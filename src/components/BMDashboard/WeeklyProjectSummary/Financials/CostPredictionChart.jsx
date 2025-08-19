@@ -357,303 +357,308 @@ function CostPredictionChart({ projectId }) {
       className={`weekly-project-summary-card normal-card ${darkMode ? 'dark-mode' : ''}`}
       style={{ position: 'relative' }}
     >
-      <div className={`${styles.chartTitleContainer}`}>
-        <h2 className={`${styles.costPredictionChartTitle}`}>Planned v Actual Costs Tracking</h2>
+      <div className={styles.costPredictionWrapper}>
+        <div className={`${styles.chartTitleContainer}`}>
+          <h2 className={`${styles.costPredictionChartTitle}`}>Planned v Actual Costs Tracking</h2>
 
-        <button
-          type="button"
-          className={`${styles.costPredictionChartInfoButton}`}
-          data-tip
-          data-for="cost-prediction-info"
-          aria-label="Chart Info"
-        >
-          <Info size={14} strokeWidth={2} />
-        </button>
-      </div>
-
-      <ReactTooltip
-        id="cost-prediction-info"
-        place="left"
-        effect="solid"
-        className={`${styles.costPredictionChartTooltip}`}
-        clickable
-        event="click"
-        globalEventOff="click"
-      >
-        <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Chart Overview</div>
-        <div>This chart compares planned vs actual costs across different categories.</div>
-        <ul style={{ paddingLeft: '16px', marginTop: '4px' }}>
-          <li>Solid lines represent actual costs for each category.</li>
-          <li>Dashed lines with diamond markers represent predicted/planned costs.</li>
-          <li>Hover over lines to view exact cost values.</li>
-          <li>
-            The dropdown filters allow you to:
-            <ul style={{ paddingLeft: '16px' }}>
-              <li>Select specific cost categories (multi-select).</li>
-              <li>Choose organization (defaulted).</li>
-              <li>Pick a specific project.</li>
-            </ul>
-          </li>
-          <li>
-            Color coding:
-            <ul style={{ paddingLeft: '16px' }}>
-              <li>
-                <strong>Blue</strong> – Labor costs
-              </li>
-              <li>
-                <strong>Orange</strong> – Materials costs
-              </li>
-              <li>
-                <strong>Purple</strong> – Equipment costs
-              </li>
-              <li>
-                <strong>Green</strong> – Total costs
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </ReactTooltip>
-
-      <div
-        className={`cost-prediction-dropdown ${styles.dropdownContainer} ${styles.costPredictionCard}`}
-      >
-        <Select
-          isMulti
-          isSearchable
-          options={costOptions}
-          value={costOptions.filter(option => selectedCosts.includes(option.value))}
-          onChange={handleCostChange}
-          placeholder="All Cost Categories"
-          classNamePrefix="custom-select"
-          className={`cost-prediction-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
-          menuPosition="fixed"
-          closeMenuOnSelect={false}
-          hideSelectedOptions={false}
-          styles={
-            darkMode
-              ? {
-                  control: baseStyles => ({
-                    ...baseStyles,
-                    backgroundColor: '#2c3344',
-                    borderColor: '#364156',
-                  }),
-                  menu: baseStyles => ({
-                    ...baseStyles,
-                    backgroundColor: '#2c3344',
-                  }),
-                  option: (baseStyles, state) => ({
-                    ...baseStyles,
-                    backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                    color: '#e0e0e0',
-                  }),
-                  multiValue: baseStyles => ({
-                    ...baseStyles,
-                    backgroundColor: '#364156',
-                  }),
-                  multiValueLabel: baseStyles => ({
-                    ...baseStyles,
-                    color: '#e0e0e0',
-                  }),
-                  multiValueRemove: baseStyles => ({
-                    ...baseStyles,
-                    color: '#e0e0e0',
-                    ':hover': { backgroundColor: '#ff4d4f', color: '#fff' },
-                  }),
-                }
-              : {}
-          }
-        />
-
-        <Select
-          options={orgOptions}
-          value={orgOptions.find(option => option.value === selectedOrg)}
-          placeholder="Organization"
-          classNamePrefix="custom-select"
-          className={`cost-prediction-dropdown-item ${styles.dropdownItem}`}
-          styles={
-            darkMode
-              ? {
-                  control: baseStyles => ({
-                    ...baseStyles,
-                    backgroundColor: '#2c3344',
-                    borderColor: '#364156',
-                  }),
-                  menu: baseStyles => ({
-                    ...baseStyles,
-                    backgroundColor: '#2c3344',
-                  }),
-                  option: (baseStyles, state) => ({
-                    ...baseStyles,
-                    backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                    color: '#e0e0e0',
-                  }),
-                  singleValue: baseStyles => ({
-                    ...baseStyles,
-                    color: '#e0e0e0',
-                  }),
-                }
-              : {}
-          }
-          // isDisabled
-        />
-
-        <Select
-          options={availableProjects}
-          value={selectedProject}
-          onChange={handleProjectChange}
-          placeholder="Select Project"
-          classNamePrefix="custom-select"
-          className={`cost-prediction-dropdown-item ${styles.dropdownItem}`}
-          styles={
-            darkMode
-              ? {
-                  control: baseStyles => ({
-                    ...baseStyles,
-                    backgroundColor: '#2c3344',
-                    borderColor: '#364156',
-                  }),
-                  menu: baseStyles => ({
-                    ...baseStyles,
-                    backgroundColor: '#2c3344',
-                  }),
-                  option: (baseStyles, state) => ({
-                    ...baseStyles,
-                    backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                    color: '#e0e0e0',
-                  }),
-                  singleValue: baseStyles => ({
-                    ...baseStyles,
-                    color: '#e0e0e0',
-                  }),
-                }
-              : {}
-          }
-        />
-      </div>
-
-      <div className={`${styles.costPredictionChartContainer}`}>
-        {loading && <div className="cost-chart-loading">Loading...</div>}
-        {error && <div className="cost-chart-error">{error}</div>}
-
-        {!loading && !error && data.length > 0 && (
-          <div
-            style={{
-              height: 'calc(100% - 40px)',
-              width: '100%',
-              position: 'relative',
-            }}
+          <button
+            type="button"
+            className={`${styles.costPredictionChartInfoButton}`}
+            data-tip
+            data-for="cost-prediction-info"
+            aria-label="Chart Info"
           >
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 18 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#364156' : '#ccc'} />
-                <XAxis
-                  dataKey="date"
-                  tick={{
-                    fill: darkMode ? '#e0e0e0' : '#333',
-                    fontSize: 10,
-                  }}
-                  tickMargin={5}
-                  height={25}
-                />
-                <YAxis
-                  tick={{
-                    fill: darkMode ? '#e0e0e0' : '#333',
-                    fontSize: 10,
-                  }}
-                  tickFormatter={value => `${currency}${value}`}
-                  width={35}
-                />
-                <Tooltip content={<CustomTooltip currency={currency} />} />
-                <Legend
-                  verticalAlign="bottom"
-                  height={15}
-                  iconSize={8}
-                  wrapperStyle={{
-                    fontSize: 9,
-                    padding: 0,
-                    margin: '0 auto',
-                    width: '100%',
-                    textAlign: 'center',
-                    lineHeight: '1.2',
-                    color: darkMode ? '#e0e0e0' : '#333',
-                  }}
-                  align="center"
-                />
+            <Info size={14} strokeWidth={2} />
+          </button>
+        </div>
 
-                {/* Reference Lines for Last Predicted Values */}
-                {(selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials']).map(category =>
-                  lastPredictedValues[category] ? (
-                    <ReferenceLine
-                      key={`ref-${category}`}
-                      y={lastPredictedValues[category]}
-                      stroke={costColors[category]}
-                      strokeWidth={1.5}
-                    />
-                  ) : null,
-                )}
+        <ReactTooltip
+          id="cost-prediction-info"
+          place="left"
+          effect="solid"
+          className={`${styles.costPredictionChartTooltip}`}
+          clickable
+          event="click"
+          globalEventOff="click"
+        >
+          <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Chart Overview</div>
+          <div>This chart compares planned vs actual costs across different categories.</div>
+          <ul style={{ paddingLeft: '16px', marginTop: '4px' }}>
+            <li>Solid lines represent actual costs for each category.</li>
+            <li>Dashed lines with diamond markers represent predicted/planned costs.</li>
+            <li>Hover over lines to view exact cost values.</li>
+            <li>
+              The dropdown filters allow you to:
+              <ul style={{ paddingLeft: '16px' }}>
+                <li>Select specific cost categories (multi-select).</li>
+                <li>Choose organization (defaulted).</li>
+                <li>Pick a specific project.</li>
+              </ul>
+            </li>
+            <li>
+              Color coding:
+              <ul style={{ paddingLeft: '16px' }}>
+                <li>
+                  <strong>Blue</strong> – Labor costs
+                </li>
+                <li>
+                  <strong>Orange</strong> – Materials costs
+                </li>
+                <li>
+                  <strong>Purple</strong> – Equipment costs
+                </li>
+                <li>
+                  <strong>Green</strong> – Total costs
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </ReactTooltip>
 
-                {/* Dynamically render lines based on selected costs */}
-                {(selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials']).map(
-                  category => (
-                    <Fragment key={`${category}-container`}>
-                      {/* Actual cost line */}
-                      <Line
-                        key={category}
-                        type="linear"
-                        dataKey={category}
-                        name={`${category} Cost`}
+        <div
+          className={`cost-prediction-dropdown ${styles.dropdownContainer} ${styles.costPredictionCard}`}
+        >
+          <Select
+            isMulti
+            isSearchable
+            options={costOptions}
+            value={costOptions.filter(option => selectedCosts.includes(option.value))}
+            onChange={handleCostChange}
+            placeholder="All Cost Categories"
+            classNamePrefix="custom-select"
+            className={`cost-prediction-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
+            menuPosition="fixed"
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            styles={
+              darkMode
+                ? {
+                    control: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#2c3344',
+                      borderColor: '#364156',
+                    }),
+                    menu: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#2c3344',
+                    }),
+                    option: (baseStyles, state) => ({
+                      ...baseStyles,
+                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                      color: '#e0e0e0',
+                    }),
+                    multiValue: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#364156',
+                    }),
+                    multiValueLabel: baseStyles => ({
+                      ...baseStyles,
+                      color: '#e0e0e0',
+                    }),
+                    multiValueRemove: baseStyles => ({
+                      ...baseStyles,
+                      color: '#e0e0e0',
+                      ':hover': { backgroundColor: '#ff4d4f', color: '#fff' },
+                    }),
+                  }
+                : {}
+            }
+          />
+
+          <Select
+            options={orgOptions}
+            value={orgOptions.find(option => option.value === selectedOrg)}
+            placeholder="Organization"
+            classNamePrefix="custom-select"
+            className={`cost-prediction-dropdown-item ${styles.dropdownItem}`}
+            styles={
+              darkMode
+                ? {
+                    control: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#2c3344',
+                      borderColor: '#364156',
+                    }),
+                    menu: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#2c3344',
+                    }),
+                    option: (baseStyles, state) => ({
+                      ...baseStyles,
+                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                      color: '#e0e0e0',
+                    }),
+                    singleValue: baseStyles => ({
+                      ...baseStyles,
+                      color: '#e0e0e0',
+                    }),
+                  }
+                : {}
+            }
+            // isDisabled
+          />
+
+          <Select
+            options={availableProjects}
+            value={selectedProject}
+            onChange={handleProjectChange}
+            placeholder="Select Project"
+            classNamePrefix="custom-select"
+            className={`cost-prediction-dropdown-item ${styles.dropdownItem}`}
+            styles={
+              darkMode
+                ? {
+                    control: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#2c3344',
+                      borderColor: '#364156',
+                    }),
+                    menu: baseStyles => ({
+                      ...baseStyles,
+                      backgroundColor: '#2c3344',
+                    }),
+                    option: (baseStyles, state) => ({
+                      ...baseStyles,
+                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
+                      color: '#e0e0e0',
+                    }),
+                    singleValue: baseStyles => ({
+                      ...baseStyles,
+                      color: '#e0e0e0',
+                    }),
+                  }
+                : {}
+            }
+          />
+        </div>
+
+        <div className={`${styles.costPredictionChartContainer}`}>
+          {loading && <div className="cost-chart-loading">Loading...</div>}
+          {error && <div className="cost-chart-error">{error}</div>}
+
+          {!loading && !error && data.length > 0 && (
+            <div
+              style={{
+                height: 'calc(100% - 40px)',
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data} margin={{ top: 5, right: 10, left: 10, bottom: 18 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#364156' : '#ccc'} />
+                  <XAxis
+                    dataKey="date"
+                    tick={{
+                      fill: darkMode ? '#e0e0e0' : '#333',
+                      fontSize: 10,
+                    }}
+                    tickMargin={5}
+                    height={25}
+                  />
+                  <YAxis
+                    tick={{
+                      fill: darkMode ? '#e0e0e0' : '#333',
+                      fontSize: 10,
+                    }}
+                    tickFormatter={value => `${currency}${value}`}
+                    width={35}
+                  />
+                  <Tooltip content={<CustomTooltip currency={currency} />} />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={15}
+                    iconSize={8}
+                    wrapperStyle={{
+                      fontSize: 9,
+                      padding: 0,
+                      margin: '0 auto',
+                      width: '100%',
+                      textAlign: 'center',
+                      lineHeight: '1.2',
+                      color: darkMode ? '#e0e0e0' : '#333',
+                    }}
+                    align="center"
+                  />
+
+                  {/* Reference Lines for Last Predicted Values */}
+                  {(selectedCosts.length > 0
+                    ? selectedCosts
+                    : ['Labor', 'Materials']
+                  ).map(category =>
+                    lastPredictedValues[category] ? (
+                      <ReferenceLine
+                        key={`ref-${category}`}
+                        y={lastPredictedValues[category]}
                         stroke={costColors[category]}
-                        strokeWidth={2}
-                        dot={{ r: 3 }}
-                        activeDot={{ r: 4 }}
-                        isAnimationActive={false}
+                        strokeWidth={1.5}
                       />
-                      {/* Predicted cost line */}
-                      <Line
-                        key={`${category}Predicted`}
-                        type="linear"
-                        dataKey={`${category}Predicted`}
-                        name={`${category} Cost (Predicted)`}
-                        stroke={costColors[category]}
-                        strokeWidth={2}
-                        strokeDasharray="8 4"
-                        dot={getDotRenderer(category)}
-                        activeDot={{ r: 4 }}
-                        isAnimationActive={false}
-                      />
-                    </Fragment>
-                  ),
-                )}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
+                    ) : null,
+                  )}
 
-        {!loading && !error && data.length === 0 && (
-          <div className="cost-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
-            <p>No data available</p>
-          </div>
-        )}
-      </div>
+                  {/* Dynamically render lines based on selected costs */}
+                  {(selectedCosts.length > 0 ? selectedCosts : ['Labor', 'Materials']).map(
+                    category => (
+                      <Fragment key={`${category}-container`}>
+                        {/* Actual cost line */}
+                        <Line
+                          key={category}
+                          type="linear"
+                          dataKey={category}
+                          name={`${category} Cost`}
+                          stroke={costColors[category]}
+                          strokeWidth={2}
+                          dot={{ r: 3 }}
+                          activeDot={{ r: 4 }}
+                          isAnimationActive={false}
+                        />
+                        {/* Predicted cost line */}
+                        <Line
+                          key={`${category}Predicted`}
+                          type="linear"
+                          dataKey={`${category}Predicted`}
+                          name={`${category} Cost (Predicted)`}
+                          stroke={costColors[category]}
+                          strokeWidth={2}
+                          strokeDasharray="8 4"
+                          dot={getDotRenderer(category)}
+                          activeDot={{ r: 4 }}
+                          isAnimationActive={false}
+                        />
+                      </Fragment>
+                    ),
+                  )}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
 
-      {/* Fixed label below chart */}
-      <div
-        style={{
-          width: '100%',
-          textAlign: 'center',
-          fontSize: '12px',
-          marginTop: '5px',
-          color: 'var(--text-color)',
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '6px',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-        }}
-      >
-        <span>📊 Actual Costs</span>
-        <span>vs</span>
-        <span>📈 Predicted Costs</span>
+          {!loading && !error && data.length === 0 && (
+            <div className="cost-chart-empty" style={{ color: darkMode ? '#e0e0e0' : 'inherit' }}>
+              <p>No data available</p>
+            </div>
+          )}
+        </div>
+
+        {/* Fixed label below chart */}
+        <div
+          style={{
+            width: '100%',
+            textAlign: 'center',
+            fontSize: '12px',
+            marginTop: '5px',
+            color: 'var(--text-color)',
+            display: 'flex',
+            justifyContent: 'center',
+            gap: '6px',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+          }}
+        >
+          <span>📊 Actual Costs</span>
+          <span>vs</span>
+          <span>📈 Predicted Costs</span>
+        </div>
       </div>
     </div>
   );

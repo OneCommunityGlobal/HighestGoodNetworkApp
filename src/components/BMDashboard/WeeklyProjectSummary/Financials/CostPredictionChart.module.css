@@ -59,6 +59,20 @@
   /* Additional styles for cost prediction specific styling */
 }
 
+/* Chart Wrapper - protects from external styles */
+.costPredictionWrapper {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Override global financial-big class styles */
+:global(.weekly-project-summary-card.financial-big) .costPredictionWrapper {
+  padding: 10px !important;
+  width: 100% !important;
+}
+
 /* Chart Container */
 .costPredictionChartContainer {
   position: relative;

@@ -147,6 +147,18 @@
   grid-column: span 1;
 }
 
+.financialBig {
+  grid-column: span 4;
+  min-height: 600px;
+  height: auto;
+  padding: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
 
 .weekly-project-summary-card.financial-big {
   grid-column: span 4;
