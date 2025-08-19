@@ -34,7 +34,8 @@
   max-width: 300px;
   font-size: 12px;
   line-height: 1.4;
-  z-index: 1000;
+  z-index: 1000 !important;
+  position: fixed !important;
 }
 
 /* Dropdown Container */
@@ -65,6 +66,7 @@
   height: 100%;
   padding: 10px;
   box-sizing: border-box;
+  position: relative;
 }
 
 /* Override global financial-big class styles */
@@ -83,10 +85,49 @@
   background-color: transparent;
 }
 
+/* Chart Tooltip Styling */
+.costPredictionChartContainer :global(.recharts-tooltip-wrapper) {
+  z-index: 1000 !important;
+}
+
+.costPredictionChartContainer :global(.recharts-default-tooltip) {
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--button-hover) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  padding: 8px !important;
+}
+
+.costPredictionChartContainer :global(.recharts-tooltip-label) {
+  color: var(--text-color) !important;
+  font-weight: bold !important;
+  margin-bottom: 4px !important;
+}
+
+.costPredictionChartContainer :global(.recharts-tooltip-item) {
+  color: var(--text-color) !important;
+  padding: 2px 0 !important;
+}
+
+.costPredictionChartContainer :global(.recharts-tooltip-item-name) {
+  color: var(--text-color) !important;
+}
+
+.costPredictionChartContainer :global(.recharts-tooltip-item-value) {
+  color: var(--text-color) !important;
+  font-weight: bold !important;
+}
+
 /* Dark mode styles */
 :global(.dark-mode) .costPredictionChartContainer {
   background-color: #1e2736;
   color: #e0e0e0;
+}
+
+:global(.dark-mode) .costPredictionChartContainer :global(.recharts-default-tooltip) {
+  background-color: #2c3344 !important;
+  border-color: #364156 !important;
+  color: #e0e0e0 !important;
 }
 
 :global(.dark-mode) .costPredictionChartTitle {

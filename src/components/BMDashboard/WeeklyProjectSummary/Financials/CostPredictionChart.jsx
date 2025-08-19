@@ -214,24 +214,95 @@ function CustomTooltip({ active, payload, label, currency }) {
     return null;
   }
 
-  const isPrediction = payload[0]?.payload?.isPrediction;
+  // Check if any payload entry is predicted data
+  const hasActualData = payload.some(entry => !entry.dataKey.includes('Predicted'));
+  const hasPredictedData = payload.some(entry => entry.dataKey.includes('Predicted'));
+
+  // If both actual and predicted exist, prioritize showing "Actual"
+  const displayType = hasActualData ? 'Actual' : hasPredictedData ? 'Predicted' : 'Actual';
 
   return (
-    <div className="cost-chart-tooltip">
-      <p className="tooltip-date">{label}</p>
-      <p className="tooltip-type">{isPrediction ? 'Predicted' : 'Actual'}</p>
+    <div
+      className="cost-chart-tooltip"
+      style={{
+        backgroundColor: 'var(--card-bg)',
+        border: '1px solid var(--button-hover)',
+        borderRadius: '4px',
+        padding: '8px',
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+        color: 'var(--text-color)',
+        fontSize: '12px',
+      }}
+    >
+      <p
+        className="tooltip-date"
+        style={{ margin: '0 0 4px 0', fontWeight: 'bold', color: 'var(--text-color)' }}
+      >
+        {label}
+      </p>
+      <p
+        className="tooltip-type"
+        style={{ margin: '0 0 4px 0', fontSize: '10px', color: 'var(--text-color)', opacity: 0.8 }}
+      >
+        {displayType}
+      </p>
       {payload.map(entry => {
+        const isPredicted = entry.dataKey.includes('Predicted');
         let costLabel = '';
-        if (entry.dataKey === 'Labor') costLabel = 'Labor Cost';
-        else if (entry.dataKey === 'Materials') costLabel = 'Materials Cost';
-        else if (entry.dataKey === 'Equipment') costLabel = 'Equipment Cost';
-        else if (entry.dataKey === 'Total') costLabel = 'Total Cost';
+        const baseDataKey = entry.dataKey.replace('Predicted', '');
+
+        if (baseDataKey === 'Labor') costLabel = 'Labor Cost';
+        else if (baseDataKey === 'Materials') costLabel = 'Materials Cost';
+        else if (baseDataKey === 'Equipment') costLabel = 'Equipment Cost';
+        else if (baseDataKey === 'Total') costLabel = 'Total Cost';
 
         return (
-          <div key={`tooltip-${entry.dataKey}-${entry.value}`} className="tooltip-item">
-            <span className="tooltip-marker" style={{ backgroundColor: entry.color }} />
-            <span className="tooltip-label">{costLabel}:</span>
-            <span className="tooltip-value">{`${currency}${entry.value.toLocaleString()}`}</span>
+          <div
+            key={`tooltip-${entry.dataKey}-${entry.value}`}
+            className="tooltip-item"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              margin: '2px 0',
+              color: 'var(--text-color)',
+            }}
+          >
+            {isPredicted ? (
+              // Diamond shape for predicted data
+              <span
+                className="tooltip-marker"
+                style={{
+                  backgroundColor: entry.color,
+                  width: '6px',
+                  height: '6px',
+                  transform: 'rotate(45deg)',
+                  border: `1px solid ${entry.color}`,
+                  display: 'inline-block',
+                }}
+              />
+            ) : (
+              // Circle for actual data
+              <span
+                className="tooltip-marker"
+                style={{
+                  backgroundColor: entry.color,
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  display: 'inline-block',
+                }}
+              />
+            )}
+            <span className="tooltip-label" style={{ color: 'var(--text-color)' }}>
+              {costLabel}:
+            </span>
+            <span
+              className="tooltip-value"
+              style={{ fontWeight: 'bold', color: 'var(--text-color)' }}
+            >
+              {`${currency}${entry.value.toLocaleString()}`}
+            </span>
           </div>
         );
       })}
@@ -357,6 +428,52 @@ function CostPredictionChart({ projectId }) {
       className={`weekly-project-summary-card normal-card ${darkMode ? 'dark-mode' : ''}`}
       style={{ position: 'relative' }}
     >
+      {/* ReactTooltip moved outside wrapper for better positioning */}
+      <ReactTooltip
+        id="cost-prediction-info"
+        place="left"
+        effect="solid"
+        className={`${styles.costPredictionChartTooltip}`}
+        clickable
+        event="click"
+        globalEventOff="click"
+        delayHide={100}
+        delayShow={0}
+      >
+        <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Chart Overview</div>
+        <div>This chart compares planned vs actual costs across different categories.</div>
+        <ul style={{ paddingLeft: '16px', marginTop: '4px' }}>
+          <li>Solid lines represent actual costs for each category.</li>
+          <li>Dashed lines with diamond markers represent predicted/planned costs.</li>
+          <li>Hover over lines to view exact cost values.</li>
+          <li>
+            The dropdown filters allow you to:
+            <ul style={{ paddingLeft: '16px' }}>
+              <li>Select specific cost categories (multi-select).</li>
+              <li>Choose organization (defaulted).</li>
+              <li>Pick a specific project.</li>
+            </ul>
+          </li>
+          <li>
+            Color coding:
+            <ul style={{ paddingLeft: '16px' }}>
+              <li>
+                <strong>Blue</strong> – Labor costs
+              </li>
+              <li>
+                <strong>Orange</strong> – Materials costs
+              </li>
+              <li>
+                <strong>Purple</strong> – Equipment costs
+              </li>
+              <li>
+                <strong>Green</strong> – Total costs
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </ReactTooltip>
+
       <div className={styles.costPredictionWrapper}>
         <div className={`${styles.chartTitleContainer}`}>
           <h2 className={`${styles.costPredictionChartTitle}`}>Planned v Actual Costs Tracking</h2>
@@ -371,49 +488,6 @@ function CostPredictionChart({ projectId }) {
             <Info size={14} strokeWidth={2} />
           </button>
         </div>
-
-        <ReactTooltip
-          id="cost-prediction-info"
-          place="left"
-          effect="solid"
-          className={`${styles.costPredictionChartTooltip}`}
-          clickable
-          event="click"
-          globalEventOff="click"
-        >
-          <div style={{ fontWeight: 'bold', marginBottom: '4px' }}>Chart Overview</div>
-          <div>This chart compares planned vs actual costs across different categories.</div>
-          <ul style={{ paddingLeft: '16px', marginTop: '4px' }}>
-            <li>Solid lines represent actual costs for each category.</li>
-            <li>Dashed lines with diamond markers represent predicted/planned costs.</li>
-            <li>Hover over lines to view exact cost values.</li>
-            <li>
-              The dropdown filters allow you to:
-              <ul style={{ paddingLeft: '16px' }}>
-                <li>Select specific cost categories (multi-select).</li>
-                <li>Choose organization (defaulted).</li>
-                <li>Pick a specific project.</li>
-              </ul>
-            </li>
-            <li>
-              Color coding:
-              <ul style={{ paddingLeft: '16px' }}>
-                <li>
-                  <strong>Blue</strong> – Labor costs
-                </li>
-                <li>
-                  <strong>Orange</strong> – Materials costs
-                </li>
-                <li>
-                  <strong>Purple</strong> – Equipment costs
-                </li>
-                <li>
-                  <strong>Green</strong> – Total costs
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </ReactTooltip>
 
         <div
           className={`cost-prediction-dropdown ${styles.dropdownContainer} ${styles.costPredictionCard}`}
@@ -579,6 +653,59 @@ function CostPredictionChart({ projectId }) {
                       color: darkMode ? '#e0e0e0' : '#333',
                     }}
                     align="center"
+                    content={props => {
+                      const { payload } = props;
+                      return (
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: '15px',
+                            flexWrap: 'wrap',
+                            fontSize: '9px',
+                            color: darkMode ? '#e0e0e0' : '#333',
+                          }}
+                        >
+                          {payload.map((entry, index) => {
+                            const isPredicted = entry.value.includes('Predicted');
+                            return (
+                              <div
+                                key={index}
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                }}
+                              >
+                                {isPredicted ? (
+                                  // Diamond shape for predicted
+                                  <div
+                                    style={{
+                                      width: '6px',
+                                      height: '6px',
+                                      backgroundColor: entry.color,
+                                      transform: 'rotate(45deg)',
+                                      border: `1px solid ${entry.color}`,
+                                    }}
+                                  />
+                                ) : (
+                                  // Circle for actual
+                                  <div
+                                    style={{
+                                      width: '8px',
+                                      height: '8px',
+                                      backgroundColor: entry.color,
+                                      borderRadius: '50%',
+                                    }}
+                                  />
+                                )}
+                                <span>{entry.value}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    }}
                   />
 
                   {/* Reference Lines for Last Predicted Values */}
