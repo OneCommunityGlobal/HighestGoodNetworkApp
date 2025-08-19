@@ -32,9 +32,9 @@ function PredictedDot({ cx, cy, payload, category, costColors }) {
   return (
     <path
       d={`M${cx},${cy - 3} L${cx + 3},${cy} L${cx},${cy + 3} L${cx - 3},${cy} Z`}
-      fill="none"
+      fill={costColors[category]}
       stroke={costColors[category]}
-      strokeWidth={1.5}
+      strokeWidth={0}
     />
   );
 }
@@ -45,9 +45,9 @@ function FullPagePredictedDot({ cx, cy, payload, category, costColors }) {
   return (
     <path
       d={`M${cx},${cy - 4} L${cx + 4},${cy} L${cx},${cy + 4} L${cx - 4},${cy} Z`}
-      fill="none"
+      fill={costColors[category]}
       stroke={costColors[category]}
-      strokeWidth={1.5}
+      strokeWidth={0}
     />
   );
 }
@@ -221,6 +221,11 @@ function CustomTooltip({ active, payload, label, currency }) {
   // If both actual and predicted exist, prioritize showing "Actual"
   const displayType = hasActualData ? 'Actual' : hasPredictedData ? 'Predicted' : 'Actual';
 
+  // Filter payload: if actual data exists, only show actual data; otherwise show predicted data
+  const filteredPayload = hasActualData
+    ? payload.filter(entry => !entry.dataKey.includes('Predicted'))
+    : payload;
+
   return (
     <div
       className="cost-chart-tooltip"
@@ -246,7 +251,7 @@ function CustomTooltip({ active, payload, label, currency }) {
       >
         {displayType}
       </p>
-      {payload.map(entry => {
+      {filteredPayload.map(entry => {
         const isPredicted = entry.dataKey.includes('Predicted');
         let costLabel = '';
         const baseDataKey = entry.dataKey.replace('Predicted', '');
@@ -269,7 +274,7 @@ function CustomTooltip({ active, payload, label, currency }) {
             }}
           >
             {isPredicted ? (
-              // Diamond shape for predicted data
+              // Solid diamond shape for predicted data
               <span
                 className="tooltip-marker"
                 style={{
@@ -277,12 +282,11 @@ function CustomTooltip({ active, payload, label, currency }) {
                   width: '6px',
                   height: '6px',
                   transform: 'rotate(45deg)',
-                  border: `1px solid ${entry.color}`,
                   display: 'inline-block',
                 }}
               />
             ) : (
-              // Circle for actual data
+              // Solid circle for actual data
               <span
                 className="tooltip-marker"
                 style={{
@@ -678,18 +682,17 @@ function CostPredictionChart({ projectId }) {
                                 }}
                               >
                                 {isPredicted ? (
-                                  // Diamond shape for predicted
+                                  // Solid diamond shape for predicted
                                   <div
                                     style={{
                                       width: '6px',
                                       height: '6px',
                                       backgroundColor: entry.color,
                                       transform: 'rotate(45deg)',
-                                      border: `1px solid ${entry.color}`,
                                     }}
                                   />
                                 ) : (
-                                  // Circle for actual
+                                  // Solid circle for actual
                                   <div
                                     style={{
                                       width: '8px',
@@ -735,8 +738,18 @@ function CostPredictionChart({ projectId }) {
                           name={`${category} Cost`}
                           stroke={costColors[category]}
                           strokeWidth={2}
-                          dot={{ r: 3 }}
-                          activeDot={{ r: 4 }}
+                          dot={{
+                            r: 3,
+                            fill: costColors[category],
+                            stroke: costColors[category],
+                            strokeWidth: 0,
+                          }}
+                          activeDot={{
+                            r: 4,
+                            fill: costColors[category],
+                            stroke: costColors[category],
+                            strokeWidth: 0,
+                          }}
                           isAnimationActive={false}
                         />
                         {/* Predicted cost line */}
