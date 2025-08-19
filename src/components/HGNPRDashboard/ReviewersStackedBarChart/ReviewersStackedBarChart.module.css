@@ -1,0 +1,177 @@
+.reviewersChartContainer {
+  padding: 20px;
+  font-family: sans-serif;
+  height: auto;
+  width: 80%;
+  padding: 20px;
+  justify-self: center;
+}
+
+.reviewersChartContainer.darkMode {
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+.darkMode .reviewersLabel {
+  color: #fdfdfd; /* Always use the light mode color */
+}
+
+.reviewersFiltersBar {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.reviewersFiltersBar label {
+  margin-right: 5px;
+  font-weight: 600;
+}
+
+.reviewersScrollContainer {
+  overflow-x: auto;
+  border: 1px solid #ddd;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.customTooltip {
+  background-color: #f8fafc;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: background-color 0.2s ease;
+}
+
+.darkMode .customTooltip {
+  background-color: #1c2d48;
+  color: #ffffff;
+}
+
+.customTooltip:hover {
+  background-color: #3d4a64;
+}
+
+.tooltipEntry {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.tooltipLabel {
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.tooltipTitle {
+  color: black;
+}
+
+.darkMode .tooltipTitle {
+  color: #f8fafc;
+}
+
+.darkMode .reviewersScrollContainer {
+  background-color: #324d77;
+  border-color: #444;
+}
+
+.filtersBar {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.reviewersLabel {
+  font-weight: 500;
+  min-width: 70px;
+}
+
+/* react-select overrides */
+.reviewersSelectContainer {
+  width: 180px;
+}
+
+.reviewersSelect__control {
+  background-color: white;
+  color: black;
+}
+
+.darkMode .reviewersSelect__toggle {
+  color: white;
+}
+
+.darkMode .reviewersSelect__control {
+  background-color: #324d77;
+  color: #f8fafc;
+}
+
+.darkMode .reviewers-select__menu {
+  background-color: #1b2a41;
+  color: #f8fafc;
+  border: 1px solid white;
+}
+
+.darkMode .reviewersSelect__single-value {
+  color: #f8fafc;
+}
+
+/* Light mode option hover and focus */
+.reviewersSelect__option--is-focused,
+.reviewersSelect__option:hover {
+  background-color: #eef0f2;
+  color: #000;
+}
+
+/* Dark mode option hover and focus */
+.darkMode .reviewersSelect__option--is-focused,
+.dark-mode .reviewersSelect__option:hover {
+  background-color: #2f4a73;
+  color: #fff;
+}
+
+/* Optional: Highlight selected option */
+.reviewersSelect__option--isSelected {
+  background-color: #cbd5e1;
+  color: #000;
+}
+
+.dark-mode .reviewersSelect__option--isSelected {
+  background-color: #3a5a84;
+  color: #fff;
+}
+
+.dark-mode .rechartsLegendItemText {
+  color: black !important;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  .reviewersChartContainer h3 {
+    font-size: 1.25rem;
+  }
+
+  .reviewersFiltersBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reviewersFiltersBar > div {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .reviewersChartContainer h3 {
+    font-size: 1.1rem;
+  }
+
+  .reviewersLabel {
+    font-size: 0.9rem;
+  }
+
+  .reviewersSelectContainer {
+    font-size: 0.85rem;
+  }
+}

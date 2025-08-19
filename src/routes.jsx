@@ -148,7 +148,7 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 // HGN PR Dashboard
-import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
+import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -758,6 +758,11 @@ export default (
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PromotionEligibility}
+        />
+        <ProtectedRoute
+          path="/pr-team-analytics/reviewers-stacked-bar-chart"
+          exact
+          component={ReviewersStackedBarChart}
         />
 
         <Route path="*" component={NotFoundPage} />
