@@ -92,7 +92,8 @@ describe('BadgeManagement validateBadges action', () => {
 
     expect(actions).toContainEqual({
       type: GET_MESSAGE,
-      message: 'The Name Find function does not work without entering a name. Nice try though.',
+      message:
+        'The Name Find function does not work without entering first and last name. Nice try though.',
       color: 'danger',
     });
     // since setTimeout → immediate, CLOSE_ALERT is already dispatched
@@ -110,16 +111,19 @@ describe('BadgeManagement assignBadges action', () => {
 
   beforeEach(() => {
     store = mockStore({});
+    vi.useFakeTimers();
   });
   afterEach(() => {
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
     vi.clearAllMocks();
     store.clearActions();
   });
 
   it('dispatches error + CLOSE_ALERT when no badges selected', async () => {
     await store.dispatch(assignBadges('John', 'Doe', []));
+    vi.runAllTimers();
     const actions = store.getActions();
-
     expect(actions).toContainEqual({
       type: GET_MESSAGE,
       message:
@@ -132,6 +136,7 @@ describe('BadgeManagement assignBadges action', () => {
   it('dispatches error + CLOSE_ALERT when user not found', async () => {
     axios.get.mockResolvedValue({ data: [] });
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
+    vi.runAllTimers();
     const actions = store.getActions();
 
     expect(actions).toContainEqual({
@@ -144,9 +149,12 @@ describe('BadgeManagement assignBadges action', () => {
   });
 
   it('dispatches success + CLOSE_ALERT on successful assign', async () => {
-    axios.get.mockResolvedValue({ data: [{ badgeCollection: [], _id: 'user1' }] });
-    axios.put.mockResolvedValue({});
+    axios.get
+      .mockResolvedValueOnce({ data: [{ badgeCollection: [], _id: 'user1' }] })
+      .mockResolvedValueOnce({ data: { badgeCollection: [], _id: 'user1' } });
+    axios.put.mockResolvedValue({}); // Mock successful PUT request
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
+    vi.runAllTimers();
     const actions = store.getActions();
 
     expect(actions).toContainEqual({
@@ -162,6 +170,7 @@ describe('BadgeManagement assignBadges action', () => {
     axios.get.mockResolvedValue({ data: [{ badgeCollection: [], _id: 'user1' }] });
     axios.put.mockRejectedValue(new Error('API Error'));
     await store.dispatch(assignBadges('John', 'Doe', ['badge1']));
+    vi.runAllTimers();
     const actions = store.getActions();
 
     expect(actions).toContainEqual({
