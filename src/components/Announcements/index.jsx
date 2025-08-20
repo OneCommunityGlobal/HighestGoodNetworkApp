@@ -7,6 +7,7 @@ import { Label, Input, Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import { FaFacebook, FaTwitter } from 'react-icons/fa';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import {
   sendTweet,
@@ -48,6 +49,8 @@ function Announcements({ title, email: initialEmail }) {
   const [scheduleSelectedPlatforms, setscheduleSelectedPlatforms] = useState([]);
   const [hintIndex, setHintIndex] = useState(0);
   const [currentHint, setCurrentHint] = useState('');
+  const [activePlatform, setActivePlatform] = useState('facebook');
+
   const twitterHints = [
     'Twitter Tip: Keep tweets concise and impactful.',
     'Twitter Tip: Keep under 280 characters for maximum clarity.',
@@ -58,6 +61,14 @@ function Announcements({ title, email: initialEmail }) {
     'Facebook Tip: Break long posts into short paragraphs.',
     'Facebook Tip: Add images/videos for higher engagement.',
   ];
+
+  const platformHints = {
+    facebook: facebookHints,
+    twitter: twitterHints,
+  };
+  const [editorContent, setEditorContent] = useState('');
+  const [showSchedulePopup, setShowSchedulePopup] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState('');
 
   useEffect(() => {
     setShowEditor(false);
@@ -106,6 +117,12 @@ function Announcements({ title, email: initialEmail }) {
     content_css: darkMode ? 'dark' : 'default',
   };
 
+  const postButtonLabel =
+    selectedPlatforms.length === 0
+      ? `Publish Post`
+      : // ? `Post  to ${activePlatform.charAt(0).toUpperCase() + activePlatform.slice(1)}`
+        `Post to ${selectedPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}`;
+
   useEffect(() => {
     if (initialEmail) {
       const trimmedEmail = initialEmail.trim();
@@ -114,26 +131,51 @@ function Announcements({ title, email: initialEmail }) {
     }
   }, [initialEmail]);
 
-  useEffect(() => {
-    const hints =
-      selectedPlatforms.includes('twitter') && !selectedPlatforms.includes('facebook')
-        ? twitterHints
-        : selectedPlatforms.includes('facebook') && !selectedPlatforms.includes('twitter')
-        ? facebookHints
-        : [...twitterHints, ...facebookHints];
+  // useEffect(() => {
+  //   const hints =
+  //     selectedPlatforms.includes('twitter') && !selectedPlatforms.includes('facebook')
+  //       ? twitterHints
+  //       : selectedPlatforms.includes('facebook') && !selectedPlatforms.includes('twitter')
+  //       ? facebookHints
+  //       : [...twitterHints, ...facebookHints];
 
-    if (hints.length > 0) {
-      setCurrentHint(hints[0]);
+  //   if (hints.length > 0) {
+  //     setCurrentHint(hints[0]);
+  //     const interval = setInterval(() => {
+  //       setHintIndex(prev => {
+  //         const next = (prev + 1) % hints.length;
+  //         setCurrentHint(hints[next]);
+  //         return next;
+  //       });
+  //     }, 5000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [selectedPlatforms]);
+
+  useEffect(() => {
+    if (!editorContent || editorContent.trim() === '') {
       const interval = setInterval(() => {
-        setHintIndex(prev => {
-          const next = (prev + 1) % hints.length;
-          setCurrentHint(hints[next]);
-          return next;
+        setCurrentHint(prev => {
+          const hints = platformHints[activePlatform];
+          if (!hints || hints.length === 0) return prev;
+
+          const currentIndex = hints.indexOf(prev);
+          const nextIndex = (currentIndex + 1) % hints.length;
+          return hints[nextIndex];
         });
       }, 5000);
+
       return () => clearInterval(interval);
     }
-  }, [selectedPlatforms]);
+  }, [editorContent, activePlatform]);
+
+  useEffect(() => {
+    if (activePlatform === 'facebook') {
+      setCurrentHint(facebookHints[0]);
+    } else if (activePlatform === 'twitter') {
+      setCurrentHint('Twitter Tip: Use high-quality visuals and concise captions.');
+    }
+  }, [activePlatform]);
 
   const getAllPosts = async () => {
     const data = await fetchPosts();
@@ -232,6 +274,7 @@ function Announcements({ title, email: initialEmail }) {
 
   const handleEditorChange = (content, editor) => {
     setEmailContent(content);
+    setEditorContent(content);
     const charCounts = stripHtml(content).trim();
     setCharCount(charCounts.length);
     if (editor) {
@@ -369,6 +412,9 @@ function Announcements({ title, email: initialEmail }) {
     }
 
     setShowDropdown(false);
+    setscheduleSelectedPlatforms([]);
+    setDateContent('');
+    setTimeContent('');
   };
 
   const handleChange = async e => {
@@ -482,96 +528,176 @@ function Announcements({ title, email: initialEmail }) {
     }
   };
 
+  const handlePlatformClick = platform => {
+    setActivePlatform(platform);
+    // reset to first hint of that platform
+    setCurrentHint(platformHints[platform][0]);
+    if (platform === 'facebook') {
+      setSelectedPlatforms(['facebook']);
+    } else if (platform === 'twitter') {
+      setSelectedPlatforms(['twitter']);
+    }
+  };
+
+  const handleDateRangeChange = async e => {
+    const days = parseInt(e.target.value);
+    setSelectedDateRange(days);
+
+    const { twitterPosts, facebookPosts } = await fetchPostsSeparately();
+
+    const now = new Date();
+    const filterDate = new Date(now);
+    filterDate.setDate(now.getDate() - days);
+
+    const filterPosts = postList =>
+      postList.filter(post => new Date(post.scheduledDate) >= filterDate);
+
+    if (selectedPlatform === 'facebook') {
+      setPosts(filterPosts(facebookPosts));
+    } else if (selectedPlatform === 'twitter') {
+      setPosts(filterPosts(twitterPosts));
+    } else {
+      const allPosts = [...facebookPosts, ...twitterPosts];
+      setPosts(filterPosts(allPosts));
+    }
+  };
+
+  const cancelSchedule = async () => {
+    setShowDropdown(false);
+    setscheduleSelectedPlatforms([]);
+    setDateContent('');
+    setTimeContent('');
+  };
+
+  const cancelPost = async () => {
+    setShowDropdownPost(false);
+    setSelectedPlatforms([]);
+  };
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
         <div className="editor">
           {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
           <br />
-          <div inline="true" className="mb-2">
-            <Label for="dateOfWork">Date</Label>
-            <Input
-              className="responsive-font-size"
-              type="date"
-              name="dateOfWork"
-              id="dateOfWork"
-              value={dateContent}
-              onChange={handleDateContentChange}
+
+          <div className="flex justify-center space-x-6 mb-4">
+            <FaFacebook
+              size={40}
+              color={activePlatform === 'facebook' ? '#1877F2' : '#888'}
+              onClick={() => handlePlatformClick('facebook')}
+              className="cursor-pointer hover:scale-110 transition-transform"
             />
-            {'dateOfWork' in errors && (
-              <div className="text-danger">
-                <small>{errors.dateOfWork}</small>
-              </div>
-            )}
+            <FaTwitter
+              size={40}
+              color={activePlatform === 'twitter' ? '#E1306C' : '#888'}
+              onClick={() => handlePlatformClick('twitter')}
+              className="cursor-pointer hover:scale-110 transition-transform"
+            />
           </div>
 
-          <div inline="true" className="mb-2">
-            <Label for="timeOfWork">Time</Label>
-            <Input
-              className="responsive-font-size"
-              type="time"
-              name="timeOfWork"
-              id="timeOfWork"
-              value={timeContent}
-              onChange={e => setTimeContent(e.target.value)}
-            />
-            {'timeOfWork' in errors && (
-              <div className="text-danger">
-                <small>{errors.timeOfWork}</small>
+          {!showDropdown ? (
+            <button
+              className="send-button mr-1 ml-1"
+              onClick={handleScheduleClick}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Schedule Post
+            </button>
+          ) : (
+            <div style={{ marginTop: '15px' }}>
+              <label className="d-block">
+                <strong>
+                  {' '}
+                  <h3>Schedule Post for Social Media</h3>
+                </strong>
+              </label>
+              <label className="d-block">
+                <strong>Select Multiple Platform(s):</strong>
+              </label>
+              <div>
+                {platforms.map(({ label, value }) => (
+                  <div key={value} style={{ margin: '5px 0' }}>
+                    <input
+                      type="checkbox"
+                      id={`platform-${value}`}
+                      value={value}
+                      checked={scheduleSelectedPlatforms.includes(value)}
+                      onChange={e => {
+                        const { value, checked } = e.target;
+                        if (checked) {
+                          setscheduleSelectedPlatforms(prev => [...prev, value]);
+                        } else {
+                          setscheduleSelectedPlatforms(prev => prev.filter(p => p !== value));
+                        }
+                      }}
+                    />
+                    <label htmlFor={`platform-${value}`} style={{ marginLeft: '8px' }}>
+                      {label}
+                    </label>
+                  </div>
+                ))}
               </div>
-            )}
-            {!showDropdown ? (
-              <button
-                className="send-button mr-1 ml-1"
-                onClick={handleScheduleClick}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Schedule Post
-              </button>
-            ) : (
-              // <div style={{ marginTop: '15px' }}>
-              //   <label>Select Platform: </label>
-              //   <select
-              //     value={platform}
-              //     onChange={e => setPlatform(e.target.value)}
-              //     style={{ marginLeft: '10px', padding: '5px' }}
-              //   >
-              //     <option value="">-- Choose --</option>
-              //     <option value="facebook">Facebook</option>
-              //     <option value="twitter">Twitter</option>
-              //   </select>
-              // </div>
+            </div>
+          )}
+
+          {showDropdown && (
+            <>
+              <div inline="true" className="mb-2">
+                <Label for="dateOfWork">Date</Label>
+                <Input
+                  className="responsive-font-size"
+                  type="date"
+                  name="dateOfWork"
+                  id="dateOfWork"
+                  value={dateContent}
+                  onChange={handleDateContentChange}
+                />
+                {'dateOfWork' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.dateOfWork}</small>
+                  </div>
+                )}
+              </div>
+
+              <div inline="true" className="mb-2">
+                <Label for="timeOfWork">Time</Label>
+                <Input
+                  className="responsive-font-size"
+                  type="time"
+                  name="timeOfWork"
+                  id="timeOfWork"
+                  value={timeContent}
+                  onChange={e => setTimeContent(e.target.value)}
+                />
+                {'timeOfWork' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.timeOfWork}</small>
+                  </div>
+                )}
+              </div>
+
               <div style={{ marginTop: '15px' }}>
-                <label>
-                  <strong>Schedule Post</strong>
-                  <strong>Select Multiple Platform(s):</strong>
-                </label>
-                <div>
-                  {platforms.map(({ label, value }) => (
-                    <div key={value} style={{ margin: '5px 0' }}>
-                      <input
-                        type="checkbox"
-                        id={`platform-${value}`}
-                        value={value}
-                        checked={scheduleSelectedPlatforms.includes(value)}
-                        onChange={e => {
-                          const { value, checked } = e.target;
-                          if (checked) {
-                            setscheduleSelectedPlatforms(prev => [...prev, value]);
-                          } else {
-                            setscheduleSelectedPlatforms(prev => prev.filter(p => p !== value));
-                          }
-                        }}
-                      />
-                      <label htmlFor={`platform-${value}`} style={{ marginLeft: '8px' }}>
-                        {label}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+                <button
+                  className="cancel-button"
+                  onClick={cancelSchedule}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#f0f0f0',
+                    color: '#333',
+                    border: '1px solid #ccc',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontWeight: 'bold',
+                    marginRight: '8px',
+                  }}
+                >
+                  Cancel
+                </button>
               </div>
-            )}
-          </div>
+            </>
+          )}
           <div style={{ marginBottom: '20px' }}>
             {!showDropdownPost ? (
               <button
@@ -583,8 +709,14 @@ function Announcements({ title, email: initialEmail }) {
               </button>
             ) : (
               <div style={{ marginTop: '15px' }}>
-                <label>
-                  <strong>Post on Multiple Platforms</strong>
+                <label className="d-block">
+                  {' '}
+                  <strong>
+                    {' '}
+                    <h3> Post on Multiple Social Media Platforms </h3>{' '}
+                  </strong>{' '}
+                </label>
+                <label className="d-block">
                   <strong>Select Multiple Platform(s):</strong>
                 </label>
                 <div>
@@ -610,17 +742,34 @@ function Announcements({ title, email: initialEmail }) {
                     </div>
                   ))}
                 </div>
+                <div style={{ marginTop: '15px' }}>
+                  <button
+                    className="cancel-button"
+                    onClick={cancelPost}
+                    style={{
+                      padding: '8px 16px',
+                      backgroundColor: '#f0f0f0',
+                      color: '#333',
+                      border: '1px solid #ccc',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      fontWeight: 'bold',
+                      marginRight: '8px',
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </div>
               </div>
             )}
           </div>
-
           {showEditor && (
             <Editor
+              key={currentHint}
               tinymceScriptSrc="/tinymce/tinymce.min.js"
               id="email-editor"
-              initialValue={`<div style="background-color: #f0f0f0; color: #555; padding: 6px; border-radius: 4px; font-size: 14px;">
-              ${currentHint || 'Social Media Tip will appear here...'}
-            </div>`}
+              value={editorContent}
               init={{
                 height: 500,
                 menubar: false,
@@ -637,35 +786,22 @@ function Announcements({ title, email: initialEmail }) {
                 ],
                 toolbar:
                   'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+                placeholder: currentHint,
               }}
-              //onEditorChange={handleEditorChange}
               onEditorChange={(content, editor) => handleEditorChange(content, editor)}
             />
           )}
           <div style={{ color: charCount > 280 ? 'red' : 'black' }}>{charCount}</div>
-          {title ? (
-            ''
-          ) : (
-            <div>
-              <button
-                className="send-button mr-1 ml-1"
-                onClick={handleSubmit}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Confirm Schedule
-              </button>
-              <button
-                type="button"
-                className="send-button mr-1 ml-1"
-                onClick={handleBroadcastEmails}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Broadcast Weekly Update
-              </button>
-            </div>
-          )}
-          <br />
-          <br />
+          <div>
+            <button
+              type="button"
+              className="send-button mr-1 ml-1"
+              onClick={handleBroadcastEmails}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Broadcast Weekly Update
+            </button>
+          </div>
         </div>
 
         {title ? (
@@ -733,53 +869,54 @@ function Announcements({ title, email: initialEmail }) {
           </div>
         )}
       </div>
-      <div className="social-media-container">
-        <div className="social-media">
-          {title ? <h3>{title}</h3> : <h3>Post on Social Media</h3>}
-          {title ? null : (
-            <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
-              Click on below social media to post
-            </label>
-          )}
 
-          <button
-            type="button"
-            className="send-button"
-            onClick={handlePostNow}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Post to Selected Platform(s)
-          </button>
-
-          {title ? null : (
-            <div className="social-buttons-container">
-              <button
-                type="button"
-                className="send-button"
-                onClick={handleCreateFbPost}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Post on Facebook
-              </button>
-
-              <button
-                type="button"
-                className="send-button"
-                onClick={handlePostTweets}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Post on Twitter
-              </button>
-            </div>
-          )}
+      {showDropdown && (
+        <div className="social-media-container" style={{ marginTop: '10px' }}>
+          <div className="social-media">
+            {title ? <h3>{title}</h3> : <h3>Schedule Post on Social Media</h3>}
+            {title ? null : (
+              <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
+                Click on below to schedule post on social media
+              </label>
+            )}
+            <button
+              className="send-button mr-1 ml-1"
+              onClick={handleSubmit}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Confirm Schedule
+            </button>
+          </div>
         </div>
-      </div>
+      )}
+
+      {showDropdownPost && (
+        <div className="social-media-container" style={{ marginTop: '10px' }}>
+          <div className="social-media">
+            {title ? <h3>{title}</h3> : <h3>Post on Social Media</h3>}
+            {title ? null : (
+              <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
+                Click on below to post on social media
+              </label>
+            )}
+
+            <button
+              type="button"
+              className="send-button"
+              onClick={handlePostNow}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              {postButtonLabel}
+            </button>
+          </div>
+        </div>
+      )}
       <div className="container mx-auto p-4">
         {/* Title */}
         <h1 className="text-2xl font-bold text-center mb-6">Scheduled Social Media Posts</h1>
 
         {/* Platform Select Dropdown */}
-        <div className="flex text-center mb-6 ml-8">
+        <div className="flex text-center mb-6 ml-8" style={{ display: 'flex', gap: '1rem' }}>
           <select
             className="p-3 border rounded-lg w-96"
             onChange={handleChange}
@@ -789,6 +926,19 @@ function Announcements({ title, email: initialEmail }) {
             <option value="facebook">Fetch all Facebook Scheduled Posts</option>
             <option value="twitter">Fetch all Twitter Scheduled Posts</option>
             <option value="All">Fetch all Scheduled Posts</option>
+          </select>
+
+          <select
+            className="p-3 border rounded-lg w-72"
+            onChange={handleDateRangeChange}
+            value={selectedDateRange}
+          >
+            <option value="">Filter by Time Range</option>
+            <option value="10">Last 10 Days</option>
+            <option value="30">Last 30 Days</option>
+            <option value="60">Last 2 Months</option>
+            <option value="180">Last 6 Months</option>
+            <option value="365">Last 1 Year</option>
           </select>
         </div>
       </div>
