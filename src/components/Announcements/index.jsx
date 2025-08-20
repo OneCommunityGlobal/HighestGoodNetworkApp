@@ -69,6 +69,8 @@ function Announcements({ title, email: initialEmail }) {
   const [editorContent, setEditorContent] = useState('');
   const [showSchedulePopup, setShowSchedulePopup] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState('');
+  const [repeatAnnually, setRepeatAnnually] = useState(false);
+  const [numYears, setNumYears] = useState(1);
 
   useEffect(() => {
     setShowEditor(false);
@@ -120,8 +122,7 @@ function Announcements({ title, email: initialEmail }) {
   const postButtonLabel =
     selectedPlatforms.length === 0
       ? `Publish Post`
-      : // ? `Post  to ${activePlatform.charAt(0).toUpperCase() + activePlatform.slice(1)}`
-        `Post to ${selectedPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}`;
+      : `Post to ${selectedPlatforms.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(', ')}`;
 
   useEffect(() => {
     if (initialEmail) {
@@ -130,27 +131,6 @@ function Announcements({ title, email: initialEmail }) {
       setEmailList(trimmedEmail.split(','));
     }
   }, [initialEmail]);
-
-  // useEffect(() => {
-  //   const hints =
-  //     selectedPlatforms.includes('twitter') && !selectedPlatforms.includes('facebook')
-  //       ? twitterHints
-  //       : selectedPlatforms.includes('facebook') && !selectedPlatforms.includes('twitter')
-  //       ? facebookHints
-  //       : [...twitterHints, ...facebookHints];
-
-  //   if (hints.length > 0) {
-  //     setCurrentHint(hints[0]);
-  //     const interval = setInterval(() => {
-  //       setHintIndex(prev => {
-  //         const next = (prev + 1) % hints.length;
-  //         setCurrentHint(hints[next]);
-  //         return next;
-  //       });
-  //     }, 5000);
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [selectedPlatforms]);
 
   useEffect(() => {
     if (!editorContent || editorContent.trim() === '') {
@@ -403,18 +383,47 @@ function Announcements({ title, email: initialEmail }) {
       return;
     }
 
-    if (scheduleSelectedPlatforms.includes('facebook')) {
-      await dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
+    // if (scheduleSelectedPlatforms.includes('facebook')) {
+    //   await dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
+    // }
+
+    // if (scheduleSelectedPlatforms.includes('twitter')) {
+    //   await dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
+    // }
+
+    const baseDate = new Date(`${dateContent}T${timeContent}`);
+    const schedules = [];
+
+    if (repeatAnnually) {
+      for (let i = 0; i < numYears; i++) {
+        const newDate = new Date(baseDate);
+        newDate.setFullYear(baseDate.getFullYear() + i);
+        schedules.push(newDate);
+      }
+    } else {
+      schedules.push(baseDate);
     }
 
-    if (scheduleSelectedPlatforms.includes('twitter')) {
-      await dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
+    for (const scheduleDate of schedules) {
+      const dateStr = scheduleDate.toISOString().split('T')[0];
+      const timeStr = scheduleDate.toTimeString().slice(0, 5);
+
+      if (scheduleSelectedPlatforms.includes('facebook')) {
+        await dispatch(scheduleFbPost(dateStr, timeStr, emailContent));
+      }
+      if (scheduleSelectedPlatforms.includes('twitter')) {
+        await dispatch(scheduleTweet(dateStr, timeStr, emailContent));
+      }
     }
+
+    toast.success(`Scheduled ${schedules.length} post(s) successfully!`);
 
     setShowDropdown(false);
     setscheduleSelectedPlatforms([]);
     setDateContent('');
     setTimeContent('');
+    setRepeatAnnually(false);
+    setNumYears(1);
   };
 
   const handleChange = async e => {
@@ -676,6 +685,32 @@ function Announcements({ title, email: initialEmail }) {
                   </div>
                 )}
               </div>
+
+              <div style={{ marginTop: '15px' }}>
+                <input
+                  type="checkbox"
+                  id="repeat-annually"
+                  checked={repeatAnnually}
+                  onChange={() => setRepeatAnnually(!repeatAnnually)}
+                />
+                <label htmlFor="repeat-annually" style={{ marginLeft: '8px' }}>
+                  Repeat Annually
+                </label>
+              </div>
+
+              {repeatAnnually && (
+                <div style={{ marginTop: '10px' }}>
+                  <Label for="numYears">Number of Years</Label>
+                  <Input
+                    type="number"
+                    id="numYears"
+                    value={numYears}
+                    min={1}
+                    max={15}
+                    onChange={e => setNumYears(parseInt(e.target.value))}
+                  />
+                </div>
+              )}
 
               <div style={{ marginTop: '15px' }}>
                 <button
