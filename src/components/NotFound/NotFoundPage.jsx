@@ -14,7 +14,7 @@ function NotFoundPage() {
   return (
     <div className={cn(styles.notFoundContainer, darkMode ? cn(styles.darkMode) : '')}>
       <div
-        className={styles.test}
+        className={styles.notFoundContent}
         //prettier-ignore
         style={{border: `2px solid ${darkMode ? `#f1f1f1` : `#333`}`}}
       >

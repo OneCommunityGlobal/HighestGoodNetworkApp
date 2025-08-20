@@ -14,7 +14,7 @@ body,
 html {
   overflow: hidden;
 }
-.test{
+.notFoundContent {
   padding: 5px;
   border-radius: 20px;
   width: 60%;
@@ -56,24 +56,22 @@ html {
   background-color: #121212;
 }
 
-
-
 @media (max-width: 1039px) {
-.test{
-  margin-top: 20rem;
-}
+  .notFoundContent {
+    margin-top: 20rem;
+  }
 }
 
 @media (max-width: 1200px) {
-  .test{
+  .notFoundContent {
     width: 92%;
   }
 }
 
 @media (max-width: 768px) {
-  .test{
-  margin-top: 0rem;
-}
+  .notFoundContent {
+    margin-top: 0rem;
+  }
 
   .notFoundText h1 {
     font-size: 1.5em;
@@ -82,5 +80,4 @@ html {
   .notFoundText p {
     font-size: 1em;
   }
-
 }
