@@ -27,9 +27,6 @@ const COLORS = {
   'Did Not Review': '#DC3545',
 };
 
-const textDark = '#f8fafc';
-const axisLine = '#bfc7d1';
-
 // Transform data to suit Recharts
 const transformData = rawData =>
   rawData.map(item => ({
@@ -42,18 +39,19 @@ const transformData = rawData =>
     'Did Not Review': item.counts['Did Not Review'],
   }));
 
-let transformed = [];
-
 // Custom tick components for Y-axis
-function CustomYAxisTick({ x, y, payload }) {
+function CustomYAxisTick({ x, y, payload, data, darkMode }) {
   const currentReviewer = payload.value;
-  const isMentor = transformed.find(d => d.reviewer === currentReviewer)?.isMentor;
+  // This is now reliable because data is passed as a prop
+  const isMentor = data.find(d => d.reviewer === currentReviewer)?.isMentor;
+  const axisColor = darkMode ? 'white' : 'black';
+
   return (
     <text
       x={x - 5}
       y={y + 4}
       textAnchor="end"
-      fill={isMentor ? 'red' : 'black'}
+      fill={isMentor ? 'red' : axisColor}
       fontWeight={isMentor ? 'bold' : 'normal'}
     >
       {payload.value}
@@ -62,7 +60,17 @@ function CustomYAxisTick({ x, y, payload }) {
 }
 
 // Custom X-axis tick component
-function CustomXAxisTick(data) {
+function CustomXAxisTick({ x, y, payload, darkMode }) {
+  const textColor = darkMode ? 'white' : 'black';
+  return (
+    <text x={x} y={y} dy={16} fill={textColor} textAnchor="middle">
+      {payload.value}
+    </text>
+  );
+}
+
+// Custom X-axis tick component to generate ticks
+function CustomXAxisTicks(data) {
   const max = Math.max(
     ...data.map(d => d.Exceptional + d.Sufficient + d['Needs Changes'] + d['Did Not Review']),
     0,
@@ -76,17 +84,18 @@ function CustomXAxisTick(data) {
 }
 
 // Custom tooltip component
-function CustomTooltip({ active, payload, label }) {
+function CustomTooltip({ active, payload, label, darkMode }) {
   if (!active || !payload || !payload.length) return null;
 
   return (
-    <div className={`${styles.customTooltip}`}>
+    <div className={`${styles.customTooltip} ${darkMode ? styles.darkTooltip : ''}`}>
       <p className={`${styles.tooltipTitle}`}>{label}</p>
       {payload.map(entry => (
         <div key={entry.name} className={`${styles.tooltipEntry}`}>
           <span className={`${styles.tooltipLabel}`} style={{ color: entry.color }}>
             {entry.name}:
           </span>
+          {/* Access the value correctly from the payload entry */}
           <span>{entry.value}</span>
         </div>
       ))}
@@ -99,11 +108,14 @@ function CustomLabel({ x, y, width, height, value }) {
   // Don't show zero values
   if (value === 0) return null;
 
+  // Set the fill color to white always
+  const textColor = '#fff';
+
   return (
     <text
       x={x + width / 2}
       y={y + height / 2}
-      fill="#fff"
+      fill={textColor}
       textAnchor="middle"
       dominantBaseline="middle"
       fontSize="12"
@@ -145,13 +157,19 @@ function getDateRange(option) {
   }
 }
 
+// Custom legend formatter
+function LegendFormatter(value, entry, darkMode) {
+  const textColor = darkMode ? 'white' : 'black';
+  return <span style={{ color: textColor }}>{value}</span>;
+}
+
 function ReviewersStackedBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [teamFilter, setTeamFilter] = useState('All');
   const [durationFilter, setDurationFilter] = useState({ label: 'Last Week', value: 'Last Week' });
   const [sortFilter, setSortFilter] = useState('Ascending');
   const { start: filterStartDate, end: filterEndDate } = getDateRange(durationFilter.value);
-  const [reviewerData, setReviewerData] = useState([]);
+  const [transformedData, setTransformedData] = useState([]);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -176,16 +194,16 @@ function ReviewersStackedBarChart() {
           });
         }
 
-        transformed = transformData(filtered);
+        const newTransformedData = transformData(filtered);
 
-        transformed.sort((a, b) => {
+        newTransformedData.sort((a, b) => {
           const totalA = a.Exceptional + a.Sufficient + a['Needs Changes'] + a['Did Not Review'];
           const totalB = b.Exceptional + b.Sufficient + b['Needs Changes'] + b['Did Not Review'];
 
           return sortFilter === 'Ascending' ? totalA - totalB : totalB - totalA;
         });
 
-        setReviewerData(transformed);
+        setTransformedData(newTransformedData);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch reviewer data.');
@@ -194,10 +212,7 @@ function ReviewersStackedBarChart() {
     }, 1000);
   };
 
-  const { domain, ticks } = CustomXAxisTick(transformed);
-
-  // Always use light mode colors for the chart itself
-  const axisLineColor = axisLine; // always #bfc7d1
+  const { domain, ticks } = CustomXAxisTicks(transformedData);
 
   useEffect(() => {
     setTeams(MOCK_TEAMS);
@@ -209,15 +224,18 @@ function ReviewersStackedBarChart() {
   }, [teamFilter, durationFilter, sortFilter]);
 
   return (
-    <div className={`${styles.reviewersChartContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h3>PR Quality by Reviewers</h3>
+    <div
+      className={`${styles.reviewersChartContainer} ${darkMode ? styles.darkMode : ''}`}
+      style={{
+        backgroundColor: darkMode ? '#1b2a41' : 'white',
+        minHeight: '100vh',
+      }}
+    >
+      <h3 className={darkMode ? styles.darkMode : ''}>PR Quality by Reviewers</h3>
 
-      <div className={`${styles.reviewersFiltersBar} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.reviewersFiltersBar} `}>
         <div>
-          <label
-            htmlFor="teamSelect"
-            className={`${styles.reviewersLabel} ${darkMode ? styles.darkMode : ''}`}
-          >
+          <label htmlFor="teamSelect" className={`${styles.reviewersLabel}`}>
             Team:
           </label>
           <Select
@@ -225,15 +243,12 @@ function ReviewersStackedBarChart() {
             options={teams.map(team => ({ label: team, value: team }))}
             value={{ label: teamFilter, value: teamFilter }}
             onChange={selected => setTeamFilter(selected.value)}
-            className={`${styles.reviewersSelectContainer} ${darkMode ? styles.darkMode : ''}`}
+            className={`${styles.reviewersSelectContainer}`}
             classNamePrefix="reviewersSelect"
           />
         </div>
         <div>
-          <label
-            htmlFor="sortSelect"
-            className={`${styles.reviewersLabel} ${darkMode ? styles.darkMode : ''}`}
-          >
+          <label htmlFor="sortSelect" className={`${styles.reviewersLabel}`}>
             Sort:
           </label>
           <Select
@@ -244,15 +259,12 @@ function ReviewersStackedBarChart() {
             ]}
             value={{ label: sortFilter, value: sortFilter }}
             onChange={selected => setSortFilter(selected.value)}
-            className={`${styles.reviewersSelectContainer} ${darkMode ? styles.darkMode : ''}`}
+            className={`${styles.reviewersSelectContainer}`}
             classNamePrefix="reviewersSelect"
           />
         </div>
         <div>
-          <label
-            htmlFor="durationSelect"
-            className={`${styles.reviewersLabel} ${darkMode ? styles.darkMode : ''}`}
-          >
+          <label htmlFor="durationSelect" className={`${styles.reviewersLabel}`}>
             Duration:
           </label>
           <Select
@@ -265,79 +277,69 @@ function ReviewersStackedBarChart() {
             ]}
             value={{ label: durationFilter.label, value: durationFilter.value }}
             onChange={selected => setDurationFilter(selected)}
-            className={`${styles.reviewersSelectContainer} ${darkMode ? styles.darkMode : ''}`}
+            className={`${styles.reviewersSelectContainer}`}
             classNamePrefix="reviewersSelect"
           />
         </div>
       </div>
 
       {loading ? (
-        <div
-          className={`${styles.reviewerStackbarLoading} ${darkMode ? styles.darkMode : ''}`}
-          style={{ color: darkMode ? textDark : '#000', justifyItems: 'center' }}
-        >
-          <div
-            className={`${styles.loadingSpinner} ${darkMode ? styles.darkMode : ''}`}
-            style={darkMode ? { borderTop: '4px solid #f8fafc' } : {}}
-          />
-          <p style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}>
-            Loading Reviewers data...
-          </p>
+        <div className={`${styles.reviewerStackbarLoading}`}>
+          <div className={`${styles.loadingSpinner}`} />
+          <p>Loading Reviewers data...</p>
         </div>
       ) : error ? (
-        <div
-          className={`${styles.reviewersStackbarError} ${darkMode ? styles.darkMode : ''}`}
-          style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
-        >
+        <div className={`${styles.reviewersStackbarError}`}>
           <div className={`${styles.errorIcon}`}>⚠️</div>
-          <p style={{ color: darkMode ? textDark : undefined }}>{error}</p>
+          <p>{error}</p>
           <button
             type="button"
             className={`${styles.retryButton}`}
-            style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
             onClick={() => window.location.reload()}
           >
             Retry
           </button>
         </div>
-      ) : reviewerData.length === 0 ? (
-        <div
-          className={`${styles.reviewerDataEmpty}`}
-          style={{ color: darkMode ? textDark : undefined, justifyItems: 'center' }}
-        >
+      ) : transformedData.length === 0 ? (
+        <div className={`${styles.reviewerDataEmpty}`}>
           <div className={`${styles.emptyIcon}`}>📊</div>
-          <p style={{ color: darkMode ? textDark : undefined }}>No PR data available</p>
+          <p>No PR data available</p>
         </div>
       ) : (
         <div className={`${styles.reviewersScrollContainer}`}>
-          <ResponsiveContainer width="100%" height={Math.max(400, reviewerData.length * 28)}>
-            <CartesianGrid
-              vertical
-              horizontal={false}
-              stroke={axisLineColor}
-              strokeDasharray="3 3"
-            />
+          <ResponsiveContainer width="100%" height={Math.max(400, transformedData.length * 28)}>
+            <CartesianGrid vertical horizontal={false} className={`${styles.chartGrid}`} />
             <BarChart
               layout="vertical"
-              data={reviewerData}
-              margin={{ top: 20, right: 30, left: 120, bottom: 20 }}
+              data={transformedData}
+              margin={{ top: 20, right: 30, left: 200, bottom: 20 }}
             >
-              <XAxis type="number" domain={domain} ticks={ticks} />
-              <YAxis dataKey="reviewer" type="category" tick={<CustomYAxisTick />} width={200}>
+              <XAxis
+                type="number"
+                domain={domain}
+                ticks={ticks}
+                stroke={darkMode ? 'white' : 'black'}
+                tick={<CustomXAxisTick darkMode={darkMode} />}
+              />
+              <YAxis
+                dataKey="reviewer"
+                type="category"
+                tick={<CustomYAxisTick data={transformedData} darkMode={darkMode} />}
+                width={200}
+                stroke={darkMode ? 'white' : 'black'}
+              >
                 <Label
                   value="Top Reviewers"
                   angle={-90}
                   position="insideLeft"
-                  style={{ textAnchor: 'middle' }}
+                  style={{ textAnchor: 'middle', fill: darkMode ? 'white' : 'black' }}
                 />
               </YAxis>
               <Tooltip
-                cursor={{
-                  fill: darkMode ? 'rgb(50, 73, 105)' : '#e0e0e0',
-                }}
-                content={<CustomTooltip />}
+                cursor={{ className: `${styles.chartCursor}` }}
+                content={<CustomTooltip darkMode={darkMode} />}
               />
-              <Legend wrapperStyle={{ color: darkMode ? 'white' : 'black' }} />
+              <Legend formatter={(value, entry) => LegendFormatter(value, entry, darkMode)} />
               {Object.keys(COLORS).map(key => (
                 <Bar key={key} dataKey={key} stackId="a" fill={COLORS[key]}>
                   <LabelList dataKey={key} content={<CustomLabel />} />

@@ -116,25 +116,25 @@
   color: #f8fafc;
 }
 
-.darkMode .reviewers-select__menu {
+.darkMode .reviewersSelect__menu {
   background-color: #1b2a41;
   color: #f8fafc;
   border: 1px solid white;
 }
 
-.darkMode .reviewersSelect__single-value {
+.darkMode .reviewersSelect__singleValue {
   color: #f8fafc;
 }
 
 /* Light mode option hover and focus */
-.reviewersSelect__option--is-focused,
+.reviewersSelect__option--isFocused,
 .reviewersSelect__option:hover {
   background-color: #eef0f2;
   color: #000;
 }
 
 /* Dark mode option hover and focus */
-.darkMode .reviewersSelect__option--is-focused,
+.darkMode .reviewersSelect__option--isFocused,
 .darkMode .reviewersSelect__option:hover {
   background-color: #2f4a73;
   color: #fff;
@@ -183,4 +183,128 @@
   .reviewersSelectContainer {
     font-size: 0.85rem;
   }
+}
+
+.reviewerStackbarLoading {
+  display: grid;
+  place-items: center;
+  height: 200px;
+  font-size: 16px;
+  color: #000;
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.darkMode .reviewerStackbarLoading {
+  color: #f8fafc; /* Dark mode text color */
+}
+
+.darkMode .loadingSpinner {
+  border-top: 4px solid #f8fafc;
+}
+
+.darkMode .reviewerStackbarLoading p {
+  color: #f8fafc;
+}
+.reviewersStackbarError {
+  display: grid;
+  place-items: center;
+  height: 200px;
+  font-size: 16px;
+  color: #000;
+  text-align: center;
+}
+
+.darkMode .reviewersStackbarError {
+  color: #f8fafc;
+}
+
+.darkMode .reviewersStackbarError p {
+  color: #f8fafc;
+}
+
+.retryButton {
+  background-color: transparent;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  margin-top: 10px;
+}
+
+.retryButton:hover {
+  background-color: #f0f0f0;
+}
+
+.darkMode .retryButton {
+  color: #f8fafc;
+  border-color: #f8fafc;
+}
+
+.darkMode .retryButton:hover {
+  background-color: #324d77;
+}
+.reviewerDataEmpty {
+  display: grid;
+  place-items: center;
+  height: 200px;
+  font-size: 16px;
+  color: #000;
+  text-align: center;
+}
+
+.darkMode .reviewerDataEmpty {
+  color: #f8fafc;
+}
+
+.darkMode .reviewerDataEmpty p {
+  color: #f8fafc;
+}
+
+.emptyIcon {
+  font-size: 2rem;
+}
+
+.chartGrid {
+  stroke: #bfc7d1;
+  stroke-dasharray: 3 3;
+}
+
+.darkMode .chartGrid {
+  stroke: #444;
+}
+
+.chartCursor {
+  fill: #e0e0e0;
+}
+
+.darkMode .chartCursor {
+  fill: rgb(50, 73, 105);
+}
+
+.chartLegend {
+  color: black;
+}
+
+.darkMode .chartLegend {
+  color: white;
 }
