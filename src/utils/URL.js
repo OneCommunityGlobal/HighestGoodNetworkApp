@@ -346,6 +346,7 @@ export const ENDPOINTS = {
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
 
   DROPBOX_DELETE: `${APIEndpoint}/dropbox/delete-folder`,
+  DROPBOX_TEAM_FOLDERS: `${APIEndpoint}/dropbox/team-folders`,
   GITHUB_REMOVE: `${APIEndpoint}/github/remove`,
   SENTRY_REMOVE: `${APIEndpoint}/sentry/remove`,
 
