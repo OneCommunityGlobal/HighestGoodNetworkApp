@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import './PieChart.css';
 // import './UserProjectPieChart.css';
@@ -13,12 +13,24 @@ export const PieChart = ({
   projectsData = [],
 }) {
   const [totalHours, setTotalHours] = useState(0);
-  
+
   // Custom vibrant color palette
   const customColors = [
-    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFBE0B',
-    '#FF006E', '#8338EC', '#3A86FF', '#FB5607', '#38B000',
-    '#7209B7', '#F72585', '#4CC9F0', '#80ED99', '#F15BB5',
+    '#FF6B6B',
+    '#4ECDC4',
+    '#45B7D1',
+    '#96CEB4',
+    '#FFBE0B',
+    '#FF006E',
+    '#8338EC',
+    '#3A86FF',
+    '#FB5607',
+    '#38B000',
+    '#7209B7',
+    '#F72585',
+    '#4CC9F0',
+    '#80ED99',
+    '#F15BB5',
   ];
 
   let color = d3.scaleOrdinal().range(customColors);
@@ -77,10 +89,8 @@ export const PieChart = ({
     color = d3.scaleOrdinal().range(customColors);
     const data_ready = pie(Object.entries(data));
 
-    const totalValue = data_ready
-      .map(obj => obj.value)
-      .reduce((a, c) => a + c, 0);
-    
+    const totalValue = data_ready.map(obj => obj.value).reduce((a, c) => a + c, 0);
+
     setTotalHours(totalValue);
 
     let div = d3.select('.tooltip-donut');
@@ -113,7 +123,7 @@ export const PieChart = ({
           .duration('50')
           .attr('opacity', '.7')
           .style('filter', 'brightness(1.2)');
-          
+
         div
           .transition()
           .duration(50)
@@ -125,7 +135,7 @@ export const PieChart = ({
           .map(e => e)
           .indexOf(d.data[0]);
         const legendInfo = taskName[index].toString();
-        
+
         div
           .html(legendInfo)
           .style('max-width', '150px')
@@ -141,7 +151,7 @@ export const PieChart = ({
           .duration('50')
           .attr('opacity', '1')
           .style('filter', 'brightness(1.1)');
-          
+
         div
           .transition()
           .duration(50)
@@ -168,12 +178,12 @@ export const PieChart = ({
         </div>
         {Object.keys(dataLegend).map(key => (
           <div key={key} className="pie-chart-legend-item">
-            <div 
-              className="data-legend-color" 
-              style={{ 
+            <div
+              className="data-legend-color"
+              style={{
                 backgroundColor: color(key),
-                filter: 'brightness(1.1)'
-              }} 
+                filter: 'brightness(1.1)',
+              }}
             />
             <div className="data-legend-info">
               {dataLegend[key].map((legendPart, index) => (
