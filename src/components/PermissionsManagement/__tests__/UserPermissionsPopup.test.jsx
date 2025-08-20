@@ -7,6 +7,8 @@ vi.mock('react-toastify', () => ({
   ToastContainer: () => null,
 }));
 // eslint-disable-next-line no-unused-vars
+import userEvent from '@testing-library/user-event';
+
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -270,7 +272,8 @@ describe('UserPermissionsPopup component', () => {
     );
 
     // Select user
-    fireEvent.click(screen.getByText('Test2 Manager'));
+    const userToClick = await screen.findByText('Test2 Manager');
+    fireEvent.click(userToClick);
 
     // Wait for initial "Add" buttons to appear
     await waitFor(() => {

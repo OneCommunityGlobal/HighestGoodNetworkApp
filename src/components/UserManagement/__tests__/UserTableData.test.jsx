@@ -358,5 +358,16 @@ describe('User Table Data: Jae protected account record and login as Jae related
       userEvent.click(screen.getByRole('button', { name: /Set Final Day/i }));
       expect(alertMock).toHaveBeenCalledTimes(0);
     });
+     it('should fire onDeleteClick() once the user clicks the delete button', async () => {
+      // 1. Arrange: Get the user instance for realistic interaction
+      const user = userEvent.setup();
+      
+      // 2. Act: Find the button and simulate a full user click
+      const deleteButton = screen.getByRole('button', { name: /delete/i });
+      await user.click(deleteButton); // Use await with userEvent
+
+      // 3. Assert: The mock function should now be called correctly
+      expect(onDeleteClick).toHaveBeenCalledTimes(1);
+    });
   });
 });

@@ -240,23 +240,53 @@ describe('WeeklySummary page', () => {
       );
     });
 
-    const testTooltip = async testId => {
-      const tooltipIcon = await screen.findByTestId(testId);
+    // const testTooltip = async testId => {
+    //   const tooltipIcon = await screen.findByTestId(testId);
+    //   expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+    //   await userEvent.hover(tooltipIcon);
+    //   const tooltip = await screen.findByRole('tooltip');
+    //   expect(tooltip).toBeInTheDocument();
+    // };
+    const testTooltip = async (testId, expectedText) => {
+      const tooltipIcon = screen.getByTestId(testId); // Use getByTestId since it should be there immediately
       expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+
       await userEvent.hover(tooltipIcon);
-      const tooltip = await screen.findByRole('tooltip');
+
+      // THE FIX: Instead of a generic role search, we find the tooltip
+      // by the specific text content we expect it to have. This is unambiguous.
+      const tooltip = await screen.findByText(expectedText);
+
       expect(tooltip).toBeInTheDocument();
+
+      // (Optional but good practice) Test that it disappears on unhover
+      await userEvent.unhover(tooltipIcon);
+      await waitFor(() => {
+        expect(screen.queryByText(expectedText)).not.toBeInTheDocument();
+      });
     };
 
+    // describe('Tabs content tooltip', () => {
+    //   it('opens on mouse over (hover)', async () => {
+    //     await testTooltip('summary-content-tooltip-1');
+    //   });
+    // });
     describe('Tabs content tooltip', () => {
       it('opens on mouse over (hover)', async () => {
-        await testTooltip('summary-content-tooltip-1');
+        // We now pass the expected text to our helper function
+        await testTooltip('summary-content-tooltip-1', /write it in 3rd person/i);
       });
     });
 
+    // describe('Media URL tooltip', () => {
+    //   it('opens on mouse over (hover)', async () => {
+    //     await testTooltip('mediaurl-tooltip');
+    //   });
+    // });
     describe('Media URL tooltip', () => {
       it('opens on mouse over (hover)', async () => {
-        await testTooltip('mediaurl-tooltip');
+        // We do the same for the other tooltip test
+        await testTooltip('mediaurl-tooltip', /This link is to a shared folder/i);
       });
     });
   });

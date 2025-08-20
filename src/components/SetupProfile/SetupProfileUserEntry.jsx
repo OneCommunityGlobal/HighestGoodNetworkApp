@@ -9,13 +9,12 @@ import {
   Form,
   Label,
   Button,
-  InputGroupAddon,
+  InputGroupText,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
   InputGroup,
-  InputGroupText,
   UncontrolledTooltip,
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
@@ -704,7 +703,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
                   invalid={formErrors.password !== ''}
                 />
 
-                <InputGroupAddon addonType="append">
+                <InputGroupText addonType="append">
                   <InputGroupText
                     id="showPassword"
                     onClick={togglePasswordVisibility}
@@ -726,7 +725,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
                       />
                     )}
                   </InputGroupText>
-                </InputGroupAddon>
+                </InputGroupText>
                 <FormFeedback>{formErrors.password}</FormFeedback>
               </InputGroup>
             </Col>
@@ -743,7 +742,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
                   invalid={formErrors.confirmPassword !== ''}
                 />
 
-                <InputGroupAddon addonType="append">
+                <InputGroupText addonType="append">
                   <InputGroupText
                     id="showConfirmPassword"
                     onClick={toggleConfirmPasswordVisibility}
@@ -765,7 +764,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
                       />
                     )}
                   </InputGroupText>
-                </InputGroupAddon>
+                </InputGroupText>
                 <FormFeedback>{formErrors.confirmPassword}</FormFeedback>
               </InputGroup>
             </Col>
@@ -853,7 +852,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
                   }}
                   invalid={formErrors.collaborationPreference !== ''}
                 />
-                <InputGroupAddon addonType="append">
+                <InputGroupText addonType="append">
                   <Dropdown
                     isOpen={collaborationSuggestionOpen}
                     toggle={togglecollaborationSuggestionDropdown}
@@ -879,7 +878,7 @@ function SetupProfileUserEntry({ token, userEmail }) {
                       </DropdownMenu>
                     )}
                   </Dropdown>
-                </InputGroupAddon>
+                </InputGroupText>
                 <FormFeedback>{formErrors.collaborationPreference}</FormFeedback>
               </FormGroup>
             </Col>
