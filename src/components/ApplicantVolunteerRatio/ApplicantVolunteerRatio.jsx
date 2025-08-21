@@ -30,7 +30,7 @@ function ApplicantVolunteerRatio() {
         // Set all roles as selected by default
         setSelectedRoles(roleOptions);
       } catch (err) {
-        console.error('Error fetching all roles:', err);
+        // Error fetching all roles
         setError('Failed to load roles. Please try again.');
       }
     };
@@ -73,7 +73,7 @@ function ApplicantVolunteerRatio() {
 
         setData(transformedData);
       } catch (err) {
-        console.error('Error fetching applicant volunteer ratio data:', err);
+        // Error fetching applicant volunteer ratio data
         setError('Failed to load data. Please try again.');
       } finally {
         setLoading(false);
