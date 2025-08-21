@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import styles from './TestEventRegistration.module.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function TestEventRegistration() {
   // State to store the event name and error message
-  const [formValues, setFormValues] = useState({
+  const eventDetails =  {
     eventName: '',
     firstName: '',
     lastName: '',
@@ -20,7 +22,20 @@ function TestEventRegistration() {
     zipcode: '',
     howDidYouHear: '',
     otherHowDidYouHear: '',
-  });
+  }
+  const howDidYouHearOptions = [
+            'Search Engine (Google, Bing, etc.)',
+            'Social Media',
+            'Radio',
+            'Television',
+            'Streaming Service Ad',
+            'Newspaper/Online Newspaper',
+            'Billboard',
+            'Word of Mouth',
+            'Referral',
+            'Others',
+          ];
+  const [formValues, setFormValues] = useState(eventDetails);
   const [errors, setErrors] = useState({});
 
   // Handle changes in the input field
@@ -35,7 +50,7 @@ function TestEventRegistration() {
       [name]: '',
     })); // Clear error when user starts typing
   };
-  const [formSubmitted, setFormSubmitted] = useState(false);
+  // const [formSubmitted, setFormSubmitted] = useState(false);
   // Handle form submission
   const handleSubmit = e => {
     e.preventDefault();
@@ -89,58 +104,32 @@ function TestEventRegistration() {
     if (!formValues.howDidYouHear.trim()) {
       newErrors.howDidYouHear = 'Please select at least one option.';
     }
-    if (formValues.howDidYouHear.includes('Others') && !formValues.otherHowDidYouHear.trim()) {
+    if (formValues.howDidYouHear === 'Others' && !formValues.otherHowDidYouHear.trim()) {
       newErrors.howDidYouHear = 'Please specify how you heard about us.';
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      toast.error("Please fill all the mandatory details.");
     } else {
-      setFormSubmitted(true);
+      toast.success('Your form has been successfully submitted!');
+      // setFormSubmitted(true);
       // Clear the form on successful submission
-      setFormValues({
-        eventName: '',
-        firstName: '',
-        lastName: '',
-        countryCode: '',
-        phoneNumber: '',
-        emailAddress: '',
-        dateOfBirth: '',
-        gender: '',
-        otherGender: '',
-        address: '',
-        city: '',
-        state: '',
-        country: '',
-        zipcode: '',
-        howDidYouHear: '',
-        otherHowDidYouHear: '',
-      });
+      setFormValues(eventDetails);
     }
   };
 
   // Handle cancel button
   const handleCancel = () => {
-    setFormValues({
-      eventName: '',
-      firstName: '',
-      lastName: '',
-      countryCode: '',
-      phoneNumber: '',
-      emailAddress: '',
-      dateOfBirth: '',
-      address: '',
-      city: '',
-      state: '',
-      country: '',
-      zipcode: '',
-      howDidYouHear: '',
-      otherHowDidYouHear: '',
-    });
+    setFormValues(eventDetails);
     setErrors({});
   };
-  const closeModal = () => {
-    setFormSubmitted(false); // Close the popup
-  };
+  // const closeModal = () => {
+  //   setFormSubmitted(false); // Close the popup
+  // };
+
+  const maxDob = new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+  .toISOString()
+  .split('T')[0];
 
   return (
     <div>
@@ -254,11 +243,7 @@ function TestEventRegistration() {
             name="dateOfBirth"
             value={formValues.dateOfBirth}
             onChange={handleChange}
-            max={
-              new Date(new Date().setFullYear(new Date().getFullYear() - 18))
-                .toISOString()
-                .split('T')[0]
-            } // Set max to today's date minus 18 years
+            max={maxDob} // Set max to today's date minus 18 years
             className={styles.input}
           />
           {errors.dateOfBirth && (
@@ -270,57 +255,19 @@ function TestEventRegistration() {
           <label htmlFor="gender" className={styles.label}>
             Gender: <span style={{ color: 'red' }}>*</span>
           </label>
-          <div>
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="Male"
-                checked={formValues.gender === 'Male'}
-                onChange={handleChange}
-              />
-              Male
-            </label>
-            <label className={styles.formGroup}>
-              <input
-                type="radio"
-                name="gender"
-                value="Female"
-                checked={formValues.gender === 'Female'}
-                onChange={handleChange}
-              />
-              Female
-            </label>
-            <label className={styles.formGroup}>
-              <input
-                type="radio"
-                name="gender"
-                value="Binary/Non-Binary"
-                checked={formValues.gender === 'Binary/Non-Binary'}
-                onChange={handleChange}
-              />
-              Binary/Non-Binary
-            </label>
-            <label className={styles.formGroup}>
-              <input
-                type="radio"
-                name="gender"
-                value="Prefer Not to Say"
-                checked={formValues.gender === 'Prefer Not to Say'}
-                onChange={handleChange}
-              />
-              Prefer Not to Say
-            </label>
-            <label className={styles.formGroup}>
-              <input
-                type="radio"
-                name="gender"
-                value="Others"
-                checked={formValues.gender === 'Others'}
-                onChange={handleChange}
-              />
-              Others
-            </label>
+          <div className={styles.radioGroup}>
+            {['Male', 'Female', 'Binary/Non-Binary', 'Prefer Not to Say', 'Others'].map(option => (
+              <label key={option}>
+                <input
+                  type="radio"
+                  name="gender"
+                  value={option}
+                  checked={formValues.gender === option}
+                  onChange={handleChange}
+                />
+                {option}
+              </label>
+            ))}
           </div>
 
           {/* Conditional Text Box for "Others" */}
@@ -349,109 +296,29 @@ function TestEventRegistration() {
         </div>
 
         {/* Address Field */}
-        <div className={styles.formGroup}>
-          <label htmlFor="address" className={styles.label}>
-            Address: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formValues.address}
-            onChange={handleChange}
-            className={styles.input}
-          />
-          {errors.address && (
-            <span className={styles.error}>{errors.address}</span>
-          )}
-        </div>
-
-        {/* City Field */}
-        <div className={styles.formGroup}>
-          <label className={styles.label}>
-            City: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="city"
-            name="city"
-            value={formValues.city}
-            onChange={handleChange}
-            className={styles.input}
-          />
-          {errors.city && <span className={styles.error}>{errors.city}</span>}
-        </div>
-
-        {/* State Field */}
-        <div className={styles.formGroup}>
-          <label htmlFor="state" className={styles.label}>
-            State: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="state"
-            name="state"
-            value={formValues.state}
-            onChange={handleChange}
-            className={styles.input}
-          />
-          {errors.state && (
-            <span className={styles.error}>{errors.state}</span>
-          )}
-        </div>
-
-        {/* Country Field */}
-        <div className={styles.formGroup}>
-          <label htmlFor="country" className={styles.label}>
-            Country: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="country"
-            name="country"
-            value={formValues.country}
-            onChange={handleChange}
-            className={styles.input}
-          />
-          {errors.country && (
-            <span className={styles.error}>{errors.country}</span>
-          )}
-        </div>
-
-        {/* ZIP Code Field */}
-        <div className={styles.formGroup}>
-          <label htmlFor="zipcode" className={styles.label}>
-            ZIP Code: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="zipcode"
-            name="zipcode"
-            value={formValues.zipcode}
-            onChange={handleChange}
-            className={styles.input}
-          />
-          {errors.zipcode && (
-            <span className={styles.error}>{errors.zipcode}</span>
-          )}
-        </div>
+        {['address', 'city', 'state', 'country', 'zipcode'].map(field => (
+          <div key={field} className={styles.formGroup}>
+            <label htmlFor={field} className={styles.label}>
+              {field.charAt(0).toUpperCase() + field.slice(1)}: <span style={{ color: 'red' }}>*</span>
+            </label>
+            <input
+              type="text"
+              id={field}
+              name={field}
+              value={formValues[field]}
+              onChange={handleChange}
+              className={styles.input}
+            />
+            {errors[field] && <span className={styles.error}>{errors[field]}</span>}
+          </div>
+        ))}
+        
         {/* How Did You Hear About Us Field */}
         <div className={styles.formGroup}>
           <label htmlFor="howDidYouHear" className={styles.label}>
             How did you hear about us? <span style={{ color: 'red' }}>*</span>
           </label>
-          {[
-            'Search Engine (Google, Bing, etc.)',
-            'Social Media',
-            'Radio',
-            'Television',
-            'Streaming Service Ad',
-            'Newspaper/Online Newspaper',
-            'Billboard',
-            'Word of Mouth',
-            'Referral',
-            'Others',
-          ].map(option => (
+          {howDidYouHearOptions.map(option => (
             <div key={option} style={{ marginBottom: '0.5rem' }}>
               <label>
                 <input
@@ -497,7 +364,7 @@ function TestEventRegistration() {
           </button>
         </div>
       </form>
-      {formSubmitted && (
+      {/* {formSubmitted && (
         <div
           className={styles.modalOverlay}
         >
@@ -515,7 +382,7 @@ function TestEventRegistration() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
