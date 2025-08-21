@@ -1,0 +1,18 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🧪 Running tests before push..."
+npm run test -- --bail=1
+test_status=$?
+
+echo "🧹 Running lint before push..."
+npm run lint
+lint_status=$?
+
+# Block push if either fails
+if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ]; then
+  echo "❌ Push blocked: Lint or test failed."
+  exit 1
+fi
+
+echo "✅ All checks passed. Proceeding with push..."

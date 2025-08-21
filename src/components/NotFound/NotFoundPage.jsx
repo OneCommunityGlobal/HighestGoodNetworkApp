@@ -12,9 +12,9 @@ function NotFoundPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={cn(styles.notFoundContainer, darkMode ? cn(
-      styles.darkMode, styles.bgBlack
-    ) : '')}>
+    <div
+      className={cn(styles.notFoundContainer, darkMode ? cn(styles.darkMode, styles.bgBlack) : '')}
+    >
       <img
         className={styles.notFoundImage}
         src={darkMode ? NotFoundDarkImage : NotFoundImage}

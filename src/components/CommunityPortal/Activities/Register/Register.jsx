@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+// import Calendar from 'react-calendar';
+// import 'react-calendar/dist/Calendar.css';
 import './Register.css';
 import EventDescription from './EventDescription';
 
 function Register() {
   const { activityId } = useParams();
   const [activity, setActivity] = useState(null);
+  // eslint-disable-next-line no-unused-vars
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [feedbackMessage, setFeedbackMessage] = useState(null);
   const [availability, setAvailability] = useState(0);
@@ -140,7 +141,7 @@ function Register() {
           </div>
         </div>
         <div className="right-column">
-          <Calendar onChange={setSelectedDate} value={selectedDate} />
+          {/*  <Calendar onChange={setSelectedDate} value={selectedDate} /> */}
           <p className="selected-date">Selected Date: {selectedDate.toDateString()}</p>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ApiEndpoint } from '../utils/URL';
+import { ApiEndpoint } from '~/utils/URL';
 import * as actionTypes from '../constants/notification';
 
 const APIEndpoint = ApiEndpoint;

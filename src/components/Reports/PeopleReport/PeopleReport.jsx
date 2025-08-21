@@ -1,4 +1,4 @@
-/* eslint-disable no-nested-ternary */
+/* eslint-disable*/
 import { Component } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
@@ -13,10 +13,8 @@ import {
   getUserProfile,
   getUserTasks,
 } from '../../../actions/userProfile';
-
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
-import 'react-input-range/lib/css/index.css';
 import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
@@ -86,6 +84,7 @@ class PeopleReport extends Component {
     this.setEndDate = this.setEndDate.bind(this);
   }
 
+
   async componentDidMount() {
     const { match } = this.props;
     const { fromDate, toDate } = this.state;
@@ -99,7 +98,6 @@ class PeopleReport extends Component {
       await this.props.getTimeEntriesForPeriod(userId, fromDate, toDate);
 
       const { userProfile, userTask, userProjects, timeEntries, auth } = this.props;
-
       this.setState({
         // eslint-disable-next-line react/no-unused-state
         userId,
@@ -122,6 +120,16 @@ class PeopleReport extends Component {
           ...timeEntries,
         },
       });
+    }
+
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevState.userTask !== this.state.userTask ||
+      prevState.userProjects !== this.state.userProjects ||
+      prevState.timeEntries !== this.state.timeEntries ||
+      prevState.isLoading !== this.state.isLoading) {
+      // this.syncPanelHeights();
     }
   }
 
@@ -275,7 +283,17 @@ class PeopleReport extends Component {
   //     .subtract(offset, 'weeks')
   //     .format('YYYY-MM-DD');
   // }
+  // syncPanelHeights = () => {
+  // const leftEl = this.leftContentRef?.current;
+  //   const rightEl = this.rightContentRef?.current;
 
+  //   if (leftEl && rightEl) {
+  //     requestAnimationFrame(() => {
+  //       const leftHeight = leftEl.offsetHeight;
+  //       rightEl.style.height = `${leftHeight}px`;
+  //     });
+  //   }
+  // };
 
   render() {
     const {
@@ -293,8 +311,9 @@ class PeopleReport extends Component {
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
     const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
+      console.log("Time Entries for user:", timeEntries);
       return total + (entry.hours + (entry.minutes / 60));
-    }, 0) || 0).toFixed(2);    
+    }, 0) || 0).toFixed(2);
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     function UserProject(props) {
@@ -324,7 +343,7 @@ class PeopleReport extends Component {
       }
       if (props.infringements.length > 0) {
         props.infringements.map((current, index) => (
-          <tr className="teams__tr">
+          <tr className="teams__tr" key={index}>
             <td>{index + 1}</td>
             <td>{current.date}</td>
             <td>{current.description}</td>
@@ -367,7 +386,7 @@ class PeopleReport extends Component {
           intentInfo: '',
         };
         const resourcesName = [];
-        
+
         if (userTask[i].isActive) {
           task.active = 'Yes';
         } else {
@@ -465,7 +484,7 @@ class PeopleReport extends Component {
               ''
             )} */}
 
-            <div className="stats">
+            <div>
               <div>
                 <h4>{formatDate(startDate)}</h4>
                 <p>Start Date</p>
@@ -499,7 +518,7 @@ class PeopleReport extends Component {
       const bioStatus = bio;
       this.setState(() => {
         return {
-          bioStatus,
+          bioStatus: bio,
         };
       });
 
@@ -533,107 +552,98 @@ class PeopleReport extends Component {
               <p>Weekly Committed Hours</p>
             </ReportPage.ReportBlock>
 
-            {userProfile.endDate ? (
-              ''
-            ) : (
-              <ReportPage.ReportBlock
-                firstColor="#b368d2"
-                secondColor="#831ec4"
-                className="people-report-time-log-block"
-                darkMode={darkMode}
-              >
-                <h3 className="text-light">{!Number.isNaN(tangibleHoursReportedThisWeek)?tangibleHoursReportedThisWeek:""}</h3>
-                <p>Hours Logged This Week</p>
-              </ReportPage.ReportBlock>
-            )}
+                {(userProfile.isActive) && (
 
-            <ReportPage.ReportBlock
-              firstColor="#64b7ff"
-              secondColor="#928aef"
-              className="people-report-time-log-block"
-              darkMode={darkMode}
-            >. 
-              <h3 className="text-light">{infringements.length}</h3>
-              <p>Blue squares</p>
-            </ReportPage.ReportBlock>
-            <ReportPage.ReportBlock
-              firstColor="#ffdb56"
-              secondColor="#ff9145"
-              className="people-report-time-log-block"
-              darkMode={darkMode}
-            >
-              <h3 className="text-light">{totalTangibleHrsRound}</h3>
-              <p>Total Hours Logged</p>
-            </ReportPage.ReportBlock>
-          </div>
-
-          <PeopleTasksPieChart darkMode={darkMode} />
-          <div className="mobile-people-table">
-            <ReportPage.ReportBlock darkMode={darkMode}>
-              {this.state.isLoading ? (
-                <div
-                  className={`${darkMode ? 'text-light' : ''}
-                   d-flex align-items-center flex-row justify-content-center`}
+                  <ReportPage.ReportBlock
+                    firstColor="#b368d2"
+                    secondColor="#831ec4"
+                    className="people-report-time-log-block"
+                    darkMode={darkMode}
+                  >
+                    <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
+                    <p>Hours Logged This Week</p>
+                  </ReportPage.ReportBlock>
+                )}
+                <ReportPage.ReportBlock
+                  firstColor="#64b7ff"
+                  secondColor="#928aef"
+                  className="people-report-time-log-block"
+                  darkMode={darkMode}
                 >
-                  Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
-                </div>
-              ) : activeTasks.length > 0 ? (
-                <>
-                  <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
-                    <h4>Tasks contributed</h4>
-                  </div>
-                  <PeopleDataTable />
-                </>
-              ) : (
-                <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
-              )}
-              <div className="Infringementcontainer">
-                <div className="InfringementcontainerInner">
-                  <UserProject userProjects={userProjects} />
-                  <Infringements
-                    infringements={infringements}
-                    fromDate={fromDate}
-                    toDate={toDate}
-                    timeEntries={timeEntries}
-                  />
-                  <div className="visualizationDiv">
-                    <TimeEntriesViz
-                      timeEntries={timeEntries}
-                      fromDate={fromDate}
-                      toDate={toDate}
-                      darkMode={darkMode}
-                    />
-                  </div>
-                  <div className="visualizationDiv">
-                    <InfringementsViz
-                      infringements={infringements}
-                      fromDate={fromDate}
-                      toDate={toDate}
-                      darkMode={darkMode}
-                    />
-                  </div>
-                  <div className="visualizationDivRow">
-                    <div className="BadgeSummaryDiv">
-                      <BadgeSummaryViz
-                        authId={auth.user.userid}
-                        userId={match.params.userId}
-                        badges={userProfile.badgeCollection}
-                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
-                      />
-                    </div>
-                    <div className="BadgeSummaryPreviewDiv">
-                      <BadgeSummaryPreview
-                        badges={userProfile.badgeCollection}
-                        darkMode={darkMode}
-                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
-                      />
-                    </div>
-                  </div>
-                </div>
+                  <h3 className="text-light">{infringements.length}</h3>
+                  <p>Blue squares</p>
+                </ReportPage.ReportBlock>
+                <ReportPage.ReportBlock
+                  firstColor="#ffdb56"
+                  secondColor="#ff9145"
+                  className="people-report-time-log-block"
+                  darkMode={darkMode}
+                >
+                  <h3 className="text-light">{totalTangibleHrsRound}</h3>
+                  <p>Total Hours Logged</p>
+                </ReportPage.ReportBlock>
               </div>
-            </ReportPage.ReportBlock>
-          </div>
-          {/* {tangibleHoursReportedThisWeek === 0 ? (
+
+
+
+              <PeopleTasksPieChart darkMode={darkMode} />
+
+              <div className="mobile-people-table">
+                <ReportPage.ReportBlock darkMode={darkMode}>
+                  {this.state.isLoading ? (
+                    <p
+                      className={`${darkMode ? 'text-light' : ''}
+                   d-flex align-items-center flex-row justify-content-center`}
+                    >
+                      Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+                    </p>
+                  ) : activeTasks.length > 0 ? (
+                    <>
+                      <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
+                        <h4>Tasks contributed</h4>
+                      </div>
+                      <PeopleDataTable />
+                    </>
+                  ) : (
+                    <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+                  )}
+                  <div className="Infringementcontainer">
+                    <div className="InfringementcontainerInner">
+                      <UserProject userProjects={userProjects} />
+                      <Infringements
+                        infringements={infringements}
+                        fromDate={fromDate}
+                        toDate={toDate}
+                        timeEntries={timeEntries}
+                      />
+                      <div className="visualizationDiv">
+                        <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
+                      </div>
+                      <div className="visualizationDiv">
+                        <InfringementsViz
+                          infringements={infringements}
+                          fromDate={fromDate}
+                          toDate={toDate}
+                          darkMode={darkMode}
+                        />
+                      </div>
+                      <div className="visualizationDivRow">
+                        <div className="BadgeSummaryDiv">
+                          <BadgeSummaryViz
+                            authId={auth.user.userid}
+                            userId={match.params.userId}
+                            badges={userProfile.badgeCollection}
+                          />
+                        </div>
+                        <div className="BadgeSummaryPreviewDiv">
+                          <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ReportPage.ReportBlock>
+              </div>
+              {/* {tangibleHoursReportedThisWeek === 0 ? (
             <div className="report-no-log-message">No task has been logged this week...</div>
           ) : (
             <div className="mobile-people-table">
