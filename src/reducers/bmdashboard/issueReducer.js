@@ -24,7 +24,7 @@ const initialState = {
 };
 
 // eslint-disable-next-line default-param-last
-const issueReducer = (state = initialState, action) => {
+export const issueReducer = (state = initialState, action) => {
   switch (action.type) {
     case FETCH_ISSUES_BARCHART_REQUEST:
       return { ...state, loading: true, error: null };
