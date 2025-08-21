@@ -21,7 +21,7 @@ import { toast } from 'react-toastify';
 
 function Dashboard() {
   const dispatch = useDispatch();
-  
+
   // Use hooks instead of connect to access Redux state
   const authUser = useSelector(state => state.auth.user);
   const displayUserProfile = useSelector(state => state.userProfile);
@@ -29,23 +29,23 @@ function Dashboard() {
 
   // Get userId from URL params
   const { userId: urlUserId } = useParams();
-  
+
   // Component state
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  
+
   // Memoize this function to avoid recreating it on every render
   const checkSessionStorage = useCallback(() => {
     return JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   }, []);
-  
+
   // State for viewing user
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [displayUserId, setDisplayUserId] = useState(
-    urlUserId || viewingUser?.userId || authUser.userid
+    urlUserId || viewingUser?.userId || authUser.userid,
   );
-  
+
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
 
   // Toggle popup with memoization to prevent recreation
@@ -77,7 +77,7 @@ function Dashboard() {
   }, [authUser.userid, checkSessionStorage]);
 
   // Memoize summary bar update handler
-  const handleSummaryBarDataUpdate = useCallback((data) => {
+  const handleSummaryBarDataUpdate = useCallback(data => {
     setSummaryBarData(data);
   }, []);
 
