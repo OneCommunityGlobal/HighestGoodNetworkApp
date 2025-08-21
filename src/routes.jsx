@@ -130,7 +130,6 @@ import Register from './components/CommunityPortal/Activities/Register/Register'
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
 
-import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
