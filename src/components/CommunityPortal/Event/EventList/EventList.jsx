@@ -12,7 +12,7 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '../../../../utils/URL';
 import EventCard from '../EventCard/EventCard';
 
 function EventList(props) {

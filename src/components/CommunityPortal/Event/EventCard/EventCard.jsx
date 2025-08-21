@@ -10,7 +10,7 @@ import {
   faTag,
 } from '@fortawesome/free-solid-svg-icons';
 import { format } from 'date-fns';
-import './EventCard.css';
+import styles from './EventCard.module.css';
 
 function EventCard(props) {
   const { event, darkMode } = props;
@@ -62,24 +62,24 @@ function EventCard(props) {
   };
 
   return (
-    <Card className={`event-card ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
-      <div className="cover-section">
-        <img src={event.coverImage} alt={event.title} className="event-cover-image" />
+    <Card className={`${styles['event-card']} ${darkMode ? `${styles['bg-space-cadet']} text-light` : ''}`}>
+      <div className={styles['cover-section']}>
+        <img src={event.coverImage} alt={event.title} className={styles['event-cover-image']} />
       </div>
 
       <div className="p-3">
         {/* Title and Status */}
         <div className="d-flex justify-content-between align-items-start">
           <div className="d-flex flex-column">
-            <div className="d-flex align-items-center gap-2">
+            <div className={`d-flex align-items-center ${styles['gap-2']}`}>
               <h2 className={`h4 mb-0 ${darkMode ? 'text-light' : ''}`}>{title}</h2>
-              <span className={`badge status-badge ${getStatusClass(status)}`}>{status}</span>
+              <span className={`badge ${styles['status-badge']} ${styles[getStatusClass(status)]}`}>{status}</span>
             </div>
           </div>
         </div>
 
         {/* Event Details */}
-        <div className="event-details mt-3">
+        <div className={`${styles['event-details']} mt-3`}>
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon
               icon={faTag}
@@ -91,9 +91,9 @@ function EventCard(props) {
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2 text-muted" />
             <span className="text-muted">Location:</span>
-            <span className={`ms-2 attendee-tag ${getLocationTag(location)}`}>{location}</span>
+            <span className={`ms-2 ${styles['attendee-tag']} ${styles[getLocationTag(location)]}`}>{location}</span>
           </div>
-          <div className="event-description mb-2">
+          <div className={`${styles['event-description']} mb-2`}>
             <span className="text-muted">Description:</span>
             <p className="mt-1 mb-0">{description}</p>
           </div>
@@ -117,13 +117,13 @@ function EventCard(props) {
         <div className="mb-4">
           <h3 className="h5 mb-3">Attendance</h3>
           <p className="mb-2">Attendance rate: {attendanceRate}%</p>
-          <div className="attendance-progress">
-            <div className="attendance-bar" style={{ width: `${attendanceRate}%` }} />
+          <div className={styles['attendance-progress']}>
+            <div className={styles['attendance-bar']} style={{ width: `${attendanceRate}%` }} />
           </div>
         </div>
 
         {/* Attendees List */}
-        <div className="attendees-section">
+        <div className={styles['attendees-section']}>
           <div className="d-flex align-items-center mb-3">
             <FontAwesomeIcon icon={faUsers} className="me-2" />
             <span>
@@ -137,10 +137,10 @@ function EventCard(props) {
               className="d-flex justify-content-between align-items-center py-2"
             >
               <div className="d-flex align-items-center">
-                <div className="avatar-placeholder me-2" />
+                <div className={`${styles['avatar-placeholder']} me-2`} />
                 <span>{resource.name}</span>
               </div>
-              <span className={`attendee-tag ${getLocationTag(resource.location)}`}>
+              <span className={`${styles['attendee-tag']} ${styles[getLocationTag(resource.location)]}`}>
                 {resource.location.toLowerCase()}
               </span>
             </div>
@@ -154,7 +154,7 @@ function EventCard(props) {
             >
               <FontAwesomeIcon
                 icon={faChevronDown}
-                className={`me-1 ${expanded ? 'expanded' : ''}`}
+                className={`me-1 ${expanded ? styles['expanded'] : ''}`}
               />
               {expanded ? 'Show less' : `Show ${resources.length - 3} more`}
             </button>
@@ -165,15 +165,15 @@ function EventCard(props) {
         <div className="mt-3">
           <button
             type="button"
-            className="action-button primary-button"
+            className={`${styles['action-button']} ${styles['primary-button']}`}
             onClick={handleConfirmation}
           >
             Confirm attendance
           </button>
-          <button type="button" className="action-button secondary-button">
+          <button type="button" className={`${styles['action-button']} ${styles['secondary-button']}`}>
             Log activity
           </button>
-          <button type="button" className="action-button secondary-button">
+          <button type="button" className={`${styles['action-button']} ${styles['secondary-button']}`}>
             Report
           </button>
         </div>
