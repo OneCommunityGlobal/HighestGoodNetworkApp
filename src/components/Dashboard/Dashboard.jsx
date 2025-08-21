@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Row, Col, Container } from 'reactstrap';
-import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { connect, useSelector, useDispatch } from 'react-redux';
 import { cantUpdateDevAdminDetails } from '~/utils/permissions';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
@@ -16,6 +16,8 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import styles from './Dashboard.module.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
+import FeedbackModal from '../FeedbackModal/FeedbackModal';
+import { toast } from 'react-toastify';
 
 function Dashboard() {
   const dispatch = useDispatch();
@@ -49,10 +51,11 @@ function Dashboard() {
   // Toggle popup with memoization to prevent recreation
   const toggle = useCallback(() => {
     if (isNotAllowedToEdit) {
-      const warningMessage = viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
-        ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
-        : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
-      alert(warningMessage);
+      const warningMessage =
+        viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
+          ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
+          : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
+      toast.warn(warningMessage);
       return;
     }
 
