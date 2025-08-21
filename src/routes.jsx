@@ -161,7 +161,6 @@ import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
-
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
@@ -521,7 +520,6 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
-
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />

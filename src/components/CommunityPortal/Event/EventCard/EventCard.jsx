@@ -62,7 +62,11 @@ function EventCard(props) {
   };
 
   return (
-    <Card className={`${styles['event-card']} ${darkMode ? `${styles['bg-space-cadet']} text-light` : ''}`}>
+    <Card
+      className={`${styles['event-card']} ${
+        darkMode ? `${styles['bg-space-cadet']} text-light` : ''
+      }`}
+    >
       <div className={styles['cover-section']}>
         <img src={event.coverImage} alt={event.title} className={styles['event-cover-image']} />
       </div>
@@ -73,7 +77,9 @@ function EventCard(props) {
           <div className="d-flex flex-column">
             <div className={`d-flex align-items-center ${styles['gap-2']}`}>
               <h2 className={`h4 mb-0 ${darkMode ? 'text-light' : ''}`}>{title}</h2>
-              <span className={`badge ${styles['status-badge']} ${styles[getStatusClass(status)]}`}>{status}</span>
+              <span className={`badge ${styles['status-badge']} ${styles[getStatusClass(status)]}`}>
+                {status}
+              </span>
             </div>
           </div>
         </div>
@@ -91,7 +97,9 @@ function EventCard(props) {
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faMapMarkerAlt} className="me-2 text-muted" />
             <span className="text-muted">Location:</span>
-            <span className={`ms-2 ${styles['attendee-tag']} ${styles[getLocationTag(location)]}`}>{location}</span>
+            <span className={`ms-2 ${styles['attendee-tag']} ${styles[getLocationTag(location)]}`}>
+              {location}
+            </span>
           </div>
           <div className={`${styles['event-description']} mb-2`}>
             <span className="text-muted">Description:</span>
@@ -140,7 +148,9 @@ function EventCard(props) {
                 <div className={`${styles['avatar-placeholder']} me-2`} />
                 <span>{resource.name}</span>
               </div>
-              <span className={`${styles['attendee-tag']} ${styles[getLocationTag(resource.location)]}`}>
+              <span
+                className={`${styles['attendee-tag']} ${styles[getLocationTag(resource.location)]}`}
+              >
                 {resource.location.toLowerCase()}
               </span>
             </div>
@@ -170,10 +180,16 @@ function EventCard(props) {
           >
             Confirm attendance
           </button>
-          <button type="button" className={`${styles['action-button']} ${styles['secondary-button']}`}>
+          <button
+            type="button"
+            className={`${styles['action-button']} ${styles['secondary-button']}`}
+          >
             Log activity
           </button>
-          <button type="button" className={`${styles['action-button']} ${styles['secondary-button']}`}>
+          <button
+            type="button"
+            className={`${styles['action-button']} ${styles['secondary-button']}`}
+          >
             Report
           </button>
         </div>
