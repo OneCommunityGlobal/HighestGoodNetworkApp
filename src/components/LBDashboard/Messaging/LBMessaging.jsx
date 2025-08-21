@@ -363,7 +363,11 @@ export default function LBMessaging() {
                               className={styles.lbMsgIconBtn} // you can reuse or define styles here
                             >
                               <img
-                                src="https://img.icons8.com/metro/26/multiply.png"
+                                src={
+                                  darkMode
+                                    ? 'https://img.icons8.com/?size=26&id=1510&format=png&color=ffffff'
+                                    : 'https://img.icons8.com/metro/26/multiply.png'
+                                }
                                 alt="Close"
                                 className={styles.lbMsgIcon}
                               />
@@ -383,7 +387,9 @@ export default function LBMessaging() {
                             <div className={styles.lbMessagingSearchIconsMobile}>
                               <FontAwesomeIcon
                                 icon={faSearch}
-                                className={styles.lbMsgIconMobile}
+                                className={`${styles.lbMsgIconMobile} ${
+                                  darkMode ? styles.darkModeIcon : ''
+                                }`}
                                 onClick={() => setShowContacts(prev => !prev)}
                               />
                             </div>
@@ -465,10 +471,14 @@ export default function LBMessaging() {
                     <button
                       type="button"
                       onClick={() => setShowContacts(prev => !prev)}
-                      className={styles.lbMsgIconBtn} // you can reuse or define styles here
+                      className={`${styles.lbMsgIconBtn} ${darkMode ? styles.darkModeIcon : ''}`} // you can reuse or define styles here
                     >
                       <img
-                        src="https://img.icons8.com/metro/26/multiply.png"
+                        src={
+                          darkMode
+                            ? 'https://img.icons8.com/?size=26&id=1510&format=png&color=ffffff'
+                            : 'https://img.icons8.com/metro/26/multiply.png'
+                        }
                         alt="Close"
                         className={styles.lbMsgIcon}
                       />
@@ -486,14 +496,16 @@ export default function LBMessaging() {
                     <div className={styles.lbMessagingSearchIcons}>
                       <FontAwesomeIcon
                         icon={faSearch}
-                        className={styles.lbMsgIcon}
+                        className={`${styles.lbMsgIcon} ${darkMode ? styles.darkModeIcon : ''}`}
                         onClick={() => setShowContacts(prev => !prev)}
                       />
                     </div>
                   </div>
                 )}
                 <div
-                  className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
+                  className={`${styles.lbMessagingContactsBody} ${
+                    styles.activeInlbMessagingContactsBody
+                  } ${darkMode ? styles.bgOxfordBlue : ''}`}
                 >
                   {showContacts
                     ? searchResults.map(user => (
@@ -557,7 +569,9 @@ export default function LBMessaging() {
                       onClick={() => {
                         setBellDropdownActive(prev => !prev);
                       }}
-                      className={styles.lgMessagingNotificationBell}
+                      className={`${styles.lgMessagingNotificationBell} ${
+                        darkMode ? styles.darkModeIcon : ''
+                      }`}
                     />
                     {bellDropdownActive && (
                       <div

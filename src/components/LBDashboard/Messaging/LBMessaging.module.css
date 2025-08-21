@@ -120,7 +120,7 @@
 .lbMsgIconMobile {
   height: 100%;
   width: auto !important;
-  color: black !important;
+  color: black
 }
 
 .lbMobileHamMenuHeader {
@@ -463,6 +463,6 @@
   border-color: black;
 }
 
-.darkModeColor {
-  color: black;
+.darkModeIcon {
+  color: white;
 }
