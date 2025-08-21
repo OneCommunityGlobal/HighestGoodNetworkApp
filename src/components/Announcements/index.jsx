@@ -35,39 +35,31 @@ function Announcements({ title, email: initialEmail }) {
   const [posts, setPosts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [showDropdownPost, setShowDropdownPost] = useState(false);
-  const [platform, setPlatform] = useState('');
   const [selectedPlatform, setSelectedPlatform] = useState('');
-  const editorRef = useRef(null);
   const maxLength = 280;
   const platforms = [
     { label: 'Facebook', value: 'facebook' },
     { label: 'Twitter', value: 'twitter' },
-    { label: 'Instagram', value: 'instagram' }, // add more as needed
+    { label: 'Instagram', value: 'instagram' },
   ];
-
   const [selectedPlatforms, setSelectedPlatforms] = useState([]);
   const [scheduleSelectedPlatforms, setscheduleSelectedPlatforms] = useState([]);
-  const [hintIndex, setHintIndex] = useState(0);
   const [currentHint, setCurrentHint] = useState('');
   const [activePlatform, setActivePlatform] = useState('facebook');
-
   const twitterHints = [
     'Twitter Tip: Keep tweets concise and impactful.',
     'Twitter Tip: Keep under 280 characters for maximum clarity.',
   ];
-
   const facebookHints = [
     'Facebook Tip: Use the first 80 characters as a strong hook.',
     'Facebook Tip: Break long posts into short paragraphs.',
     'Facebook Tip: Add images/videos for higher engagement.',
   ];
-
   const platformHints = {
     facebook: facebookHints,
     twitter: twitterHints,
   };
   const [editorContent, setEditorContent] = useState('');
-  const [showSchedulePopup, setShowSchedulePopup] = useState(false);
   const [selectedDateRange, setSelectedDateRange] = useState('');
   const [repeatAnnually, setRepeatAnnually] = useState(false);
   const [numYears, setNumYears] = useState(1);
@@ -76,48 +68,6 @@ function Announcements({ title, email: initialEmail }) {
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
-
-  const editorInit = {
-    license_key: 'gpl',
-    selector: 'Editor#email-editor',
-    height: 500,
-    plugins: [
-      'advlist autolink lists link image',
-      'charmap print preview anchor help',
-      'searchreplace visualblocks code',
-      'insertdatetime media table wordcount',
-    ],
-    menubar: false,
-    branding: false,
-    image_title: true,
-    automatic_uploads: true,
-    file_picker_callback(cb) {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-
-      input.onchange = () => {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = window.tinymce.activeEditor.editorUpload;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-          cb(blobInfo.blobUri(), { title: file.name });
-        };
-        reader.readAsDataURL(file);
-      };
-
-      input.click();
-    },
-    a11y_advanced_options: true,
-    toolbar:
-      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
 
   const postButtonLabel =
     selectedPlatforms.length === 0
@@ -213,12 +163,10 @@ function Announcements({ title, email: initialEmail }) {
 
   const handleSendEmails = () => {
     const htmlContent = emailContent;
-
     if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
-
     if (!isFileUploaded) {
       toast.error('Error: Please upload a file.');
       return;
@@ -229,7 +177,6 @@ function Announcements({ title, email: initialEmail }) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
       return;
     }
-
     dispatch(
       sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent),
     );
@@ -245,7 +192,6 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const [charCount, setCharCount] = useState(0);
-
   const stripHtml = html => {
     const div = document.createElement('div');
     div.innerHTML = html;
@@ -264,15 +210,6 @@ function Announcements({ title, email: initialEmail }) {
         editor.getBody().style.color = ''; // reset to default
       }
     }
-  };
-
-  const handlePostTweets = () => {
-    if (charCount > maxLength) {
-      toast.error('Character limit exceeded. Please shorten your text to 280 characters.');
-      return;
-    }
-    const htmlContent = `${emailContent}`;
-    dispatch(sendTweet(htmlContent));
   };
 
   const handleDateContentChange = e => {
@@ -328,33 +265,6 @@ function Announcements({ title, email: initialEmail }) {
     loadFacebookSDK();
   }, []);
 
-  const handleCreateFbPost = () => {
-    if (!emailContent || emailContent.trim() === '') {
-      toast.error('Error: No content to post. Please add some content in Weekly progress editor');
-      return;
-    }
-
-    window.FB.login(
-      response => {
-        if (response.authResponse) {
-          const accessTokens = response.authResponse.accessToken;
-          dispatch(ssendFbPost(emailContent, accessTokens))
-            .then(() => {
-              toast.success('Post successfully created on Facebook!');
-            })
-            .catch(error => {
-              toast.error('Failed to post on Facebook.');
-            });
-        } else {
-          toast.error('Facebook login failed or was cancelled.');
-        }
-      },
-      {
-        scope: 'public_profile,email,pages_show_list,pages_manage_posts',
-      },
-    );
-  };
-
   const handleScheduleClick = () => {
     setShowDropdown(prev => !prev);
     setShowDropdownPost(false);
@@ -370,30 +280,16 @@ function Announcements({ title, email: initialEmail }) {
       toast.error('Character limit exceeded. Please shorten your text to 280 characters.');
       return;
     }
-    const htmlContent = `${emailContent}`;
-    const scheduleDate = `${dateContent}`;
-    const scheduleTime = `${timeContent}`;
     if (!emailContent || emailContent.trim() === '') {
       toast.error('Please enter content before posting.');
       return;
     }
-
     if (scheduleSelectedPlatforms.length === 0) {
       toast.error('Please select at least one platform.');
       return;
     }
-
-    // if (scheduleSelectedPlatforms.includes('facebook')) {
-    //   await dispatch(scheduleFbPost(scheduleDate, scheduleTime, htmlContent));
-    // }
-
-    // if (scheduleSelectedPlatforms.includes('twitter')) {
-    //   await dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
-    // }
-
     const baseDate = new Date(`${dateContent}T${timeContent}`);
     const schedules = [];
-
     if (repeatAnnually) {
       for (let i = 0; i < numYears; i++) {
         const newDate = new Date(baseDate);
@@ -403,7 +299,6 @@ function Announcements({ title, email: initialEmail }) {
     } else {
       schedules.push(baseDate);
     }
-
     for (const scheduleDate of schedules) {
       const dateStr = scheduleDate.toISOString().split('T')[0];
       const timeStr = scheduleDate.toTimeString().slice(0, 5);
@@ -415,22 +310,17 @@ function Announcements({ title, email: initialEmail }) {
         await dispatch(scheduleTweet(dateStr, timeStr, emailContent));
       }
     }
-
     toast.success(`Scheduled ${schedules.length} post(s) successfully!`);
-
     setShowDropdown(false);
     setscheduleSelectedPlatforms([]);
     setDateContent('');
     setTimeContent('');
-    setRepeatAnnually(false);
-    setNumYears(1);
   };
 
   const handleChange = async e => {
     const value = e.target.value;
     setSelectedPlatform(value);
     const { twitterPosts, facebookPosts } = await fetchPostsSeparately();
-
     if (value === 'facebook') {
       setPosts(facebookPosts);
     } else if (value === 'twitter') {
@@ -482,13 +372,11 @@ function Announcements({ title, email: initialEmail }) {
     if (!skipConfirm) {
       const confirmDelete = window.confirm(`Are you sure you want to post this on ${platforms}`);
       if (!confirmDelete) return;
-
       const dontAskAgain = window.confirm("Don't ask again for future posts?");
       if (dontAskAgain) {
         localStorage.setItem('skipPostConfirm', 'true');
       }
     }
-
     if (platforms === 'facebook') {
       handlePostScheduledFbPost(postId, textContent, base64Srcs, platforms);
     } else if (platforms === 'twitter') {
@@ -510,16 +398,13 @@ function Announcements({ title, email: initialEmail }) {
       toast.error('Please enter content before posting.');
       return;
     }
-
     if (selectedPlatforms.length === 0) {
       toast.error('Please select at least one platform.');
       return;
     }
-
     if (selectedPlatforms.includes('twitter')) {
       dispatch(sendTweet(emailContent));
     }
-
     if (selectedPlatforms.includes('facebook')) {
       window.FB.login(
         response => {
@@ -589,7 +474,6 @@ function Announcements({ title, email: initialEmail }) {
         <div className="editor">
           {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
           <br />
-
           <div className="flex justify-center space-x-6 mb-4">
             <FaFacebook
               size={40}
