@@ -192,13 +192,13 @@ export function Header(props) {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
+            <Nav className="ml-auto nav-links d-flex" navbar>
               <div
                 className="d-flex justify-content-center align-items-center"
                 style={{ width: '100%' }}
               >
                 {canUpdateTask && (
-                  <NavItem>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
                       <div className="redBackGroupHeader">
                         <span>{props.taskEditSuggestionCount}</span>
@@ -206,12 +206,12 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to="/communityportal">
                     <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav inNavbar>
+                <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{ACTIVITY}</span>
                   </DropdownToggle>
@@ -224,12 +224,12 @@ export function Header(props) {
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-                <NavItem>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to="/communityportal/calendar">
                     <span className="dashboard-text-link">{CALENDAR}</span>
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav inNavbar>
+                <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
@@ -245,6 +245,8 @@ export function Header(props) {
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
+              </div>
+              <div className="d-flex align-items-center justify-content-center">
                 <NavItem className="responsive-spacing">
                   <BellNotification />
                 </NavItem>
@@ -300,29 +302,38 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <img
-                      src={`${profilePic || '/pfp-default-header.png'}`}
-                      alt=""
-                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                    <div
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        minWidth: '60px',
+                        minHeight: '60px',
+                        backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                      }}
                       className="dashboardimg"
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav>
+                <UncontrolledDropdown nav className="responsive-spacing">
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
                   <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                    <DropdownItem header>Hello {firstName}</DropdownItem>
+                    <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>
+                      Hello {firstName}
+                    </DropdownItem>
                     <DropdownItem divider />
                     <DropdownItem
                       tag={Link}
-                      to={`/userprofile/${user.userid}`}
-                      className={darkMode ? 'text-light' : ''}
+                      to={`/userprofile/${displayUserId}`}
+                      className={fontColor}
                     >
                       {VIEW_PROFILE}
                     </DropdownItem>
@@ -332,17 +343,17 @@ export function Header(props) {
                     ) && (
                       <DropdownItem
                         tag={Link}
-                        to={`/updatepassword/${user.userid}`}
-                        className={darkMode ? 'text-light' : ''}
+                        to={`/updatepassword/${displayUserId}`}
+                        className={fontColor}
                       >
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-                    <DropdownItem className={darkMode ? 'text-light' : ''}>
+                    <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={openModal} className={darkMode ? 'text-light' : ''}>
+                    <DropdownItem onClick={openModal} className={fontColor}>
                       {LOGOUT}
                     </DropdownItem>
                   </DropdownMenu>
