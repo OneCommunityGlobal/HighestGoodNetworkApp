@@ -717,7 +717,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
-                            0 hrs Totals:{' '}
+                            0-hrs Mentors:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
                           </span>
@@ -731,7 +731,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
-                            0 hrs Totals:{' '}
+                            0-hrs Mentors:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
                           </span>
