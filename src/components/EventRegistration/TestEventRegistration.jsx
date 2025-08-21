@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import styles from './TestEventRegistration.module.css';
 
 function TestEventRegistration() {
   // State to store the event name and error message
@@ -143,9 +144,9 @@ function TestEventRegistration() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="eventName" style={{ display: 'block', marginBottom: '0.5rem' }}>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.formGroup}>
+          <label htmlFor="eventName" className={styles.label}>
             Event Name: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -154,19 +155,14 @@ function TestEventRegistration() {
             name="eventName"
             value={formValues.eventName}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
           {errors.eventName && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.eventName}</span>
+            <span className={styles.error}>{errors.eventName}</span>
           )}
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="firstName" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="firstName" className={styles.label}>
             First Name: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -175,20 +171,15 @@ function TestEventRegistration() {
             name="firstName"
             value={formValues.firstName}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
           {errors.firstName && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.firstName}</span>
+            <span className={styles.error}>{errors.firstName}</span>
           )}
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="lastName" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="lastName" className={styles.label}>
             Last Name: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -197,32 +188,22 @@ function TestEventRegistration() {
             name="lastName"
             value={formValues.lastName}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
           {errors.lastName && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.lastName}</span>
+            <span className={styles.error}>{errors.lastName}</span>
           )}
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="phoneNumber" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="phoneNumber" className={styles.label}>
             Phone Number: <span style={{ color: 'red' }}>*</span>
           </label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className={styles.flexRow}>
             <select
               name="countryCode"
               value={formValues.countryCode}
               onChange={handleChange}
-              style={{
-                padding: '0.5rem',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                width: '30%',
-              }}
+              className={styles.selectCode}
             >
               <option value="">Select Code</option>
               <option value="+1">+1 (US)</option>
@@ -237,23 +218,18 @@ function TestEventRegistration() {
               value={formValues.phoneNumber}
               onChange={handleChange}
               placeholder="XXX-XXX-XXXX"
-              style={{
-                flex: 1,
-                padding: '0.5rem',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-              }}
+              className={styles.input}
             />
           </div>
           {errors.countryCode && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.countryCode}</span>
+            <span className={styles.error}>{errors.countryCode}</span>
           )}
           {errors.phoneNumber && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.phoneNumber}</span>
+            <span className={styles.error}>{errors.phoneNumber}</span>
           )}
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="emailAddress" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="emailAddress" className={styles.label}>
             Email Address: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -262,19 +238,14 @@ function TestEventRegistration() {
             name="emailAddress"
             value={formValues.emailAddress}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+           className={styles.input}
           />
           {errors.emailAddress && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.emailAddress}</span>
+            <span className={styles.error}>{errors.emailAddress}</span>
           )}
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="dateOfBirth" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="dateOfBirth" className={styles.label}>
             Date of Birth: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -288,20 +259,15 @@ function TestEventRegistration() {
                 .toISOString()
                 .split('T')[0]
             } // Set max to today's date minus 18 years
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
           {errors.dateOfBirth && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.dateOfBirth}</span>
+            <span className={styles.error}>{errors.dateOfBirth}</span>
           )}
         </div>
         {/* Gender Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="gender" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="gender" className={styles.label}>
             Gender: <span style={{ color: 'red' }}>*</span>
           </label>
           <div>
@@ -315,7 +281,7 @@ function TestEventRegistration() {
               />
               Male
             </label>
-            <label style={{ marginLeft: '1rem' }}>
+            <label className={styles.formGroup}>
               <input
                 type="radio"
                 name="gender"
@@ -325,7 +291,7 @@ function TestEventRegistration() {
               />
               Female
             </label>
-            <label style={{ marginLeft: '1rem' }}>
+            <label className={styles.formGroup}>
               <input
                 type="radio"
                 name="gender"
@@ -335,7 +301,7 @@ function TestEventRegistration() {
               />
               Binary/Non-Binary
             </label>
-            <label style={{ marginLeft: '1rem' }}>
+            <label className={styles.formGroup}>
               <input
                 type="radio"
                 name="gender"
@@ -345,7 +311,7 @@ function TestEventRegistration() {
               />
               Prefer Not to Say
             </label>
-            <label style={{ marginLeft: '1rem' }}>
+            <label className={styles.formGroup}>
               <input
                 type="radio"
                 name="gender"
@@ -359,8 +325,8 @@ function TestEventRegistration() {
 
           {/* Conditional Text Box for "Others" */}
           {formValues.gender === 'Others' && (
-            <div style={{ marginTop: '0.5rem' }}>
-              <label htmlFor="otherGender" style={{ display: 'block', marginBottom: '0.5rem' }}>
+            <div className={styles.othersInput}>
+              <label htmlFor="otherGender" className={styles.label}>
                 Please Specify: <span style={{ color: 'red' }}>*</span>
               </label>
               <input
@@ -369,27 +335,22 @@ function TestEventRegistration() {
                 name="otherGender"
                 value={formValues.otherGender || ''}
                 onChange={handleChange}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                }}
+                className={styles.otherText}
               />
               {errors.otherGender && (
-                <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.otherGender}</span>
+                <span className={styles.error}>{errors.otherGender}</span>
               )}
             </div>
           )}
 
           {errors.gender && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.gender}</span>
+            <span className={styles.error}>{errors.gender}</span>
           )}
         </div>
 
         {/* Address Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="address" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="address" className={styles.label}>
             Address: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -398,21 +359,16 @@ function TestEventRegistration() {
             name="address"
             value={formValues.address}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
           {errors.address && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.address}</span>
+            <span className={styles.error}>{errors.address}</span>
           )}
         </div>
 
         {/* City Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="city" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label className={styles.label}>
             City: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -421,19 +377,14 @@ function TestEventRegistration() {
             name="city"
             value={formValues.city}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
-          {errors.city && <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.city}</span>}
+          {errors.city && <span className={styles.error}>{errors.city}</span>}
         </div>
 
         {/* State Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="state" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="state" className={styles.label}>
             State: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -442,21 +393,16 @@ function TestEventRegistration() {
             name="state"
             value={formValues.state}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
           {errors.state && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.state}</span>
+            <span className={styles.error}>{errors.state}</span>
           )}
         </div>
 
         {/* Country Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="country" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="country" className={styles.label}>
             Country: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -465,21 +411,16 @@ function TestEventRegistration() {
             name="country"
             value={formValues.country}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
           {errors.country && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.country}</span>
+            <span className={styles.error}>{errors.country}</span>
           )}
         </div>
 
         {/* ZIP Code Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="zipcode" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="zipcode" className={styles.label}>
             ZIP Code: <span style={{ color: 'red' }}>*</span>
           </label>
           <input
@@ -488,20 +429,15 @@ function TestEventRegistration() {
             name="zipcode"
             value={formValues.zipcode}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
+            className={styles.input}
           />
           {errors.zipcode && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.zipcode}</span>
+            <span className={styles.error}>{errors.zipcode}</span>
           )}
         </div>
         {/* How Did You Hear About Us Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="howDidYouHear" style={{ display: 'block', marginBottom: '0.5rem' }}>
+        <div className={styles.formGroup}>
+          <label htmlFor="howDidYouHear" className={styles.label}>
             How did you hear about us? <span style={{ color: 'red' }}>*</span>
           </label>
           {[
@@ -534,47 +470,28 @@ function TestEventRegistration() {
                   placeholder="Please specify"
                   value={formValues.otherHowDidYouHear}
                   onChange={handleChange}
-                  style={{
-                    marginLeft: '1rem',
-                    padding: '0.5rem',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                  }}
+                  className={styles.hearOtherInput}
                 />
               )}
             </div>
           ))}
           {errors.howDidYouHear && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.howDidYouHear}</span>
+            <span className={styles.error}>{errors.howDidYouHear}</span>
           )}
         </div>
 
         {/* buttons */}
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <div className={styles.buttons}>
           <button
             type="button"
             onClick={handleCancel}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#f44336',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
+            className={styles.cancelBtn}
           >
             Cancel
           </button>
           <button
             type="submit"
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
+            className={styles.submitBtn}
           >
             Submit
           </button>
@@ -582,41 +499,17 @@ function TestEventRegistration() {
       </form>
       {formSubmitted && (
         <div
-          style={{
-            position: 'fixed',
-            top: '0',
-            left: '0',
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
+          className={styles.modalOverlay}
         >
           <div
-            style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            }}
+            className={styles.modalContent}
           >
-            <h2 style={{ marginBottom: '1rem' }}>Form Submitted</h2>
+            <h2 className={styles.modalTitle}>Form Submitted</h2>
             <p>Your form has been successfully submitted!</p>
             <button
               type="button"
               onClick={closeModal}
-              style={{
-                marginTop: '1rem',
-                padding: '0.5rem 1rem',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
+              className={styles.modalBtn}
             >
               Close
             </button>
