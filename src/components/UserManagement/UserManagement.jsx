@@ -46,6 +46,7 @@ import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { Spinner } from 'reactstrap';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -80,6 +81,7 @@ class UserManagement extends React.PureComponent {
       isMobile: window.innerWidth <= 750,
       mobileFontSize: 10,
       mobileWidth: '100px',
+      isLoadingUsers: props.initialIsLoadingUsers ?? true,
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -120,38 +122,62 @@ class UserManagement extends React.PureComponent {
 
   // eslint-disable-next-line react/sort-comp
   async componentDidUpdate(prevProps, prevState) {
-    
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
-      const {darkMode} = this.props.state.theme;
+      const { darkMode } = this.props.state.theme;
       // eslint-disable-next-line no-unused-vars
       const { userProfiles, fetching } = this.props.state.allUserProfiles;
       const { roles: rolesPermissions } = this.props.state.role;
       const { requests: timeOffRequests } = this.props.state.timeOffRequests;
 
-      
-      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable, this.state.isMobile, this.state.mobileFontSize,);
+      this.getFilteredData(
+        userProfiles,
+        rolesPermissions,
+        timeOffRequests,
+        darkMode,
+        this.state.editable,
+        this.state.isMobile,
+        this.state.mobileFontSize,
+      );
     }
-    
-    const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || 
-                               (prevState.lastNameSearchText !== this.state.lastNameSearchText) || 
-                               (prevState.roleSearchText !== this.state.roleSearchText) || 
-                               prevState.titleSearchText !== this.state.titleSearchText ||
-                               (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || 
-                               (prevState.emailSearchText !== this.state.emailSearchText);
-  
+
+    const searchStateChanged =
+      prevState.firstNameSearchText !== this.state.firstNameSearchText ||
+      prevState.lastNameSearchText !== this.state.lastNameSearchText ||
+      prevState.roleSearchText !== this.state.roleSearchText ||
+      prevState.titleSearchText !== this.state.titleSearchText ||
+      prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText ||
+      prevState.emailSearchText !== this.state.emailSearchText;
+
     const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
-    const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
+    const userProfilesChanged =
+      prevProps.state.allUserProfiles.userProfiles !==
+      this.props.state.allUserProfiles.userProfiles;
 
-    if ((prevState.selectedPage !== this.state.selectedPage) ||
-      (prevState.wildCardSearchText !== this.state.wildCardSearchText) ||
-      searchStateChanged || pageSizeChanged || userProfilesChanged) {
-
-      const {darkMode} = this.props.state.theme;
+    if (
+      prevState.selectedPage !== this.state.selectedPage ||
+      prevState.wildCardSearchText !== this.state.wildCardSearchText ||
+      searchStateChanged ||
+      pageSizeChanged ||
+      userProfilesChanged
+    ) {
+      const { darkMode } = this.props.state.theme;
       // eslint-disable-next-line no-unused-vars
       const { userProfiles, fetching } = this.props.state.allUserProfiles;
       const { roles: rolesPermissions } = this.props.state.role;
       const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable, this.state.isMobile, this.state.mobileFontSize,);
+      this.getFilteredData(
+        userProfiles,
+        rolesPermissions,
+        timeOffRequests,
+        darkMode,
+        this.state.editable,
+        this.state.isMobile,
+        this.state.mobileFontSize,
+      );
+
+      this.setState({
+        isLoadingUsers: false,
+      });
     }
   }
 
@@ -223,7 +249,14 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions, timeOffRequests, darkMode, isMobile, mobileFontSize) => {
+  userTableElements = (
+    userProfiles,
+    rolesPermissions,
+    timeOffRequests,
+    darkMode,
+    isMobile,
+    mobileFontSize,
+  ) => {
     if (userProfiles && userProfiles.length > 0) {
       const usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -270,7 +303,7 @@ class UserManagement extends React.PureComponent {
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
-            // editUser={editUser}
+              // editUser={editUser}
               isMobile={isMobile}
               mobileFontSize={mobileFontSize}
               onUserUpdate={this.onUserUpdate}
@@ -278,10 +311,19 @@ class UserManagement extends React.PureComponent {
           );
         });
     }
+
     return null;
   };
 
-  getFilteredData = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser, isMobile, mobileFontSize) => {
+  getFilteredData = (
+    userProfiles,
+    rolesPermissions,
+    timeOffRequests,
+    darkMode,
+    editUser,
+    isMobile,
+    mobileFontSize,
+  ) => {
     this.setState({
       userTableItems: this.userTableElements(
         userProfiles,
@@ -309,9 +351,9 @@ class UserManagement extends React.PureComponent {
       const trimmedFirstNameSearch = firstNameSearch.trim();
       const trimmedLastNameSearch = lastNameSearch.trim();
 
-      const isFirstNameExactMatch = firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
+      const isFirstNameExactMatch =
+        firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
       const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
-
 
       // const firstNameMatches = trimmedFirstNameSearch
       //  ? (isFirstNameExactMatch
@@ -380,21 +422,22 @@ class UserManagement extends React.PureComponent {
       return (
         nameMatches &&
         user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
-       // user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
+        user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
         user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
         ((this.state.allSelected && true) ||
-          (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
+          this.state.isActive === undefined ||
+          user.isActive === this.state.isActive) &&
         ((this.state.allSelected && true) ||
-          (this.state.isPaused === false ||
-            (user.reactivationDate && new Date(user.reactivationDate) > new Date())))
+          this.state.isPaused === false ||
+          (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
       );
     });
   };
 
   /**
-   * 
+   *
    * reload user list and close user creation popup
    */
   userCreated = () => {
@@ -422,15 +465,15 @@ class UserManagement extends React.PureComponent {
 
   onUserUpdate = updatedUser => {
     const { userProfiles } = this.props.state.allUserProfiles;
-  
+
     // Update the userProfiles array with the updated user
     const updatedProfiles = userProfiles.map(user =>
       user._id === updatedUser._id ? updatedUser : user,
     );
-  
+
     // Update the state with the new userProfiles
     this.props.state.allUserProfiles.userProfiles = updatedProfiles;
-  
+
     // Re-render the table
     this.getFilteredData(
       updatedProfiles,
@@ -573,19 +616,20 @@ class UserManagement extends React.PureComponent {
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
-  setActiveInactive = isActive => {    
-    this.setState(
-      {      
-        activeInactivePopupOpen: false,      
-        selectedUser: undefined,      
-      });
-          
-      this.props.updateUserStatus(      
-        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive, undefined,    
-      )
-      // ).finally(() => {      
-      //  this.setState({ isUpdating: false });    
-      // });
+  setActiveInactive = isActive => {
+    this.setState({
+      activeInactivePopupOpen: false,
+      selectedUser: undefined,
+    });
+
+    this.props.updateUserStatus(
+      this.state.selectedUser,
+      isActive ? UserStatus.Active : UserStatus.InActive,
+      undefined,
+    );
+    // ).finally(() => {
+    //  this.setState({ isUpdating: false });
+    // });
   };
 
   /**
@@ -618,22 +662,15 @@ class UserManagement extends React.PureComponent {
     });
 
     if (deleteType === UserDeleteType.Inactive) {
-      this.props.updateUserStatus(
-        this.state.selectedUser,
-        UserStatus.InActive,
-        undefined
-      )
-//      ).finally(() => {
-//        this.setState({ isUpdating: false });
-//      });
+      this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, undefined);
+      //      ).finally(() => {
+      //        this.setState({ isUpdating: false });
+      //      });
     } else {
-      this.props.deleteUser(
-        this.state.selectedUser,
-        deleteType
-      )
-//      ).finally(() => {
-//        this.setState({ isUpdating: false });
-//      });
+      this.props.deleteUser(this.state.selectedUser, deleteType);
+      //      ).finally(() => {
+      //        this.setState({ isUpdating: false });
+      //      });
     }
   };
 
@@ -738,10 +775,10 @@ class UserManagement extends React.PureComponent {
         const { userProfiles } = this.props.state.allUserProfiles;
         const { roles: rolesPermissions } = this.props.state.role;
         const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-        const {darkMode} = this.props.state.theme;
+        const { darkMode } = this.props.state.theme;
 
         this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
-      }
+      },
     );
   };
 
@@ -850,59 +887,69 @@ class UserManagement extends React.PureComponent {
         ) : ( */}
         <>
           {this.popupElements()}
-          <UserSearchPanel
-            onSearch={this.onWildCardSearch}
-            searchText={this.state.wildCardSearchText}
-            onActiveFiter={this.onActiveFiter}
-            onNewUserClick={this.onNewUserClick}
-            handleNewUserSetupPopup={this.handleNewUserSetupPopup}
-            handleSetupHistoryPopup={this.handleSetupHistoryPopup}
-            darkMode={darkMode}
-          />
           <div className="table-responsive" id="user-management-table">
-            <Table
-              className={`table table-bordered noWrap ${darkMode ? 'text-light bg-yinmn-blue' : ''
-                }`}
-            >
-              <thead>
-                <UserTableHeader
-                  authRole={this.props.state.auth.user.role}
-                  roleSearchText={this.state.roleSearchText}
+            {this.state.isLoadingUsers ? (
+              <section className="message-loading">
+                <h3 className={darkMode ? 'text-light' : 'text-dark'}>Loading users</h3>
+              </section>
+            ) : (
+              <>
+                <UserSearchPanel
+                  onSearch={this.onWildCardSearch}
+                  searchText={this.state.wildCardSearchText}
+                  onActiveFiter={this.onActiveFiter}
+                  onNewUserClick={this.onNewUserClick}
+                  handleNewUserSetupPopup={this.handleNewUserSetupPopup}
+                  handleSetupHistoryPopup={this.handleSetupHistoryPopup}
                   darkMode={darkMode}
-                  editUser={this.props.state.userProfileEdit.editable}
-                  enableEditUserInfo={this.props.enableEditUserInfo}
-                  disableEditUserInfo={this.props.disableEditUserInfo}
-                  isMobile={this.state.isMobile}
-                  mobileFontSize={this.state.mobileFontSize}
-                  mobileWidth={this.state.mobileWidth}
                 />
-                <UserTableSearchHeader
-                  onFirstNameSearch={this.onFirstNameSearch}
-                  onLastNameSearch={this.onLastNameSearch}
-                  onRoleSearch={this.onRoleSearch}
-                  onTitleSearch={this.onTitleSearch}
-                  onEmailSearch={this.onEmailSearch}
-                  onWeeklyHrsSearch={this.onWeeklyHrsSearch}
-                  roles={roles}
-                  authRole={this.props.state.auth.user.role}
-                  roleSearchText={this.state.roleSearchText}
+                <Table
+                  className={`table table-bordered noWrap ${
+                    darkMode ? 'text-light bg-yinmn-blue' : ''
+                  }`}
+                >
+                  <thead>
+                    <UserTableHeader
+                      authRole={this.props.state.auth.user.role}
+                      roleSearchText={this.state.roleSearchText}
+                      darkMode={darkMode}
+                      editUser={this.props.state.userProfileEdit.editable}
+                      enableEditUserInfo={this.props.enableEditUserInfo}
+                      disableEditUserInfo={this.props.disableEditUserInfo}
+                      isMobile={this.state.isMobile}
+                      mobileFontSize={this.state.mobileFontSize}
+                      mobileWidth={this.state.mobileWidth}
+                    />
+                    <UserTableSearchHeader
+                      onFirstNameSearch={this.onFirstNameSearch}
+                      onLastNameSearch={this.onLastNameSearch}
+                      onRoleSearch={this.onRoleSearch}
+                      onTitleSearch={this.onTitleSearch}
+                      onEmailSearch={this.onEmailSearch}
+                      onWeeklyHrsSearch={this.onWeeklyHrsSearch}
+                      roles={roles}
+                      authRole={this.props.state.auth.user.role}
+                      roleSearchText={this.state.roleSearchText}
+                      darkMode={darkMode}
+                      isMobile={this.state.isMobile}
+                      mobileFontSize={this.state.mobileFontSize}
+                      mobileWidth={this.state.mobileWidth}
+                    />
+                  </thead>
+                  <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.userTableItems}</tbody>
+                </Table>
+
+                <UserTableFooter
+                  datacount={this.filteredUserDataCount}
+                  selectedPage={this.state.selectedPage}
+                  onPageSelect={this.onSelectPage}
+                  onSelectPageSize={this.onSelectPageSize}
+                  pageSize={this.state.pageSize}
                   darkMode={darkMode}
-                  isMobile={this.state.isMobile}
-                  mobileFontSize={this.state.mobileFontSize}
-                  mobileWidth={this.state.mobileWidth}
                 />
-              </thead>
-              <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.userTableItems}</tbody>
-            </Table>
+              </>
+            )}
           </div>
-          <UserTableFooter
-            datacount={this.filteredUserDataCount}
-            selectedPage={this.state.selectedPage}
-            onPageSelect={this.onSelectPage}
-            onSelectPageSize={this.onSelectPageSize}
-            pageSize={this.state.pageSize}
-            darkMode={darkMode}
-          />
         </>
         {/* )} */}
       </Container>
@@ -927,4 +974,3 @@ export default connect(mapStateToProps, {
 
 // exporting without connect
 export { UserManagement as UnconnectedUserManagement };
-

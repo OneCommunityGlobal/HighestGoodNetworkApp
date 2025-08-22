@@ -7,6 +7,15 @@ thead {
   background-color: #0f8292;
 } */
 
+.message-loading {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 #new_usermanagement {
   margin-bottom: 10px;
   box-sizing: border-box;
