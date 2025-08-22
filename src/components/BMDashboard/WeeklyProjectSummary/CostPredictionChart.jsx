@@ -11,6 +11,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import projectCostService from '../../../services/projectCostService';
+import styles from './CostPredictionChart.module.css'
 
 // Custom dot renderer to show value above the top line and below the bottom line
 function renderDotTopOrBottom(lineKey, color) {
