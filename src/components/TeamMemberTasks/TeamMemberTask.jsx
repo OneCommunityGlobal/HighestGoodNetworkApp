@@ -424,7 +424,7 @@ const TeamMemberTask = React.memo(
                                           data-testid={`tick-${task.taskName}`}
                                         />
                                       )}
-                                      {(canUpdateTask || canDeleteTask) && (
+                                      {(canUpdateTask || canRemoveUserFromTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
                                           icon={faTimesCircle}
