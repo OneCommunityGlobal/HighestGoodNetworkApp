@@ -100,7 +100,7 @@ function CustomTooltip({ active, payload, label, darkMode }) {
 function InjurySeverityDashboard(props) {
   const dispatch = useDispatch();
   const bmProjects = useSelector(state => state.bmProjects);
-  const rawData = useSelector(state => state.bmInjuries);
+  const rawData = useSelector(state => state.bmInjury?.severityData || []);
   const { darkMode } = props;
 
   const [selProjects, setSelProjects] = useState([]);
