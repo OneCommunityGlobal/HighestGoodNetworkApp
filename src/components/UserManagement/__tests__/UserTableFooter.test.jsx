@@ -60,19 +60,19 @@ describe('user table footer', () => {
     });
     it('should fire onPageSelect() with next page once the user clicks `next`', async() => {
       const { user, onPageSelect } = renderFooter({ selectedPage: 1 });
-      await user.click(screen.getByRole('button', { name: /next/i }));
+      await userEvent.click(screen.getByRole('button', { name: /next/i }));
       expect(onPageSelect).toHaveBeenCalled();
       expect(onPageSelect).toHaveBeenCalledWith(2);
     });
     it('should fire onPageSelect() with the clicked page button', async() => {
       const { user, onPageSelect } = renderFooter();
-      await user.click(screen.getByRole('button', { name: /3/i }));
+      await userEvent.click(screen.getByRole('button', { name: /3/i }));
       expect(onPageSelect).toHaveBeenCalled();
       expect(onPageSelect).toHaveBeenCalledWith(3);
     });
     it('should not fire onPageSelect() when the user clicks the previous on the first page', async() => {
       const { user, onPageSelect } = renderFooter({ selectedPage: 1 });
-      await user.click(screen.getByRole('button', { name: /previous/i }));
+      await userEvent.click(screen.getByRole('button', { name: /previous/i }));
       expect(onPageSelect).not.toHaveBeenCalled();
     });
     it('should not fire onPageSelect() when the user click next on the last page', async() => {
@@ -82,7 +82,7 @@ describe('user table footer', () => {
         datacount: 100,
         pageNo: 11,
       });
-      await user.click(screen.getByRole('button', { name: /next/i }));
+      await userEvent.click(screen.getByRole('button', { name: /next/i }));
       expect(onPageSelect).not.toHaveBeenCalled();
     });
 
@@ -93,7 +93,7 @@ describe('user table footer', () => {
         datacount: 100,
         pageNo: 2,
       });
-      await user.click(screen.getByRole('button', { name: /previous/i }));
+      await userEvent.click(screen.getByRole('button', { name: /previous/i }));
       expect(onPageSelect).toHaveBeenCalled();
       expect(onPageSelect).toHaveBeenCalledWith(1);
     });
@@ -121,7 +121,7 @@ describe('user table footer tests', () => {
         datacount,
         pageNo: 1,
       });
-      await user.click(screen.getByRole('button', { name: /4/i }));
+      await userEvent.click(screen.getByRole('button', { name: /4/i }));
       expect(onPageSelect).toHaveBeenCalledWith(4);
       const rightNum = pageSize * selectedPage;
       const leftNum = 1 + (selectedPage - 1) * pageSize;

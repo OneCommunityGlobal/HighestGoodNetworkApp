@@ -47,7 +47,7 @@ describe('text search box', () => {
     expect(searchCallbacktest).toHaveBeenCalledTimes(0);
   });
   it('should show the user input', async () => {
-    render(<TextSearchBox id = {id} value = {value} searchCallback={searchCallbacktest} />);
+    render(<TextSearchBox id = {id} searchCallback={searchCallbacktest} />);
     await userEvent.type(
       screen.getByRole('textbox'),
       'this is a test message for the text search box',

@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import UserSearchPanel from '../UserSearchPanel';
 import { renderWithProvider } from '../../../__tests__/utils';
-import { overrides } from 'chart.js/dist/core/core.defaults';
+// import { overrides } from 'chart.js/dist/core/core.defaults';
 
 const mockStore = configureStore([thunk]);
 const nonJaeAccountMock = {
@@ -46,7 +46,7 @@ describe('user search panel', () => {
   let onSearch;
   let onActiveFilter;
   let store;
-  const renderPanel = (overrides = {}) => {
+  const renderPanel = () => {
      renderWithProvider(
       <UserSearchPanel
         onSearch={onSearch}

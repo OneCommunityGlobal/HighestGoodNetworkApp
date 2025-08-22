@@ -14,7 +14,7 @@ describe('ActiveCell', () => {
   it('renders with the correct inactive class', () => {
     render(<ActiveCell isActive={false} canChange={false} />);
     const cell = screen.getByTitle('Inactive')
-    expect(screen).toHaveClass('notActiveUser');
+    expect(cell).toHaveClass('notActiveUser');
   });
 
   it('sets the correct id when index is provided', () => {
@@ -35,20 +35,16 @@ describe('ActiveCell', () => {
   });
 
   it('calls onClick when canChange is true and the cell is clicked', async() => {
-    const user = userEvent.setup();
     const mockOnClick = vi.fn();
     render(<ActiveCell canChange onClick={mockOnClick} />);
-    const cell = screen.getByTitle('Click here to change the user status');
-    await user.click(cell);
+    await userEvent.click(screen.getByTitle('Click here to change the user status'));
     expect(mockOnClick).toHaveBeenCalled();
   });
 
   it('does not call onClick when canChange is false', async() => {
-    const user = userEvent.setup();
     const mockOnClick = vi.fn();
     render(<ActiveCell canChange={false} onClick={mockOnClick} />);
-    const cell = screen.getByTitle('Active');
-    await user.click(cell);
+    await userEvent.click(screen.getByTitle('Inactive'));
     expect(mockOnClick).not.toHaveBeenCalled();
   });
 
@@ -59,6 +55,6 @@ describe('ActiveCell', () => {
 
     // Test when canChange is false
     render(<ActiveCell canChange={false} />);
-    expect(screen.getByTitle('Active')).toHaveStyle('cursor: default');
+    expect(screen.getByTitle('Inactive')).toHaveStyle('cursor: default');
   });
 });

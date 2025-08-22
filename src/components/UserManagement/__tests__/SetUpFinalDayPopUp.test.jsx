@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
 import { Provider } from 'react-redux';
@@ -11,13 +11,12 @@ const mockStore = configureStore([]);
 const onSaveMock = vi.fn();
 const onCloseMock = vi.fn();
 
-const renderComponent = (store, { open, onClose, onSave }) => {
-  const utils =  render(
+const renderComponent = (store, props) => {
+  return render(
     <Provider store={store}>
-      <SetUpFinalDayPopUp open={open} onClose={onClose} onSave={onSave} />
+      <SetUpFinalDayPopUp {...props} />
     </Provider>
   );
-  return utils;
 };
 
 describe('SetUpFinalDayPopUp Component', () => {
@@ -75,19 +74,21 @@ describe('SetUpFinalDayPopUp Component', () => {
     expect(screen.queryByText('Please choose a future date.')).not.toBeInTheDocument();
   });
 
-  it('should apply dark mode styles when darkMode is true', () => {
-    store = mockStore({
-      theme: { darkMode: true },
-    });
-    const { container } = renderComponent(store, { open: true, onClose: onCloseMock, onSave: onSaveMock });
+  it('should apply dark mode styles when darkMode is true', async () => {
+    // store = mockStore({
+    //   theme: { darkMode: true },
+    // });
+    renderComponent(store, { open: true, onClose: onCloseMock, onSave: onSaveMock, darkMode: true });
+    
+    const dialog = await screen.findByRole('dialog');
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getByRole('heading', { name: 'Set Your Final Day' })).toBeInTheDocument();
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
+    const dateInput = within(dialog).getByTestId('date-input');
+    expect(dateInput).toHaveClass('bg-darkmode-liblack', 'text-light', 'border-0', 'calendar-icon-dark');
 
-    const modalHeader = screen.getByRole('heading', { name: 'Set Your Final Day' });
-    const modalBody = container.querySelector('.modal-body');
-
-    expect(modalHeader).toHaveClass('modal-header');
-    expect(modalBody).toHaveClass('modal-body');
+    expect(within(dialog).getByRole('button', { name: 'Save' })).toBeInTheDocument();
+    expect(within(dialog).getByText(/^Close$/)).toBeInTheDocument();
   });
 
   /// /////////////////////////

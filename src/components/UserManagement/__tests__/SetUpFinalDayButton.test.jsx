@@ -17,6 +17,11 @@ beforeAll(() => {
   vi.spyOn(toast, 'success').mockImplementation(mockToastSuccess);
 });
 
+beforeEach(() => {
+  vi.clearAllMocks();
+  axios.patch.mockReset();
+});
+
 const mockStore = configureStore();
 
 // const userProfileUrl = ENDPOINTS.USER_PROFILE(mockState.auth.user.userid);
@@ -125,8 +130,9 @@ describe('SetUpFinalDayButton', () => {
       await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
 
       const dateInput = screen.getByTestId('date-input');
-      fireEvent.change(dateInput, { target: { value: '12-07-2019' } });
+      fireEvent.change(dateInput, { target: { value: '2099-12-07' } });
       const saveFinalDayPopup = screen.getByText('Save');
+      axios.patch.mockResolvedValueOnce({data: {status: 200}});
       fireEvent.click(saveFinalDayPopup);
 
       // When final day is set, expect toast to be called with appropriate message

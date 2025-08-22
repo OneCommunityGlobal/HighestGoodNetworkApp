@@ -5,6 +5,7 @@ import PauseAndResumeButton from '../PauseAndResumeButton';
 import { PAUSE, RESUME, PROCESSING } from '../../../languages/en/ui';
 import { userProfileMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
+import * as userMgmtActions from '../../../actions/userManagement';
 
 vi.mock('react-toastify');
 
@@ -13,14 +14,18 @@ PauseAndResumeButton.defaultProps = {
   loadUserProfile: vi.fn(),
 };
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 describe('PauseAndResumeButton', () => {
   // beforeEach(() => {
-   
+
   // });
 
   describe('Structure', () => {
     it('should render a button', () => {
-       renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
+      renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
       const pauseResumeButton = screen.getByTestId('pause-resume-button');
       expect(pauseResumeButton).toBeInTheDocument();
     });
@@ -28,7 +33,7 @@ describe('PauseAndResumeButton', () => {
 
   describe('Behavior', () => {
     it('should render modal after the user clicks the pause button', async () => {
-       renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
+      renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
       await userEvent.click(screen.getByRole('button', { name: PAUSE }));
 
       // Wait for the dialog to appear
@@ -38,7 +43,13 @@ describe('PauseAndResumeButton', () => {
     });
 
     it('should change pause button to processing and then to resume after clicking on "Pause the User"', async () => {
-       renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
+      let resolveUpdate;
+      const updatePromise = new Promise(res => { resolveUpdate = res; });
+      vi.spyOn(userMgmtActions, 'updateUserStatus').mockImplementation(() => {
+        // return a thunk that returns our deferred promise
+        return () => updatePromise;
+      });
+      renderWithProvider(<PauseAndResumeButton isBigBtn userProfile={userProfileMock} />);
       // Select a Pause button
       const pauseButton = screen.getAllByRole('button', { name: PAUSE })[0];
 
@@ -64,7 +75,7 @@ describe('PauseAndResumeButton', () => {
         // expect(pauseButton).toBeDisabled();
       });
       await waitFor(() => expect(pauseButton).toBeDisabled());
-
+      resolveUpdate();
       // Wait for the button text to change to RESUME after processing is complete
       await waitFor(() => {
         expect(pauseButton).toHaveTextContent(RESUME)
