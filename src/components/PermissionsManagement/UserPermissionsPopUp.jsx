@@ -2,17 +2,17 @@ import { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { getAllUserProfile } from 'actions/userManagement';
+import { getAllUserProfile } from '~/actions/userManagement';
 import './PermissionsManagement.css';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 // eslint-disable-next-line no-unused-vars
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+} from '~/utils/constants';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
@@ -144,6 +144,7 @@ function UserPermissionsPopUp({
         onSubmit={e => {
           updateProfileOnSubmit(e);
         }}
+        autoComplete="off"
       >
         <div
           className={darkMode ? 'text-space-cadet' : ''}
@@ -173,7 +174,7 @@ function UserPermissionsPopUp({
           style={{ width: '100%', marginRight: '5px' }}
         >
           <Input
-            type="text"
+            type="search"
             value={searchText}
             innerRef={refInput}
             // eslint-disable-next-line no-unused-vars
@@ -187,6 +188,8 @@ function UserPermissionsPopUp({
             }}
             placeholder="Shows only ACTIVE users"
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            autoComplete="off"
+            name="user-search"
           />
           {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
             <div
@@ -217,14 +220,24 @@ function UserPermissionsPopUp({
                   <div
                     className="user__auto-complete"
                     key={user._id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => {
                       onInputChange(`${user.firstName} ${user.lastName}`);
                       setIsOpen(false);
                       setActualUserProfile(user);
                       getUserData(user._id);
                     }}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        onInputChange(`${user.firstName} ${user.lastName}`);
+                        setIsOpen(false);
+                        setActualUserProfile(user);
+                        getUserData(user._id);
+                      }
+                    }}
                   >
-                    {`${user.firstName} ${user.lastName}`}
+                    {user.firstName} {user.lastName}
                   </div>
                 ))}
             </div>

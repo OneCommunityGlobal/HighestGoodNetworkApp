@@ -44,7 +44,7 @@ const mapStateToProps = state => {
 
   const orgData = get(state, 'orgData', {});
 
-  orgData.name = `HGN Totals: ${orgData.memberCount} Members`;
+  orgData.name = `Active Team: ${orgData.memberCount} Members`;
   orgData.tangibletime = round(orgData.totaltangibletime_hrs, 2);
   orgData.totaltime = round(orgData.totaltime_hrs, 2);
   orgData.intangibletime = round(orgData.totalintangibletime_hrs, 2);
@@ -67,6 +67,8 @@ const mapStateToProps = state => {
     totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
     totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
     allRequests: state.timeOffRequests?.requests,
+    userOnTimeOff: state.timeOffRequests?.onTimeOff,
+    usersOnFutureTimeOff: state.timeOffRequests?.futureTimeOff,
   };
 };
 export default connect(mapStateToProps, {
