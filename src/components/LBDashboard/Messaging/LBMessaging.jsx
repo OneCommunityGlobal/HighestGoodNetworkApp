@@ -627,7 +627,9 @@ export default function LBMessaging() {
                 {selectedUser.userId ? (
                   renderChatMessages()
                 ) : (
-                  <p className={styles.startMsg}>Select a user to start chatting</p>
+                  <p className={`${styles.startMsg} ${darkMode ? 'text-light' : ''}`}>
+                    Select a user to start chatting
+                  </p>
                 )}
               </div>
               <div
