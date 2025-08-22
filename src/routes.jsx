@@ -8,7 +8,7 @@ import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from '~/components/AutoUpdate';
 import CPHeader from '~/components/CommunityPortal/CPHeader/CPHeader';
-import { TaskEditSuggestions } from '~/components/TaskEditSuggestions/TaskEditSuggestions';
+import TaskEditSuggestions from '~/components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from '~/utils/routePermissions';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from '~/components/UserProfile/EditableModal/RoleInfoModal';
@@ -32,7 +32,7 @@ import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
-import { EmailSender } from './components/common/EmailSender/EmailSender';
+import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // LB Dashboard
