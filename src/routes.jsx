@@ -5,7 +5,10 @@ import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
+
 import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+
+// hgnform routes
 import AutoUpdate from '~/components/AutoUpdate';
 import TaskEditSuggestions from '~/components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from '~/utils/routePermissions';
@@ -636,6 +639,7 @@ export default (
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
+
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
