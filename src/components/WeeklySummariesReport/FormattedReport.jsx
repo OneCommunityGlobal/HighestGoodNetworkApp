@@ -684,7 +684,7 @@ function BioLabel({ bioPosted, summary }) {
   return (
     <div>
       <b style={style}>Bio announcement: </b>
-      <span style={{ color : '#000' }}>{text}</span>
+      <span style={{ color: '#000' }}>{text}</span>
     </div>
   );
 }
