@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { getAllPermissionKeys } from "components/PermissionsManagement/PermissionsConst"; 
+import { getAllPermissionKeys } from "~/components/PermissionsManagement/PermissionsConst";
 import { createAuthMocks } from "./mockStates";
 
 describe('Permission tests', () => {

@@ -3,20 +3,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
   faCircle,
-  faCheck,
-  faTimes,
+  faCheckCircle,
+  faTimesCircle,
   faExpandArrowsAlt,
   faCompressArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import moment from 'moment-timezone';
-import { useDispatch, useSelector } from 'react-redux';
+import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
-import hasPermission from '../../utils/permissions';
-import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
+import hasPermission from '~/utils/permissions';
 import './style.css';
-import Warning from '../Warnings/Warnings';
+
+import Warning from '~/components/Warnings/Warnings';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment-timezone';
 
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -80,10 +81,11 @@ const TeamMemberTask = React.memo(
     const thisWeekHours = user.totaltangibletime_hrs;
 
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
-    const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
     const isAllowedToResolveTasks =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
-    const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+
+    // this variable is used to check the permission to view task extension count for a user
+    const isAllowedToSeeDeadlineCount = dispatch(hasPermission('viewTaskDeadlineCount'));
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canSeeReports =
@@ -118,16 +120,7 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    /** 
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    };
-    */
+    /**    const handleReportClick = (event, to) => {      if (event.metaKey || event.ctrlKey || event.button === 1) {        return;      }      event.preventDefault(); // prevent full reload    };    */
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -212,7 +205,10 @@ const TeamMemberTask = React.memo(
                               data-testid="icon"
                             />
 
-                            <Link to={`/timelog/${user.personId}`} className="timelog-info">
+                            <Link
+                              to={`/timelog/${user.personId}#currentWeek`}
+                              className="timelog-info"
+                            >
                               <i
                                 className="fa fa-clock-o"
                                 aria-hidden="true"
@@ -415,7 +411,7 @@ const TeamMemberTask = React.memo(
                                       {isAllowedToResolveTasks && (
                                         <FontAwesomeIcon
                                           className="team-member-tasks-done"
-                                          icon={faCheck}
+                                          icon={faCheckCircle}
                                           title="Mark as Done"
                                           onClick={() => {
                                             handleMarkAsDoneModal(user.personId, task);
@@ -427,7 +423,7 @@ const TeamMemberTask = React.memo(
                                       {(canUpdateTask || canDeleteTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
-                                          icon={faTimes}
+                                          icon={faTimesCircle}
                                           title="Remove User from Task"
                                           onClick={() => {
                                             handleRemoveFromTaskModal(user.personId, task);
@@ -438,7 +434,7 @@ const TeamMemberTask = React.memo(
                                       )}
                                       <TeamMemberTaskIconsInfo />
                                     </div>
-                                    <div>
+                                    <div className="team-member-task-review-button">
                                       <ReviewButton
                                         user={user}
                                         userId={userId}
