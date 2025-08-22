@@ -14,7 +14,7 @@ import {
 import { Select, DatePicker, Spin } from 'antd';
 import { fetchInjurySeverity } from '../../../actions/bmdashboard/injuryActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
-import './InjurySeverityChart.css';
+import styles from './InjurySeverityChart.module.css';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
@@ -47,14 +47,7 @@ function CustomTooltip({ active, payload, label, darkMode }) {
 
   return (
     <div
-      className={`custom-tooltip ${darkMode ? 'dark' : ''}`}
-      style={{
-        backgroundColor: darkMode ? '#1c2541' : '#ffffff',
-        border: darkMode ? '1px solid rgba(255,255,255,0.2)' : '1px solid #ccc',
-        borderRadius: '4px',
-        padding: '8px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-      }}
+      className={`${styles.customTooltip} ${darkMode ? styles.dark : ''}`}
     >
       <p
         style={{
@@ -213,7 +206,7 @@ function InjurySeverityDashboard(props) {
   return (
     <div
       style={{ padding: '0 24px' }}
-      className={`container-fluid h-100 ${darkMode ? 'oxide-dark text-light' : ''}`}
+      className={`${styles.injurySeverityContainer} container-fluid h-100 ${darkMode ? `${styles.oxideDark} text-light` : ''}`}
     >
       <h2 className={`${darkMode && 'text-light'}`}>Injury Severity by Projects</h2>
 
@@ -222,7 +215,7 @@ function InjurySeverityDashboard(props) {
         style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 20, paddingLeft: 20 }}
       >
         <Select
-          className="filter-select"
+          className={styles.filterSelect}
           mode="multiple"
           allowClear
           placeholder="Projects"
@@ -240,14 +233,14 @@ function InjurySeverityDashboard(props) {
         </Select>
 
         <RangePicker
-          className="filter-select"
+          className={styles.filterSelect}
           value={dateRange}
           onChange={dates => setDateRange(dates || [null, null])}
           style={filterStyle}
         />
 
         <Select
-          className="filter-select"
+          className={styles.filterSelect}
           mode="multiple"
           allowClear
           placeholder="Injury Types"
@@ -265,7 +258,7 @@ function InjurySeverityDashboard(props) {
         </Select>
 
         <Select
-          className="filter-select"
+          className={styles.filterSelect}
           mode="multiple"
           allowClear
           placeholder="Departments"
