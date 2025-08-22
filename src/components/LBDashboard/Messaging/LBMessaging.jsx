@@ -1,18 +1,17 @@
-import { useState } from 'react';
-import './LBMessaging.css';
+import { useState, useEffect, useRef } from 'react';
+import styles from './LBMessaging.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faLocationArrow, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useDispatch, useSelector } from 'react-redux';
-import { getUserProfileBasicInfo } from 'actions/userManagement';
+import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import {
   fetchUserPreferences,
   updateUserPreferences,
-} from 'actions/lbdashboard/userPreferenceActions';
-import { useEffect, useRef } from 'react';
+} from '~/actions/lbdashboard/userPreferenceActions';
 import { toast } from 'react-toastify';
-import { fetchExistingChats, fetchMessages } from 'actions/lbdashboard/messagingActions';
+import { fetchExistingChats, fetchMessages } from '~/actions/lbdashboard/messagingActions';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   initMessagingSocket,
   getMessagingSocket,
@@ -218,9 +217,10 @@ export default function LBMessaging() {
     }
 
     return existingChats.map(user => (
-      <div
+      <button
         key={user.userId}
-        className="lb-messaging-contact"
+        type="button"
+        className={`${styles.lbMessagingContact}`}
         onClick={() => {
           updateSelection(user);
           setMobileHamMenu(false);
@@ -234,22 +234,22 @@ export default function LBMessaging() {
             e.target.src = '/pfp-default-header.png';
           }}
         />
-        <div className="lb-messaging-contact-info">
-          <div className={`lb-messaging-contact-name ${mobileView ? 'black' : ''}`}>
+        <div className={styles.lbMessagingContactInfo}>
+          <div className={`${styles.lbMessagingContactName} ${mobileView ? styles.black : ''}`}>
             {user.firstName} {user.lastName}
           </div>
         </div>
-      </div>
+      </button>
     ));
   };
 
   const renderChatMessages = () => {
     if (messagesLoading) {
-      return <p className="lb-no-msg-text">Loading messages...</p>;
+      return <p className={styles.lbNoMsgText}>Loading messages...</p>;
     }
 
     if (messages.length === 0) {
-      return <p className="lb-no-msg-text">No messages to display.</p>;
+      return <p className={styles.lbNoMsgText}>No messages to display.</p>;
     }
 
     const filteredMessages = messages.filter(
@@ -259,18 +259,20 @@ export default function LBMessaging() {
     );
 
     if (filteredMessages.length === 0) {
-      return <p className="lb-no-msg-text">No messages to display.</p>;
+      return <p className={styles.lbNoMsgText}>No messages to display.</p>;
     }
 
     return (
-      <div className="message-list">
-        <div className="message-spacer" />
+      <div className={styles.messageList}>
+        <div className={styles.messageSpacer} />
         {filteredMessages.map(message => (
           <div
             key={message._id || message.timestamp}
-            className={`message-item ${message.sender === auth.userid ? 'sent' : 'received'}`}
+            className={`${styles.messageItem} ${
+              message.sender === auth.userid ? styles.sent : styles.received
+            }`}
           >
-            <p className="message-text">
+            <p className={styles.messageText}>
               {message.content.split('\n').map(line => (
                 <span key={message._id + line}>
                   {line}
@@ -287,31 +289,31 @@ export default function LBMessaging() {
 
   return (
     users.userProfilesBasicInfo.length !== 0 && (
-      <div className="main-container">
-        <div className="logo-container">
+      <div className={styles.mainContainer}>
+        <div className={styles.logoContainer}>
           <img src={logo} alt="One Community Logo" />
         </div>
-        <div className="content-container">
-          <div className="container-top msg">
+        <div className={styles.contentContainer}>
+          <div className={`${styles.containerTop} ${styles.msg}`}>
             {mobileView && (
-              <div className="lb-mobile-messaging-menu">
-                <div className="lb-mobile-header">
+              <div className={styles.lbMobileMessagingMenu}>
+                <div className={styles.lbMobileHeader}>
                   <button
                     type="button"
-                    className="lb-ham-btn"
+                    className={styles.lbHamBtn}
                     onClick={() => setMobileHamMenu(prev => !prev)}
                   >
                     ☰
                   </button>
                   {mobileHamMenu && (
-                    <div className="lb-mobile-ham-menu" ref={menuRef}>
-                      <div className="lb-mobile-ham-menu-header">
+                    <div className={styles.lbMobileHamMenu} ref={menuRef}>
+                      <div className={styles.lbMobileHamMenuHeader}>
                         {showContacts ? (
-                          <div className="lb-messaging-contacts-header-mobile">
+                          <div className={styles.lbMessagingContactsHeaderMobile}>
                             <input
                               type="text"
                               placeholder={placeholder}
-                              className="lb-search-input"
+                              className={styles.lbSearchInput}
                               value={searchQuery}
                               onChange={e => {
                                 const query = e.target.value;
@@ -323,32 +325,39 @@ export default function LBMessaging() {
                                 }
                               }}
                             />
-                            <div onClick={() => setShowContacts(prev => !prev)}>
+                            <button
+                              type="button"
+                              onClick={() => setShowContacts(prev => !prev)}
+                              className={styles.lbMsgIconBtn} // you can reuse or define styles here
+                            >
                               <img
                                 src="https://img.icons8.com/metro/26/multiply.png"
-                                alt="multiply"
-                                className="lb-msg-icon"
+                                alt="Close"
+                                className={styles.lbMsgIcon}
                               />
-                            </div>
+                            </button>
                           </div>
                         ) : (
-                          <div className="lb-messaging-contacts-header-mobile">
-                            <h3 className="lb-contact-msgs">Messages</h3>
-                            <div className="lb-messaging-search-icons-mobile">
+                          <div className={styles.lbMessagingContactsHeaderMobile}>
+                            <h3 className={styles.lbContactMsgs}>Messages</h3>
+                            <div className={styles.lbMessagingSearchIconsMobile}>
                               <FontAwesomeIcon
                                 icon={faSearch}
-                                className="lb-msg-icon-mobile"
+                                className={styles.lbMsgIconMobile}
                                 onClick={() => setShowContacts(prev => !prev)}
                               />
                             </div>
                           </div>
                         )}
-                        <div className="lb-messaging-contacts-body active">
+                        <div
+                          className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
+                        >
                           {showContacts
                             ? searchResults.map(user => (
-                                <div
-                                  key={user._id}
-                                  className="lb-messaging-contact"
+                                <button
+                                  key={user.userId}
+                                  type="button"
+                                  className={styles.lbMessagingContact}
                                   onClick={() => {
                                     updateSelection(user);
                                     setMobileHamMenu(false);
@@ -362,16 +371,16 @@ export default function LBMessaging() {
                                       e.target.src = '/pfp-default-header.png';
                                     }}
                                   />
-                                  <div className="lb-messaging-contact-info">
+                                  <div className={styles.lbMessagingContactInfo}>
                                     <div
-                                      className={`lb-messaging-contact-name ${
-                                        mobileView ? 'black' : ''
+                                      className={`${styles.lbMessagingContactName} ${
+                                        mobileView ? styles.black : ''
                                       }`}
                                     >
                                       {user.firstName} {user.lastName}
                                     </div>
                                   </div>
-                                </div>
+                                </button>
                               ))
                             : renderContacts()}
                         </div>
@@ -382,16 +391,16 @@ export default function LBMessaging() {
               </div>
             )}
           </div>
-          <div className="container-main-msg">
+          <div className={styles.containerMainMsg}>
             {/* Contacts Section */}
             {!mobileView && (
-              <div className="lb-messaging-contacts">
+              <div className={styles.lbMessagingContacts}>
                 {showContacts ? (
-                  <div className="lb-messaging-contacts-header">
+                  <div className={styles.lbMessagingContactsHeader}>
                     <input
                       type="text"
                       placeholder={placeholder}
-                      className="lb-search-input"
+                      className={styles.lbSearchInput}
                       value={searchQuery}
                       onChange={e => {
                         const query = e.target.value;
@@ -403,32 +412,39 @@ export default function LBMessaging() {
                         }
                       }}
                     />
-                    <div onClick={() => setShowContacts(prev => !prev)}>
+                    <button
+                      type="button"
+                      onClick={() => setShowContacts(prev => !prev)}
+                      className={styles.lbMsgIconBtn} // you can reuse or define styles here
+                    >
                       <img
                         src="https://img.icons8.com/metro/26/multiply.png"
-                        alt="multiply"
-                        className="lb-msg-icon"
+                        alt="Close"
+                        className={styles.lbMsgIcon}
                       />
-                    </div>
+                    </button>
                   </div>
                 ) : (
-                  <div className="lb-messaging-contacts-header">
-                    <h3 className="lb-contact-msgs">Messages</h3>
-                    <div className="lb-messaging-search-icons">
+                  <div className={styles.lbMessagingContactsHeader}>
+                    <h3 className={styles.lbContactMsgs}>Messages</h3>
+                    <div className={styles.lbMessagingSearchIcons}>
                       <FontAwesomeIcon
                         icon={faSearch}
-                        className="lb-msg-icon"
+                        className={styles.lbMsgIcon}
                         onClick={() => setShowContacts(prev => !prev)}
                       />
                     </div>
                   </div>
                 )}
-                <div className="lb-messaging-contacts-body active">
+                <div
+                  className={`${styles.lbMessagingContactsBody} ${styles.activeInlbMessagingContactsBody}`}
+                >
                   {showContacts
                     ? searchResults.map(user => (
-                        <div
+                        <button
                           key={user._id}
-                          className="lb-messaging-contact"
+                          type="button"
+                          className={styles.lbMessagingContact}
                           onClick={() => updateSelection(user)}
                         >
                           <img
@@ -439,12 +455,12 @@ export default function LBMessaging() {
                               e.target.src = '/pfp-default-header.png';
                             }}
                           />
-                          <div className="lb-messaging-contact-info">
-                            <div className="lb-messaging-contact-name">
+                          <div className={styles.lbMessagingContactInfo}>
+                            <div className={styles.lbMessagingContactName}>
                               {user.firstName} {user.lastName}
                             </div>
                           </div>
-                        </div>
+                        </button>
                       ))
                     : renderContacts()}
                 </div>
@@ -452,8 +468,8 @@ export default function LBMessaging() {
             )}
 
             {/* Chat Window Section */}
-            <div className="lb-messaging-message-window">
-              <div className="lb-messaging-message-window-header">
+            <div className={styles.lbMessagingMessageWindow}>
+              <div className={styles.lbMessagingMessageWindowHeader}>
                 <div>
                   <img
                     src={selectedUser.profilePic || '/pfp-default-header.png'}
@@ -469,18 +485,18 @@ export default function LBMessaging() {
                     : 'Select a user to chat'}
                 </div>
                 {selectedUser.userId && (
-                  <div className="lb-messaging-header-icons">
+                  <div className={styles.lbMessagingHeaderIcons}>
                     <FontAwesomeIcon
                       icon={faBell}
                       onClick={() => {
                         setBellDropdownActive(prev => !prev);
                       }}
-                      className="lg-messaging-notification-bell"
+                      className={styles.lgMessagingNotificationBell}
                     />
                     {bellDropdownActive && (
                       <div
-                        className={`lg-messaging-bell-select-dropdown ${
-                          bellDropdownActive ? 'active' : ''
+                        className={`${styles.lgMessagingBellSelectDropdown} ${
+                          bellDropdownActive ? styles.activeInlgMessagingBellSelectDropdown : ''
                         }`}
                       >
                         <label>
@@ -523,14 +539,14 @@ export default function LBMessaging() {
                   </div>
                 )}
               </div>
-              <div className="lb-messaging-message-window-body">
+              <div className={styles.lbMessagingMessageWindowBody}>
                 {selectedUser.userId ? (
                   renderChatMessages()
                 ) : (
-                  <p className="start-msg">Select a user to start chatting</p>
+                  <p className={styles.startMsg}>Select a user to start chatting</p>
                 )}
               </div>
-              <div className="lb-messaing-message-window-footer">
+              <div className={styles.lbMessaingMessageWindowFooter}>
                 <textarea
                   type="text"
                   placeholder="Type a message..."
@@ -542,12 +558,12 @@ export default function LBMessaging() {
                       handleSendMessage();
                     }
                   }}
-                  className="lb-messaging-textarea"
+                  className={styles.lbMessagingTextarea}
                   disabled={!selectedUser.userId}
                 />
                 <FontAwesomeIcon
                   icon={faLocationArrow}
-                  className="send-button"
+                  className={styles.sendButton}
                   onClick={handleSendMessage}
                 />
               </div>

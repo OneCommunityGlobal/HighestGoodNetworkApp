@@ -150,9 +150,10 @@ function TagsSearch(props) {
   );
 }
 
-const mapStateToProps = state => {
-  return { state };
-};
+const mapStateToProps = state => ({
+  members: state.projectMembers.members,
+  state,
+});
 
 export default connect(mapStateToProps, {
   findProjectMembers,

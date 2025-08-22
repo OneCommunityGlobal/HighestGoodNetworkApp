@@ -4,4 +4,6 @@
 .scrollable-menu {
   max-height: 200px;
   overflow-y: auto;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
 }

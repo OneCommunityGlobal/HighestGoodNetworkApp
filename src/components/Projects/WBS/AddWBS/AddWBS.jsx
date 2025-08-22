@@ -6,12 +6,12 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { addNewWBS } from './../../../../actions/wbs';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 
 const AddWBS = (props) => {
   const darkMode = props.state.theme.darkMode;
   const [taskTitle, setTaskTitle] = useState('');
-  const canPostWBS = props.hasPermission('postWbs');
+  const canPostWBS = hasPermission('postWbs');
 
   const handleSubmit = () => {
     if (!taskTitle.trim()) return;
@@ -28,13 +28,13 @@ const AddWBS = (props) => {
       {canPostWBS ? (
         <div className="input-group" id="new_project">
           <div className="input-group-prepend">
-            <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}>Add new WBS</span>
+            <span className={`input-group-text ${darkMode ? 'bg-light-grey border-0' : ''}`}>Add new WBS</span>
           </div>
 
           <input
             autoFocus
             type="text"
-            className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+            className={`form-control ${darkMode ? 'bg-white border-0' : ''}`}
             aria-label="WBS WBS"
             placeholder="WBS Name"
             value={taskTitle}
@@ -51,12 +51,12 @@ const AddWBS = (props) => {
                 <i className="fa fa-plus" aria-hidden="true"></i>
               </button>
             ) : null}
-            <button className="btn btn-primary" type="button" onClick={props.onSortAscending}>
+            {/* <button className="btn btn-primary" type="button" onClick={props.onSortAscending}>
               A ↓
             </button>
             <button className="btn btn-primary" type="button" onClick={props.onSortDescending}>
               D ↑
-            </button>
+            </button> */}
           </div>
         </div>
       ) : null}
@@ -68,5 +68,4 @@ const mapStateToProps = state => {
 };
 export default connect(mapStateToProps, {
   addNewWBS,
-  hasPermission,
 })(AddWBS);

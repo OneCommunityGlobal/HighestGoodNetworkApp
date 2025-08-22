@@ -6,15 +6,15 @@
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle } from '~/styles';
 import PropTypes from 'prop-types';
 
 
 const Member = props => {
   const { darkMode } = props;
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+  const canGetProjectMembers = hasPermission('getProjectMembers');
+  const canUnassignUserInProject = hasPermission('unassignUserInProject');
 
 
   return (
@@ -66,4 +66,4 @@ Member.propTypes = {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { assignProject, hasPermission })(Member);
+export default connect(mapStateToProps, { assignProject })(Member);

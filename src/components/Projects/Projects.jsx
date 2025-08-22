@@ -1,9 +1,9 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 import { useState, useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
-import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
-import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
+import { connect } from 'react-redux';
+import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
+import ProjectsList from '~/components/BMDashboard/Projects/ProjectsList';
 import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
 import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
@@ -18,6 +18,7 @@ import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { useSelector } from 'react-redux'
 
 const Projects = function(props) {
   const { role } = props.state.userProfile;
@@ -280,21 +281,20 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   };
 
   return (
-
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-      <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
-        {fetching || !fetched ? <Loading align="center" /> : null}
-        <div className="d-flex align-items-center">
-          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <EditableInfoModal
-            areaName="projectsInfoModal"
-            areaTitle="Projects"
-            fontSize={30}
-            isPermissionPage
-            role={role}
-            darkMode={darkMode}
-          />
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+    <>
+      <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+        <div className="container" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
+          {fetching || !fetched ? <Loading align="center" /> : null}
+          <div className="d-flex justify-content-center align-items-center">
+            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+            <EditableInfoModal
+              areaName="projectsInfoModal"
+              areaTitle="Projects"
+              fontSize={30}
+              isPermissionPage={true}
+              role={role}
+            />
+            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
           {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
         </div>
@@ -334,6 +334,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
         isSetActiveDisabled={isChangingStatus}
       />
     </div>
+    </>
   );
 };
 

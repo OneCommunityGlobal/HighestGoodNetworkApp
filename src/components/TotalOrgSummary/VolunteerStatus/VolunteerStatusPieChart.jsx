@@ -6,10 +6,10 @@ import './VolunteerStatusPieChart.css';
 
 Chart.register(ArcElement);
 
-function VolunteerStatusPieChart(props) {
-  const { totalVolunteers, percentageChange, data: volunteerData } = props.data;
-  const { comparisonType } = props;
-
+function VolunteerStatusPieChart({
+  data: { totalVolunteers, percentageChange, data: volunteerData },
+  comparisonType,
+}) {
   const chartData = {
     labels: volunteerData.map(item => item.label),
     datasets: [

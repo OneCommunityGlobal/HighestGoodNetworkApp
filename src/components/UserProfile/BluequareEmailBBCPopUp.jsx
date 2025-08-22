@@ -17,7 +17,7 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 const BluequareEmailAssignmentPopUp = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);

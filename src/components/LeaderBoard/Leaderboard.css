@@ -15,7 +15,8 @@
   border-top-color: rgb(222, 226, 230);
 }
 
-.leaderboard tbody tr td, thead tr th {
+.leaderboard tbody tr td, 
+.leaderboard thead tr th {
   text-align: left !important;
 }
 
@@ -100,6 +101,14 @@
 .leaderboard-totals-container {
   display: flex;
   flex-direction: column;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+.leaderboard-totals-container > * {
+  text-align: center;
+  margin: 0 auto;
 }
 
 @media screen and (max-width: 544px) {

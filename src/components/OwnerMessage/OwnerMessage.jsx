@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { connect, useDispatch } from 'react-redux';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '../../styles';
 import './OwnerMessage.css';
 
