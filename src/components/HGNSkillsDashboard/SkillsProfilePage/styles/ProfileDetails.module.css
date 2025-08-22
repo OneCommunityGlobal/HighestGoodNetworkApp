@@ -7,6 +7,7 @@
   color: #3ea0cb;
   font-size: 20px;
   margin-bottom: 10px;
+  margin-top: 20px;
 }
 
 .profileDetails h4 {
@@ -90,4 +91,9 @@ strong {
     flex-direction: column;
     gap: 5px;
   }
+}
+
+.otherSkills {
+  color: #869aa3;
+  font-weight: bold;
 }

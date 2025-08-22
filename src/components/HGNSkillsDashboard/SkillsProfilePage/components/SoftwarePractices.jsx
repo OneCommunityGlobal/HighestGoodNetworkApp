@@ -1,28 +1,78 @@
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { Spinner } from 'reactstrap';
+import { ENDPOINTS } from '~/utils/URL';
 import styles from '../styles/SkillsSection.module.css';
 
-function SoftwarePractices({ profileData }) {
-  const safeProfileData = profileData || {};
-  const skillInfo = safeProfileData.skillInfo || {};
-  const backend = skillInfo.backend || {};
-  const general = skillInfo.general || {};
-  const frontend = skillInfo.frontend || {};
+function SoftwarePractices() {
+  const [userSkillsData, setUserSkillsData] = useState(null);
+  const [skillsLoading, setSkillsLoading] = useState(true);
+  const currentUser = useSelector(state => state.auth.user);
 
-  const skills = [
-    { value: backend.CodeReview, label: 'Code Review Skills' },
-    { value: backend.AgileDevelopment, label: 'Agile Development (Jira, Bamboo)' },
-    { value: frontend.Documentation, label: 'Docs & Markdown' },
-    { value: general.leadership_experience, label: 'Leadership / Management Experience' },
-    { value: general.leadership_skills, label: 'Leadership / Management Skills' },
-    { value: backend.AdvancedCoding, label: 'Advanced Coding Skills' },
-  ];
+  const fetchUserSkills = async () => {
+    try {
+      setSkillsLoading(true);
+      const response = await axios.get(`${ENDPOINTS.HGN_FORM_SUBMIT}`, {
+        params: { skillsOnly: true },
+      });
+      const userSurveyData = response.data.find(
+        user => user.userInfo?.email?.toLowerCase() === currentUser.email?.toLowerCase(),
+      );
+      if (userSurveyData) {
+        setUserSkillsData(userSurveyData);
+      }
+    } catch (error) {
+      toast.error('Failed to load skills data.');
+    } finally {
+      setSkillsLoading(false);
+    }
+  };
 
-  // Function to determine color based on value
+  useEffect(() => {
+    if (currentUser?.email) {
+      fetchUserSkills();
+    } else {
+      setSkillsLoading(false);
+    }
+  }, [currentUser]);
+
+  const getSkillsArray = () => {
+    if (!userSkillsData) return [];
+
+    const backend = userSkillsData.backend || {};
+    const frontend = userSkillsData.frontend || {};
+    const general = userSkillsData.general || {};
+
+    return [
+      { value: backend.Overall, label: 'Overall Software Practices' },
+      { value: backend.CodeReview, label: 'Code Review' },
+      { value: backend.AgileDevelopment, label: 'Agile Development' },
+      { value: frontend.Documentation, label: 'Documentation' },
+      { value: general.leadership_experience, label: 'Leadership / Management Experience' },
+      { value: general.leadership_skills, label: 'Leadership / Management Skills' },
+      { value: backend.AdvancedCoding, label: 'Advanced Coding Skills' },
+    ];
+  };
+
   const getColorClass = value => {
-    const numValue = Number(value) || 0; // Convert to number, default to 0 if undefined
+    const numValue = Number(value) || 0;
     if (numValue <= 4) return `${styles.skillValue} ${styles.red}`;
     if (numValue <= 7) return `${styles.skillValue} ${styles.orange}`;
-    return `${styles.skillValue} ${styles.green}`; // 9-10
+    return `${styles.skillValue} ${styles.green}`;
   };
+
+  if (skillsLoading) {
+    return (
+      <div className={`${styles.skillsLoading}`}>
+        <Spinner size="sm" color="primary" />
+        <span>Loading skills...</span>
+      </div>
+    );
+  }
+
+  const skills = getSkillsArray();
 
   return (
     <div className={`${styles.skillSection}`}>
