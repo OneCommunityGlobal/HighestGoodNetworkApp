@@ -1,10 +1,11 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import Select from 'react-select';
 import { MdOutlinePersonAddAlt1 } from 'react-icons/md';
+import styles from './AddTeamMember.module.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ENDPOINTS } from '~/utils/URL';
-import styles from './AddTeamMember.module.css';
+import { ENDPOINTS } from '../../../utils/URL';
 
 function AddTeamMember() {
   const initialState = {
@@ -40,8 +41,57 @@ function AddTeamMember() {
     { value: '+44', label: '+44 (UK)' },
   ];
 
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  const selectDarkStyles = darkMode
+    ? {
+        control: (provided, state) => ({
+          ...provided,
+          backgroundColor: '#3b5b7a',
+          color: '#1b2a41',
+          borderColor: state.isFocused ? '#f49441' : '#4a5568',
+          boxShadow: state.isFocused ? '0 0 0 1px #f49441' : provided.boxShadow,
+        }),
+        menu: provided => ({
+          ...provided,
+          backgroundColor: '#3b5b7a',
+          color: '#1b2a41',
+        }),
+        singleValue: provided => ({
+          ...provided,
+          color: '#1b2a41',
+        }),
+        option: (provided, state) => ({
+          ...provided,
+          backgroundColor: state.isFocused ? '#f49441' : '#3b5b7a',
+          color: '#1b2a41',
+        }),
+        input: provided => ({
+          ...provided,
+          color: '#1b2a41',
+        }),
+        placeholder: provided => ({
+          ...provided,
+          color: '#e0e7ef',
+        }),
+      }
+    : {};
+
+  const clearFieldError = fieldName => {
+    if (formData.errors[fieldName]) {
+      setFormData(prev => ({
+        ...prev,
+        errors: {
+          ...prev.errors,
+          [fieldName]: undefined,
+        },
+      }));
+    }
+  };
+
   const handleInputChange = e => {
     const { name, value } = e.target;
+    clearFieldError(name);
     setFormData(prev => ({
       ...prev,
       [name]: value,
@@ -49,6 +99,7 @@ function AddTeamMember() {
   };
 
   const handleSelectChange = (option, field) => {
+    clearFieldError(field);
     setFormData(prev => ({
       ...prev,
       [field]: option,
@@ -83,7 +134,7 @@ function AddTeamMember() {
         errors.email = 'Please enter a valid email address';
       }
     }
-    if (formData.phone && !/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
+    if (formData.phone === '' || !/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
       errors.phone = 'Please enter a valid 10-digit phone number';
     }
     return errors;
@@ -138,182 +189,163 @@ function AddTeamMember() {
   };
 
   return (
-    <div className={`${styles.containerAdd}`}>
-      <div className={`${styles.iconAddPerson}`}>
-        <MdOutlinePersonAddAlt1 size={90} />
-        <h1 className={`${styles.titleMember}`}>Create new team member</h1>
-      </div>
+    <div className={darkMode ? styles['dark-background'] : ''}>
+      <div className={`${styles['container-add']} ${darkMode ? styles['dark'] : ''}`}>
+        <div className={styles['icon-add-person']}>
+          <MdOutlinePersonAddAlt1 size={90} />
+          <h1 className={styles['title-member']}>Create new team member</h1>
+        </div>
 
-      <div className={`${styles.nameContainer}`}>
-        <div className={`${styles.inputName}`}>
-          <label htmlFor="firstName">
+        <div className={styles['name-container']}>
+          <div className={styles['input-name']}>
+            <label htmlFor="firstName">First Name</label>
             <input
               id="firstName"
               name="firstName"
               type="text"
               value={formData.firstName}
               onChange={handleInputChange}
-              className={formData.errors.firstName ? 'error' : ''}
+              className={formData.errors.firstName ? styles['error'] : ''}
             />
-            First Name
-          </label>
-          {formData.errors.firstName && (
-            <span className={`${styles.errorMessage}`}>{formData.errors.firstName}</span>
-          )}
-        </div>
+            {formData.errors.firstName && (
+              <span className={styles['error-message']}>{formData.errors.firstName}</span>
+            )}
+          </div>
 
-        <div className={`${styles.inputName}`}>
-          <label htmlFor="lastName">
+          <div className={styles['input-name']}>
+            <label htmlFor="lastName">Last Name</label>
             <input
               id="lastName"
               name="lastName"
               type="text"
               value={formData.lastName}
               onChange={handleInputChange}
-              className={formData.errors.lastName ? 'error' : ''}
+              className={formData.errors.lastName ? styles['error'] : ''}
             />
-            Last Name
-          </label>
-          {formData.errors.lastName && (
-            <span className={`${styles.errorMessage}`}>{formData.errors.lastName}</span>
-          )}
+            {formData.errors.lastName && (
+              <span className={styles['error-message']}>{formData.errors.lastName}</span>
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className={`${styles.roleContainer}`}>
-        <div className={`${styles.roleInput}`}>
-          {/* Associate the label with the control via htmlFor + id */}
-          <label htmlFor="role-select">
-            {/* react-select component */}
+        <div className={styles['role-container']}>
+          <div className={styles['role-input']}>
+            <label htmlFor="role">Roles</label>
             <Select
-              inputId="role" // use inputId instead of id for proper label binding in react-select
-              name="role"
+              id="role"
               options={optionsRole}
               value={formData.role}
               onChange={option => handleSelectChange(option, 'role')}
-              className={formData.errors.role ? 'error' : ''}
+              className={formData.errors.role ? styles['error'] : ''}
+              styles={selectDarkStyles}
             />
-            Roles
-          </label>
-
-          {/* Display validation error if present */}
-          {formData.errors.role && (
-            <span className={`${styles.errorMessage}`}>{formData.errors.role}</span>
-          )}
-        </div>
-        <div className={`${styles.roleInput}`}>
-          <label htmlFor="roleSpecifyInput">
+            {formData.errors.role && (
+              <span className={styles['error-message']}>{formData.errors.role}</span>
+            )}
+          </div>
+          <div className={styles['role-input']}>
+            <label htmlFor="roleSpecify">Specify Role</label>
             <input
-              id="roleSpecifyInput"
+              id="roleSpecify"
               name="roleSpecify"
               type="text"
               value={formData.roleSpecify}
               onChange={handleInputChange}
-              className={formData.errors.roleSpecify ? 'error' : ''}
+              className={formData.errors.roleSpecify ? styles['error'] : ''}
             />
-            Specify Role
-          </label>
-          {formData.errors.roleSpecify && (
-            <span className={`${styles.errorMessage}`}>{formData.errors.roleSpecify}</span>
-          )}
+            {formData.errors.roleSpecify && (
+              <span className={styles['error-message']}>{formData.errors.roleSpecify}</span>
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className={`${styles.teamContainer}`}>
-        <div className={`${styles.teamInput}`}>
-          {/* Associate the label with the control via htmlFor + id */}
-          <label htmlFor="team-select">
-            {/* react-select component */}
+        <div className={styles['team-container']}>
+          <div className={styles['team-input']}>
+            <label htmlFor="team">Teams</label>
             <Select
-              inputId="team" // use inputId instead of id for proper label binding in react-select
-              name="team"
+              id="team"
               options={optionsTeam}
               value={formData.team}
               onChange={option => handleSelectChange(option, 'team')}
-              className={formData.errors.team ? 'error' : ''}
+              className={formData.errors.team ? styles['error'] : ''}
+              styles={selectDarkStyles}
             />
-            Teams
-          </label>
-
-          {formData.errors.team && (
-            <span className={styles.errorMessage}>{formData.errors.team}</span>
-          )}
-        </div>
-
-        <div className={`${styles.teamInput}`}>
-          <label htmlFor="teamSpecifyInput">
+            {formData.errors.team && (
+              <span className={styles['error-message']}>{formData.errors.team}</span>
+            )}
+          </div>
+          <div className={styles['team-input']}>
+            <label htmlFor="teamSpecify">Specify Team</label>
             <input
-              id="teamSpecifyInput"
+              id="teamSpecify"
               name="teamSpecify"
               type="text"
               value={formData.teamSpecify}
               onChange={handleInputChange}
-              className={formData.errors.teamSpecify ? 'error' : ''}
+              className={formData.errors.teamSpecify ? styles['error'] : ''}
             />
-            Specify Team
-          </label>
-          {formData.errors.teamSpecify && (
-            <span className={`${styles.errorMessage}`}>{formData.errors.teamSpecify}</span>
-          )}
+            {formData.errors.teamSpecify && (
+              <span className={styles['error-message']}>{formData.errors.teamSpecify}</span>
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className={`${styles.contactInfo}`}>
-        <label htmlFor="email">
+        <div className={styles['contact-info']}>
+          <label htmlFor="email">Email Address</label>
           <input
             type="email"
             id="email"
             name="email"
             value={formData.email}
             onChange={handleInputChange}
-            className={formData.errors.email ? 'error' : ''}
+            className={formData.errors.email ? styles['error'] : ''}
           />
-          Email Address
-        </label>
-        {formData.errors.email && (
-          <span className={`${styles.errorMessage}`}>{formData.errors.email}</span>
-        )}
+          {formData.errors.email && (
+            <span className={styles['error-message']}>{formData.errors.email}</span>
+          )}
 
-        <div className={`${styles.phoneInputGroup}`}>
-          <Select
-            options={countryCodes}
-            value={countryCodes.find(code => code.value === formData.countryCode)}
-            onChange={option => handleSelectChange(option, 'countryCode')}
-            className={`${styles.countryCodeSelect}`}
-          />
-          <input
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={e => {
-              const formatted = formatPhoneNumber(e.target.value);
-              handleInputChange({
-                target: {
-                  name: 'phone',
-                  value: formatted,
-                },
-              });
-            }}
-            placeholder="123-456-7890"
-          />
+          <div className={styles['phone-input-group']}>
+            <Select
+              options={countryCodes}
+              value={countryCodes.find(code => code.value === formData.countryCode)}
+              onChange={option => handleSelectChange(option, 'countryCode')}
+              className={styles['country-code-select']}
+              styles={selectDarkStyles}
+            />
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={e => {
+                const formatted = formatPhoneNumber(e.target.value);
+                handleInputChange({
+                  target: {
+                    name: 'phone',
+                    value: formatted,
+                  },
+                });
+              }}
+              placeholder="123-456-7890"
+            />
+          </div>
+          {formData.errors.phone && (
+            <span className={styles['error-message']}>{formData.errors.phone}</span>
+          )}
         </div>
-        {formData.errors.phone && (
-          <span className={`${styles.errorMessage}`}>{formData.errors.phone}</span>
-        )}
-      </div>
 
-      <div className={`${styles.submitCancel}`}>
-        <button
-          type="button"
-          className={`${styles.cancelButton}`}
-          onClick={() => setFormData(initialState)}
-        >
-          Cancel
-        </button>
+        <div className={styles['submit-cancel']}>
+          <button
+            type="button"
+            className={styles['cancel-button']}
+            onClick={() => setFormData(initialState)}
+          >
+            Cancel
+          </button>
 
-        <button type="submit" className={`${styles.submitButton}`} onClick={handleSubmit}>
-          Submit
-        </button>
+          <button type="submit" className={styles['submit-button']} onClick={handleSubmit}>
+            Submit
+          </button>
+        </div>
       </div>
     </div>
   );
