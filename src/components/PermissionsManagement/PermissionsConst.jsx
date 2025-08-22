@@ -343,10 +343,24 @@ export const permissionLabels = [
                   'Gives the user permission to add a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Add task button"',
               },
               {
-                label: 'Edit Task',
-                key: 'updateTask',
+                label: 'Edit Task/Task Extension',
                 description:
-                  'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
+                  'Category for all permissions related to editing tasks and task extensions',
+                subperms: [
+                  {
+                    label: 'Edit Task',
+                    key: 'updateTask',
+                    description:
+                      'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
+                  },
+                  {
+                    // task extension count viewing permission
+                    label: 'See # of Times Time Added to Task',
+                    key: 'viewTaskDeadlineCount',
+                    description:
+                      'Gives the user permission to view the task extension count. "Other Links" -> "Permissions Management" -> "Manage User Permissions" -> "Choose any user" -> "Add button to view task deadline count" ',
+                  },
+                ],
               },
               {
                 label: 'Delete Task',
@@ -595,6 +609,12 @@ export const permissionLabels = [
         key: 'seeUsersInDashboard',
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
+      {
+        label: 'Access HGN Skills Dashboard',
+        key: 'accessHgnSkillsDashboard',
+        description:
+          'Lets the user access the HGN skills dashboard, which provides insights into user skills and competencies.',
       },
     ],
   },
