@@ -1,20 +1,20 @@
 // Delete these two lines:
-import FormEditor from 'components/Forms/FormEditor';
-import FormViewer from 'components/Forms/FormViewer';
+import FormEditor from '~/components/Forms/FormEditor';
+import FormViewer from '~/components/Forms/FormViewer';
 
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import SetupProfile from 'components/SetupProfile/SetupProfile';
+import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
-import AutoUpdate from 'components/AutoUpdate';
-import CPHeader from 'components/CommunityPortal/CPHeader/CPHeader';
-import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
-import RoutePermissions from 'utils/routePermissions';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
-import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
-import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
-import Announcements from 'components/Announcements';
+import AutoUpdate from '~/components/AutoUpdate';
+import CPHeader from '~/components/CommunityPortal/CPHeader/CPHeader';
+import { TaskEditSuggestions } from '~/components/TaskEditSuggestions/TaskEditSuggestions';
+import RoutePermissions from '~/utils/routePermissions';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import RoleInfoCollections from '~/components/UserProfile/EditableModal/RoleInfoModal';
+import LessonList from '~/components/BMDashboard/LessonList/LessonListForm';
+import AddEquipmentType from '~/components/BMDashboard/Equipment/Add/AddEquipmentType';
+import Announcements from '~/components/Announcements';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -36,8 +36,8 @@ import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // LB Dashboard
-import LBRegister from './components/LBDashboard/Auth/Register';
-import LBLogin from './components/LBDashboard/Auth/Login';
+import LBRegister from './components/LBDashboard/Register/LBRegister';
+import LBLogin from './components/LBDashboard/Login/LBLogin';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -64,9 +64,6 @@ import RegistrationPopup from './components/CommunityPortal/RegistrationConfirma
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
-
-
-
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -123,7 +120,6 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -167,10 +163,14 @@ export default (
         <CPProtectedRoute path="/cpdashboard" exact component={CPDashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
-          const { userId } = props.match.params;
-          return <Timelog userId={userId} />
-        }} />
+        <ProtectedRoute
+          path="/timelog/:userId"
+          exact
+          render={props => {
+            const { userId } = props.match.params;
+            return <Timelog userId={userId} />;
+          }}
+        />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
@@ -402,16 +402,17 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-        <CPProtectedRoute path="/communityportal/activities/registration" exact component={RegistrationPopup} />
+        <CPProtectedRoute
+          path="/communityportal/activities/registration"
+          exact
+          component={RegistrationPopup}
+        />
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
 
-
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-
-
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
