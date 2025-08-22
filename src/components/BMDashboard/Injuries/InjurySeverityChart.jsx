@@ -12,8 +12,8 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Select, DatePicker, Spin } from 'antd';
-import { fetchInjurySeverity } from 'actions/bmdashboard/injuryActions';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
+import { fetchInjurySeverity } from '../../../actions/bmdashboard/injuryActions';
+import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import './InjurySeverityChart.css';
 
 const { Option } = Select;
