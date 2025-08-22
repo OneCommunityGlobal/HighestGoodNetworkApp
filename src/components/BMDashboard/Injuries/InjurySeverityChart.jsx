@@ -46,9 +46,7 @@ function CustomTooltip({ active, payload, label, darkMode }) {
   });
 
   return (
-    <div
-      className={`${styles.customTooltip} ${darkMode ? styles.dark : ''}`}
-    >
+    <div className={`${styles.customTooltip} ${darkMode ? styles.dark : ''}`}>
       <p
         style={{
           margin: '0 0 8px 0',
@@ -206,7 +204,9 @@ function InjurySeverityDashboard(props) {
   return (
     <div
       style={{ padding: '0 24px' }}
-      className={`${styles.injurySeverityContainer} container-fluid h-100 ${darkMode ? `${styles.oxideDark} text-light` : ''}`}
+      className={`${styles.injurySeverityContainer} container-fluid h-100 ${
+        darkMode ? `${styles.oxideDark} text-light` : ''
+      }`}
     >
       <h2 className={`${darkMode && 'text-light'}`}>Injury Severity by Projects</h2>
 
