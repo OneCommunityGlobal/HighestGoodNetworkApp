@@ -1,62 +1,64 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
-import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
-function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
+function AssignTableRow(props) {
   // Pull selected badges from Redux if prop is not passed
-  const storeBadges = useSelector(state => state.badge.selectedBadges);
-  const existBadges = propExistBadges ?? storeBadges;
-
+  const selectedFromStore = useSelector(s => s.badge?.selectedBadges || []);
+  const effectiveSelected = props?.selectedBadges ?? selectedFromStore;
   const [isOpen, setOpen] = useState(false);
-  const [isSelect, setSelect] = useState(false);
+
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (existBadges?.includes(`assign-badge-${badge._id}`)) {
-      setSelect(true);
-      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
-    } else {
-      setSelect(false);
-    }
-  }, [existBadges, badge._id, dispatch]);
+  const initialChecked = useMemo(() => {
+    const id = `assign-badge-${props.badge?._id}`;
+    return Array.isArray(effectiveSelected) && effectiveSelected.includes(id);
+  }, [effectiveSelected, props.badge?._id]);
 
-  const toggle = () => setOpen(prev => !prev);
+  const [isSelect, setSelect] = useState(initialChecked);
+
+  useEffect(() => {
+    const id = `assign-badge-${props.badge?._id}`;
+    const next = Array.isArray(effectiveSelected) && effectiveSelected.includes(id);
+    setSelect(prev => (prev !== next ? next : prev));
+  }, [effectiveSelected, props.badge?._id]);
+
+  const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 
   const handleCheckBoxChange = e => {
-    const isChecked = e.target.checked;
-    setSelect(isChecked);
-    if (isChecked) {
-      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
+    if (e.target.checked) {
+      dispatch(addSelectBadge(e.target.id));
+      setSelect(true);
     } else {
-      dispatch(removeSelectBadge(`assign-badge-${badge._id}`));
+      dispatch(removeSelectBadge(e.target.id));
+      setSelect(false);
     }
   };
 
   return (
     <tr>
       <td className="badge_image_mini">
-        <img src={badge.imageUrl} id={`popover_${index?.toString()}`} alt="" />
+        <img src={props.badge.imageUrl} id={`popover_${props.index.toString()}`} alt="" />
         <Popover
           trigger="hover"
           isOpen={isOpen}
           toggle={toggle}
-          target={`popover_${index?.toString()}`}
+          target={`popover_${props?.index?.toString()}`}
         >
           <Card className="text-center">
-            <CardImg className="badge_image_lg" src={badge.imageUrl} />
+            <CardImg className="badge_image_lg" src={props?.badge.imageUrl} />
             <CardBody>
-              <CardText>{badge.description}</CardText>
+              <CardText>{props.badge.description}</CardText>
             </CardBody>
           </Card>
         </Popover>
       </td>
-      <td>{badge.badgeName}</td>
+      <td>{props?.badge.badgeName}</td>
       <td>
         <CustomInput
           type="checkbox"
-          id={`assign-badge-${badge._id}`}
+          id={`assign-badge-${props?.badge._id}`}
           onChange={handleCheckBoxChange}
           checked={isSelect}
         />
@@ -65,4 +67,9 @@ function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
   );
 }
 
-export default AssignTableRow;
+const mapDispatchToProps = dispatch => ({
+  addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
+  removeSelectBadge: badgeId => dispatch(removeSelectBadge(badgeId)),
+});
+
+export default connect(null, mapDispatchToProps)(AssignTableRow);
