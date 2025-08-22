@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import getJobAnalyticsData from './api';
-import styles from './JobAnalytics.module.css';
+import styles from './jobAnalytics.module.css';
 
 function JobAnalytics() {
   const [dateFilter, setDateFilter] = useState('all');
