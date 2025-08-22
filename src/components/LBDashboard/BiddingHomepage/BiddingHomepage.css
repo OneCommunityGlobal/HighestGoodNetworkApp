@@ -21,6 +21,15 @@ body, .bidding-bg {
   display: block;
 }
 
+.row {
+  width: 100%;
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 /* Override reactstrap container-fluid default padding */
 .container-fluid {
   padding-left: 0 !important;
@@ -528,8 +537,6 @@ body, .bidding-bg {
   }
   .property-card-gray {
     width: 100%;
-    max-width: none;
-    min-width: 0;
   }
   
   /* Mobile responsive adjustments for village filter */
