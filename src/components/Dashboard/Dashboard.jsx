@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Row, Col, Container } from 'reactstrap';
+import { useParams } from 'react-router-dom';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import { cantUpdateDevAdminDetails } from '~/utils/permissions';
 import {
@@ -10,7 +11,6 @@ import {
 import { updateSummaryBarData } from '~/actions/dashboardActions';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
-import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import styles from './Dashboard.module.css';
@@ -19,22 +19,37 @@ import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import FeedbackModal from '../FeedbackModal/FeedbackModal';
 import { toast } from 'react-toastify';
 
-export function Dashboard(props) {
+function Dashboard() {
+  const dispatch = useDispatch();
+
+  // Use hooks instead of connect to access Redux state
+  const authUser = useSelector(state => state.auth.user);
+  const displayUserProfile = useSelector(state => state.userProfile);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Get userId from URL params
+  const { userId: urlUserId } = useParams();
+
+  // Component state
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, authUser } = props;
-  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
-  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+
+  // Memoize this function to avoid recreating it on every render
+  const checkSessionStorage = useCallback(() => {
+    return JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
+  }, []);
+
+  // State for viewing user
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [displayUserId, setDisplayUserId] = useState(
-    match.params.userId || viewingUser?.userId || authUser.userid,
+    urlUserId || viewingUser?.userId || authUser.userid,
   );
+
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
-  const dispatch = useDispatch();
-
-  const toggle = () => {
+  // Toggle popup with memoization to prevent recreation
+  const toggle = useCallback(() => {
     if (isNotAllowedToEdit) {
       const warningMessage =
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
@@ -52,28 +67,37 @@ export function Dashboard(props) {
         elem.scrollIntoView();
       }
     }, 150);
-  };
+  }, [isNotAllowedToEdit, popup, viewingUser?.email]);
 
-  const handleStorageEvent = () => {
+  // Memoize storage event handler
+  const handleStorageEvent = useCallback(() => {
     const sessionStorageData = checkSessionStorage();
     setViewingUser(sessionStorageData || false);
     setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
-  };
+  }, [authUser.userid, checkSessionStorage]);
 
+  // Memoize summary bar update handler
+  const handleSummaryBarDataUpdate = useCallback(data => {
+    setSummaryBarData(data);
+  }, []);
+
+  // Update Redux store when summaryBarData changes
+  useEffect(() => {
+    if (summaryBarData) {
+      dispatch(updateSummaryBarData({ summaryBarData }));
+    }
+  }, [dispatch, summaryBarData]);
+
+  // Add storage event listener
   useEffect(() => {
     window.addEventListener('storage', handleStorageEvent);
     return () => {
       window.removeEventListener('storage', handleStorageEvent);
     };
-  }, []);
-
-  useEffect(() => {
-    dispatch(updateSummaryBarData({ summaryBarData }));
-  }, [summaryBarData]);
+  }, [handleStorageEvent]);
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      {/* <FeedbackModal /> */}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -129,7 +153,7 @@ export function Dashboard(props) {
           <div className="my-2" id="wsummary">
             <Timelog
               isDashboard
-              passSummaryBarData={setSummaryBarData}
+              passSummaryBarData={handleSummaryBarDataUpdate}
               isNotAllowedToEdit={isNotAllowedToEdit}
               filteredUserTeamIds={filteredUserTeamIds}
             />
@@ -141,9 +165,4 @@ export function Dashboard(props) {
   );
 }
 
-const mapStateToProps = state => ({
-  authUser: state.auth.user,
-  displayUserProfile: state.userProfile,
-});
-
-export default connect(mapStateToProps)(Dashboard);
+export default Dashboard;
