@@ -1190,7 +1190,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
         await dispatch(getUserProfile(displayUserId));
         lastFetchRef.current[`profile_${displayUserId}`] = Date.now();
       } catch (err) {
-        console.log('User Profile not loaded.');
+        // User Profile not loaded
       }
     }
   }, [displayUserId, dispatch, shouldFetchData]);
@@ -1203,8 +1203,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
       const newUserTasks = response.data;
       setTasks(newUserTasks.length);
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log('User Tasks not loaded.');
+      // User Tasks not loaded
     }
   };
 
@@ -1218,7 +1217,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
         await dispatch(getUserTasks(displayUserId));
         lastFetchRef.current[`tasks_${displayUserId}`] = Date.now();
       } catch (err) {
-        console.log('User Tasks not loaded.');
+        // User Tasks not loaded
       }
     }
   }, [displayUserId, dispatch, shouldFetchData]);
@@ -1460,10 +1459,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
           setSuggestionCategory(res.data.suggestion);
           setInputField(res.data.field);
         } else {
-          console.error(res.status);
+          // Error status: ${res.status}
         }
       } catch (error) {
-        console.error('Error:', error);
+        // Error occurred
       }
     }
     setShowSuggestionModal(prev => !prev);

@@ -59,7 +59,7 @@ const MemberCard = ({
     e.preventDefault();
     e.stopPropagation();
     // This would ideally open Slack with the user's profile - for now just log
-    console.log(`Redirect to Slack for user: ${slackId}`);
+    // Redirect to Slack for user: ${slackId}
   };
 
   const handleGithubClick = e => {

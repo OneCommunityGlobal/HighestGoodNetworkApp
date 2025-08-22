@@ -321,8 +321,6 @@ export default (
           ]}
         />
 
-
-
         <ProtectedRoute
           path="/inventory/:projectId"
           component={Inventory}
