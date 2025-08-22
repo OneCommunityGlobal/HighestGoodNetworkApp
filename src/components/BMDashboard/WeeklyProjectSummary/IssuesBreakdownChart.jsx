@@ -10,6 +10,7 @@ import {
   LabelList,
 } from 'recharts';
 import httpService from '../../../services/httpService';
+import styles from './IssueBreakdownChart.module.css';
 
 const COLORS = {
   equipmentIssues: '#4F81BD', // blue
@@ -53,94 +54,36 @@ export default function IssuesBreakdownChart() {
   }
 
   return (
-    <div
-      style={{
-        boxSizing: 'border-box',
-        position: 'relative',
-        width: '100%',
-        maxWidth: '1400px',
-        margin: '32px auto',
-        background: '#fafbfc',
-        borderRadius: 18,
-        boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-        padding: 32,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            width: '100%',
-            marginBottom: 24,
-          }}
-        >
-          <h2
-            style={{
-              textAlign: 'left',
-              margin: 0,
-              fontSize: 36,
-              fontWeight: 400,
-              color: '#888',
-              marginBottom: 16,
-            }}
-          >
-            Issues breakdown by Type
-          </h2>
+    <div className={styles.container}>
+      <div className={styles.inner}>
+        <div className={styles.headerRow}>
+          <h2 className={styles.heading}>Issues breakdown by Type</h2>
         </div>
-        <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
+        <div className={styles.legend}>
+          <span className={styles.legendItem}>
             <span
-              style={{
-                display: 'inline-block',
-                width: 22,
-                height: 22,
-                backgroundColor: '#4F81BD',
-                borderRadius: 4,
-                marginRight: 8,
-              }}
+              className={styles.legendBox}
+              style={{ backgroundColor: COLORS.equipmentIssues }}
             />
-            <span style={{ color: '#666', fontSize: 22 }}>Equipment Issues</span>
+            <span className={styles.legendLabel}>Equipment Issues</span>
           </span>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
+          <span className={styles.legendItem}>
             <span
-              style={{
-                display: 'inline-block',
-                width: 22,
-                height: 22,
-                backgroundColor: '#C0504D',
-                borderRadius: 4,
-                marginRight: 8,
-              }}
+              className={styles.legendBox}
+              style={{ backgroundColor: COLORS.laborIssues }}
             />
-            <span style={{ color: '#666', fontSize: 22 }}>Labor Issues</span>
+            <span className={styles.legendLabel}>Labor Issues</span>
           </span>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
+          <span className={styles.legendItem}>
             <span
-              style={{
-                display: 'inline-block',
-                width: 22,
-                height: 22,
-                backgroundColor: '#F3C13A',
-                borderRadius: 4,
-                marginRight: 8,
-              }}
+              className={styles.legendBox}
+              style={{ backgroundColor: COLORS.materialIssues }}
             />
-            <span style={{ color: '#666', fontSize: 22 }}>Materials Issues</span>
+            <span className={styles.legendLabel}>Materials Issues</span>
           </span>
         </div>
       </div>
-      <div style={{ width: '100%', height: '500px', marginTop: '20px' }}>
+      <div className={styles.chartContainer}>
         <ResponsiveContainer>
           <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
             <CartesianGrid strokeDasharray="3 3" />
