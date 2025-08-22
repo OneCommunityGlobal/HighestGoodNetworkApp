@@ -11,7 +11,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import projectCostService from '../../../services/projectCostService';
-import styles from './CostPredictionChart.module.css'
+import styles from './CostPredictionChart.module.css';
 
 // Custom dot renderer to show value above the top line and below the bottom line
 function renderDotTopOrBottom(lineKey, color) {
@@ -120,15 +120,8 @@ function CostPredictionChart({ projectId }) {
   const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
 
   return (
-    <div style={{ width: '100%', height: '100%', padding: '20px' }}>
-      <h2
-        style={{
-          textAlign: 'center',
-          marginBottom: '40px',
-          fontSize: '24px',
-          fontWeight: 'normal',
-        }}
-      >
+    <div className={styles.container}>
+      <h2 className={styles.title}>
         Planned Vs Actual costs tracking
       </h2>
       <ResponsiveContainer width="100%" height={400}>
