@@ -1,0 +1,40 @@
+/* ApplicantVolunteerRatio.module.css */
+
+/* Layout */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  margin: 0 0 8px 0;
+}
+
+/* Controls row */
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+/* Date controls */
+.dateGroup { display: flex; align-items: center; gap: 8px; }
+.label { font-weight: 500; }
+
+/* Role select wrapper */
+.selectWrapper { min-width: 220px; }
+
+/* States */
+.loading { color: #3c4043; }
+.error { color: red; }
+.noData { text-align: center; padding: 40px 0; }
+
+/* Optional: local tweaks for third-party styles without leaking globally */
+:global(.react-datepicker-wrapper) { display: inline-block; }
+:global(.react-datepicker__input-container input) {
+  padding: 6px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+}
