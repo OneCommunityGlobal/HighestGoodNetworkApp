@@ -9,6 +9,10 @@ export const FETCH_BM_INJURY_SEVERITIES = 'FETCH_BM_INJURY_SEVERITIES';
 export const FETCH_BM_INJURY_TYPES = 'FETCH_BM_INJURY_TYPES';
 export const FETCH_BM_INJURY_PROJECTS = 'FETCH_BM_INJURY_PROJECTS';
 
+// Legacy constants for backward compatibility
+export const GET_INJURY_SEVERITY = 'GET_INJURY_SEVERITY';
+export const GET_ERRORS = 'GET_ERRORS';
+
 // Helpers
 const cleanParams = (obj = {}) => {
   const out = {};
@@ -38,6 +42,17 @@ const setInjuryDataError = payload => ({ type: FETCH_BM_INJURY_DATA_FAILURE, pay
 const setInjurySeverities = payload => ({ type: FETCH_BM_INJURY_SEVERITIES, payload });
 const setInjuryTypes = payload => ({ type: FETCH_BM_INJURY_TYPES, payload });
 const setInjuryProjects = payload => ({ type: FETCH_BM_INJURY_PROJECTS, payload });
+
+// Legacy action creators for backward compatibility
+export const setInjurySeverity = payload => ({
+  type: GET_INJURY_SEVERITY,
+  payload,
+});
+
+export const setErrors = payload => ({
+  type: GET_ERRORS,
+  payload,
+});
 
 // Thunks
 export const fetchInjuryData = (filters) => async dispatch => {
@@ -80,3 +95,30 @@ export const fetchInjuryProjects = (filters) => async dispatch => {
   }
 };
 
+// Legacy function for backward compatibility
+export const fetchInjurySeverity = (filters = {}) => {
+  return async dispatch => {
+    try {
+      const params = {};
+
+      if (filters.projectIds?.length) {
+        params.projectIds = filters.projectIds.join(',');
+      }
+      if (filters.startDate && filters.endDate) {
+        params.startDate = filters.startDate;
+        params.endDate = filters.endDate;
+      }
+      if (filters.types?.length) {
+        params.types = filters.types.join(',');
+      }
+      if (filters.departments?.length) {
+        params.departments = filters.departments.join(',');
+      }
+
+      const res = await axios.get(ENDPOINTS.BM_INJURY_SEVERITY, { params });
+      dispatch(setInjurySeverity(res.data));
+    } catch (err) {
+      dispatch(setErrors(err.response?.data || err.message));
+    }
+  };
+};

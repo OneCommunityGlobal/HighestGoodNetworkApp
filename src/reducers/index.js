@@ -65,6 +65,8 @@ import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
 import { userPreferencesReducer } from './lbdashboard/userPreferencesReducer';
@@ -115,13 +117,13 @@ const localReducers = {
   tools: toolReducer,
   toolAvailability: toolAvailabilityReducer,
   bmProjects: bmProjectReducer,
+  bmInjuries: bmInjuryReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
   lessons: lessonsReducer,
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmEquipments: equipmentReducer,
-  bmIssues: issueReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
