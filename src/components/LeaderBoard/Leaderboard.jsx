@@ -236,7 +236,7 @@ function LeaderBoard({ displayUserId, darkMode, isNotAllowedToEdit, setFilteredU
 
         dataFetchedRef.current = true;
       } catch (error) {
-        console.error('Error fetching initial data:', error);
+        // Error fetching initial data
       }
     };
 
@@ -316,7 +316,7 @@ function LeaderBoard({ displayUserId, darkMode, isNotAllowedToEdit, setFilteredU
         }
       }
     } catch (error) {
-      console.error('Error scrolling to user position:', error);
+      // Error scrolling to user position
     }
   }, [leaderBoardData, displayUserId]);
 
@@ -445,7 +445,7 @@ function LeaderBoard({ displayUserId, darkMode, isNotAllowedToEdit, setFilteredU
       }
     } catch (error) {
       toast.error('Failed to update leaderboard');
-      console.error(error);
+      // Error updating leaderboard
     } finally {
       setIsLoading(false);
     }

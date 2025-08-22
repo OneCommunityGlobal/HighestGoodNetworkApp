@@ -65,11 +65,7 @@ if (axios.interceptors && axios.interceptors.response && axios.interceptors.resp
           const request = pendingRequests[requestId];
           const duration = now() - request.startTime;
 
-          console.log(
-            `✅ API RESPONSE: ${request.method} ${request.url} | ` +
-              `Duration: ${duration.toFixed(2)}ms | Status: ${response.status} | ` +
-              `From: ${request.caller.component} (${request.caller.file})`,
-          );
+          // API RESPONSE logged
           delete pendingRequests[requestId];
         }
       } catch (err) {
@@ -85,13 +81,7 @@ if (axios.interceptors && axios.interceptors.response && axios.interceptors.resp
           const request = pendingRequests[requestId];
           const duration = now() - request.startTime;
 
-          console.error(
-            `❌ API ERROR: ${request.method} ${request.url} | ` +
-              `Duration: ${duration.toFixed(2)}ms | Status: ${error.response?.status ||
-                'unknown'} | ` +
-              `From: ${request.caller.component} (${request.caller.file})`,
-            error.response?.data || error.message,
-          );
+          // API ERROR logged
           delete pendingRequests[requestId];
         }
       } catch (err) {
@@ -129,17 +119,10 @@ axios.interceptors.request.use(request => {
     request.headers['X-Request-ID'] = requestId;
 
     // Log with caller information
-    console.log(
-      `🔍 API REQUEST: ${method} ${request.url} | ` +
-        `From: ${callerInfo.component} (${callerInfo.file})`,
-      request.data || '',
-    );
+    // API REQUEST logged
   } catch (err) {
     // Fallback to simpler logging
-    console.log(
-      `[API CALL] ${request.method?.toUpperCase() || 'GET'} ${request.url}`,
-      request.data || '',
-    );
+    // API CALL logged
   }
 
   return request;
