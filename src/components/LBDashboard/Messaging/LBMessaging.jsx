@@ -215,7 +215,7 @@ export default function LBMessaging() {
 
   const renderContacts = () => {
     if (existingChats.length === 0) {
-      return <p>No chats available.</p>;
+      return <p className={`${darkMode ? 'text-light' : ''}`}>No chats available.</p>;
     }
 
     return existingChats.map(user => (
