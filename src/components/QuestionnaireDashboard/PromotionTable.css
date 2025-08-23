@@ -100,3 +100,53 @@
   height: 20px;
   cursor: pointer;
 }
+
+/* Dark Mode Support */
+[data-theme="dark"] .container,
+.dark .container {
+  background-color: #1a1a1a;
+  border-color: #333;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .header,
+.dark .header {
+  border-bottom: 1px solid #333;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .btn-secondary,
+.dark .btn-secondary {
+  background-color: #333;
+  color: #e8eaed;
+  border-color: #555;
+}
+
+[data-theme="dark"] .promotion-table th,
+[data-theme="dark"] .promotion-table td,
+.dark .promotion-table th,
+.dark .promotion-table td {
+  border-bottom: 1px solid #333;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .promotion-table thead th,
+.dark .promotion-table thead th {
+  background-color: #2a2a2a;
+}
+
+[data-theme="dark"] .section-header td,
+.dark .section-header td {
+  background-color: #2a2a2a;
+  color: #aaa;
+}
+
+[data-theme="dark"] .status-met,
+.dark .status-met {
+  color: #6bc46d;
+}
+
+[data-theme="dark"] .status-not-met,
+.dark .status-not-met {
+  color: #f78181;
+}
