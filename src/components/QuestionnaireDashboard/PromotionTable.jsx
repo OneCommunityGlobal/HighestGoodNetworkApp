@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const names = ['Alice', 'Bob', 'Charlie'];
 const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
@@ -15,6 +16,7 @@ const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
 function PromotionTable() {
   const [eligibilityData, setEligibilityData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     // Simulating an API call with the dummy data
@@ -33,11 +35,18 @@ function PromotionTable() {
   if (loading) return <div>Loading promotions...</div>;
 
   return (
-    <div className="container">
-      <div className="header">
+    <div
+      className={`container promotion-dashboard ${
+        darkMode ? 'bg-dark text-light' : 'bg-white text-dark'
+      }`}
+    >
+      <div className={`header ${darkMode ? 'border-secondary' : 'border-light'}`}>
         <h1>Promotion Eligibility</h1>
         <div className="actions">
-          <button type="button" className="btn btn-secondary">
+          <button
+            type="button"
+            className={`btn ${darkMode ? 'btn-outline-light' : 'btn-secondary'}`}
+          >
             Review for this week
           </button>
           <button type="button" className="btn btn-primary">
@@ -47,7 +56,11 @@ function PromotionTable() {
       </div>
 
       <div className="promotion-table-wrapper">
-        <table className="promotion-table">
+        <table
+          className={`promotion-table table ${
+            darkMode ? 'table-dark table-striped' : 'table-light'
+          }`}
+        >
           <thead>
             <tr>
               <th style={{ width: '15%' }}>Existing member/ New member</th>
@@ -61,7 +74,7 @@ function PromotionTable() {
           </thead>
           <tbody>
             {/* --- New Members Section --- */}
-            <tr className="section-header">
+            <tr className={`section-header ${darkMode ? 'bg-secondary' : ''}`}>
               <td colSpan="7">New Members</td>
             </tr>
             {newMembers.map(user => (
@@ -86,7 +99,7 @@ function PromotionTable() {
             ))}
 
             {/* --- Existing Members Section --- */}
-            <tr className="section-header">
+            <tr className={`section-header ${darkMode ? 'bg-secondary' : ''}`}>
               <td colSpan="7">Existing Members</td>
             </tr>
             {existingMembers.map(user => (
