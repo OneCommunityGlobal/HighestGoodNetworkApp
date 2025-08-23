@@ -21,11 +21,17 @@
   border: 1px solid #ddd;
   border-radius: 10px;
 }
-/*.job-landing .header img {
+.user-collaboration-container .job-queries {
+  display: flex;
+  flex-direction: row;
+  gap:2rem;
+}
+
+.job-landing .header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
-} */
+} 
 .job-navbar {
   width: 100%;
   display: flex;
@@ -303,12 +309,16 @@ select {
 
 .user-collaboration-dark-mode .job-summary-item {
   background: linear-gradient(135deg, #23272a, #181a1b);
-  padding: 10px;
-  border-radius: 5px;
+  padding: 1rem;
+  border-radius: 0.5rem;
 }
 
 .user-collaboration-dark-mode .job-summary-item p {
   color: #e0e0e0;
+}
+
+.user-collaboration-dark-mode button {
+  background-color: #e0e0e0;
 }
 
 .user-collaboration-dark-mode .job-select:focus,
