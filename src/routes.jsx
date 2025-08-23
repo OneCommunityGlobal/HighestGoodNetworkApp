@@ -1,7 +1,3 @@
-// Delete these two lines:
-import FormEditor from 'components/Forms/FormEditor';
-import FormViewer from 'components/Forms/FormViewer';
-import PRDashboard from 'components/PRDashboard';
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -25,9 +21,7 @@ import Timelog from 'components/Timelog';
 import UserProfileEdit from 'components/UserProfile/UserProfileEdit';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
-
 import PRDashboard from 'components/PRDashboard';
-import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
 import ApplicantsAgeChart from 'components/ApplicantsChart';
 import ApplicationTimeChartPage from 'components/ApplicationTimeChart';
 import ApplicationAnalyticsContainer from 'components/ApplicationAnalytics';
@@ -75,8 +69,6 @@ import FaqSearch from 'components/Faq/FaqSearch';
 import FaqManagement from 'components/Faq/FaqManagement';
 import FaqHistory from 'components/Faq/FaqHistory';
 import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
-import HeaderRenderer from 'components/Header/HeaderRenderer';
-import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
 import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
 // hgnform routes
 import Page1 from './components/HGNForm/pages/Page1';
@@ -314,6 +306,14 @@ export default (
           ]}
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
+        <ProtectedRoute
+          path="/pr-dashboard"
+          exact
+          component={PRDashboard}
+          fallback
+          routePermissions={RoutePermissions.prDashboard}
+        />
+
         <ProtectedRoute
           path="/pr-dashboard"
           exact
@@ -642,6 +642,28 @@ export default (
         />
         <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
 
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid/resources"
+          exact
+          component={Resources}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid"
+          exact
+          component={Activity}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/event/personalization"
+          exact
+          component={EventStats}
+        />
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
+
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
@@ -704,6 +726,12 @@ export default (
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
         <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
+        <ProtectedRoute path="/hgnform" exact component={Page1} />
+        <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
+        <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
+        <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
+        <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
         <ProtectedRoute path="/hgnform" exact component={Page1} />
         <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
         <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
