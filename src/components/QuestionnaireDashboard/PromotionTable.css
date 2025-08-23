@@ -54,9 +54,13 @@
   margin-right: 0;
 }
 
+.promotion-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .promotion-table {
-  width: 100%;
-  border-collapse: collapse;
+  min-width: 700px;
 }
 
 .promotion-table th,
