@@ -118,6 +118,7 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import FaqSection from './components/CommunityPortal/Activities/FaqSection';
 import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
 import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 
@@ -634,6 +635,11 @@ export default (
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
+        <CPProtectedRoute
+          path="/communityportal/activities/:activityid/faq"
+          exact
+          component={FaqSection}
+        />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
