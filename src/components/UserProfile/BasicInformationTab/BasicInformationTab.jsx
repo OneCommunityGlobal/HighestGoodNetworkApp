@@ -141,7 +141,7 @@ export const Title = props => {
   );
 };
 
-export const Email = props => {
+  const Email = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
 
 const Email = props => {
