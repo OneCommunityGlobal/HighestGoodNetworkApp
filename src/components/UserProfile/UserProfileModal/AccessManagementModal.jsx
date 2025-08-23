@@ -10,6 +10,7 @@ import {
   faUserPlus,
   faUserMinus,
   faSync,
+  faFolder,
 } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../../utils/URL';
 import './AccessManagementModal.css';
@@ -543,6 +544,14 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                       : 'Please select a Dropbox team folder'}
                   </div>
                 )}
+
+              {isDropbox && !teamFoldersLoading && selectedTeamFolder && isCredentialValid && (
+                <div className="text-info small mt-2">
+                  <FontAwesomeIcon icon={faFolder} className="mr-1" />
+                  <strong>User folder name to be created:</strong> {userProfile?.firstName}{' '}
+                  {userProfile?.lastName}
+                </div>
+              )}
             </div>
           )}
 
@@ -613,10 +622,15 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                     <strong>{appConfigs[appName].name}</strong> -{' '}
                     {appName === 'github' ? 'Username' : 'Email'}: {credentialsInput[appName]}
                     {appName === 'dropbox' && selectedTeamFolder && (
-                      <div className="text-muted small mt-1">
-                        Dropbox Team Folder:{' '}
+                      <div className="text-info small mt-1">
+                        <FontAwesomeIcon icon={faFolder} className="mr-1" />
+                        <strong>Team folder:</strong>{' '}
                         {teamFolders.find(f => f.key === selectedTeamFolder)?.name ||
                           selectedTeamFolder}
+                        <br />
+                        <FontAwesomeIcon icon={faFolder} className="mr-1" />
+                        <strong>User folder:</strong> {userProfile?.firstName}{' '}
+                        {userProfile?.lastName}
                       </div>
                     )}
                   </li>
