@@ -181,20 +181,15 @@ const UserTableData = React.memo(props => {
           ''
         )}
         <span style={{ position: 'absolute', top: 0, right: 0 }}>
-          <a
-            href={`/peoplereport/${props.user._id}`}
-            id={`report-icon-${props.user._id}`}
+          <button
+            type="button"
             className="team-member-tasks-user-report-link"
-            target="_blank"
-            rel="noopener noreferrer"
             style={{
               fontSize: 18,
               opacity: canSeeReports ? 1 : 0.7,
               background: 'none',
               border: 'none',
               padding: 0,
-              display: 'inline-block',
-              cursor: canSeeReports ? 'pointer' : 'not-allowed',
             }}
             onClick={(event) => {
               if (!canSeeReports) {
@@ -202,29 +197,25 @@ const UserTableData = React.memo(props => {
                 return;
               }
 
-              const isModified = event.metaKey || event.ctrlKey || event.button === 1;
-              if (!isModified) {
-                event.preventDefault();
-                history.push(`/peoplereport/${props.user._id}`);
+              if (event.metaKey || event.ctrlKey || event.button === 1) {
+                window.open(`/peoplereport/${props.user._id}`, '_blank');
+                return;
               }
+
+              event.preventDefault(); // prevent full reload
+              history.push(`/peoplereport/${props.user._id}`);
             }}
           >
             <img
               src="/report_icon.png"
               alt="reportsicon"
               className="team-member-tasks-user-report-link-image"
+              id={`report-icon-${props.user._id}`}
+              style={{
+                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
+              }}
             />
-          </a>
-          {!canSeeReports && (
-            <Tooltip
-              placement="bottom"
-              isOpen={tooltipReportsOpen}
-              target={`report-icon-${props.user._id}`}
-              toggle={toggleReportsTooltip}
-            >
-              You don&apos;t have permission to view user reports
-            </Tooltip>
-          )}
+          </button>
         </span>
 
         <span style={{ position: 'absolute', bottom: 0, right: 0 }}>
@@ -239,14 +230,13 @@ const UserTableData = React.memo(props => {
                 return;
               }
 
-              const url = `${window.location.origin}/timelog/${props.user._id}#currentWeek`;
-
               if (e.metaKey || e.ctrlKey || e.button === 1) {
-                window.open(url, '_blank', 'noopener');
+                window.open(`/timelog/${props.user._id}`, '_blank');
                 return;
               }
-              e.preventDefault();
-              history.push(`/timelog/${props.user._id}#currentWeek`);
+
+              e.preventDefault(); // prevent full reload
+              history.push(`/timelog/${props.user._id}`);
             }}
           />
         </span>
