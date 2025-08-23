@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -136,15 +136,21 @@ function CommunityCalendar() {
     setSelectedEvent(null);
   }, []);
 
-  // Handle escape key for modal
-  const handleModalEscape = useCallback(
-    e => {
-      if (e.key === 'Escape') {
+  // Handle escape key globally when modal is open
+  useEffect(() => {
+    const handleEscape = e => {
+      if (e.key === 'Escape' && showEventModal) {
         closeEventModal();
       }
-    },
-    [closeEventModal],
-  );
+    };
+
+    if (showEventModal) {
+      document.addEventListener('keydown', handleEscape);
+      return () => {
+        document.removeEventListener('keydown', handleEscape);
+      };
+    }
+  }, [showEventModal, closeEventModal]);
 
   // Memoized tile content function - prevents unnecessary re-renders
   const tileContent = useCallback(
@@ -268,73 +274,84 @@ function CommunityCalendar() {
 
       {/* Event Details Modal */}
       {showEventModal && selectedEvent && (
-        <div
-          className="event-modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="event-modal-title"
-        >
-          <button
-            className="modal-overlay-close"
-            onClick={closeEventModal}
-            onKeyDown={handleModalEscape}
-            aria-label="Close modal by clicking background"
-          />
-          <div className={`event-modal ${darkMode ? 'event-modal-dark' : ''}`} role="document">
-            <div className="modal-header">
-              <h2 id="event-modal-title">{selectedEvent.title}</h2>
-              <button
-                className="modal-close"
-                onClick={closeEventModal}
-                onKeyDown={handleModalEscape}
-                aria-label="Close event details"
-              >
-                ×
-              </button>
-            </div>
-
-            <div className="modal-content">
-              <div className="event-status">
-                <span
-                  className={`status-badge status-${selectedEvent.status
-                    .toLowerCase()
-                    .replace(' ', '-')}`}
+        <>
+          <div
+            className="event-modal-overlay"
+            role="button"
+            tabIndex={0}
+            aria-label="Close event details (click backdrop or press Enter/Space)"
+            onClick={e => {
+              if (e.target === e.currentTarget) {
+                closeEventModal();
+              }
+            }}
+            onKeyDown={e => {
+              if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
+                e.preventDefault();
+                closeEventModal();
+              }
+            }}
+          >
+            <div
+              className={`event-modal ${darkMode ? 'event-modal-dark' : ''}`}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="event-modal-title"
+            >
+              <div className="modal-header">
+                <h2 id="event-modal-title">{selectedEvent.title}</h2>
+                <button
+                  className="modal-close"
+                  onClick={closeEventModal}
+                  aria-label="Close event details"
                 >
-                  {selectedEvent.status}
-                </span>
+                  ×
+                </button>
               </div>
 
-              <div className="event-details-grid">
-                <div className="detail-item">
-                  <label htmlFor="event-type">Type:</label>
-                  <span id="event-type">{selectedEvent.type}</span>
+              <div className="modal-content">
+                <div className="event-status">
+                  <span
+                    className={`status-badge status-${selectedEvent.status
+                      .toLowerCase()
+                      .replace(' ', '-')}`}
+                  >
+                    {selectedEvent.status}
+                  </span>
                 </div>
-                <div className="detail-item">
-                  <label htmlFor="event-location">Location:</label>
-                  <span id="event-location">{selectedEvent.location}</span>
+
+                <div className="event-details-grid">
+                  <div className="detail-item">
+                    <label htmlFor="event-type">Type:</label>
+                    <span id="event-type">{selectedEvent.type}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label htmlFor="event-location">Location:</label>
+                    <span id="event-location">{selectedEvent.location}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label htmlFor="event-date">Date:</label>
+                    <span id="event-date">{selectedEvent.date.toLocaleDateString()}</span>
+                  </div>
+                  <div className="detail-item">
+                    <label htmlFor="event-time">Time:</label>
+                    <span id="event-time">{selectedEvent.time}</span>
+                  </div>
                 </div>
-                <div className="detail-item">
-                  <label htmlFor="event-date">Date:</label>
-                  <span id="event-date">{selectedEvent.date.toLocaleDateString()}</span>
-                </div>
-                <div className="detail-item">
-                  <label htmlFor="event-time">Time:</label>
-                  <span id="event-time">{selectedEvent.time}</span>
+
+                <div className="event-description">
+                  <label htmlFor="event-description">Description:</label>
+                  <p id="event-description">{selectedEvent.description}</p>
                 </div>
               </div>
 
-              <div className="event-description">
-                <label htmlFor="event-description">Description:</label>
-                <p id="event-description">{selectedEvent.description}</p>
+              <div className="modal-actions">
+                <button className="btn-primary">Register for Event</button>
+                <button className="btn-secondary">Add to Calendar</button>
               </div>
-            </div>
-
-            <div className="modal-actions">
-              <button className="btn-primary">Register for Event</button>
-              <button className="btn-secondary">Add to Calendar</button>
             </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

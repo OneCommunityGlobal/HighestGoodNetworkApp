@@ -278,17 +278,9 @@
   animation: fadeIn 0.2s ease-out;
 }
 
-.modal-overlay-close {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1;
-}
+
+
+
 
 @keyframes fadeIn {
   from {
