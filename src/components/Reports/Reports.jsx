@@ -540,7 +540,6 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-             {/* <p className={textColor} >Select a Category</p> */}
               <div className={darkMode ? `text-white` : ``}>Select a Category</div>
             </div>
             <div className='report-container-data'>
