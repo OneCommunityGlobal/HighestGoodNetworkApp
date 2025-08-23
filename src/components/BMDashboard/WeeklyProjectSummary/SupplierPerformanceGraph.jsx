@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable no-shadow */
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -10,229 +10,212 @@ import {
   Tooltip,
   ResponsiveContainer,
   LabelList,
+  Label,
 } from 'recharts';
-import { connect } from 'react-redux';
-import { Input } from 'reactstrap';
-import { fetchAllProjects } from '../../../actions/projects';
+import { useDispatch } from 'react-redux';
 import { fetchSupplierPerformance } from '../../../actions/summaryDashboard';
 
-const SupplierPerformanceDashboard = function(props) {
-  const { onDataLoaded, className, height = 400, showTitle = true, enableFilters = true } = props;
-  const darkMode = props.state?.theme?.darkMode;
+const ALL_DATES = {
+  start: '1970-01-01',
+  end: new Date().toISOString().split('T')[0],
+};
+
+const SupplierPerformanceDashboard = function({ className, height = 420, onDataLoaded }) {
+  const dispatch = useDispatch();
 
   const [supplierData, setSupplierData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedProject, setSelectedProject] = useState('');
-  const [dateRange, setDateRange] = useState({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 30)).toISOString().split('T')[0],
-    endDate: new Date().toISOString().split('T')[0],
-  });
 
-  // Fetch projects on mount
+  // Fetch all supplier performance data on mount
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        await props.fetchAllProjects();
-      } catch (error) {
-        console.error('Failed to fetch projects:', error.message);
-      }
-    };
-    fetchProjects();
-  }, [props.fetchAllProjects]);
-
-  // Fetch supplier data when filters change
-  useEffect(() => {
-    if (!selectedProject || selectedProject === 'all') return;
-
-    const fetchSupplierData = async () => {
+    const fetchData = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        console.log('Fetching supplier data with:', {
-          projectId: selectedProject,
-          startDate: dateRange.startDate,
-          endDate: dateRange.endDate,
-        });
-
-        const data = await props.fetchSupplierPerformance({
-          projectId: selectedProject,
-          startDate: dateRange.startDate,
-          endDate: dateRange.endDate,
-        });
+        console.log('Fetching supplier performance data for all projects');
+        const data = await dispatch(
+          fetchSupplierPerformance({
+            projectId: 'all',
+            startDate: ALL_DATES.start,
+            endDate: ALL_DATES.end,
+          }),
+        );
 
         console.log('Received supplier data:', data);
-        setSupplierData(data);
-
+        setSupplierData(Array.isArray(data) ? data : []);
         if (onDataLoaded && typeof onDataLoaded === 'function') {
           onDataLoaded(data);
         }
       } catch (err) {
-        console.error('Failed to load supplier data:', err.message);
-        setError(`Failed to load data: ${err.message}`);
+        console.error('Failed to load supplier performance:', err);
+        setError('Failed to load supplier performance');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSupplierData();
-  }, [selectedProject, dateRange, onDataLoaded, props.fetchSupplierPerformance]);
+    fetchData();
+  }, [dispatch, onDataLoaded]);
 
-  // Event handlers
-  const handleProjectChange = e => {
-    setSelectedProject(e.target.value);
-  };
+  const styles = useMemo(
+    () => ({
+      container: {
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
+        ...(className && { className }),
+      },
+      headerRow: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        marginBottom: 16,
+      },
+      title: {
+        fontSize: 24,
+        fontWeight: 700,
+        color: '#2D3748',
+        margin: 0,
+      },
+      rightControls: {
+        display: 'flex',
+        gap: 24,
+        alignItems: 'center',
+      },
+      control: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+      },
+      controlLabel: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: '#4A5568',
+        marginBottom: 2,
+      },
+      controlValue: {
+        fontSize: 14,
+        color: '#718096',
+        fontWeight: 500,
+      },
+      card: {
+        border: '1px solid #E2E8F0',
+        borderRadius: 8,
+        padding: 20,
+        background: '#FFFFFF',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+      },
+      message: {
+        textAlign: 'center',
+        padding: 32,
+        color: '#718096',
+        fontSize: 16,
+      },
+      chartContainer: {
+        marginTop: 8,
+      },
+    }),
+    [className],
+  );
 
-  const handleDateChange = e => {
-    const { name, value } = e.target;
-    setDateRange(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  // Y-axis domain to match the image (50-100)
+  const yDomain = [50, 100];
 
-  // Inline styles
-  const styles = {
-    container: {
-      fontFamily:
-        '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
-      ...(className && { className }),
-    },
-    dashboardContent: {
-      border: '1px solid #ddd',
-      borderRadius: '8px',
-      backgroundColor: darkMode ? '#2d3748' : '#fff',
-      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
-      padding: '20px',
-      marginBottom: '20px',
-    },
-    title: {
-      fontSize: '18px',
-      fontWeight: '600',
-      color: darkMode ? '#e2e8f0' : '#333',
-      marginBottom: '16px',
-    },
-    filterControls: {
-      display: 'flex',
-      flexWrap: 'wrap',
-      gap: '12px',
-      marginBottom: '20px',
-      alignItems: 'center',
-    },
-    errorMessage: {
-      backgroundColor: '#f8d7da',
-      color: '#721c24',
-      padding: '10px 15px',
-      borderRadius: '4px',
-      marginBottom: '15px',
-      fontSize: '14px',
-    },
-    chartContainer: {
-      backgroundColor: darkMode ? '#1a202c' : '#f9f9f9',
-      borderRadius: '6px',
-      padding: '15px',
-      minHeight: '300px',
-    },
-    messageText: {
-      color: darkMode ? '#a0aec0' : '#6c757d',
-      fontSize: '14px',
-      padding: '20px',
-      textAlign: 'center',
-    },
+  // Custom tooltip to show percentage
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div
+          style={{
+            backgroundColor: 'white',
+            padding: '8px 12px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}
+        >
+          <p style={{ margin: 0, fontWeight: 'bold' }}>{`${label}`}</p>
+          <p style={{ margin: 0, color: '#34A853' }}>{`On-Time Delivery: ${payload[0].value}%`}</p>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
     <div style={styles.container}>
-      <div style={styles.dashboardContent}>
-        {showTitle && <h3 style={styles.title}>Supplier Performance by On-Time Delivery %</h3>}
-
-        {enableFilters && (
-          <div style={styles.filterControls}>
-            {/* Project Selector */}
-            <Input
-              type="select"
-              value={selectedProject}
-              onChange={handleProjectChange}
-              aria-label="Project Filter"
-              style={{ minWidth: '140px', maxWidth: '220px' }}
-            >
-              <option value="" disabled>
-                Select a Project
-              </option>
-              <option value="all">All Projects</option>
-              {props.state.allProjects?.projects?.map(project => (
-                <option key={project._id} value={project._id}>
-                  {project.projectName}
-                </option>
-              ))}
-            </Input>
-
-            {/* Start Date Input */}
-            <Input
-              type="date"
-              name="startDate"
-              value={dateRange.startDate}
-              onChange={handleDateChange}
-              aria-label="Start Date"
-              style={{ minWidth: '140px', maxWidth: '220px' }}
-            />
-
-            {/* End Date Input */}
-            <Input
-              type="date"
-              name="endDate"
-              value={dateRange.endDate}
-              onChange={handleDateChange}
-              aria-label="End Date"
-              style={{ minWidth: '140px', maxWidth: '220px' }}
-            />
+      <div style={styles.card}>
+        <div style={styles.headerRow}>
+          <h3 style={styles.title}>Supplier Performance by On-Time Delivery %</h3>
+          <div style={styles.rightControls}>
+            <div style={styles.control}>
+              <span style={styles.controlLabel}>Dates</span>
+              <span style={styles.controlValue}>ALL</span>
+            </div>
+            <div style={styles.control}>
+              <span style={styles.controlLabel}>Project</span>
+              <span style={styles.controlValue}>ALL</span>
+            </div>
           </div>
-        )}
-
-        {/* Debug Info */}
-        <div style={{ fontSize: '12px', color: '#666', marginBottom: '10px' }}>
-          <div>Selected Project: {selectedProject || 'None'}</div>
-          <div>
-            Date Range: {dateRange.startDate} to {dateRange.endDate}
-          </div>
-          <div>Available Projects: {props.state.allProjects?.projects?.length || 0}</div>
         </div>
 
-        {/* Error Message */}
-        {error && <div style={styles.errorMessage}>{error}</div>}
-
-        {/* Chart Rendering */}
         <div style={styles.chartContainer}>
-          {loading && <div style={styles.messageText}>Loading...</div>}
-          {supplierData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={height}>
-              <BarChart data={supplierData} margin={{ top: 20, right: 10, left: 10, bottom: 30 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="supplierName" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="onTimeDeliveryPercentage" fill="#4CAF50">
-                  <LabelList dataKey="onTimeDeliveryPercentage" position="top" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div style={styles.messageText}>
-              No data available for the selected project and date range.
-            </div>
-          )}
+          {loading && <div style={styles.message}>Loading...</div>}
+          {error && <div style={styles.message}>{error}</div>}
+
+          {!loading &&
+            !error &&
+            (supplierData && supplierData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={height}>
+                <BarChart data={supplierData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                  <XAxis
+                    dataKey="supplierName"
+                    interval={0}
+                    tickMargin={10}
+                    angle={0}
+                    textAnchor="middle"
+                    height={60}
+                    tick={{ fontSize: 12, fill: '#4A5568' }}
+                  >
+                    <Label
+                      value="Supplier Name"
+                      offset={-10}
+                      position="insideBottom"
+                      style={{ textAnchor: 'middle', fontSize: '14px', fill: '#4A5568' }}
+                    />
+                  </XAxis>
+                  <YAxis domain={yDomain} tickCount={6} tick={{ fontSize: 12, fill: '#4A5568' }}>
+                    <Label
+                      value="On time performance"
+                      angle={-90}
+                      position="insideLeft"
+                      style={{ textAnchor: 'middle', fontSize: '14px', fill: '#4A5568' }}
+                    />
+                  </YAxis>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar
+                    dataKey="onTimeDeliveryPercentage"
+                    fill="#4CAF50"
+                    maxBarSize={80}
+                    radius={[2, 2, 0, 0]}
+                  >
+                    <LabelList
+                      dataKey="onTimeDeliveryPercentage"
+                      position="top"
+                      style={{ fontSize: '12px', fontWeight: 'bold', fill: '#2D3748' }}
+                      formatter={value => `${value}`}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div style={styles.message}>No supplier performance data available.</div>
+            ))}
         </div>
       </div>
     </div>
   );
 };
 
-const mapStateToProps = state => ({
-  state,
-});
-
-export default connect(mapStateToProps, {
-  fetchAllProjects,
-  fetchSupplierPerformance,
-})(SupplierPerformanceDashboard);
+export default SupplierPerformanceDashboard;
