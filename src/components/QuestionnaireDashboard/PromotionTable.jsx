@@ -46,62 +46,72 @@ function PromotionTable() {
         </div>
       </div>
 
-      <table className="promotion-table">
-        <thead>
-          <tr>
-            <th style={{ width: '15%' }}>Existing member/ New member</th>
-            <th>Reviewer</th>
-            <th>Weekly Requirements</th>
-            <th>Required PRs</th>
-            <th>Total Reviews</th>
-            <th>Remaining Weeks</th>
-            <th>Promote?</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* --- New Members Section --- */}
-          <tr className="section-header">
-            <td colSpan="7">New Members</td>
-          </tr>
-          {newMembers.map(user => (
-            <tr key={user.id}>
-              <td />
-              <td>{user.reviewer}</td>
-              <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
-                <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
-                {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
-              </td>
-              <td>{user.requiredPRs}</td>
-              <td>{user.totalReviews}</td>
-              <td>{user.remainingWeeks}</td>
-              <td>
-                <input className="promote-checkbox" type="checkbox" defaultChecked={user.promote} />
-              </td>
+      <div className="promotion-table-wrapper">
+        <table className="promotion-table">
+          <thead>
+            <tr>
+              <th style={{ width: '15%' }}>Existing member/ New member</th>
+              <th>Reviewer</th>
+              <th>Weekly Requirements</th>
+              <th>Required PRs</th>
+              <th>Total Reviews</th>
+              <th>Remaining Weeks</th>
+              <th>Promote?</th>
             </tr>
-          ))}
+          </thead>
+          <tbody>
+            {/* --- New Members Section --- */}
+            <tr className="section-header">
+              <td colSpan="7">New Members</td>
+            </tr>
+            {newMembers.map(user => (
+              <tr key={user.id}>
+                <td />
+                <td>{user.reviewer}</td>
+                <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
+                  <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
+                  {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
+                </td>
+                <td>{user.requiredPRs}</td>
+                <td>{user.totalReviews}</td>
+                <td>{user.remainingWeeks}</td>
+                <td>
+                  <input
+                    className="promote-checkbox"
+                    type="checkbox"
+                    defaultChecked={user.promote}
+                  />
+                </td>
+              </tr>
+            ))}
 
-          {/* --- Existing Members Section --- */}
-          <tr className="section-header">
-            <td colSpan="7">Existing Members</td>
-          </tr>
-          {existingMembers.map(user => (
-            <tr key={user.id}>
-              <td />
-              <td>{user.reviewer}</td>
-              <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
-                <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
-                {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
-              </td>
-              <td>{user.requiredPRs}</td>
-              <td>{user.totalReviews}</td>
-              <td>{user.remainingWeeks}</td>
-              <td>
-                <input className="promote-checkbox" type="checkbox" defaultChecked={user.promote} />
-              </td>
+            {/* --- Existing Members Section --- */}
+            <tr className="section-header">
+              <td colSpan="7">Existing Members</td>
             </tr>
-          ))}
-        </tbody>
-      </table>
+            {existingMembers.map(user => (
+              <tr key={user.id}>
+                <td />
+                <td>{user.reviewer}</td>
+                <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
+                  <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
+                  {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
+                </td>
+                <td>{user.requiredPRs}</td>
+                <td>{user.totalReviews}</td>
+                <td>{user.remainingWeeks}</td>
+                <td>
+                  <input
+                    className="promote-checkbox"
+                    type="checkbox"
+                    defaultChecked={user.promote}
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
