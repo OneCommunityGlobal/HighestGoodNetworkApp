@@ -223,7 +223,7 @@ export default function LBMessaging() {
         key={user.userId}
         type="button"
         className={`${`${styles.lbMessagingContact} ${
-          darkMode ? `${styles.bgYinMnBlue} ${styles.darkModeBorder}` : ''
+          darkMode ? ` bg-yinmn-blue ${styles.contactYinmBlue} ${styles.darkModeBorder}` : ''
         }`}`}
         onClick={() => {
           updateSelection(user);
@@ -292,9 +292,7 @@ export default function LBMessaging() {
               message.sender === auth.userid ? styles.sent : styles.received
             }`}
           >
-            <p
-              className={`${styles.messageText} ${darkMode ? `${styles.bgAzure} text-light` : ''}`}
-            >
+            <p className={`${styles.messageText} ${darkMode ? ` bg-azure text-light` : ''}`}>
               {message.content.split('\n').map(line => (
                 <span key={message._id + line}>
                   {line}
@@ -311,16 +309,16 @@ export default function LBMessaging() {
 
   return (
     users.userProfilesBasicInfo.length !== 0 && (
-      <div className={`${styles.mainContainer} ${darkMode ? styles.bgOxfordBlue : ''}`}>
-        <div className={`${styles.logoContainer} ${darkMode ? styles.bgOxfordBlue : ''}`}>
+      <div className={`${styles.mainContainer} ${darkMode ? ' bg-oxford-blue' : ''}`}>
+        <div className={`${styles.logoContainer} ${darkMode ? ' bg-oxford-blue' : ''}`}>
           <img src={logo} alt="One Community Logo" />
         </div>
         <div
           className={`${styles.contentContainer} ${
-            darkMode ? `${styles.bgYinMnBlue} ${styles.darkModeBorder}` : ''
+            darkMode ? ` bg-yinmn-blue ${styles.darkModeBorder}` : ''
           }`}
         >
-          <div className={`${styles.containerTop} ${styles.msg} ${darkMode ? styles.bgAzure : ''}`}>
+          <div className={`${styles.containerTop} ${styles.msg} ${darkMode ? ' bg-azure' : ''}`}>
             {mobileView && (
               <div className={styles.lbMobileMessagingMenu}>
                 <div className={styles.lbMobileHeader}>
@@ -337,14 +335,14 @@ export default function LBMessaging() {
                         {showContacts ? (
                           <div
                             className={`${styles.lbMessagingContactsHeaderMobile} ${
-                              darkMode ? styles.bgSpaceCadet : ''
+                              darkMode ? ' bg-space-cadet' : ''
                             }`}
                           >
                             <input
                               type="text"
                               placeholder={placeholder}
                               className={`${styles.lbSearchInput} ${
-                                darkMode ? `${styles.bgYinMnBlue} text-light` : ''
+                                darkMode ? ` bg-yinmn-blue text-light` : ''
                               }`}
                               value={searchQuery}
                               onChange={e => {
@@ -376,7 +374,7 @@ export default function LBMessaging() {
                         ) : (
                           <div
                             className={`${styles.lbMessagingContactsHeaderMobile} ${
-                              darkMode ? styles.bgSpaceCadet : ''
+                              darkMode ? ' bg-space-cadet' : ''
                             }`}
                           >
                             <h3
@@ -398,7 +396,7 @@ export default function LBMessaging() {
                         <div
                           className={`${styles.lbMessagingContactsBody} ${
                             styles.activeInlbMessagingContactsBody
-                          } ${darkMode ? styles.bgOxfordBlue : ''}`}
+                          } ${darkMode ? ' bg-oxford-blue' : ''}`}
                         >
                           {showContacts
                             ? searchResults.map(user => (
@@ -406,7 +404,9 @@ export default function LBMessaging() {
                                   key={user.userId}
                                   type="button"
                                   className={`${styles.lbMessagingContact} ${
-                                    darkMode ? `${styles.bgYinMnBlue} ${styles.darkModeBorder}` : ''
+                                    darkMode
+                                      ? ` bg-yinmn-blue ${styles.contactYinmBlue} ${styles.darkModeBorder}`
+                                      : ''
                                   }`}
                                   onClick={() => {
                                     updateSelection(user);
@@ -441,21 +441,21 @@ export default function LBMessaging() {
               </div>
             )}
           </div>
-          <div className={`${styles.containerMainMsg} ${darkMode ? styles.bgOxfordBlue : ''}`}>
+          <div className={`${styles.containerMainMsg} ${darkMode ? ' bg-oxford-blue' : ''}`}>
             {/* Contacts Section */}
             {!mobileView && (
               <div className={styles.lbMessagingContacts}>
                 {showContacts ? (
                   <div
                     className={`${styles.lbMessagingContactsHeader} ${
-                      darkMode ? styles.bgSpaceCadet : ''
+                      darkMode ? ' bg-space-cadet' : ''
                     }`}
                   >
                     <input
                       type="text"
                       placeholder={placeholder}
                       className={`${styles.lbSearchInput} ${
-                        darkMode ? `${styles.bgYinMnBlue} text-light` : ''
+                        darkMode ? ` bg-yinmn-blue text-light` : ''
                       }`}
                       value={searchQuery}
                       onChange={e => {
@@ -487,7 +487,7 @@ export default function LBMessaging() {
                 ) : (
                   <div
                     className={`${styles.lbMessagingContactsHeader} ${
-                      darkMode ? styles.bgSpaceCadet : ''
+                      darkMode ? ' bg-space-cadet' : ''
                     }`}
                   >
                     <h3 className={`${styles.lbContactMsgs} ${darkMode ? 'text-light' : ''}`}>
@@ -505,7 +505,7 @@ export default function LBMessaging() {
                 <div
                   className={`${styles.lbMessagingContactsBody} ${
                     styles.activeInlbMessagingContactsBody
-                  } ${darkMode ? styles.bgOxfordBlue : ''}`}
+                  } ${darkMode ? ' bg-oxford-blue' : ''}`}
                 >
                   {showContacts
                     ? searchResults.map(user => (
@@ -513,7 +513,9 @@ export default function LBMessaging() {
                           key={user._id}
                           type="button"
                           className={`${styles.lbMessagingContact} ${
-                            darkMode ? `${styles.bgYinMnBlue} ${styles.darkModeBorder}` : ''
+                            darkMode
+                              ? ` bg-yinmn-blue  ${styles.contactYinmBlue} ${styles.darkModeBorder}`
+                              : ''
                           }`}
                           onClick={() => updateSelection(user)}
                         >
@@ -545,7 +547,7 @@ export default function LBMessaging() {
             <div className={styles.lbMessagingMessageWindow}>
               <div
                 className={`${styles.lbMessagingMessageWindowHeader} ${
-                  darkMode ? styles.bgOxfordBlue : ''
+                  darkMode ? ' bg-oxford-blue' : ''
                 }`}
               >
                 <div className={darkMode ? 'text-light' : ''}>
@@ -577,7 +579,7 @@ export default function LBMessaging() {
                       <div
                         className={`${styles.lgMessagingBellSelectDropdown} ${
                           bellDropdownActive ? styles.activeInlgMessagingBellSelectDropdown : ''
-                        } ${darkMode ? styles.bgYinMnBlue : ''}`}
+                        } ${darkMode ? ' bg-yinmn-blue' : ''}`}
                       >
                         <label className={darkMode ? 'text-light' : ''}>
                           <input
@@ -621,7 +623,7 @@ export default function LBMessaging() {
               </div>
               <div
                 className={`${styles.lbMessagingMessageWindowBody} ${
-                  darkMode ? styles.bgYinMnBlue : ''
+                  darkMode ? ' bg-yinmn-blue' : ''
                 }`}
               >
                 {selectedUser.userId ? (
@@ -634,7 +636,7 @@ export default function LBMessaging() {
               </div>
               <div
                 className={`${styles.lbMessaingMessageWindowFooter} ${
-                  darkMode ? styles.bgOxfordBlue : ''
+                  darkMode ? ' bg-oxford-blue' : ''
                 }`}
               >
                 <textarea
@@ -649,7 +651,7 @@ export default function LBMessaging() {
                     }
                   }}
                   className={`${styles.lbMessagingTextarea} ${
-                    darkMode ? `${styles.bgYinMnBlue} text-light` : ''
+                    darkMode ? ` bg-yinmn-blue text-light` : ''
                   }`}
                   disabled={!selectedUser.userId}
                 />

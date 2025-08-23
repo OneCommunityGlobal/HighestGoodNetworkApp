@@ -439,24 +439,13 @@
 }
 
 /* Dark Mode Styles */
-.bgOxfordBlue {
-  background-color: #1b2a41;
+
+.contactYinmBlue {
+   /* empty class to provide hovering capabilty to contacts in dark mode  */
 }
 
-.bgSpaceCadet {
-  background-color: #1C2541;
-}
-
-.bgYinMnBlue {
-  background-color: #3A506B;
-}
-
-.bgAzure {
-  background-color: #007FFF;
-}
-
-.lbMessagingContact.bgYinMnBlue:hover {
-  background-color: #1C2541; /* Space Cadet for hover effect */
+.contactYinmBlue:hover {
+  background-color: #1c2541 !important; /* Space Cadet for hover effect */
 }
 
 .darkModeBorder {
