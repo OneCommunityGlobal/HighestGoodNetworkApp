@@ -14,7 +14,7 @@ function MapThemeUpdater({ darkMode }) {
   useEffect(() => {
     map.invalidateSize();
     const container = map.getContainer();
-    container.classList.toggle('dark-mode-map', darkMode);
+    container.classList.toggle(css.darkModeMap, darkMode);
   }, [darkMode, map]);
 
   return null;
@@ -324,10 +324,11 @@ function InteractiveMap() {
                   weight: 1,
                 }}
               >
-                <Tooltip className={darkMode ? 'dark-mode-tooltip' : ''} permanent={false}>
+                <Tooltip className={darkMode ? css.darkModeTooltip : ''} permanent={false}>
                   Click for {org.name} details
                 </Tooltip>
-                <Popup className={darkMode ? 'dark-mode-popup' : ''}>
+
+                <Popup className={darkMode ? css.darkModePopup : ''}>
                   <div
                     style={{
                       color: darkMode ? 'white' : '#222',
