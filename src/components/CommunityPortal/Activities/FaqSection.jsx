@@ -123,7 +123,19 @@ function FaqSection() {
         ) : (
           filteredFaqs.map(faq => (
             <div key={faq.id} className="faq-item">
-              <div className="faq-question" onClick={() => toggleFaq(faq.id)}>
+              <div
+                className="faq-question"
+                onClick={() => toggleFaq(faq.id)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleFaq(faq.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-expanded={openIndex === faq.id}
+              >
                 {faq.question}
                 <span className={`faq-arrow ${openIndex === faq.id ? 'open' : ''}`}>&#9662;</span>
               </div>
@@ -137,7 +149,18 @@ function FaqSection() {
 
       <p className="faq-contact">
         Still have questions? Feel free to{' '}
-        <span className="contact-link" onClick={handleContactClick}>
+        <span
+          className="contact-link"
+          onClick={handleContactClick}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleContactClick();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+        >
           contact us
         </span>
         .{copied && <span className="copied-message"> Copied!</span>}
