@@ -131,9 +131,6 @@ class PeopleReport extends Component {
       prevState.isLoading !== this.state.isLoading) {
       // this.syncPanelHeights();
     }
-    if (prevProps.timeEntries !== this.props.timeEntries) {
-      this.setState({ timeEntries: this.props.timeEntries });
-    }
   }
 
   setStartDate(date) {

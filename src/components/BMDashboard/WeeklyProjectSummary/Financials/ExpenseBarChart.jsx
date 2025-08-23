@@ -1,7 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import styles from './ExpenseBarChart.module.css';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
@@ -13,7 +11,6 @@ export default function ExpenseBarChart() {
   const [endDate, setEndDate] = useState('');
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     async function fetchData() {
@@ -92,58 +89,34 @@ export default function ExpenseBarChart() {
     fetchData();
   }, [projectId, categoryFilter, startDate, endDate]);
 
-  // Apply dark mode styles to document body when in dark mode
-  useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add('dark-mode-body');
-    } else {
-      document.body.classList.remove('dark-mode-body');
-    }
-
-    // Add dark mode CSS for chart
-    if (!document.getElementById('dark-mode-styles-expense-chart')) {
-      const styleElement = document.createElement('style');
-      styleElement.id = 'dark-mode-styles-expense-chart';
-      styleElement.innerHTML = `
-        .dark-mode-body .recharts-wrapper,
-        .dark-mode-body .recharts-surface {
-          background-color: #1e2736 !important;
-        }
-        .dark-mode-body .recharts-cartesian-grid-horizontal line,
-        .dark-mode-body .recharts-cartesian-grid-vertical line {
-          stroke: #364156 !important;
-        }
-        .dark-mode-body .recharts-text {
-          fill: #e0e0e0 !important;
-        }
-        .dark-mode-body .expense-bar-chart-container {
-          background-color: #1e2736 !important;
-          color: #e0e0e0 !important;
-        }
-      `;
-      document.head.appendChild(styleElement);
-    }
-
-    return () => {
-      // Cleanup
-      document.body.classList.remove('dark-mode-body');
-    };
-  }, [darkMode]);
-
   return (
-    <div className={`${styles.chartContainer} ${darkMode ? 'dark-mode' : ''}`}>
-      <div className={styles.titleContainer}>
-        <h4 className={styles.chartTitle}>Planned vs Actual Cost</h4>
-        {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+    <div style={{ width: '100%', padding: '0.5rem' }}>
+      <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
+        <h4 style={{ margin: 0, color: '#555', fontSize: '1.2rem' }}>Planned vs Actual Cost</h4>
+        {errorMessage && (
+          <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
+            {errorMessage}
+          </div>
+        )}
       </div>
 
-      <div className={styles.filtersContainer}>
-        <label className={styles.filterLabel}>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '1rem',
+          fontSize: '0.75rem',
+          marginBottom: '0.5rem',
+        }}
+      >
+        <label style={{ minWidth: '150px' }}>
           Project:
           <select
             value={projectId}
             onChange={e => setProjectId(e.target.value)}
-            className={styles.filterSelect}
+            style={{ marginLeft: '0.3rem', width: '100%' }}
           >
             <option value="">All</option>
             {projects.map(p => (
@@ -153,12 +126,12 @@ export default function ExpenseBarChart() {
             ))}
           </select>
         </label>
-        <label className={styles.filterLabel}>
+        <label style={{ minWidth: '150px' }}>
           Category:
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
-            className={styles.filterSelect}
+            style={{ marginLeft: '0.3rem', width: '100%' }}
           >
             <option value="ALL">All</option>
             {categories.map(cat => (
@@ -168,84 +141,67 @@ export default function ExpenseBarChart() {
             ))}
           </select>
         </label>
-        <label className={styles.filterLabel}>
+        <label style={{ minWidth: '150px' }}>
           Start Date:
           <input
             type="date"
             value={startDate}
             onChange={e => setStartDate(e.target.value)}
-            className={styles.filterInput}
+            style={{ marginLeft: '0.3rem', width: '100%' }}
           />
         </label>
-        <label className={styles.filterLabel}>
+        <label style={{ minWidth: '150px' }}>
           End Date:
           <input
             type="date"
             value={endDate}
             onChange={e => setEndDate(e.target.value)}
-            className={styles.filterInput}
+            style={{ marginLeft: '0.3rem', width: '100%' }}
           />
         </label>
       </div>
 
-      <div className={styles.legendContainer}>
-        <span className={styles.legendItem}>
-          <span className={styles.legendColor} style={{ backgroundColor: '#4285F4' }} />
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '1rem',
+          fontSize: '0.75rem',
+          marginBottom: '0.75rem',
+          flexWrap: 'wrap',
+        }}
+      >
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+          <span
+            style={{ width: 10, height: 10, backgroundColor: '#4285F4', display: 'inline-block' }}
+          />{' '}
           Planned
         </span>
-        <span className={styles.legendItem}>
-          <span className={styles.legendColor} style={{ backgroundColor: '#EA4335' }} />
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+          <span
+            style={{ width: 10, height: 10, backgroundColor: '#EA4335', display: 'inline-block' }}
+          />{' '}
           Actual
         </span>
       </div>
 
-      <div className={styles.chartWrapper}>
+      <div style={{ width: '100%', height: '240px' }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 20, right: 10, left: 35, bottom: 35 }}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: 35, bottom: 35 }}>
             <XAxis
               dataKey="project"
-              tick={{
-                fontSize: 10,
-                fill: darkMode ? '#e0e0e0' : '#333',
-              }}
+              tick={{ fontSize: 10 }}
               interval={0}
               angle={-15}
               textAnchor="end"
-              label={{
-                value: 'Project Name',
-                position: 'insideBottom',
-                dy: 25,
-                fontSize: 10,
-                fill: darkMode ? '#e0e0e0' : '#333',
-              }}
+              label={{ value: 'Project Name', position: 'insideBottom', dy: 25, fontSize: 10 }}
             />
-            <YAxis
-              tick={{
-                fontSize: 10,
-                fill: darkMode ? '#e0e0e0' : '#333',
-              }}
-              axisLine
-              tickLine
-            />
+            <YAxis tick={{ fontSize: 10 }} axisLine tickLine />
             <Bar dataKey="planned" fill="#4285F4" name="Planned">
-              <LabelList
-                dataKey="planned"
-                position="top"
-                style={{
-                  fontSize: 8,
-                  fill: darkMode ? '#e0e0e0' : '#333',
-                }}
-              />
+              <LabelList dataKey="planned" position="top" style={{ fontSize: 8 }} />
             </Bar>
             <Bar dataKey="actual" fill="#EA4335" name="Actual">
-              <LabelList
-                dataKey="actual"
-                position="top"
-                style={{
-                  fontSize: 8,
-                  fill: darkMode ? '#e0e0e0' : '#333',
-                }}
-              />
+              <LabelList dataKey="actual" position="top" style={{ fontSize: 8 }} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
