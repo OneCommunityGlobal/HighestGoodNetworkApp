@@ -127,3 +127,13 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.phoneContainer {
+  display: block;
+  width: 100%;
+}
+
+.phoneContainer input {
+  width: 100% !important;
+  box-sizing: border-box;
+}

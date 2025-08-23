@@ -2,6 +2,10 @@ import { useState } from 'react';
 import styles from './TestEventRegistration.module.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import mockEvents from '../CommunityPortal/Reports/Participation/mockData';
+
 
 function TestEventRegistration() {
   // State to store the event name and error message
@@ -35,12 +39,6 @@ function TestEventRegistration() {
     'Referral',
     'Others',
   ];
-  const countryCodes = [
-    { code: '+1', label: 'US' },
-    { code: '+91', label: 'India' },
-    { code: '+44', label: 'UK' },
-    { code: '+61', label: 'Australia' },
-  ];
   const [formValues, setFormValues] = useState(eventDetails);
   const [errors, setErrors] = useState({});
 
@@ -58,7 +56,7 @@ function TestEventRegistration() {
     return d <= eighteen;
   }
 
-  function validate(values) {
+  function validate(values, selectedEvent) {
     const errs = {};
     const phoneDigits = normalizeDigits(values.phoneNumber);
     const isUS =
@@ -66,23 +64,37 @@ function TestEventRegistration() {
       values.country === 'United States' ||
       values.country === 'USA';
 
-    if (!values.eventName.trim()) errs.eventName = 'Event Name is required.';
+    // Event
+    if (!values.eventName.trim()) {
+      errs.eventName = 'Event Name is required.';
+    } else if (selectedEvent) {
+      const seatsLeft =
+        typeof selectedEvent.availableSeats === 'number'
+          ? selectedEvent.availableSeats
+          : (selectedEvent.capacity ?? 0) - (selectedEvent.attendees ?? 0);
+      if (Number.isFinite(seatsLeft) && seatsLeft <= 0) {
+        errs.eventName = 'This event is full.';
+      }
+    }
+
+    // Names
     if (!values.firstName.trim()) errs.firstName = 'First Name is required.';
     if (!values.lastName.trim()) errs.lastName = 'Last Name is required.';
 
-    // Phone + country code Validation
+    // Phone
     if (!values.countryCode.trim()) errs.countryCode = 'Country Code is required.';
     if (!phoneDigits || phoneDigits.length !== 10) {
       errs.phoneNumber = 'Enter a valid 10-digit phone number.';
     }
 
-    // Email Validation
+    // Email
     if (!values.emailAddress.trim()) {
       errs.emailAddress = 'Email Address is required.';
     } else if (!emailRegex.test(values.emailAddress)) {
       errs.emailAddress = 'Please enter a valid email address.';
     }
 
+    // DOB
     if (!values.dateOfBirth.trim()) {
       errs.dateOfBirth = 'Date of Birth is required.';
     } else if (!isAdult(values.dateOfBirth)) {
@@ -118,6 +130,7 @@ function TestEventRegistration() {
     return errs;
   }
 
+
   // Handle changes in the input field
   const handleChange = e => {
     const { name, value } = e.target;
@@ -134,23 +147,25 @@ function TestEventRegistration() {
   // Handle form submission
   const handleSubmit = e => {
     e.preventDefault();
-    const newErrors = validate(formValues);
+    const selectedEvent = mockEvents.find(ev => ev.eventName === formValues.eventName);
+
+    const newErrors = validate(formValues, selectedEvent);
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       toast.error('Please fix the highlighted fields.');
-      // scroll to first error
       const first = Object.keys(newErrors)[0];
       document.getElementById(first)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
+
     toast.success(
-      `Registration confirmed for "${formValues.eventName}" at ${formValues.city}, ${formValues.state}, ${formValues.country}.`,
+      `Registration confirmed for "${formValues.eventName}" at ${formValues.city}, ${formValues.state}, ${formValues.country}.`
     );
-    // setFormSubmitted(true);
-    // Clear the form on successful submission
     setFormValues(eventDetails);
   };
+
+
 
   // Handle cancel button
   const handleCancel = () => {
@@ -172,15 +187,29 @@ function TestEventRegistration() {
           <label htmlFor="eventName" className={styles.label}>
             Event Name: <span style={{ color: 'red' }}>*</span>
           </label>
-          <input
-            type="text"
+          <select
             id="eventName"
             name="eventName"
             value={formValues.eventName}
-            onChange={handleChange}
+            onChange={e => {
+              const selected = mockEvents.find(ev => ev.eventName === e.target.value);
+              setFormValues(prev => ({
+                ...prev,
+                eventName: e.target.value,
+              }));
+              setErrors(prev => ({ ...prev, eventName: '' }));
+            }}
             className={styles.input}
-          />
+          >
+            <option value="">-- Select an event --</option>
+            {mockEvents.map(ev => (
+              <option key={ev.id} value={ev.eventName}>
+                {ev.eventName} {ev.capacity === 0 ? '(Full)' : `(Seats: ${ev.capacity})`}
+              </option>
+            ))}
+          </select>
           {errors.eventName && <span className={styles.error}>{errors.eventName}</span>}
+
         </div>
         <div className={styles.formGroup}>
           <label htmlFor="firstName" className={styles.label}>
@@ -212,36 +241,39 @@ function TestEventRegistration() {
           {errors.lastName && <span className={styles.error}>{errors.lastName}</span>}
         </div>
         <div className={styles.formGroup}>
-          <label htmlFor="phoneNumber" className={styles.label}>
+          <label htmlFor="phone" className={styles.label}>
             Phone Number: <span style={{ color: 'red' }}>*</span>
           </label>
-          <div className={styles.flexRow}>
-            <select
-              name="countryCode"
-              value={formValues.countryCode}
-              onChange={handleChange}
-              className={styles.selectCode}
-            >
-              <option value="">Select Code</option>
-              {countryCodes.map(({ code, label }) => (
-                <option key={code} value={code}>
-                  {code} ({label})
-                </option>
-              ))}
-            </select>
-            <input
-              type="text"
-              id="phoneNumber"
-              name="phoneNumber"
-              value={formValues.phoneNumber}
-              onChange={handleChange}
-              placeholder="XXX-XXX-XXXX"
-              className={styles.input}
-            />
-          </div>
+
+          <PhoneInput
+            country="us"                 // default, user can change
+            enableSearch                 // searchable country list
+            countryCodeEditable={false}  // lock dial code editing
+            inputProps={{ id: 'phone', name: 'phone' }}
+            // Build a single E.164-like value for the widget:
+            value={`${formValues.countryCode || ''}${formValues.phoneNumber ? formValues.phoneNumber.replace(/\D/g, '') : ''}`}
+            onChange={(value, country) => {
+              const dial = `+${country?.dialCode || ''}`;
+              // strip the dial code from the full value to get national number
+              const national = value.replace(/^\+?/, '').replace(new RegExp(`^${country?.dialCode || ''}`), '');
+              setFormValues(prev => ({
+                ...prev,
+                countryCode: dial,
+                phoneNumber: national.replace(/\D/g, ''), // keep only digits
+              }));
+              setErrors(prev => ({ ...prev, countryCode: '', phoneNumber: '' }));
+            }}
+            // optional styling hooks
+            inputClass={styles.input}
+            containerClass={styles.phoneContainer}
+            buttonClass={styles.phoneButton}
+            dropdownClass={styles.phoneDropdown}
+          />
+
           {errors.countryCode && <span className={styles.error}>{errors.countryCode}</span>}
           {errors.phoneNumber && <span className={styles.error}>{errors.phoneNumber}</span>}
         </div>
+
         <div className={styles.formGroup}>
           <label htmlFor="emailAddress" className={styles.label}>
             Email Address: <span style={{ color: 'red' }}>*</span>
