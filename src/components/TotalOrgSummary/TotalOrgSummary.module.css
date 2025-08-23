@@ -89,7 +89,9 @@
   line-height: 36px;
   color: #000;
 }
-
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderTitle h3 {
+  color: #fff !important;
+}
 .reportHeaderActions {
   display: flex;
   align-items: center;
