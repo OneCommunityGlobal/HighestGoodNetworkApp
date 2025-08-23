@@ -1,4 +1,3 @@
-/* eslint-disable import/prefer-default-export */
 import classnames from 'classnames';
 import './ReportBlock.css';
 
@@ -17,8 +16,19 @@ export function ReportBlock({ className, children, firstColor, secondColor, dark
   }
 
   return (
-    <div className={classnames(`${darkMode ? 'report-block-wrapper-dark' : 'report-block-wrapper'}`, className)}>
-      <div className="report-block-content" style={{ background: backgroundColor }}>
+    <div
+      className={classnames(
+        `${darkMode ? 'report-block-wrapper-dark' : 'report-block-wrapper'}`,
+        className,
+      )}
+      data-testid="report-block-wrapper"
+      role="generic"
+    >
+      <div
+        className="report-block-content"
+        data-testid="report-block-content"
+        style={{ background: backgroundColor }}
+      >
         {children}
       </div>
     </div>

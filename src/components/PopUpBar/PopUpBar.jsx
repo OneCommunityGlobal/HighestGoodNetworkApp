@@ -1,18 +1,26 @@
-// import React from 'react';
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import './PopUpBar.css';
 
-function PopUpBar(props) {
-  const { message, onClickClose, textColor, isLoading = false } = props;
+function PopUpBar({
+  firstName = window.viewingUser?.firstName,
+  lastName = window.viewingUser?.lastName,
+  message,
+  onClickClose,
+  textColor = '#000',
+  isLoading = false,
+  button = true,
+}) {
+  const defaultTemplate =
+    `You are currently functioning as ${firstName} ${lastName}, ` +
+    `you only have the permissions of ${firstName}`;
+
+  const displayText = message ?? defaultTemplate;
+
   return (
-    <div className={`popup_container ${textColor}`} data-testid="test-popup">
-      {message}
-      {isLoading ? (
-        <span className="close_button">
-          <Loading className="fa-sm" />
-        </span>
-      ) : (
-        <button type="button" className="close_button btn_padding" onClick={onClickClose}>
+    <div className="popup_container" data-testid="test-popup" style={{ color: textColor }}>
+      {isLoading ? <Loading /> : <p className="popup_message">{displayText}</p>}
+      {button && (
+        <button type="button" className="close_button" onClick={onClickClose}>
           X
         </button>
       )}

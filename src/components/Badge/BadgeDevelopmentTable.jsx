@@ -14,7 +14,7 @@ import {
   UncontrolledPopover,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
