@@ -501,7 +501,7 @@ class ReportsPage extends Component {
     return (
       <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
         <div
-          className={`category-data-container ${
+          className={`category-data-container ${isOxfordBlue} ${isYinmnBlue} ${
             this.state.showPeople ||
             this.state.showProjects ||
             this.state.showTeams ||
@@ -540,7 +540,8 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <p className={textColor} >Select a Category</p>
+             {/* <p className={textColor} >Select a Category</p> */}
+              <div className={darkMode ? `text-white` : ``}>Select a Category</div>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>

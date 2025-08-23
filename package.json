@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "license": "GPL-2.0",
   "engines": {
-    "node": ">=14.0.0 <15"
+    "node": ">=14.0.0 <21"
   },
   "private": true,
   "dependencies": {
@@ -94,6 +94,7 @@
     "redux-concatenate-reducers": "^1.0.0",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.4.2",
+    "sass": "^1.90.0",
     "tinymce": "^7.2.0",
     "uuid": "^9.0.1"
   },
@@ -144,7 +145,6 @@
     "jest-environment-jsdom-sixteen": "^2.0.0",
     "msw": "^0.19.5",
     "node-fetch": "^3.1.1",
-    "node-sass": "^8.0.0",
     "prettier": "^1.19.1",
     "react-error-overlay": "^6.0.9",
     "redux-mock-store": "^1.5.4",
