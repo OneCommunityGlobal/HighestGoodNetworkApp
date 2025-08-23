@@ -77,6 +77,11 @@
     font-size: 14px;
   }
 }
+/* Added warning style */
+.total-warning{
+    font-weight: 400;
+    color: #DAA520	;
+}
 
 @media screen and (max-width: 550px) {
   .total-container {

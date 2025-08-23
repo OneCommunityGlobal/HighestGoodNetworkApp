@@ -285,10 +285,11 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
 
 /**
  * fetching all user profiles basic info
+ *  Added `source` parameter to identify the calling component.
  */
-export const getUserProfileBasicInfo = () => {
+export const getUserProfileBasicInfo = (source) => {
   // API request to fetch basic user profile information
-  const userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+  const userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO(source));
 
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process
