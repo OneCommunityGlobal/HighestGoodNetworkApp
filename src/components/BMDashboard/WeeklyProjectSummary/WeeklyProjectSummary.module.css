@@ -147,17 +147,29 @@
   grid-column: span 1;
 }
 
-
-.weekly-project-summary-card.financial-big {
+.financialBig {
   grid-column: span 4;
-  min-height: 600px;
+  min-height: 400px;
   height: auto;
   padding: 0;
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+
+.weekly-project-summary-card.financial-big {
+  grid-column: span 4;
+  min-height: 400px;
+  height: auto;
+  padding: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 10px;
 }
 
 .weekly-project-summary-card.financial-big h2 {
@@ -208,10 +220,10 @@
 }
 
 .weeklyProjectSummaryDashboardCategoryContent {
-  padding: 15px;
+  padding: 10px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  gap: 15px;
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);

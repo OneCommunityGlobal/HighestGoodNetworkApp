@@ -5,15 +5,16 @@ import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import CostPredictionChart from './CostPredictionChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
+import { CostPredictionChart } from './Financials';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
@@ -168,8 +169,8 @@ export function WeeklyProjectSummaryContent() {
 
 function WeeklyProjectSummary() {
   const dispatch = useDispatch();
-  const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
+  const materials = useSelector(state => state.materials?.materialslist || []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
@@ -308,15 +309,41 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small financial-chart">
+          <>
+            {/* {Array.from({ length: 3 }).map(() => {
+              const uniqueId = uuidv4();
+              return (
+                <div
+                  key={uniqueId}
+                  className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}
+                >
+                  📊 Card
+                </div>
+              );
+            })} */}
+
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
+              <CostPredictionChart />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
-          </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
+              <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+                📊 Card
+              </div>
+
+              <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+                📊 Card
+              </div>
+              <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall}`}>
+                📊 Card
+              </div>
+              <div className={`${styles.weeklyProjectSummaryCard} ${styles.financialBig}`}>
+                📊 Big Card
+              </div>
+            </div>
+          </>
         ),
       },
       {
