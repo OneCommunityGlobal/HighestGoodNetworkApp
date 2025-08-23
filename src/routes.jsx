@@ -42,6 +42,7 @@ import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 import Timelog from './components/Timelog';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
@@ -266,6 +267,7 @@ export default (
         </>
       )}
     />
+    <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
