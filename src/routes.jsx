@@ -5,7 +5,10 @@ import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
+
 import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+
+// hgnform routes
 import AutoUpdate from '~/components/AutoUpdate';
 import TaskEditSuggestions from '~/components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from '~/utils/routePermissions';
@@ -62,6 +65,8 @@ import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
+import CommunityMembers from './components/CommunityMembers';
+
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
@@ -69,6 +74,9 @@ import ApplicantsAgeChart from './components/ApplicantsChart';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
+import PRGradingScreen from './components/PRGradingScreen';
+import PRGradingTest from './components/PRGradingScreen/PRGradingTest'; //temporary route for testing - delete after testing
+import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
 
 import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage'; // 测试用 后续要删除
 
@@ -137,6 +145,7 @@ import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChar
 
 import HelpPage from './components/LandingPage/HelpPage';
 
+import TeamCard from './components/HGNHelpSkillsDashboard/TeamCard/TeamCard';
 import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
 import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
@@ -147,6 +156,7 @@ import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 // HGN PR Dashboard
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
+import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -282,7 +292,7 @@ export default (
       <Switch>
         {/* 测试用，后续要删除 */}
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
-        <ProtectedRoute path="/hgnhelp" component={HelpPage} />
+        <ProtectedRoute path="/hgnhelp" exact component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
@@ -300,6 +310,20 @@ export default (
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
 
+        {/* New Community Members route */}
+        <ProtectedRoute
+          path="/hgnhelp/community"
+          component={CommunityMembers}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+        />
+
         <ProtectedRoute
           path="/inventory/:projectId"
           component={Inventory}
@@ -310,7 +334,6 @@ export default (
           component={Inventory}
           routePermissions={RoutePermissions.inventoryProjectWbs}
         />
-
         <ProtectedRoute
           path="/weeklysummariesreport"
           exact
@@ -378,7 +401,6 @@ export default (
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
         />
-
         <ProtectedRoute
           path="/communityportal/activity/:activityId/resources"
           exact
@@ -433,8 +455,13 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.teams}
         />
-
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+
+        <ProtectedRoute
+          path="/applicant-volunteer-ratio"
+          exact
+          component={ApplicantVolunteerRatio}
+        />
 
         <ProtectedRoute
           path="/application-time-chart"
@@ -472,21 +499,18 @@ export default (
           component={FaqManagement}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/faqs/:id/history"
           exact
           component={FaqHistory}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/unanswered-faqs"
           exact
           component={UnansweredFaqs}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/totalorgsummary"
           exact
@@ -509,10 +533,10 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
-
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
+
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
 
         <Route path="/UtilizationChart" component={UtilizationChart} />
@@ -601,29 +625,21 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
+        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
 
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
-
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
-
         <BMProtectedRoute
           path="/bmdashboard/timelog/:projectId"
           fallback
           component={BMTimeLogCard}
         />
-
-        <BMProtectedRoute
-          path="/bmdashboard/tools-availability"
-          fallback
-          exact
-          component={ToolsAvailabilityPage}
-        />
-
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
+
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
@@ -632,7 +648,6 @@ export default (
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
-
         <CPProtectedRoute
           path="/communityportal/activities/:activityid/resources"
           exact
@@ -678,7 +693,6 @@ export default (
         />
         <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
         <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
-
         <CPProtectedRoute
           path="/communityportal/reports/participation"
           exact
@@ -696,7 +710,6 @@ export default (
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
-
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
@@ -711,10 +724,13 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
+        <ProtectedRoute path="/hgnteam" exact component={TeamCard} />
+
         <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
         <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
         <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
@@ -725,6 +741,7 @@ export default (
         <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+
         <ProtectedRoute
           path="/hgn/profile/skills"
           exact
@@ -733,6 +750,7 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.CoreTeam, UserRole.Owner]}
           routePermissions={RoutePermissions.accessHgnSkillsDashboard}
         />
+
         <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
         <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
         <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
@@ -741,7 +759,19 @@ export default (
         <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
+        <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
+        <ProtectedRoute path="/pr-grading-screen" exact component={PRGradingScreen} />
+        <ProtectedRoute path="/pr-grading-test" exact component={PRGradingTest} />
+        {/* //temporary route for testing - delete after testing */}
         <ProtectedRoute path="/" exact component={Dashboard} />
+
+        {/* ----- PR Dashboard  ----- */}
+        <ProtectedRoute
+          path="/pr-dashboard/promotion-eligibility"
+          exact
+          component={PromotionEligibility}
+        />
+
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>

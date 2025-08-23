@@ -26,7 +26,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import { updateRehireableStatus } from '../../../actions/userManagement'
+import { updateRehireableStatus } from '../../../actions/userManagement';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -130,6 +130,9 @@ class PeopleReport extends Component {
       prevState.timeEntries !== this.state.timeEntries ||
       prevState.isLoading !== this.state.isLoading) {
       // this.syncPanelHeights();
+    }
+    if (prevProps.timeEntries !== this.props.timeEntries) {
+      this.setState({ timeEntries: this.props.timeEntries });
     }
   }
 
@@ -311,6 +314,7 @@ class PeopleReport extends Component {
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
     const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
+      console.log("Time Entries for user:", timeEntries);
       return total + (entry.hours + (entry.minutes / 60));
     }, 0) || 0).toFixed(2);
 
@@ -444,12 +448,77 @@ class PeopleReport extends Component {
           darkMode={darkMode}
         />
       );
-    }
+    };
+    const renderProfileInfo = () => {
+      const { isRehireable, bioStatus, authRole } = this.state;
+      const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
 
+      return (
+        <ReportPage.ReportHeader
+          src={profilePic}
+          avatar={profilePic ? undefined : <FiUser />}
+          isActive={isActive}
+          darkMode={darkMode}
+        >
+          <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
+            <p>
+              <Link to={`/userProfile/${_id}`}
+                title="View Profile"
+                className={darkMode ? 'text-light font-weight-bold' : ''}
+                style={{ fontSize: "24px" }}>
+                {firstName} {lastName}
+              </Link>
+            </p>
+            <p>Role: {role}</p>
+            <p>Title: {jobTitle}</p>
 
-    const { isRehireable, bioStatus, authRole } = this.state;
-    const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
+            {/* {endDate ? ( */}
+            <div className="rehireable">
+              <Checkbox
+                value={isRehireable}
+                onChange={() => this.setRehireable(!isRehireable)}
+                label="Rehireable"
+                darkMode={darkMode}
+                backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
+                textColorCN={darkMode ? "text-light" : ""}
+              />
+            </div>
+            {/* ) : (
+              ''
+            )} */}
+
+            <div>
+              <div>
+                <h4>{formatDate(startDate)}</h4>
+                <p>Start Date</p>
+              </div>
+              <div>
+                <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
+                <p>End Date</p>
+              </div>
+              {bioStatus ? (
+                <div>
+                  <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
+                  {authRole === 'Administrator' || authRole === 'Owner' ? (
+                    <ToggleSwitch
+                      fontSize="13px"
+                      fontColor="#007BFF"
+                      switchType="bio"
+                      state={bioStatus}
+                      /* eslint-disable-next-line no-use-before-define */
+                      handleUserProfile={bio => onChangeBioPosted(bio)}
+                    />
+                  ) : null}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </ReportPage.ReportHeader>
+      );
+    };
+
     const onChangeBioPosted = async bio => {
+      const bioStatus = bio;
       this.setState(() => {
         return {
           bioStatus: bio,
@@ -471,36 +540,20 @@ class PeopleReport extends Component {
       );
       return accumulator.concat(incompleteTasks);
     }, []);
-    const visibleBlocks = [
-      'weeklycommittedHours',
-      userProfile.isActive ? 'hoursLogged' : null,
-      'blueSquares',
-      'totalHours'
-    ].filter(Boolean);
-
-    const boxCount = visibleBlocks.length;
 
     return (
-
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-        <div className="people-report-flex-layout" >
-
-          <div xs="12" md="9" lg="9" className="people-report-left" >
-            <ReportPage darkMode={darkMode}>
-
-
-              <div className={`people-report-time-logs-wrapper`} 
-              // style={boxCount === 3 ? { height: '68vw' } : { width: '100%' }}
-              >
-                <ReportPage.ReportBlock
-                  firstColor="#ff5e82"
-                  secondColor="#e25cb2"
-                  className="people-report-time-log-block"
-                  darkMode={darkMode}
-                >
-                  <h3 className="text-light">{weeklycommittedHours}</h3>
-                  <p>Weekly Committed Hours</p>
-                </ReportPage.ReportBlock>
+        <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 && !Number.isNaN(tangibleHoursReportedThisWeek)? "auto-width-report-time-logs-wrapper" : ""}`}>
+            <ReportPage.ReportBlock
+              firstColor="#ff5e82"
+              secondColor="#e25cb2"
+              className="people-report-time-log-block"
+              darkMode={darkMode}
+            >
+              <h3 className="text-light">{weeklycommittedHours}</h3>
+              <p>Weekly Committed Hours</p>
+            </ReportPage.ReportBlock>
 
                 {(userProfile.isActive) && (
 
@@ -640,77 +693,7 @@ class PeopleReport extends Component {
               </ReportPage.ReportBlock>
             </div>
           )} */}
-            </ReportPage>
-          </div>
-          <div className={`people-report-right ${darkMode ? 'bg-oxford-blue' : ''}`} xs="12" md="3" lg="3">
-            <ReportPage.ReportHeader
-              src={profilePic}
-              avatar={profilePic ? undefined : <FiUser />}
-              isActive={isActive}
-              darkMode={darkMode}
-            >
-
-              <div
-                // style={{ minHeight: '200px' }}
-                className={`report-stats ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-              >
-                <p>
-                  <Link to={`/userProfile/${_id}`}
-                    title="View Profile"
-                    className={darkMode ? 'text-light font-weight-bold' : ''}
-                    style={{ fontSize: "24px" }}>
-                    {firstName} {lastName}
-                  </Link>
-                </p>
-                <p>Role: {role}</p>
-                <p>Title: {jobTitle}</p>
-
-                {/* {endDate ? ( */}
-                <div className="rehireable">
-                  <Checkbox
-                    value={isRehireable}
-                    onChange={() => this.setRehireable(!isRehireable)}
-                    label="Rehireable"
-                    darkMode={darkMode}
-                    backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
-                    textColorCN={darkMode ? "text-light" : ""}
-                  />
-                </div>
-                {/* ) : (
-              ''
-            )} */}
-
-                <div className="stats">
-                  <div>
-                    <h4>{formatDate(startDate)}</h4>
-                    <p>Start Date</p>
-                  </div>
-                  <div>
-                    <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
-                    <p>End Date</p>
-                  </div>
-                  {bioStatus ? (
-                    <div>
-                      <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
-                      {authRole === 'Administrator' || authRole === 'Owner' ? (
-                        <ToggleSwitch
-                          fontSize="13px"
-                          fontColor="#007BFF"
-                          switchType="bio"
-                          state={bioStatus}
-                          /* eslint-disable-next-line no-use-before-define */
-                          handleUserProfile={bio => onChangeBioPosted(bio)}
-                        />
-                      ) : null}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            </ReportPage.ReportHeader>
-
-
-          </div >
-        </div>
+        </ReportPage>
       </div>
     );
   }
