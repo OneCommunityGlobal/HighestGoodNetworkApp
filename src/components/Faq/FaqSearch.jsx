@@ -72,11 +72,30 @@ function FaqSearch() {
     setLogging(true);
     try {
       const response = await logUnansweredQuestion(searchQuery);
-      toast.success(response.data.message || 'Your question has been recorded.');
+      const { message, emailSent, emailNote } = response?.data || {};
+
+      toast.success(message || 'Your question has been recorded.');
+
+      // show a warning toast if owners not emailed
+      if (emailSent === false && emailNote) {
+        toast.warn(emailNote);
+      }
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error logging unanswered question:', error);
-      toast.error('Failed to log question. It may already exist.');
+      const status = error?.response?.status;
+      const msg = (error?.response?.data?.message || '').toString();
+
+      // If backend complains about missing owner email, treat as success + warning
+      if (/owner/i.test(msg) && /email/i.test(msg)) {
+        toast.success('Your question has been recorded.');
+        toast.warn(msg || 'Owner email not configured; email skipped.');
+        return;
+      }
+
+      if (status === 409) {
+        toast.error(msg || 'That question is already logged.');
+      } else {
+        toast.error(msg || 'Failed to log question.');
+      }
     } finally {
       setLogging(false);
     }
