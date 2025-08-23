@@ -1,4 +1,4 @@
-import './DurationFilter.css';
+import './DurationFilter.module.css';
 import { useTheme } from './ThemeContext';
 
 function DurationFilter({ options, value, onChange }) {
