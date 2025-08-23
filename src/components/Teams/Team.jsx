@@ -1,8 +1,9 @@
+/* eslint-disable react/destructuring-assignment */
 import './Team.css';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
 
 export function Team(props) {
@@ -57,6 +58,7 @@ export function Team(props) {
                 props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={darkMode ? {} : boxStyle}
+              disabled={!canPutTeam}
             >
               Edit
             </Button>
@@ -69,6 +71,7 @@ export function Team(props) {
                 props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={darkMode ? boxStyleDark : boxStyle}
+              disabled={!canDeleteTeam}
             >
               {DELETE}
             </Button>

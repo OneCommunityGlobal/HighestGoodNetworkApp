@@ -103,6 +103,29 @@
   border-bottom: 0 !important;
 }
 
+.notes-text-light p{
+  color: #fff; /* White text for dark mode */
+}
+.text-dark {
+  color: #000 !important; /* Force black text */
+}
+
+/* Hotfix: Prevent red color for project name and notes in Timelog */
+.notes-section, .notes-section *:not(a),
+.text-success, .text-light, .text-muted, .dark-text-info, .dark-text-muted {
+  color: #222 !important;
+}
+
+.notes-text-light, .notes-text-light *, .dark-text-info, .dark-text-muted {
+  color: #f1f1f1 !important;
+}
+
+/* Hotfix: Make "Viewing time Entries from" text white in dark mode */
+.bg-oxford-blue .text-dark {
+  color: #fff !important;
+}
+
+
 @media screen and (max-width: 1400px) and (min-width: 1100px) {
   .timelogPageContainer {
     padding: 0 10%;

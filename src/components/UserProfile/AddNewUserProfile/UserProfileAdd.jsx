@@ -13,8 +13,8 @@ import {
   TabPane,
   TabContent,
 } from 'reactstrap';
-import CommonInput from 'components/common/Input';
-import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
+import CommonInput from '~/components/common/Input';
+import DuplicateNamePopup from '~/components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser } from '../../../services/userProfileService';
@@ -31,22 +31,23 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { fetchAllProjects } from 'actions/projects';
+import { fetchAllProjects } from '~/actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
+const DEFAULT_PASSWORD = '123Welcome!';
 
 class UserProfileAdd extends Component {
   constructor(props) {
@@ -81,6 +82,7 @@ class UserProfileAdd extends Component {
         createdDate: new Date(),
         actualEmail: '',
         actualPassword: '',
+        defaultPassword: DEFAULT_PASSWORD,
         startDate: new Date(),
         actualConfirmedPassword: '',
       },
@@ -93,6 +95,7 @@ class UserProfileAdd extends Component {
         actualEmail: 'Actual Email is required',
         actualPassword: 'Actual Password is required',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
+        defaultPassword: 'Default Password is required',
         jobTitle: 'Job Title is required',
       },
       timeZoneFilter: '',
@@ -123,28 +126,28 @@ class UserProfileAdd extends Component {
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
-    this.fetchTeamCodeAllUsers(); 
+    this.fetchTeamCodeAllUsers();
   }
 
   // Replace fetchTeamCodeAllUsers with a method that dispatches getAllTeamCode
-  fetchTeamCodeAllUsers = async() => {
+  fetchTeamCodeAllUsers = async () => {
     const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
     try {
-      this.setState({isLoading:true})
-     
+      this.setState({ isLoading: true })
+
       const response = await axios.get(url);
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)
         .filter((item, index, array) => array.indexOf(item) === index);
-      this.setState({inputAutoComplete:stringNoRepeat})
-      
-      this.setState({inputAutoStatus:response.status})
-      this.setState({isLoading:false})
-      
+      this.setState({ inputAutoComplete: stringNoRepeat })
+
+      this.setState({ inputAutoStatus: response.status })
+      this.setState({ isLoading: false })
+
     } catch (error) {
       console.log(error);
-      this.setState({isLoading:false})
+      this.setState({ isLoading: false })
       toast.error(`It was not possible to retrieve the team codes. 
       Please try again by clicking the icon inside the input auto complete.`);
     }
@@ -161,6 +164,7 @@ class UserProfileAdd extends Component {
       actualPassword,
       actualConfirmedPassword,
       jobTitle,
+      defaultPassword,
     } = this.state.userProfile;
 
     const darkMode = this.props.darkMode;
@@ -199,11 +203,11 @@ class UserProfileAdd extends Component {
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                       {this.state.formSubmitted && this.state.formErrors.firstName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.firstName}
-    </FormFeedback>
-  )}
+                      {this.state.formSubmitted && this.state.formErrors.firstName && (
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.firstName}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -219,10 +223,10 @@ class UserProfileAdd extends Component {
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.lastName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.lastName}
-    </FormFeedback>
-  )}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.lastName}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -243,9 +247,9 @@ class UserProfileAdd extends Component {
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.jobTitle && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.jobTitle}
-    </FormFeedback>)}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.jobTitle}
+                        </FormFeedback>)}
                     </FormGroup>
                   </Col>
                 </Row>
@@ -266,9 +270,9 @@ class UserProfileAdd extends Component {
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.email && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.email}
-    </FormFeedback>)}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.email}
+                        </FormFeedback>)}
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -374,6 +378,25 @@ class UserProfileAdd extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label className={fontColor}>Default Password</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <CommonInput
+                        type="password"
+                        name="defaultPassword"
+                        id="defaultPassword"
+                        value={DEFAULT_PASSWORD}
+                        disabled
+                        readOnly
+                        
+                        className="d-flex justify-start items-start"
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
                 {(role === 'Administrator' || role === 'Owner') && (
                   <>
                     <Row className="user-add-row">
@@ -409,7 +432,7 @@ class UserProfileAdd extends Component {
                             value={actualPassword}
                             onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            invalid={!!this.state.formErrors.actualPassword}
                             className="d-flex justify-start items-start"
                           />
                         </FormGroup>
@@ -686,7 +709,7 @@ class UserProfileAdd extends Component {
     }
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if(res.status === 200) {
+      if (res.status === 200) {
         const { timezone, currentLocation } = res.data;
         this.setState({
           ...this.state,
@@ -707,12 +730,20 @@ class UserProfileAdd extends Component {
     const firstLength = this.state.userProfile.firstName !== '';
     const lastLength = this.state.userProfile.lastName !== '';
     const phone = this.state.userProfile.phoneNumber;
+    const role = this.state.userProfile.role;
+    const defaultPassword = this.state.userProfile.defaultPassword;
     
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
+    } else if (!weeklyCommittedHours) {
+      toast.error('Weekly Committed Hours is required');
+      return false;
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
+      return false;
+    } else if (role !== 'Administrator' && role !== 'Owner' && !defaultPassword) {
+      toast.error('Default Password is required for non-admin users');
       return false;
     } else if (firstLength && lastLength && phone.length >= 9) {
       return true;
@@ -756,11 +787,11 @@ class UserProfileAdd extends Component {
       actualEmail,
       actualPassword,
       startDate,
-      actualConfirmedPassword
+      actualConfirmedPassword,
     } = that.state.userProfile;
 
     const userData = {
-      password: process.env.REACT_APP_DEF_PWD,
+      password: DEFAULT_PASSWORD,
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -781,8 +812,8 @@ class UserProfileAdd extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
-      actualEmail: actualEmail,
-      actualPassword: actualPassword,
+      actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
+      actualPassword: role === 'Administrator' || role === 'Owner' ? actualPassword : '',
       startDate: startDate,
     };
 
@@ -917,7 +948,7 @@ class UserProfileAdd extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-                'An unknown error occurred while attempting to create this user.',
+              'An unknown error occurred while attempting to create this user.',
             );
           });
       }
@@ -1109,7 +1140,7 @@ class UserProfileAdd extends Component {
           val = 168
         } else if (val < 0) {
           val = 0
-        } 
+        }
         this.setState({
           userProfile: {
             ...userProfile,
@@ -1232,6 +1263,18 @@ class UserProfileAdd extends Component {
           formErrors: {
             ...formErrors,
             actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
+          },
+        });
+        break;
+      case 'defaultPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            defaultPassword: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            defaultPassword: event.target.value.length > 0 ? '' : 'Default Password is required',
           },
         });
         break;

@@ -1,6 +1,7 @@
 .pie-chart-wrapper {
     display: flex;
     align-items: center;
+    /* overflow: hidden; */
   }
   
   .pie-chart {
@@ -140,9 +141,9 @@
   }
   
   .pie-chart-legend-table-wrapper {
-    max-height: 350px;
+    max-height: 35vh;
     width: 100%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    /* border: 1px solid rgba(0, 0, 0, 0.1); */
     overflow-y: auto;
   }
   
@@ -156,7 +157,7 @@
   .pie-chart-legend-table td {
     padding: 8px;
     text-align: left;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
   }
   
  
@@ -180,7 +181,7 @@
   .pie-chart-legend-table-dark td {
     padding: 8px;
     text-align: left;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
     color:black
   }
   
@@ -191,7 +192,8 @@
     /* color: inherit; */
   }
   .pie-chart-legend-table-dark tr{
-    background-color: white;
+    background-color: #1f2a40; 
+    color: white;
   }
 
   #project-chart-legend{

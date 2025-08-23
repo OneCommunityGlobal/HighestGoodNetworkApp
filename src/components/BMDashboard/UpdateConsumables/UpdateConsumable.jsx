@@ -1,34 +1,84 @@
-import './UpdateConsumable.css';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Container, FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { postConsumableUpdate } from '../../../actions/bmdashboard/consumableActions';
+import styles from './UpdateConsumable.module.css';
 
 function UpdateConsumable({ record, setModal }) {
   const dispatch = useDispatch();
   const postConsumableUpdateResult = useSelector(state => state.bmConsumables.updateConsumables);
   const { purchaseRecord, stockAvailable, updateRecord: _, ...rest } = record;
+
   const recordInitialState = {
     date: moment(new Date()).format('YYYY-MM-DD'),
     quantityUsed: '0',
     quantityWasted: '0',
     qtyUsedLogUnit: 'unit',
     qtyWastedLogUnit: 'unit',
+    reasonWastage: '',
+    usedBy: '',
     consumable: rest,
     newAvailable: undefined,
   };
+
   const validationsInitialState = {
     quantityUsed: '',
     quantityWasted: '',
     quantityTogether: '',
   };
+
   const [updateRecord, setUpdateRecord] = useState(recordInitialState);
   const [validations, setValidations] = useState(validationsInitialState);
   const [availableCount, setAvailableCount] = useState(undefined);
   const [changeOccured, setChangeOccured] = useState(false);
+
+  const validate = (_qtyUsed, _qtyWasted, qtyUsedLogUnit, qtyWastedLogUnit) => {
+    let unitsUsed = _qtyUsed === '' ? 0 : parseFloat(_qtyUsed);
+    let unitsWasted = _qtyWasted === '' ? 0 : parseFloat(_qtyWasted);
+
+    if (qtyUsedLogUnit === 'percent' && stockAvailable > 0) {
+      unitsUsed *= stockAvailable / 100;
+    }
+
+    if (qtyWastedLogUnit === 'percent' && stockAvailable > 0) {
+      unitsWasted *= stockAvailable / 100;
+    }
+
+    const tempValidations = { ...validations };
+
+    if (unitsUsed > stockAvailable) {
+      tempValidations.quantityUsed = 'Quantity Used exceeds the available stock';
+    } else if (unitsUsed < 0) {
+      tempValidations.quantityUsed = 'Quantity Used cannot be negative';
+    } else {
+      tempValidations.quantityUsed = '';
+    }
+
+    if (unitsWasted > stockAvailable) {
+      tempValidations.quantityWasted = 'Quantity Wasted exceeds the available stock';
+    } else if (unitsWasted < 0) {
+      tempValidations.quantityWasted = 'Quantity Wasted cannot be negative';
+    } else {
+      tempValidations.quantityWasted = '';
+    }
+
+    if (unitsUsed + unitsWasted > stockAvailable) {
+      tempValidations.quantityTogether = `Sum of Used and Wasted values exceeds available stock with a value of ${unitsUsed +
+        unitsWasted}`;
+    } else {
+      tempValidations.quantityTogether = '';
+    }
+
+    setValidations({ ...tempValidations });
+    const newAvailable = parseFloat((stockAvailable - (unitsUsed + unitsWasted)).toFixed(4));
+    if (newAvailable !== stockAvailable) {
+      setAvailableCount(newAvailable);
+    } else {
+      setAvailableCount(undefined);
+    }
+  };
 
   useEffect(() => {
     setUpdateRecord({ ...recordInitialState });
@@ -58,7 +108,6 @@ function UpdateConsumable({ record, setModal }) {
       setChangeOccured(false);
     }
 
-    // eslint-disable-next-line no-use-before-define
     validate(
       updateRecord.quantityUsed,
       updateRecord.quantityWasted,
@@ -66,48 +115,6 @@ function UpdateConsumable({ record, setModal }) {
       updateRecord.qtyWastedLogUnit,
     );
   }, [updateRecord]);
-
-  const validate = (_qtyUsed, _qtyWasted, qtyUsedLogUnit, qtyWastedLogUnit) => {
-    let unitsUsed = _qtyUsed === '' ? 0 : parseFloat(_qtyUsed);
-    let unitsWasted = _qtyWasted === '' ? 0 : parseFloat(_qtyWasted);
-
-    if (qtyUsedLogUnit === 'percent' && stockAvailable > 0) {
-      unitsUsed *= stockAvailable / 100;
-    }
-
-    if (qtyWastedLogUnit === 'percent' && stockAvailable > 0) {
-      unitsWasted *= stockAvailable / 100;
-    }
-
-    const tempValidations = { ...validations };
-
-    if (unitsUsed > stockAvailable) {
-      tempValidations.quantityUsed = 'Quantity Used exceeds the available stock';
-    } else {
-      tempValidations.quantityUsed = '';
-    }
-
-    if (unitsWasted > stockAvailable) {
-      tempValidations.quantityWasted = 'Quantity Wasted exceeds the available stock';
-    } else {
-      tempValidations.quantityWasted = '';
-    }
-
-    if (unitsUsed + unitsWasted > stockAvailable) {
-      tempValidations.quantityTogether = `Sum of Used and Wasted values exceeds available stock with a value of ${unitsUsed +
-        unitsWasted}`;
-    } else {
-      tempValidations.quantityTogether = '';
-    }
-
-    setValidations({ ...tempValidations });
-    const newAvailable = parseFloat((stockAvailable - (unitsUsed + unitsWasted)).toFixed(4));
-    if (newAvailable !== stockAvailable) {
-      setAvailableCount(newAvailable);
-    } else {
-      setAvailableCount(undefined);
-    }
-  };
 
   const submitHandler = () => {
     if (
@@ -123,6 +130,8 @@ function UpdateConsumable({ record, setModal }) {
         quantityWasted:
           updateRecord.quantityWasted === '' ? 0 : parseFloat(updateRecord.quantityWasted),
         qtyWastedLogUnit: updateRecord.qtyWastedLogUnit,
+        reasonWastage: updateRecord.reasonWastage,
+        usedBy: updateRecord.usedBy,
         stockAvailable,
         consumable: updateRecord.consumable,
       };
@@ -137,37 +146,41 @@ function UpdateConsumable({ record, setModal }) {
     if (Number(value) < 0) return;
     const tempRecord = { ...updateRecord };
     tempRecord[name] = value;
-
     setUpdateRecord(tempRecord);
   };
 
   return (
-    <Container fluid className="updateConsumableContainer">
-      <div className="updateConsumablePage">
-        <div className="updateConsumable">
+    <Container fluid className={`${styles.updateConsumableContainer}`}>
+      <div className={`${styles.updateConsumablePage}`}>
+        <div className={`${styles.updateConsumable}`}>
           <Form>
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableName" sm={4} className="consumableFormLabel">
+              <Label for="updateConsumableName" sm={4} className={`${styles.consumableFormLabel}`}>
                 Consumable
               </Label>
-              <Col sm={6} className="consumableFormValue">
+              <Col sm={6} className={`${styles.consumableFormValue}`}>
                 <b>{record?.itemType?.name}</b>
               </Col>
             </FormGroup>
 
             <FormGroup row className="align-items-center">
-              <Label for="updateConsumableProject" sm={4} className="consumableFormLabel">
+              <Label
+                for="updateConsumableProject"
+                sm={4}
+                className={`${styles.consumableFormLabel}`}
+              >
                 Project Name
               </Label>
-              <Col sm={8} className="consumableFormValue">
+              <Col sm={8} className={`${styles.consumableFormValue}`}>
                 {record?.project.name}
               </Col>
             </FormGroup>
+
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableDate" sm={4} className="consumableFormLabel">
+              <Label for="updateConsumableDate" sm={4} className={`${styles.consumableFormLabel}`}>
                 Date
               </Label>
-              <Col sm={6} className="consumableFormValue">
+              <Col sm={6} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumableDate"
                   name="date"
@@ -179,31 +192,36 @@ function UpdateConsumable({ record, setModal }) {
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableUnit" sm={4} className="consumableFormLabel">
+              <Label for="updateConsumableUnit" sm={4} className={`${styles.consumableFormLabel}`}>
                 Available
               </Label>
-              <Col sm={6} className="consumableFormValue">
+              <Col sm={6} className={`${styles.consumableFormValue}`}>
                 {record?.stockAvailable}
               </Col>
             </FormGroup>
 
             {availableCount !== undefined && (
               <FormGroup row className="align-items-center justify-content-start">
-                <Label for="updateMaterialUnit" sm={4} className="consumableFormLabel">
+                <Label for="updateMaterialUnit" sm={4} className={`${styles.consumableFormLabel}`}>
                   New Available
                 </Label>
-                <Col sm={6} className="consumableFormValue">
+                <Col sm={6} className={`${styles.consumableFormValue}`}>
                   <span className={availableCount < 0 ? 'consumableFormErrorClr' : undefined}>
                     {availableCount}
                   </span>
                 </Col>
               </FormGroup>
             )}
+
             <FormGroup row>
-              <Label for="updateConsumableQuantityUsed" sm={4} className="consumableFormLabel">
+              <Label
+                for="updateConsumableQuantityUsed"
+                sm={4}
+                className={`${styles.consumableFormLabel}`}
+              >
                 Quantity Used
               </Label>
-              <Col sm={4} className="consumableFormValue">
+              <Col sm={4} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumableQuantityUsed"
                   name="quantityUsed"
@@ -212,9 +230,15 @@ function UpdateConsumable({ record, setModal }) {
                   value={updateRecord.quantityUsed}
                   onChange={e => changeRecordHandler(e)}
                   min={0}
+                  onKeyDown={e => {
+                    if (e.key === '+' || e.key === '-') e.preventDefault();
+                  }}
+                  onInput={e => {
+                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
+                  }}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className="consumableFormValue">
+              <Col sm={{ size: 4 }} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumableQtyUsedLogUnitSelect"
                   name="qtyUsedLogUnit"
@@ -231,7 +255,7 @@ function UpdateConsumable({ record, setModal }) {
                 <Label
                   for="updateMaterialQuantityUsedError"
                   sm={12}
-                  className="consumableFormError"
+                  className={`${styles.consumableFormError}`}
                 >
                   {validations.quantityUsed}
                 </Label>
@@ -239,10 +263,14 @@ function UpdateConsumable({ record, setModal }) {
             </FormGroup>
 
             <FormGroup row>
-              <Label for="updateConsumablequantityWasted" sm={4} className="consumableFormLabel">
+              <Label
+                for="updateConsumablequantityWasted"
+                sm={4}
+                className={`${styles.consumableFormLabel}`}
+              >
                 Quantity Wasted
               </Label>
-              <Col sm={4} className="consumableFormValue">
+              <Col sm={4} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumablequantityWasted"
                   name="quantityWasted"
@@ -251,9 +279,15 @@ function UpdateConsumable({ record, setModal }) {
                   value={updateRecord.quantityWasted}
                   onChange={e => changeRecordHandler(e)}
                   min={0}
+                  onKeyDown={e => {
+                    if (e.key === '+' || e.key === '-') e.preventDefault();
+                  }}
+                  onInput={e => {
+                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
+                  }}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className="consumableFormValue">
+              <Col sm={{ size: 4 }} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumableQtyWastedLogUnitSelect"
                   name="qtyWastedLogUnit"
@@ -269,12 +303,48 @@ function UpdateConsumable({ record, setModal }) {
                 <Label
                   for="updateConsumableQuantityWastedError"
                   sm={12}
-                  className="consumableFormError"
+                  className={`${styles.consumableFormError}`}
                 >
                   {validations.quantityWasted}
                 </Label>
               )}
             </FormGroup>
+
+            <FormGroup row>
+              <Label for="updateConsumableReasonWastage" sm={4} className="consumableFormLabel">
+                Reason for Wastage
+              </Label>
+              <Col sm={8} className="consumableFormValue">
+                <Input
+                  id="updateConsumableReasonWastage"
+                  name="reasonWastage"
+                  type="select"
+                  value={updateRecord.reasonWastage}
+                  onChange={e => changeRecordHandler(e)}
+                >
+                  <option value="">Select Reason</option>
+                  <option value="expired">Expired</option>
+                  <option value="damaged">Damaged</option>
+                  <option value="overstock">Overstock</option>
+                </Input>
+              </Col>
+            </FormGroup>
+
+            <FormGroup row>
+              <Label for="updateConsumableUsedBy" sm={4} className="consumableFormLabel">
+                Used By
+              </Label>
+              <Col sm={8} className="consumableFormValue">
+                <Input
+                  id="updateConsumableUsedBy"
+                  name="usedBy"
+                  type="text"
+                  value={updateRecord.usedBy}
+                  onChange={e => changeRecordHandler(e)}
+                />
+              </Col>
+            </FormGroup>
+
             {validations.quantityTogether !== '' &&
               validations.quantityUsed === '' &&
               validations.quantityWasted === '' && (
@@ -282,7 +352,7 @@ function UpdateConsumable({ record, setModal }) {
                   <Label
                     for="updateConsumableQuantityTogetherError"
                     sm={12}
-                    className="consumableFormError"
+                    className={`${styles.consumableFormError}`}
                   >
                     {validations.quantityTogether}
                   </Label>
@@ -296,7 +366,7 @@ function UpdateConsumable({ record, setModal }) {
                   availableCount < 0 ||
                   changeOccured === false
                 }
-                className="consumableButtonBg"
+                className={`${styles.consumableButtonBg}`}
                 onClick={submitHandler}
               >
                 Update Consumable

@@ -1,6 +1,7 @@
-/* eslint-disable no-restricted-globals */
+/* eslint-disable testing-library/no-node-access */
 import { useEffect, useState, useMemo } from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3';
+
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './UserProjectPieChart.css';
@@ -47,7 +48,7 @@ export function PieChart({
   };
 
   const getCreateSvgPie = totalValue => {
-    if (totalValue === 0) return;
+    if (totalValue === 0) return null;
     // Clear existing SVG before creating new one
     d3.select(`#pie-chart-${pieChartId}`).remove();
     const svg = d3
@@ -77,7 +78,7 @@ export function PieChart({
           ? `${displayValue.toFixed(2)}% of ${calculateTotalHours(projectsData, tasksData).toFixed(
               2,
             )}`
-          : totalValue.toFixed(2),
+          : `${totalValue.toFixed(2)} Hrs`,
       );
 
     svg
@@ -98,7 +99,7 @@ export function PieChart({
       .select('input')
       .on('change', handleTogglePercentage); // Use the existing React handler
 
-    // return svg;
+    return svg;
   };
 
   const pie = d3.pie().value(d => d.totalTime);
@@ -198,7 +199,7 @@ export function PieChart({
             <thead>
               <tr>
                 <th>Color</th>
-                <th>Project Name</th>
+                <th>Task Name</th>
                 <th>Hours</th>
               </tr>
             </thead>

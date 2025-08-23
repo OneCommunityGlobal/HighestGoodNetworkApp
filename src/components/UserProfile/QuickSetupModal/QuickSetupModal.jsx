@@ -52,12 +52,19 @@ function QuickSetupModal(props) {
     }
   };
 
-  useEffect(() => {
-    if (props.teamsData && props.teamsData.allTeamCode) {
-      const teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
-      setQSTTeamCodes(teamCodes);
-    }
-  }, [stateTeamCodes, props.teamsData]);
+ useEffect(() => {
+  if (props.fetchTeamCodeAllUsers) {
+    props.fetchTeamCodeAllUsers()
+      .then((fetchedCodes) => {
+        if (fetchedCodes?.length) {
+          const formatted = fetchedCodes.map(code => ({ value: code }));
+          setQSTTeamCodes(formatted);
+        }
+      })
+      .catch((err) => console.error('Failed to fetch team codes:', err));
+  }
+}, [stateTeamCodes.length, props.teamsData && props.teamsData.allTeamCode]);
+
 
   return (
     <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>

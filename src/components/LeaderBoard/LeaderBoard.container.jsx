@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { get, round, maxBy } from 'lodash';
-import { getLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
+import { getLeaderboardData, postLeaderboardData, getOrgData } from '../../actions/leaderBoardData';
 import Leaderboard from './Leaderboard';
 import { getcolor, getprogress, getProgressValue } from '../../utils/effortColors';
 import { getMouseoverText } from '../../actions/mouseoverTextAction';
@@ -44,7 +44,7 @@ const mapStateToProps = state => {
 
   const orgData = get(state, 'orgData', {});
 
-  orgData.name = `HGN Totals: ${orgData.memberCount} Members`;
+  orgData.name = `Active Team: ${orgData.memberCount} Members`;
   orgData.tangibletime = round(orgData.totaltangibletime_hrs, 2);
   orgData.totaltime = round(orgData.totaltime_hrs, 2);
   orgData.intangibletime = round(orgData.totalintangibletime_hrs, 2);
@@ -67,10 +67,13 @@ const mapStateToProps = state => {
     totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
     totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
     allRequests: state.timeOffRequests?.requests,
+    userOnTimeOff: state.timeOffRequests?.onTimeOff,
+    usersOnFutureTimeOff: state.timeOffRequests?.futureTimeOff,
   };
 };
 export default connect(mapStateToProps, {
   getLeaderboardData,
+  postLeaderboardData,
   getOrgData,
   getMouseoverText,
   showTimeOffRequestModal,
