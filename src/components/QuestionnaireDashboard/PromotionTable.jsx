@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import './PromotionTable.css'; // Make sure this is present
 
-const names = ['Alice', 'Bob', 'Charlie'];
+// Dummy data remains the same
+const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'Grace'];
 const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
   id: i + 1,
   reviewer: names[i % names.length],
-  hasMetWeekly: i % 2 === 0, // Simulating weekly requirement met
+  hasMetWeekly: i % 2 === 0,
   requiredPRs: 5,
   totalReviews: Math.floor(Math.random() * 10),
-  remainingWeeks: Math.max(0, 4 - Math.floor(Math.random() * 4)), // Random remaining weeks between 0 and 4
-  promote: i % 3 === 0, // Randomly decide if they should be promoted
-  isNew: i < 15, // First 15 are new members
+  remainingWeeks: Math.max(0, 4 - Math.floor(Math.random() * 4)),
+  promote: i % 3 === 0,
+  isNew: i < 15,
 }));
 
 function PromotionTable() {
@@ -19,14 +21,13 @@ function PromotionTable() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    // Simulating an API call with the dummy data
     setLoading(true);
     const timer = setTimeout(() => {
       setEligibilityData(dummyMembers);
       setLoading(false);
-    }, 500); // Simulate network delay
+    }, 500);
 
-    return () => clearTimeout(timer); // Cleanup timer on unmount
+    return () => clearTimeout(timer);
   }, []);
 
   const newMembers = eligibilityData.filter(u => u.isNew);
@@ -35,35 +36,25 @@ function PromotionTable() {
   if (loading) return <div>Loading promotions...</div>;
 
   return (
-    <div
-      className={`container promotion-dashboard ${
-        darkMode ? 'bg-dark text-light' : 'bg-white text-dark'
-      }`}
-    >
-      <div className={`header ${darkMode ? 'border-secondary' : 'border-light'}`}>
+    // The key change: added data-theme attribute
+    <div className="container" data-theme={darkMode ? 'dark' : 'light'}>
+      <div className="header">
         <h1>Promotion Eligibility</h1>
         <div className="actions">
-          <button
-            type="button"
-            className={`btn ${darkMode ? 'btn-outline-light' : 'btn-secondary'}`}
-          >
-            Review for this week
-          </button>
           <button type="button" className="btn btn-primary">
+            Review for This Week
+          </button>
+          <button type="button" className="btn btn-secondary">
             Process Promotions
           </button>
         </div>
       </div>
 
       <div className="promotion-table-wrapper">
-        <table
-          className={`promotion-table table ${
-            darkMode ? 'table-dark table-striped' : 'table-light'
-          }`}
-        >
+        <table className="promotion-table">
           <thead>
             <tr>
-              <th style={{ width: '15%' }}>Existing member/ New member</th>
+              <th style={{ width: '15%' }}>Existing/New</th>
               <th>Reviewer</th>
               <th>Weekly Requirements</th>
               <th>Required PRs</th>
@@ -74,7 +65,7 @@ function PromotionTable() {
           </thead>
           <tbody>
             {/* --- New Members Section --- */}
-            <tr className={`section-header ${darkMode ? 'bg-secondary' : ''}`}>
+            <tr className="section-header">
               <td colSpan="7">New Members</td>
             </tr>
             {newMembers.map(user => (
@@ -99,7 +90,7 @@ function PromotionTable() {
             ))}
 
             {/* --- Existing Members Section --- */}
-            <tr className={`section-header ${darkMode ? 'bg-secondary' : ''}`}>
+            <tr className="section-header">
               <td colSpan="7">Existing Members</td>
             </tr>
             {existingMembers.map(user => (

@@ -3,8 +3,9 @@
   background-color: #ffffff;
   border: 1px solid #e1e4e8;
   border-radius: 6px;
-  max-width: 1200px;
+  width: 100%;
   margin: 20px auto;
+  color: #24292e;
 }
 
 .header {
@@ -42,8 +43,9 @@
 }
 
 .btn-secondary {
-  background-color: #f6f8fa;
-  color: #24292e;
+  background-color: #0d6efd;
+  color: #ffffff;
+  border-color: #0d6efd;
 }
 
 .actions .btn {
@@ -61,6 +63,8 @@
 
 .promotion-table {
   min-width: 700px;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 .promotion-table th,
@@ -106,51 +110,67 @@
 }
 
 /* Dark Mode Support */
-[data-theme="dark"] .container,
-.dark .container {
-  background-color: #1a1a1a;
-  border-color: #333;
+[data-theme="dark"] {
+  background-color: #1e2329;
   color: #f0f0f0;
+  border-color: #383e44;
 }
 
-[data-theme="dark"] .header,
-.dark .header {
-  border-bottom: 1px solid #333;
-  color: #f0f0f0;
+[data-theme="dark"] .header {
+  background-color: #24292f;
+  border-bottom: 1px solid #383e44;
 }
 
-[data-theme="dark"] .btn-secondary,
-.dark .btn-secondary {
-  background-color: #333;
-  color: #e8eaed;
-  border-color: #555;
+[data-theme="dark"] .btn-primary {
+  background-color: #2c974b;
+  color: #ffffff;
+  border-color: #2c974b;
+}
+
+[data-theme="dark"] .btn-secondary {
+  background-color: #0d6efd;
+  color: #ffffff;
+  border-color: #0d6efd;
+}
+
+[data-theme="dark"] .promotion-table {
+  width: 100%;
+  background-color: #2d333b;
+}
+
+[data-theme="dark"] .promotion-table thead th {
+  background-color: #24292f;
+  border-color: #383e44;
+  color: #f0f0f0;
 }
 
 [data-theme="dark"] .promotion-table th,
-[data-theme="dark"] .promotion-table td,
-.dark .promotion-table th,
-.dark .promotion-table td {
-  border-bottom: 1px solid #333;
+[data-theme="dark"] .promotion-table td {
+  border-bottom: 1px solid #383e44;
+}
+
+[data-theme="dark"] .section-header td {
+  background-color: #24292f;
   color: #f0f0f0;
 }
 
-[data-theme="dark"] .promotion-table thead th,
-.dark .promotion-table thead th {
-  background-color: #2a2a2a;
+[data-theme="dark"] .promotion-table tbody tr.odd-row {
+  background-color: #24292f; 
 }
 
-[data-theme="dark"] .section-header td,
-.dark .section-header td {
-  background-color: #2a2a2a;
-  color: #aaa;
+[data-theme="dark"] .promotion-table tbody tr:hover {
+  background-color: #363b43;
+  cursor: pointer;
 }
 
-[data-theme="dark"] .status-met,
-.dark .status-met {
-  color: #6bc46d;
+[data-theme="dark"] .promotion-table tbody tr:hover td {
+  color: #f0f0f0; 
 }
 
-[data-theme="dark"] .status-not-met,
-.dark .status-not-met {
-  color: #f78181;
+[data-theme="dark"] .status-met {
+  color: #53d06e;
+}
+
+[data-theme="dark"] .status-not-met {
+  color: #fa7970;
 }
