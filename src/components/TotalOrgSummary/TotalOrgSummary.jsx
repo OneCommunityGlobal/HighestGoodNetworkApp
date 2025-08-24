@@ -711,35 +711,54 @@ function TotalOrgSummary(props) {
         </Row>
       </AccordianWrapper>
       <AccordianWrapper title="Volunteer Roles and Team Dynamics">
-        <Row>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Team Stats</p>
-              </div>
-              <TeamStats
-                isLoading={isLoading}
-                usersInTeamStats={volunteerStats?.usersInTeamStats}
-                endDate={currentToDate}
-                comparisonType={selectedComparison}
-              />
-            </div>
-          </Col>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Blue Square Stats</p>
-              </div>
-              <BlueSquareStats
-                isLoading={isLoading}
-                blueSquareStats={volunteerStats?.blueSquareStats}
-                comparisonType={selectedComparison}
-                darkMode={darkMode}
-              />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
+  <Row>
+    <Col lg={{ size: 6 }}>
+      <div
+        className={clsx(styles.componentContainer, styles.componentBorder)}
+        data-pdf-block
+      >
+        <div
+          className={clsx(
+            styles.totalOrgChartTitle,
+            darkMode && styles.totalOrgChartTitleDark,
+          )}
+          data-pdf-title
+        >
+          <p>Team Stats</p>
+        </div>
+        <TeamStats
+          isLoading={isLoading}
+          usersInTeamStats={volunteerStats?.usersInTeamStats}
+          endDate={currentToDate}
+          comparisonType={selectedComparison}
+        />
+      </div>
+    </Col>
+
+    <Col lg={{ size: 6 }}>
+      <div
+        className={clsx(styles.componentContainer, styles.componentBorder)}
+        data-pdf-block
+      >
+        <div
+          className={clsx(
+            styles.totalOrgChartTitle,
+            darkMode && styles.totalOrgChartTitleDark,
+          )}
+          data-pdf-title
+        >
+          <p>Blue Square Stats</p>
+        </div>
+        <BlueSquareStats
+          isLoading={isLoading}
+          blueSquareStats={volunteerStats?.blueSquareStats}
+          comparisonType={selectedComparison}
+          darkMode={darkMode}
+        />
+      </div>
+    </Col>
+  </Row>
+</AccordianWrapper>
     </Container>
   );
 }
