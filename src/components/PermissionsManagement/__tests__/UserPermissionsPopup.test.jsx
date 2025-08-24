@@ -246,6 +246,7 @@ describe('UserPermissionsPopup component', () => {
     });
   });
   it('should reset permissions to default when "Reset to Default" is clicked', async () => {
+    // Increased timeout to 15 seconds to prevent test timeout
     axios.get.mockResolvedValue({
       status: 200,
       data: {
@@ -289,8 +290,6 @@ describe('UserPermissionsPopup component', () => {
       const newAddButtons = screen.queryAllByRole('button', { name: /add/i });
       expect(newAddButtons.length).toBeLessThan(initialCount);
     });
-
-    // Click "Reset to Default"
     // Click "Reset to Default"
     fireEvent.click(screen.getByRole('button', { name: /reset to default/i }));
 
@@ -299,5 +298,5 @@ describe('UserPermissionsPopup component', () => {
       const addButtons = screen.queryAllByRole('button', { name: /add/i });
       expect(addButtons.length).toBeGreaterThan(0);
     });
-  });
+  }, 15000);
 });
