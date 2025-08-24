@@ -26,6 +26,7 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
+import TaskChangeLogModal from './components/TaskChangeLogModal';
 import * as messages from '../../constants/followUpConstants';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
@@ -74,6 +75,8 @@ const TeamMemberTask = React.memo(
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
+    const [showChangeLogModal, setShowChangeLogModal] = useState(false);
+    const [selectedTaskForChangeLog, setSelectedTaskForChangeLog] = useState(null);
 
     const completedTasks = user.tasks.filter(task =>
       task.resources?.some(resource => resource.userID === user.personId && resource.completedTask),
@@ -119,7 +122,26 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    /**    const handleReportClick = (event, to) => {      if (event.metaKey || event.ctrlKey || event.button === 1) {        return;      }      event.preventDefault(); // prevent full reload    };    */
+    const handleOpenTaskChangeLog = task => {
+      setSelectedTaskForChangeLog(task);
+      setShowChangeLogModal(true);
+    };
+
+    const handleCloseTaskChangeLog = () => {
+      setShowChangeLogModal(false);
+      setSelectedTaskForChangeLog(null);
+    };
+
+    /** 
+    const handleReportClick = (event, to) => {
+      if (event.metaKey || event.ctrlKey || event.button === 1) {
+        return;
+      }
+
+      event.preventDefault(); // prevent full reload
+      history.push(`/peoplereport/${to}`);
+    };
+    */
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -452,8 +474,10 @@ const TeamMemberTask = React.memo(
                                       {isAllowedToSeeDeadlineCount && (
                                         <span
                                           className="deadlineCount"
-                                          title="Deadline Follow-up Count"
+                                          title="Click to view task change history"
                                           data-testid={`deadline-${task.taskName}`}
+                                          onClick={() => handleOpenTaskChangeLog(task)}
+                                          style={{ cursor: 'pointer' }}
                                         >
                                           {taskCounts[task._id] ?? task.deadlineCount ?? 0}
                                         </span>
@@ -535,6 +559,15 @@ const TeamMemberTask = React.memo(
             </Table>
           </div>
         </td>
+        {/* Task Change Log Modal */}
+        {selectedTaskForChangeLog && (
+          <TaskChangeLogModal
+            isOpen={showChangeLogModal}
+            toggle={handleCloseTaskChangeLog}
+            task={selectedTaskForChangeLog}
+            darkMode={darkMode}
+          />
+        )}
       </tr>
     );
   },
