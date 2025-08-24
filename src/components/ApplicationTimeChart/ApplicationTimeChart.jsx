@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import getApplicationData from './api';
 
@@ -6,23 +7,59 @@ function ApplicationTimeChart() {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedRole, setSelectedRole] = useState('all');
 
-  // Get raw data
+  // Dark mode from Redux (JSX-safe)
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Color palette flips with dark mode
+  const palette = useMemo(() => {
+    if (darkMode) {
+      return {
+        cardBg: '#0b1324',
+        pageBgClass: 'bg-oxford-blue text-light',
+        panelBg: '#0e1a33',
+        border: '#314163',
+        gridLine: '#243556',
+        axis: '#3a4f75',
+        textMuted: '#c7d0e0',
+        textDefault: '#e8eef9',
+        barFill: '#5fa862',
+        barStroke: '#4e8c52',
+        barLabel: '#d9f3d0',
+        summaryBg: '#101a2c',
+      };
+    }
+    return {
+      cardBg: '#ffffff',
+      pageBgClass: '',
+      panelBg: '#ffffff',
+      border: '#dadce0',
+      gridLine: '#e0e0e0',
+      axis: '#9aa0a6',
+      textMuted: '#5f6368',
+      textDefault: '#3c4043',
+      barFill: '#93c47d',
+      barStroke: '#6aa84f',
+      barLabel: '#2d5016',
+      summaryBg: '#f8f9fa',
+    };
+  }, [darkMode]);
+
+  // Raw data
   const rawData = getApplicationData();
 
-  // Process data with filters and outlier removal
+  // Processed data
   const processedData = useMemo(() => {
     let filtered = [...rawData];
 
-    // Remove outliers (applications taking more than 30 minutes)
+    // Remove outliers (> 30 minutes)
     filtered = filtered.filter(item => item.timeToApply <= 30);
 
-    // Apply date filter
+    // Date filter
     if (dateFilter !== 'all') {
       const now = new Date();
       filtered = filtered.filter(item => {
         const itemDate = new Date(item.timestamp);
-        const daysAgo = Math.floor((now - itemDate) / (1000 * 60 * 60 * 24));
-
+        const daysAgo = Math.floor((now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24));
         switch (dateFilter) {
           case 'weekly':
             return daysAgo <= 7;
@@ -36,36 +73,34 @@ function ApplicationTimeChart() {
       });
     }
 
-    // Apply role filter
+    // Role filter
     if (selectedRole !== 'all') {
       filtered = filtered.filter(item => item.role === selectedRole);
     }
 
-    // Group by role and calculate averages
+    // Group by role
     const roleGroups = {};
     filtered.forEach(item => {
-      if (!roleGroups[item.role]) {
-        roleGroups[item.role] = [];
-      }
+      if (!roleGroups[item.role]) roleGroups[item.role] = [];
       roleGroups[item.role].push(item.timeToApply);
     });
 
-    // Calculate averages and create chart data
+    // Averages
     const chartData = Object.entries(roleGroups)
       .map(([role, times]) => {
         const avg = times.reduce((a, b) => a + b, 0) / times.length;
         return {
           role,
-          avgTime: Math.round(avg * 10) / 10, // Round to 1 decimal place
+          avgTime: Math.round(avg * 10) / 10,
           count: times.length,
         };
       })
-      .sort((a, b) => b.avgTime - a.avgTime); // Sort highest to lowest
+      .sort((a, b) => b.avgTime - a.avgTime);
 
     return chartData;
   }, [rawData, dateFilter, selectedRole]);
 
-  // Get unique roles for dropdown
+  // Roles for dropdown
   const roles = useMemo(() => {
     const uniqueRoles = [...new Set(rawData.map(item => item.role))];
     return ['all', ...uniqueRoles];
@@ -75,6 +110,7 @@ function ApplicationTimeChart() {
 
   return (
     <div
+      className={`${palette.pageBgClass}`}
       style={{
         display: 'flex',
         alignItems: 'flex-start',
@@ -87,11 +123,12 @@ function ApplicationTimeChart() {
     >
       {/* Chart Container */}
       <div
+        className={darkMode ? 'boxStyleDark' : ''}
         style={{
           flex: 1,
-          border: '2px solid #4285f4',
+          border: `2px solid ${darkMode ? '#2a3a5a' : '#4285f4'}`,
           borderRadius: '8px',
-          backgroundColor: '#ffffff',
+          backgroundColor: palette.cardBg,
           padding: '20px',
         }}
       >
@@ -99,8 +136,8 @@ function ApplicationTimeChart() {
         <h2
           style={{
             fontSize: '20px',
-            fontWeight: '400',
-            color: '#5f6368',
+            fontWeight: 400,
+            color: palette.textMuted,
             margin: '0 0 30px 0',
             fontFamily: 'Arial, sans-serif',
           }}
@@ -130,11 +167,11 @@ function ApplicationTimeChart() {
                   top: '20px',
                   bottom: '40px',
                   backgroundImage: `
-                  linear-gradient(to right, #e0e0e0 1px, transparent 1px),
-                  linear-gradient(to bottom, #e0e0e0 1px, transparent 1px)
-                `,
+                    linear-gradient(to right, ${palette.gridLine} 1px, transparent 1px),
+                    linear-gradient(to bottom, ${palette.gridLine} 1px, transparent 1px)
+                  `,
                   backgroundSize: `${100 / 6}% ${100 / processedData.length}%`,
-                  opacity: 0.5,
+                  opacity: darkMode ? 0.6 : 0.5,
                 }}
               />
 
@@ -161,8 +198,8 @@ function ApplicationTimeChart() {
                       justifyContent: 'flex-end',
                       paddingRight: '10px',
                       fontSize: '12px',
-                      color: '#5f6368',
-                      borderRight: '1px solid #9aa0a6',
+                      color: palette.textMuted,
+                      borderRight: `1px solid ${palette.axis}`,
                     }}
                   >
                     {item.role}
@@ -178,7 +215,7 @@ function ApplicationTimeChart() {
                   right: '60px',
                   bottom: '0',
                   height: '40px',
-                  borderTop: '1px solid #9aa0a6',
+                  borderTop: `1px solid ${palette.axis}`,
                   display: 'flex',
                   alignItems: 'flex-start',
                   paddingTop: '5px',
@@ -191,7 +228,7 @@ function ApplicationTimeChart() {
                       position: 'absolute',
                       left: `${(tick / maxTime) * 100}%`,
                       fontSize: '12px',
-                      color: '#5f6368',
+                      color: palette.textMuted,
                       transform: 'translateX(-50%)',
                     }}
                   >
@@ -228,11 +265,12 @@ function ApplicationTimeChart() {
                       style={{
                         width: `${(item.avgTime / maxTime) * 100}%`,
                         height: '60%',
-                        backgroundColor: '#93c47d',
-                        border: '1px solid #6aa84f',
+                        backgroundColor: palette.barFill,
+                        border: `1px solid ${palette.barStroke}`,
                         borderRadius: '0 4px 4px 0',
                         position: 'relative',
                         minWidth: '2px',
+                        boxShadow: darkMode ? '0 0 8px rgba(95,168,98,0.25)' : 'none',
                       }}
                     >
                       {/* Data Label */}
@@ -243,9 +281,10 @@ function ApplicationTimeChart() {
                           top: '50%',
                           transform: 'translateY(-50%)',
                           fontSize: '14px',
-                          fontWeight: '600',
-                          color: '#2d5016',
+                          fontWeight: 600,
+                          color: palette.barLabel,
                           whiteSpace: 'nowrap',
+                          filter: darkMode ? 'drop-shadow(0 1px 0 rgba(0,0,0,0.5))' : 'none',
                         }}
                       >
                         {item.avgTime} min
@@ -263,7 +302,7 @@ function ApplicationTimeChart() {
                   left: '50%',
                   transform: 'translateX(-50%)',
                   fontSize: '12px',
-                  color: '#5f6368',
+                  color: palette.textMuted,
                 }}
               >
                 Average Time taken to fill application (in minutes)
@@ -271,12 +310,13 @@ function ApplicationTimeChart() {
             </>
           ) : (
             <div
+              className={darkMode ? 'text-light' : ''}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 height: '400px',
-                color: '#5f6368',
+                color: palette.textMuted,
                 fontSize: '16px',
               }}
             >
@@ -291,21 +331,31 @@ function ApplicationTimeChart() {
             style={{
               marginTop: '20px',
               padding: '15px',
-              backgroundColor: '#f8f9fa',
+              backgroundColor: palette.summaryBg,
               borderRadius: '4px',
               fontSize: '14px',
-              color: '#5f6368',
+              color: palette.textMuted,
+              border: `1px solid ${palette.border}`,
             }}
           >
             <div>
-              <strong>Showing:</strong> {processedData.length} role(s)
+              <strong style={{ color: darkMode ? '#ffffff' : '#000000' }}>Showing:</strong>{' '}
+              <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+                {processedData.length} role(s)
+              </span>
             </div>
             <div>
-              <strong>Fastest:</strong> {processedData[processedData.length - 1]?.role} (
-              {processedData[processedData.length - 1]?.avgTime} min)
+              <strong style={{ color: darkMode ? '#ffffff' : '#000000' }}>Fastest:</strong>{' '}
+              <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+                {processedData[processedData.length - 1]?.role} (
+                {processedData[processedData.length - 1]?.avgTime} min)
+              </span>
             </div>
             <div>
-              <strong>Slowest:</strong> {processedData[0]?.role} ({processedData[0]?.avgTime} min)
+              <strong style={{ color: darkMode ? '#ffffff' : '#000000' }}>Slowest:</strong>{' '}
+              <span style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+                {processedData[0]?.role} ({processedData[0]?.avgTime} min)
+              </span>
             </div>
           </div>
         )}
@@ -323,17 +373,17 @@ function ApplicationTimeChart() {
         {/* Dates Filter */}
         <div
           style={{
-            border: '1px solid #dadce0',
+            border: `1px solid ${palette.border}`,
             borderRadius: '4px',
             padding: '12px',
-            backgroundColor: '#ffffff',
+            backgroundColor: palette.panelBg,
           }}
         >
           <div
             style={{
               fontSize: '14px',
-              fontWeight: '500',
-              color: '#3c4043',
+              fontWeight: 500,
+              color: palette.textDefault,
               marginBottom: '8px',
             }}
           >
@@ -341,17 +391,17 @@ function ApplicationTimeChart() {
           </div>
           <select
             value={dateFilter}
-            onChange={e => {
-              setDateFilter(e.target.value);
-            }}
+            onChange={e => setDateFilter(e.target.value)}
+            className={darkMode ? 'bg-space-cadet text-light' : ''}
             style={{
               width: '100%',
               padding: '4px 8px',
-              border: '1px solid #dadce0',
+              border: `1px solid ${palette.border}`,
               borderRadius: '4px',
               fontSize: '14px',
-              backgroundColor: '#ffffff',
-              color: '#3c4043',
+              backgroundColor: darkMode ? '#0e1a33' : '#ffffff',
+              color: darkMode ? '#e8eef9' : '#3c4043',
+              outline: 'none',
             }}
           >
             <option value="all">ALL</option>
@@ -364,17 +414,17 @@ function ApplicationTimeChart() {
         {/* Role Filter */}
         <div
           style={{
-            border: '1px solid #dadce0',
+            border: `1px solid ${palette.border}`,
             borderRadius: '4px',
             padding: '12px',
-            backgroundColor: '#ffffff',
+            backgroundColor: palette.panelBg,
           }}
         >
           <div
             style={{
               fontSize: '14px',
-              fontWeight: '500',
-              color: '#3c4043',
+              fontWeight: 500,
+              color: palette.textDefault,
               marginBottom: '8px',
             }}
           >
@@ -382,17 +432,17 @@ function ApplicationTimeChart() {
           </div>
           <select
             value={selectedRole}
-            onChange={e => {
-              setSelectedRole(e.target.value);
-            }}
+            onChange={e => setSelectedRole(e.target.value)}
+            className={darkMode ? 'bg-space-cadet text-light' : ''}
             style={{
               width: '100%',
               padding: '4px 8px',
-              border: '1px solid #dadce0',
+              border: `1px solid ${palette.border}`,
               borderRadius: '4px',
               fontSize: '14px',
-              backgroundColor: '#ffffff',
-              color: '#3c4043',
+              backgroundColor: darkMode ? '#0e1a33' : '#ffffff',
+              color: darkMode ? '#e8eef9' : '#3c4043',
+              outline: 'none',
             }}
           >
             {roles.map(role => (
