@@ -1,6 +1,6 @@
 /* eslint-disable testing-library/no-node-access */
 import { connect } from 'react-redux';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Col,
@@ -28,8 +28,9 @@ import hasPermission from '~/utils/permissions';
 import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
-import styles from './TotalOrgSummary.module.css';
-import clsx from 'clsx';
+import './TotalOrgSummary.css';
+
+// components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
@@ -124,7 +125,6 @@ function TotalOrgSummary(props) {
   const [endDate, setEndDate] = useState(null);
   const [currentFromDate, setCurrentFromDate] = useState(fromDate);
   const [currentToDate, setCurrentToDate] = useState(toDate);
-  const rootRef = useRef(null);
 
   useEffect(() => {
     const fetchVolunteerStats = async () => {
@@ -225,18 +225,20 @@ function TotalOrgSummary(props) {
       pdfContainer.style.margin = '0';
 
       // Clone the main content area
-      const originalContent = rootRef.current;
+      const originalContent = document.querySelector('.container-total-org-wrapper');
       const clonedContent = originalContent.cloneNode(true);
 
       // Remove interactive or unwanted elements from the clone
       clonedContent
-        .querySelectorAll('[data-pdf-hide], .controls, .no-print')
+        .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
         .forEach(el => el.remove());
 
       // Adjust title row styling for a clean layout
-      const titleRow = clonedContent.querySelector('[data-pdf-title-row]');
+      const titleRow = clonedContent.querySelector(
+        '.row.d-flex.justify-content-between.align-items-center',
+      );
       if (titleRow) {
-        const titleCol = titleRow.querySelector('[data-pdf-title-col]');
+        const titleCol = titleRow.querySelector('.col');
         if (titleCol) {
           titleCol.style.width = '100%';
         }
@@ -253,7 +255,7 @@ function TotalOrgSummary(props) {
       // Create a style element for the PDF container
       const styleElem = document.createElement('style');
       styleElem.textContent = `
-        [data-pdf-root] {
+        .container-total-org-wrapper {
           padding: 20px !important;
           margin: 0 !important;
           box-shadow: none !important;
@@ -261,8 +263,7 @@ function TotalOrgSummary(props) {
           width: 100% !important;
           min-height: 100% !important;
         }
-
-        [data-pdf-title-row] {
+        .row.d-flex.justify-content-between.align-items-center {
           display: flex !important;
           justify-content: space-between !important;
           align-items: center !important;
@@ -270,48 +271,45 @@ function TotalOrgSummary(props) {
           width: 100% !important;
           padding: 0 !important;
         }
-
-        /* Merges old .component-container + .component-border rules */
-        [data-pdf-block] {
+        .component-container {
           page-break-inside: avoid;
           break-inside: avoid;
           margin: 15px 0 !important;
           padding: 20px !important;
+          border: 1px solid #eee !important;
+          border-radius: 8px !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        .component-border {
           background-color: #fff !important;
           border: 1px solid #e0e0e0 !important;
           border-radius: 10px !important;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
           overflow: hidden !important;
         }
-
         img, svg {
           max-width: 100% !important;
           height: auto !important;
           page-break-inside: avoid !important;
         }
-
         .recharts-wrapper {
           width: 100% !important;
           height: auto !important;
         }
-
         table {
           page-break-inside: avoid !important;
         }
-
         .Collapsible__trigger {
           background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
           color: ${darkMode ? '#fff' : '#000'} !important;
         }
-
-        .volunteerStatusGrid {
+        .volunteer-status-grid {
           display: grid !important;
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
           gap: 1.5rem !important;
           width: 100% !important;
           margin-top: 15px !important;
         }
-
         .component-pie-chart-label {
           font-size: 12px !important;
           font-weight: 600 !important;
@@ -319,8 +317,7 @@ function TotalOrgSummary(props) {
           overflow: hidden !important;
           text-overflow: ellipsis !important;
         }
-
-        [data-pdf-title] p {
+        .total-org-chart-title p {
           font-size: 1.5em !important;
           font-weight: bold !important;
           text-align: center !important;
@@ -425,19 +422,14 @@ function TotalOrgSummary(props) {
 
   if (error || isVolunteerFetchingError) {
     return (
-      <Container
-        className={clsx(
-          styles.containerTotalOrgWrapper,
-          darkMode && 'bg-oxford-blue', // keep global theme utility if needed
-        )}
-      >
+      <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
           className="align-self-center pt-2"
           data-testid="error"
           style={{ width: '30%', margin: '0 auto' }}
         >
           <Col>
-            <Alert color="danger">Error! {error?.message}</Alert>
+            <Alert color="danger">Error! {error.message}</Alert>
           </Col>
         </Row>
       </Container>
@@ -447,425 +439,307 @@ function TotalOrgSummary(props) {
   return (
     <Container
       fluid
-      className={clsx(
-        styles.containerTotalOrgWrapper,
-        'py-3 mb-5',
-        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke',
-      )}
+      className={`container-total-org-wrapper py-3 mb-5 ${
+        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
+      }`}
     >
-      <div ref={rootRef} data-pdf-root>
-        <Row className={styles.totalOrgReportHeaderRow} data-pdf-title-row>
-          <div className={styles.reportHeaderTitle} data-pdf-title-col>
-            <h3 className="my-0">Total Org Summary</h3>
-          </div>
-          <div className={styles.reportHeaderActions}>
-            <Dropdown
-              isOpen={dateRangeDropdownOpen}
-              toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
-            >
-              <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
-                  Current Week
-                </DropdownItem>
-                <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
-                  Previous Week
-                </DropdownItem>
-                <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
-                  Select Date Range
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <Dropdown
-              isOpen={comparisonDropdownOpen}
-              toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
-            >
-              <DropdownToggle caret>{selectedComparison}</DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
-                  No Comparison
-                </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
-                  Week Over Week
-                </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
-                  Month Over Month
-                </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
-                  Year Over Year
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-            <Button
-              className={styles.sharePdfBtn}
-              data-pdf-hide
-              onClick={handleSaveAsPDF}
-              disabled={isGeneratingPDF}
-            >
-              {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
-            </Button>
-          </div>
-        </Row>
+      <Row className="total-org-report-header-row">
+        <div className="report-header-title">
+          <h3 className="my-0">Total Org Summary</h3>
+        </div>
+        <div className="report-header-actions">
+          <Dropdown
+            isOpen={dateRangeDropdownOpen}
+            toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
+                Current Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
+                Previous Week
+              </DropdownItem>
+              <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
+                Select Date Range
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Dropdown
+            isOpen={comparisonDropdownOpen}
+            toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
+          >
+            <DropdownToggle caret>{selectedComparison}</DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
+                No Comparison
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
+                Week Over Week
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
+                Month Over Month
+              </DropdownItem>
+              <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
+                Year Over Year
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isGeneratingPDF}>
+            {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
+          </Button>
+        </div>
+      </Row>
 
-        <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
-          <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
-            Select Date Range
-          </ModalHeader>
-          <ModalBody>
-            <div className="d-flex flex-column gap-4">
-              <div>
-                <label htmlFor="start-date" style={{ display: 'block', marginBottom: '1rem' }}>
-                  Start Date
-                </label>
-                <div style={{ padding: '0.5rem 0' }}>
-                  <DatePicker
-                    id="start-date"
-                    selected={startDate}
-                    onChange={date => setStartDate(date)}
-                    className="form-control"
-                    dateFormat="MM/dd/yyyy"
-                    placeholderText="Select start date"
-                  />
-                </div>
+      <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
+        <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
+          Select Date Range
+        </ModalHeader>
+        <ModalBody>
+          <div className="d-flex flex-column gap-4">
+            <div>
+              <label htmlFor="start-date" style={{ display: 'block', marginBottom: '1rem' }}>
+                Start Date
+              </label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  id="start-date"
+                  selected={startDate}
+                  onChange={date => setStartDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select start date"
+                />
               </div>
+            </div>
 
-              <div>
-                <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
-                  End Date
-                </label>
-                <div style={{ padding: '0.5rem 0' }}>
-                  <DatePicker
-                    id="end-date"
-                    selected={endDate}
-                    onChange={date => setEndDate(date)}
-                    className="form-control"
-                    dateFormat="MM/dd/yyyy"
-                    placeholderText="Select end date"
-                    minDate={startDate}
+            <div>
+              <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
+                End Date
+              </label>
+              <div style={{ padding: '0.5rem 0' }}>
+                <DatePicker
+                  id="end-date"
+                  selected={endDate}
+                  onChange={date => setEndDate(date)}
+                  className="form-control"
+                  dateFormat="MM/dd/yyyy"
+                  placeholderText="Select end date"
+                  minDate={startDate}
+                />
+              </div>
+            </div>
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={() => setShowDatePicker(false)}>
+            Cancel
+          </Button>
+          <Button
+            color="primary"
+            onClick={handleDatePickerSubmit}
+            disabled={!startDate || !endDate}
+          >
+            Apply
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      <hr />
+      <AccordianWrapper title="Volunteer Status">
+        <Row>
+          <Col lg={{ size: 12 }}>
+            <VolunteerStatus
+              isLoading={isLoading}
+              volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+              totalHoursWorked={volunteerStats?.totalHoursWorked}
+              comparisonType={selectedComparison}
+            />
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Activities">
+        <Row>
+          <Col lg={{ size: 12 }}>
+            <VolunteerActivities
+              isLoading={isLoading}
+              totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+              completedAssignedHours={volunteerStats?.completedAssignedHours}
+              totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+              tasksStats={volunteerStats?.tasksStats}
+              totalActiveTeams={volunteerStats?.totalActiveTeams}
+              comparisonType={selectedComparison}
+            />
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Global Volunteer Network: Uniting Communities Worldwide</p>
+              </div>
+              <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Volunteer Status</p>
+              </div>
+              <VolunteerStatusChart
+                isLoading={isLoading}
+                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                comparisonType={selectedComparison}
+              />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Volunteer Hours Distribution</p>
+              </div>
+              <div
+                className="d-flex flex-column justify-content-center mt-4 gap-3"
+                style={{ gap: '20px' }}
+              >
+                <VolunteerHoursDistribution
+                  isLoading={isLoading}
+                  darkMode={darkMode}
+                  hoursData={volunteerStats?.volunteerHoursStats}
+                  totalHoursData={volunteerStats?.totalHoursWorked}
+                  comparisonType={selectedComparison}
+                />
+                <div className="d-flex flex-column align-items-center justify-content-center">
+                  <NumbersVolunteerWorked
+                    isLoading={isLoading}
+                    data={volunteerStats?.volunteersOverAssignedTime}
+                    darkMode={darkMode}
                   />
                 </div>
               </div>
             </div>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={() => setShowDatePicker(false)}>
-              Cancel
-            </Button>
-            <Button
-              color="primary"
-              onClick={handleDatePickerSubmit}
-              disabled={!startDate || !endDate}
-            >
-              Apply
-            </Button>
-          </ModalFooter>
-        </Modal>
-
-        <hr />
-        <AccordianWrapper title="Volunteer Status">
-          <Row>
-            <Col lg={{ size: 12 }}>
-              <VolunteerStatus
+          </Col>
+          <Col lg={{ size: 3 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Task Completed</p>
+              </div>
+              <div className="mt-4">
+                <TaskCompletedBarChart
+                  isLoading={isLoading}
+                  data={volunteerStats?.tasksStats}
+                  darkMode={darkMode}
+                />
+              </div>
+            </div>
+          </Col>
+          <Col lg={{ size: 3 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Hours Completed</p>
+              </div>
+              <div className="mt-4">
+                <HoursCompletedBarChart
+                  isLoading={isLoading}
+                  data={volunteerStats?.taskAndProjectStats}
+                  darkMode={darkMode}
+                  comparisonType={selectedComparison}
+                />
+              </div>
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Engagement Trends and Milestones">
+        <Row>
+          <Col lg={{ size: 7 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Volunteer Trends by Time</p>
+              </div>
+              <VolunteerTrendsLineChart darkMode={darkMode} />
+            </div>
+          </Col>
+          <Col lg={{ size: 5 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Anniversary Celebrated</p>
+              </div>
+              <AnniversaryCelebrated
                 isLoading={isLoading}
-                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
-                totalHoursWorked={volunteerStats?.totalHoursWorked}
+                data={volunteerStats?.anniversaryStats}
+                darkMode={darkMode}
                 comparisonType={selectedComparison}
               />
-            </Col>
-          </Row>
-        </AccordianWrapper>
-
-        <AccordianWrapper title="Volunteer Activities">
-          <Row>
-            <Col lg={{ size: 12 }}>
-              <VolunteerActivities
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 7 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Work Distribution</p>
+              </div>
+              <WorkDistributionBarChart
                 isLoading={isLoading}
-                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
-                completedAssignedHours={volunteerStats?.completedAssignedHours}
-                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
-                tasksStats={volunteerStats?.tasksStats}
-                totalActiveTeams={volunteerStats?.totalActiveTeams}
+                workDistributionStats={volunteerStats?.workDistributionStats}
                 comparisonType={selectedComparison}
               />
-            </Col>
-          </Row>
-        </AccordianWrapper>
-
-        <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
-          <Row>
-            <Col lg={{ size: 6 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Global Volunteer Network: Uniting Communities Worldwide</p>
-                </div>
-                <GlobalVolunteerMap
-                  isLoading={isLoading}
-                  locations={volunteerStats?.userLocations}
-                />
+            </div>
+          </Col>
+          <Col lg={{ size: 5 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Role Distribution</p>
               </div>
-            </Col>
-            <Col lg={{ size: 6 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Volunteer Status</p>
-                </div>
-                <VolunteerStatusChart
-                  isLoading={isLoading}
-                  volunteerNumberStats={volunteerStats?.volunteerNumberStats}
-                  comparisonType={selectedComparison}
-                />
+              <RoleDistributionPieChart
+                isLoading={isLoading}
+                roleDistributionStats={volunteerStats?.roleDistributionStats}
+                darkMode={darkMode}
+                comparisonType={selectedComparison}
+              />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Team Stats</p>
               </div>
-            </Col>
-          </Row>
-        </AccordianWrapper>
-
-        <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
-          <Row>
-            <Col lg={{ size: 6 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Volunteer Hours Distribution</p>
-                </div>
-                <div
-                  className="d-flex flex-column justify-content-center mt-4 gap-3"
-                  style={{ gap: '20px' }}
-                >
-                  <VolunteerHoursDistribution
-                    isLoading={isLoading}
-                    darkMode={darkMode}
-                    hoursData={volunteerStats?.volunteerHoursStats}
-                    totalHoursData={volunteerStats?.totalHoursWorked}
-                    comparisonType={selectedComparison}
-                  />
-                  <div className="d-flex flex-column align-items-center justify-content-center">
-                    <NumbersVolunteerWorked
-                      isLoading={isLoading}
-                      data={volunteerStats?.volunteersOverAssignedTime}
-                      darkMode={darkMode}
-                    />
-                  </div>
-                </div>
+              <TeamStats
+                isLoading={isLoading}
+                usersInTeamStats={volunteerStats?.usersInTeamStats}
+                endDate={currentToDate}
+                comparisonType={selectedComparison}
+              />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+                <p>Blue Square Stats</p>
               </div>
-            </Col>
-            <Col lg={{ size: 3 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Task Completed</p>
-                </div>
-                <div className="mt-4">
-                  <TaskCompletedBarChart
-                    isLoading={isLoading}
-                    data={volunteerStats?.tasksStats}
-                    darkMode={darkMode}
-                  />
-                </div>
-              </div>
-            </Col>
-            <Col lg={{ size: 3 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Hours Completed</p>
-                </div>
-                <div className="mt-4">
-                  <HoursCompletedBarChart
-                    isLoading={isLoading}
-                    data={volunteerStats?.taskAndProjectStats}
-                    darkMode={darkMode}
-                    comparisonType={selectedComparison}
-                  />
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </AccordianWrapper>
-
-        <AccordianWrapper title="Volunteer Engagement Trends and Milestones">
-          <Row>
-            <Col lg={{ size: 7 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Volunteer Trends by Time</p>
-                </div>
-                <VolunteerTrendsLineChart darkMode={darkMode} />
-              </div>
-            </Col>
-            <Col lg={{ size: 5 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Anniversary Celebrated</p>
-                </div>
-                <AnniversaryCelebrated
-                  isLoading={isLoading}
-                  data={volunteerStats?.anniversaryStats}
-                  darkMode={darkMode}
-                  comparisonType={selectedComparison}
-                />
-              </div>
-            </Col>
-          </Row>
-        </AccordianWrapper>
-
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
-          <Row>
-            <Col lg={{ size: 7 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Work Distribution</p>
-                </div>
-                <WorkDistributionBarChart
-                  isLoading={isLoading}
-                  workDistributionStats={volunteerStats?.workDistributionStats}
-                  comparisonType={selectedComparison}
-                />
-              </div>
-            </Col>
-            <Col lg={{ size: 5 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Role Distribution</p>
-                </div>
-                <RoleDistributionPieChart
-                  isLoading={isLoading}
-                  roleDistributionStats={volunteerStats?.roleDistributionStats}
-                  darkMode={darkMode}
-                  comparisonType={selectedComparison}
-                />
-              </div>
-            </Col>
-          </Row>
-        </AccordianWrapper>
-
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
-          <Row>
-            <Col lg={{ size: 6 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Team Stats</p>
-                </div>
-                <TeamStats
-                  isLoading={isLoading}
-                  usersInTeamStats={volunteerStats?.usersInTeamStats}
-                  endDate={currentToDate}
-                  comparisonType={selectedComparison}
-                />
-              </div>
-            </Col>
-            <Col lg={{ size: 6 }}>
-              <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
-                data-pdf-block
-              >
-                <div
-                  className={clsx(
-                    styles.totalOrgChartTitle,
-                    darkMode && styles.totalOrgChartTitleDark,
-                  )}
-                  data-pdf-title
-                >
-                  <p>Blue Square Stats</p>
-                </div>
-                <BlueSquareStats
-                  isLoading={isLoading}
-                  blueSquareStats={volunteerStats?.blueSquareStats}
-                  comparisonType={selectedComparison}
-                  darkMode={darkMode}
-                />
-              </div>
-            </Col>
-          </Row>
-        </AccordianWrapper>
-      </div>
-      {/* ← closes ref wrapper */}
+              <BlueSquareStats
+                isLoading={isLoading}
+                blueSquareStats={volunteerStats?.blueSquareStats}
+                comparisonType={selectedComparison}
+                darkMode={darkMode}
+              />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
     </Container>
   );
 }
