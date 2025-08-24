@@ -225,14 +225,13 @@ const UserTableDataComponent = (props) => {
                 return;
               }
 
-              const url = `${window.location.origin}/timelog/${props.user._id}#currentWeek`;
-
               if (e.metaKey || e.ctrlKey || e.button === 1) {
-                window.open(url, '_blank', 'noopener');
+                window.open(`/timelog/${props.user._id}`, '_blank');
                 return;
               }
-              e.preventDefault();
-              history.push(`/timelog/${props.user._id}#currentWeek`);
+
+              e.preventDefault(); // prevent full reload
+              history.push(`/timelog/${props.user._id}`);
             }}
           />
         </span>
