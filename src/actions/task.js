@@ -15,7 +15,7 @@ import {
 } from '../components/TeamMemberTasks/actions';
 import { createTaskEditSuggestionHTTP } from '../components/TaskEditSuggestions/service';
 import * as types from '../constants/task';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 import { fetchTaskEditSuggestions } from '../components/TaskEditSuggestions/thunks';
 import { incrementDashboardTaskCount } from './dashboardActions';
