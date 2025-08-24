@@ -682,35 +682,6 @@ function TotalOrgSummary(props) {
         </Row>
       </AccordianWrapper>
       <AccordianWrapper title="Volunteer Roles and Team Dynamics">
-        <Row>
-          <Col lg={{ size: 7 }}>
-            <div className="component-container component-border">
-              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Work Distribution</p>
-              </div>
-              <WorkDistributionBarChart
-                isLoading={isLoading}
-                workDistributionStats={volunteerStats?.workDistributionStats}
-                comparisonType={selectedComparison}
-              />
-            </div>
-          </Col>
-          <Col lg={{ size: 5 }}>
-            <div className="component-container component-border">
-              <div className={`total-org-chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Role Distribution</p>
-              </div>
-              <RoleDistributionPieChart
-                isLoading={isLoading}
-                roleDistributionStats={volunteerStats?.roleDistributionStats}
-                darkMode={darkMode}
-                comparisonType={selectedComparison}
-              />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
   <Row>
     <Col lg={{ size: 6 }}>
       <div
