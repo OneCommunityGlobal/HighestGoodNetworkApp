@@ -7,7 +7,7 @@ import '../Header/DarkMode.css';
 /**
  * Modal popup to show the reset password action
  */
-const ResetPasswordPopup = React.memo(props => {
+const ResetPasswordPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
@@ -35,6 +35,14 @@ const ResetPasswordPopup = React.memo(props => {
   //   }));
   // };
 
+  const firstInputRef = React.useRef(null);
+
+  useEffect(() => {
+    if (props.open && firstInputRef.current) {
+      firstInputRef.current.focus();
+    }
+  }, [props.open]);
+
   const resetPassword = () => {
     if (!newPassword.isValid) {
       setError(
@@ -56,7 +64,6 @@ const ResetPasswordPopup = React.memo(props => {
     <Modal
       isOpen={props.open}
       toggle={closePopup}
-      autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
@@ -73,7 +80,7 @@ const ResetPasswordPopup = React.memo(props => {
             darkMode={darkMode}
             label="New Password"
             textColor={darkMode ? 'text-light' : ''}
-            autoFocus
+            ref={firstInputRef}
             type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
             id="newpassword"
@@ -133,6 +140,9 @@ const ResetPasswordPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
+
+const ResetPasswordPopup = React.memo(ResetPasswordPopupComponent);
+ResetPasswordPopup.displayName = 'ResetPasswordPopup';
 
 export default ResetPasswordPopup;

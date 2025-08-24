@@ -29,7 +29,7 @@ import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import styles from './TotalOrgSummary.module.css';
-import clsx from 'clsx';
+import clsx from 'clsx'
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
@@ -427,7 +427,7 @@ function TotalOrgSummary(props) {
       <Container
         className={clsx(
           styles.containerTotalOrgWrapper,
-          darkMode && 'bg-oxford-blue',
+          darkMode && 'bg-oxford-blue', // keep global theme utility if needed
         )}
       >
         <Row
@@ -449,7 +449,7 @@ function TotalOrgSummary(props) {
       className={clsx(
         styles.containerTotalOrgWrapper,
         'py-3 mb-5',
-        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke',
+        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke', // or add .whiteSmoke
       )}
     >
       <div ref={rootRef} data-pdf-root>
@@ -573,7 +573,6 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-
         <AccordianWrapper title="Volunteer Activities">
           <Row>
             <Col lg={{ size: 12 }}>
@@ -589,7 +588,6 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-
         <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
           <Row>
             <Col lg={{ size: 6 }}>
@@ -635,7 +633,6 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-
         <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
           <Row>
             <Col lg={{ size: 6 }}>
@@ -722,7 +719,6 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-
         <AccordianWrapper title="Volunteer Engagement Trends and Milestones">
           <Row>
             <Col lg={{ size: 7 }}>
@@ -766,7 +762,6 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-
         <AccordianWrapper title="Volunteer Roles and Team Dynamics">
           <Row>
             <Col lg={{ size: 7 }}>
@@ -814,7 +809,6 @@ function TotalOrgSummary(props) {
             </Col>
           </Row>
         </AccordianWrapper>
-
         <AccordianWrapper title="Volunteer Roles and Team Dynamics">
           <Row>
             <Col lg={{ size: 6 }}>

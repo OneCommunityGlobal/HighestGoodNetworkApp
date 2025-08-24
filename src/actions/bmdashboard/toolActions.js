@@ -1,5 +1,5 @@
 import axios from 'axios';
-import GET_TOOL_BY_ID, { GET_TOOLS, GET_TOOL_AVAILABILITY } from '../../constants/bmdashboard/toolsConstants';
+import { GET_TOOL_BY_ID, GET_TOOLS, GET_TOOL_AVAILABILITY } from '../../constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from '../../constants/errors';
 import { ENDPOINTS } from '~/utils/URL';
 
