@@ -1568,6 +1568,13 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.7.2"
 
+"@fortawesome/free-brands-svg-icons@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/@fortawesome/free-brands-svg-icons/-/free-brands-svg-icons-7.0.0.tgz"
+  integrity sha512-C8oY28gq/Qx/cHReJa2AunKJUHvUZDVoPlSTHtAvjriaNfi+5nugW4cx7yA/xN3f/nYkElw11gFBoJ2xUDDFgg==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "7.0.0"
+
 "@fortawesome/free-regular-svg-icons@^6":
   version "6.7.2"
   resolved "https://registry.yarnpkg.com/@fortawesome/free-regular-svg-icons/-/free-regular-svg-icons-6.7.2.tgz#f1651e55e6651a15589b0569516208f9c65f96db"
@@ -1575,14 +1582,14 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.7.2"
 
-"@fortawesome/free-solid-svg-icons@^6":
+"@fortawesome/free-solid-svg-icons@^6.7.2":
   version "6.7.2"
   resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-6.7.2.tgz#fe25883b5eb8464a82918599950d283c465b57f6"
   integrity sha512-GsBrnOzU8uj0LECDfD5zomZJIjrPhIlWU82AHwa2s40FKH+kcxQaBvBo3Z4TxyZHIyX8XTDxsyA33/Vx9eFuQA==
   dependencies:
     "@fortawesome/fontawesome-common-types" "6.7.2"
 
-"@fortawesome/react-fontawesome@^0.2":
+"@fortawesome/react-fontawesome@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@fortawesome/react-fontawesome/-/react-fontawesome-0.2.3.tgz#bde1bc0fd67693e140d5d21b2e4f6faea8aae657"
   integrity sha512-HlJco8RDY8NrzFVjy23b/7mNS4g9NegcrBG3n7jinwpc2x/AmSVk53IhWniLYM4szYLxRAFTAGwGn0EIlclDeQ==
@@ -2026,7 +2033,7 @@
 
 "@parcel/watcher-darwin-arm64@2.5.1":
   version "2.5.1"
-  resolved "https://registry.yarnpkg.com/@parcel/watcher-darwin-arm64/-/watcher-darwin-arm64-2.5.1.tgz#3d26dce38de6590ef79c47ec2c55793c06ad4f67"
+  resolved "https://registry.npmjs.org/@parcel/watcher-darwin-arm64/-/watcher-darwin-arm64-2.5.1.tgz"
   integrity sha512-eAzPv5osDmZyBhou8PoF4i6RQXAfeKL9tjb3QzYuccXFMQU0ruIc/POh30ePnaOyD1UXdlKguHBmsTs53tVoPw==
 
 "@parcel/watcher-darwin-x64@2.5.1":
@@ -3054,7 +3061,7 @@ ansi-styles@^5.0.0:
 
 ansi-styles@^5.2.0:
   version "5.2.0"
-  resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-5.2.0.tgz#07449690ad45777d1924ac2abb2fc8895dba836b"
+  resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-5.2.0.tgz"
   integrity sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==
 
 anymatch@^3.0.3:
@@ -3686,7 +3693,7 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
     inherits "^2.0.4"
     safe-buffer "^5.2.1"
 
-classnames@^2.2.3, classnames@^2.2.5, classnames@^2.2.6, classnames@^2.3.1:
+classnames@^2.2.3, classnames@^2.2.5, classnames@^2.2.6, classnames@^2.3.1, classnames@^2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.5.1.tgz#ba774c614be0f016da105c858e7159eae8e7687b"
   integrity sha512-saHYOzhIQs6wy2sVxTM6bUDsQO4F50V9RQ22qBpEdCW+I+/Wmke2HOl6lS6dTpdxVhb88/I6+Hs+438c3lfUow==
@@ -5947,15 +5954,10 @@ jest-message-util@^29.7.0:
   resolved "https://registry.yarnpkg.com/jest-mock/-/jest-mock-29.7.0.tgz#4e836cf60e99c6fcfabe9f99d017f3fdd50a6347"
   integrity sha512-ITOMZn+UkYS4ZFh83xYAOzWStloNzJFO2s8DWrE4lhtGD+AorgnbkiKERe4wQVBydIGPx059g6riW5Btp6Llnw==
   dependencies:
-    "@babel/code-frame" "^7.12.13"
-    "@jest/types" "^29.6.3"
-    "@types/stack-utils" "^2.0.0"
     chalk "^4.0.0"
-    graceful-fs "^4.2.9"
-    micromatch "^4.0.4"
+    jest-diff "^29.7.0"
+    jest-get-type "^29.6.3"
     pretty-format "^29.7.0"
-    slash "^3.0.0"
-    stack-utils "^2.0.3"
 
 jest-regex-util@30.0.1:
   version "30.0.1"
@@ -7165,7 +7167,7 @@ react-is@^16.7.0:
 
 react-is@^17.0.1:
   version "17.0.2"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
+  resolved "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
 react-is@^17.0.2:
@@ -7185,7 +7187,7 @@ react-is@^18.2.0:
 
 react-is@^18.3.1:
   version "18.3.1"
-  resolved "https://registry.yarnpkg.com/react-is/-/react-is-18.3.1.tgz#e83557dc12eae63a99e003a46388b1dcbb44db7e"
+  resolved "https://registry.npmjs.org/react-is/-/react-is-18.3.1.tgz"
   integrity sha512-/LLMVyas0ljjAtoYiPqYiL8VWXzUUdThrmU5+n20DZv+a+ClRoevUzw5JxU+Ieh5/c87ytoTBV9G1FiKfNJdmg==
 
 react-is@^19.1.1:
@@ -7399,7 +7401,7 @@ react-toastify@^5.3.1:
     prop-types "^15.7.2"
     react-transition-group "^4"
 
-react-tooltip@^4.2.10:
+react-tooltip@^4.5.1:
   version "4.5.1"
   resolved "https://registry.yarnpkg.com/react-tooltip/-/react-tooltip-4.5.1.tgz#77eccccdf16adec804132e558ec20ca5783b866a"
   integrity sha512-Zo+CSFUGXar1uV+bgXFFDe7VeS2iByeIp5rTgTcc2HqtuOS5D76QapejNNfx320MCY91TlhTQat36KGFTqgcvw==
@@ -7444,7 +7446,7 @@ reactjs-popup@^2.0.5:
   resolved "https://registry.yarnpkg.com/reactjs-popup/-/reactjs-popup-2.0.6.tgz#ff0e340e31d03785ae62f6b6cf62de1ef48c9605"
   integrity sha512-A+tt+x9wdgZiZjv0e2WzYLD3IfFwJALaRaqwrCSXGjo0iQdsry/EtBEbQXRSmQs7cHmOi5eytCiSlOm8k4C+dg==
 
-reactstrap@^8.4.1:
+reactstrap@^8.10.1:
   version "8.10.1"
   resolved "https://registry.yarnpkg.com/reactstrap/-/reactstrap-8.10.1.tgz#43ea596c7f82f88997a9c8aae203417910262d3f"
   integrity sha512-StjLADa/12yMNjafrSs+UD7sZAGtKpLO9fZp++2Dj0IzJinqY7eQhXlM3nFf0q40YsIcLvQdFc9pKF8PF4f0Qg==
