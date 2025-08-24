@@ -14,7 +14,7 @@ import {
 import { Select, DatePicker, Spin } from 'antd';
 
 import axios from 'axios';
-import { fetchInjuriesOverTime } from 'actions/bmdashboard/injuryActions';
+import { fetchInjuriesOverTime } from '../../../actions/bmdashboard/injuryActions';
 
 function InjuriesOverTimeChart(props) {
   const dispatch = useDispatch();

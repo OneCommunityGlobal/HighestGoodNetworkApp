@@ -105,7 +105,7 @@ export const fetchInjuriesOverTime = (filters = {}) => {
       const res = await axios.get(ENDPOINTS.BM_INJURY_OVER_TIME, { params });
       //dispatch(setInjuryOverTime(res.data));
     } catch (err) {
-      dispatch(setErrors(err.response?.data || err.message));
+      //dispatch(setErrors(err.response?.data || err.message));
     }
   };
 }
