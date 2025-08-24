@@ -120,7 +120,7 @@
 .lbMsgIconMobile {
   height: 100%;
   width: auto !important;
-  color: black !important;
+  color: black
 }
 
 .lbMobileHamMenuHeader {
@@ -436,4 +436,22 @@
 
 .lbMsgIcon {
   cursor: pointer;
+}
+
+/* Dark Mode Styles */
+
+.contactYinmBlue {
+   /* empty class to provide hovering capabilty to contacts in dark mode  */
+}
+
+.contactYinmBlue:hover {
+  background-color: #1c2541 !important; /* Space Cadet for hover effect */
+}
+
+.darkModeBorder {
+  border-color: black;
+}
+
+.darkModeIcon {
+  color: white;
 }
