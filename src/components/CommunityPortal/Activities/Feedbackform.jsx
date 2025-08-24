@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import { addEventFeedback } from '../../../actions/communityPortal/eventFeedback';
 import styles from './Feedbackform.module.css';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Spinner } from 'reactstrap';
-import { toast } from 'react-toastify';
 const isValidName = name => {
   if (!name || name.trim() === '') return false;
   const allowedChars = new Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ -'");
@@ -69,8 +67,6 @@ function Feedbackform() {
   const dispatch = useDispatch();
   const { eventId, email } = useParams();
   const initialFormState = { eventId: eventId, name: '', email: '', rating: 0, comments: '' };
-  // eslint-disable-next-line no-console
-  console.log(`eventId is${eventId}`);
 
   const [formData, setFormData] = useState({
     ...initialFormState,
@@ -110,23 +106,9 @@ function Feedbackform() {
     }
     const newErrors = {};
 
-    // eslint-disable-next-line no-console
-    // console.log(formData);
-
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required';
     }
-    // eslint-disable-next-line no-console
-    console.log('isValidName(formData.name)');
-
-    // eslint-disable-next-line no-console
-    console.log(isValidName(formData.name));
-
-    // eslint-disable-next-line no-console
-    console.log('isValidEmail(formData.email)');
-
-    // eslint-disable-next-line no-console
-    console.log(isValidEmail(formData.email));
 
     if (!isValidName(formData.name)) {
       newErrors.name =
@@ -146,48 +128,21 @@ function Feedbackform() {
       const errorMsg = 'Please select a rating';
       newErrors.rating = errorMsg;
     }
-    // eslint-disable-next-line no-console
-    console.log('newErrors');
 
-    // eslint-disable-next-line no-console
-    console.log(newErrors);
-
-    // eslint-disable-next-line no-console
-    console.log(Object.keys(newErrors).length);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    // eslint-disable-next-line no-console
-    console.log('acceptCommentsEmpty');
-    // eslint-disable-next-line no-console
-    console.log(acceptCommentsEmpty);
-
-    // eslint-disable-next-line no-console
-    console.log('!acceptCommentsEmpty');
-    // eslint-disable-next-line no-console
-    console.log(!acceptCommentsEmpty);
-
     if (!formData.comments.trim() && !acceptCommentsEmpty) {
-      // eslint-disable-next-line no-console
-      console.log(modal);
       setModal(true);
       return;
     }
 
     const eventFeedback = {
       ...formData,
-      // createdBy: 'anonymous',
-      // createdAt: new Date().toString(),
-      // _id: uuidv4(),
     };
-    // eslint-disable-next-line no-console
-    console.log(eventFeedback);
     dispatch(addEventFeedback(eventFeedback));
-    // toast.success('Event feedback submitted');
-    // replace toast
     setFormData({ ...initialFormState });
-    // setShouldSaveAnyway(false);
     const emptyMsg = '';
     setErrors([]);
     setAcceptCommentsEmpty(false);

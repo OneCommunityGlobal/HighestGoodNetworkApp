@@ -5,8 +5,6 @@ import companyLogo from '../../../assets/images/logo2.png';
 
 function FollowUpEmailTemplate() {
   const { eventId = 1234, email = '' } = useParams(); // || { email: '' };
-  // eslint-disable-next-line no-console
-  console.log(`FollowUpEmailTemplate eventId is${eventId}`);
   return (
     <div className="email-template-container">
       {/* Company Logo */}
