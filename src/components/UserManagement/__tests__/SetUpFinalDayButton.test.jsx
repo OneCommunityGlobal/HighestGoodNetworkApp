@@ -82,7 +82,7 @@ describe('SetUpFinalDayButton', () => {
       fireEvent.click(cancelFinalDayButton);
 
       // Clicking CANCEL button calls final day deleted toast
-      waitFor(() => {
+      await waitFor(() => {
         expect(mockToastSuccess).toHaveBeenCalledWith(finalDayDeletedMessage);
       });
     });
@@ -125,12 +125,16 @@ describe('SetUpFinalDayButton', () => {
       await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
 
       const dateInput = screen.getByTestId('date-input');
-      fireEvent.change(dateInput, { target: { value: '12-07-2019' } });
+      // Use a future date to pass validation
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 30); // 30 days from now
+      const futureDateString = futureDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
+      fireEvent.change(dateInput, { target: { value: futureDateString } });
       const saveFinalDayPopup = screen.getByText('Save');
       fireEvent.click(saveFinalDayPopup);
 
       // When final day is set, expect toast to be called with appropriate message
-      waitFor(() => {
+      await waitFor(() => {
         expect(mockToastSuccess).toHaveBeenCalledWith(finalDaySetMessage);
       });
     });

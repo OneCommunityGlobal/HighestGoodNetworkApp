@@ -49,6 +49,7 @@ function SingleTask(props) {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         setTask(res?.data || {});
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error);
       }
     };
@@ -208,6 +209,7 @@ function SingleTask(props) {
                               target="_blank"
                               rel="noreferrer"
                             >
+                              {/* eslint-disable-next-line jsx-a11y/alt-text */}
                               <img className="img-circle" src={elem.profilePic} />
                             </a>
                           );
