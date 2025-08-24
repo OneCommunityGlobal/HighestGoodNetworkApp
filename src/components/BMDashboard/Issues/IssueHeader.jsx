@@ -1,5 +1,5 @@
 import { Search, MoreHorizontal, ChevronDown } from 'lucide-react';
-import './IssueHeader.css';
+import styles from './IssueHeader.module.css';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { getHeaderData } from '~/actions/authActions';
 import { Link } from 'react-router-dom';
@@ -38,22 +38,26 @@ export function IssueHeader(props) {
   }, []);
 
   return (
-    <div className={`${darkMode ? 'issue-header-container-dark' : 'issue-header-container '}`}>
-      <div className="top-row">
-        <div className={`${darkMode ? 'title-section-dark' : 'title-section'}`}>
-          <h1 className={`${darkMode ? 'section-dark' : 'section'}`}>Issues</h1>
+    <div
+      className={`${
+        darkMode ? styles['issue-header-container-dark'] : styles['issue-header-container']
+      }`}
+    >
+      <div className={styles['top-row']}>
+        <div className={`${darkMode ? styles['title-section-dark'] : styles['title-section']}`}>
+          <h1 className={`${darkMode ? styles['section-dark'] : styles.section}`}>Issues</h1>
         </div>
 
-        <div className="action-section">
-          <button className="more-button" type="button" label="More Button">
+        <div className={styles['action-section']}>
+          <button className={styles['more-button']} type="button" label="More Button">
             <MoreHorizontal size={20} />
           </button>
           <Link to="/bmdashboard/projects" style={{ textDecoration: 'none' }}>
-            <button className="back-button" type="button">
+            <button className={styles['back-button']} type="button">
               Back to Projects
             </button>
           </Link>
-          <div className="avatar">
+          <div className={styles.avatar}>
             {profilePic ? (
               <img src={profilePic} alt={`${firstName}'s avatar`} />
             ) : (
@@ -64,56 +68,56 @@ export function IssueHeader(props) {
         </div>
       </div>
 
-      <div className={`${darkMode ? 'bg-oxide-blue' : ''} 'top-row-dark'`}>
-        <div className={` project-tab`}>
+      <div className={`${darkMode ? styles['bg-oxide-blue'] : ''} ${styles['top-row-dark']}`}>
+        <div className={styles['project-tab']}>
           <button
             type="button"
-            className={`tab-item ${activeTab === 'info' ? 'active' : ''}`}
+            className={`${styles['tab-item']} ${activeTab === 'info' ? styles.active : ''}`}
             onClick={() => setActiveTab('info')}
           >
             Project 1
           </button>
           <button
             type="button"
-            className={`tab-item ${activeTab === 'dates' ? 'active' : ''}`}
+            className={`${styles['tab-item']} ${activeTab === 'dates' ? styles.active : ''}`}
             onClick={() => setActiveTab('dates')}
           >
             Dates of Project 1
           </button>
         </div>
 
-        <div className="search-container" ref={searchRef}>
-          <div className="search-icon">
+        <div className={styles['search-container']} ref={searchRef}>
+          <div className={styles['search-icon']}>
             <Search size={20} />
           </div>
           <input
             type="text"
             placeholder="Search..."
-            className="search-input"
+            className={styles['search-input']}
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             onFocus={() => setIsSearchFocused(true)}
           />
 
           {searchTerm && isSearchFocused && (
-            <div className="search-results">
+            <div className={styles['search-results']}>
               {filteredProjects.length > 0 ? (
-                <div className="search-results-list">
+                <div className={styles['search-results-list']}>
                   {filteredProjects.map(project => (
                     <Link
                       to={`/bmdashboard/projects/${project._id}`}
                       key={project.id}
                       style={{ textDecoration: 'none' }}
                     >
-                      <div className="search-result-item">
-                        <span className="result-name">{project.name}</span>
-                        <span className="result-category">{project.category}</span>
+                      <div className={styles['search-result-item']}>
+                        <span className={styles['result-name']}>{project.name}</span>
+                        <span className={styles['result-category']}>{project.category}</span>
                       </div>
                     </Link>
                   ))}
                 </div>
               ) : (
-                <div className="search-no-results">No matching projects found</div>
+                <div className={styles['search-no-results']}>No matching projects found</div>
               )}
             </div>
           )}

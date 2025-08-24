@@ -7,7 +7,7 @@ import {
   FiCopy,
   FiEdit,
 } from 'react-icons/fi';
-import './IssueDashboard.css';
+import styles from './IssueDashboard.module.css';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -97,7 +97,7 @@ export default function IssueDashboard() {
 
   return (
     <div
-      className={`container-fluid issue-dashboard min-vh-100 p-4 ${
+      className={`${styles['issue-dashboard']} container-fluid min-vh-100 p-4 ${
         darkMode ? 'bg-oxford-blue text-light' : ''
       }`}
     >
@@ -110,16 +110,16 @@ export default function IssueDashboard() {
         </Col>
       </Row>
 
-      <div className="issues-table-responsive">
+      <div className={styles['issues-table-responsive']}>
         <Table hover className={`mb-0 ${darkMode ? 'table-dark' : ''}`}>
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
-              <th className="text-end">Issue Name </th>
-              <th className="text-end">Open since</th>
-              <th className="text-end">Category</th>
-              <th className="text-end">Person dealing</th>
-              <th className="text-end">Cost due to Issue</th>
-              <th className="text-end">Actions</th>
+              <th className={styles['text-end']}>Issue Name </th>
+              <th className={styles['text-end']}>Open since</th>
+              <th className={styles['text-end']}>Category</th>
+              <th className={styles['text-end']}>Person dealing</th>
+              <th className={styles['text-end']}>Cost due to Issue</th>
+              <th className={styles['text-end']}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -142,8 +142,12 @@ export default function IssueDashboard() {
                   </td>
                   <td>{assignedTo}</td>
                   <td>{cost}</td>
-                  <td className="text-end position-relative">
-                    <div className={`issue-dashboard-dropdown  ${darkMode ? 'bg-oxide-blue' : ''}`}>
+                  <td className={`${styles['text-end']} position-relative`}>
+                    <div
+                      className={`${styles['issue-dashboard-dropdown']}  ${
+                        darkMode ? 'bg-oxide-blue' : ''
+                      }`}
+                    >
                       <button
                         type="button"
                         aria-label="Actions menu"
@@ -155,15 +159,17 @@ export default function IssueDashboard() {
 
                       {menuOpen === issue._id && (
                         <div
-                          className={`issue-dashboard-dropdown-menu show action-menu${
+                          className={`${styles['issue-dashboard-dropdown-menu']} ${styles.show} ${
+                            styles['action-menu']
+                          }${
                             currentItems.indexOf(issue) === currentItems.length - 1
-                              ? ' last-row-menu'
+                              ? styles['last-row-menu']
                               : ''
                           }`}
                         >
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={styles['issue-dashboard-dropdown-item']}
                             onClick={() => {
                               openRenameModal(issue);
                               setMenuOpen(null);
@@ -174,7 +180,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={styles['issue-dashboard-dropdown-item']}
                             onClick={() => {
                               openCopyModal(issue);
                               setMenuOpen(null);
@@ -185,7 +191,7 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item text-danger"
+                            className={`${styles['issue-dashboard-dropdown-item']} text-danger`}
                             onClick={() => {
                               openDeleteModal(issue);
                               setMenuOpen(null);
@@ -214,7 +220,7 @@ export default function IssueDashboard() {
       </div>
 
       <div
-        className={`card-footer d-flex justify-content-between align-items-center ${
+        className={`${styles['card-footer']} d-flex justify-content-between align-items-center ${
           darkMode ? 'bg-dark text-light' : 'bg-light text-muted'
         }`}
       >
@@ -275,7 +281,7 @@ export default function IssueDashboard() {
 
       {/* Rename Modal */}
       {showRenameModal && (
-        <div className="issues-modal-backdrop">
+        <div className={styles['issues-modal-backdrop']}>
           <div className={`modal-dialog `}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Rename Issue</h5>
@@ -310,7 +316,7 @@ export default function IssueDashboard() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="issues-modal-backdrop">
+        <div className={styles['issues-modal-backdrop']}>
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Delete</h5>
@@ -342,7 +348,7 @@ export default function IssueDashboard() {
 
       {/* Copy Modal */}
       {showCopyModal && (
-        <div className="issues-modal-backdrop">
+        <div className={styles['issues-modal-backdrop']}>
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Copy</h5>

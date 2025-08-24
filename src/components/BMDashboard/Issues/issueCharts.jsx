@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import Select from 'react-select';
 import { fetchIssues } from '../../../actions/bmdashboard/issueChartActions';
-import './issueChart.css';
+import styles from './issueCharts.module.css';
 
 function IssueChart() {
   const dispatch = useDispatch();
@@ -132,28 +132,28 @@ function IssueChart() {
   });
 
   return (
-    <div className="issue-chart-event-container">
-      <h2 className="issue-chart-event-title">Issues Chart</h2>
+    <div className={styles['issue-chart-event-container']}>
+      <h2 className={styles['issue-chart-event-title']}>Issues Chart</h2>
 
       <div>
-        <label className="issue-chart-label" htmlFor="issue-type-select">
+        <label className={styles['issue-chart-label']} htmlFor="issue-type-select">
           Issue Type:
         </label>
         <Select
           inputId="issue-type-select"
-          className="issue-chart-select"
+          className={styles['issue-chart-select']}
           isMulti
           options={issueTypes}
           onChange={selectedOptions => handleFilterChange(selectedOptions, 'issueTypes')}
           value={issueTypes.filter(option => filters.issueTypes.includes(option.value))}
         />
 
-        <label className="issue-chart-label" htmlFor="year-select">
+        <label className={styles['issue-chart-label']} htmlFor="year-select">
           Year:
         </label>
         <Select
           inputId="year-select"
-          className="issue-chart-select"
+          className={styles['issue-chart-select']}
           isMulti
           // other props...
         />

@@ -18,7 +18,7 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
-import './issueCharts.css';
+import styles from './issueCharts.module.css';
 
 function IssueCharts() {
   const dispatch = useDispatch();
@@ -87,15 +87,15 @@ function IssueCharts() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="issue-chart-container">
+    <div className={styles['issue-chart-container']}>
       <h2>Longest Open Issues</h2>
 
-      <div className="filters-container">
-        <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+      <div className={styles['filters-container']}>
+        <div className={styles.filter}>
+          <label className={styles['issue-chart-label']} htmlFor="start-date">
             Date Range:
           </label>
-          <div className="date-range-picker">
+          <div className={styles['date-range-picker']}>
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -106,7 +106,7 @@ function IssueCharts() {
               maxDate={endDate}
               placeholderText="Start Date"
               isClearable
-              className="filter-select"
+              className={styles['filter-select']}
             />
             <span>to</span>
             <DatePicker
@@ -119,13 +119,13 @@ function IssueCharts() {
               maxDate={new Date()}
               placeholderText="End Date"
               isClearable
-              className="filter-select"
+              className={styles['filter-select']}
             />
           </div>
         </div>
 
-        <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+        <div className={styles.filter}>
+          <label className={styles['issue-chart-label']} htmlFor="start-date">
             Projects:
           </label>
           <Select
@@ -134,16 +134,16 @@ function IssueCharts() {
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            className="filter-select"
+            className={styles['filter-select']}
             classNamePrefix="select"
           />
         </div>
       </div>
 
-      <div className="chart-container" ref={chartContainerRef}>
+      <div className={styles['chart-container']} ref={chartContainerRef}>
         {!issues || issues.length === 0 ? (
-          <div className="no-data-message">
-            <div className="no-data-content">
+          <div className={styles['no-data-message']}>
+            <div className={styles['no-data-content']}>
               <h3>No Open Issues Found</h3>
               <p>There are currently no open issues matching your selected criteria.</p>
               <p>Try adjusting your date range or project filters to see more results.</p>
@@ -172,7 +172,7 @@ function IssueCharts() {
                   dataKey="durationOpen"
                   position="right"
                   formatter={v => `${v} mo`}
-                  className="recharts-label"
+                  className={styles['recharts-label']}
                 />
               </Bar>
             </BarChart>
