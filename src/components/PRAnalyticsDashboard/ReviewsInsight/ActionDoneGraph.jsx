@@ -1,5 +1,5 @@
 import { Bar } from 'react-chartjs-2';
-import './ReviewsInsight.css';
+import './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
 
 function ActionDoneGraph({ selectedTeams, teamData }) {

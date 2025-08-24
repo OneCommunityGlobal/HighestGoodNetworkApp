@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Select from 'react-select';
-import './ReviewsInsight.css';
+import './ReviewsInsight.module.css';
 import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
 import { fetchReviewsInsights } from '../../../actions/prAnalytics/reviewsInsightsAction';
