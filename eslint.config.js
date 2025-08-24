@@ -36,7 +36,6 @@ module.exports = [
       'src/components/SummaryManagement/**',
       'src/components/TeamMemberTasks/**',
       'src/components/Teams/TeamMembersPopup.jsx',
-      'src/components/UserManagement/**',
       'src/components/UserProfile/**',
       'src/components/Announcements/index.jsx',
     ],
