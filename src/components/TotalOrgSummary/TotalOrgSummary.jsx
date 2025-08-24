@@ -29,7 +29,7 @@ import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
 import styles from './TotalOrgSummary.module.css';
-import clsx from 'clsx'
+import {clsx} from 'clsx';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
