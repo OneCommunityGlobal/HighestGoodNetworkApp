@@ -59,7 +59,7 @@ function FollowUpEmailTemplate() {
         </a>
 
         <a
-          href="https://www.instagram.com"
+          href="https://www.instagram.com/onecommunityglobal/?hl=en"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Instagram"
@@ -68,7 +68,7 @@ function FollowUpEmailTemplate() {
         </a>
 
         <a
-          href="https://www.facebook.com"
+          href="https://www.facebook.com/groups/forthehighestgoodofall/"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Facebook"
@@ -92,23 +92,33 @@ function FollowUpEmailTemplate() {
       </p>
 
       <div className="footer-links-container">
-        <p className="footer-links">
-          <button type="button" className="footer-link">
-            Privacy Policy
-          </button>
-          |
-          <button type="button" className="footer-link">
-            Terms of Service
-          </button>
-          |
-          <button type="button" className="footer-link">
-            Help Center
-          </button>
-          |
-          <button type="button" className="footer-link">
-            Unsubscribe
-          </button>
-        </p>
+        <a
+          href="https://onecommunityglobal.org/terms-and-conditions/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Privacy Policy"
+          className="footer-links"
+        >
+          Privacy Policy
+        </a>
+        <a
+          href="https://onecommunityglobal.org/terms-and-conditions/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Terms and Conditions"
+          className="footer-links"
+        >
+          Terms and Conditions
+        </a>
+        <a
+          href="https://onecommunityglobal.org/contact/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Contact"
+          className="footer-links"
+        >
+          Help Center
+        </a>
       </div>
     </div>
   );
