@@ -1,45 +1,45 @@
-.donut-chart-container {
+/* .donut-chart-container {
     padding: 20px;
     font-family: Arial, sans-serif;
   }
-  
+
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  
+
   .header h2 {
     text-align: center;
     flex: 1;
     font-family: monospace;
     font-weight: bolder;
   }
-  
+
   .date-picker-container {
     display: flex;
     align-items: center;
     gap: 10px;
   }
-  
+
   .date-picker {
     font-size: 12px;
     width: 100px;
   }
-  
+
   .apply-button {
     padding: 5px 10px;
     font-size: 12px;
     cursor: pointer;
   }
-  
+
   .content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 20px;
   }
-  
+
   .donut-chart-section {
     width: 60%;
     position: relative;
@@ -48,7 +48,7 @@
     flex-direction: column;
     align-items: center;
   }
-  
+
   .total-projects {
     position: absolute;
     top: 50%;
@@ -56,35 +56,35 @@
     transform: translate(-50%, -50%);
     text-align: center;
   }
-  
+
   .total-projects p {
     margin: 0;
     font-size: 22px;
     font-weight: bold;
   }
-  
+
   .total-projects p:last-child {
     font-size: 24px;
     font-weight: bold;
   }
-  
+
   .project-counts {
     width: 50%;
     text-align: center;
     font-size: 18px;
     font-weight: bold;
   }
-  
+
   .project-details {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
-  
+
   .project-item {
     margin-bottom: 20px;
   }
-  
+
   .project-label {
     font-family: monospace;
     font-size: 22px;
@@ -92,7 +92,7 @@
     margin: 0;
     text-align: right;
   }
-  
+
   .project-value {
     font-family: monospace;
     font-size: 20px;
@@ -132,7 +132,7 @@
     font-size: 14px;
     transition: background-color 0.3s ease;
   }
-  
+
   .apply-button:hover {
     background-color: #0056b3;
   }
@@ -140,5 +140,25 @@
   .header h2 {
     margin-left: 250px;
   }
-  
-  
+
+   */
+
+.dark-datepicker .react-datepicker {
+  background-color: #343a40;
+  border-color: #6c757d;
+}
+.dark-datepicker .react-datepicker__header {
+  background-color: #454d55;
+  border-bottom-color: #6c757d;
+}
+.dark-datepicker .react-datepicker__current-month,
+.dark-datepicker .react-datepicker__day-name,
+.dark-datepicker .react-datepicker__day {
+  color: #fff;
+}
+.dark-datepicker .react-datepicker__day:hover {
+  background-color: #495057;
+}
+.dark-datepicker .react-datepicker__day--selected {
+  background-color: #007bff;
+}

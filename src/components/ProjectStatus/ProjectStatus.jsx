@@ -46,7 +46,6 @@ function DonutChart() {
     setError(null);
 
     const requestData = { startDate, endDate };
-    // console.log('Data sent to backend:', requestData);
     try {
       const response = await axios.post('/your-backend-endpoint', requestData);
       if (response.data) {
@@ -69,8 +68,6 @@ function DonutChart() {
     if (startDate && endDate && endDate <= startDate) {
       setDateError(true);
       setTimeout(() => {
-        // TODO: use react-toastify
-        // eslint-disable-next-line no-alert
         alert('End date must be later than start date');
       }, 0);
       return false;
@@ -113,7 +110,7 @@ function DonutChart() {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: true, // Changed to false for better control
     plugins: {
       legend: {
         position: 'bottom',
@@ -130,7 +127,7 @@ function DonutChart() {
       datalabels: {
         color: darkMode ? '#fff' : '#000',
         font: {
-          size: 16,
+          size: 14, // Reduced font size
           weight: 'bold',
         },
         formatter: (value, context) => {
@@ -145,13 +142,13 @@ function DonutChart() {
     },
     layout: {
       padding: {
-        top: 20,
-        bottom: 20,
-        left: 20,
-        right: 20,
+        top: 10,
+        bottom: 10,
+        left: 10,
+        right: 10,
       },
     },
-    cutout: '70%',
+    cutout: '65%',
   };
 
   return (
@@ -185,54 +182,35 @@ function DonutChart() {
         </div>
       </div>
 
-      <div className="row g-4">
-        <div className="col-lg-6 d-flex flex-column align-items-center">
+      <div className="row">
+        <div className="col-md-8  align-items-center">
+          {/* chart */}
+          <div className="row w-full position-relative">
+            <Doughnut data={data} options={options} style={{ width: '100%', height: '100%' }} />
+          </div>
           <div
-            style={{
-              width: '500px',
-              height: '500px',
-              position: 'relative',
-            }}
+            className="row w-full text-center mt-3 mt-md-0 ms-md-4"
+            style={{ pointerEvents: 'none' }}
           >
-            <Doughnut
-              data={data}
-              options={options}
-              style={{
-                width: '100%',
-                height: '100%',
-              }}
-            />
-            <div
-              className="position-absolute top-50 start-50 translate-middle text-center"
-              style={{ pointerEvents: 'none' }}
-            >
-              <p
-                className={`mb-1 fw-bold ${darkMode ? 'text-light' : ''}`}
-                style={{ fontSize: '1.5rem' }}
-              >
-                Total Projects
-              </p>
-              <p
-                className={`mb-0 fw-bold ${darkMode ? 'text-light' : ''}`}
-                style={{ fontSize: '3rem' }}
-              >
-                {chartData?.totalProjects}
-              </p>
-            </div>
+            <p className={`mb-1 ${darkMode ? 'text-light' : ''}`} style={{ fontSize: '1.5rem' }}>
+              Total Projects:
+              <b>{chartData?.totalProjects}</b>
+            </p>
           </div>
         </div>
 
-        <div className="col-lg-6">
-          <div className="mb-3 text-end text-md-start">
+        <div className="col-md-4 mt-4 mt-md-0">
+          {/* Chart Info */}
+          <div className="mb-3 text-right">
             <span className={darkMode ? 'text-light' : 'text-muted'}>{formattedDate}</span>
           </div>
-          <div className="row">
+          <div>
             {[
               { label: 'ACTIVE PROJECTS', value: chartData?.activeProjects },
               { label: 'COMPLETED PROJECTS', value: chartData?.completedProjects },
               { label: 'DELAYED PROJECTS', value: chartData?.delayedProjects },
             ].map(item => (
-              <div key={item.label} className="col-12 mb-3">
+              <div key={item.label} className="mb-3">
                 <div
                   className={`card shadow-sm ${
                     darkMode ? 'bg-dark text-light border-secondary' : ''
