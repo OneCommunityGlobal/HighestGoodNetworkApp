@@ -1,5 +1,5 @@
 import { Card, Table } from 'reactstrap';
-
+import styles from './ProjectDetails.module.css';
 const DummyData = [
   {
     id: '12',
@@ -48,7 +48,7 @@ function ProjectLog() {
   ));
 
   return (
-    <Card className="project-log">
+    <Card className={`${styles.projectLog}`}>
       <h2>Members working on site today</h2>
       <Table hover responsive striped>
         <thead>
