@@ -6,8 +6,6 @@
   font-weight: bold;
   margin-bottom: 20px;
   min-height: 100vh;
-  background-color: white;
-  color: black;
 }
 
 .darkMode .projectDetails {
@@ -16,6 +14,7 @@
 }
 .projectDetailsTitle {
   font-size: 1.5rem;
+  overflow: hidden;
 }
 
 .darkMode .projectDetailsTitle {
