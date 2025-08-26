@@ -339,7 +339,7 @@ class AnalyticsService {
       const diffTime = Math.abs(end - start);
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-      for (let i = 0; i <= diffDays; i+=1) {
+      for (let i = 0; i <= diffDays; i += 1) {
         const date = new Date(start);
         date.setDate(date.getDate() + i);
 
