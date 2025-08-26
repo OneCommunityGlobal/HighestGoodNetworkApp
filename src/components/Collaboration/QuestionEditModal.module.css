@@ -1,4 +1,4 @@
-.question-edit-modal-overlay {
+.questionEditModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.question-edit-modal {
+.questionEditModal {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -22,7 +22,7 @@
   padding: 20px;
 }
 
-.question-edit-modal h3 {
+.questionEditModal h3 {
   margin-top: 0;
   margin-bottom: 15px;
   color: #333;
@@ -30,54 +30,54 @@
   padding-bottom: 10px;
 }
 
-.edit-form {
+.editForm {
   display: flex;
   flex-direction: column;
   gap: 15px;
 }
 
-.form-group {
+.formGroup {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.form-group label {
+.formGroup label {
   font-weight: 500;
 }
 
-.form-group input[type="text"],
-.form-group select,
-.form-group textarea {
+.formGroup input[type='text'],
+.formGroup select,
+.formGroup textarea {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
 }
 
-.form-group input[type="checkbox"] {
+.formGroup input[type='checkbox'] {
   margin-right: 5px;
 }
 
-.options-group {
+.optionsGroup {
   border: 1px solid #eee;
   border-radius: 4px;
   padding: 10px;
   background-color: #f9f9f9;
 }
 
-.option-row {
+.optionRow {
   display: flex;
   gap: 5px;
   margin-bottom: 5px;
   align-items: center;
 }
 
-.option-row input {
+.optionRow input {
   flex-grow: 1;
 }
 
-.remove-option-button {
+.removeOptionButton {
   padding: 2px 8px;
   border: none;
   border-radius: 3px;
@@ -87,7 +87,7 @@
   font-size: 1rem;
 }
 
-.add-option-button {
+.addOptionButton {
   background-color: #4caf50;
   color: white;
   padding: 5px 10px;
@@ -98,14 +98,14 @@
   align-self: flex-start;
 }
 
-.modal-buttons {
+.modalButtons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 15px;
 }
 
-.save-button {
+.saveButton {
   background-color: #2196f3;
   color: white;
   padding: 8px 15px;
@@ -115,7 +115,7 @@
   font-weight: 500;
 }
 
-.cancel-button {
+.cancelButton {
   background-color: #9e9e9e;
   color: white;
   padding: 8px 15px;
@@ -125,25 +125,26 @@
   font-weight: 500;
 }
 
-.save-button:hover {
+.saveButton:hover {
   background-color: #1976d2;
 }
 
-.cancel-button:hover {
+.cancelButton:hover {
   background-color: #757575;
 }
 
 @media (max-width: 600px) {
-  .question-edit-modal {
+  .questionEditModal {
     width: 95%;
     padding: 15px;
   }
-  
-  .modal-buttons {
+
+  .modalButtons {
     flex-direction: column;
   }
-  
-  .save-button, .cancel-button {
+
+  .saveButton,
+  .cancelButton {
     width: 100%;
   }
 }
