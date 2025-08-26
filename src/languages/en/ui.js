@@ -86,6 +86,8 @@ export const PARTICIPATION = "Participation";
 export const CALENDAR = "Calendar";
 export const EVENT_PERSONALIZATION = "Event Personalization";
 export const REGISTRATION = "Registration";
+export const JOB_ANALYTICS_REPORT = 'Job Analytics Report';
+
 
 
 

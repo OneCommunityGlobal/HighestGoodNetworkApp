@@ -47,6 +47,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  JOB_ANALYTICS_REPORT,
   TOTAL_CONSTRUCTION_SUMMARY,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
@@ -92,6 +93,8 @@ export function Header(props) {
     !isAuthUser && canInteractWithViewingUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+  const canGetJobAnalytics = props.hasPermission('getJobReports');
+
 
   // Users
   const canAccessUserManagement =
@@ -141,6 +144,7 @@ export function Header(props) {
     props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+    
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -446,6 +450,11 @@ export function Header(props) {
                       {canGetWeeklyVolunteerSummary && (
                         <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
                           {TOTAL_ORG_SUMMARY}
+                        </DropdownItem>
+                      )}
+                      {canGetJobAnalytics && (
+                        <DropdownItem tag={Link} to="/application/analytics" className={fontColor}>
+                          {JOB_ANALYTICS_REPORT}
                         </DropdownItem>
                       )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
