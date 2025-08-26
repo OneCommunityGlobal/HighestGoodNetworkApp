@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
@@ -166,13 +164,6 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     };
     // onSave(formattedData);
     // TODO: Replace with actual API call when backend is implemented
-    // fetch('/api/weekly-grading/save', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(formattedData),
-    // });
   };
 
   return (
@@ -278,7 +269,26 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
 
                         <td className={styles['pr-grading-screen-td-reviewed']}>
                           <input
-                            // ... all your input props remain the same ...
+                            type="number"
+                            min="0"
+                            value={reviewer.prsReviewed}
+                            onFocus={e => {
+                              e.target.value = '';
+                            }}
+                            onChange={e => handlePRReviewedChange(reviewer.id, e.target.value)}
+                            onBlur={e => {
+                              if (e.target.value === '') {
+                                handlePRReviewedChange(reviewer.id, reviewer.prsReviewed);
+                              }
+                            }}
+                            onKeyDown={e => {
+                              if (
+                                (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) ||
+                                ['e', 'E', '+', '-'].includes(e.key)
+                              ) {
+                                e.preventDefault();
+                              }
+                            }}
                             className={`${styles['pr-grading-screen-pr-input']} ${
                               darkMode ? styles['dark-mode'] : ''
                             }`}
@@ -302,14 +312,20 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                         : ''
                                     } ${styles['pr-grading-screen-pr-clickable']}`}
                                     onClick={() => handlePRNumberClick(reviewer.id)}
-                                    // ... rest of props ...
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter' || e.key === ' ') {
+                                        e.preventDefault();
+                                        handlePRNumberClick(reviewer.id);
+                                      }
+                                    }}
+                                    role="button"
+                                    tabIndex={0}
                                   >
                                     {pr.prNumbers}
                                   </span>
                                 </div>
                               );
                             })}
-
                             {/* Add New Button */}
                             {activeInput !== reviewer.id && (
                               <Button
@@ -334,7 +350,15 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                     type="text"
                                     value={inputValue}
                                     onChange={e => handleInputChange(e.target.value)}
-                                    // ... other props ...
+                                    onKeyDown={e => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        handleInputSubmit();
+                                      } else if (e.key === 'Escape') {
+                                        handleCancel();
+                                      }
+                                    }}
+                                    placeholder="1070 or 1070 + 1256"
                                     className={`${styles['pr-grading-screen-pr-number-input']} ${
                                       isBackendFrontendPair(inputValue)
                                         ? styles['pr-grading-screen-pair-input']
@@ -343,7 +367,25 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                       inputError ? styles['pr-grading-screen-input-error'] : ''
                                     } ${darkMode ? styles['dark-mode'] : ''}`}
                                   />
-                                  {/* ... buttons ... */}
+                                  <div className={styles['pr-grading-screen-input-buttons']}>
+                                    <Button
+                                      variant="primary"
+                                      size="sm"
+                                      onClick={handleInputSubmit}
+                                      disabled={!inputValue.trim()}
+                                      className={darkMode ? styles['dark-mode'] : ''}
+                                    >
+                                      Add
+                                    </Button>
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
+                                      onClick={handleCancel}
+                                      className={darkMode ? styles['dark-mode'] : ''}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </div>
                                 </div>
                                 {inputError && (
                                   <div
@@ -354,7 +396,15 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                     {inputError}
                                   </div>
                                 )}
-                                {/* ... pair message ... */}
+                                {isBackendFrontendPair(inputValue) && !inputError && (
+                                  <div
+                                    className={`${styles['pr-grading-screen-pair-message']} ${
+                                      darkMode ? styles['dark-mode'] : ''
+                                    }`}
+                                  >
+                                    Frontend-Backend Pair Detected
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
@@ -365,19 +415,133 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 </table>
               </div>
 
-              {/* Modal - similar pattern for all modal classes */}
+              {/* Grading Modal */}
               {showGradingModal && (
                 <div
                   className={`${styles['pr-grading-screen-modal-overlay']} ${
                     darkMode ? styles['dark-mode'] : ''
                   }`}
+                  role="presentation"
                 >
                   <div
                     className={`${styles['pr-grading-screen-modal']} ${
                       darkMode ? styles['dark-mode'] : ''
                     }`}
+                    role="dialog"
+                    aria-modal="true"
+                    tabIndex={-1}
                   >
-                    {/* ... rest of modal content with same pattern ... */}
+                    <div
+                      className={`${styles['pr-grading-screen-modal-header']} ${
+                        darkMode ? styles['dark-mode'] : ''
+                      }`}
+                    >
+                      <h4>Grade PR</h4>
+                      <button
+                        className={`${styles['pr-grading-screen-modal-close']} ${
+                          darkMode ? styles['dark-mode'] : ''
+                        }`}
+                        onClick={handleCloseGradingModal}
+                        aria-label="Close modal"
+                      >
+                        ×
+                      </button>
+                    </div>
+                    <div
+                      className={`${styles['pr-grading-screen-modal-body']} ${
+                        darkMode ? styles['dark-mode'] : ''
+                      }`}
+                    >
+                      <table
+                        className={`${styles['pr-grading-screen-grading-table']} ${
+                          darkMode ? styles['dark-mode'] : ''
+                        }`}
+                      >
+                        <thead>
+                          <tr>
+                            <th>PR Number</th>
+                            <th>Exceptional</th>
+                            <th>Okay</th>
+                            <th>Unsatisfactory</th>
+                            <th>Cannot find image</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {reviewerData
+                            .find(r => r.id === showGradingModal)
+                            ?.gradedPrs.map(pr => (
+                              <tr key={pr.id}>
+                                <td className={styles['pr-grading-screen-modal-pr-number']}>
+                                  <span
+                                    className={`${styles['pr-grading-screen-pr-number']} ${
+                                      pr.prNumbers.includes('+')
+                                        ? styles['pr-grading-screen-pair']
+                                        : ''
+                                    }`}
+                                  >
+                                    {pr.prNumbers}
+                                  </span>
+                                </td>
+                                <td className={styles['pr-grading-screen-checkbox-cell']}>
+                                  <input
+                                    type="checkbox"
+                                    checked={pr.grade === 'Exceptional'}
+                                    onChange={() =>
+                                      handleGradeChange(showGradingModal, pr.id, 'Exceptional')
+                                    }
+                                    className={styles['pr-grading-screen-grade-checkbox']}
+                                  />
+                                </td>
+                                <td className={styles['pr-grading-screen-checkbox-cell']}>
+                                  <input
+                                    type="checkbox"
+                                    checked={pr.grade === 'Okay'}
+                                    onChange={() =>
+                                      handleGradeChange(showGradingModal, pr.id, 'Okay')
+                                    }
+                                    className={styles['pr-grading-screen-grade-checkbox']}
+                                  />
+                                </td>
+                                <td className={styles['pr-grading-screen-checkbox-cell']}>
+                                  <input
+                                    type="checkbox"
+                                    checked={pr.grade === 'Unsatisfactory'}
+                                    onChange={() =>
+                                      handleGradeChange(showGradingModal, pr.id, 'Unsatisfactory')
+                                    }
+                                    className={styles['pr-grading-screen-grade-checkbox']}
+                                  />
+                                </td>
+                                <td className={styles['pr-grading-screen-checkbox-cell']}>
+                                  <input
+                                    type="checkbox"
+                                    checked={pr.grade === 'Cannot find image'}
+                                    onChange={() =>
+                                      handleGradeChange(
+                                        showGradingModal,
+                                        pr.id,
+                                        'Cannot find image',
+                                      )
+                                    }
+                                    className={styles['pr-grading-screen-grade-checkbox']}
+                                  />
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                      <div className={styles['pr-grading-screen-modal-footer']}>
+                        <Button
+                          variant="primary"
+                          onClick={handleCloseGradingModal}
+                          className={`${styles['pr-grading-screen-done-btn']} ${
+                            darkMode ? styles['dark-mode'] : ''
+                          }`}
+                        >
+                          Done
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
