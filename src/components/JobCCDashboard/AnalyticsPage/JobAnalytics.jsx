@@ -332,15 +332,17 @@ class AnalyticsService {
 
   // eslint-disable-next-line no-unused-vars
   static generateMockAnalyticsData(dateRange, comparisonPeriod) {
-    const generateTimeSeriesData = (days, offset) => {
+    const generateTimeSeriesData = (startDate, endDate, offset = 0) => {
       const data = [];
-      const today = new Date();
-
-      // eslint-disable-next-line no-plusplus
-      for (let i = days - 1; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+      for (let i = 0; i <= diffDays; i++) {
+        const date = new Date(start);
+        date.setDate(date.getDate() + i);
+  
         data.push({
           date: date.toISOString().split('T')[0],
           displayDate: date.toLocaleDateString('en-US', CONFIG.DATE_FORMAT.display),
@@ -353,10 +355,10 @@ class AnalyticsService {
       }
       return data;
     };
-
     return {
-      currentPeriod: generateTimeSeriesData(30, 100),
-      previousPeriod: generateTimeSeriesData(30, 0),
+    currentPeriod: generateTimeSeriesData(dateRange.start, dateRange.end, 100),
+    previousPeriod: generateTimeSeriesData(dateRange.start, dateRange.end, 0),
+    // ... rest of the data
       metrics: {
         current: {
           totalUsers: 23456,
@@ -469,6 +471,8 @@ const useAnalyticsData = (dateRange, comparisonPeriod) => {
     try {
       const analyticsData = await AnalyticsService.fetchData(dateRange, comparisonPeriod);
       setData(analyticsData);
+      console.log(analyticsData,dateRange)
+
     } catch (err) {
       setError(err.message);
     } finally {
@@ -1142,11 +1146,23 @@ function JobAnalytics(props) {
                       dataKey="displayDate"
                       tick={{ fontSize: 12, fill: darkMode ? '#9ca3af' : '#6b7280' }}
                       tickLine={{ stroke: darkMode ? '#374151' : '#e5e7eb' }}
+                      label={{ 
+                        value: 'Date', 
+                        position: 'insideBottom', 
+                        offset: -10,
+                        style: { fill: darkMode ? '#9ca3af' : '#6b7280' }
+                      }}
                     />
                     <YAxis
                       tick={{ fontSize: 12, fill: darkMode ? '#9ca3af' : '#6b7280' }}
                       tickLine={{ stroke: darkMode ? '#374151' : '#e5e7eb' }}
                       domain={['dataMin - 100', 'dataMax + 100']}
+                      label={{ 
+                        value: 'Number of Users', 
+                        angle: -90, 
+                        position: 'insideLeft',
+                        style: { textAnchor: 'middle', fill: darkMode ? '#9ca3af' : '#6b7280' }
+                      }}
                     />
                     <Tooltip
                       contentStyle={{
@@ -1204,11 +1220,23 @@ function JobAnalytics(props) {
                       dataKey="displayDate"
                       tick={{ fontSize: 12, fill: darkMode ? '#9ca3af' : '#6b7280' }}
                       tickLine={{ stroke: darkMode ? '#374151' : '#e5e7eb' }}
+                      label={{ 
+                        value: 'Date', 
+                        position: 'insideBottom', 
+                        offset: -10,
+                        style: { fill: darkMode ? '#9ca3af' : '#6b7280' }
+                      }}
                     />
                     <YAxis
                       tick={{ fontSize: 12, fill: darkMode ? '#9ca3af' : '#6b7280' }}
                       tickLine={{ stroke: darkMode ? '#374151' : '#e5e7eb' }}
                       domain={['dataMin - 500', 'dataMax + 500']}
+                      label={{ 
+                        value: 'Page Views', 
+                        angle: -90, 
+                        position: 'insideLeft',
+                        style: { textAnchor: 'middle', fill: darkMode ? '#9ca3af' : '#6b7280' }
+                      }}
                     />
                     <Tooltip
                       contentStyle={{
@@ -1253,11 +1281,23 @@ function JobAnalytics(props) {
                       angle={-15}
                       textAnchor="end"
                       height={60}
+                      label={{ 
+                        value: 'Traffic Source', 
+                        position: 'insideBottom', 
+                        offset: -5,
+                        style: { fill: darkMode ? '#9ca3af' : '#6b7280' }
+                      }}
                     />
                     <YAxis
                       tick={{ fontSize: 12, fill: darkMode ? '#9ca3af' : '#6b7280' }}
                       tickLine={{ stroke: darkMode ? '#374151' : '#e5e7eb' }}
                       domain={[0, 'dataMax + 500']}
+                      label={{ 
+                        value: 'Number of Visits', 
+                        angle: -90, 
+                        position: 'insideLeft',
+                        style: { textAnchor: 'middle', fill: darkMode ? '#9ca3af' : '#6b7280' }
+                      }}
                     />
                     <Tooltip
                       contentStyle={{
