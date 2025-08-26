@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
+import styles from './ApplicationChart.module.css';
 
 function AgeChart({ data, compareLabel }) {
   const formatTooltip = (value, name, props) => {
@@ -27,7 +28,7 @@ function AgeChart({ data, compareLabel }) {
   };
 
   return (
-    <div style={{ width: '800px', height: 500, margin: '0 auto', padding: '20px' }}>
+    <div className={`${styles.AgeChart}`}>
       <h2>Applicants grouped by Age</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barSize={80}>
