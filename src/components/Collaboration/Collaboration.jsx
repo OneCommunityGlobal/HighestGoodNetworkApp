@@ -164,11 +164,11 @@ function Collaboration() {
   useEffect(() => {
     fetchJobAds(query, category);
     fetchCategories();
-  }, [currentPage]); // Re-fetch job ads when page or category changes
+  }, [currentPage]);
 
   if (summaries) {
     return (
-      <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
+      <div className={`job-landing ${darkMode ? 'dark-mode' : ''}`}>
         <div className="job-header">
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
@@ -178,10 +178,10 @@ function Collaboration() {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="user-collaboration-container">
+        <div className="job-container">
           <nav className="job-navbar">
             <div className="job-navbar-left">
-              <form className="search-form">
+              <form className="job-search-form">
                 <input
                   type="text"
                   placeholder="Search by title..."
@@ -267,12 +267,12 @@ function Collaboration() {
                 setShowSearchResults(true);
               }}
             >
-              Show Summaries
+              Close Summaries
             </button>
             {searchTerm && (
-              <div className="query-option btn btn-secondary " type="button">
+              <div className="job-query-option btn btn-secondary " type="button">
                 <span>{searchTerm}</span>
-                <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                <button className="job-cross-button" type="button" onClick={handleRemoveQuery}>
                   <img
                     width="30"
                     height="30"
@@ -283,9 +283,9 @@ function Collaboration() {
               </div>
             )}
             {selectedCategory && (
-              <div className="btn btn-secondary query-option" type="button">
+              <div className="btn btn-secondary job-query-option" type="button">
                 {selectedCategory}
-                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                <button className="job-cross-button" type="button" onClick={handleRemoveCategory}>
                   <img
                     width="30"
                     height="30"
@@ -327,7 +327,7 @@ function Collaboration() {
   }
 
   return (
-    <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
+    <div className={`job-landing ${darkMode ? 'dark-mode' : ''}`}>
       <div className="job-header">
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
@@ -337,10 +337,10 @@ function Collaboration() {
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
-      <div className="user-collaboration-container">
+      <div className="job-container">
         <nav className="job-navbar">
           <div className="job-navbar-left">
-            <form className="search-form">
+            <form className="job-search-form">
               <input
                 type="text"
                 placeholder="Search by title..."
@@ -401,7 +401,7 @@ function Collaboration() {
         </nav>
 
         {showSearchResults ? (
-          <div>
+          <div className="job-details">
             <div className="job-queries">
               {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
                 <p className="job-query">
@@ -425,9 +425,9 @@ function Collaboration() {
                 Show Summaries
               </button>
               {searchTerm && (
-                <div className="query-option btn btn-secondary " type="button">
+                <div className="job-query-option btn btn-secondary " type="button">
                   <span>{searchTerm}</span>
-                  <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                  <button className="job-cross-button" type="button" onClick={handleRemoveQuery}>
                     <img
                       width="30"
                       height="30"
@@ -438,9 +438,9 @@ function Collaboration() {
                 </div>
               )}
               {selectedCategory && (
-                <div className="btn btn-secondary query-option" type="button">
+                <div className="btn btn-secondary job-query-option" type="button">
                   {selectedCategory}
-                  <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                  <button className="job-cross-button" type="button" onClick={handleRemoveCategory}>
                     <img
                       width="30"
                       height="30"
@@ -493,12 +493,12 @@ function Collaboration() {
                 ))}
               </div>
             ) : (
-              <div className="no-results">
+              <div className="job-no-results">
                 <h2>No job ads found.</h2>
               </div>
             )}
 
-            <div className="pagination">
+            <div className="job-pagination">
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   type="button"
@@ -512,7 +512,7 @@ function Collaboration() {
             </div>
           </div>
         ) : (
-          <div className={`job-headings ${darkMode ? ' user-collaboration-dark-mode' : ''}`}>
+          <div className={`job-headings ${darkMode ? ' dark-mode' : ''}`}>
             <h1 className="job-head">Like to Work With Us? Apply Now!</h1>
             <p className="job-intro"> Learn about who we are and who we want to work with!</p>
           </div>
