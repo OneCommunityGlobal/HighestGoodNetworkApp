@@ -369,6 +369,10 @@ export const ENDPOINTS = {
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
+
+  // pr dashboard endpoints
+  PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 };
 
 export const ApiEndpoint = APIEndpoint;
