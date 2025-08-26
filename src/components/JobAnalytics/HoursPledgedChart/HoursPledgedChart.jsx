@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LabelList, Label } from 'recharts';
 import DatePicker from 'react-datepicker';
+import styles from './HoursPledgedChart.module.css';
 import Select from 'react-select';
 import { fetchHoursPledged } from '../../../actions/jobAnalytics/hoursPledgedActions';
 import 'react-datepicker/dist/react-datepicker.css';
-import './HoursPledgedChart.css';
 
 function HoursPledgedChart() {
   const [startDate, setStartDate] = useState(null);
@@ -89,11 +89,11 @@ function HoursPledgedChart() {
   }, [rawData, startDate, endDate, selectedRoles]);
 
   return (
-    <div className={`hours-pledged-chart ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.hoursPledgedChart} ${darkMode ? styles.darkMode : ''}`}>
       <h2>Average Number of Hours/Week Pledged by Role</h2>
 
-      <div className="hp-filters">
-        <div className="hp-date-filter">
+      <div className={`${styles.hpFilters}`}>
+        <div className={`${styles.hpDateFilter}`}>
           <label htmlFor="start-date">Date Range:</label>
           <DatePicker
             id="start-date"
@@ -115,7 +115,7 @@ function HoursPledgedChart() {
           />
         </div>
 
-        <div className="hp-role-filter">
+        <div className={`${styles.hpRoleFilter}`}>
           <label htmlFor="role-select">Roles:</label>
           <Select
             id="role-select"
@@ -123,15 +123,23 @@ function HoursPledgedChart() {
             options={roleOptions}
             onChange={setSelectedRoles}
             placeholder="Select Roles"
+            styles={{
+              placeholder: base => ({
+                ...base,
+                color: 'black',
+              }),
+            }}
           />
         </div>
       </div>
 
-      <div className="hp-chart-container">
-        {loading && <div className="hp-spinner">Loading...</div>}
-        {error && <div className="hp-error-message">{error}</div>}
+      <div className={`${styles.hpChartContainer}`}>
+        {loading && <div className={`${styles.hpSpinner}`}>Loading...</div>}
+        {error && <div className={`${styles.hpErrorMessage}`}>{error}</div>}
         {!loading && !error && chartData.length === 0 && (
-          <div className="empty-message">No data available for the selected filters.</div>
+          <div className={`${styles.hpEmptyMessage}`}>
+            No data available for the selected filters.
+          </div>
         )}
         {!loading && !error && chartData.length > 0 && (
           <BarChart
@@ -142,8 +150,18 @@ function HoursPledgedChart() {
             margin={{ top: 20, right: 30, left: 100, bottom: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis type="number" dataKey="avgHours" />
-            <YAxis type="category" dataKey="role" />
+            <XAxis type="number" dataKey="avgHours">
+              <Label value="Average Hours Pledged" position="insideBottom" offset={-10} />
+            </XAxis>
+            <YAxis type="category" dataKey="role">
+              <Label
+                value="Name of Role"
+                angle={-90}
+                position="outsideCenter"
+                offset={-20}
+                dx={-50}
+              />
+            </YAxis>
             <Tooltip />
             <Bar dataKey="avgHours" fill={darkMode ? '#225163' : '#8884d8'}>
               <LabelList dataKey="avgHours" position="right" />
