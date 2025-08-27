@@ -7,11 +7,7 @@ const JobApplicationForm = () => {
       {/* Header Section */}
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <input
-            type="text"
-            placeholder="Enter Job Title"
-            className={styles.jobTitleInput}
-          />
+          <input type="text" placeholder="Enter Job Title" className={styles.jobTitleInput} />
           <select className={styles.jobSelect}>
             <option value="Software Engineer">Software Engineer</option>
             {/* Add more options as needed */}

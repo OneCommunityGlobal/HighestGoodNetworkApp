@@ -158,7 +158,7 @@ import LogTools from './components/BMDashboard/LogTools/LogTools';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 // Social Architecture
 
-import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm'
+import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
@@ -215,7 +215,6 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
-
 
 export default (
   <Switch>
@@ -523,12 +522,7 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
 
-        <ProtectedRoute
-          path="/job-application"
-          exact
-          component={JobApplicationForm}
-          fallback
-        />
+        <ProtectedRoute path="/job-application" exact component={JobApplicationForm} fallback />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
