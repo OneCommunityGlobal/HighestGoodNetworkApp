@@ -7,9 +7,10 @@ import { useDispatch } from 'react-redux';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import styles from '../styles/UserSkillsProfile.module.css';
+import jwtDecode from 'jwt-decode';
 
 function UserSkillsProfile() {
-  const { userId } = useParams();
+  // const { userId } = useParams();
   const dispatch = useDispatch();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,9 +25,13 @@ function UserSkillsProfile() {
         if (!token) {
           throw new Error('No token found. Please log in.');
         }
+        // console.log('Token:', token);
 
+        const decodedToken = jwtDecode(token);
+        // console.log('Decoded Token:', decodedToken);
+        const userId = decodedToken.userid;
         if (!userId) {
-          return; // throw new Error('User ID not found in token.');
+          throw new Error('User ID not found in token.');
         }
 
         const response = await axios.get(`http://localhost:4500/api/skills/profile/${userId}`, {
