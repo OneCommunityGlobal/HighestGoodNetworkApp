@@ -119,29 +119,29 @@ const financialData = [
     id: uuidv4(),
     title: 'Total Project Cost',
     value: '-',
-    bgColor: '#E0F2FE', // light blue
-    textColor: '#0369A1', // dark blue
+    bgColor: '#E0F2FE',
+    textColor: '#0369A1',
   },
   {
     id: uuidv4(),
     title: 'Total Material Cost',
     value: '-',
-    bgColor: '#F3E8FF', // light purple
-    textColor: '#6D28D9', // dark purple
+    bgColor: '#F3E8FF',
+    textColor: '#6D28D9',
   },
   {
     id: uuidv4(),
     title: 'Total Labor Cost',
     value: '-',
-    bgColor: '#FEE2E2', // light red
-    textColor: '#B91C1C', // dark red
+    bgColor: '#FEE2E2',
+    textColor: '#B91C1C',
   },
   {
     id: uuidv4(),
     title: 'Total Equipment Cost',
     value: '-',
-    bgColor: '#DCFCE7', // light green
-    textColor: '#15803D', // dark green
+    bgColor: '#DCFCE7',
+    textColor: '#15803D',
   },
 ];
 
