@@ -286,6 +286,14 @@ function WeeklyProjectSummary() {
                 <div className={`${styles.weeklyCardTitle}`} style={{ color: card.textColor }}>
                   {card.title}
                 </div>
+                <div
+                  className={`${styles.weeklyStatusButton}`}
+                  style={{ backgroundColor: card.ovalColor }}
+                >
+                  <span className={`${styles.weeklyStatusValue}`}>
+                    {card.value === '-' ? '-' : card.value.toLocaleString()}
+                  </span>
+                </div>
                 <div className={`${styles.weeklyCardValue}`} style={{ color: card.textColor }}>
                   {card.value === '-' ? '-' : card.value.toLocaleString()}
                 </div>
