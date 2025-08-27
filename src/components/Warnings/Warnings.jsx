@@ -9,7 +9,6 @@ import {
 } from '../../actions/warnings';
 import WarningTrackerModal from './modals/WarningTrackerModal';
 import WarningIcons from './WarningIcons';
-// import WarningItem from './WarningItem';
 import './Warnings.css';
 import WarningModal from './modals/WarningModal';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
@@ -151,6 +150,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
             selectedWarning={selectedWarning}
             visible={toggleWarningModal}
             warning={selectedWarning}
+            numberOfWarnings={selectedWarning.numberOfWarnings}
             setToggleModal={setToggleWarningModal}
             handleDeleteWarning={handleDeleteWarning}
             handleIssueWarning={handlePostWarningDetails}
@@ -166,7 +166,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           />
         )}
 
-        <div className="warning-wrapper">{warnings}</div>
+        <div className="warning-wrapper"> {warnings}</div>
         <div className="error-container">
           {error && (
             <Alert key="warning" variant="warning">

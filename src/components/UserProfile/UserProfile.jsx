@@ -76,10 +76,10 @@ import {
   getTimeStartDateEntriesByPeriod,
   getTimeEntriesForWeek,
 } from '../../actions/timeEntries.js';
-import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
+import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -156,11 +156,7 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [didLinkUpdate, setDidLinkUpdate] = useState(false);
   const [specialWarnings, setSpecialWarnings] = useState([]);
-  // Function to toggle the modal
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
@@ -1633,7 +1629,6 @@ function UserProfile(props) {
                   user={userProfile}
                   authEmail={authEmail}
                   canUpdatePassword
-                  canResetPassword // luis code
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1765,7 +1760,6 @@ function UserProfile(props) {
                           user={userProfile}
                           authEmail={authEmail}
                           canUpdatePassword
-                          canResetPassword
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (

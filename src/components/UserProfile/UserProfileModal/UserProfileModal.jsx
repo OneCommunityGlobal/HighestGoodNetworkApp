@@ -15,7 +15,7 @@ import {
   Spinner,
 } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/DarkMode.css';
+import '../../Header/DarkMode.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
@@ -163,11 +163,22 @@ const UserProfileModal = props => {
 
   const handleWarningChange = (warningTitle, warn, color) => {
     setWarningSelections(prevData => {
-      return {
+      const updatedData = {
         ...prevData,
         [warningTitle]: { warn, color },
-        issueBlueSquare: warn === 'Issue Blue Square',
         bothTriggered: true,
+      }
+
+      const issueBlueSquare = Object.entries(updatedData)
+        .filter(([key]) => key !== 'bothTriggered' && key !== 'issueBlueSquare')
+        .reduce((acc, [warningTitle, selection]) => {
+          acc[warningTitle] = selection?.warn === 'Issue Blue Square';
+          return acc;
+        }, {});
+
+      return {
+        ...updatedData,
+        issueBlueSquare,
       };
     });
   };
@@ -183,7 +194,7 @@ const UserProfileModal = props => {
       setWarningType({
         specialWarnings,
         username: `${userProfile.firstName} ${userProfile.lastName}`,
-        warningText: `${specialWarnings[0].title} and ${specialWarnings[1].title}`,
+        warningText: `${specialWarnings[0].title} and ${specialWarnings[0].warnings.length + 1}x ${specialWarnings[1].title}`,
       });
       return;
     }
@@ -215,7 +226,7 @@ const UserProfileModal = props => {
       }
     }
 
-  const adjustTextareaHeight = textarea => {
+  const adjustTextareaHeight = (textarea) => {
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
   };
@@ -540,17 +551,17 @@ const UserProfileModal = props => {
                   overlay={
                     <Popover id="popover-basic">
                       <Popover.Title as="h4" className="popover__title">
-                        <p>Removed Blue Square </p>
+                        <p>Remove Blue Square </p>
                         {warning.abbreviation === 'RBS4NS' ? (
                           <p>for No Summary</p>
                         ) : (
-                          <p>for Not Enough Hours Logged</p>
+                          <p>for Hours Close Enough</p>
                         )}{' '}
                       </Popover.Title>
                       <Popover.Content>
                         {warning.abbreviation === 'RBS4NS'
                           ? 'Issues a warning if no summary was submitted'
-                          : 'Issues a warning if hours were not completed'}
+                          : 'Issues a warning if hours were close enough (above 85% of the weekly hours commitment)'}
                       </Popover.Content>
                     </Popover>
                   }
@@ -574,7 +585,7 @@ const UserProfileModal = props => {
                   overlay={
                     <Popover>
                       <Popover.Title as="h4" className="popover__title">
-                        Removes Blue Square for both Not Enough Hours and No Summary
+                        Removes Blue Square for both Hours Close Enough and No Summary
                       </Popover.Title>
                       <Popover.Content>
                         Logs both hours and no summary being completed

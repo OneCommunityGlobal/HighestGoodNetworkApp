@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, ModalHeader, ModalBody, Button } from "reactstrap";
 import './UserProfileModal.css';  // For custom styling
 import axios from "axios";
-import { ENDPOINTS } from "utils/URL";
+import { ENDPOINTS } from "~/utils/URL";
 import { toast } from "react-toastify";
 
 const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
