@@ -9,7 +9,6 @@ import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
-import FinancialCard from './Financials/FinancialCard';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
@@ -120,41 +119,29 @@ const financialData = [
     id: uuidv4(),
     title: 'Total Project Cost',
     value: '-',
-    monthOverMonth: '-',
-    additionalInfo: {
-      'Budget Utilization': '-',
-      Forecast: '-',
-    },
+    bgColor: '#E0F2FE', // light blue
+    textColor: '#0369A1', // dark blue
   },
   {
     id: uuidv4(),
     title: 'Total Material Cost',
     value: '-',
-    monthOverMonth: '-',
-    additionalInfo: {
-      'Inventory Cost': '-',
-      Suppliers: '-',
-    },
+    bgColor: '#F3E8FF', // light purple
+    textColor: '#6D28D9', // dark purple
   },
   {
     id: uuidv4(),
     title: 'Total Labor Cost',
     value: '-',
-    monthOverMonth: '-',
-    additionalInfo: {
-      'Overtime Hours': '-',
-      'Team Efficiency': '-',
-    },
+    bgColor: '#FEE2E2', // light red
+    textColor: '#B91C1C', // dark red
   },
   {
     id: uuidv4(),
     title: 'Total Equipment Cost',
     value: '-',
-    monthOverMonth: '-',
-    additionalInfo: {
-      'Equipment Utilization': '-',
-      'Maintenance Cost': '-',
-    },
+    bgColor: '#DCFCE7', // light green
+    textColor: '#15803D', // dark green
   },
 ];
 
@@ -289,16 +276,22 @@ function WeeklyProjectSummary() {
         key: 'Financials',
         className: 'large',
         content: (
-          <div className="financial-cards-container">
+          <div className={`${styles.financialGrid}`}>
             {financialData.map(card => (
-              <FinancialCard
+              <div
                 key={card.id}
-                title={card.title}
-                value={card.value}
-                monthOverMonth={card.monthOverMonth}
-                additionalInfo={card.additionalInfo}
-              />
+                className={`${styles.weeklyProjectSummaryCard} ${styles.financialCard}`}
+                style={{ backgroundColor: card.bgColor }}
+              >
+                <div className={`${styles.weeklyCardTitle}`} style={{ color: card.textColor }}>
+                  {card.title}
+                </div>
+                <div className={`${styles.weeklyCardValue}`} style={{ color: card.textColor }}>
+                  {card.value === '-' ? '-' : card.value.toLocaleString()}
+                </div>
+              </div>
             ))}
+
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
