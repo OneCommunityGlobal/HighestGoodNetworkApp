@@ -48,9 +48,7 @@ import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
 function NotificationCard({ notification }) {
   const dispatch = useDispatch();
   // const { _id, message, sender, isSystemGenerated } = mockData;
-  const { _id, message, sender, isSystemGenerated, createdTimeStamps } = notification;
-  const { firstName: senderFirstName, lastName: senderLastName } = sender;
-  const senderFullName = `${senderFirstName} ${senderLastName}`;
+  const { _id, message, isSystemGenerated, createdTimeStamps } = notification;
 
   // Fade animation state
   const [fade, setFade] = React.useState(false);
@@ -81,7 +79,7 @@ function NotificationCard({ notification }) {
             <i className="fa fa-info-circle" id="TypeInfo" />
             {isSystemGenerated
               ? ' You have a new system notification!'
-              : ` You have a new notification from ${senderFullName}!`}
+              : ` You have a new notification!`}
           </CardTitle>
           <CardText>{parse(styledHtmlString)}</CardText>
           <CardText>Date: {convertDateFormatToMMMDDYY(createdTimeStamps)}</CardText>

@@ -1,11 +1,10 @@
-import './UpdateConsumable.css';
-import * as moment from 'moment';
+import moment from 'moment';
 import { Container, FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { postConsumableUpdate } from '../../../actions/bmdashboard/consumableActions';
+import styles from './UpdateConsumable.module.css';
 
 function UpdateConsumable({ record, setModal }) {
   const dispatch = useDispatch();
@@ -142,32 +141,36 @@ function UpdateConsumable({ record, setModal }) {
   };
 
   return (
-    <Container fluid className="updateConsumableContainer">
-      <div className="updateConsumablePage">
-        <div className="updateConsumable">
+    <Container fluid className={`${styles.updateConsumableContainer}`}>
+      <div className={`${styles.updateConsumablePage}`}>
+        <div className={`${styles.updateConsumable}`}>
           <Form>
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableName" sm={4} className="consumableFormLabel">
+              <Label for="updateConsumableName" sm={4} className={`${styles.consumableFormLabel}`}>
                 Consumable
               </Label>
-              <Col sm={6} className="consumableFormValue">
+              <Col sm={6} className={`${styles.consumableFormValue}`}>
                 <b>{record?.itemType?.name}</b>
               </Col>
             </FormGroup>
 
             <FormGroup row className="align-items-center">
-              <Label for="updateConsumableProject" sm={4} className="consumableFormLabel">
+              <Label
+                for="updateConsumableProject"
+                sm={4}
+                className={`${styles.consumableFormLabel}`}
+              >
                 Project Name
               </Label>
-              <Col sm={8} className="consumableFormValue">
+              <Col sm={8} className={`${styles.consumableFormValue}`}>
                 {record?.project.name}
               </Col>
             </FormGroup>
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableDate" sm={4} className="consumableFormLabel">
+              <Label for="updateConsumableDate" sm={4} className={`${styles.consumableFormLabel}`}>
                 Date
               </Label>
-              <Col sm={6} className="consumableFormValue">
+              <Col sm={6} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumableDate"
                   name="date"
@@ -179,20 +182,20 @@ function UpdateConsumable({ record, setModal }) {
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableUnit" sm={4} className="consumableFormLabel">
+              <Label for="updateConsumableUnit" sm={4} className={`${styles.consumableFormLabel}`}>
                 Available
               </Label>
-              <Col sm={6} className="consumableFormValue">
+              <Col sm={6} className={`${styles.consumableFormValue}`}>
                 {record?.stockAvailable}
               </Col>
             </FormGroup>
 
             {availableCount !== undefined && (
               <FormGroup row className="align-items-center justify-content-start">
-                <Label for="updateMaterialUnit" sm={4} className="consumableFormLabel">
+                <Label for="updateMaterialUnit" sm={4} className={`${styles.consumableFormLabel}`}>
                   New Available
                 </Label>
-                <Col sm={6} className="consumableFormValue">
+                <Col sm={6} className={`${styles.consumableFormValue}`}>
                   <span className={availableCount < 0 ? 'consumableFormErrorClr' : undefined}>
                     {availableCount}
                   </span>
@@ -200,10 +203,14 @@ function UpdateConsumable({ record, setModal }) {
               </FormGroup>
             )}
             <FormGroup row>
-              <Label for="updateConsumableQuantityUsed" sm={4} className="consumableFormLabel">
+              <Label
+                for="updateConsumableQuantityUsed"
+                sm={4}
+                className={`${styles.consumableFormLabel}`}
+              >
                 Quantity Used
               </Label>
-              <Col sm={4} className="consumableFormValue">
+              <Col sm={4} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumableQuantityUsed"
                   name="quantityUsed"
@@ -214,7 +221,7 @@ function UpdateConsumable({ record, setModal }) {
                   min={0}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className="consumableFormValue">
+              <Col sm={{ size: 4 }} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumableQtyUsedLogUnitSelect"
                   name="qtyUsedLogUnit"
@@ -231,7 +238,7 @@ function UpdateConsumable({ record, setModal }) {
                 <Label
                   for="updateMaterialQuantityUsedError"
                   sm={12}
-                  className="consumableFormError"
+                  className={`${styles.consumableFormError}`}
                 >
                   {validations.quantityUsed}
                 </Label>
@@ -239,10 +246,14 @@ function UpdateConsumable({ record, setModal }) {
             </FormGroup>
 
             <FormGroup row>
-              <Label for="updateConsumablequantityWasted" sm={4} className="consumableFormLabel">
+              <Label
+                for="updateConsumablequantityWasted"
+                sm={4}
+                className={`${styles.consumableFormLabel}`}
+              >
                 Quantity Wasted
               </Label>
-              <Col sm={4} className="consumableFormValue">
+              <Col sm={4} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumablequantityWasted"
                   name="quantityWasted"
@@ -253,7 +264,7 @@ function UpdateConsumable({ record, setModal }) {
                   min={0}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className="consumableFormValue">
+              <Col sm={{ size: 4 }} className={`${styles.consumableFormValue}`}>
                 <Input
                   id="updateConsumableQtyWastedLogUnitSelect"
                   name="qtyWastedLogUnit"
@@ -269,7 +280,7 @@ function UpdateConsumable({ record, setModal }) {
                 <Label
                   for="updateConsumableQuantityWastedError"
                   sm={12}
-                  className="consumableFormError"
+                  className={`${styles.consumableFormError}`}
                 >
                   {validations.quantityWasted}
                 </Label>
@@ -282,7 +293,7 @@ function UpdateConsumable({ record, setModal }) {
                   <Label
                     for="updateConsumableQuantityTogetherError"
                     sm={12}
-                    className="consumableFormError"
+                    className={`${styles.consumableFormError}`}
                   >
                     {validations.quantityTogether}
                   </Label>
@@ -296,7 +307,7 @@ function UpdateConsumable({ record, setModal }) {
                   availableCount < 0 ||
                   changeOccured === false
                 }
-                className="consumableButtonBg"
+                className={`${styles.consumableButtonBg}`}
                 onClick={submitHandler}
               >
                 Update Consumable

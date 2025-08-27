@@ -1,8 +1,8 @@
-/* eslint-disable no-restricted-globals */
+/* eslint-disable testing-library/no-node-access */
 import { useEffect, useState, useMemo } from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
-import { generateArrayOfUniqColors } from './colorsGenerator';
+import { getVisuallyDistinctColors } from './colorsGenerator';
 import './UserProjectPieChart.css';
 
 function UserProjectPieChart({
@@ -12,9 +12,15 @@ function UserProjectPieChart({
   darkMode,
 }) {
   const [totalHours, setTotalHours] = useState(0);
-  const colors = useMemo(() => generateArrayOfUniqColors(projectsData.length), [projectsData]);
-  const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
-
+  const colors = useMemo(() => getVisuallyDistinctColors(projectsData.length), [projectsData]);
+  const color = useMemo(
+    () =>
+      d3
+        .scaleOrdinal()
+        .domain(projectsData)
+        .range(colors),
+    [colors],
+  );
   const [togglePercentage, setTogglePercentage] = useState(false);
   const [selectedProjects, setSelectedProjects] = useState(
     projectsData.map(project => project.projectId),
@@ -71,7 +77,7 @@ function UserProjectPieChart({
           ? `${displayValue.toFixed(2)}% of ${calculateTotalHours(projectsData, tasksData).toFixed(
               2,
             )}`
-          : totalValue.toFixed(2),
+          : `${totalValue.toFixed(2)} Hrs`,
       );
 
     svg

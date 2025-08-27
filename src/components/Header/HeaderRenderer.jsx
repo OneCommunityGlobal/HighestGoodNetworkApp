@@ -1,7 +1,7 @@
-import { CPHeader } from 'components/CommunityPortal';
+import { CPHeader } from '~/components/CommunityPortal';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { getWeeklySummaries } from 'actions/weeklySummaries';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
 import { Header } from './Header';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';

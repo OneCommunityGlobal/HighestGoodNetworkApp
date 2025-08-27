@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
+import { fetchAllMaterials, resetMaterialUpdate } from '~/actions/bmdashboard/materialsActions';
 import ItemListView from '../ItemList/ItemListView';
 import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 
@@ -10,23 +10,26 @@ function MaterialListView() {
   const errors = useSelector(state => state.errors);
   const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
-  const materialsWithId = materials
-    ? materials.map(item => ({
-        ...item,
-        id:
-          parseInt(item._id?.substring(item._id.length - 6), 16) ||
-          Math.floor(Math.random() * 1000000),
-      }))
-    : [];
+  // Transform the materials to match expected PropTypes
+  const transformedMaterials =
+    materials?.map(material => ({
+      ...material,
+      id: parseInt(material._id?.split('-')[0], 16) || Math.random(), // Convert first part of _id to number or use random fallback
+      name: material.itemType?.name || 'Unnamed Material',
+    })) || [];
 
   useEffect(() => {
     dispatch(fetchAllMaterials());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
-    if (!postMaterialUpdateResult || postMaterialUpdateResult?.result == null)
-      dispatch(fetchAllMaterials());
-  }, [postMaterialUpdateResult?.result]);
+    if (postMaterialUpdateResult?.result !== null && !postMaterialUpdateResult.loading) {
+      if (!postMaterialUpdateResult.error) {
+        dispatch(fetchAllMaterials());
+        dispatch(resetMaterialUpdate());
+      }
+    }
+  }, [postMaterialUpdateResult, dispatch]);
 
   const itemType = 'Materials';
 
@@ -43,7 +46,7 @@ function MaterialListView() {
   return (
     <ItemListView
       itemType={itemType}
-      items={materialsWithId}
+      items={transformedMaterials}
       errors={errors}
       UpdateItemModal={UpdateMaterialModal}
       dynamicColumns={dynamicColumns}
