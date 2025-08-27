@@ -1,4 +1,4 @@
-.calendar-container {
+.calendarContainer {
   display: flex;
   flex-direction: row;
   min-width: 100%;
@@ -6,14 +6,14 @@
   align-items: stretch;
   gap: 20px;
 }
-.calendar-container-dark-mode {
+.calendarContainerDarkMode {
   background-color: #1B2A41;
   color: #fff;
   min-width: 100% !important;
 }
 
-.calendar-activity-section,
-.calendar-section {
+.calendarActivitySection,
+.calendarSection {
   flex: 1;
   border-radius: 8px;
   padding: 20px;
@@ -22,8 +22,8 @@
   flex-direction: column;
 }
 
-.calendar-activity-section-dark-mode,
-.calendar-section-dark-mode {
+.calendarActivitySectionDarkMode,
+.calendarSectionDarkMode {
   background-color: #3A506B;
   color: #fff;
   border-radius: 8px;
@@ -33,15 +33,15 @@
   flex-direction: column;
 }
 
-.calendar-activity-section {
+.calendarActivitySection {
   flex: 0 0 30%;
 }
 
-.calendar-section {
+.calendarSection {
   flex: 0 0 70%;
 }
 
-.community-calendar {
+.communityCalendar {
   font-family: Arial, sans-serif;
   /* max-width: 90%; */
   margin: 0 auto;
@@ -53,12 +53,12 @@
   flex-direction: column;
   flex-grow: 1;
 }
-.community-calendar-dark-mode {
+.communityCalendarDarkMode {
   background-color: #1B2A41;
   color: #fff;
 }
 
-.react-calendar {
+.reactCalendar {
   width: 100%;
   height: auto;
   font-size: 1.2rem;
@@ -67,40 +67,40 @@
   overflow: hidden;
   background-color: #fff;
 }
-.react-calendar-dark-mode {
+.reactCalendarDarkMode {
   background-color: #1B2A41;
   color: #FFFFFF;
   border: 1px solid #444;
 }
 
-.calendar-header {
+.calendarHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
-.calendar-header-dark-mode {
+.calendarHeaderDarkMode {
   background-color: #1B2A41;
   color: #fff;
   padding: 20px;
   border-radius: 8px;
 }
 
-.calendar-header h1 {
+.calendarHeader h1 {
   font-size: 1.8rem;
   color: #333;
 }
 
-.calendar-header-dark-mode h1 {
+.calendarHeaderDarkMode h1 {
   color: #fff;
 }
 
-.calendar-header .calendar-filters {
+.calendarHeader .calendarFilters {
   display: flex;
   gap: 10px;
 }
 
-.calendar-header .filters select {
+.calendarHeader .filters select {
   padding: 8px 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -108,69 +108,69 @@
   color: #333;
 }
 
-.calendar-main {
+.calendarMain {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 90%;
 }
 
-.react-calendar__month-view__weekdays__weekday abbr {
+.reactCalendar :global(.react-calendar__month-view__weekdays__weekday) abbr {
   text-decoration: none !important;
 }
 
 
-.react-calendar__month-view__days__day {
+.reactCalendar :global(.react-calendar__month-view__days__day) {
   height: 80px;
   overflow: auto;
   height: -webkit-fill-available;
   border: 1px solid #000000;
 }
 
-.react-calendar__navigation {
+.reactCalendar :global(.react-calendar__navigation) {
   background-color: #f9f9f9;
   border-bottom: 1px solid #ddd;
   margin-bottom: 0px !important;
 }
 
-.react-calendar__tile {
+.reactCalendar :global(.react-calendar__tile) {
   display: grid;
   height: 100px;
   background: 1px solid #ddd;
   transition: background 0.3s, border-color 0.3s;
   overflow: hidden;
 }
-.react-calendar-dark-mode .react-calendar__tile {
+.reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
   color: #FFFFFF;
 }
 
-.react-calendar .react-calendar__tile {
+.reactCalendar :global(.react-calendar__tile) {
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
   transition: border-color 0.3s ease;
 }
 
-.react-calendar .react-calendar__month-view__days__day {
+.reactCalendar :global(.react-calendar__month-view__days__day) {
   border: 1px solid #555454;
   box-sizing: border-box;
 }
 
-.react-calendar__tile:hover {
+.reactCalendar :global(.react-calendar__tile):hover {
   background-color: #f5f5f5;
   border-color: #999;
 }
 
 
 
-.react-calendar__tile .tile-events {
+.reactCalendar :global(.react-calendar__tile) .tileEvents {
   font-size: 0.9rem;
   color: #555;
   margin-top: 8px;
   line-height: 1.2;
 }
 
-.react-calendar__tile .event-item {
+.reactCalendar :global(.react-calendar__tile) .eventItem {
   background-color: #e0f7fa;
   padding: 5px;
   border-radius: 4px;
@@ -180,7 +180,7 @@
   text-overflow: ellipsis;
 }
 
-.event-details {
+.eventDetails {
   margin-top: 20px;
   padding: 20px;
   border: 1px solid #ddd;
@@ -188,18 +188,18 @@
   background: #f9f9f9;
 }
 
-.event-details h2 {
+.eventDetails h2 {
   margin: 0 0 10px;
   font-size: 1.5rem;
   color: #333;
 }
 
-.event-details p {
+.eventDetails p {
   font-size: 1rem;
   margin: 5px 0;
 }
 
-.event-details button {
+.eventDetails button {
   margin-top: 10px;
   padding: 10px 15px;
   background-color: #2196f3;
@@ -211,60 +211,60 @@
   display: grid;
 }
 
-.react-calendar__tile--now {
+.reactCalendar :global(.react-calendar__tile--now) {
   background: #f0f0f0;
 }
 
-.react-calendar-dark-mode .react-calendar__month-view__weekdays {
+.reactCalendarDarkMode :global(.react-calendar__month-view__weekdays) {
   color: #FFFFFF;
 }
-.react-calendar-dark-mode .react-calendar__navigation {
+.reactCalendarDarkMode :global(.react-calendar__navigation) {
   background: #266497;
   color: #ffffff;
   border-bottom: 1px solid #444;
 }
-.react-calendar-dark-mode .react-calendar__navigation button {
+.reactCalendarDarkMode :global(.react-calendar__navigation) button {
   color: rgb(255, 254, 254);
 }
-.react-calendar-dark-mode .react-calendar__navigation button:hover {
+.reactCalendarDarkMode :global(.react-calendar__navigation) button:hover {
   background: #1B2A41;
   color: #fff;
 }
-.react-calendar-dark-mode .react-calendar__navigation button:disabled {
+.reactCalendarDarkMode :global(.react-calendar__navigation) button:disabled {
   background: #1B2A41;
   color: #fff;
 }
-.react-calendar-dark-mode .react-calendar__navigation button:disabled:hover {
+.reactCalendarDarkMode :global(.react-calendar__navigation) button:disabled:hover {
   background: #1B2A41;
   color: #fff;
 }
-.react-calendar-dark-mode .react-calendar__navigation button:active {
+.reactCalendarDarkMode :global(.react-calendar__navigation) button:active {
   background: #1B2A41;
   color: #fff;
 }
 
-.event-details button:hover {
+.eventDetails button:hover {
   background-color: #1769aa;
 }
 
 /* Clickable Event Items */
-.event-item.clickable {
+.eventItem.clickable {
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.event-item.clickable:hover {
+.eventItem.clickable:hover {
   background-color: #b2ebf2;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.event-item.clickable:active {
+.eventItem.clickable:active {
   transform: translateY(0);
 }
 
 /* Event Modal Styles */
-.event-modal-overlay {
+.eventModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -281,7 +281,6 @@
 
 
 
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -291,7 +290,7 @@
   }
 }
 
-.event-modal {
+.eventModal {
   background: white;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -315,13 +314,13 @@
   }
 }
 
-.event-modal-dark {
+.eventModalDark {
   background: #1a202c;
   color: #e2e8f0;
   border: 1px solid #4a5568;
 }
 
-.modal-header {
+.modalHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -329,25 +328,25 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
-.event-modal-dark .modal-header {
+.eventModalDark .modalHeader {
   border-bottom-color: #4a5568;
   background: #2d3748;
   border-radius: 12px 12px 0 0;
 }
 
-.modal-header h2 {
+.modalHeader h2 {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 600;
   color: #2d3748;
 }
 
-.event-modal-dark .modal-header h2 {
+.eventModalDark .modalHeader h2 {
   color: #ffffff;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.modal-close {
+.modalClose {
   background: none;
   border: none;
   font-size: 24px;
@@ -363,34 +362,34 @@
   justify-content: center;
 }
 
-.modal-close:hover {
+.modalClose:hover {
   background-color: #f7fafc;
   color: #4a5568;
 }
 
-.event-modal-dark .modal-close {
+.eventModalDark .modalClose {
   color: #a0aec0;
 }
 
-.event-modal-dark .modal-close:hover {
+.eventModalDark .modalClose:hover {
   background-color: #4a5568;
   color: #ffffff;
 }
 
-.modal-content {
+.modalContent {
   padding: 20px 24px;
 }
 
-.event-modal-dark .modal-content {
+.eventModalDark .modalContent {
   background: #1a202c;
 }
 
-.event-status {
+.eventStatus {
   margin-bottom: 20px;
   text-align: center;
 }
 
-.status-badge {
+.statusBadge {
   padding: 6px 12px;
   border-radius: 16px;
   font-size: 0.8rem;
@@ -399,68 +398,68 @@
   letter-spacing: 0.5px;
 }
 
-.status-new {
+.statusNew {
   background-color: #e6fffa;
   color: #065666;
   border: 1px solid #81e6d9;
 }
 
-.status-needs-attendees {
+.statusNeedsAttendees {
   background-color: #fff5f5;
   color: #c53030;
   border: 1px solid #feb2b2;
 }
 
-.status-filling-fast {
+.statusFillingFast {
   background-color: #fef5e7;
   color: #c05621;
   border: 1px solid #fbd38d;
 }
 
-.status-full {
+.statusFull {
   background-color: #f0fff4;
   color: #22543d;
   border: 1px solid #9ae6b4;
 }
 
 /* Dark mode status badges with better contrast */
-.event-modal-dark .status-new {
+.eventModalDark .statusNew {
   background-color: #0f766e;
   color: #ffffff;
   border-color: #14b8a6;
 }
 
-.event-modal-dark .status-needs-attendees {
+.eventModalDark .statusNeedsAttendees {
   background-color: #dc2626;
   color: #ffffff;
   border-color: #ef4444;
 }
 
-.event-modal-dark .status-filling-fast {
+.eventModalDark .statusFillingFast {
   background-color: #ea580c;
   color: #ffffff;
   border-color: #f97316;
 }
 
-.event-modal-dark .status-full {
+.eventModalDark .statusFull {
   background-color: #16a34a;
   color: #ffffff;
   border-color: #22c55e;
 }
 
-.event-details-grid {
+.eventDetailsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   margin-bottom: 20px;
 }
 
-.detail-item {
+.detailItem {
   display: flex;
   flex-direction: column;
 }
 
-.detail-item label {
+.detailItem label {
   font-size: 0.8rem;
   font-weight: 600;
   color: #718096;
@@ -469,28 +468,28 @@
   letter-spacing: 0.5px;
 }
 
-.event-modal-dark .detail-item label {
+.eventModalDark .detailItem label {
   color: #cbd5e0;
   font-weight: 700;
 }
 
-.detail-item span {
+.detailItem span {
   font-size: 1rem;
   color: #2d3748;
   font-weight: 500;
 }
 
-.event-modal-dark .detail-item span {
+.eventModalDark .detailItem span {
   color: #ffffff;
   font-weight: 600;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.event-description {
+.eventDescription {
   margin-bottom: 24px;
 }
 
-.event-description label {
+.eventDescription label {
   display: block;
   font-size: 0.8rem;
   font-weight: 600;
@@ -500,38 +499,38 @@
   letter-spacing: 0.5px;
 }
 
-.event-modal-dark .event-description label {
+.eventModalDark .eventDescription label {
   color: #cbd5e0;
   font-weight: 700;
 }
 
-.event-description p {
+.eventDescription p {
   margin: 0;
   font-size: 1rem;
   line-height: 1.6;
   color: #4a5568;
 }
 
-.event-modal-dark .event-description p {
+.eventModalDark .eventDescription p {
   color: #f7fafc;
   font-weight: 500;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.modal-actions {
+.modalActions {
   display: flex;
   gap: 12px;
   padding: 16px 24px 24px;
   border-top: 1px solid #e2e8f0;
 }
 
-.event-modal-dark .modal-actions {
+.eventModalDark .modalActions {
   border-top-color: #4a5568;
   background: #2d3748;
   border-radius: 0 0 12px 12px;
 }
 
-.btn-primary, .btn-secondary {
+.btnPrimary, .btnSecondary {
   padding: 10px 20px;
   border: none;
   border-radius: 8px;
@@ -542,140 +541,153 @@
   flex: 1;
 }
 
-.btn-primary {
+.btnPrimary {
   background-color: #3182ce;
   color: white;
 }
 
-.btn-primary:hover {
+.btnPrimary:hover {
   background-color: #2c5aa0;
   transform: translateY(-1px);
 }
 
-.btn-secondary {
+.btnSecondary {
   background-color: #e2e8f0;
   color: #4a5568;
   border: 1px solid #cbd5e0;
 }
 
-.btn-secondary:hover {
+.btnSecondary:hover {
   background-color: #cbd5e0;
   transform: translateY(-1px);
 }
 
-.event-modal-dark .btn-secondary {
+.eventModalDark .btnSecondary {
   background-color: #4a5568;
   color: #ffffff;
   border-color: #718096;
 }
 
-.event-modal-dark .btn-secondary:hover {
+.eventModalDark .btnSecondary:hover {
   background-color: #718096;
   transform: translateY(-1px);
 }
 
 /* Enhanced dark mode modal styling */
-.event-modal-dark {
+.eventModalDark {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 
-.event-modal-dark .modal-header,
-.event-modal-dark .modal-actions {
+.eventModalDark .modalHeader,
+.eventModalDark .modalActions {
   background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
 }
 
-.event-modal-dark .modal-content {
+.eventModalDark .modalContent {
   background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
 }
 
 /* Better dark mode contrast for all text elements */
-.event-modal-dark * {
+.eventModalDark * {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .event-modal {
+  .eventModal {
     width: 95%;
     max-height: 90vh;
   }
   
-  .event-details-grid {
+  .eventDetailsGrid {
     grid-template-columns: 1fr;
     gap: 12px;
   }
   
-  .modal-actions {
+  .modalActions {
     flex-direction: column;
   }
   
-  .btn-primary, .btn-secondary {
+  .btnPrimary, .btnSecondary {
     width: 100%;
   }
 }
 
-.calendar-activity-section h2 {
+.calendarActivitySection h2 {
   margin-bottom: 10px;
 }
-.calendar-activity-section-dark-mode h2 {
+.calendarActivitySectionDarkMode h2 {
   color: #fff;
   margin-bottom: 10px;
 }
 
-.calendar-activity-list {
+.calendarActivityList {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.calendar-activity-item {
+.calendarActivityItem {
   margin-bottom: 15px;
   padding: 10px 0;
   border-bottom: 1px solid #ccc;
 }
 
-.activity-message-dark-mode {
+.activityMessageDarkMode {
   color: #fff;
 }
 
-.activity-time-dark-mode {
+.activityTimeDarkMode {
   color: #fff !important;
 }
 
-.calendar-activity-section .calendar-activity-item-dark-mode {
+.calendarActivitySection .calendarActivityItemDarkMode {
   color: #fff;
   border-bottom: 1px solid #ccc;
 }
 
-.calendar-activity-item:last-child {
+.calendarActivityItem:last-child {
   border-bottom: none;
 }
 
-.calendar-activity-item strong {
+.calendarActivityItem strong {
   color: #0073e6;
 }
 
-.calendar-activity-item small {
+.calendarActivityItem small {
   display: block;
   font-size: 0.85rem;
   color: #666;
 }
-.calendar-activity-item-dark-mode small {
+.calendarActivityItemDarkMode small {
   color: #fff;
 }
 
-.react-calendar-dark-mode .react-calendar__tile {
+.reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
   color: #FFFFFF;
 }
-.react-calendar-dark-mode .react-calendar__tile--active {
+.reactCalendarDarkMode :global(.react-calendar__tile--active) {
   background: #444;
   color: #fff;
 }
-.react-calendar-dark-mode .react-calendar__tile--now {
+.reactCalendarDarkMode :global(.react-calendar__tile--now) {
   background: #666;
   color: #fff;
 }
-.react-calendar-dark-mode .react-calendar__navigation__label {
+.reactCalendarDarkMode :global(.react-calendar__navigation__label) {
+  color: #fff;
+}
+
+.hasEvents {
+  background: #f0f8ff;
+}
+
+.calendarFilters {
+  display: flex;
+  gap: 10px;
+}
+
+.calendarFiltersDarkMode {
   color: #fff;
 }

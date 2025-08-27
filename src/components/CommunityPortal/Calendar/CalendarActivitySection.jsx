@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux';
+import styles from './CommunityCalendar.module.css';
 
 function CalendarActivitySection() {
   const calendarActivities = [
@@ -10,20 +11,26 @@ function CalendarActivitySection() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={`calendar-activity-section ${darkMode ? 'calendar-activity-section' : ''}`}>
+    <div
+      className={`${styles.calendarActivitySection} ${
+        darkMode ? styles.calendarActivitySectionDarkMode : ''
+      }`}
+    >
       <h2 className={`activity-header ${darkMode ? 'activity-header-dark-mode' : ''}`}>
         Latest News
       </h2>
-      <ul className="calendar-activity-list">
+      <ul className={styles.calendarActivityList}>
         {calendarActivities.map(activity => (
           <li
             key={activity.id}
-            className={`calendar-activity-item ${darkMode ? 'calendar-activity-item' : ''}`}
+            className={`${styles.calendarActivityItem} ${
+              darkMode ? styles.calendarActivityItemDarkMode : ''
+            }`}
           >
-            <p className={`activity-message ${darkMode ? 'activity-message-dark-mode' : ''}`}>
+            <p className={`activity-message ${darkMode ? styles.activityMessageDarkMode : ''}`}>
               <strong>{activity.author}</strong>: {activity.message}
             </p>
-            <small className={`activity-time ${darkMode ? 'activity-time-dark-mode' : ''}`}>
+            <small className={`activity-time ${darkMode ? styles.activityTimeDarkMode : ''}`}>
               {activity.time}
             </small>
           </li>

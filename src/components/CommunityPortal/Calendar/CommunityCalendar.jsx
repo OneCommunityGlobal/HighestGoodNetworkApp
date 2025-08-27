@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import CalendarActivitySection from './CalendarActivitySection';
-import './CommunityCalendar.css';
+import styles from './CommunityCalendar.module.css';
 
 function CommunityCalendar() {
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
@@ -159,7 +159,7 @@ function CommunityCalendar() {
         const eventsForTile = getEventsForDate(date).map(event => (
           <div
             key={event.id}
-            className="event-item clickable"
+            className={`${styles.eventItem} ${styles.clickable}`}
             onClick={() => handleEventClick(event)}
             onKeyDown={e => handleEventKeyPress(e, event)}
             role="button"
@@ -169,7 +169,9 @@ function CommunityCalendar() {
             {event.title}
           </div>
         ));
-        return eventsForTile.length > 0 ? <div className="tile-events">{eventsForTile}</div> : null;
+        return eventsForTile.length > 0 ? (
+          <div className={styles.tileEvents}>{eventsForTile}</div>
+        ) : null;
       }
       return null;
     },
@@ -180,7 +182,7 @@ function CommunityCalendar() {
   const tileClassName = useCallback(
     ({ date, view }) => {
       if (view === 'month' && eventCountByDate.has(date.toDateString())) {
-        return 'has-events';
+        return styles.hasEvents;
       }
       return null;
     },
@@ -206,16 +208,20 @@ function CommunityCalendar() {
   // Memoized CSS classes to prevent string concatenation on every render
   const calendarClasses = useMemo(
     () => ({
-      container: `community-calendar ${darkMode ? 'community-calendar-dark-mode' : ''}`,
-      header: `calendar-header ${darkMode ? 'calendar-header-dark-mode' : ''}`,
-      filters: `calendar-filters ${darkMode ? 'calendar-filters-dark-mode' : ''}`,
-      main: `calendar-main`,
-      calendarContainer: `calendar-container ${darkMode ? 'calendar-container-dark-mode' : ''}`,
-      activitySection: `calendar-activity-section ${
-        darkMode ? 'calendar-activity-section-dark-mode' : ''
+      container: `${styles.communityCalendar} ${darkMode ? styles.communityCalendarDarkMode : ''}`,
+      header: `${styles.calendarHeader} ${darkMode ? styles.calendarHeaderDarkMode : ''}`,
+      filters: `${styles.calendarFilters} ${darkMode ? styles.calendarFiltersDarkMode : ''}`,
+      main: styles.calendarMain,
+      calendarContainer: `${styles.calendarContainer} ${
+        darkMode ? styles.calendarContainerDarkMode : ''
       }`,
-      calendarSection: `calendar-section ${darkMode ? 'calendar-section-dark-mode' : ''}`,
-      reactCalendar: `react-calendar ${darkMode ? 'react-calendar-dark-mode' : ''}`,
+      activitySection: `${styles.calendarActivitySection} ${
+        darkMode ? styles.calendarActivitySectionDarkMode : ''
+      }`,
+      calendarSection: `${styles.calendarSection} ${
+        darkMode ? styles.calendarSectionDarkMode : ''
+      }`,
+      reactCalendar: `${styles.reactCalendar} ${darkMode ? styles.reactCalendarDarkMode : ''}`,
     }),
     [darkMode],
   );
@@ -276,7 +282,7 @@ function CommunityCalendar() {
       {showEventModal && selectedEvent && (
         <>
           <div
-            className="event-modal-overlay"
+            className={styles.eventModalOverlay}
             role="button"
             tabIndex={0}
             aria-label="Close event details (click backdrop or press Enter/Space)"
@@ -293,15 +299,15 @@ function CommunityCalendar() {
             }}
           >
             <div
-              className={`event-modal ${darkMode ? 'event-modal-dark' : ''}`}
+              className={`${styles.eventModal} ${darkMode ? styles.eventModalDark : ''}`}
               role="dialog"
               aria-modal="true"
               aria-labelledby="event-modal-title"
             >
-              <div className="modal-header">
+              <div className={styles.modalHeader}>
                 <h2 id="event-modal-title">{selectedEvent.title}</h2>
                 <button
-                  className="modal-close"
+                  className={styles.modalClose}
                   onClick={closeEventModal}
                   aria-label="Close event details"
                 >
@@ -309,45 +315,49 @@ function CommunityCalendar() {
                 </button>
               </div>
 
-              <div className="modal-content">
-                <div className="event-status">
+              <div className={styles.modalContent}>
+                <div className={styles.eventStatus}>
                   <span
-                    className={`status-badge status-${selectedEvent.status
-                      .toLowerCase()
-                      .replace(' ', '-')}`}
+                    className={`${styles.statusBadge} ${(() => {
+                      const statusKey = selectedEvent.status
+                        .toLowerCase()
+                        .replace(/\s+/g, '')
+                        .replace(/^(.)/, match => `status${match.toUpperCase()}`);
+                      return styles[statusKey] || '';
+                    })()}`}
                   >
                     {selectedEvent.status}
                   </span>
                 </div>
 
-                <div className="event-details-grid">
-                  <div className="detail-item">
+                <div className={styles.eventDetailsGrid}>
+                  <div className={styles.detailItem}>
                     <label htmlFor="event-type">Type:</label>
                     <span id="event-type">{selectedEvent.type}</span>
                   </div>
-                  <div className="detail-item">
+                  <div className={styles.detailItem}>
                     <label htmlFor="event-location">Location:</label>
                     <span id="event-location">{selectedEvent.location}</span>
                   </div>
-                  <div className="detail-item">
+                  <div className={styles.detailItem}>
                     <label htmlFor="event-date">Date:</label>
                     <span id="event-date">{selectedEvent.date.toLocaleDateString()}</span>
                   </div>
-                  <div className="detail-item">
+                  <div className={styles.detailItem}>
                     <label htmlFor="event-time">Time:</label>
                     <span id="event-time">{selectedEvent.time}</span>
                   </div>
                 </div>
 
-                <div className="event-description">
+                <div className={styles.eventDescription}>
                   <label htmlFor="event-description">Description:</label>
                   <p id="event-description">{selectedEvent.description}</p>
                 </div>
               </div>
 
-              <div className="modal-actions">
-                <button className="btn-primary">Register for Event</button>
-                <button className="btn-secondary">Add to Calendar</button>
+              <div className={styles.modalActions}>
+                <button className={styles.btnPrimary}>Register for Event</button>
+                <button className={styles.btnSecondary}>Add to Calendar</button>
               </div>
             </div>
           </div>
