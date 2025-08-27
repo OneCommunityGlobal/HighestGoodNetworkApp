@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Tooltip } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { Tooltip, UncontrolledTooltip } from 'reactstrap';
+import { connect, useSelector, useDispatch} from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 // import { Link, useHistory } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
-import { UncontrolledTooltip } from 'reactstrap';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
@@ -18,16 +15,14 @@ import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
-import hasPermission from '../../utils/permissions';
 import { boxStyle } from '../../styles';
-import { formatDateLocal } from '../../utils/formatDate';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
  */
-const UserTableData = React.memo(props => {
+const UserTableDataComponent = (props) => {
   const { darkMode } = props;
   const editUser = useSelector(state => state.userProfileEdit?.editable);
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
@@ -181,20 +176,15 @@ const UserTableData = React.memo(props => {
           ''
         )}
         <span style={{ position: 'absolute', top: 0, right: 0 }}>
-          <a
-            href={`/peoplereport/${props.user._id}`}
-            id={`report-icon-${props.user._id}`}
+          <button
+            type="button"
             className="team-member-tasks-user-report-link"
-            target="_blank"
-            rel="noopener noreferrer"
             style={{
               fontSize: 18,
               opacity: canSeeReports ? 1 : 0.7,
               background: 'none',
               border: 'none',
               padding: 0,
-              display: 'inline-block',
-              cursor: canSeeReports ? 'pointer' : 'not-allowed',
             }}
             onClick={(event) => {
               if (!canSeeReports) {
@@ -202,29 +192,25 @@ const UserTableData = React.memo(props => {
                 return;
               }
 
-              const isModified = event.metaKey || event.ctrlKey || event.button === 1;
-              if (!isModified) {
-                event.preventDefault();
-                history.push(`/peoplereport/${props.user._id}`);
+              if (event.metaKey || event.ctrlKey || event.button === 1) {
+                window.open(`/peoplereport/${props.user._id}`, '_blank');
+                return;
               }
+
+              event.preventDefault(); // prevent full reload
+              history.push(`/peoplereport/${props.user._id}`);
             }}
           >
             <img
               src="/report_icon.png"
               alt="reportsicon"
               className="team-member-tasks-user-report-link-image"
+              id={`report-icon-${props.user._id}`}
+              style={{
+                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
+              }}
             />
-          </a>
-          {!canSeeReports && (
-            <Tooltip
-              placement="bottom"
-              isOpen={tooltipReportsOpen}
-              target={`report-icon-${props.user._id}`}
-              toggle={toggleReportsTooltip}
-            >
-              You don&apos;t have permission to view user reports
-            </Tooltip>
-          )}
+          </button>
         </span>
 
         <span style={{ position: 'absolute', bottom: 0, right: 0 }}>
@@ -239,14 +225,13 @@ const UserTableData = React.memo(props => {
                 return;
               }
 
-              const url = `${window.location.origin}/timelog/${props.user._id}#currentWeek`;
-
               if (e.metaKey || e.ctrlKey || e.button === 1) {
-                window.open(url, '_blank', 'noopener');
+                window.open(`/timelog/${props.user._id}`, '_blank');
                 return;
               }
-              e.preventDefault();
-              history.push(`/timelog/${props.user._id}#currentWeek`);
+
+              e.preventDefault(); // prevent full reload
+              history.push(`/timelog/${props.user._id}`);
             }}
           />
         </span>
@@ -606,7 +591,10 @@ const UserTableData = React.memo(props => {
       )}
     </tr>
   );
-});
+};
+
+const UserTableData = React.memo(UserTableDataComponent);
+UserTableData.displayName = 'UserTableData';
 
 const mapStateToProps = state => ({
   auth: state.auth,

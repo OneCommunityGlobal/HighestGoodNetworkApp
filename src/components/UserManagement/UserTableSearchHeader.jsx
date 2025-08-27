@@ -6,7 +6,7 @@ import DropDownSearchBox from './DropDownSearchBox';
 /**
  * The header row of the user table.
  */
-const UserTableSearchHeader = React.memo(props => {
+const UserTableSearchHeader = React.memo(function UserTableSeacrhHeader(props) {
   const { darkMode, isMobile, mobileFontSize, mobileWidth } = props;
 
   const onFirstNameSearch = text => {

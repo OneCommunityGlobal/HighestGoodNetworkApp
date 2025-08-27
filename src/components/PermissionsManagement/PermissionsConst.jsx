@@ -343,24 +343,10 @@ export const permissionLabels = [
                   'Gives the user permission to add a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Add task button"',
               },
               {
-                label: 'Edit Task/Task Extension',
+                label: 'Edit Task',
+                key: 'updateTask',
                 description:
-                  'Category for all permissions related to editing tasks and task extensions',
-                subperms: [
-                  {
-                    label: 'Edit Task',
-                    key: 'updateTask',
-                    description:
-                      'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
-                  },
-                  {
-                    // task extension count viewing permission
-                    label: 'See # of Times Time Added to Task',
-                    key: 'viewTaskDeadlineCount',
-                    description:
-                      'Gives the user permission to view the task extension count. "Other Links" -> "Permissions Management" -> "Manage User Permissions" -> "Choose any user" -> "Add button to view task deadline count" ',
-                  },
-                ],
+                  'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
               },
               {
                 label: 'Delete Task',
