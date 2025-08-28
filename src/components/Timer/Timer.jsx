@@ -102,6 +102,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
+  const [lastSubmittedTime, setLastSubmittedTime] = useState(null); // Add this state to track submitted time
   const [viewingUserId, setViewingUserId] = useState(null);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
@@ -112,6 +113,12 @@ function Timer({ authUser, darkMode, isPopout }) {
   const logMinutes = timeToLog.minutes();
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
+
+  // function to clear submitted time when timer is reset
+  const clearSubmittedTime = useCallback(() => {
+    setLastSubmittedTime(null);
+    setLogTimer({ hours: 0, minutes: 0 });
+  }, []);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -143,13 +150,18 @@ function Timer({ authUser, darkMode, isPopout }) {
   // control whether to send GET_TIMER message to avoid message overriding
   const isInitialJsonMessageReceived = useMemo(() => !!lastJsonMessage, [lastJsonMessage]);
 
+  // Modify the sendStop function to track submitted time
   const wsJsonMessageHandler = useMemo(() => {
     if (viewingUserId == null) {
       return {
         sendStart: () => sendJsonMessageNoQueue({ action: action.START_TIMER }),
         sendPause: () => sendJsonMessageNoQueue({ action: action.PAUSE_TIMER }),
         sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
-        sendStop: () => sendJsonMessageNoQueue({ action: action.STOP_TIMER }),
+        sendStop: () => {
+          sendJsonMessageNoQueue({ action: action.STOP_TIMER });
+          // Clear the submitted time when stopping
+          clearSubmittedTime();
+        },
         sendAckForced: () => sendJsonMessageNoQueue({ action: action.ACK_FORCED }),
         sendGetTimer: () => sendJsonMessageNoQueue({ action: action.GET_TIMER }),
         sendStartChime: state =>
@@ -170,7 +182,11 @@ function Timer({ authUser, darkMode, isPopout }) {
         sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId }),
       sendClear: () =>
         sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
-      sendStop: () => sendJsonMessageNoQueue({ action: action.STOP_TIMER, userId: viewingUserId }),
+      sendStop: () => {
+        sendJsonMessageNoQueue({ action: action.STOP_TIMER, userId: viewingUserId });
+        // Clear the submitted time when stopping
+        clearSubmittedTime();
+      },
       sendAckForced: () =>
         sendJsonMessageNoQueue({ action: action.ACK_FORCED, userId: viewingUserId }),
       sendGetTimer: () =>
@@ -194,7 +210,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       sendHeartbeat: () =>
         sendJsonMessageNoQueue({ action: action.HEARTBEAT, userId: viewingUserId }),
     };
-  }, [sendJsonMessageNoQueue, viewingUserId]);
+  }, [sendJsonMessageNoQueue, viewingUserId, clearSubmittedTime]);
 
   const {
     sendStart,
@@ -212,6 +228,16 @@ function Timer({ authUser, darkMode, isPopout }) {
   const toggleLogTimeModal = () => {
     setLogTimeEntryModal(modal => !modal);
   };
+
+  // Modify the TimeEntryForm to track when time is submitted
+  const handleTimeSubmitted = useCallback(
+    submittedTime => {
+      const timeKey = `${submittedTime.hours}_${submittedTime.minutes}_${goal}_${remaining}`;
+      setLastSubmittedTime(timeKey);
+      setLogTimer({ hours: 0, minutes: 0 }); // Clear the log timer after submission
+    },
+    [goal, remaining],
+  );
 
   const toggleTimer = () => setShowTimer(timer => !timer);
 
@@ -284,9 +310,17 @@ function Timer({ authUser, darkMode, isPopout }) {
     if (goal - remaining < 60000) {
       toast.error(`You need at least 1 minute to log time!`);
     } else {
-      toggleLogTimeModal();
+      // Only show the modal if there's actual time to log and it hasn't been submitted
+      const timeToLog = goal - remaining;
+      const timeKey = `${logHours}_${logMinutes}_${goal}_${remaining}`;
+
+      if (timeToLog >= 60000 && lastSubmittedTime !== timeKey) {
+        toggleLogTimeModal();
+      } else if (lastSubmittedTime === timeKey) {
+        toast.info('This time has already been submitted.');
+      }
     }
-  }, [remaining]);
+  }, [remaining, goal, logHours, logMinutes, lastSubmittedTime]);
 
   const updateRemaining = () => {
     if (!running) return;
@@ -362,13 +396,30 @@ function Timer({ authUser, darkMode, isPopout }) {
       setRemaining(time);
       clearInterval(interval);
     }
+
     return () => clearInterval(interval);
   }, [running, message]);
 
+  // Modify the useEffect that updates logTimer to prevent showing already submitted time
   useEffect(() => {
     checkRemainingTime();
-    setLogTimer({ hours: logHours, minutes: logMinutes });
-  }, [remaining]);
+
+    // Only update logTimer if we haven't submitted this time yet
+    const currentTimeToLog = { hours: logHours, minutes: logMinutes };
+    const timeKey = `${logHours}_${logMinutes}_${goal}_${remaining}`;
+
+    if (lastSubmittedTime !== timeKey && (logHours > 0 || logMinutes > 0)) {
+      setLogTimer(currentTimeToLog);
+    }
+  }, [remaining, logHours, logMinutes, goal, lastSubmittedTime]);
+
+  // Add this useEffect to handle timer state changes and clear submitted time when appropriate
+  useEffect(() => {
+    // Clear submitted time when timer is reset or goal changes
+    if (!started || goal !== lastSubmittedTime?.goal) {
+      clearSubmittedTime();
+    }
+  }, [started, goal, clearSubmittedTime]);
 
   useEffect(() => {
     if (timeIsOverModalOpen) {
@@ -397,6 +448,18 @@ function Timer({ authUser, darkMode, isPopout }) {
 
     sendGetTimer();
   }, [isInitialJsonMessageReceived, viewingUserId]);
+
+  // cleanup when viewing user changes
+  useEffect(() => {
+    clearSubmittedTime();
+  }, [viewingUserId, clearSubmittedTime]);
+
+  //  cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      clearSubmittedTime();
+    };
+  }, [clearSubmittedTime]);
 
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
@@ -438,6 +501,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             isOpen={logTimeEntryModal}
             data={logTimer}
             sendStop={sendStop}
+            onTimeSubmitted={handleTimeSubmitted} // Add this prop
           />
         )}
         <audio
@@ -746,6 +810,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           isOpen={logTimeEntryModal}
           data={logTimer}
           sendStop={sendStop}
+          onTimeSubmitted={handleTimeSubmitted} // Add this prop
         />
       )}
       <audio

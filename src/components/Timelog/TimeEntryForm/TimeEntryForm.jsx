@@ -6,7 +6,7 @@
 /* eslint-disable no-param-reassign */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect , useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -67,7 +67,19 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
- const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile, userProjects } = props;
+  const {
+    from,
+    sendStop,
+    edit,
+    data,
+    toggle,
+    isOpen,
+    tab,
+    darkMode,
+    userProfile,
+    userProjects,
+    onTimeSubmitted,
+  } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
@@ -145,7 +157,9 @@ function TimeEntryForm(props) {
   const [timeEntryFormUserProjects, setTimeEntryFormUserProjects] = useState(userProjects || []);
   const [timeEntryFormUserTasks, setTimeEntryFormUserTasks] = useState([]);
   const [projectOrTaskId, setProjectOrTaskId] = useState(timeEntryInitialProjectOrTaskId);
- const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(Boolean(userProjects && userProjects.length));
+  const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(
+    Boolean(userProjects && userProjects.length),
+  );
   const [errors, setErrors] = useState({});
   const [reminder, setReminder] = useState(initialReminder);
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibility] = useState(false);
@@ -343,6 +357,10 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
+          // Notify parent component that time was submitted
+          if (onTimeSubmitted) {
+            onTimeSubmitted({ hours: formHours, minutes: formMinutes });
+          }
           dispatch(
             updateIndividualTaskTime({
               newTime: { hours: formHours, minutes: formMinutes },
@@ -559,7 +577,7 @@ function TimeEntryForm(props) {
       const options = buildOptions();
       setProjectsAndTasksOptions(options);
     }
- }, [isAsyncDataLoaded, timeEntryFormUserProjects]);
+  }, [isAsyncDataLoaded, timeEntryFormUserProjects]);
 
   // grab form data before editing
   useEffect(() => {
