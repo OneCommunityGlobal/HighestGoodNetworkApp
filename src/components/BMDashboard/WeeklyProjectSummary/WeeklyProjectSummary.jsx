@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 import CostPredictionChart from './CostPredictionChart';
+import CostBreakdownChart from './CostBreakdownChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
@@ -371,6 +372,7 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
               {(() => {
+                if (index === 0) return <CostBreakdownChart />;
                 if (index === 2) return <CostPredictionChart projectId={1} />;
                 if (index === 3) return <ActualVsPlannedCost />;
                 return '📊 Card';
