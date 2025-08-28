@@ -103,6 +103,43 @@ function ApplicantVolunteerRatio() {
     [data, selectedRoles],
   );
 
+  // Inline styles for react-select to guarantee contrast in dark mode (overrides other CSS)
+  const selectStyles = useMemo(() => {
+    if (!darkMode) return undefined;
+
+    return {
+      control: provided => ({
+        ...provided,
+        backgroundColor: '#0b2434',
+        borderColor: '#2b4a6b',
+        boxShadow: 'none',
+        color: '#ffffff',
+      }),
+      valueContainer: provided => ({ ...provided, color: '#ffffff' }),
+      singleValue: provided => ({ ...provided, color: '#ffffff' }),
+      placeholder: provided => ({ ...provided, color: 'rgba(224,224,224,0.9)' }),
+      menu: provided => ({ ...provided, backgroundColor: '#0b2434', color: '#ffffff' }),
+      menuPortal: provided => ({ ...provided, zIndex: 9999 }),
+      option: (provided, state) => ({
+        ...provided,
+        backgroundColor: state.isSelected
+          ? 'rgba(67,160,71,0.22)'
+          : state.isFocused
+          ? 'rgba(255,255,255,0.06)'
+          : 'transparent',
+        color: '#ffffff',
+      }),
+      multiValue: provided => ({
+        ...provided,
+        backgroundColor: 'rgba(255,255,255,0.06)',
+        color: '#ffffff',
+      }),
+      multiValueLabel: provided => ({ ...provided, color: '#ffffff' }),
+      dropdownIndicator: provided => ({ ...provided, color: '#ffffff' }),
+      indicatorSeparator: provided => ({ ...provided, backgroundColor: 'rgba(255,255,255,0.06)' }),
+    };
+  }, [darkMode]);
+
   // Apply dark mode to document body and inject page-specific dark styles
   useEffect(() => {
     if (darkMode) {
@@ -239,6 +276,8 @@ function ApplicantVolunteerRatio() {
               placeholder="Select roles..."
               className={darkMode ? 'dark-select' : ''}
               classNamePrefix="custom-select"
+              styles={selectStyles}
+              menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
             />
           </div>
         </div>
