@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import RankedUserList from './RankedUserList'; // wherever your RankedUserList is
+import styles from './style/CommunityMembersPage.module.css';
 
 const availableSkills = ['React', 'Redux', 'HTML', 'CSS', 'MongoDB', 'Database', 'Agile'];
 
@@ -15,7 +16,7 @@ function CommunityMembersPage() {
   return (
     <div>
       <h2>Select Skills to Filter Community Members</h2>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+      <div className={styles.skillsContainer}>
         {availableSkills.map(skill => (
           <label key={skill}>
             <input

@@ -25,7 +25,7 @@ import {
   Tooltip,
 } from 'recharts';
 import { ENDPOINTS } from '~/utils/URL';
-import styles from './style/UserCard.module.css';
+import styles from './style/UserProfilePage.module.css';
 
 // Sample data for skills
 const mockSkillsData = {
@@ -200,34 +200,21 @@ const mockSkillsData = {
 
 function CustomTooltip({ active, payload }) {
   if (active && payload && payload.length) {
+    const val = payload[0].value;
     return (
       <div
-        className="custom-tooltip"
-        style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #ddd',
-          borderRadius: '8px',
-          padding: '6px 8px',
-          fontSize: '12px',
-          boxShadow: '0px 0px 6px rgba(0,0,0,0.1)',
-          maxWidth: '180px',
-          whiteSpace: 'normal',
-          wordWrap: 'break-word',
-        }}
+        className={styles.customTooltip}
       >
-        <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>{payload[0].payload.name}</p>
-        <p style={{ margin: '0 0 4px 0' }}>
+        <p className={styles.tooltipTitle}>{payload[0].payload.name}</p>
+        <p className={styles.tooltipLine}>
           Score:{' '}
           <span
-            style={{
-              color: payload[0].value < 5 ? '#dc3545' : '#28a745',
-              fontWeight: 'bold',
-            }}
+            className={classnames(styles.tooltipScore, val < 5 ? styles.low : styles.high)}
           >
-            {payload[0].value}
+            {val}
           </span>
         </p>
-        <p style={{ margin: 0 }}>{payload[0].payload.question}</p>
+        <p className={styles.tooltipQuestion}>{payload[0].payload.question}</p>
       </div>
     );
   }
@@ -239,29 +226,14 @@ function SkillItem({ item }) {
   return (
     <div
       id={`tooltip-${item.id}`}
-      className="score-item"
-      style={{
-        position: 'relative',
-        padding: '15px 10px',
-        height: '100%',
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
+      className={styles.scoreItem}
     >
       <div
-        style={{
-          fontSize: '24px',
-          fontWeight: 'bold',
-          color: item.score < 5 ? '#dc3545' : '#28a745',
-          marginBottom: '8px',
-        }}
+        className={classnames(styles.scoreValue, item.score < 5 ? styles.low : styles.high)}
       >
         {item.score}
       </div>
-      <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{item.name}</div>
+      <div className={styles.scoreName}>{item.name}</div>
       <UncontrolledTooltip placement="top" target={`tooltip-${item.id}`}>
         {item.question}
       </UncontrolledTooltip>
@@ -318,17 +290,13 @@ function SkillsTabbedSection({ skillsData }) {
 
   return (
     <Card>
-      <CardBody style={{ padding: '1rem' }}>
+      <CardBody className={styles.cardBody}>
         <h5 className="mb-3">Skills</h5>
-        <Row style={{ minHeight: '400px' }}>
+        <Row className={styles.skillsRow}>
           {/* Tabs column */}
           <Col
             md={2}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-            }}
+            className={styles.tabsCol}
           >
             <Nav vertical pills>
               {[
@@ -338,19 +306,10 @@ function SkillsTabbedSection({ skillsData }) {
                 'Deployment & DevOps',
                 'Software Practices',
               ].map(tab => (
-                <NavItem key={tab} style={{ marginBottom: '15px' }}>
+                <NavItem key={tab} className={styles.navItem}>
                   <NavLink
-                    className={classnames({ active: activeTab === tab })}
+                    className={classnames(styles.navLink, { [styles.active]: activeTab === tab })}
                     onClick={() => toggle(tab)}
-                    style={{
-                      backgroundColor: activeTab === tab ? '#e3f2fd' : '#f1f1f1',
-                      color: activeTab === tab ? '#007bff' : '#555',
-                      fontWeight: '500',
-                      textAlign: 'center',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      padding: '10px',
-                    }}
                   >
                     {tab}
                   </NavLink>
@@ -360,10 +319,10 @@ function SkillsTabbedSection({ skillsData }) {
           </Col>
 
           {/* Content column */}
-          <Col md={10} style={{ overflowY: 'auto' }}>
+          <Col md={10} className={styles.contentCol}>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="Dashboard">
-                <div style={{ height: '350px', overflow: 'hidden' }}>{renderRadarChart()}</div>
+                <div className={styles.chartWrapper}>{renderRadarChart()}</div>
               </TabPane>
               <TabPane tabId="Frontend">{renderScoreItems(skillsData.Frontend)}</TabPane>
               <TabPane tabId="Backend">{renderScoreItems(skillsData.Backend)}</TabPane>
@@ -417,7 +376,7 @@ function UserProfilePage() {
       </div>
 
       {/* Skills tabbed section */}
-      <div className={`${styles.skillsSection}`}>
+      <div className={styles.skillsSection}>
         <SkillsTabbedSection skillsData={mockSkillsData} />
       </div>
     </div>
