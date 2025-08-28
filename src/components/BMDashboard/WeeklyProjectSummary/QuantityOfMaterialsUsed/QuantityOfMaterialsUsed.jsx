@@ -594,7 +594,8 @@ function QuantityOfMaterialsUsed({ data }) {
           </li>
           <li>Hover over bars or dots to view exact quantities.</li>
           <li>
-            <strong>Click on a bar</strong> to view detailed usage:
+            <strong className={darkMode ? 'text-light' : ''}>Click on a bar </strong> to view
+            detailed usage:
             <ul style={{ paddingLeft: '16px' }}>
               <li>Usage timeline (date-wise quantity)</li>
               <li>Project where it was used the most</li>
@@ -618,13 +619,13 @@ function QuantityOfMaterialsUsed({ data }) {
             Legend colors match chart bars. Dots are color-coded based on change:
             <ul style={{ paddingLeft: '16px' }}>
               <li>
-                <strong>Red</strong> – Increase in usage
+                <strong className={darkMode ? 'text-light' : ''}>Red</strong> – Increase in usage
               </li>
               <li>
-                <strong>Green</strong> – Decrease in usage
+                <strong className={darkMode ? 'text-light' : ''}>Green</strong> – Decrease in usage
               </li>
               <li>
-                <strong>Gray</strong> – No change
+                <strong className={darkMode ? 'text-light' : ''}>Gray</strong> – No change
               </li>
             </ul>
           </li>
@@ -642,9 +643,9 @@ function QuantityOfMaterialsUsed({ data }) {
           onChange={selectedOptions =>
             setSelectedMaterials(selectedOptions.map(({ value }) => value))
           }
-          placeholder="All Materials"
+          placeholder="All Materials testing"
           classNamePrefix="custom-select"
-          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}}`}
           menuPosition="fixed"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           closeMenuOnSelect={false}
@@ -865,7 +866,7 @@ function QuantityOfMaterialsUsed({ data }) {
             color: 'var(--text-color)',
           }}
         >
-          <strong>
+          <strong className={darkMode ? 'text-light' : ''}>
             Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
           </strong>
           {chartData.datasets[0].data
