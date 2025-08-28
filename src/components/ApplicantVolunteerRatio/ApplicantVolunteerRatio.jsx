@@ -72,7 +72,7 @@ function ApplicantVolunteerRatio() {
 
         setData(transformedData);
       } catch (err) {
-        console.error('Error fetching applicant volunteer ratio data:', err);
+        setError(`Error fetching applicant volunteer ratio data: ${err.message}`);
       } finally {
         setLoading(false);
       }

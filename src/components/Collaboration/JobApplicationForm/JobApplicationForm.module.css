@@ -1,15 +1,22 @@
 .container {
   font-family: Arial, sans-serif;
   margin: 0 auto;
-  padding: 20px;`
-  max-width: 800px;
+  padding: 20px;
+  background-color: #d9d9d9;
+  width: 100%;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .header {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  background-color: #d9f99d;
   padding: 10px;
   border-radius: 5px;
 }
@@ -17,6 +24,20 @@
 .headerContent {
   display: flex;
   gap: 10px;
+  background-color: #98cb03;
+  width: 75%;
+  padding: 2%;
+  justify-content: space-between;
+}
+
+.headerLeft {
+  display: flex;
+  gap: 10px;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
 }
 
 .jobTitleInput {
@@ -41,10 +62,9 @@
 }
 
 .formContainer {
-  margin-top: 20px;
   background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 5px;
+  padding: 2%;
+  width: 75%;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -68,6 +88,9 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
+  background-color: #d9d9d9;
+  padding: 2%;
+  border-radius: 1%;
 }
 
 .formGroup {
