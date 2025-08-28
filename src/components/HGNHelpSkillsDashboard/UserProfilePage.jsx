@@ -202,15 +202,11 @@ function CustomTooltip({ active, payload }) {
   if (active && payload && payload.length) {
     const val = payload[0].value;
     return (
-      <div
-        className={styles.customTooltip}
-      >
+      <div className={styles.customTooltip}>
         <p className={styles.tooltipTitle}>{payload[0].payload.name}</p>
         <p className={styles.tooltipLine}>
           Score:{' '}
-          <span
-            className={classnames(styles.tooltipScore, val < 5 ? styles.low : styles.high)}
-          >
+          <span className={classnames(styles.tooltipScore, val < 5 ? styles.low : styles.high)}>
             {val}
           </span>
         </p>
@@ -224,13 +220,8 @@ function CustomTooltip({ active, payload }) {
 
 function SkillItem({ item }) {
   return (
-    <div
-      id={`tooltip-${item.id}`}
-      className={styles.scoreItem}
-    >
-      <div
-        className={classnames(styles.scoreValue, item.score < 5 ? styles.low : styles.high)}
-      >
+    <div id={`tooltip-${item.id}`} className={styles.scoreItem}>
+      <div className={classnames(styles.scoreValue, item.score < 5 ? styles.low : styles.high)}>
         {item.score}
       </div>
       <div className={styles.scoreName}>{item.name}</div>
@@ -294,10 +285,7 @@ function SkillsTabbedSection({ skillsData }) {
         <h5 className="mb-3">Skills</h5>
         <Row className={styles.skillsRow}>
           {/* Tabs column */}
-          <Col
-            md={2}
-            className={styles.tabsCol}
-          >
+          <Col md={2} className={styles.tabsCol}>
             <Nav vertical pills>
               {[
                 'Dashboard',
