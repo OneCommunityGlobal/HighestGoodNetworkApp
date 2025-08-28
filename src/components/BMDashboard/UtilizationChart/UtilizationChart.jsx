@@ -20,20 +20,17 @@ function UtilizationChart() {
 
   const fetchChartData = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_APIENDPOINT}/tools/utilization`,
-        {
-          params: {
-            startDate,
-            endDate,
-            tool: toolFilter,
-            project: projectFilter,
-          },
-          headers: {
-            Authorization: localStorage.getItem('token'),
-          },
-        }
-      );
+      const response = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/tools/utilization`, {
+        params: {
+          startDate,
+          endDate,
+          tool: toolFilter,
+          project: projectFilter,
+        },
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      });
       setToolsData(response.data);
     } catch (err) {
       setError('Failed to load utilization data.');
@@ -143,10 +140,7 @@ function UtilizationChart() {
               className={styles.datepickerWrapper}
             />
 
-            <button
-              onClick={handleApplyClick}
-              className={styles.button}
-            >
+            <button onClick={handleApplyClick} className={styles.button}>
               Apply
             </button>
           </div>
