@@ -41,11 +41,13 @@ function InfoForm() {
   }, [newVolunteer.name, newVolunteer.slack]);
 
   useEffect(() => {
-    if (user && userProfile && formData) {
+    if (user && formData) {
       setNewVolunteer(prevState => ({
         ...formData,
         ...prevState, // This preserves any user input
-        name: `${userProfile?.firstName} ${userProfile?.lastName}`,
+        name: userProfile
+          ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim()
+          : prevState.name,
         email: user.email,
         github: prevState.github || formData.github || '', // Preserve GitHub value
         slack: prevState.slack || formData.slack || '', // Preserve
@@ -164,7 +166,6 @@ function InfoForm() {
             pattern=".{2,}"
             title="Name must be at least 2 characters long"
             placeholder="Your First and Last Name"
-            disabled={!!(userProfile !== undefined || userProfile !== null)}
           />
           {showError && (
             <span className={`${styles.errorMessage}`}>
