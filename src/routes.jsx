@@ -131,6 +131,8 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
+// Community Calendar
+import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
@@ -634,6 +636,9 @@ export default (
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
+
+        {/* ----- Community Calendar Routing ----- */}
+        <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/ActivityAttendance"
