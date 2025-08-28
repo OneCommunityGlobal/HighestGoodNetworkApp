@@ -314,7 +314,7 @@ class PeopleReport extends Component {
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
     const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
-      console.log("Time Entries for user:", timeEntries);
+      // console.log("Time Entries for user:", timeEntries);
       return total + (entry.hours + (entry.minutes / 60));
     }, 0) || 0).toFixed(2);
 
