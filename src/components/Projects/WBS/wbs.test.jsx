@@ -64,7 +64,7 @@ describe('WBS Component', () => {
     role: { roles: [] },
     popupEditor: { currPopup: { popupContent: 'wbs content 1' } },
     infoCollections: { loading: false },
-  });
+  };
 });
 
   beforeEach(() => {

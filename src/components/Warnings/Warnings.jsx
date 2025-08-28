@@ -26,8 +26,11 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   const [toggleWarningModal, setToggleWarningModal] = useState(false);
   const [selectedWarning, setSelectedWarning] = useState(null);
   const [error, setError] = useState(null);
-  const isAllowedToTracking = dispatch(hasPermission('viewTrackingOverview'));
+  const rolesAllowedToTracking = ['Administrator', 'Owner'];
+  const isAllowedToTracking =
+    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('viewTrackingOverview'));
   const canViewTrackerButton =
+    rolesAllowedToTracking.includes(userRole) ||
     dispatch(hasPermission('addWarningTracker')) ||
     dispatch(hasPermission('deactivateWarningTracker')) ||
     dispatch(hasPermission('deleteWarningTracker'));
