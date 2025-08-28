@@ -65,7 +65,6 @@ describe('WBS Component', () => {
     popupEditor: { currPopup: { popupContent: 'wbs content 1' } },
     infoCollections: { loading: false },
   };
-});
 
   beforeEach(() => {
     store = mockStore(initialState);
