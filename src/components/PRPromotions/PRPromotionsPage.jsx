@@ -14,8 +14,8 @@ export default function PromotionsPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Promotions Page</h1>
+    <div>
+      <h1>Promotions Page</h1>
       <button type="button" className={styles.button} onClick={handleOpenModal}>
         Promote ?
       </button>
