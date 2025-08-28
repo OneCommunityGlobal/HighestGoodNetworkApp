@@ -56,7 +56,7 @@
     "html-to-pdfmake": "^2.0.6",
     "html2canvas": "^1.4.1",
     "jquery": "^3.7.1",
-    "jspdf": "^3.0.1",
+    "jspdf": "^3.0.2",
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.9.4",
     "leaflet.heat": "^0.2.0",
