@@ -114,7 +114,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
         setSelectedTeamFolder(defaultFolder.key);
       }
     } catch (error) {
-      console.error('Error fetching Dropbox team folders:', error);
+      // console.error('Error fetching Dropbox team folders:', error);
       toast.error('Failed to fetch Dropbox team folders');
       // Set empty array to prevent indefinite loading state
       setTeamFolders([]);
@@ -338,7 +338,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_REMOVE;
-          payload = { username, targetUser: { targetUserId, role } };
+          payload = { targetUser: { targetUserId, role } };
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_DELETE;
@@ -582,7 +582,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       !type ||
       (type !== 'invite-all' && type !== 'revoke-all' && type !== 'revoke' && type !== 'invite')
     ) {
-      console.error('Invalid confirmAction structure:', confirmAction);
+      // console.error('Invalid confirmAction structure:', confirmAction);
       setConfirmAction(null);
       return null;
     }
