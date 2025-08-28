@@ -221,6 +221,27 @@
   color: #b0b8c9 !important;
 }
 
+/* Make .text-info readable in dark mode - but preserve original colors for icons and dynamic content */
+.access-management-modal.dark-mode .text-info,
+.access-management-modal.dark-mode .text-info.small {
+  color: #7dd3fc !important;
+}
+
+/* Make .text-info strong tags readable in dark mode */
+.access-management-modal.dark-mode .text-info strong,
+.access-management-modal.dark-mode .text-info.small strong {
+  color: #ffffff !important;
+}
+
+/* Keep FontAwesome icons in their original color in dark mode */
+.access-management-modal.dark-mode .text-info svg,
+.access-management-modal.dark-mode .text-info .fa,
+.access-management-modal.dark-mode .text-info .fas,
+.access-management-modal.dark-mode .text-info .far,
+.access-management-modal.dark-mode .text-info .fab {
+  color: #0dcaf0 !important;
+}
+
 /* App Card Layout Updates */
 .access-management-modal .app-card-content {
   width: 100%;
