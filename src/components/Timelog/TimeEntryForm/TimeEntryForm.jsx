@@ -79,6 +79,8 @@ function TimeEntryForm(props) {
     userProfile,
     userProjects,
     onTimeSubmitted,
+    sessionId,
+    timerStats,
   } = props;
   // props from store
   const { authUser } = props;
@@ -357,9 +359,15 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
-          // Notify parent component that time was submitted
+          // Enhanced callback with additional data
           if (onTimeSubmitted) {
-            onTimeSubmitted({ hours: formHours, minutes: formMinutes });
+            onTimeSubmitted({
+              hours: formHours,
+              minutes: formMinutes,
+              sessionId,
+              timestamp: new Date().toISOString(),
+              userProfile: userProfile?.firstName + ' ' + userProfile?.lastName,
+            });
           }
           dispatch(
             updateIndividualTaskTime({

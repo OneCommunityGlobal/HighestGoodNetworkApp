@@ -103,6 +103,10 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
   const [lastSubmittedTime, setLastSubmittedTime] = useState(null); // Add this state to track submitted time
+  const [submissionHistory, setSubmissionHistory] = useState([]); // Track submission history for debugging
+  const [timerState, setTimerState] = useState('idle'); // Track timer state: 'idle', 'running', 'paused', 'completed'
+  const [lastActivity, setLastActivity] = useState(null); // Track last user activity
+  const [sessionId, setSessionId] = useState(null); // Unique session identifier
   const [viewingUserId, setViewingUserId] = useState(null);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
@@ -114,11 +118,128 @@ function Timer({ authUser, darkMode, isPopout }) {
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
 
-  // function to clear submitted time when timer is reset
+  // Enhanced function to clear submitted time with better logging
   const clearSubmittedTime = useCallback(() => {
+    console.log(' Clearing submitted time - Timer reset or user change detected');
     setLastSubmittedTime(null);
     setLogTimer({ hours: 0, minutes: 0 });
+    setTimerState('idle');
   }, []);
+
+  // Enhanced function to track time submission with detailed logging
+  const trackTimeSubmission = useCallback(
+    submittedTime => {
+      const timeKey = `${submittedTime.hours}_${submittedTime.minutes}_${goal}_${remaining}`;
+      const submissionRecord = {
+        id: Date.now(),
+        time: submittedTime,
+        timestamp: new Date().toISOString(),
+        sessionId,
+        userId: viewingUserId || authUser?.userid,
+        goal,
+        remaining,
+      };
+
+      console.log('✅ Time submitted successfully:', submissionRecord);
+
+      setLastSubmittedTime(timeKey);
+      setSubmissionHistory(prev => [...prev, submissionRecord]);
+      setLogTimer({ hours: 0, minutes: 0 });
+      setTimerState('completed');
+
+      // Store in localStorage for debugging (optional)
+      try {
+        const existingHistory = JSON.parse(localStorage.getItem('timerSubmissionHistory') || '[]');
+        const updatedHistory = [...existingHistory, submissionRecord].slice(-10); // Keep last 10 entries
+        localStorage.setItem('timerSubmissionHistory', JSON.stringify(updatedHistory));
+      } catch (error) {
+        console.warn('Could not save submission history to localStorage:', error);
+      }
+    },
+    [goal, remaining, sessionId, viewingUserId, authUser?.userid],
+  );
+
+  // Enhanced function to validate time before submission
+  const validateTimeForSubmission = useCallback(
+    timeToSubmit => {
+      const { hours, minutes } = timeToSubmit;
+      const totalMinutes = hours * 60 + minutes;
+
+      // Check minimum time requirement
+      if (totalMinutes < 1) {
+        toast.error('❌ You need at least 1 minute to log time!');
+        return false;
+      }
+
+      // Check maximum time limit (5 hours)
+      if (totalMinutes > 300) {
+        toast.error('❌ Maximum time limit is 5 hours per session!');
+        return false;
+      }
+
+      // Check if this exact time was already submitted
+      const timeKey = `${hours}_${minutes}_${goal}_${remaining}`;
+      if (lastSubmittedTime === timeKey) {
+        toast.info('ℹ️ This time has already been submitted in this session.');
+        return false;
+      }
+
+      return true;
+    },
+    [goal, remaining, lastSubmittedTime],
+  );
+
+  // Enhanced function to get timer statistics
+  const getTimerStats = useCallback(() => {
+    const today = new Date().toDateString();
+    const todaySubmissions = submissionHistory.filter(
+      record => new Date(record.timestamp).toDateString() === today,
+    );
+
+    const totalTimeToday = todaySubmissions.reduce((total, record) => {
+      return total + (record.time.hours * 60 + record.time.minutes);
+    }, 0);
+
+    return {
+      totalSubmissions: submissionHistory.length,
+      todaySubmissions: todaySubmissions.length,
+      totalTimeToday: {
+        hours: Math.floor(totalTimeToday / 60),
+        minutes: totalTimeToday % 60,
+      },
+      lastSubmission: submissionHistory[submissionHistory.length - 1],
+    };
+  }, [submissionHistory]);
+
+  // Enhanced function to handle timer state changes
+  const updateTimerState = useCallback(
+    newState => {
+      console.log(`🔄 Timer state changed: ${timerState} → ${newState}`);
+      setTimerState(newState);
+      setLastActivity(new Date().toISOString());
+    },
+    [timerState],
+  );
+
+  // Initialize session ID on component mount
+  useEffect(() => {
+    const newSessionId = `session_${Date.now()}_${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
+    setSessionId(newSessionId);
+    console.log('🚀 Timer session initialized:', newSessionId);
+  }, []);
+
+  // Enhanced useEffect for timer state management
+  useEffect(() => {
+    if (running && !paused) {
+      updateTimerState('running');
+    } else if (paused && started) {
+      updateTimerState('paused');
+    } else if (!started) {
+      updateTimerState('idle');
+    }
+  }, [running, paused, started, updateTimerState]);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -229,14 +350,18 @@ function Timer({ authUser, darkMode, isPopout }) {
     setLogTimeEntryModal(modal => !modal);
   };
 
-  // Modify the TimeEntryForm to track when time is submitted
+  // Enhanced TimeEntryForm callback
   const handleTimeSubmitted = useCallback(
     submittedTime => {
-      const timeKey = `${submittedTime.hours}_${submittedTime.minutes}_${goal}_${remaining}`;
-      setLastSubmittedTime(timeKey);
-      setLogTimer({ hours: 0, minutes: 0 }); // Clear the log timer after submission
+      trackTimeSubmission(submittedTime);
+
+      // Show success message with statistics
+      const stats = getTimerStats();
+      toast.success(
+        `✅ Time logged successfully!`,
+      );
     },
-    [goal, remaining],
+    [trackTimeSubmission, getTimerStats],
   );
 
   const toggleTimer = () => setShowTimer(timer => !timer);
@@ -306,21 +431,27 @@ function Timer({ authUser, darkMode, isPopout }) {
     [remaining],
   );
 
+  // Enhanced handleStopButton with better validation and user feedback
   const handleStopButton = useCallback(() => {
-    if (goal - remaining < 60000) {
-      toast.error(`You need at least 1 minute to log time!`);
-    } else {
-      // Only show the modal if there's actual time to log and it hasn't been submitted
-      const timeToLog = goal - remaining;
-      const timeKey = `${logHours}_${logMinutes}_${goal}_${remaining}`;
+    const timeToSubmit = { hours: logHours, minutes: logMinutes };
 
-      if (timeToLog >= 60000 && lastSubmittedTime !== timeKey) {
-        toggleLogTimeModal();
-      } else if (lastSubmittedTime === timeKey) {
-        toast.info('This time has already been submitted.');
+    if (!validateTimeForSubmission(timeToSubmit)) {
+      return;
+    }
+
+    // Show confirmation dialog for longer sessions
+    if (logHours >= 2) {
+      const confirmed = window.confirm(
+        `Are you sure you want to submit ${logHours} hours and ${logMinutes} minutes? This action cannot be undone.`,
+      );
+      if (!confirmed) {
+        return;
       }
     }
-  }, [remaining, goal, logHours, logMinutes, lastSubmittedTime]);
+
+    console.log('🛑 Stop button clicked - preparing to log time:', timeToSubmit);
+    toggleLogTimeModal();
+  }, [logHours, logMinutes, validateTimeForSubmission]);
 
   const updateRemaining = () => {
     if (!running) return;
@@ -400,24 +531,27 @@ function Timer({ authUser, darkMode, isPopout }) {
     return () => clearInterval(interval);
   }, [running, message]);
 
-  // Modify the useEffect that updates logTimer to prevent showing already submitted time
+  // Enhanced useEffect that updates logTimer with better validation
   useEffect(() => {
     checkRemainingTime();
 
-    // Only update logTimer if we haven't submitted this time yet
     const currentTimeToLog = { hours: logHours, minutes: logMinutes };
     const timeKey = `${logHours}_${logMinutes}_${goal}_${remaining}`;
 
+    // Only update logTimer if we haven't submitted this time yet and it's valid
     if (lastSubmittedTime !== timeKey && (logHours > 0 || logMinutes > 0)) {
-      setLogTimer(currentTimeToLog);
+      if (validateTimeForSubmission(currentTimeToLog)) {
+        setLogTimer(currentTimeToLog);
+        console.log('⏱️ Time to log updated:', currentTimeToLog);
+      }
     }
-  }, [remaining, logHours, logMinutes, goal, lastSubmittedTime]);
+  }, [remaining, logHours, logMinutes, goal, lastSubmittedTime, validateTimeForSubmission]);
 
-  // Add this useEffect to handle timer state changes and clear submitted time when appropriate
+  // Enhanced useEffect for timer state changes
   useEffect(() => {
-    // Clear submitted time when timer is reset or goal changes
     if (!started || goal !== lastSubmittedTime?.goal) {
       clearSubmittedTime();
+      console.log('🔄 Timer reset detected - clearing submitted time');
     }
   }, [started, goal, clearSubmittedTime]);
 
@@ -449,15 +583,17 @@ function Timer({ authUser, darkMode, isPopout }) {
     sendGetTimer();
   }, [isInitialJsonMessageReceived, viewingUserId]);
 
-  // cleanup when viewing user changes
+  // Enhanced cleanup when viewing user changes
   useEffect(() => {
     clearSubmittedTime();
+    console.log('👤 User changed - clearing timer state');
   }, [viewingUserId, clearSubmittedTime]);
 
-  //  cleanup on component unmount
+  // Enhanced cleanup on component unmount
   useEffect(() => {
     return () => {
       clearSubmittedTime();
+      console.log('🔚 Timer component unmounting - cleanup complete');
     };
   }, [clearSubmittedTime]);
 
@@ -502,6 +638,8 @@ function Timer({ authUser, darkMode, isPopout }) {
             data={logTimer}
             sendStop={sendStop}
             onTimeSubmitted={handleTimeSubmitted} // Add this prop
+            sessionId={sessionId}
+            timerStats={getTimerStats()}
           />
         )}
         <audio
@@ -811,6 +949,8 @@ function Timer({ authUser, darkMode, isPopout }) {
           data={logTimer}
           sendStop={sendStop}
           onTimeSubmitted={handleTimeSubmitted} // Add this prop
+          sessionId={sessionId}
+          timerStats={getTimerStats()}
         />
       )}
       <audio
