@@ -156,6 +156,7 @@ const Members = props => {
               </div>
 
               <input
+                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 type="text"
                 className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}

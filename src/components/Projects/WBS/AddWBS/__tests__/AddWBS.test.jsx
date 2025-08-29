@@ -35,11 +35,11 @@ const renderAddWBS = (addWBSProps) => {
   );
 }
 // Helper function
-const typeIntoInput = ({ input }) => {
+const typeIntoInput = async ({ input }) => {
   const inputField = screen.getByRole('textbox');
 
   if (input) {
-    userEvent.type(inputField, input);
+    await userEvent.type(inputField, input);
   }
 
   return { inputField };
@@ -47,36 +47,57 @@ const typeIntoInput = ({ input }) => {
 
 describe("AddWBS component structure", () => {
 
-  beforeEach(() => {
+  test("it renders correctly based on permissions", () => {
     const sampleProps = {
       role: 'Owner',
     };
     const hasPermission = vi.fn((a) => true)
     sampleProps.hasPermission = hasPermission;
     renderAddWBS(sampleProps);
-  });
-
-  test("it renders correctly based on permissions", () => {
     // Assuming hasPermission is mocked to return true
     expect(screen.getByText("Add new WBS")).toBeInTheDocument();
   });
 
   test("input field should initially be empty", () => {
+    const sampleProps = {
+      role: 'Owner',
+    };
+    const hasPermission = vi.fn((a) => true)
+    sampleProps.hasPermission = hasPermission;
+    renderAddWBS(sampleProps);
     expect(screen.getByRole('textbox').value).toBe('');
   });
 
   test("button should not be in the document when the input field is empty", () => {
+    const sampleProps = {
+      role: 'Owner',
+    };
+    const hasPermission = vi.fn((a) => true)
+    sampleProps.hasPermission = hasPermission;
+    renderAddWBS(sampleProps);
     expect(screen.queryByTestId('add-wbs-button')).toBeNull();
   });
 
-  test("user should be able to type in the input field", () => {
-    const { inputField } = typeIntoInput({ input: 'New WBS Name' });
+  test("user should be able to type in the input field", async () => {
+    const sampleProps = {
+      role: 'Owner',
+    };
+    const hasPermission = vi.fn((a) => true)
+    sampleProps.hasPermission = hasPermission;
+    renderAddWBS(sampleProps);
+    const { inputField } = await typeIntoInput({ input: 'New WBS Name' });
     expect(inputField.value).toBe('New WBS Name');
   });
 
-  test("button should appear when user types in the input field", () => {
-    typeIntoInput({ input: '123' });
-    expect(screen.queryByTestId('add-wbs-button')).not.toBeNull();
+  test("button should appear when user types in the input field", async () => {
+    const sampleProps = {
+      role: 'Owner',
+    };
+    const hasPermission = vi.fn((a) => true)
+    sampleProps.hasPermission = hasPermission;
+    renderAddWBS(sampleProps);
+    await typeIntoInput({ input: '123' });
+    expect(screen.getByTestId('add-wbs-button')).not.toBeNull();
   });
 });
 
@@ -86,8 +107,7 @@ describe('AddWBS component state handlers', () => {
   const mockAddNewWBS = vi.fn();
   const mockProjectId = '123';
 
-
-  beforeEach(() => {
+  test("Input change handler updates state correctly", () => {
     const sampleProps = {
       role: 'Owner',
       addWBS: mockAddNewWBS,
@@ -96,10 +116,7 @@ describe('AddWBS component state handlers', () => {
     const hasPermission = vi.fn((a) => true)
     sampleProps.hasPermission = hasPermission;
     renderAddWBS(sampleProps);
-
-  });
-
-  test("Input change handler updates state correctly", () => {
+    
     const inputField = screen.getByRole('textbox');
 
     fireEvent.change(inputField, { target: { value: 'New WBS' } });
