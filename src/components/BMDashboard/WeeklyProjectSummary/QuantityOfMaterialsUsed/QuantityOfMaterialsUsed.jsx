@@ -1008,11 +1008,11 @@ function QuantityOfMaterialsUsed({ data }) {
 
               return (
                 <>
-                  <p>
-                    <strong>Highest Usage in:</strong> {details.project}
+                  <p className="text-light">
+                    <strong className="text-light">Highest Usage in:</strong> {details.project}
                   </p>
-                  <p>
-                    <strong>Total Quantity:</strong> {details.total}
+                  <p className="text-light">
+                    <strong className="text-light">Total Quantity:</strong> {details.total}
                   </p>
 
                   <h4 className={`${styles.quantityModalSubheading}`}>📅 Usage Timeline</h4>
