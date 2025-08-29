@@ -283,7 +283,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
+        <div className="container py-3 border border-secondary rounded" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex justify-content-center align-items-center">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>

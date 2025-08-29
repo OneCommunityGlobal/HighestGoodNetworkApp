@@ -20,7 +20,7 @@ import '../Header/DarkMode.css';
 /**
  * Modal popup to delete the user profile
  */
-const DeleteUserPopup = React.memo(props => {
+const DeleteUserPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const closePopup = () => {
@@ -88,10 +88,16 @@ const DeleteUserPopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
 
-const DivSpacer = React.memo(() => {
+const DeleteUserPopup = React.memo(DeleteUserPopupComponent);
+DeleteUserPopup.displayName = 'DeleteUserPopup';
+
+const DivSpacerComponent = () => {
   return <div style={{ padding: '5px' }} />;
-});
+};
+
+const DivSpacer = React.memo(DivSpacerComponent);
+DivSpacer.displayName = 'DivSpacer';
 
 export default connect(null, { hasPermission })(DeleteUserPopup);
