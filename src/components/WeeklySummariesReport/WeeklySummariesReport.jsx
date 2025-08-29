@@ -250,13 +250,13 @@ const WeeklySummariesReport = props => {
         canSeeBioHighlight: hasPermission('highlightEligibleBios'),
       }));
 
-      // Fetch data for the active tab only
-      const res = await getWeeklySummariesReport(weekIndex);
-      // console.log('API response:', res);
-      // console.log('Response data:', res?.data);
-      // console.log('Data is array:', Array.isArray(res?.data));
-      // console.log('Data length:', res?.data?.length);
-      const summaries = res?.data ?? [];
+      // Fetch data for the active tab only with cache-busting
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
+      // console.log('API response:', response);
+      const summaries = response?.data ?? [];
 
       if (!Array.isArray(summaries) || summaries.length === 0) {
         setState(prevState => ({
@@ -672,12 +672,12 @@ const WeeklySummariesReport = props => {
     setState(prev => ({ ...prev, refreshing: true }));
 
     try {
-      // Use the force refresh parameter
+      // Use the force refresh parameter and cache-busting timestamp
       const weekIndex = navItems.indexOf(activeTab);
-      const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-      // console.log(`Forcing refresh of report section from: ${url}`);
-
-      const response = await axios.get(url);
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
 
       if (response.status === 200) {
         // Process the data
@@ -1105,10 +1105,23 @@ const WeeklySummariesReport = props => {
     let isMounted = true;
     window._isMounted = isMounted;
 
-    // console.log('Initial useEffect running');
+    createIntialSummaries().then(() => {
+      if (!window._isMounted) return;
+      refreshCurrentTab();
 
-    // Only load the initial tab, nothing else
-    createIntialSummaries();
+      // const nav =
+      //   performance && performance.getEntriesByType
+      //     ? performance.getEntriesByType('navigation')[0]
+      //     : null;
+
+      // // Only refresh if this navigation was a browser reload
+      // if (nav && nav.type === 'reload') {
+      //   refreshCurrentTab();
+      // } else {
+      //   // If you prefer always refreshing after initial load:
+      //   // refreshCurrentTab();
+      // }
+    });
 
     return () => {
       isMounted = false;
