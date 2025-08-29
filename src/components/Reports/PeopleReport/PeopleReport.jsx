@@ -314,6 +314,14 @@ class PeopleReport extends Component {
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
     const totalTangibleHrsRound = (timeEntries.period?.reduce((total, entry) => {
+      // console.log("Time Entries for user:", timeEntries);
+      if ((entry.projectId == null && entry.taskId == null) || !entry.isTangible || !entry.isActive) return total;
+      const isTaskLog = entry.wbsId != null;
+      const belongsNow =
+        (isTaskLog && (userTask || []).some(t => t.wbsId === entry.wbsId)) ||
+        (!isTaskLog && (userProjects?.projects || []).some(p => p.projectId === entry.projectId));
+
+      if (!belongsNow) return total;
       return total + (entry.hours + (entry.minutes / 60));
     }, 0) || 0).toFixed(2);
 
