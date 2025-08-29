@@ -18,6 +18,7 @@ import Announcements from '~/components/Announcements';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
 import Login from './components/Login';
@@ -35,6 +36,16 @@ import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
+import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
+import MemberList from './components/QuestionnaireDashboard/MemberList';
+import EventPopularity from './components/EventPopularity/EventPopularity';
+import ApplicantsAgeChart from './components/ApplicantsChart';
+import ApplicationTimeChartPage from './components/ApplicationTimeChart';
+import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
+import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
+import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
+
+import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage'; // 测试用 后续要删除
 // LB Dashboard
 import LBRegister from './components/LBDashboard/Register/LBRegister';
 import LBLogin from './components/LBDashboard/Login/LBLogin';
@@ -57,6 +68,8 @@ import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
+import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
@@ -65,8 +78,75 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
+import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+
+import HelpPage from './components/LandingPage/HelpPage';
+
+import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
+import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
+import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
+import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
+import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityAgenda';
+import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
+// HGN PR Dashboard
+import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
+import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+
+// FAQ Components
+import FaqSearch from './components/Faq/FaqSearch';
+import FaqManagement from './components/Faq/FaqManagement';
+import FaqHistory from './components/Faq/FaqHistory';
+import UnansweredFaqs from './components/Faq/UnansweredFaqs';
+
+// Job Components
+import JobCCDashboard from './components/JobCCDashboard/JobCCDashboard';
+
+// BM Dashboard Components
+import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+
+// Issue Components
+import Issue from './components/BMDashboard/Issue/Issue';
+import IssueChart from './components/BMDashboard/Issues/issueCharts';
+import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+
+// Time Logging Components
+import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
+import BMTimeLogCard from './components/BMDashboard/BMTimeLogger/BMTimeLogCard';
+import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+
+// Chart Components
+import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
+import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+
+// HGN Form Components
+import Page1 from './components/HGNForm/pages/Page1';
+import Page2 from './components/HGNForm/pages/Page2';
+import Page3 from './components/HGNForm/pages/Page3';
+import Page4 from './components/HGNForm/pages/Page4';
+import Page5 from './components/HGNForm/pages/Page5';
+import Page6 from './components/HGNForm/pages/Page6';
+
+// TSA Form Components
+import TSAFormPage1 from './components/TSAForm/pages/TSAFormPage1';
+import TSAFormPage2 from './components/TSAForm/pages/TSAFormPage2';
+import TSAFormPage3 from './components/TSAForm/pages/TSAFormPage3';
+import TSAFormPage4 from './components/TSAForm/pages/TSAFormPage4';
+import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
+import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
+import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
+import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
+
+// Chart Components
+import ExperienceDonutChart from './components/ExperienceDonutChart/ExperienceDonutChart';
+
+// LB Dashboard Components
+import WishList from './components/LBDashboard/WishList/WishList';
+import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -144,6 +224,30 @@ export default (
         </>
       )}
     />
+
+    <Route
+      exact
+      path="/lbdashboard/wishlists"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishList />
+        </>
+      )}
+    />
+    <Route
+      exact
+      path="/lbdashboard/wishlist/:id"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishListItem />
+        </>
+      )}
+    />
+    <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
@@ -254,6 +358,7 @@ export default (
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
         />
+
         <ProtectedRoute
           path="/usermanagement"
           exact
@@ -294,6 +399,27 @@ export default (
           routePermissions={RoutePermissions.teams}
         />
 
+        <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
+        <ProtectedRoute
+          path="/applicant-volunteer-ratio"
+          exact
+          component={ApplicantVolunteerRatio}
+        />
+
+        <ProtectedRoute
+          path="/application-time-chart"
+          exact
+          component={ApplicationTimeChartPage}
+          fallback
+        />
+
+        <ProtectedRoute
+          path="/application-analytics"
+          exact
+          component={ApplicationAnalyticsContainer}
+          fallback
+        />
+
         <ProtectedRoute
           path="/announcements"
           exact
@@ -308,6 +434,28 @@ export default (
           routePermissions={RoutePermissions.projects}
         />
 
+        <ProtectedRoute path="/faq" exact component={FaqSearch} />
+
+        <ProtectedRoute
+          path="/faq-management"
+          exact
+          component={FaqManagement}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/faqs/:id/history"
+          exact
+          component={FaqHistory}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/unanswered-faqs"
+          exact
+          component={UnansweredFaqs}
+          routePermissions={RoutePermissions.faqManagement}
+        />
         <ProtectedRoute
           path="/totalorgsummary"
           exact
@@ -323,10 +471,20 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
+        <ProtectedRoute
+          path="/job-notification-dashboard"
+          exact
+          component={JobCCDashboard}
+          fallback
+          allowedRoles={[UserRole.Owner]}
+        />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
+        <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
+
+        <Route path="/UtilizationChart" component={UtilizationChart} />
 
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
@@ -398,6 +556,32 @@ export default (
           component={InventoryTypesList}
         />
 
+        <BMProtectedRoute path="/bmdashboard/AddNewTeam" fallback component={CreateNewTeam} />
+        <BMProtectedRoute
+          path="/bmdashboard/totalconstructionsummary"
+          fallback
+          exact
+          component={WeeklyProjectSummary}
+        />
+
+        <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
+        <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+
+        <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
+        <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
+
+        <BMProtectedRoute
+          path="/bmdashboard/timelog/:projectId"
+          fallback
+          component={BMTimeLogCard}
+        />
+
+        <BMProtectedRoute
+          path="/bmdashboard/tools-availability"
+          fallback
+          exact
+          component={ToolsAvailabilityPage}
+        />
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
@@ -407,12 +591,21 @@ export default (
           exact
           component={RegistrationPopup}
         />
+        <CPProtectedRoute
+          path="/communityportal/activities/Feedbackform/:eventId/:email"
+          component={Feedbackform}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/FollowUpEmailTemplate"
+          component={FollowUpEmailTemplate}
+        />
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
 
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
+        <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
@@ -429,6 +622,28 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
+        <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
+        <ProtectedRoute path="/hgnhelp/skills-overview" exact component={SkillsOverviewPage} />
+        <ProtectedRoute path="/hgnhelp/community" exact component={CommunityMembersPage} />
+        <ProtectedRoute path="/hgnhelp/profile/:userId" exact component={UserProfilePage} />
+        <ProtectedRoute path="/hgnhelp/feedback" exact component={FeedbackModal} />
+        <ProtectedRoute path="/hgnform" exact component={Page1} />
+        <ProtectedRoute path="/hgnform/page2" exact component={Page2} />
+        <ProtectedRoute path="/hgnform/page3" exact component={Page3} />
+        <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
+        <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+        <ProtectedRoute path="/hgn/profile/skills/:userId" exact component={UserSkillsProfile} />
+        <ProtectedRoute path="/tsaformpage1" exact component={TSAFormPage1} />
+        <ProtectedRoute path="/tsaformpage2" exact component={TSAFormPage2} />
+        <ProtectedRoute path="/tsaformpage3" exact component={TSAFormPage3} />
+        <ProtectedRoute path="/tsaformpage4" exact component={TSAFormPage4} />
+        <ProtectedRoute path="/tsaformpage5" exact component={TSAFormPage5} />
+        <ProtectedRoute path="/tsaformpage6" exact component={TSAFormPage6} />
+        <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
+        <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
+        <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
