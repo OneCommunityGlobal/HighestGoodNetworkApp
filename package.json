@@ -24,6 +24,7 @@
     "@mui/x-date-pickers": "^8.5.0",
     "@popperjs/core": "^2.11.8",
     "@reduxjs/toolkit": "^2.4.0",
+    "@rollup/rollup-darwin-arm64": "^4.49.0",
     "@sentry/browser": "^9.15.0",
     "@tinymce/miniature": "^6.0.0",
     "@tinymce/tinymce-react": "^6.1.0",
