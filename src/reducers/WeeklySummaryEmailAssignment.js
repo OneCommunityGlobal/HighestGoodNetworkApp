@@ -25,6 +25,14 @@ const WeeklySummaryEmailAssignment = (state = initialState, action = {}) => {
         emailAssignment: state.emailAssignment.filter(ele => ele._id !== action.payload),
         error: null,
       };
+    case types.UPDATE_WEEKLY_SUMMARY_EMAIL_ASSIGNMENT:
+      return {
+        ...state,
+        emailAssignment: state.emailAssignment.map(item =>
+          item._id === action.payload._id ? { ...item, email: action.payload.email } : item,
+        ),
+        error: null,
+      };
     case types.WEEKLY_SUMMARY_EMAIL_ASSIGNMENT_ERROR:
       return {
         ...state,
