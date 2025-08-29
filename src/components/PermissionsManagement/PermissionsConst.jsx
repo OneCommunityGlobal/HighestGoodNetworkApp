@@ -244,6 +244,12 @@ export const permissionLabels = [
         key: 'deleteWarningTracker',
         description: 'Gives user permission to delete a warning tracker from the system.',
       },
+      {
+        label: 'Blue Square Email Management',
+        key: 'resendBlueSquareAndSummaryEmails',
+        description:
+          'Gives the user permission to access Blue Square Email Management and resend infringement emails and weekly summary emails.',
+      },
     ],
   },
   {

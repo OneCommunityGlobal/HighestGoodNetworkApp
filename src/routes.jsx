@@ -209,6 +209,9 @@ const PermissionsManagement = lazy(() =>
   import('./components/PermissionsManagement/PermissionsManagement'),
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
+const BlueSquareEmailManagement = lazy(() =>
+  import('./components/BlueSquareEmailManagement/BlueSquareEmailManagement'),
+);
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 
@@ -427,6 +430,13 @@ export default (
           component={UserRoleTab}
           fallback
           routePermissions={RoutePermissions.permissionsManagement}
+        />
+        <ProtectedRoute
+          path="/bluesquare-email-management"
+          exact
+          component={BlueSquareEmailManagement}
+          fallback
+          routePermissions={['resendBlueSquareAndSummaryEmails']}
         />
         <ProtectedRoute
           path="/teams"

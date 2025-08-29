@@ -90,3 +90,4 @@ export const REGISTRATION = "Registration";
 
 
 export const SEND_EMAILS = 'Send Emails';
+export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';
