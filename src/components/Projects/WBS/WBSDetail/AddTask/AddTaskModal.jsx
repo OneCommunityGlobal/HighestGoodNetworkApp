@@ -104,11 +104,11 @@ function AddTaskModal(props) {
   // states from hooks
 
   const defaultCategory = useMemo(() => {
-    if (props.taskId && Array.isArray(tasks)) {
+    if (props.taskId) {
       const task = tasks.find(({ _id }) => _id === props.taskId);
       return task?.category || 'Unspecified';
     }
-    if (props.projectId && Array.isArray(allProjects?.projects)) {
+    if (props.projectId) {
       const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
       return project?.category || 'Unspecified';
     }
@@ -895,12 +895,12 @@ function AddTaskModal(props) {
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks.taskItems,
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
+  tasks: state.tasks.taskItems,
 });
 
 const mapDispatchToProps = {

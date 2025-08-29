@@ -10,8 +10,8 @@ function InfoForm() {
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
   const isOwner = user.role === 'Owner';
-  const { userProfilesBasicInfo } = useSelector(state => state.allUserProfilesBasicInfo);
-  const userProfile = userProfilesBasicInfo.find(profile => profile._id === user.userid);
+  const userProfile = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
+
   const [newVolunteer, setNewVolunteer] = useState({
     ...formData,
     github: formData?.github || '',
@@ -136,6 +136,7 @@ function InfoForm() {
 
       // PAGE 5: Follow-up form fields
       followup_platform: '',
+      followup_mern_work_experience: '',
       followup_other_skills: '',
       followup_suggestion: '',
       followup_additional_info: '',

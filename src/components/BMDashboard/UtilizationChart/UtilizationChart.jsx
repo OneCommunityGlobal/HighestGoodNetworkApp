@@ -1,13 +1,12 @@
 /* eslint-disable */
 /* prettier-ignore */
-
 import { useState, useEffect } from 'react';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
-import './UtilizationChart.css';
+import styles from './UtilizationChart.module.css';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
@@ -101,32 +100,53 @@ function UtilizationChart() {
   };
 
   return (
-    <div className="utilization-chart-container">
-      <h2>Utilization Rate and Downtime of Tools/Equipment</h2>
-
-      <div className="filters">
-        <select value={toolFilter} onChange={e => setToolFilter(e.target.value)}>
-          <option value="ALL">All Tools</option>
-          {/* have to add actual tools dynamic */}
-        </select>
-
-        <select value={projectFilter} onChange={e => setProjectFilter(e.target.value)}>
-          <option value="ALL">All Projects</option>
-          {/* need to add actual projects dynamically */}
-        </select>
-
-        <DatePicker selected={startDate} onChange={setStartDate} placeholderText="From Date" />
-        <DatePicker selected={endDate} onChange={setEndDate} placeholderText="To Date" />
-
-        <button type="button" onClick={handleApplyClick}>
-          Apply
-        </button>
-      </div>
+    <div className={styles.utilizationChartContainer}>
+      <h2 className={styles.chartTitle}>Utilization Chart</h2>
 
       {error ? (
-        <p className="utilization-chart-error">{error}</p>
+        <div className={styles.utilizationChartError}>{error}</div>
       ) : (
-        <Bar data={chartData} options={options} />
+        <>
+          <div className={styles.filters}>
+            <select
+              value={toolFilter}
+              onChange={e => setToolFilter(e.target.value)}
+              className={styles.select}
+            >
+              <option value="ALL">All Tools</option>
+              {/* other options */}
+            </select>
+
+            <select
+              value={projectFilter}
+              onChange={e => setProjectFilter(e.target.value)}
+              className={styles.select}
+            >
+              <option value="ALL">All Projects</option>
+              {/* other options */}
+            </select>
+
+            <DatePicker
+              selected={startDate}
+              onChange={date => setStartDate(date)}
+              placeholderText="Start Date"
+              className={styles.datepickerWrapper}
+            />
+
+            <DatePicker
+              selected={endDate}
+              onChange={date => setEndDate(date)}
+              placeholderText="End Date"
+              className={styles.datepickerWrapper}
+            />
+
+            <button onClick={handleApplyClick} className={styles.button}>
+              Apply
+            </button>
+          </div>
+
+          <Bar data={chartData} options={options} />
+        </>
       )}
     </div>
   );
