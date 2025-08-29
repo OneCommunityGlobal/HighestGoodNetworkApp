@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
+import DOMPurify from 'dompurify';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import './WeeklySummary.css';
@@ -27,6 +28,12 @@ function CurrentPromptModal(props) {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Sanitize text content to prevent XSS attacks
+  const sanitizeText = text => {
+    if (!text || typeof text !== 'string') return '';
+    return DOMPurify.sanitize(text, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  };
+
   const { userRole, userId, darkMode } = props;
   const toggle = () => setModal(!modal);
 
@@ -42,7 +49,7 @@ function CurrentPromptModal(props) {
       dispatch(getDashboardDataAI())
         .then(response => {
           if (response) {
-            setPrompt(response.aIPromptText);
+            setPrompt(sanitizeText(response.aIPromptText));
           } else {
             setPrompt(fallbackPrompt); // Fallback to hardcoded prompt if fetched prompt is empty
           }
@@ -110,7 +117,7 @@ function CurrentPromptModal(props) {
   };
 
   const handleEditPrompt = event => {
-    setPrompt(event.target.value);
+    setPrompt(sanitizeText(event.target.value));
   };
 
   const renderModalContent = () => {
@@ -120,7 +127,7 @@ function CurrentPromptModal(props) {
     if (isEditing) {
       return <Input type="textarea" value={prompt} onChange={handleEditPrompt} />;
     }
-    return <div>{prompt}</div>;
+    return <div>{sanitizeText(prompt)}</div>;
   };
 
   return (
