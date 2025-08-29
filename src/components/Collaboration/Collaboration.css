@@ -79,6 +79,20 @@
   min-width: 240px;
 }
 
+@media (max-width: 380px) {
+  .job-landing .search-form input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;        
+    margin: 0;           
+    box-sizing: border-box;
+    flex: 1 1 auto;      
+  }
+
+  .job-landing .navbar-left input { margin-right: 0; }
+}
+
+
 .job-landing .search-form .search-button,
 .job-landing .search-form .reset-button,
 .job-landing .search-form .show-summaries {
@@ -123,14 +137,56 @@
   background: #fff;
 }
 
+/* ===== Jobs grid – single source of truth ===== */
 .job-landing .job-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: 1fr;      /* default: 1 column */
   gap: 20px;
   width: 100%;
   margin-top: 20px;
   justify-content: center;
   align-items: stretch;
+}
+
+/* 2 columns from 480px up */
+@media (min-width: 480px) {
+  .job-landing .job-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 3 columns from 768px up */
+@media (min-width: 768px) {
+  .job-landing .job-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* 4 columns from 1017px up */
+@media (min-width: 1017px) {
+  .job-landing .job-list {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* 5 columns from 1300px up */
+@media (min-width: 1300px) {
+  .job-landing .job-list {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* 6 columns from 1600px up */
+@media (min-width: 1600px) {
+  .job-landing .job-list {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* When there are no results, center the banner and keep a single column */
+.job-landing .job-list:has(.no-jobads) {
+  grid-template-columns: 1fr;
+  place-items: center;
 }
 
 .job-landing .job-ad {
@@ -273,7 +329,7 @@
   margin: 0 auto;
 }
 
-@media (max-width:1024px) {
+/* @media (max-width:1024px) {
   .job-landing .job-list {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -283,7 +339,7 @@
   .job-landing .job-list {
     grid-template-columns: repeat(2, 1fr);
   }
-}
+} */
 
 @media (max-width:800px) {
   .job-landing .navbar {
@@ -326,6 +382,17 @@
   }
 }
 
+@media (max-width: 350px) {
+  .job-landing .navbar-right select {
+    width: 100%;         
+    max-width: 100%;     
+    min-width: 0;        
+    box-sizing: border-box;
+    margin: 0;           
+    font-size: 0.9rem;   
+  }
+}
+
 @media (max-width:640px) {
 
   .job-landing .summaries-item h3,
@@ -341,10 +408,6 @@
 }
 
 @media (max-width:480px) {
-  .job-landing .job-list {
-    grid-template-columns: 1fr;
-  }
-
   .job-landing .navbar {
     padding: 5px;
     text-align: center;
@@ -361,7 +424,7 @@
   color: #f1f1f1;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   border-radius: 6px;
-  padding: 20px;
+  padding: 0; /* match light-mode so widths are identical */
 }
 
 .job-landing.dark-mode .navbar,
@@ -453,10 +516,16 @@
   font-weight: bold;
 }
 .job-landing .no-jobads {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  font-size: 1.2em;
-  margin-top: 20px;
-  padding: 20px;
+
+  font-size: 1.1em;
+  margin: 20px auto;          
+  max-width: 400px;           
+  padding: 16px 20px;
+
   border: 1px solid #ddd;
   border-radius: 8px;
   background-color: #f9f9f9;
@@ -467,6 +536,7 @@
   border: 1px solid #555;
   color: #fff;
 }
+
 
 .job-landing.dark-mode {
   background-color: #1c2541;
@@ -498,3 +568,57 @@
 .job-landing.dark-mode .summaries-item h3 a:hover {
   color: #c3d9ff;
 }
+
+.job-landing .headings h1,
+.job-landing .headings p {
+  color: #111827; 
+}
+
+.job-landing.dark-mode .headings h1 {
+  color: #ffffff;
+}
+
+.job-landing.dark-mode .headings p {
+  color: #e5e7eb; 
+}
+
+@media (max-width: 300px) {
+  .job-landing .navbar-right {
+    width: 100%;
+  }
+
+  .job-landing .navbar-right select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;          
+    box-sizing: border-box;
+    margin: 0;             
+    height: 36px;          
+    padding: 8px 10px;     
+    font-size: 0.85rem;    
+  }
+
+  .job-landing .navbar {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .job-landing .pagination {
+    display: flex;
+    flex-wrap: wrap;        
+    justify-content: center;
+    gap: 8px 10px;          
+    padding: 6px 4px;
+    margin-bottom: 56px;    
+  }
+
+  .job-landing .pagination button {
+    min-width: 40px; 
+    padding: 6px 10px;  
+    font-size: 14px;
+    border-radius: 10px;
+  }
+}
+
+

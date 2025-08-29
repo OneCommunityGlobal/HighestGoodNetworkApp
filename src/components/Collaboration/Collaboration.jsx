@@ -168,7 +168,7 @@ class Collaboration extends Component {
         ? 6
         : width >= 1300
         ? 5
-        : width >= 1024
+        : width >= 1017
         ? 4
         : width >= 768
         ? 3
