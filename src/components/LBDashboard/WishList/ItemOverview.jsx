@@ -29,7 +29,7 @@ const item = {
 function WishListItem(props) {
   const [isWishlist, setIsWishlist] = useState(true);
   const [currWishlistItem, setCurrWishlistItem] = useState(item);
-
+  const [message, setMessage] = useState('');
   const { wishlistItem } = props;
 
   // We don't need the back to top button on this page
@@ -46,6 +46,19 @@ function WishListItem(props) {
       setCurrWishlistItem(wishlistItem);
     }
   }, [wishlistItem]);
+
+  const handleWishlistToggle = () => {
+    setIsWishlist(!isWishlist);
+    if (!isWishlist) {
+      setMessage('Item saved to wishlist');
+    } else {
+      setMessage('Item removed from wishlist');
+    }
+
+    setTimeout(() => {
+      setMessage('');
+    }, 3000);
+  };
 
   return (
     <div className="item">
@@ -124,15 +137,21 @@ function WishListItem(props) {
             </div>
             <div className="footer__icons">
               <div className="save__list">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsWishlist(!isWishlist);
-                  }}
-                >
+                <button type="button" onClick={handleWishlistToggle}>
                   {isWishlist ? <IoMdHeart className="saved__item" /> : <IoMdHeartEmpty />}
                   Save
                 </button>
+                {message && (
+                  <p
+                    style={{
+                      fontSize: '12px',
+                      marginTop: '5px',
+                      color: isWishlist ? 'green' : 'red',
+                    }}
+                  >
+                    {message}
+                  </p>
+                )}
               </div>
               <div className="start__chat">
                 <button type="button">

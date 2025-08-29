@@ -1,3 +1,5 @@
+import { id } from "date-fns/locale";
+
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
 
@@ -341,6 +343,9 @@ export const ENDPOINTS = {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+  LB_GET_USER_WISHLIST: id => `${APIEndpoint}/lb/wishlist/user/${id}`,
+  LB_ADD_TO_USER_WISHLIST: id => `${APIEndpoint}/lb/wishlist/add/${id}`,
+  LB_REMOVE_FROM_USER_WISHLIST: id => `${APIEndpoint}/lb/wishlist/remove/${id}`,
 
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
