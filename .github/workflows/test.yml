@@ -19,6 +19,8 @@ jobs:
           cache: npm
 
       - name: Install dependencies
+      - name: Ensure Rollup Linux binary (CI workaround)
+        run: npm i --no-save @rollup/rollup-linux-x64-gnu
         run: npm ci
 
       - name: Run tests

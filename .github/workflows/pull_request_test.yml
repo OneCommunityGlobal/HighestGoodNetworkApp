@@ -16,6 +16,8 @@ jobs:
         node-version: 20
         cache: 'npm'
     - name: Install Dependencies
+      - name: Ensure Rollup Linux binary (CI workaround)
+        run: npm i --no-save @rollup/rollup-linux-x64-gnu
       run: npm ci
     - name: Run Unit Tests for Changed Files Only
       run: npm run test:changed
