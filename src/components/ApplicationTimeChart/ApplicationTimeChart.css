@@ -1,0 +1,85 @@
+/* ApplicationTimeChart.css */
+.chart-page {
+  /* layout container (page-wide) */
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+
+  /* responsive tokens */
+  --yAxisWidth: 140px;
+  --rightPad: 60px;
+  --xAxisFontSize: 12px;
+  --yAxisFontSize: 12px;
+  --minChartHeight: 400px;
+  --barLabelFont: 14px;
+}
+
+.chart-main {
+  flex: 1;
+}
+
+.chart-stage {
+  position: relative;
+  padding-left: var(--yAxisWidth);
+  padding-right: var(--rightPad);
+  padding-top: 20px;
+  padding-bottom: 40px;
+  min-height: var(--minChartHeight);
+}
+
+.chart-sidepanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 150px;
+}
+
+/* Breakpoint: large tablets/laptops */
+@media (max-width: 1024px) {
+  .chart-page {
+    --yAxisWidth: 110px;
+    --rightPad: 48px;
+    --xAxisFontSize: 12px;
+    --yAxisFontSize: 12px;
+    --minChartHeight: 360px;
+  }
+}
+
+/* Breakpoint: tablets */
+@media (max-width: 768px) {
+  .chart-page {
+    flex-direction: column; /* stack filters above chart */
+    gap: 16px;
+    --yAxisWidth: 90px;
+    --rightPad: 32px;
+    --xAxisFontSize: 11px;
+    --yAxisFontSize: 11px;
+    --minChartHeight: 320px;
+    --barLabelFont: 13px;
+  }
+  .chart-sidepanel {
+    flex-direction: row;
+    min-width: 0;
+    gap: 12px;
+  }
+  .chart-sidepanel > div {
+    flex: 1;
+  }
+}
+
+/* Breakpoint: phones */
+@media (max-width: 480px) {
+  .chart-page {
+    padding: 12px;
+    --yAxisWidth: 70px;
+    --rightPad: 16px;
+    --xAxisFontSize: 11px;
+    --yAxisFontSize: 10px;
+    --minChartHeight: 280px;
+    --barLabelFont: 12px;
+  }
+}

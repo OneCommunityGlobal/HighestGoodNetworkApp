@@ -2,15 +2,14 @@ import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import getApplicationData from './api';
+import './ApplicationTimeChart.css';
 
 function ApplicationTimeChart() {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedRole, setSelectedRole] = useState('all');
 
-  // Dark mode from Redux (JSX-safe)
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Color palette flips with dark mode
   const palette = useMemo(() => {
     if (darkMode) {
       return {
@@ -44,63 +43,42 @@ function ApplicationTimeChart() {
     };
   }, [darkMode]);
 
-  // Raw data
   const rawData = getApplicationData();
 
-  // Processed data
   const processedData = useMemo(() => {
     let filtered = [...rawData];
-
-    // Remove outliers (> 30 minutes)
     filtered = filtered.filter(item => item.timeToApply <= 30);
 
-    // Date filter
     if (dateFilter !== 'all') {
       const now = new Date();
       filtered = filtered.filter(item => {
         const itemDate = new Date(item.timestamp);
         const daysAgo = Math.floor((now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24));
-        switch (dateFilter) {
-          case 'weekly':
-            return daysAgo <= 7;
-          case 'monthly':
-            return daysAgo <= 30;
-          case 'yearly':
-            return daysAgo <= 365;
-          default:
-            return true;
-        }
+        if (dateFilter === 'weekly') return daysAgo <= 7;
+        if (dateFilter === 'monthly') return daysAgo <= 30;
+        if (dateFilter === 'yearly') return daysAgo <= 365;
+        return true;
       });
     }
 
-    // Role filter
     if (selectedRole !== 'all') {
       filtered = filtered.filter(item => item.role === selectedRole);
     }
 
-    // Group by role
     const roleGroups = {};
     filtered.forEach(item => {
       if (!roleGroups[item.role]) roleGroups[item.role] = [];
       roleGroups[item.role].push(item.timeToApply);
     });
 
-    // Averages
-    const chartData = Object.entries(roleGroups)
+    return Object.entries(roleGroups)
       .map(([role, times]) => {
         const avg = times.reduce((a, b) => a + b, 0) / times.length;
-        return {
-          role,
-          avgTime: Math.round(avg * 10) / 10,
-          count: times.length,
-        };
+        return { role, avgTime: Math.round(avg * 10) / 10, count: times.length };
       })
       .sort((a, b) => b.avgTime - a.avgTime);
-
-    return chartData;
   }, [rawData, dateFilter, selectedRole]);
 
-  // Roles for dropdown
   const roles = useMemo(() => {
     const uniqueRoles = [...new Set(rawData.map(item => item.role))];
     return ['all', ...uniqueRoles];
@@ -108,24 +86,18 @@ function ApplicationTimeChart() {
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
 
+  // helper to decide if the label should be inside the bar (on small screens or wide bars)
+  const getLabelPlacement = pct => {
+    // If the bar is wide (>= 22% of width), put label inside; else outside
+    return pct >= 22 ? 'inside' : 'outside';
+  };
+
   return (
-    <div
-      className={`${palette.pageBgClass}`}
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '20px',
-        width: '100%',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '20px',
-      }}
-    >
+    <div className={`chart-page ${palette.pageBgClass}`}>
       {/* Chart Container */}
       <div
-        className={darkMode ? 'boxStyleDark' : ''}
+        className={`chart-main ${darkMode ? 'boxStyleDark' : ''}`}
         style={{
-          flex: 1,
           border: `2px solid ${darkMode ? '#2a3a5a' : '#4285f4'}`,
           borderRadius: '8px',
           backgroundColor: palette.cardBg,
@@ -146,24 +118,15 @@ function ApplicationTimeChart() {
         </h2>
 
         {/* Chart */}
-        <div
-          style={{
-            minHeight: '400px',
-            position: 'relative',
-            paddingLeft: '140px',
-            paddingRight: '60px',
-            paddingTop: '20px',
-            paddingBottom: '40px',
-          }}
-        >
+        <div className="chart-stage">
           {processedData.length > 0 ? (
             <>
               {/* Grid Lines */}
               <div
                 style={{
                   position: 'absolute',
-                  left: '140px',
-                  right: '60px',
+                  left: 'var(--yAxisWidth)',
+                  right: 'var(--rightPad)',
                   top: '20px',
                   bottom: '40px',
                   backgroundImage: `
@@ -179,10 +142,10 @@ function ApplicationTimeChart() {
               <div
                 style={{
                   position: 'absolute',
-                  left: '0',
+                  left: 0,
                   top: '20px',
                   bottom: '40px',
-                  width: '130px',
+                  width: 'var(--yAxisWidth)',
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'space-between',
@@ -197,10 +160,14 @@ function ApplicationTimeChart() {
                       alignItems: 'center',
                       justifyContent: 'flex-end',
                       paddingRight: '10px',
-                      fontSize: '12px',
+                      fontSize: 'var(--yAxisFontSize)',
                       color: palette.textMuted,
                       borderRight: `1px solid ${palette.axis}`,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
                     }}
+                    title={item.role}
                   >
                     {item.role}
                   </div>
@@ -211,14 +178,15 @@ function ApplicationTimeChart() {
               <div
                 style={{
                   position: 'absolute',
-                  left: '140px',
-                  right: '60px',
-                  bottom: '0',
+                  left: 'var(--yAxisWidth)',
+                  right: 'var(--rightPad)',
+                  bottom: 0,
                   height: '40px',
                   borderTop: `1px solid ${palette.axis}`,
                   display: 'flex',
                   alignItems: 'flex-start',
                   paddingTop: '5px',
+                  fontSize: 'var(--xAxisFontSize)',
                 }}
               >
                 {[0, 5, 10, 15, 20, 25, 30].map(tick => (
@@ -227,7 +195,6 @@ function ApplicationTimeChart() {
                     style={{
                       position: 'absolute',
                       left: `${(tick / maxTime) * 100}%`,
-                      fontSize: '12px',
                       color: palette.textMuted,
                       transform: 'translateX(-50%)',
                     }}
@@ -241,8 +208,8 @@ function ApplicationTimeChart() {
               <div
                 style={{
                   position: 'absolute',
-                  left: '140px',
-                  right: '60px',
+                  left: 'var(--yAxisWidth)',
+                  right: 'var(--rightPad)',
                   top: '20px',
                   bottom: '40px',
                   display: 'flex',
@@ -250,48 +217,64 @@ function ApplicationTimeChart() {
                   justifyContent: 'space-between',
                 }}
               >
-                {processedData.map(item => (
-                  <div
-                    key={uuidv4()}
-                    style={{
-                      height: `${100 / processedData.length}%`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      paddingTop: '10px',
-                      paddingBottom: '10px',
-                    }}
-                  >
+                {processedData.map(item => {
+                  const pct = (item.avgTime / maxTime) * 100;
+                  const labelPlacement = getLabelPlacement(pct);
+                  const labelInside = labelPlacement === 'inside';
+                  return (
                     <div
+                      key={uuidv4()}
                       style={{
-                        width: `${(item.avgTime / maxTime) * 100}%`,
-                        height: '60%',
-                        backgroundColor: palette.barFill,
-                        border: `1px solid ${palette.barStroke}`,
-                        borderRadius: '0 4px 4px 0',
-                        position: 'relative',
-                        minWidth: '2px',
-                        boxShadow: darkMode ? '0 0 8px rgba(95,168,98,0.25)' : 'none',
+                        height: `${100 / processedData.length}%`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        paddingTop: '10px',
+                        paddingBottom: '10px',
                       }}
                     >
-                      {/* Data Label */}
                       <div
                         style={{
-                          position: 'absolute',
-                          right: '-35px',
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          fontSize: '14px',
-                          fontWeight: 600,
-                          color: palette.barLabel,
-                          whiteSpace: 'nowrap',
-                          filter: darkMode ? 'drop-shadow(0 1px 0 rgba(0,0,0,0.5))' : 'none',
+                          width: `${pct}%`,
+                          height: '60%',
+                          backgroundColor: palette.barFill,
+                          border: `1px solid ${palette.barStroke}`,
+                          borderRadius: '0 4px 4px 0',
+                          position: 'relative',
+                          minWidth: '2px',
+                          boxShadow: darkMode ? '0 0 8px rgba(95,168,98,0.25)' : 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: labelInside ? 'flex-end' : 'flex-start',
+                          paddingRight: labelInside ? 8 : 0,
                         }}
                       >
-                        {item.avgTime} min
+                        {/* Data Label */}
+                        <div
+                          style={{
+                            position: labelInside ? 'static' : 'absolute',
+                            right: labelInside ? 'auto' : '-35px',
+                            top: labelInside ? 'auto' : '50%',
+                            transform: labelInside ? 'none' : 'translateY(-50%)',
+                            fontSize: 'var(--barLabelFont)',
+                            fontWeight: 600,
+                            color: labelInside
+                              ? darkMode
+                                ? '#0b1324'
+                                : '#1a2a1a'
+                              : palette.barLabel,
+                            whiteSpace: 'nowrap',
+                            filter:
+                              darkMode && !labelInside
+                                ? 'drop-shadow(0 1px 0 rgba(0,0,0,0.5))'
+                                : 'none',
+                          }}
+                        >
+                          {item.avgTime} min
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* X-axis Label */}
@@ -301,8 +284,10 @@ function ApplicationTimeChart() {
                   bottom: '-25px',
                   left: '50%',
                   transform: 'translateX(-50%)',
-                  fontSize: '12px',
+                  fontSize: 12,
                   color: palette.textMuted,
+                  textAlign: 'center',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 Average Time taken to fill application (in minutes)
@@ -315,9 +300,11 @@ function ApplicationTimeChart() {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                height: '400px',
+                height: 'var(--minChartHeight)',
                 color: palette.textMuted,
                 fontSize: '16px',
+                textAlign: 'center',
+                padding: '0 12px',
               }}
             >
               No data available for the selected filters
@@ -334,7 +321,6 @@ function ApplicationTimeChart() {
               backgroundColor: palette.summaryBg,
               borderRadius: '4px',
               fontSize: '14px',
-              color: palette.textMuted,
               border: `1px solid ${palette.border}`,
             }}
           >
@@ -362,14 +348,7 @@ function ApplicationTimeChart() {
       </div>
 
       {/* Filters Panel */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          minWidth: '150px',
-        }}
-      >
+      <div className="chart-sidepanel">
         {/* Dates Filter */}
         <div
           style={{
@@ -377,6 +356,7 @@ function ApplicationTimeChart() {
             borderRadius: '4px',
             padding: '12px',
             backgroundColor: palette.panelBg,
+            minWidth: 0,
           }}
         >
           <div
@@ -418,6 +398,7 @@ function ApplicationTimeChart() {
             borderRadius: '4px',
             padding: '12px',
             backgroundColor: palette.panelBg,
+            minWidth: 0,
           }}
         >
           <div
