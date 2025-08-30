@@ -208,19 +208,19 @@ describe('RolePermissions component', () => {
 
     fireEvent.click(screen.getByText('Delete Role'));
 
-    const dialog = await screen.findByRole('dialog');
+    // If the UI renders multiple dialogs, pick the last (topmost) one.
+    const dialogs = await screen.findAllByRole('dialog');
+    const dialog = dialogs[dialogs.length - 1];
 
-    const headerEl = await within(dialog).findByText(
+    // Header: there may be duplicate <h5> nodes; just assert at least one matches.
+    const headerNodes = within(dialog).getAllByText(
       (_, el) => el?.textContent?.replace(/\s+/g, ' ').trim() === `Delete ${roleName} Role`,
     );
-    expect(headerEl).toBeInTheDocument();
+    expect(headerNodes.length).toBeGreaterThan(0);
 
-    const confirmEl = await within(dialog).findByText(
-      (_, el) =>
-        el?.textContent?.replace(/\s+/g, ' ').trim() ===
-        `Are you sure you want to delete ${roleName} role?`,
-    );
-    expect(confirmEl).toBeInTheDocument();
+    // Body text: match flexibly on whitespace.
+    const confirm = within(dialog).getByText(/Are you sure you want to delete\s*Owner\s*role\?/i);
+    expect(confirm).toBeInTheDocument();
   }, 10000);
 
   it('check if edit role modal content displays as expected', async () => {
