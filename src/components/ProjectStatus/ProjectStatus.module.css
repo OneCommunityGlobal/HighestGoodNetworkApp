@@ -1,0 +1,106 @@
+.wrapper {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-start;
+  padding: 1.5rem 2rem; /* <-- adds spacing from page edges */
+}
+
+.leftSection {
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 1rem;
+}
+
+.controls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btnPrimary {
+  background: #3b82f6;
+  color: white;
+}
+
+.chartWrapper {
+  width: 400px;
+  height: 400px;
+  margin: 0 auto;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 12px;
+  gap: 1rem;
+}
+
+.legendItem {
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.total {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 600;
+  color: #444;
+}
+
+/* Panel styling */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  font-size: 14px;
+  min-width: 220px;
+  padding: 1.2rem;
+  background: #f9fafb;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+.statLabel {
+  color: #666;
+  margin-right: 10px; /* <-- ensures gap between label & value */
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: bold;
+  color: #111;
+}
