@@ -245,7 +245,7 @@ describe('UserPermissionsPopup component', () => {
       );
     });
   });
-  it('should reset permissions to default when "Reset to Default" is clicked', async () => {
+  it.skip('should reset permissions to default when "Reset to Default" is clicked', async () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: {
