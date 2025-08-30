@@ -1,216 +1,200 @@
-import { useState, useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import getJobAnalyticsData from './api';
 import './jobAnalytics.css';
 
 function JobAnalytics() {
-  const [dateFilter, setDateFilter] = useState('all');
-  const [selectedRole, setSelectedRole] = useState('all');
-  const [hoveredBar, setHoveredBar] = useState(null);
+  const { darkMode } = useSelector(state => state.theme);
 
-  // Get raw data
+  // Date range (new)
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  // Role filter
+  const [selectedRole, setSelectedRole] = useState('all');
+
+  // Data source: [{ role: string, timestamp: ISO string }, ...]
   const rawData = getJobAnalyticsData();
 
-  // Process data with filters
-  const processedData = useMemo(() => {
-    let filtered = [...rawData];
-
-    // Apply date filter
-    if (dateFilter !== 'all') {
-      const now = new Date();
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.timestamp);
-        const daysAgo = Math.floor((now - itemDate) / (1000 * 60 * 60 * 24));
-
-        switch (dateFilter) {
-          case 'weekly':
-            if (daysAgo <= 7) {
-              return true;
-            }
-            return false;
-          case 'monthly':
-            return daysAgo <= 30;
-          case 'yearly':
-            return daysAgo <= 365;
-          default:
-            return true;
-        }
-      });
-      // console.log(`After date filter (${dateFilter}): ${beforeDateFilter} -> ${filtered.length}`);
-    }
-
-    // Apply role filter
-    if (selectedRole !== 'all') {
-      filtered = filtered.filter(item => item.role === selectedRole);
-      // console.log(`After role filter (${selectedRole}): ${beforeRoleFilter} -> ${filtered.length}`);
-    }
-
-    // Group by role and count applications
-    const roleGroups = {};
-    filtered.forEach(item => {
-      if (!roleGroups[item.role]) {
-        roleGroups[item.role] = 0;
-      }
-      roleGroups[item.role] += 1;
-    });
-
-    // console.log('Role groups:', roleGroups);
-
-    // Create chart data and sort least to most competitive (ascending)
-    const chartData = Object.entries(roleGroups)
-      .map(([role, applicationCount]) => ({
-        role,
-        applications: applicationCount,
-        hits: Math.floor(applicationCount * (Math.random() * 10 + 5)), // Simulated hits data
-      }))
-      .sort((a, b) => a.applications - b.applications); // Sort ascending (least to most)
-
-    // console.log('Final chart data:', chartData);
-    // console.log('=== END DEBUG ===');
-    return chartData;
-  }, [rawData, dateFilter, selectedRole]);
-
-  // Get unique roles for dropdown
+  // Roles list for the dropdown (includes "all")
   const roles = useMemo(() => {
-    const uniqueRoles = [...new Set(rawData.map(item => item.role))];
-    return ['all', ...uniqueRoles];
+    const r = Array.from(new Set(rawData.map(r => r.role))).sort();
+    return ['all', ...r];
   }, [rawData]);
 
-  const maxApplications = Math.max(...processedData.map(item => item.applications), 10);
+  const invalidRange = useMemo(() => {
+    if (startDate && endDate) return new Date(startDate) > new Date(endDate);
+    return false;
+  }, [startDate, endDate]);
+
+  const { chartData, maxApplications } = useMemo(() => {
+    let filtered = [...rawData];
+
+    // Date range filter (range-first)
+    if (startDate || endDate) {
+      const start = startDate ? new Date(`${startDate}T00:00:00`) : new Date('1970-01-01T00:00:00');
+      const end = endDate ? new Date(`${endDate}T23:59:59`) : new Date();
+      filtered = filtered.filter(row => {
+        const d = new Date(row.timestamp);
+        return d >= start && d <= end;
+      });
+    }
+
+    // Role filter
+    if (selectedRole !== 'all') {
+      filtered = filtered.filter(row => row.role === selectedRole);
+    }
+
+    // Group counts per role
+    const counts = new Map();
+    for (const row of filtered) {
+      counts.set(row.role, (counts.get(row.role) || 0) + 1);
+    }
+
+    // Build rows and sort least -> most popular
+    const rows = Array.from(counts.entries())
+      .map(([role, applications]) => ({ role, applications }))
+      .sort((a, b) => a.applications - b.applications);
+
+    const max = rows.length ? Math.max(...rows.map(r => r.applications)) : 0;
+    return { chartData: rows, maxApplications: max };
+  }, [rawData, startDate, endDate, selectedRole]);
+
+  const showingCount = chartData.length;
+  const least = showingCount ? chartData[0] : null;
+  const most = showingCount ? chartData[chartData.length - 1] : null;
+
+  const ticks = useMemo(() => {
+    const m = maxApplications || 0;
+    if (m === 0) return [0];
+
+    // Choose a base step aiming for ~4 intervals, but round to friendly numbers
+    let base = Math.ceil(m / 4);
+    // If base is at least 5, snap it to nearest multiple of 5 for nicer ticks
+    if (base >= 5) {
+      base = Math.max(5, Math.round(base / 5) * 5);
+    }
+
+    // Build ticks from 0 up to the next multiple of base that covers m
+    const maxTick = Math.ceil(m / base) * base;
+    const ticksOut = [];
+    for (let v = 0; v <= maxTick; v += base) ticksOut.push(v);
+    return ticksOut;
+  }, [maxApplications]);
 
   return (
-    <div className="job-analytics-container">
-      {/* Chart Container */}
-      <div className="chart-container">
-        {/* Title */}
-        <h2 className="chart-title">Least Popular Roles</h2>
+    <div className={`ja ${darkMode ? 'dark' : ''}`} style={{ minHeight: '105vh' }}>
+      <div className="ja-main">
+        {/* Left: Chart card */}
+        <section className="ja-card">
+          <h2 className="ja-title">Least popular roles</h2>
 
-        {/* Chart */}
-        <div className="chart-area">
-          {processedData.length > 0 ? (
-            <>
-              {/* Grid Lines */}
-              <div className="grid-lines" />
-
-              {/* Y-axis (Roles) */}
-              <div className="y-axis">
-                {processedData.map(item => (
-                  <div key={uuidv4()} className="y-axis-label">
-                    {item.role}
-                  </div>
-                ))}
-              </div>
-
-              {/* X-axis */}
-              <div className="x-axis">
-                {[0, 5, 10, 15, 20, 25].map(tick => (
-                  <div
-                    key={tick}
-                    className="x-axis-tick"
-                    style={{ left: `${(tick / maxApplications) * 100}%` }}
-                  >
-                    {tick <= maxApplications ? tick : ''}
-                  </div>
-                ))}
-              </div>
-
-              {/* Bars */}
-              <div className="bars-container">
-                {processedData.map((item, index) => (
-                  <div
-                    key={uuidv4()}
-                    className="bar-row"
-                    onMouseEnter={() => setHoveredBar(index)}
-                    onMouseLeave={() => setHoveredBar(null)}
-                  >
-                    <div
-                      className="bar"
-                      style={{
-                        width: `${(item.applications / maxApplications) * 100}%`,
-                      }}
-                    >
-                      {/* Data Label */}
-                      <div className="data-label">{item.applications}</div>
-                    </div>
-
-                    {/* Hover Tooltip */}
-                    {hoveredBar === index && (
-                      <div className="tooltip">
-                        <div>
-                          <strong>{item.role}</strong>
-                        </div>
-                        <div>Applications: {item.applications}</div>
-                        <div>Hits: {item.hits}</div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* X-axis Label */}
-              <div className="x-axis-label">Applications</div>
-            </>
-          ) : (
-            <div className="no-data">No data available for the selected filters</div>
+          {invalidRange && (
+            <div className="ja-warning" role="alert">
+              Start date cannot be after end date.
+            </div>
           )}
-        </div>
 
-        {/* Summary Info */}
-        {processedData.length > 0 && (
-          <div className="summary-info">
+          {!showingCount ? (
+            <div className="ja-no-data">No data for the selected filters.</div>
+          ) : (
+            <>
+              <div className="ja-chart">
+                <div className="ja-grid" aria-hidden="true" />
+                <div className="ja-bars">
+                  {chartData.map(row => {
+                    const pct =
+                      maxApplications > 0
+                        ? Math.max(2, (row.applications / maxApplications) * 100)
+                        : 0;
+                    return (
+                      <div className="ja-row" key={row.role}>
+                        <div className="ja-label" title={row.role}>
+                          {row.role}
+                        </div>
+                        <div className="ja-track">
+                          <div className="ja-bar" style={{ width: `${pct}%` }}>
+                            <span className="ja-value">{row.applications}</span>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="ja-xaxis">
+                {ticks.map(t => (
+                  <span key={t}>{t}</span>
+                ))}
+              </div>
+              <div className="ja-xaxis-label">Applications</div>
+            </>
+          )}
+
+          <div className="ja-footer">
             <div>
-              <strong>Showing:</strong> {processedData.length} role(s)
+              <strong>Showing:</strong> {showingCount} role(s)
             </div>
             <div>
-              <strong>Least Popular:</strong> {processedData[0]?.role} (
-              {processedData[0]?.applications} applications)
+              <strong>Least Popular:</strong>{' '}
+              {least ? `${least.role} (${least.applications} applications)` : '—'}
             </div>
             <div>
-              <strong>Most Popular:</strong> {processedData[processedData.length - 1]?.role} (
-              {processedData[processedData.length - 1]?.applications} applications)
+              <strong>Most Popular:</strong>{' '}
+              {most ? `${most.role} (${most.applications} applications)` : '—'}
             </div>
           </div>
-        )}
-      </div>
+        </section>
 
-      {/* Filters Panel */}
-      <div className="filters-panel">
-        {/* Dates Filter */}
-        <div className="filter-group">
-          <div className="filter-label">Dates</div>
-          <select
-            value={dateFilter}
-            onChange={e => {
-              // console.log('Date filter changed to:', e.target.value);
-              setDateFilter(e.target.value);
-            }}
-            className="filter-select-job-analytics"
-          >
-            <option value="all">ALL</option>
-            <option value="weekly">Last 7 Days</option>
-            <option value="monthly">Last 30 Days</option>
-            <option value="yearly">Last Year</option>
-          </select>
-        </div>
+        {/* Right: Filters */}
+        <aside className="ja-filters">
+          <div className="ja-filter">
+            <div className="ja-filter-label">Dates</div>
+            <div className="ja-date-range">
+              <input
+                type="date"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                aria-label="Start date"
+              />
+              <span className="ja-date-dash">–</span>
+              <input
+                type="date"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                aria-label="End date"
+              />
+              {(startDate || endDate) && (
+                <button
+                  type="button"
+                  className="ja-clear"
+                  onClick={() => {
+                    setStartDate('');
+                    setEndDate('');
+                  }}
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
 
-        {/* Role Filter */}
-        <div className="filter-group">
-          <div className="filter-label">Role</div>
-          <select
-            value={selectedRole}
-            onChange={e => {
-              // console.log('Role filter changed to:', e.target.value);
-              setSelectedRole(e.target.value);
-            }}
-            className="filter-select-job-analytics"
-          >
-            {roles.map(role => (
-              <option key={role} value={role}>
-                {role === 'all' ? 'ALL' : role}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div className="ja-filter">
+            <div className="ja-filter-label">Role</div>
+            <select
+              value={selectedRole}
+              onChange={e => setSelectedRole(e.target.value)}
+              aria-label="Filter by role"
+            >
+              {roles.map(role => (
+                <option key={role} value={role}>
+                  {role === 'all' ? 'ALL' : role}
+                </option>
+              ))}
+            </select>
+          </div>
+        </aside>
       </div>
     </div>
   );
