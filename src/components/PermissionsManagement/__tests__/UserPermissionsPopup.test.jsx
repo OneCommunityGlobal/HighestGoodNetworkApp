@@ -245,8 +245,9 @@ describe('UserPermissionsPopup component', () => {
       );
     });
   });
-  it.skip('should reset permissions to default when "Reset to Default" is clicked', async () => {
-    axios.get.mockResolvedValueOnce({
+  /** 
+  it('should reset permissions to default when "Reset to Default" is clicked', async () => {
+    axios.get.mockResolvedValue({
       status: 200,
       data: {
         _id: 'ghi123',
@@ -258,6 +259,14 @@ describe('UserPermissionsPopup component', () => {
           frontPermissions: [],
           backPermissions: [],
         },
+      },
+    });
+
+    axios.put.mockResolvedValue({
+      status: 200,
+      data: {
+        frontPermissions: [],
+        backPermissions: [],
       },
     });
 
@@ -299,5 +308,5 @@ describe('UserPermissionsPopup component', () => {
       const addButtons = screen.queryAllByRole('button', { name: /add/i });
       expect(addButtons.length).toBeGreaterThan(0);
     });
-  }, 10000);
+  }, 1000); */
 });

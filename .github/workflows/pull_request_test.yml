@@ -14,10 +14,12 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: 20
-        cache: 'yarn'
+        cache: 'npm'
     - name: Install Dependencies
-      run: yarn install --frozen-lockfile
+      - name: Ensure Rollup Linux binary (CI workaround)
+        run: npm i --no-save @rollup/rollup-linux-x64-gnu
+      run: npm ci
     - name: Run Unit Tests for Changed Files Only
-      run: yarn run test:changed
+      run: npm run test:changed
     - name: Run Lint
-      run: yarn run lint
+      run: npm run lint

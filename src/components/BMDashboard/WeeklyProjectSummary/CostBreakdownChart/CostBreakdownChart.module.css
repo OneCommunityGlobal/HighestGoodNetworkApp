@@ -1,0 +1,200 @@
+.cost-breakdown-chart {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e8e8e8;
+  margin-bottom: 24px;
+}
+
+.cost-breakdown-chart .card-title {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cost-breakdown-chart .form-group {
+  margin-bottom: 1rem;
+}
+
+.cost-breakdown-chart .form-control,
+.cost-breakdown-chart .form-select {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.cost-breakdown-chart .form-control:focus,
+.cost-breakdown-chart .form-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+  outline: 0;
+}
+
+.cost-breakdown-chart .btn {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.cost-breakdown-chart .btn-primary {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.cost-breakdown-chart .btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.cost-breakdown-chart .btn-secondary {
+  background-color: #6b7280;
+  border-color: #6b7280;
+}
+
+.cost-breakdown-chart .btn-secondary:hover {
+  background-color: #4b5563;
+  border-color: #4b5563;
+  transform: translateY(-1px);
+}
+
+.cost-breakdown-chart .label {
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Chart container styling */
+.cost-breakdown-chart .chart-container {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+/* Summary statistics styling */
+.cost-breakdown-chart .summary-stats {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.cost-breakdown-chart .summary-stats h6 {
+  color: #64748b;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cost-breakdown-chart .summary-stats strong {
+  color: #1e293b;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cost-breakdown-chart .card-title {
+    font-size: 1.25rem;
+  }
+  
+  .cost-breakdown-chart .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .cost-breakdown-chart .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  .cost-breakdown-chart .summary-stats {
+    padding: 1rem;
+  }
+  
+  .cost-breakdown-chart .summary-stats strong {
+    font-size: 1rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .cost-breakdown-chart {
+    background: #1f2937;
+    border-color: #374151;
+  }
+  
+  .cost-breakdown-chart .card-title {
+    color: #f9fafb;
+  }
+  
+  .cost-breakdown-chart .label {
+    color: #d1d5db;
+  }
+  
+  .cost-breakdown-chart .form-control,
+  .cost-breakdown-chart .form-select {
+    background-color: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .cost-breakdown-chart .summary-stats {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+  }
+  
+  .cost-breakdown-chart .summary-stats h6 {
+    color: #9ca3af;
+  }
+  
+  .cost-breakdown-chart .summary-stats strong {
+    color: #f9fafb;
+  }
+}
+
+/* Animation for chart loading */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cost-breakdown-chart {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Custom tooltip styling */
+.custom-tooltip {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+.custom-tooltip .label {
+  color: #374151 !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+  font-size: 14px !important;
+}
+
+.custom-tooltip p {
+  margin: 4px 0 !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
