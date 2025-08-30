@@ -9,7 +9,7 @@ import {
   LabelList,
 } from 'recharts';
 
-function AgeChart({ data, compareLabel }) {
+function AgeChart({ data, compareLabel, darkMode }) {
   const formatTooltip = (value, name, props) => {
     const { change } = props.payload;
     if (compareLabel && change !== undefined) {
@@ -27,14 +27,23 @@ function AgeChart({ data, compareLabel }) {
   };
 
   return (
-    <div style={{ width: '800px', height: 500, margin: '0 auto', padding: '20px' }}>
-      <h2>Applicants Grouped by Age</h2>
+    <div
+      className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
+      style={{ width: '800px', height: 500, margin: '0 auto', padding: '20px' }}
+    >
+      <h2 style={{ color: darkMode ? '#fff' : '#000' }}>Applicants Grouped by Age</h2>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 40 }} barSize={80}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#555' : '#ccc'} />
           <XAxis
             dataKey="ageGroup"
-            label={{ value: 'Age Group', position: 'insideBottom', offset: -5 }}
+            label={{
+              value: 'Age Group',
+              position: 'insideBottom',
+              offset: -5,
+              fill: darkMode ? '#fff' : '#000',
+            }}
+            tick={{ fill: darkMode ? '#fff' : '#000' }}
           />
           <YAxis
             label={{
@@ -42,11 +51,20 @@ function AgeChart({ data, compareLabel }) {
               angle: -90,
               position: 'insideLeft',
               offset: -5,
+              fill: darkMode ? '#fff' : '#000',
+            }}
+            tick={{ fill: darkMode ? '#fff' : '#000' }}
+          />
+          <Tooltip
+            formatter={formatTooltip}
+            contentStyle={{
+              backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+              color: darkMode ? '#fff' : '#000',
+              border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
             }}
           />
-          <Tooltip formatter={formatTooltip} />
-          <Bar dataKey="applicants" fill="#3b82f6">
-            <LabelList dataKey="applicants" position="top" />
+          <Bar dataKey="applicants" fill={darkMode ? '#60a5fa' : '#3b82f6'}>
+            <LabelList dataKey="applicants" position="top" fill={darkMode ? '#fff' : '#000'} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
