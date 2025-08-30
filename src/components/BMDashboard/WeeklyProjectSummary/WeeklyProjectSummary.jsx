@@ -171,7 +171,6 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
