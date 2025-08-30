@@ -1533,25 +1533,30 @@ const onAssignProject = assignedProject => {
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab
-                userProjects={projects || []}
-                userTasks={tasks}
-                projectsData={props?.allProjects?.projects || []}
-                onAssignProject={onAssignProject}
-                onDeleteProject={onDeleteProject}
-                edit={canPutUserProfile}
-                role={requestorRole}
-                userId={props.match.params.userId}
-                updateTask={onUpdateTask}
-                handleSubmit={handleSubmit}
-                disabled={
-                  !formValid.firstName ||
-                  !formValid.lastName ||
-                  !formValid.email ||
-                  !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                {
+                  activeTab === '4' && (
+                    <ProjectsTab
+                      userProjects={userProfile.projects || []}
+                      userTasks={tasks}
+                      projectsData={props?.allProjects?.projects || []}
+                      onAssignProject={onAssignProject}
+                      onDeleteProject={onDeleteProject}
+                      edit={canEdit}
+                      role={requestorRole}
+                      userId={props.match.params.userId}
+                      updateTask={onUpdateTask}
+                      handleSubmit={handleSubmit}
+                      disabled={
+                        !formValid.firstName ||
+                        !formValid.lastName ||
+                        !formValid.email ||
+                        !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                      }
+                      darkMode={darkMode}
+                    />
+                  )
                 }
-                darkMode={darkMode}
-                />
+
               </TabPane>
               <TabPane tabId="5">
                 <TimeEntryEditHistory

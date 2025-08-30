@@ -45,7 +45,7 @@ const UserProjectsTable = React.memo(props => {
   }, [userTasks]);
 
   const tasksByProject = userProjects?.map(project => {
-    const tasks = sortedTasksByNumber?.filter(task => task.projectId.includes(project._id));
+    const tasks = sortedTasksByNumber?.filter(task => task.projectId?.includes(project._id));
     return { ...project, tasks };
   });
 
@@ -54,7 +54,7 @@ const UserProjectsTable = React.memo(props => {
       if (sortedTasksByNumber) {
         return userProjects?.map(project => {
           const filteredTasks = sortedTasksByNumber.filter(task => {
-            const isTaskForProject = task.projectId.includes(project._id);
+            const isTaskForProject = task.projectId?.includes(project._id);
             const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
     
             if (isTaskForProject) {
