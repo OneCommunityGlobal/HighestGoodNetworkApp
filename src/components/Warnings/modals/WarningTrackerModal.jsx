@@ -20,6 +20,8 @@ import {
   deleteWarningDescription,
   editWarningDescription,
 } from '../../../actions/warnings';
+
+import '../Warnings.css';
 import reorder from '../reorder.svg';
 /**
  *
@@ -215,13 +217,16 @@ function WarningTrackerModal({
     return (
       <Modal isOpen={toggleDeleteModal} toggle={() => setToggleDeleteModal(false)}>
         <ModalBody>
-          <h2>Whooooo Tiger!! </h2>
+          <h2>Whoooa Tiger!! </h2>
           <p>Are you sure you want to delete this warning? </p>
-          <p>Deleteing this warning will delete all associated data tied to it from all users.</p>
+          <p>
+            Deleteing this warning will delete all associated data tied to it from{' '}
+            <span className="modal__warning__users--bold">All Users</span>.
+          </p>
           <p className="modal__warning__deletion">Warning Title: {warningTitle}</p>
         </ModalBody>
 
-        <ModalFooter>
+        <ModalFooter className="modal__footer--centered">
           <Button onClick={() => setToggleDeleteModal(false)} color="danger">
             No, I changed my mind!
           </Button>
@@ -242,7 +247,13 @@ function WarningTrackerModal({
   }
 
   return (
-    <Modal isOpen={toggleWarningTrackerModal} toggle={() => setToggleWarningTrackerModal(false)}>
+    // need to make .modal in modal.css z-index go to 1051
+    // or make .modal-backdrop z-index go to 1049 otherwise the important makes it nullify the warning tracker modal
+    <Modal
+      isOpen={toggleWarningTrackerModal}
+      toggle={() => setToggleWarningTrackerModal(false)}
+      className="warnings__tracker__modal"
+    >
       <ModalHeader className="modal__header">
         Current Warning Descriptions
         <OverlayTrigger
@@ -318,7 +329,7 @@ function WarningTrackerModal({
               <FontAwesomeIcon icon={faTimes} />
             </Button>
 
-            <input
+            <textarea
               type="text"
               onChange={e => handleEditWarningDescription(e, warning._id)}
               value={warning.warningTitle}
