@@ -370,6 +370,9 @@ export const ENDPOINTS = {
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
+  // job analytics
+  HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
+
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
