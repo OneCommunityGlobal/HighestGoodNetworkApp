@@ -307,6 +307,8 @@ export const ENDPOINTS = {
   HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
+  HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
+  
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -367,10 +369,15 @@ export const ENDPOINTS = {
   CP_NOSHOW_VIZ_PERIOD: `${APIEndpoint}/communityportal/reports/participation/data`,
   CP_ATTENDENCE_VIZ_DAY: `${APIEndpoint}/communityportal/reports/participation/by-day`,
   CP_NOSHOW_VIZ_UNIQUE_EVENTTYPES: `${APIEndpoint}/communityportal/reports/participation/unique-eventTypes`,
+  CP_ADD_EVENT_FEEDBACK: `${APIEndpoint}/communityportal/activities/eventFeedback`,
 
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
+  // pr dashboard endpoints
+  PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 };
 
 export const ApiEndpoint = APIEndpoint;

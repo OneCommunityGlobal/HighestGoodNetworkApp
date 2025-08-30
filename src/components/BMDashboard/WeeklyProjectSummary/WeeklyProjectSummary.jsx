@@ -10,6 +10,7 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
@@ -19,6 +20,7 @@ import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMate
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
   {
@@ -193,6 +195,12 @@ function WeeklyProjectSummary() {
   const sections = useMemo(
     () => [
       {
+        title: 'Risk profile for projects',
+        key: 'Risk profile for projects',
+        className: 'full',
+        content: <ProjectRiskProfileOverview />,
+      },
+      {
         title: 'Project Status',
         key: 'Project Status',
         className: 'full',
@@ -296,9 +304,7 @@ function WeeklyProjectSummary() {
         key: 'Lessons Learned',
         className: 'half',
         content: [
-          <div key="text-card" className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>,
+          <MostFrequentKeywords key="frequent-tags-card" />,
           <div key="injury-chart" className="weekly-project-summary-card normal-card">
             <InjuryCategoryBarChart />
           </div>,
