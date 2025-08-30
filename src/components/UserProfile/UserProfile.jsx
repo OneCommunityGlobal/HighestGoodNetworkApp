@@ -540,14 +540,14 @@ const onAssignProject = assignedProject => {
   console.log("Adding project to state:", assignedProject);
   
   // Always create a new array to trigger React re-render
-  setProjects(prevProjects => {
+  setProjects(prevProjects => 
+    {
     // Ensure prevProjects is an array
     const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
     
-    // Check if project already exists
     if (currentProjects.some(proj => proj._id === assignedProject._id)) {
       console.log("Project already exists, not adding duplicate");
-      return currentProjects; // Return the current array without changes
+      return currentProjects; 
     }
     
     // Add project and log the new state
