@@ -40,6 +40,7 @@ function SingleTask(props) {
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
   const canPostProject = props.hasPermission('postProject');
+  const canDeleteTask = props.hasPermission('deleteTask');
 
   const history = useHistory();
   useEffect(() => {
@@ -162,9 +163,7 @@ function SingleTask(props) {
                       level={task.level}
                       setTask={setTask}
                     />
-                    {user.role === 'Volunteer' ? (
-                      ''
-                    ) : (
+                    {canDeleteTask && (
                       <>
                         <Button
                           type="button"
