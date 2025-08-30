@@ -93,14 +93,38 @@
   border-radius: 1%;
 }
 
+.formContentGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-left: 2%;
+}
+
 .formGroup {
   display: flex;
   flex-direction: column;
 }
 
-.formGroup label {
+.formProfileDetailGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.formProfileDetailGroup input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.formGroup h2 {
   margin-bottom: 5px;
   font-weight: bold;
+  text-align: left;
+  color: black;
+  font-size: medium;
 }
 
 .formGroup input {

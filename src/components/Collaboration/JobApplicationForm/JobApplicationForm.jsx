@@ -1,8 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
 
+const jobQuestions = {
+  'Software Engineer': [
+    'How would you rate your frontend skills out of 10?',
+    'How would you rate your backend skills out of 10?',
+    'How would you rate your overall programming skills out of 10?',
+    'Have you worked with any version control systems? If so, which ones?',
+  ],
+  Designer: [
+    'Can you provide examples of your design work?',
+    'What design tools are you proficient in?',
+    'How do you approach a new design project?',
+    'Can you describe your design process from start to finish?',
+  ],
+};
+
+const jobOptions = Object.keys(jobQuestions);
+
 const JobApplicationForm = () => {
+  const [selectedJob, setSelectedJob] = useState(jobOptions[0]);
+  const [answers, setAnswers] = useState(Array(jobQuestions[selectedJob].length).fill(''));
+
+  const handleJobChange = e => {
+    const job = e.target.value;
+    setSelectedJob(job);
+    setAnswers(Array(jobQuestions[job].length).fill(''));
+  };
+
+  const handleAnswerChange = (idx, value) => {
+    const newAnswers = [...answers];
+    newAnswers[idx] = value;
+    setAnswers(newAnswers);
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.logo}>
@@ -21,8 +53,12 @@ const JobApplicationForm = () => {
             <button className="btn btn-secondary">Go</button>
           </div>
           <div className={styles.headerRight}>
-            <select className={styles.jobSelect}>
-              <option value="Software Engineer">Software Engineer</option>
+            <select className={styles.jobSelect} value={selectedJob} onChange={handleJobChange}>
+              {jobOptions.map(job => (
+                <option key={job} value={job}>
+                  {job}
+                </option>
+              ))}
             </select>
           </div>
         </section>
@@ -37,71 +73,84 @@ const JobApplicationForm = () => {
               Here is a questionare to apply to work with us. To complete your application and
               schedule zoom interview, please answer the pre-interview questions below.
             </div>
-            <div className={styles.row}>
-              <input type="text" placeholder="Name" className={styles.inputField} />
-              <input type="email" placeholder="Email" className={styles.inputField} />
+            <div className={styles.formContentGroup}>
+              <div className={styles.formProfileDetailGroup}>
+                <input type="text" placeholder="Name" className={styles.inputField} />
+                <input type="email" placeholder="Email" className={styles.inputField} />
+                <input
+                  type="text"
+                  placeholder="Location & Timezone"
+                  className={styles.inputField}
+                />
+                <input type="text" placeholder="Phone Number" className={styles.inputField} />
+                <input type="text" placeholder="Company & Position" className={styles.inputField} />
+                <input
+                  type="text"
+                  placeholder="Primary Website/Social"
+                  className={styles.inputField}
+                />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>1. How did you hear about One Community?</h2>
+                <input type="text" placeholder="Type your response here" />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>2. Are you applying as an individual or organization?</h2>
+                <input type="text" placeholder="Type your response here" />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>3. Why are you wanting to volunteer/work/collaborate with us?</h2>
+                <input type="text" placeholder="Type your response here" />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>4. What skills/experience do you possess?</h2>
+                <input type="text" placeholder="Type your response here" />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>5. How many volunteer hours per week are you willing to commit to?</h2>
+                <input type="text" placeholder="Type your response here" />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>6. For how long do you wish to volunteer with us?</h2>
+                <input type="text" placeholder="Type your response here" />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>7. What is your desired start date?</h2>
+                <input type="date" className={styles.dateInput} />
+              </div>
+              <div className={styles.formGroup}>
+                <h2>8. Will your volunteer time require documentation of your hours?</h2>
+                <select className={styles.selectField}>
+                  <option value="">Select an appropriate option</option>
+                  <option value="Yes, I'm volunteering just because I want to">
+                    Yes, I&apos;m volunteering just because I want to
+                  </option>
+                  <option value="Yes, I'm on OPT and don't yet have my EAD Card">
+                    Yes, I&apos;m on OPT and don&apos;t yet have my EAD Card
+                  </option>
+                  <option value="Yes, I'm on OPT and this time is for CPT, Co-op, or similar">
+                    Yes, I&apos;m on OPT and this time is for CPT, Co-op, or similar
+                  </option>
+                  <option value="STEM OPT: Sorry, we are 100% volunteer and don't qualify">
+                    STEM OPT: Sorry, we are 100% volunteer and don&apos;t qualify
+                  </option>
+                </select>
+              </div>
+              {jobQuestions[selectedJob].map((question, idx) => (
+                <div className={styles.formGroup} key={idx}>
+                  <h2>{`${idx + 9}. ${question}`}</h2>
+                  <input
+                    type="text"
+                    placeholder="Type your response here"
+                    value={answers[idx]}
+                    onChange={e => handleAnswerChange(idx, e.target.value)}
+                  />
+                </div>
+              ))}
+              <button type="submit" className={styles.submitButton}>
+                Proceed to submit with details
+              </button>
             </div>
-            <div className={styles.row}>
-              <input type="text" placeholder="Location & Timezone" className={styles.inputField} />
-              <input type="text" placeholder="Phone Number" className={styles.inputField} />
-            </div>
-            <div className={styles.row}>
-              <input type="text" placeholder="Company & Position" className={styles.inputField} />
-              <input
-                type="text"
-                placeholder="Primary Website/ Social"
-                className={styles.inputField}
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>1. How did you hear about One Community?</label>
-              <input type="text" placeholder="Type your response here" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>2. Are you applying as an individual or organization?</label>
-              <input type="text" placeholder="Type your response here" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>3. Why are you wanting to volunteer/work/collaborate with us?</label>
-              <input type="text" placeholder="Type your response here" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>4. What skills/experience do you possess?</label>
-              <input type="text" placeholder="Type your response here" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>5. How many volunteer hours per week are you willing to commit to?</label>
-              <input type="text" placeholder="Type your response here" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>6. For how long do you wish to volunteer with us?</label>
-              <input type="text" placeholder="Type your response here" />
-            </div>
-            <div className={styles.formGroup}>
-              <label>7. What is your desired start date?</label>
-              <input type="date" className={styles.dateInput} />
-            </div>
-            <div className={styles.formGroup}>
-              <label>8. Will your volunteer time require documentation of your hours?</label>
-              <select className={styles.selectField}>
-                <option value="">Select an appropriate option</option>
-                <option value="Yes, I'm volunteering just because I want to">
-                  Yes, I'm volunteering just because I want to
-                </option>
-                <option value="Yes, I'm on OPT and don't yet have my EAD Card">
-                  Yes, I'm on OPT and don't yet have my EAD Card
-                </option>
-                <option value="Yes, I'm on OPT and this time is for CPT, Co-op, or similar">
-                  Yes, I'm on OPT and this time is for CPT, Co-op, or similar
-                </option>
-                <option value="STEM OPT: Sorry, we are 100% volunteer and don't qualify">
-                  STEM OPT: Sorry, we are 100% volunteer and don't qualify
-                </option>
-              </select>
-            </div>
-            <button type="submit" className={styles.submitButton}>
-              Proceed to submit with details
-            </button>
           </form>
         </section>
       </main>
