@@ -135,7 +135,9 @@ function HoursPledgedChart() {
 
       <div className={`${styles.hpChartContainer}`}>
         {loading && <div className={`${styles.hpSpinner}`}>Loading...</div>}
-        {error && <div className={`${styles.hpErrorMessage}`}>{error}</div>}
+        {error && <div className={`${styles.hpErrorMessage}`}>
+          Issue getting the data
+          </div>}
         {!loading && !error && chartData.length === 0 && (
           <div className={`${styles.hpEmptyMessage}`}>
             No data available for the selected filters.
