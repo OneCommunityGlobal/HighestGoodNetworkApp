@@ -80,7 +80,7 @@ const mockEvents = [
     id: 8,
     eventType: 'Fitness Bootcamp 3',
     eventTime: '8:00-9:00 am Jan 21, 2026',
-    eventName: 'Event 7',
+    eventName: 'Event 8',
     attendees: 50,
     noShowRate: '18%',
     dropOffRate: '40%',
