@@ -20,8 +20,19 @@ const jobQuestions = {
 const jobOptions = Object.keys(jobQuestions);
 
 const JobApplicationForm = () => {
-  const [selectedJob, setSelectedJob] = useState(jobOptions[0]);
   const [answers, setAnswers] = useState(Array(jobQuestions[selectedJob].length).fill(''));
+
+  const dispatch = useDispatch();
+  const { forms, selectedJob } = useSelector(state => state.jobApplication);
+
+  useEffect(() => {
+    dispatch(getAllForms());
+  }, [dispatch]);
+
+  const filteredForm = forms.find(
+    form => form.formName.toLowerCase() === jobTitleInput.toLowerCase(),
+  );
+  const questions = filteredForm ? filteredForm.questions : [];
 
   const handleJobChange = e => {
     const job = e.target.value;
@@ -136,15 +147,19 @@ const JobApplicationForm = () => {
                   </option>
                 </select>
               </div>
-              {jobQuestions[selectedJob].map((question, idx) => (
-                <div className={styles.formGroup} key={idx}>
-                  <h2>{`${idx + 9}. ${question}`}</h2>
-                  <input
-                    type="text"
-                    placeholder="Type your response here"
-                    value={answers[idx]}
-                    onChange={e => handleAnswerChange(idx, e.target.value)}
-                  />
+              {questions.map((q, idx) => (
+                <div key={q._id?.$oid || idx}>
+                  <h2>{q.label}</h2>
+                  {q.type === 'text' && <input type="text" placeholder="Type your response here" />}
+                  {q.type === 'checkbox' && (
+                    <div>
+                      {q.options.map(opt => (
+                        <label key={opt}>
+                          <input type="checkbox" value={opt} /> {opt}
+                        </label>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
               <button type="submit" className={styles.submitButton}>
