@@ -7,6 +7,9 @@
   --tooltip-bg: #f4f4f4;
   --accent-color: #444444;
   --accent-hover: #222222;
+  --btn-color: #a2d729;
+  --btn-hover: #c25620;
+  --btn-text: #1e1e1e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -36,7 +39,7 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.filters {
+.loss-tracking-filters {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
@@ -55,17 +58,17 @@
   margin-bottom: 1rem;
 }
 
-.dark-mode .filters {
+.dark-mode .loss-tracking-filters {
   background-color: #2b3e59;
   border-radius: 8px;
   padding: 1rem;
 }
 
-.dark-mode .filters label {
+.dark-mode .loss-tracking-filters label {
   color: var(--text-color);
 }
 
-.filters label {
+.loss-tracking-filters label {
   display: flex;
   flex-direction: column;
   font-weight: 500;
@@ -73,8 +76,8 @@
   color: var(--text-color);
 }
 
-.filters select,
-.filters input[type="month"] {
+.loss-tracking-filters select,
+.loss-tracking-filters input[type="month"] {
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: 6px;
@@ -85,17 +88,17 @@
   color: var(--text-color);
 }
 
-.filters select:focus,
-.filters input[type="month"]:focus {
+.loss-tracking-filters select:focus,
+.loss-tracking-filters input[type="month"]:focus {
   outline: none;
   border-color: #007bff;
 }
 
-.reset-btn {
+.loss-tracking-filters .reset-btn {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  background-color: var(--accent-color);
-  color: var(--bg-color);
+  background-color: var(--btn-color);
+  color: var(--btn-text);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -104,8 +107,8 @@
 }
 
 .reset-btn:hover {
-  background-color: var(--accent-hover);
-  color: var(--bg-color);
+  background-color: var(--btn-hover);
+  color: var(--btn-text);
 }
 
 .chart-wrapper {
