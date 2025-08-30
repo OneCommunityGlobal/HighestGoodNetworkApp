@@ -50,7 +50,7 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
-// import WriteItForMeModal from './WriteForMeModal';
+import WriteItForMeModal from './WriteForMeModal';
 
 // Images are not allowed in weekly summary
 const customImageUploadHandler = () =>
@@ -875,6 +875,7 @@ export class WeeklySummary extends Component {
                               userId={displayUserId}
                               darkMode={darkMode}
                             />
+                            <WriteItForMeModal />
                             {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
                               <UncontrolledDropdown className="summary-dropdown">
                                 <DropdownToggle
