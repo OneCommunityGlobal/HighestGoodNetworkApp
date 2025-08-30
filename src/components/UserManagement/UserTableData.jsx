@@ -67,6 +67,7 @@ const UserTableDataComponent = (props) => {
   const resetPasswordStatus = props.hasPermission('resetPassword');
   const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const canSetFinalDay = props.hasPermission('setFinalDay');
   const canSeeReports = props.hasPermission('getReports');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
@@ -474,7 +475,7 @@ const UserTableDataComponent = (props) => {
       <td>
         {!isCurrentUser && (
           <>
-            {!canChangeUserStatus ? (
+            {!canSetFinalDay ? (
               <Tooltip
                 placement="bottom"
                 isOpen={tooltipFinalDayOpen}
@@ -486,13 +487,15 @@ const UserTableDataComponent = (props) => {
             ) : (
               ''
             )}
-            <SetUpFinalDayButton
+                       <SetUpFinalDayButton
               userProfile={props.user}
               darkMode={darkMode}
               onFinalDaySave={updatedUser => {
                 // Update the user object in the parent state
                 props.onUserUpdate(updatedUser);
               }}
+              id={`btn-final-day-${props.user._id}`}
+              disabled={!canSetFinalDay}
             />
           </>
         )}
