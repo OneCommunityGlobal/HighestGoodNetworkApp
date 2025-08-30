@@ -18,6 +18,20 @@ export const supplierPerformanceError = error => ({
   payload: error,
 });
 
+// Fetch Projects with Supplier Performance Data
+export const fetchSupplierProjects = () => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.SUPPLIER_PROJECTS);
+      return response.data;
+    } catch (error) {
+      dispatch(supplierPerformanceError(error.message));
+      toast.error('Failed to fetch projects with supplier data');
+      throw error;
+    }
+  };
+};
+
 // Fetch Supplier Performance
 export const fetchSupplierPerformance = ({ projectId = 'all', startDate, endDate }) => {
   return async dispatch => {

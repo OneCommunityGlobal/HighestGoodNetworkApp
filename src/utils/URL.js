@@ -329,6 +329,7 @@ export const ENDPOINTS = {
   // Phase 2 summary dashboard
   SUPPLIER_PERFORMANCE: (projectId, startDate, endDate) =>
     `${APIEndpoint}/suppliers/performance?projectId=${projectId}&startDate=${startDate}&endDate=${endDate}`,
+  SUPPLIER_PROJECTS: `${APIEndpoint}/suppliers/projects`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,

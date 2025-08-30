@@ -13,32 +13,84 @@ import {
   Label,
 } from 'recharts';
 import { useDispatch } from 'react-redux';
-import { fetchSupplierPerformance } from '../../../actions/summaryDashboard';
+import { Input } from 'reactstrap';
+import { fetchSupplierProjects, fetchSupplierPerformance } from '../../../actions/summaryDashboard';
 
-const ALL_DATES = {
-  start: '1970-01-01',
-  end: new Date().toISOString().split('T')[0],
+const getDateRangeOptions = () => {
+  const today = new Date();
+  const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
+  const lastQuarter = new Date(today.getFullYear(), today.getMonth() - 3, today.getDate());
+  const lastYear = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+
+  return [
+    { label: 'ALL', value: 'all', start: '1970-01-01', end: today.toISOString().split('T')[0] },
+    {
+      label: 'Last 30 Days',
+      value: 'last30',
+      start: lastMonth.toISOString().split('T')[0],
+      end: today.toISOString().split('T')[0],
+    },
+    {
+      label: 'Last 3 Months',
+      value: 'last90',
+      start: lastQuarter.toISOString().split('T')[0],
+      end: today.toISOString().split('T')[0],
+    },
+    {
+      label: 'Last Year',
+      value: 'lastYear',
+      start: lastYear.toISOString().split('T')[0],
+      end: today.toISOString().split('T')[0],
+    },
+  ];
 };
 
 const SupplierPerformanceDashboard = function({ className, height = 420, onDataLoaded }) {
   const dispatch = useDispatch();
 
   const [supplierData, setSupplierData] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedDateRange, setSelectedDateRange] = useState('all');
+  const [selectedProject, setSelectedProject] = useState('all');
 
-  // Fetch all supplier performance data on mount
+  // Load projects with supplier data on mount
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const projectsData = await dispatch(fetchSupplierProjects());
+        console.log('Loaded projects with supplier data:', projectsData);
+        setProjects(Array.isArray(projectsData) ? projectsData : []);
+      } catch (err) {
+        console.error('Failed to load projects:', err);
+        setError('Failed to load projects');
+      }
+    };
+    loadProjects();
+  }, [dispatch]);
+
+  // Fetch supplier performance data when filters change
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       try {
-        console.log('Fetching supplier performance data for all projects');
+        const dateRangeOptions = getDateRangeOptions();
+        const selectedDateObj = dateRangeOptions.find(opt => opt.value === selectedDateRange);
+
+        console.log('Fetching supplier performance data with filters:', {
+          projectId: selectedProject,
+          dateRange: selectedDateRange,
+          startDate: selectedDateObj?.start,
+          endDate: selectedDateObj?.end,
+        });
+
         const data = await dispatch(
           fetchSupplierPerformance({
-            projectId: 'all',
-            startDate: ALL_DATES.start,
-            endDate: ALL_DATES.end,
+            projectId: selectedProject,
+            startDate: selectedDateObj?.start || '1970-01-01',
+            endDate: selectedDateObj?.end || new Date().toISOString().split('T')[0],
           }),
         );
 
@@ -56,7 +108,7 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
     };
 
     fetchData();
-  }, [dispatch, onDataLoaded]);
+  }, [dispatch, selectedDateRange, selectedProject, onDataLoaded]);
 
   const styles = useMemo(
     () => ({
@@ -97,6 +149,10 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
         fontSize: 14,
         color: '#718096',
         fontWeight: 500,
+      },
+      select: {
+        minWidth: 140,
+        fontSize: 14,
       },
       card: {
         border: '1px solid #E2E8F0',
@@ -150,11 +206,36 @@ const SupplierPerformanceDashboard = function({ className, height = 420, onDataL
           <div style={styles.rightControls}>
             <div style={styles.control}>
               <span style={styles.controlLabel}>Dates</span>
-              <span style={styles.controlValue}>ALL</span>
+              <Input
+                type="select"
+                value={selectedDateRange}
+                onChange={e => setSelectedDateRange(e.target.value)}
+                style={styles.select}
+                aria-label="Date Range"
+              >
+                {getDateRangeOptions().map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </Input>
             </div>
             <div style={styles.control}>
               <span style={styles.controlLabel}>Project</span>
-              <span style={styles.controlValue}>ALL</span>
+              <Input
+                type="select"
+                value={selectedProject}
+                onChange={e => setSelectedProject(e.target.value)}
+                style={styles.select}
+                aria-label="Project"
+              >
+                <option value="all">ALL</option>
+                {projects.map(project => (
+                  <option key={project._id} value={project._id}>
+                    {project._id}
+                  </option>
+                ))}
+              </Input>
             </div>
           </div>
         </div>
