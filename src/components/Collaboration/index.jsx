@@ -1,3 +1,3 @@
-import Collaboration from './Collaboration';
+import SuggestedJobsList from './SuggestedJobsList';
 
-export default Collaboration;
+export default SuggestedJobsList;
