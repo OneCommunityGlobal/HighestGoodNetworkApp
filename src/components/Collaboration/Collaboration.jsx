@@ -409,6 +409,7 @@ function Collaboration() {
                   height="30"
                   src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
                   alt="delete-sign"
+                  style={{ filter: darkMode ? 'invert(1)' : 'none' }}
                 />
               </button>
             </div>
@@ -421,7 +422,7 @@ function Collaboration() {
                 {jobAds.map(ad => (
                   <div key={ad._id} className={styles['job-ad']}>
                     <img
-                      src={`{ad.imageUrl}`}
+                      src={`${ad.imageUrl}`}
                       onError={e => {
                         e.target.onerror = null;
                         if (ad.category === 'Engineering') {
