@@ -19,6 +19,7 @@ import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
@@ -280,7 +281,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'half',
+        className: 'full',
         content: (
           <div className="weekly-project-summary-card normal-card tools-tracking-layout">
             <div className="tools-donut-wrap">
@@ -288,6 +289,12 @@ function WeeklyProjectSummary() {
             </div>
             <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
               <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
+            <div
+              className="weekly-project-summary-card normal-card"
+              style={{ minHeight: '300px', gridColumn: 'span 2' }}
+            >
+              <SupplierPerformanceGraph />
             </div>
           </div>
         ),
