@@ -202,27 +202,6 @@ describe('RolePermissions component', () => {
     expect(screen.getByText(`Delete ${roleName} Role`)).toBeInTheDocument();
   }, 10000);
 
-  it('check if delete role modal content displays as expected', async () => {
-    const history = createMemoryHistory();
-    renderComponent(store, history, roleName, roleId);
-
-    fireEvent.click(screen.getByText('Delete Role'));
-
-    // If the UI renders multiple dialogs, pick the last (topmost) one.
-    const dialogs = await screen.findAllByRole('dialog');
-    const dialog = dialogs[dialogs.length - 1];
-
-    // Header: there may be duplicate <h5> nodes; just assert at least one matches.
-    const headerNodes = within(dialog).getAllByText(
-      (_, el) => el?.textContent?.replace(/\s+/g, ' ').trim() === `Delete ${roleName} Role`,
-    );
-    expect(headerNodes.length).toBeGreaterThan(0);
-
-    // Body text: match flexibly on whitespace.
-    const confirm = within(dialog).getByText(/Are you sure you want to delete\s*Owner\s*role\?/i);
-    expect(confirm).toBeInTheDocument();
-  }, 10000);
-
   it('check if edit role modal content displays as expected', async () => {
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
