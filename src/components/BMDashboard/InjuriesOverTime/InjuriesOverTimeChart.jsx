@@ -20,23 +20,7 @@ import styles from './InjuriesOverTimeChart.module.css';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
 const shortId = id => (id ? String(id).slice(-6) : 'unknown');
-
 const generateColors = n =>
   Array.from({ length: n }, (_, i) => `hsl(${Math.round((360 / Math.max(n, 1)) * i)},60%,55%)`);
 
@@ -46,7 +30,7 @@ function CustomTooltip({ active, payload, label, darkMode }) {
     <div className={`${styles.tooltip} ${darkMode ? styles.tooltipDark : ''}`}>
       <div style={{ fontWeight: 600, marginBottom: 6 }}>{label}</div>
       {payload
-        .filter(p => p.value != null && Number(p.value) > 0)
+        .filter(p => p?.value != null && Number(p.value) > 0)
         .map(p => (
           <div key={p.dataKey} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <span
@@ -144,38 +128,59 @@ function InjuriesOverTimeLine({ darkMode = false }) {
   );
 
   const chartData = useMemo(() => {
+    const keysSet = new Set(filtered.map(r => dayjs(r.date).format('YYYY-MM')));
+    const monthKeys = Array.from(keysSet).sort();
+
     const totals = new Map();
     filtered.forEach(r => {
-      const monthIdx = dayjs(r.date).month();
+      const k = dayjs(r.date).format('YYYY-MM');
       const pid = String(r.projectId);
-      const key = `${monthIdx}|${pid}`;
-      totals.set(key, (totals.get(key) || 0) + (Number(r.count) || 0));
+      const mapKey = `${k}|${pid}`;
+      totals.set(mapKey, (totals.get(mapKey) || 0) + (Number(r.count) || 0));
     });
 
-    const rows = MONTHS.map((month, idx) => {
-      const row = { month };
+    return monthKeys.map(k => {
+      const label = dayjs(k + '-01').format('MMM YYYY');
+      const row = { month: label, _k: k };
       visibleProjects.forEach(({ id }) => {
-        const v = totals.get(`${idx}|${id}`) || 0;
+        const v = totals.get(`${k}|${id}`) || 0;
         row[id] = v > 0 ? v : null;
       });
       return row;
     });
-
-    return rows;
   }, [filtered, visibleProjects]);
+
+  const { yTicks, yDomain } = useMemo(() => {
+    let dataMax = 0;
+    for (const row of chartData) {
+      for (const { id } of visibleProjects) {
+        const v = row[id];
+        if (typeof v === 'number' && v > dataMax) dataMax = v;
+      }
+    }
+
+    const divisions = 5;
+    if (dataMax <= 0) {
+      return {
+        yTicks: Array.from({ length: divisions + 1 }, (_, i) => i),
+        yDomain: [0, divisions],
+      };
+    }
+
+    const rawStep = Math.ceil(dataMax / divisions);
+    const step = Math.max(1, rawStep);
+    const niceMax = step * divisions;
+    const ticks = Array.from({ length: divisions + 1 }, (_, i) => i * step);
+    return { yTicks: ticks, yDomain: [0, niceMax] };
+  }, [chartData, visibleProjects]);
 
   const lineColors = useMemo(() => generateColors(visibleProjects.length || 1), [
     visibleProjects.length,
   ]);
 
-  const maxY = Math.max(...chartData.flatMap(row => visibleProjects.map(p => row[p.id] || 0)), 0);
-
-  const step = Math.ceil(maxY / 5);
-  const ticks = Array.from({ length: 6 }, (_, i) => i * step);
-
   return (
     <div className={`${styles.wrapper} ${darkMode ? styles.wrapperDark : ''}`}>
-      <h2 className={styles.title}>Injuries over time</h2>
+      <h2 className={styles.title}>Injuries over time (Jan 1 2024 - Dec 31 2024)</h2>
 
       <div className={styles.filters}>
         <Select
@@ -261,13 +266,17 @@ function InjuriesOverTimeLine({ darkMode = false }) {
         <div className={`${styles.chartCard} ${darkMode ? styles.chartCardDark : ''}`}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={darkMode ? 0.2 : 1} />
+              <CartesianGrid
+                stroke={darkMode ? '#2f3b4a' : '#e5e7eb'}
+                strokeDasharray="3 3"
+                strokeOpacity={darkMode ? 0.2 : 1}
+              />
               <XAxis dataKey="month" height={60} angle={-25} textAnchor="end" interval={0} />
               <YAxis
                 label={{ value: 'Injury Count', angle: -90, position: 'insideLeft' }}
                 allowDecimals={false}
-                domain={[0, maxY]}
-                ticks={ticks}
+                domain={yDomain}
+                ticks={yTicks}
               />
               <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
               <Legend verticalAlign="top" align="left" wrapperStyle={{ paddingBottom: 20 }} />
