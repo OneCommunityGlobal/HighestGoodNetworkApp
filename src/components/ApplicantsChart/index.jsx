@@ -26,7 +26,20 @@ function ApplicantsChart() {
   return (
     <div>
       <TimeFilter onFilterChange={handleFilterChange} />
-      {loading ? <p>Loading...</p> : <AgeChart data={chartData} compareLabel={compareLabel} />}
+      {loading ? (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '200px',
+          }}
+        >
+          <p style={{ fontSize: '24px', fontWeight: 'bold' }}>Loading...</p>
+        </div>
+      ) : (
+        <AgeChart data={chartData} compareLabel={compareLabel} />
+      )}
     </div>
   );
 }
