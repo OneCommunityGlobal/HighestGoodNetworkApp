@@ -7,6 +7,8 @@
   --tooltip-bg: #f4f4f4;
   --accent-color: #444444;
   --accent-hover: #222222;
+  --btn-hover-bg: #0056b3;
+  --btn-color: #007bff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -36,10 +38,10 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.filters {
+.loss-tracking-chart-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 1rem;
   align-items: flex-end;
 }
 
@@ -50,22 +52,22 @@
 
 .dark-mode .chart-title {
   color: var(--text-color);
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 600;
   margin-bottom: 1rem;
 }
 
-.dark-mode .filters {
+.dark-mode .loss-tracking-chart-filters {
   background-color: #2b3e59;
   border-radius: 8px;
   padding: 1rem;
 }
 
-.dark-mode .filters label {
+.dark-mode .loss-tracking-chart-filters label {
   color: var(--text-color);
 }
 
-.filters label {
+.loss-tracking-chart-filters label {
   display: flex;
   flex-direction: column;
   font-weight: 500;
@@ -73,29 +75,29 @@
   color: var(--text-color);
 }
 
-.filters select,
-.filters input[type="month"] {
+.loss-tracking-chart-filters select,
+.loss-tracking-chart-filters input[type="month"] {
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   margin-top: 0.25rem;
   min-width: 150px;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
 
-.filters select:focus,
-.filters input[type="month"]:focus {
+.loss-tracking-chart-filters select:focus,
+.loss-tracking-chart-filters input[type="month"]:focus {
   outline: none;
   border-color: #007bff;
 }
 
-.reset-btn {
+.loss-tracking-chart-filters .reset-btn {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  background-color: var(--accent-color);
-  color: var(--bg-color);
+  background-color: var(--btn-color);
+  color: var(--text-color);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -103,9 +105,9 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.reset-btn:hover {
-  background-color: var(--accent-hover);
-  color: var(--bg-color);
+.loss-tracking-chart-filters .reset-btn:hover {
+  background-color: var(--btn-hover-bg);
+  color: var(--text-color);
 }
 
 .chart-wrapper {

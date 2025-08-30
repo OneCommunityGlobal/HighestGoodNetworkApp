@@ -287,9 +287,7 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">
-              <LossTrackingLineChart />
-            </div>
+            <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small financial-chart">
               <ExpenseBarChart />
             </div>
@@ -304,7 +302,9 @@ function WeeklyProjectSummary() {
         key: 'Loss Tracking',
         className: 'small',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>📊 Card</div>
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+            <LossTrackingLineChart />
+          </div>
         ),
       },
       {

@@ -89,7 +89,7 @@ const LossTrackingLineChart = () => {
   return (
     <div className={`loss-tracking-chart-container ${darkMode ? 'dark-mode' : ''}`}>
       <h1 className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>Loss Tracking Line Chart</h1>
-      <div className={`filters ${darkMode ? 'dark-mode' : ''}`}>
+      <div className={`loss-tracking-chart-filters ${darkMode ? 'dark-mode' : ''}`}>
         <label>
           <span>Material</span>
           <select value={material} onChange={e => setMaterial(e.target.value)}>
@@ -111,12 +111,12 @@ const LossTrackingLineChart = () => {
         </label>
 
         <label>
-          <span>From</span>
+          <span>Start Date</span>
           <input type="month" value={startDate} onChange={e => setStartDate(e.target.value)} />
         </label>
 
         <label>
-          <span>To</span>
+          <span>End Date</span>
           <input type="month" value={endDate} onChange={e => setEndDate(e.target.value)} />
         </label>
 
@@ -165,7 +165,11 @@ const LossTrackingLineChart = () => {
                   color: 'var(--text-color)',
                 }}
               />
-              <Legend wrapperStyle={{ color: 'var(--text-color)' }} />
+              <Legend
+                formatter={value => (
+                  <span style={{ color: darkMode ? 'white' : 'black' }}>{value}</span>
+                )}
+              />
               {filteredLines.map(line => (
                 <Line
                   key={line.year}
