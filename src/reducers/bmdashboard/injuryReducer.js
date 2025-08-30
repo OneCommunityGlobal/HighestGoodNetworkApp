@@ -6,6 +6,7 @@ import {
   FETCH_BM_INJURY_TYPES,
   FETCH_BM_INJURY_PROJECTS,
   RESET_BM_INJURY_DATA,
+  FETCH_BM_INJURY_OVER_TIME,
 } from '../../actions/bmdashboard/injuryActions';
 
 const byName = (a, b) => String(a?.name || a).localeCompare(String(b?.name || b));
@@ -18,6 +19,7 @@ const initialState = {
   severities: [],
   injuryTypes: [],
   projects: [], // [{ _id, name }]
+  injuryOverTimeData: [],
 };
 
 function bmInjuryReducer(state = initialState, action) {
@@ -53,6 +55,11 @@ function bmInjuryReducer(state = initialState, action) {
       const map = new Map(arr.map(p => [String(p._id), p]));
       const projects = Array.from(map.values()).sort(byName);
       return { ...state, projects };
+    }
+
+    case FETCH_BM_INJURY_OVER_TIME: {
+      const injuryOverTimeData = Array.isArray(action.payload) ? action.payload : [];
+      return { ...state, injuryOverTimeData };
     }
 
     case RESET_BM_INJURY_DATA:

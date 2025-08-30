@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-
+import {setErrors} from './reusableActions.js';
 export const FETCH_BM_INJURY_DATA_REQUEST = 'FETCH_BM_INJURY_DATA_REQUEST';
 export const FETCH_BM_INJURY_DATA_SUCCESS = 'FETCH_BM_INJURY_DATA_SUCCESS';
 export const FETCH_BM_INJURY_DATA_FAILURE = 'FETCH_BM_INJURY_DATA_FAILURE';
@@ -8,6 +8,7 @@ export const RESET_BM_INJURY_DATA = 'RESET_BM_INJURY_DATA';
 export const FETCH_BM_INJURY_SEVERITIES = 'FETCH_BM_INJURY_SEVERITIES';
 export const FETCH_BM_INJURY_TYPES = 'FETCH_BM_INJURY_TYPES';
 export const FETCH_BM_INJURY_PROJECTS = 'FETCH_BM_INJURY_PROJECTS';
+export const FETCH_BM_INJURY_OVER_TIME = 'FETCH_BM_INJURY_OVER_TIME';
 
 // Helpers
 const cleanParams = (obj = {}) => {
@@ -38,6 +39,7 @@ const setInjuryDataError = payload => ({ type: FETCH_BM_INJURY_DATA_FAILURE, pay
 const setInjurySeverities = payload => ({ type: FETCH_BM_INJURY_SEVERITIES, payload });
 const setInjuryTypes = payload => ({ type: FETCH_BM_INJURY_TYPES, payload });
 const setInjuryProjects = payload => ({ type: FETCH_BM_INJURY_PROJECTS, payload });
+const setInjuryOverTime = payload => ({ type: FETCH_BM_INJURY_OVER_TIME, payload });
 
 // Thunks
 export const fetchInjuryData = (filters) => async dispatch => {
@@ -103,9 +105,9 @@ export const fetchInjuriesOverTime = (filters = {}) => {
       }
 
       const res = await axios.get(ENDPOINTS.BM_INJURY_OVER_TIME, { params });
-      //dispatch(setInjuryOverTime(res.data));
+      dispatch(setInjuryOverTime(res.data));
     } catch (err) {
-      //dispatch(setErrors(err.response?.data || err.message));
+      dispatch(setErrors(err.response?.data?.error || err.message));
     }
   };
 }
