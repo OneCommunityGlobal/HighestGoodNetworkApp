@@ -3,6 +3,13 @@
   justify-content: center;
   align-items: center;
 }
+.job-select {
+  appearance: auto; /* let the browser handle it */
+  -webkit-appearance: auto;
+  background-color: #fff;
+  color: #000;
+}
+
 .collaboration-container {
   width: 60%;
   max-width: 1000px;
@@ -25,8 +32,41 @@
   display: flex;
   flex-direction: row;
   gap:2rem;
+  padding:2rem;
+  margin:1rem;
+}
+.filter-chips-container {
+  display:flex;
+  flex-direction: row;
+}
+.filter-chips {
+  display:flex;
+  flex-direction:row;
+  gap:0.1rem;
+  align-items:center;
+ /* align-content: space-between; */
+ cursor: pointer;                          /* shows hand cursor */
+transition: background-color 0.2s ease, 
+            box-shadow 0.2s ease;         /* smooth hover effect */
+    border: 1px solid #ccc;         
+  border-radius: 16px;      /* makes it pill-shaped */
+}
+.filter-chips:hover {
+  background-color: #f0f0f0; /* highlight on hover */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.filter-chips > .btn.btn-primary {
+  margin-right:0.1rem;
+  padding:0;
+  border:none;
+  background-color:transparent;
 }
 
+.job-queries-title {
+  display:flex;
+  padding:1rem;
+  margin:1rem;
+}
 .job-landing .header img {
   height: auto;
   margin: 0 auto;
@@ -37,15 +77,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px; 
-  background-color: #9c0;
-  padding: 10px;
-  flex-flow: row nowrap;
+  margin-bottom: 0.1rem; 
+  padding: 1rem;
+  flex-flow: row wrap;
+    background-color: #9c0;
+
 }
 .job-navbar-left input,
 .job-navbar-left select {
   display: flex;
-  padding: 8px;
+  padding: 1rem;
   margin-right: 10px;
   align-items: center;
 }
@@ -54,6 +95,12 @@
 .search-form {
   display: flex;
   align-items: center;
+  
+}
+
+.job-navbar-right > .btn {
+  padding:0.4rem;
+  margin:0.2rem;
 }
 .search-form input {
   margin-right: 10px;
@@ -275,6 +322,17 @@ select {
   padding-right: 36px;
 }
 
+.filter-chip-heading {
+  padding-left:1rem;
+  /*padding-right: 2rem;
+   display:flex;
+  flex-direction: row; 
+  margin-right: 1rem; */
+}
+.cross-button {
+  background-color:aquamarine;
+  margin:1rem;
+}
 
 .user-collaboration-dark-mode .search-form button,
 .user-collaboration-dark-mode .btn {

@@ -326,6 +326,7 @@ function Collaboration() {
               className={styles['job-select']}
               value={category}
               onChange={handleCategoryChange}
+              name="selectCategory"
             >
               <option value="">Select from Categories</option>
               {categories.map(specificCategory => (
@@ -339,6 +340,7 @@ function Collaboration() {
             <select
               className={styles['job-select']}
               value={position}
+              name="SelectPosition"
               onChange={handlePositionChange}
             >
               <option value="">Select from Positions</option>
@@ -349,13 +351,15 @@ function Collaboration() {
               ))}
             </select>
           </div>
-          <button
-            className={`${styles.btn} btn-secondary active`}
-            type="button"
-            onClick={handleShowSummaries}
-          >
-            Show Summaries
-          </button>
+          <div className={styles['job-navbar-right']}>
+            <button
+              className={`${styles.btn} btn-primary`}
+              type="button"
+              onClick={handleShowSummaries}
+            >
+              Show Summaries
+            </button>
+          </div>
         </nav>
         {showTooltip}
         {showTooltip && tooltipPosition === 'search' && (
@@ -387,20 +391,26 @@ function Collaboration() {
             </h3>
           )}
         </div>
-        <div className={styles['job-queries']}>
+        <div className={styles['filter-chips-container']}>
+          {/*onClick={filter.onRemove} */}
           {filters.map((filter, index) => (
-            <div key={index} className={`${styles.btn} btn-secondary query-option `} type="button">
-              <h4>
-                {filter.label}
-                <button className={styles['cross-button']} type="button" onClick={filter.onRemove}>
-                  <img
-                    width="30"
-                    height="30"
-                    src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                    alt="delete-sign"
-                  />
-                </button>
-              </h4>
+            <div key={index} className={styles['filter-chips']}>
+              <h4 className={`${styles['filter-chip-heading']}`}>{filter.label}</h4>
+              <button
+                className={`btn btn-primary`}
+                type="button"
+                onClick={e => {
+                  e.stopPropagation();
+                  filter.onRemove();
+                }}
+              >
+                <img
+                  width="30"
+                  height="30"
+                  src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
+                  alt="delete-sign"
+                />
+              </button>
             </div>
           ))}
         </div>
