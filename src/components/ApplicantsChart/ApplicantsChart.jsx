@@ -13,8 +13,11 @@ function ApplicantsChart() {
     const data = await fetchApplicantsData(filter);
     setChartData(data);
 
+    // For weekly/monthly/yearly → show comparison text, for custom → no comparison
     setCompareLabel(
-      filter.selectedOption === 'custom' ? null : `last ${filter.selectedOption.slice(0, -2)}`,
+      filter.selectedOption === 'custom'
+        ? null
+        : `last ${filter.selectedOption.slice(0, -2)}`
     );
     setLoading(false);
   };
@@ -32,10 +35,12 @@ function ApplicantsChart() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: '200px',
+            height: '400px',
+            fontSize: '18px',
+            fontWeight: 500,
           }}
         >
-          <p style={{ fontSize: '24px', fontWeight: 'bold' }}>Loading...</p>
+          Loading...
         </div>
       ) : (
         <AgeChart data={chartData} compareLabel={compareLabel} />

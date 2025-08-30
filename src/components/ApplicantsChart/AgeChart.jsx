@@ -12,8 +12,8 @@ import {
 function AgeChart({ data, compareLabel }) {
   const formatTooltip = (value, name, props) => {
     const { change } = props.payload;
-    let changeText = '';
     if (compareLabel && change !== undefined) {
+      let changeText = '';
       if (change > 0) {
         changeText = `${change}% more than ${compareLabel}`;
       } else if (change < 0) {
@@ -28,12 +28,22 @@ function AgeChart({ data, compareLabel }) {
 
   return (
     <div style={{ width: '800px', height: 500, margin: '0 auto', padding: '20px' }}>
-      <h2>Applicants grouped by Age</h2>
+      <h2>Applicants Grouped by Age</h2>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barSize={80}>
+        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 40 }} barSize={80}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="ageGroup" />
-          <YAxis />
+          <XAxis
+            dataKey="ageGroup"
+            label={{ value: 'Age Group', position: 'insideBottom', offset: -5 }}
+          />
+          <YAxis
+            label={{
+              value: 'Number of Applicants',
+              angle: -90,
+              position: 'insideLeft',
+              offset: -5,
+            }}
+          />
           <Tooltip formatter={formatTooltip} />
           <Bar dataKey="applicants" fill="#3b82f6">
             <LabelList dataKey="applicants" position="top" />
