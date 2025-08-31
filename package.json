@@ -109,6 +109,7 @@
     "redux-thunk": "^2.4.2",
     "semver": "^7.7.2",
     "stream-browserify": "^3.0.0",
+    "slugify": "^1.6.6",
     "tinymce": "^7.2.0",
     "util": "^0.12.5",
     "uuid": "^9.0.1"
