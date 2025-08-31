@@ -99,7 +99,11 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
-import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
+import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
+
+//job analytics
+import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
+
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 
@@ -516,6 +520,12 @@ export default (
           component={JobCCDashboard}
           fallback
           allowedRoles={[UserRole.Owner]}
+        />
+        <ProtectedRoute
+          path="/jobanalytics"
+          exact
+          component={HoursPledgedChart}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
