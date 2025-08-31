@@ -25,7 +25,7 @@ export const getPeopleReportData = state => ({
   darkMode: state.theme.darkMode,
 });
 
-export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
+export const peopleTasksPieChartViewData = ({ userProjects, timeEntries, userTask }) => {
 
   // console.log('userProjects:', userProjects);
   // console.log('timeEntries:', timeEntries);
@@ -42,11 +42,11 @@ export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
   //  }
 
   timeEntries.period.forEach(entry => {
-    const { projectId } = entry;
-    if (!projectId) return; // Skip if projectId is missing
-
-    const time = entry.hours + entry.minutes / 60;
-    hoursLoggedToProjectsOnly[projectId] = (hoursLoggedToProjectsOnly[projectId] || 0) + time;
+    const { projectId, wbsId } = entry;
+    if (!projectId || wbsId !== null) return;
+    const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
+    hoursLoggedToProjectsOnly[projectId] =
+      (hoursLoggedToProjectsOnly[projectId] || 0) + time;
   });
 
   timeEntries.period.forEach(entry => {
@@ -78,14 +78,21 @@ export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
   })
   // .filter(p => p.totalTime > 0); // commented this line to  display all the projects even though the hours are not logged
 
-  const resultArray2 = Object.keys(tasksWithLoggedHoursOnly).map(taskId => {
-    const task = tasksWithLoggedHoursOnly[taskId];
-    return {
-      projectId: taskId, // used for coloring; can change if needed
-      projectName: task.taskName,
-      totalTime: task.totalTime,
-    };
+  const hoursByTask = {};
+  (timeEntries?.period ?? []).forEach(e => {
+    const taskId = e?.taskId ?? e?.wbsId;
+    if (taskId != null) {
+      const h = (e.hours || 0) + (e.minutes || 0) / 60;
+      hoursByTask[taskId] = (hoursByTask[taskId] || 0) + h;
+    }
   });
+
+  const resultArray2 = (userTask ?? []).map(t => ({
+    projectId: t._id ?? t.taskId ?? t.wbsId,
+    projectName: t.taskName ?? t.wbsName ?? 'Unnamed Task',
+    totalTime: Number(t.hoursLogged) || 0,
+  }));
+
 
 
   hoursLoggedToProjectsOnly = resultArray;
