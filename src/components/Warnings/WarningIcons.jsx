@@ -1,20 +1,25 @@
 /* eslint-disable react/jsx-props-no-spreading */
 
 import { v4 as uuidv4 } from 'uuid';
+import { useDispatch } from 'react-redux';
+import hasPermission from '../../utils/permissions';
 import WarningIcon from './WarningIcon';
 
 function WarningIcons({
   handleWarningIconClicked,
   warnings,
   warningText,
-  handleModalTriggered,
+  handleShowWarningModal,
   numberOfWarnings,
+  userProfileModal,
   handleIssueWarning,
-  canIssueTrackingWarnings,
-  canIssueBlueSquare,
-  canDeleteWarning,
 }) {
   const filledWarnings = warnings.concat(Array.from({ length: Math.max(8 - warnings.length, 0) }));
+  const dispatch = useDispatch();
+
+  const canIssueTrackingWarnings = dispatch(hasPermission('issueTrackingWarnings'));
+  const canIssueBlueSquare = dispatch(hasPermission('issueBlueSquare'));
+  const canDeleteWarning = dispatch(hasPermission('deleteWarning'));
 
   return (
     <div className="warning-icons">
@@ -27,12 +32,13 @@ function WarningIcons({
               handleWarningIconClicked={handleWarningIconClicked}
               {...warning}
               warningText={warningText}
-              handleModalTriggered={handleModalTriggered}
+              handleShowWarningModal={handleShowWarningModal}
               numberOfWarnings={numberOfWarnings}
               handleIssueWarning={handleIssueWarning}
               canIssueTrackingWarnings={canIssueTrackingWarnings}
               canIssueBlueSquare={canIssueBlueSquare}
               canDeleteWarning={canDeleteWarning}
+              userProfileModal={userProfileModal}
             />
           );
         }
@@ -42,12 +48,13 @@ function WarningIcons({
             key={uuidv4()}
             handleWarningIconClicked={handleWarningIconClicked}
             warningText={warningText}
-            handleModalTriggered={handleModalTriggered}
+            handleShowWarningModal={handleShowWarningModal}
             numberOfWarnings={numberOfWarnings}
             handleIssueWarning={handleIssueWarning}
             canIssueTrackingWarnings={canIssueTrackingWarnings}
             canIssueBlueSquare={canIssueBlueSquare}
             canDeleteWarning={canDeleteWarning}
+            userProfileModal={userProfileModal}
           />
         );
       })}
