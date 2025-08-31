@@ -1420,20 +1420,20 @@ const WeeklySummariesReport = props => {
       console.log('✅ Successfully updated user on backend:', res.data);
 
       // Step 4: Optionally, force refetch latest summaries from backend
-      const currentWeekIndex = navItems.indexOf(state.activeTab);
-      const freshSummariesRes = await axios.get(
-        `/api/reports/weeklysummaries?week=${currentWeekIndex}&forceRefresh=true`,
-      );
-      const freshSummaries = Array.isArray(freshSummariesRes.data) ? freshSummariesRes.data : [];
+      // const currentWeekIndex = navItems.indexOf(state.activeTab);
+      // const freshSummariesRes = await axios.get(
+      //   `/api/reports/weeklysummaries?week=${currentWeekIndex}&forceRefresh=true`,
+      // );
+      // const freshSummaries = Array.isArray(freshSummariesRes.data) ? freshSummariesRes.data : [];
 
-      setState(prev => ({
-        ...prev,
-        summaries: freshSummaries,
-        summariesByTab: {
-          ...prev.summariesByTab,
-          [state.activeTab]: freshSummaries,
-        },
-      }));
+      // setState(prev => ({
+      //   ...prev,
+      //   summaries: freshSummaries,
+      //   summariesByTab: {
+      //     ...prev.summariesByTab,
+      //     [state.activeTab]: freshSummaries,
+      //   },
+      // }));
     } catch (err) {
       console.error('❌ Failed to update filterColor:', err);
       toast.error('Failed to update filterColor. Please try again.');
@@ -1492,9 +1492,71 @@ const WeeklySummariesReport = props => {
             email: props.auth?.user?.email,
           },
         })
-        .catch(err => console.error(`Failed to update user ${user._id}`, err)),
+        .then(() => console.log(`✅ Updated ${user._id}`))
+        .catch(err => {
+          // console.error(`Failed to update user ${user._id}`, err)
+          const status = err?.response?.status;
+          const msg = err?.response?.data?.message || err.message;
+          console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
+        }),
     );
+    // matchingUsers.forEach(user => {
+    //   const payload = {
+    //     filterColor: [color], // always overwrite
+    //     requestor: {
+    //       requestorId: props.auth?.user?._id,
+    //       role: props.auth?.user?.role,
+    //       permissions: props.auth?.user?.permissions,
+    //       email: props.auth?.user?.email,
+    //     },
+    //   };
+
+    //   props
+    //     .updateOneSummaryReport(user._id, payload)
+    //     .then(() => console.log(`✅ Updated ${user._id}`))
+    //     .catch(err => {
+    //       const status = err?.response?.status;
+    //       const msg = err?.response?.data?.message || err.message;
+    //       console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
+    //     });
+    // });
   };
+
+  // const handleBulkDotClick = async (color, selectedUsers = []) => {
+  //   if (!Array.isArray(selectedUsers) || selectedUsers.length === 0) {
+  //     console.warn('⚠️ No users passed to handleBulkDotClick');
+  //     return;
+  //   }
+  //   try {
+  //     await Promise.all(
+  //       console.log('selectedUsers in bulk:', selectedUsers),
+  //       console.log('typeof:', typeof selectedUsers, Array.isArray(selectedUsers)),
+  //       selectedUsers.map(async user => {
+  //         const payload = {
+  //           firstName: user.firstName || 'Unknown',
+  //           lastName: user.lastName || 'Unknown',
+  //           personalLinks: Array.isArray(user.personalLinks) ? user.personalLinks : [],
+  //           adminLinks: Array.isArray(user.adminLinks) ? user.adminLinks : [],
+  //           filterColor: [color],
+  //           requestor: {
+  //             requestorId: currentUser._id,
+  //             role: currentUser.role,
+  //             permissions: currentUser.permissions,
+  //           },
+  //         };
+
+  //         console.log('🚀 Bulk PUT payload:', payload);
+
+  //         await axios.put(`/userProfile/${user._id}`, payload);
+  //       }),
+  //     );
+
+  //     toast.success('✅ Bulk color update applied!');
+  //   } catch (err) {
+  //     console.error('❌ Bulk color update failed:', err);
+  //     toast.error('Bulk update failed');
+  //   }
+  // };
 
   const passwordInputModalToggle = () => {
     try {
@@ -1526,10 +1588,12 @@ const WeeklySummariesReport = props => {
     }));
 
     // console.log('Initial useEffect running');
-    props.getWeeklySummariesReport(); // ✅ Ensures fresh MongoDB data is loaded
-
+    // props.getWeeklySummariesReport().then(freshSummaries => {
+    //   createIntialSummaries(freshSummaries);
+    // }); // ✅ Ensures fresh MongoDB data is loaded
+    props.getWeeklySummariesReport();
     // Only load the initial tab, nothing else
-    createIntialSummaries();
+    // createIntialSummaries();
 
     return () => {
       isMounted = false;
@@ -1564,34 +1628,106 @@ const WeeklySummariesReport = props => {
     state.activeTab,
   ]);
 
+  // workingggggggggg
   // When Redux summaries change, store ONLY for current tab
+  // useEffect(() => {
+  //   if (!props.summaries?.length) return;
+  //   // if (props.summaries?.length) {
+  //   //   createIntialSummaries(props.summaries);
+  //   // }
+  //   if (!state.summaries?.length) {
+  //     const merged = props.summaries.map(incoming => ({
+  //       ...incoming,
+  //       filterColor: Array.isArray(incoming.filterColor) ? [...incoming.filterColor] : [],
+  //     }));
+
+  //     setState(prev => {
+  //       const merged = props.summaries.map(incoming => ({
+  //         ...incoming,
+  //         filterColor: Array.isArray(incoming.filterColor) ? [...incoming.filterColor] : [],
+  //       }));
+  //       //   const existing = prev.summaries.find(s => s._id === incoming._id);
+  //       //   return {
+  //       //     ...incoming,
+  //       //     filterColor: Array.isArray(incoming.filterColor)
+  //       //       ? [...incoming.filterColor]
+  //       //       : existing?.filterColor || [],
+  //       //   };
+  //       // });
+  //       return {
+  //         ...prev,
+  //         summaries: merged,
+  //         summariesByTab: {
+  //           ...prev.summariesByTab,
+  //           [prev.activeTab]: merged,
+  //         },
+  //       };
+  //     });
+  //   }
+  // }, [props.summaries]);
+
+  // trying
   useEffect(() => {
     if (!props.summaries?.length) return;
 
     setState(prev => {
-      const merged = props.summaries.map(incoming => ({
-        ...incoming,
-        filterColor: Array.isArray(incoming.filterColor) ? [...incoming.filterColor] : [],
-      }));
-      //   const existing = prev.summaries.find(s => s._id === incoming._id);
-      //   return {
-      //     ...incoming,
-      //     filterColor: Array.isArray(incoming.filterColor)
-      //       ? [...incoming.filterColor]
-      //       : existing?.filterColor || [],
-      //   };
-      // });
+      // Keep existing summaries (with correct filterColor)
+      const existingSummaries = prev.summaries?.length ? prev.summaries : props.summaries;
+
+      // Build teamCodes fresh from summaries
+      const teamCodeCounts = existingSummaries.reduce((acc, { teamCode }) => {
+        acc[teamCode] = (acc[teamCode] || 0) + 1;
+        return acc;
+      }, {});
+      const teamCodeWithUserId = existingSummaries.reduce((acc, { _id, teamCode }) => {
+        if (acc[teamCode]) acc[teamCode].push(_id);
+        else acc[teamCode] = [_id];
+        return acc;
+      }, {});
+
+      let teamCodes = Object.entries(teamCodeCounts)
+        .filter(([code, count]) => code?.length > 0 && count > 0)
+        .map(([code, count]) => ({
+          label: `${code} (${count})`,
+          value: code,
+          _ids: teamCodeWithUserId[code],
+        }));
+
+      const noTeamCodeCount = teamCodeCounts[''] || 0;
+      teamCodes
+        .sort((a, b) => a.label.localeCompare(b.label))
+        .push({
+          value: '',
+          label: `Select All With NO Code (${noTeamCodeCount})`,
+          _ids: teamCodeWithUserId[''] || [],
+        });
+
       return {
         ...prev,
-        summaries: merged,
-        summariesByTab: {
-          ...prev.summariesByTab,
-          [prev.activeTab]: merged,
-        },
+        summaries: existingSummaries,
+        teamCodes,
       };
     });
   }, [props.summaries]);
 
+  useEffect(() => {
+    // Define all possible color options (the ones you mentioned)
+    const allColors = [
+      { label: 'Select All', value: 'selectAll' },
+      { label: 'Not Required', value: 'notRequired' },
+      { label: 'Required', value: 'required' },
+      { label: 'Team', value: 'team' },
+      { label: 'Team Lush', value: 'teamLush' },
+      { label: 'Team Sky', value: 'teamSky' },
+      { label: 'Team Skye', value: 'teamSkye' },
+      // Add more if needed
+    ];
+
+    setState(prev => ({
+      ...prev,
+      colorOptions: allColors,
+    }));
+  }, []);
   // When active tab changes, load from cache or fetch fresh
   useEffect(() => {
     if (state.summariesByTab[state.activeTab]) {
@@ -1839,24 +1975,37 @@ const WeeklySummariesReport = props => {
             {hasPermissionToFilter && (
               <>
                 <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                  <span>Filter by Special Colors</span>
+                  <span>Filter by Special Colors:</span>
                   <div
                     style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
                   >
-                    {['purple', 'green', 'navy'].map(color => (
-                      <SlideToggle
-                        key={`${color}-toggle`}
-                        className={styles.slideToggle}
-                        color={color}
-                        onChange={handleSpecialColorToggleChange}
-                      />
-                    ))}
+                    {['purple', 'green', 'navy'].map(color => {
+                      const labelMap = {
+                        purple: 'Admin Team',
+                        green: '20 Hour HGN Team',
+                        navy: '10 Hour HGN Team',
+                      };
+                      return (
+                        <div
+                          key={`${color}-toggle`}
+                          style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                        >
+                          <span className={styles.filterLabel}>{labelMap[color]}</span>
+                          <SlideToggle
+                            key={`${color}-toggle`}
+                            className={styles.slideToggle}
+                            color={color}
+                            onChange={handleSpecialColorToggleChange}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
                 {state.selectedCodes.length > 0 && (
                   <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
-                    <span className={styles.selectAllLabel}>Select All (Visible Users)</span>
+                    <span className={styles.selectAllLabel}>Select All (Visible Users): </span>
                     <div className={styles.dotSelector}>
                       {['purple', 'green', 'navy'].map(color => (
                         <span

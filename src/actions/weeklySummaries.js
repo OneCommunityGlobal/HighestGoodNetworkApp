@@ -204,74 +204,86 @@ export const getWeeklySummariesReport = (weekIndex = null) => {
   };
 };
 
-export const updateOneSummaryReport = (userId, fullUserPayload) => {
-  // const url = ENDPOINTS.USER_PROFILE(userId);
-  // return async dispatch => {
-  //   const { data: userProfile } = await axios.get(url);
-  //   const payload = { ...userProfile, ...updatedField };
-  //   // eslint-disable-next-line no-console
-  //   console.log('🛰 PUT payload being sent:', payload);
-  //   const res = await axios.put(url, {
-  //     ...userProfile,
-  //     ...updatedField,
-  //   });
+// working
+// export const updateOneSummaryReport = (userId, fullUserPayload) => {
+//   // const url = ENDPOINTS.USER_PROFILE(userId);
+//   // return async dispatch => {
+//   //   const { data: userProfile } = await axios.get(url);
+//   //   const payload = { ...userProfile, ...updatedField };
+//   //   // eslint-disable-next-line no-console
+//   //   console.log('🛰 PUT payload being sent:', payload);
+//   //   const res = await axios.put(url, {
+//   //     ...userProfile,
+//   //     ...updatedField,
+//   //   });
 
-  //   // 🔹 Step 4 debug: log backend response explicitly
-  //   // eslint-disable-next-line no-console
-  //   console.log('🔍 Backend returned after PUT:', res.data);
-  //   // eslint-disable-next-line no-console
-  //   console.log('✅ PUT response:', res.data);
+//   //   // 🔹 Step 4 debug: log backend response explicitly
+//   //   // eslint-disable-next-line no-console
+//   //   console.log('🔍 Backend returned after PUT:', res.data);
+//   //   // eslint-disable-next-line no-console
+//   //   console.log('✅ PUT response:', res.data);
 
-  //   if (res.status === 200) {
-  //     dispatch(updateSummaryReport({ _id: userId, updatedField }));
-  //     // eslint-disable-next-line no-console
-  //     console.log('🟢 Redux state updated with:', updatedField);
-  //     return res;
-  //   }
+//   //   if (res.status === 200) {
+//   //     dispatch(updateSummaryReport({ _id: userId, updatedField }));
+//   //     // eslint-disable-next-line no-console
+//   //     console.log('🟢 Redux state updated with:', updatedField);
+//   //     return res;
+//   //   }
 
-  //   throw new Error(`An error occurred while attempting to save the changes to the profile.`);
-  // };
+//   //   throw new Error(`An error occurred while attempting to save the changes to the profile.`);
+//   // };
+//   const url = ENDPOINTS.USER_PROFILE(userId);
+//   return async dispatch => {
+//     // try {
+//     //   // Optional: fetch current user profile if needed
+//     //   // const { data: userProfile } = await axios.get(url);
+//     //   const state = getState();
+//     //   const allUsers = Array.isArray(state.weeklySummariesReport?.summaries)
+//     //     ? state.weeklySummariesReport.summaries
+//     //     : [];
+//     //   const currentUser = allUsers.find(u => u._id === userId);
+
+//     //   if (!currentUser) throw new Error('User not found in state');
+
+//     //   // Merge updatedField (like filterColor) into the full user object
+//     //   const payload = { ...currentUser, ...updatedField };
+
+//     //   // Send the PUT and get server response (server should return the saved user)
+//     //   // const res = await axios.put(url, {
+//     //   //   ...updatedField, // send only updated fields (you already normalized on client)
+//     //   // });
+//     //   const res = await axios.put(url, payload);
+//     //   // Log for debugging
+//     //   // eslint-disable-next-line no-console
+//     //   console.log('✅ PUT response (updateOneSummaryReport):', res.data);
+
+//     //   if (res.status === 200) {
+//     //     // Dispatch the server-truth into the store.
+//     //     // IMPORTANT: payload should be the full user object (or at least fields the UI needs)
+//     //     dispatch(updateSummaryReport({ _id: userId, updatedField: res.data }));
+
+//     //     // Return the server response so callers can use res.data
+//     //     return res;
+//     //   }
+
+//     //   throw new Error('Failed to save profile');
+//     // } catch (err) {
+//     //   // rethrow so caller's try/catch can handle revert
+//     //   throw err;
+//     // }
+//     //above was good byt not working code
+//     const res = await axios.put(url, fullUserPayload);
+//     if (res.status === 200) {
+//       dispatch(updateSummaryReport({ _id: userId, updatedField: res.data }));
+//       return res;
+//     }
+//     throw new Error('Failed to save profile');
+//   };
+// };
+export const updateOneSummaryReport = (userId, payload) => {
   const url = ENDPOINTS.USER_PROFILE(userId);
   return async dispatch => {
-    // try {
-    //   // Optional: fetch current user profile if needed
-    //   // const { data: userProfile } = await axios.get(url);
-    //   const state = getState();
-    //   const allUsers = Array.isArray(state.weeklySummariesReport?.summaries)
-    //     ? state.weeklySummariesReport.summaries
-    //     : [];
-    //   const currentUser = allUsers.find(u => u._id === userId);
-
-    //   if (!currentUser) throw new Error('User not found in state');
-
-    //   // Merge updatedField (like filterColor) into the full user object
-    //   const payload = { ...currentUser, ...updatedField };
-
-    //   // Send the PUT and get server response (server should return the saved user)
-    //   // const res = await axios.put(url, {
-    //   //   ...updatedField, // send only updated fields (you already normalized on client)
-    //   // });
-    //   const res = await axios.put(url, payload);
-    //   // Log for debugging
-    //   // eslint-disable-next-line no-console
-    //   console.log('✅ PUT response (updateOneSummaryReport):', res.data);
-
-    //   if (res.status === 200) {
-    //     // Dispatch the server-truth into the store.
-    //     // IMPORTANT: payload should be the full user object (or at least fields the UI needs)
-    //     dispatch(updateSummaryReport({ _id: userId, updatedField: res.data }));
-
-    //     // Return the server response so callers can use res.data
-    //     return res;
-    //   }
-
-    //   throw new Error('Failed to save profile');
-    // } catch (err) {
-    //   // rethrow so caller's try/catch can handle revert
-    //   throw err;
-    // }
-    //above was good byt not working code
-    const res = await axios.put(url, fullUserPayload);
+    const res = await axios.put(url, payload); 
     if (res.status === 200) {
       dispatch(updateSummaryReport({ _id: userId, updatedField: res.data }));
       return res;

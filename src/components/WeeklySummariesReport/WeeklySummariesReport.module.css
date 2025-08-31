@@ -177,7 +177,11 @@
   display: flex;
   align-items: center;
 }
-
+.filterLabel {
+  font-size: 13px;   /* same as Filter by Special Colors */
+  font-weight: 500;
+  color: #333;
+}
 
 .marginRight {
   margin-right: 20px;

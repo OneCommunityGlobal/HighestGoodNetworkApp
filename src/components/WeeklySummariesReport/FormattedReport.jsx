@@ -60,6 +60,12 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
+const teamColorMap = {
+  purple: 'Admin Team',
+  green: '20 Hour Team',
+  navy: '10 Hour Team',
+};
+
 const isLastWeekReport = (startDateStr, endDateStr) => {
   if (!startDateStr || !endDateStr) return false;
   const summaryStart = new Date(startDateStr);
@@ -520,6 +526,19 @@ function TeamCodeRow({
             {teamCode === '' ? 'No assigned team code!' : teamCode}
           </div>
         )}
+        {/* <div style={{ width: '107px', paddingRight: '5px', position: 'relative' }}>
+          <Input
+            id="codeInput"
+            value={teamCode ?? ''} // fallback to empty string
+            onChange={e => {
+              if (e.target.value !== teamCode) {
+                handleCodeChange(e);
+              }
+            }}
+            placeholder="X-XXX"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+          />
+        </div> */}
         <b>Media URL:</b>
         <MediaUrlLink summary={summary} />
       </div>
@@ -971,6 +990,17 @@ function Index({
           />
         ))}
       </div>
+
+      {Array.isArray(summary.filterColor) && summary.filterColor.length > 0 && (
+        <span style={{ marginLeft: '8px', fontSize: '0.85rem', color: '#555' }}>
+          (
+          {summary.filterColor
+            .map(color => teamColorMap[color])
+            .filter(Boolean)
+            .join(', ')}
+          )
+        </span>
+      )}
 
       {Array.isArray(summary.promisedHoursByWeek) &&
         summary.promisedHoursByWeek.length > weekIndex &&
