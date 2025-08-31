@@ -273,7 +273,7 @@ export function Header(props) {
     if (!userId || hasProfileLoaded) return;
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response.data;
+      const newUserProfile = response?.data;
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
@@ -368,7 +368,7 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/timelog">
+                  <NavLink tag={Link} to="/timelog#currentWeek">
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
