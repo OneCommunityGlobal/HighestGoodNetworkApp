@@ -19,9 +19,18 @@ function ProfileNavDot({ userId }) {
 
   return (
     <span
+      role="button"
+      tabIndex={0}
       style={{ fontSize: '1.5rem', cursor: 'pointer' }}
       onClick={handleClick}
       title="Click here to go to the user's profile."
+      aria-label="Go to user profile"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick(e);
+        }
+      }}
     >
       <i className="fa fa-user" />
     </span>
