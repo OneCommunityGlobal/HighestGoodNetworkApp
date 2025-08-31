@@ -160,6 +160,7 @@ const ImportTask = props => {
           <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
             <tbody>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td scope="col">
                   <div id="instruction">
                     {instruction}
@@ -168,6 +169,7 @@ const ImportTask = props => {
               </tr>
               {importStatus === 'choosing' ? (
                 <tr>
+                  {/* eslint-disable-next-line jsx-a11y/scope */}
                   <td scope="col">
                     <input
                       type="file"
@@ -261,6 +263,7 @@ const ImportTask = props => {
         </ModalFooter>
       </Modal>
       <Button color="primary" className="controlBtn" size="sm" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+        {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
         <span onClick={toggle}>Import Tasks</span>
       </Button>
     </>
