@@ -8,7 +8,6 @@ import DatePicker from 'react-datepicker';
 
 import styles from './LessonsLearntChart.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import './LessonsLearntChart.css';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
@@ -65,8 +64,32 @@ const LessonsLearntChart = () => {
     endDate,
   );
 
+  const handleProjectChange = selected => {
+    setSelectedProjects(selected || []);
+  };
+
+  const chartData = {
+    labels: lessonsData.map(d => d.projectName),
+    datasets: [
+      {
+        label: 'Lessons Learnt',
+        data: lessonsData.map(d => d.percentage),
+        backgroundColor: '#10b981',
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: false,
+      },
+    },
+  };
+
   return (
-    <div className="styles.chartContainer">
+    <div className={styles.chartContainer}>
       <ChartTitle title="Lessons Learnt" />
 
       <div className={styles.filterRow}>
@@ -93,19 +116,34 @@ const LessonsLearntChart = () => {
       </div>
 
       <div className={styles.chartWrapper}>
-        {isLoading ? <p>Loading...</p> : <Bar data={chartData} options={chartOptions} />}
-        <div className={styles.percentageLabels}>
-          {lessonsData.map((d, idx) => (
-            <span
-              key={idx}
-              className={styles.percentageLabel}
-              style={{ left: `${(idx + 0.5) * (100 / lessonsData.length)}%` }}
-            >
-              {d.percentage}%
-            </span>
-          ))}
-        </div>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : lessonsData.length === 0 ? (
+          <p>No lessons data available for the selected criteria</p>
+        ) : (
+          <>
+            <Bar data={chartData} options={chartOptions} />
+            <div className={styles.percentageLabels}>
+              {lessonsData.map((d, idx) => (
+                <span
+                  key={idx}
+                  className={styles.percentageLabel}
+                  style={{
+                    left:
+                      lessonsData.length > 0
+                        ? `${(idx + 0.5) * (100 / lessonsData.length)}%`
+                        : '0%',
+                  }}
+                >
+                  {d.percentage}%
+                </span>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
 };
+
+export default LessonsLearntChart;
