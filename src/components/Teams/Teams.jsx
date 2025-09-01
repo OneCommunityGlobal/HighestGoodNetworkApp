@@ -54,7 +54,7 @@ class Teams extends React.PureComponent {
   componentDidMount() {
     // Initiating the teams fetch action.
     this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
-    this.props.getAllUserTeams();
+    this.props.getAllUserTeams('all');
     this.props.getAllUserProfile();
   }
 
@@ -161,6 +161,7 @@ class Teams extends React.PureComponent {
                         darkMode={darkMode}
                       />
                     </thead>
+                    {console.log('sortedTeams:', this.state.sortedTeams)}
                     <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.sortedTeams}</tbody>
                   </table>
                 </div>
