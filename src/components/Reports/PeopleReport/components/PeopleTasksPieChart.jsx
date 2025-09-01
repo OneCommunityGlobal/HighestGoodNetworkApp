@@ -1,78 +1,79 @@
-/* eslint-disable import/prefer-default-export */
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
-import { UserProjectPieChart } from '../../../common/PieChart/ProjectPieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
 import './PeopleTasksPieChart.css';
-// import { ProjectPieChart } from '~/components/Reports/ProjectReport/ProjectPieChart/ProjectPieChart';
 
-export function PeopleTasksPieChart({ darkMode }) {
+export const PeopleTasksPieChart = ({ darkMode }) => {
   const {
     tasksWithLoggedHoursById,
     showTasksPieChart,
     showProjectsPieChart,
     tasksLegend,
-    // showViewAllTasksButton,
-    hoursLoggedToProjectsOnly,
+    projectsWithLoggedHoursById,
+    projectsWithLoggedHoursLegend,
+    displayedTasksLegend,
+    showViewAllTasksButton,
   } = useSelector(peopleTasksPieChartViewData);
 
-  const showTasksPie = showTasksPieChart;
-  
-  // const [showAllTasks, setShowAllTasks] = useState(false);
+  const [showAllTasks, setShowAllTasks] = useState(false);
 
-  if (!showTasksPieChart && !showProjectsPieChart) {
-    return null;
-  }
+  // This is a more robust way to handle the key press for accessibility
+  const handleViewAllKeyPress = (event) => {
+    // This allows the "button" to be activated with Enter or Space, like a real button
+    if (event.key === 'Enter' || event.key === ' ') {
+      setShowAllTasks(prev => !prev);
+    }
+  };
 
-  // function handleViewAll() {
-  //   setShowAllTasks(prev => !prev);
-  // }
-
+  const handleViewAllClick = () => {
+    setShowAllTasks(prev => !prev);
+  };
 
   return (
-    <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`} >
-      {hoursLoggedToProjectsOnly.length!==0 && (
-        <ReportPage.ReportBlock darkMode={darkMode} >
-          <div style={{
-    height: showTasksPie ? '' : '615px', padding: showTasksPie ? '' : '90px' 
-  }}>
-     <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
-          {hoursLoggedToProjectsOnly.length!==0 && <UserProjectPieChart
-            pieChartId="projectsPieChart"
+    <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
+      {!showProjectsPieChart && (
+        <ReportPage.ReportBlock darkMode={darkMode}>
+          <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
+          <PieChart
+            pieChartId={'projectsPieChart'}
+            data={projectsWithLoggedHoursById}
+            dataLegend={projectsWithLoggedHoursLegend}
+            chartLegend={projectsWithLoggedHoursLegend}
+            dataLegendHeader="Hours"
             darkMode={darkMode}
-            projectsData={hoursLoggedToProjectsOnly}
-            tasksData={tasksLegend}       
-          />}
-  </div>
-         
+          />
         </ReportPage.ReportBlock>
       )}
-      {showTasksPieChart && (
+      {!showTasksPieChart && (
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <h5 className="people-pie-charts-header">
-            {/* {`${
+          <h5 className="people-pie-charts-header">{`${
             showViewAllTasksButton ? 'Last ' : ''
-          } */}
-          Tasks With Completed Hours
-          {/* } */}
-          </h5>
+          }Tasks With Completed Hours`}</h5>
           <PieChart
-            pieChartId="tasksPieChart"
-            darkMode={darkMode}
+            pieChartId={'tasksPieChart'}
             data={tasksWithLoggedHoursById}
-            tasksData={tasksLegend}
-            projectsData={hoursLoggedToProjectsOnly}
+            dataLegend={showAllTasks ? tasksLegend : displayedTasksLegend}
+            chartLegend={tasksLegend}
+            dataLegendHeader="Hours"
+            darkMode={darkMode}
           />
-          {/* {showViewAllTasksButton && (
+          {showViewAllTasksButton && (
             <div>
-              <div onClick={handleViewAll} className="show-all-tasks-button">
+              <div
+                onClick={handleViewAllClick}
+                onKeyDown={handleViewAllKeyPress}
+                role="button"
+                tabIndex={0}
+                className="show-all-tasks-button"
+              >
                 {showAllTasks ? 'Collapse' : 'View all'}
               </div>
             </div>
-          )} */}
+          )}
         </ReportPage.ReportBlock>
       )}
     </div>
   );
-}
+};
