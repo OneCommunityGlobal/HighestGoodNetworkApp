@@ -115,7 +115,7 @@ class ReportsPage extends Component {
     const fetchProjects = this.props.fetchAllProjects();
     const fetchTeams = this.props.getAllUserTeams();
     // Added 'Report' parameter to identify the source for fetching all user basic info
-    const fetchUserProfile = this.props.getUserProfileBasicInfo('Report');
+    const fetchUserProfile = this.props.getUserProfileBasicInfo({source:'Report'});
 
     // parallel api calls
     await Promise.all([fetchProjects, fetchTeams, fetchUserProfile]);
@@ -454,7 +454,8 @@ class ReportsPage extends Component {
       showAddTimeForm: false,
       showAddProjHistory: false,
       showAddPersonHistory: false,
-      showAddTeamHistory: false
+      showAddTeamHistory: false,
+      showCharts: !prevState.showContributorsReport
     }));
   }
 
