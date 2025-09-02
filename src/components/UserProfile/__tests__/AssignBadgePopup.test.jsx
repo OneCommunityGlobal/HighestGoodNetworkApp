@@ -32,7 +32,7 @@ const tip2 = 'Want to assign multiple of the same badge to a person? Repeat the 
 const renderComponent = () => {
   render(
     <Provider store={store}>
-      <AssignBadgePopup test={true} />
+      <AssignBadgePopup isTableOpen={true} />
     </Provider>,
   );
 };
