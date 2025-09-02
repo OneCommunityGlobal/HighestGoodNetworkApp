@@ -15,8 +15,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './MonthsPledgedChart.css';
 import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
+import { useSelector } from 'react-redux'; // assuming darkMode is in Redux
 
 const MonthsPledgedChart = () => {
+  const darkMode = useSelector(state => state.theme.darkMode); // true or false
   const [data, setData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -45,11 +47,9 @@ const MonthsPledgedChart = () => {
           setAllRoles(roles.map(role => ({ value: role, label: role })));
         }
       } else {
-        // console.error('Expected array but got:', result);
         setData([]);
       }
     } catch (error) {
-      // console.error('Error fetching data:', error);
       setData([]);
     } finally {
       setLoading(false);
@@ -68,19 +68,27 @@ const MonthsPledgedChart = () => {
 
   const maxValue = Math.max(...data.map(item => item.avgMonthsPledged), 10);
 
+  // Colors based on theme
+  const bgColor = darkMode ? '#1e1e2f' : 'white';
+  const textColor = darkMode ? 'white' : 'black';
+  const gridColor = darkMode ? '#444' : '#e0e0e0';
+  const tooltipBg = darkMode ? '#2a2a3b' : 'white';
+  const tooltipText = darkMode ? 'white' : 'black';
+  const barColor = '#FFD700'; // keep same for light/dark
+
   return (
     <div
       style={{
-        backgroundColor: 'white',
+        backgroundColor: bgColor,
         padding: '24px',
         borderRadius: '8px',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+        boxShadow: darkMode ? '0 2px 10px rgba(0,0,0,0.5)' : '0 2px 10px rgba(0,0,0,0.1)',
         margin: '20px',
       }}
     >
       <h2
         style={{
-          color: 'black',
+          color: textColor,
           marginBottom: '24px',
           fontSize: '20px',
           fontWeight: '600',
@@ -99,7 +107,7 @@ const MonthsPledgedChart = () => {
         }}
       >
         <div style={{ flex: 1, minWidth: '300px' }}>
-          <label htmlFor="startDate" style={{ color: 'black', fontWeight: '500' }}>
+          <label htmlFor="startDate" style={{ color: textColor, fontWeight: '500' }}>
             Date Range
           </label>
           <div style={{ display: 'flex', gap: '10px' }}>
@@ -113,7 +121,7 @@ const MonthsPledgedChart = () => {
               placeholderText="Start Date"
               dateFormat="yyyy-MM-dd"
               isClearable
-              className="date-picker"
+              className={`date-picker ${darkMode ? 'dark' : ''}`}
             />
             <label
               htmlFor="endDate"
@@ -141,13 +149,13 @@ const MonthsPledgedChart = () => {
               placeholderText="End Date"
               dateFormat="yyyy-MM-dd"
               isClearable
-              className="date-picker"
+              className={`date-picker ${darkMode ? 'dark' : ''}`}
             />
           </div>
         </div>
 
         <div style={{ flex: 1, minWidth: '300px' }}>
-          <label htmlFor="filterRoles" style={{ color: 'black', fontWeight: '500' }}>
+          <label htmlFor="filterRoles" style={{ color: textColor, fontWeight: '500' }}>
             Filter Roles
           </label>
           <Select
@@ -162,7 +170,15 @@ const MonthsPledgedChart = () => {
                 ...base,
                 border: '1px solid #ddd',
                 minHeight: '38px',
+                backgroundColor: darkMode ? '#2a2a3b' : '#FFF8DC',
+                color: textColor,
               }),
+              singleValue: base => ({ ...base, color: textColor }),
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#444' : '#DAA520',
+              }),
+              multiValueLabel: base => ({ ...base, color: darkMode ? 'white' : 'white' }),
             }}
           />
         </div>
@@ -172,11 +188,11 @@ const MonthsPledgedChart = () => {
           style={{
             alignSelf: 'flex-end',
             padding: '8px 16px',
-            backgroundColor: '#f5f5f5',
-            border: '1px solid #ddd',
+            backgroundColor: darkMode ? '#2a2a3b' : '#f5f5f5',
+            border: `1px solid ${darkMode ? '#444' : '#ddd'}`,
             borderRadius: '4px',
             cursor: 'pointer',
-            color: 'black',
+            color: textColor,
           }}
         >
           Reset Filters
@@ -184,7 +200,9 @@ const MonthsPledgedChart = () => {
       </div>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: 'black' }}>Loading data...</div>
+        <div style={{ textAlign: 'center', padding: '40px', color: textColor }}>
+          Loading data...
+        </div>
       ) : data.length > 0 ? (
         <div style={{ height: '500px' }}>
           <ResponsiveContainer width="100%" height="100%">
@@ -193,52 +211,95 @@ const MonthsPledgedChart = () => {
               data={data}
               margin={{ top: 20, right: 30, left: 150, bottom: 40 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
               <XAxis
                 type="number"
                 domain={[0, maxValue * 1.1]}
-                stroke="black"
-                tick={{ fill: 'black' }}
+                stroke={textColor} // axis line
+                tick={props => {
+                  const { x, y, payload } = props;
+                  return (
+                    <text
+                      x={x}
+                      y={y + 5} // adjust vertical alignment
+                      textAnchor="middle"
+                      fill={textColor}
+                      fontWeight="500"
+                      fontSize="12"
+                    >
+                      {payload.value}
+                    </text>
+                  );
+                }}
                 label={{
                   value: 'Average Months Pledged',
                   position: 'bottom',
                   offset: 0,
-                  fill: 'black',
+                  fill: textColor,
                   fontSize: 14,
                   fontWeight: '500',
                 }}
               />
+
               <YAxis
                 dataKey="role"
                 type="category"
-                stroke="black"
-                tick={{ fill: 'black' }}
+                stroke={textColor} // axis line
                 width={150}
+                tick={props => {
+                  const { x, y, payload } = props;
+                  return (
+                    <text
+                      x={x - 10} // shift left a bit
+                      y={y + 5} // adjust vertical alignment
+                      textAnchor="end"
+                      fill={textColor}
+                      fontWeight="500"
+                      fontSize="12"
+                    >
+                      {payload.value}
+                    </text>
+                  );
+                }}
                 label={{
                   value: 'Roles',
                   angle: -90,
                   position: 'left',
-                  fill: 'black',
+                  fill: textColor,
                   fontSize: 14,
                   fontWeight: '500',
                 }}
               />
+
               <Tooltip
-                formatter={value => [`${value} months`, 'Average']}
-                labelFormatter={label => `Role: ${label}`}
-                contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #ddd',
-                  color: 'black',
-                  borderRadius: '4px',
+                content={({ payload, label, active }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div
+                        style={{
+                          backgroundColor: tooltipBg,
+                          border: `1px solid ${darkMode ? '#555' : '#ddd'}`,
+                          padding: '8px 12px',
+                          borderRadius: '4px',
+                          color: tooltipText,
+                          minWidth: '120px',
+                        }}
+                      >
+                        <div style={{ fontWeight: '600', color: tooltipText }}>Role: {label}</div>
+                        <div style={{ color: tooltipText }}>Average: {payload[0].value} months</div>
+                      </div>
+                    );
+                  }
+                  return null;
                 }}
               />
-              <Bar dataKey="avgMonthsPledged" fill="#FFD700" barSize={30} radius={[0, 4, 4, 0]}>
+
+              <Bar dataKey="avgMonthsPledged" fill={barColor} barSize={30} radius={[0, 4, 4, 0]}>
                 <LabelList
                   dataKey="avgMonthsPledged"
                   position="right"
                   formatter={value => `${value.toFixed(1)}`}
-                  fill="black"
+                  fill={textColor} // bar labels color
                   style={{ fontWeight: '500' }}
                 />
               </Bar>
@@ -246,7 +307,7 @@ const MonthsPledgedChart = () => {
           </ResponsiveContainer>
         </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '40px', color: 'black' }}>
+        <div style={{ textAlign: 'center', padding: '40px', color: textColor }}>
           No data available for selected filters
         </div>
       )}
