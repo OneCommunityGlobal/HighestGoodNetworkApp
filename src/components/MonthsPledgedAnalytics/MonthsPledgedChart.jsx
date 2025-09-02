@@ -15,7 +15,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './MonthsPledgedChart.css';
 import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
-import { useSelector } from 'react-redux'; // assuming darkMode is in Redux
+import { useSelector } from 'react-redux';
 
 const MonthsPledgedChart = () => {
   const darkMode = useSelector(state => state.theme.darkMode); // true or false
