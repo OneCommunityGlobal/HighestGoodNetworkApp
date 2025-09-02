@@ -3,18 +3,24 @@ import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
-import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
+import {
+  assignBadgesByUserID,
+  clearNameAndSelected,
+  addSelectBadge,
+} from '../../actions/badgeManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import { Spinner } from 'reactstrap';
 
 function AssignBadgePopup(props) {
-  const {darkMode} = props;
+  const { darkMode } = props;
   const [searchedName, setSearchedName] = useState('');
   const [badgeList, setBadgeList] = useState([]);
   // Added state to disable confirm button while updating.
   const [shouldConfirmButtonDisable, setConfirmButtonDisable] = useState(false);
+  const [isLoadingBadge, setisLoadingBadge] = useState(true);
 
   const onSearch = text => {
     setSearchedName(text);
@@ -22,7 +28,7 @@ function AssignBadgePopup(props) {
 
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
-    if(props.isRecordBelongsToJaeAndUneditable){
+    if (props.isRecordBelongsToJaeAndUneditable) {
       alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
@@ -52,16 +58,17 @@ function AssignBadgePopup(props) {
     try {
       const response = await axios.get(ENDPOINTS.BADGE());
       setBadgeList(response.data);
+      setisLoadingBadge(false);
     } catch (error) {}
   };
 
- const filterBadges = (allBadges = []) => {
-   // guard against non-array inputs
-   if (!Array.isArray(allBadges)) return [];
-   return allBadges.filter(({ badgeName }) =>
-     badgeName.toLowerCase().includes(searchedName.toLowerCase())
-   );
- };
+  const filterBadges = (allBadges = []) => {
+    // guard against non-array inputs
+    if (!Array.isArray(allBadges)) return [];
+    return allBadges.filter(({ badgeName }) =>
+      badgeName.toLowerCase().includes(searchedName.toLowerCase()),
+    );
+  };
 
   let filteredBadges = filterBadges(badgeList);
 
@@ -77,8 +84,6 @@ function AssignBadgePopup(props) {
 
   let existBadges = addExistBadges();
 
-
-
   return (
     <div data-testid="test-assignbadgepopup">
       <input
@@ -91,47 +96,72 @@ function AssignBadgePopup(props) {
         }}
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
-        <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
-          <thead>
-            <tr>
-              <th>Badge</th>
-              <th>Name</th>
-              <th style={{ zIndex: '10' }}>
-                <i className="fa fa-info-circle" id="SelectInfo" data-testid="test-selectinfo" />
-                <UncontrolledTooltip
-                  placement="right"
-                  target="SelectInfo"
-                  style={{ backgroundColor: '#666', color: '#fff' }}
-                  data-testid="test-tooltip"
-                >
-                  <p className="badge_info_icon_text" data-testid="test-tip1">
-                    Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check
-                    those boxes to select the badges you wish to assign a person. Click the
-                    &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish
-                    to add.
-                  </p>
-                  <p className="badge_info_icon_text" data-testid="test-tip2">
-                    Want to assign multiple of the same badge to a person? Repeat the process!!
-                  </p>
-                </UncontrolledTooltip>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
-            ))}
-          </tbody>
-        </Table>
+        {filteredBadges.length > 0 ? (
+          <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
+            <thead>
+              <tr>
+                <th>Badge</th>
+                <th>Name</th>
+                <th style={{ zIndex: '10' }}>
+                  <i className="fa fa-info-circle" id="SelectInfo" data-testid="test-selectinfo" />
+                  <UncontrolledTooltip
+                    placement="right"
+                    target="SelectInfo"
+                    style={{ backgroundColor: '#666', color: '#fff' }}
+                    data-testid="test-tooltip"
+                  >
+                    <p className="badge_info_icon_text" data-testid="test-tip1">
+                      Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check
+                      those boxes to select the badges you wish to assign a person. Click the
+                      &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you
+                      wish to add.
+                    </p>
+                    <p className="badge_info_icon_text" data-testid="test-tip2">
+                      Want to assign multiple of the same badge to a person? Repeat the process!!
+                    </p>
+                  </UncontrolledTooltip>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {!isLoadingBadge &&
+                filteredBadges.map((value, index) => (
+                  <AssignTableRow
+                    badge={value}
+                    index={index}
+                    key={index}
+                    existBadges={existBadges}
+                  />
+                ))}
+            </tbody>
+          </Table>
+        ) : isLoadingBadge && filteredBadges.length === 0 ? (
+          <div
+            style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}
+          >
+            <h3 className={`text-center ${darkMode ? 'text-light' : 'text-dark'}`}>
+              Loading Badges...
+            </h3>
+
+            <Spinner />
+          </div>
+        ) : (
+          !isLoadingBadge &&
+          filteredBadges.length === 0 && (
+            <h3 className={`text-center ${darkMode ? 'text-light' : 'text-dark'}`}>
+              No badges found
+            </h3>
+          )
+        )}
       </div>
       <Button
         className="btn--dark-sea-green float-right"
-        style={darkMode ? {...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
+        style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
         onClick={assignBadges}
         disabled={shouldConfirmButtonDisable}
         data-testid="test-button"
       >
-        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'} 
+        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'}
       </Button>
     </div>
   );
