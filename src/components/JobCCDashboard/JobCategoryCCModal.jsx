@@ -66,7 +66,12 @@ function JobCategoryCCModal({ categories, onClose, darkMode, onRefresh }) {
         <Button close onClick={onClose} />
       </div>
       <div className="modal-body">
-        <Form>
+        <Form
+          onSubmit={e => {
+            e.preventDefault();
+            handleAddEmail();
+          }}
+        >
           <FormGroup>
             <Label for="filter">Filter by Category</Label>
             <Input type="select" id="filter" value={filter} onChange={handleFilterChange}>
