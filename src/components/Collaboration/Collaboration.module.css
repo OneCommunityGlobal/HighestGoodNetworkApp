@@ -1,19 +1,20 @@
-.job-landing .header a {
+.jobLanding .header a {
   display: block;
   padding: 0;
   margin: 0 auto;
   width: fit-content;
 }
 
-.job-landing .header img {
+
+.jobLanding .header img {
   width: 60%;
-  max-width: 1000px;
+  max-width: 800px;
   height: auto;
   display: block;
   margin: 0 auto;
 }
 
-.collab-container {
+.collabContainer {
   width: 90%;
   margin: 0 auto;
   display: flex;
@@ -23,16 +24,16 @@
   min-height: 100vh;
 }
 
-.job-landing {
+.jobLanding {
   min-height: 100vh;
 }
 
-.job-landing .headings,
-.job-landing .job-ad {
+.jobLanding .headings,
+.jobLanding .job-ad {
   text-align: center;
 }
 
-.job-landing .navbar {
+.jobLanding .navbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
@@ -46,29 +47,29 @@
   z-index: 0;
 }
 
-.job-landing .navbar-left input,
-.job-landing .navbar-left select {
+.jobLanding .navbarLeft input,
+.jobLanding .navbarLeft select {
   display: flex;
   padding: 8px;
   margin-right: 10px;
   align-items: center;
 }
 
-.job-landing .navbar-left,
-.job-landing .navbar-right,
-.job-landing .search-form {
+.jobLanding .navbarLeft,
+.jobLanding .navbarRight,
+.jobLanding .searchForm {
   display: flex;
   align-items: center;
   padding: 4px;
 }
 
-.job-landing .search-form {
+.jobLanding .searchForm {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.job-landing .search-form input {
+.jobLanding .searchForm input {
   margin-right: 10px;
   height: 38px;
   padding: 0 12px;
@@ -80,22 +81,24 @@
 }
 
 @media (max-width: 380px) {
-  .job-landing .search-form input {
+  .jobLanding .searchForm input {
     width: 100%;
     max-width: 100%;
-    min-width: 0;        
-    margin: 0;           
+    min-width: 0;
+    margin: 0;
     box-sizing: border-box;
-    flex: 1 1 auto;      
+    flex: 1 1 auto;
   }
 
-  .job-landing .navbar-left input { margin-right: 0; }
+  .jobLanding .navbarLeft input {
+    margin-right: 0;
+  }
 }
 
 
-.job-landing .search-form .search-button,
-.job-landing .search-form .reset-button,
-.job-landing .search-form .show-summaries {
+.jobLanding .searchForm .searchButton,
+.jobLanding .searchForm .resetButton,
+.jobLanding .searchForm .showSummaries {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -114,23 +117,23 @@
   transition: filter .15s ease, transform .02s ease;
 }
 
-.job-landing .search-form .search-button:hover,
-.job-landing .search-form .reset-button:hover,
-.job-landing .search-form .show-summaries:hover {
+.jobLanding .searchForm .searchButton:hover,
+.jobLanding .searchForm .resetButton:hover,
+.jobLanding .searchForm .show-summaries:hover {
   filter: brightness(0.95);
 }
 
-.job-landing .search-form .search-button:active,
-.job-landing .search-form .reset-button:active,
-.job-landing .search-form .show-summaries:active {
+.jobLanding .searchForm .searchButton:active,
+.jobLanding .searchForm .resetButton:active,
+.jobLanding .searchForm .showSummaries:active {
   transform: translateY(1px);
 }
 
-.job-landing .search-form .show-summaries {
+.jobLanding .searchForm .showSummaries {
   padding: 0 22px;
 }
 
-.job-landing select {
+.jobLanding select {
   padding: 10px 14px;
   border: 1px solid #ccc;
   border-radius: 8px;
@@ -138,9 +141,10 @@
 }
 
 /* ===== Jobs grid – single source of truth ===== */
-.job-landing .job-list {
+.jobLanding .jobList {
   display: grid;
-  grid-template-columns: 1fr;      /* default: 1 column */
+  grid-template-columns: 1fr;
+  /* default: 1 column */
   gap: 20px;
   width: 100%;
   margin-top: 20px;
@@ -150,46 +154,46 @@
 
 /* 2 columns from 480px up */
 @media (min-width: 480px) {
-  .job-landing .job-list {
+  .jobLanding .jobList {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 /* 3 columns from 768px up */
 @media (min-width: 768px) {
-  .job-landing .job-list {
+  .jobLanding .jobList {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 /* 4 columns from 1017px up */
 @media (min-width: 1017px) {
-  .job-landing .job-list {
+  .jobLanding .jobList {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 /* 5 columns from 1300px up */
 @media (min-width: 1300px) {
-  .job-landing .job-list {
+  .jobLanding .jobList {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 }
 
 /* 6 columns from 1600px up */
 @media (min-width: 1600px) {
-  .job-landing .job-list {
+  .jobLanding .jobList {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 }
 
 /* When there are no results, center the banner and keep a single column */
-.job-landing .job-list:has(.no-jobads) {
+.jobLanding .jobList:has(.noJobads) {
   grid-template-columns: 1fr;
   place-items: center;
 }
 
-.job-landing .job-ad {
+.jobLanding .jobAd {
   border: 1px solid #ddd;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -198,13 +202,13 @@
   transition: transform .3s, box-shadow .3s;
 }
 
-.job-landing .job-ad img {
+.jobLanding .jobAd img {
   max-width: 100%;
   height: auto;
   border-bottom: 1px solid #ddd;
 }
 
-.job-landing .job-ad h3 {
+.jobLanding .jobAd h3 {
   font-size: 1.1rem;
   font-weight: 700;
   color: #333;
@@ -212,21 +216,21 @@
   transition: color .3s;
 }
 
-.job-landing .job-ad a {
+.jobLanding .jobAd a {
   text-decoration: none;
   color: inherit;
 }
 
-.job-landing .job-ad a:hover h3 {
+.jobLanding .jobAd a:hover h3 {
   color: #007acc;
 }
 
-.job-landing .job-ad:hover {
+.jobLanding .jobAd:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-.job-landing .summaries-list {
+.jobLanding .summariesList {
   margin-top: 20px;
   max-width: 960px;
   margin-left: auto;
@@ -234,7 +238,7 @@
   text-align: center;
 }
 
-.job-landing .summaries-item {
+.jobLanding .summariesItem {
   background: none !important;
   border: 0 !important;
   border-radius: 0 !important;
@@ -243,8 +247,8 @@
   margin: 0 0 28px !important;
 }
 
-.job-landing .summaries-item h3,
-.job-landing .summaries-item h3 a {
+.jobLanding .summariesItem h3,
+.jobLanding .summariesItem h3 a {
   position: static !important;
   transform: none !important;
   margin: 0 0 8px !important;
@@ -257,11 +261,11 @@
   font-size: 1.85rem;
 }
 
-.job-landing .summaries-item h3 a:hover {
+.jobLanding .summariesItem h3 a:hover {
   text-decoration: underline;
 }
 
-.job-landing .summaries-item p {
+.jobLanding .summariesItem p {
   margin: 0 0 10px;
   color: #1f2937;
   font-size: 1rem;
@@ -269,86 +273,93 @@
   text-align: left;
 }
 
-.job-landing .summaries-item .date {
+.jobLanding .summariesItem .date {
   margin-top: 6px;
   color: #6b7280;
   font-size: 0.95rem;
 }
 
 @media (max-width: 640px) {
-  .job-landing .summaries-list {
+  .jobLanding .summariesList {
     padding: 0 12px;
   }
 
-  .job-landing .summaries-item {
+  .jobLanding .summariesItem {
     margin-bottom: 22px !important;
   }
 
-  .job-landing .summaries-item h3,
-  .job-landing .summaries-item h3 a {
+  .jobLanding .summariesItem h3,
+  .jobLanding .summariesItem h3 a {
     font-size: 1.4rem;
     line-height: 1.3;
   }
 
-  .job-landing .summaries-item p {
+  .jobLanding .summariesItem p {
     font-size: 0.98rem;
     line-height: 1.5;
   }
 }
 
-.job-landing .pagination {
+.jobLanding .pagination {
   margin: 20px 0;
   display: flex;
   justify-content: center;
 }
 
-.job-landing .pagination button {
+.jobLanding .pagination button {
   margin: 0 5px;
   padding: 5px 10px;
   cursor: pointer;
 }
 
-.job-landing .pagination button:hover {
+.jobLanding .pagination button:hover {
   background-color: #4a99ee;
 }
 
-.job-landing .pagination button:disabled {
+.jobLanding .pagination button:disabled {
   background-color: #ccc;
   color: #333;
   cursor: default;
 }
 
-.job-landing .headings {
+.jobLanding .headings {
   margin-bottom: 10px;
 }
 
-.job-landing .responsive-img {
-  max-width: 100%;
+.jobLanding .responsiveImg {
+  max-width: 1000px;
   height: auto;
   display: block;
   margin: 0 auto;
 }
 
+.job-landing .header a {
+  display: block;
+  padding: 0;
+  margin: 0 auto;
+  width: fit-content;
+}
+
 /* @media (max-width:1024px) {
-  .job-landing .job-list {
+  .jobLanding .job-list {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
 @media (max-width:768px) {
-  .job-landing .job-list {
+  .jobLanding .job-list {
     grid-template-columns: repeat(2, 1fr);
   }
 } */
 
 @media (max-width:800px) {
-  .job-landing .navbar {
+  .jobLanding .navbar {
     flex-direction: column;
     align-items: center;
   }
 
-  .job-landing .navbar-left,
-  .job-landing .navbar-right {
+  .jobLanding .navbarLeft,
+  .jobLanding .navbarRight {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -356,7 +367,7 @@
     gap: 10px;
   }
 
-  .job-landing .search-form {
+  .jobLanding .searchForm {
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -364,104 +375,105 @@
     gap: 10px;
   }
 
-  .job-landing .search-form input,
-  .job-landing .search-form button {
+  .jobLanding .searchForm input,
+  .jobLanding .searchForm button {
     width: 90%;
     max-width: 360px;
     margin: 0 auto;
   }
 
-  .job-landing .navbar-right select {
+  .jobLanding .navbarRight select {
     margin-top: -5px;
     width: 90%;
     max-width: 360px;
   }
 
-  .job-landing .summaries-list {
+  .jobLanding .summariesList {
     padding: 0 12px;
   }
 }
 
 @media (max-width: 350px) {
-  .job-landing .navbar-right select {
-    width: 100%;         
-    max-width: 100%;     
-    min-width: 0;        
+  .jobLanding .navbarRight select {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     box-sizing: border-box;
-    margin: 0;           
-    font-size: 0.9rem;   
+    margin: 0;
+    font-size: 0.9rem;
   }
 }
 
 @media (max-width:640px) {
 
-  .job-landing .summaries-item h3,
-  .job-landing .summaries-item h3 a {
+  .jobLanding .summariesItem h3,
+  .jobLanding .summariesItem h3 a {
     font-size: 1.35rem;
     line-height: 1.3;
   }
 
-  .job-landing .summaries-item p {
+  .jobLanding .summariesItem p {
     font-size: 0.97rem;
     line-height: 1.5;
   }
 }
 
 @media (max-width:480px) {
-  .job-landing .navbar {
+  .jobLanding .navbar {
     padding: 5px;
     text-align: center;
   }
 
-  .job-landing .pagination button {
+  .jobLanding .pagination button {
     padding: 8px;
     width: auto;
   }
 }
 
-.job-landing.dark-mode .collab-container {
+.jobLandingDark .collabContainer {
   background-color: #2e3b55;
   color: #f1f1f1;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
   border-radius: 6px;
-  padding: 0; /* match light-mode so widths are identical */
+  padding: 0;
+  /* match light-mode so widths are identical */
 }
 
-.job-landing.dark-mode .navbar,
-.job-landing.dark-mode select,
-.job-landing.dark-mode input,
-.job-landing.dark-mode .search-button,
-.job-landing.dark-mode .show-summaries,
-.job-landing.dark-mode .pagination button,
-.job-landing.dark-mode .job-ad {
+.jobLandingDark .navbar,
+.jobLandingDark select,
+.jobLandingDark input,
+.jobLandingDark .searchButton,
+.jobLandingDark .showSummaries,
+.jobLandingDark .pagination button,
+.jobLandingDark .jobAd {
   background-color: #1c2541 !important;
   color: #fff;
   border: 1px solid #444;
 }
 
-.job-landing.dark-mode .search-button,
-.job-landing.dark-mode .show-summaries,
-.job-landing.dark-mode .pagination button {
+.jobLandingDark .searchButton,
+.jobLandingDark .showSummaries,
+.jobLandingDark .pagination button {
   border-radius: 8px;
   padding: 6px 12px;
   font-weight: 600;
 }
 
-.job-landing.dark-mode a {
+.jobLandingDark a {
   color: #7db4ff;
 }
 
-.job-landing.dark-mode a:hover {
+.jobLandingDark a:hover {
   color: #a6ceff;
   text-decoration: underline;
 }
 
-.job-landing.dark-mode .navbar {
+.jobLandingDark .navbar {
   border-radius: 6px;
   padding: 1rem;
 }
 
-.job-landing.dark-mode .job-ad {
+.jobLandingDark .jobAd {
   background: none !important;
   background-color: #1c2541 !important;
   color: #fff !important;
@@ -472,42 +484,42 @@
   transition: background-color .3s ease;
 }
 
-.job-landing.dark-mode .job-ad:hover {
+.jobLandingDark .jobAd:hover {
   background-color: #3f4a58;
 }
 
-.job-landing.dark-mode .job-ad h3 {
+.jobLandingDark .jobAd h3 {
   color: #f1f1f1 !important;
 }
 
-.job-landing.dark-mode .navbar input,
-.job-landing.dark-mode .navbar select,
-.job-landing.dark-mode .search-form .search-button,
-.job-landing.dark-mode .search-form .reset-button,
-.job-landing.dark-mode .search-form .show-summaries,
-.job-landing.dark-mode .navbar button {
+.jobLandingDark .navbar input,
+.jobLandingDark .navbar select,
+.jobLandingDark .searchForm .searchButton,
+.jobLandingDark .searchForm .resetButton,
+.jobLandingDark .searchForm .showSummaries,
+.jobLandingDark .navbar button {
   background-color: #3f4a58 !important;
   color: #fff !important;
   border: none !important;
 }
 
-.job-landing.dark-mode .summaries-item {
+.jobLandingDark .summariesItem {
   border-bottom: 1px solid rgba(255, 255, 255, .12);
 }
 
-.job-landing.dark-mode .summaries-item h3 a {
+.jobLandingDark .summariesItem h3 a {
   color: #9abaff;
 }
 
-.job-landing.dark-mode .summaries-item p {
+.jobLandingDark .summariesItem p {
   color: #e5e7eb;
 }
 
-.job-landing.dark-mode .summaries-item .date {
+.jobLandingDark .summariesItem .date {
   color: #cbd5e1;
 }
 
-.job-landing.dark-mode .pagination button {
+.jobLandingDark .pagination button {
   background-color: #3f4a58 !important;
   color: #fff !important;
   border: none !important;
@@ -515,15 +527,16 @@
   padding: 8px 12px;
   font-weight: bold;
 }
-.job-landing .no-jobads {
+
+.jobLanding .noJobads {
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
 
   font-size: 1.1em;
-  margin: 20px auto;          
-  max-width: 400px;           
+  margin: 20px auto;
+  max-width: 400px;
   padding: 16px 20px;
 
   border: 1px solid #ddd;
@@ -531,94 +544,92 @@
   background-color: #f9f9f9;
 }
 
-.job-landing.dark-mode .no-jobads {
+.jobLandingDark .noJobads {
   background-color: #1c2541;
   border: 1px solid #555;
   color: #fff;
 }
 
 
-.job-landing.dark-mode {
+.jobLandingDark {
   background-color: #1c2541;
 }
 
-.job-landing.dark-mode .header {
+.jobLandingDark .header {
   background: #1c2541;
   padding: 8px 0;
 }
 
-.job-landing.dark-mode .search-form .search-button,
-.job-landing.dark-mode .search-form .reset-button,
-.job-landing.dark-mode .search-form .show-summaries,
-.job-landing.dark-mode .pagination button {
+.jobLandingDark .searchForm .searchButton,
+.jobLandingDark .searchForm .resetButton,
+.jobLandingDark .searchForm .showSummaries,
+.jobLandingDark .pagination button {
   background-color: #1778f2 !important;
   color: #fff !important;
   border: none !important;
 }
 
 
-.job-landing.dark-mode .summaries-list h1 {
+.jobLandingDark .summariesList h1 {
   color: #ffffff;
 }
 
-.job-landing.dark-mode .summaries-item h3 a {
+.jobLandingDark .summariesItem h3 a {
   color: #9abaff;
 }
 
-.job-landing.dark-mode .summaries-item h3 a:hover {
+.jobLandingDark .summariesItem h3 a:hover {
   color: #c3d9ff;
 }
 
-.job-landing .headings h1,
-.job-landing .headings p {
-  color: #111827; 
+.jobLanding .headings h1,
+.jobLanding .headings p {
+  color: #111827;
 }
 
-.job-landing.dark-mode .headings h1 {
+.jobLandingDark .headings h1 {
   color: #ffffff;
 }
 
-.job-landing.dark-mode .headings p {
-  color: #e5e7eb; 
+.jobLandingDark .headings p {
+  color: #e5e7eb;
 }
 
 @media (max-width: 300px) {
-  .job-landing .navbar-right {
+  .jobLanding .navbarRight {
     width: 100%;
   }
 
-  .job-landing .navbar-right select {
+  .jobLanding .navbarRight select {
     width: 100%;
     max-width: 100%;
-    min-width: 0;          
+    min-width: 0;
     box-sizing: border-box;
-    margin: 0;             
-    height: 36px;          
-    padding: 8px 10px;     
-    font-size: 0.85rem;    
+    margin: 0;
+    height: 36px;
+    padding: 8px 10px;
+    font-size: 0.85rem;
   }
 
-  .job-landing .navbar {
+  .jobLanding .navbar {
     padding: 8px 10px;
   }
 }
 
 @media (max-width: 420px) {
-  .job-landing .pagination {
+  .jobLanding .pagination {
     display: flex;
-    flex-wrap: wrap;        
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 8px 10px;          
+    gap: 8px 10px;
     padding: 6px 4px;
-    margin-bottom: 56px;    
+    margin-bottom: 56px;
   }
 
-  .job-landing .pagination button {
-    min-width: 40px; 
-    padding: 6px 10px;  
+  .jobLanding .pagination button {
+    min-width: 40px;
+    padding: 6px 10px;
     font-size: 14px;
     border-radius: 10px;
   }
 }
-
-

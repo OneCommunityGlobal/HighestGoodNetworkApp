@@ -1,11 +1,12 @@
 import { Component } from 'react';
-import './Collaboration.css';
+import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
 import 'leaflet/dist/leaflet.css';
 import { connect } from 'react-redux';
+import 'react-day-picker/dist/style.css';
 
 /* eslint-disable */
 class Collaboration extends Component {
@@ -198,35 +199,43 @@ class Collaboration extends Component {
 
     if (summaries) {
       return (
-        <div className={`job-landing ${this.props.darkMode ? 'dark-mode' : ''}`}>
-          <div className="header">
+        <div className={`${styles.jobLanding} ${this.props.darkMode ? styles.jobLandingDark : ''}`}>
+          <div className={styles.header}>
             <a
               href="https://www.onecommunityglobal.org/collaboration/"
               target="_blank"
               rel="noreferrer"
             >
-              <img src={OneCommunityImage} alt="One Community Logo" className="responsive-img" />
+              <img
+                src={OneCommunityImage}
+                alt="One Community Logo"
+                className={styles.responsiveImg}
+              />
             </a>
           </div>
 
-          <div className={`collab-container ${this.props.darkMode ? 'text-light' : ''}`}>
-            <nav className="navbar">
-              <div className="navbar-left">
-                <form className="search-form" onSubmit={this.handleSubmit}>
+          <div className={styles.collabContainer}>
+            <nav className={styles.navbar}>
+              <div className={styles.navbarLeft}>
+                <form className={styles.searchForm} onSubmit={this.handleSubmit}>
                   <input
                     type="text"
                     placeholder="Search by title..."
                     value={searchTerm}
                     onChange={this.handleSearch}
                   />
-                  <button className="search-button" type="submit">
+                  <button className={styles.searchButton} type="submit">
                     Go
                   </button>
-                  <button className="reset-button" type="button" onClick={this.handleResetFilters}>
+                  <button
+                    className={styles.resetButton}
+                    type="button"
+                    onClick={this.handleResetFilters}
+                  >
                     Reset
                   </button>
                   <button
-                    className="show-summaries"
+                    className={styles.showSummaries}
                     type="button"
                     onClick={this.handleShowSummaries}
                   >
@@ -235,7 +244,7 @@ class Collaboration extends Component {
                 </form>
               </div>
 
-              <div className="navbar-right">
+              <div className={styles.navbarRight}>
                 <select value={selectedCategory} onChange={this.handleCategoryChange}>
                   <option value="">Select from Categories</option>
                   {categories.map(category => (
@@ -247,7 +256,7 @@ class Collaboration extends Component {
               </div>
             </nav>
 
-            <div className="summaries-list">
+            <div className={styles.summariesList}>
               <h1>Summaries</h1>
 
               {summariesAll.length > 0 ? (
@@ -258,7 +267,7 @@ class Collaboration extends Component {
                   return pageItems.map(summary => (
                     <div
                       key={summary._id || summary.jobDetailsLink || summary.title}
-                      className="summaries-item"
+                      className={styles.summariesItem}
                     >
                       <h3>
                         <a href={summary.jobDetailsLink} target="_blank" rel="noreferrer">
@@ -266,7 +275,7 @@ class Collaboration extends Component {
                         </a>
                       </h3>
                       <p>{summary.description}</p>
-                      <p className="date">
+                      <p className={styles.date}>
                         Date Posted: {new Date(summary.datePosted).toLocaleDateString()}
                       </p>
                     </div>
@@ -277,7 +286,7 @@ class Collaboration extends Component {
               )}
 
               {summariesAll.length > 0 && (
-                <div className="pagination">
+                <div className={styles.pagination}>
                   {Array.from({ length: summariesTotalPages }, (_, i) => (
                     <button
                       type="button"
@@ -298,40 +307,52 @@ class Collaboration extends Component {
     }
 
     return (
-      <div className={`job-landing ${this.props.darkMode ? 'dark-mode' : ''}`}>
-        <div className="header">
+      <div className={`${styles.jobLanding} ${this.props.darkMode ? styles.jobLandingDark : ''}`}>
+        <div className={styles.header}>
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
             target="_blank"
             rel="noreferrer"
           >
-            <img src={OneCommunityImage} alt="One Community Logo" />
+            <img
+              src={OneCommunityImage}
+              alt="One Community Logo"
+              className={styles.responsiveImg}
+            />
           </a>
         </div>
 
-        <div className={`collab-container ${this.props.darkMode ? 'text-light' : ''}`}>
-          <nav className="navbar">
-            <div className="navbar-left">
-              <form className="search-form" onSubmit={this.handleSubmit}>
+        <div className={styles.collabContainer}>
+          <nav className={styles.navbar}>
+            <div className={styles.navbarLeft}>
+              <form className={styles.searchForm} onSubmit={this.handleSubmit}>
                 <input
                   type="text"
                   placeholder="Search by title..."
                   value={searchTerm}
                   onChange={this.handleSearch}
                 />
-                <button className="search-button" type="submit">
+                <button className={styles.searchButton} type="submit">
                   Go
                 </button>
-                <button className="reset-button" type="button" onClick={this.handleResetFilters}>
+                <button
+                  className={styles.resetButton}
+                  type="button"
+                  onClick={this.handleResetFilters}
+                >
                   Reset
                 </button>
-                <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
+                <button
+                  className={styles.showSummaries}
+                  type="button"
+                  onClick={this.handleShowSummaries}
+                >
                   Show Summaries
                 </button>
               </form>
             </div>
 
-            <div className="navbar-right">
+            <div className={styles.navbarRight}>
               <select value={selectedCategory} onChange={this.handleCategoryChange}>
                 <option value="">Select from Categories</option>
                 {categories.map(category => (
@@ -343,15 +364,15 @@ class Collaboration extends Component {
             </div>
           </nav>
 
-          <div className="headings">
+          <div className={styles.headings}>
             <h1>Like to Work With Us? Apply Now!</h1>
             <p>Learn about who we are and who we want to work with!</p>
           </div>
 
-          <div className="job-list">
+          <div className={styles.jobList}>
             {jobAds.length > 0 ? (
               jobAds.map(ad => (
-                <div key={ad._id} className="job-ad">
+                <div key={ad._id} className={styles.jobAd}>
                   <img src={ad.imageUrl} alt={`${ad.title}`} />
                   <a
                     href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
@@ -365,11 +386,11 @@ class Collaboration extends Component {
                 </div>
               ))
             ) : (
-              <p className="no-jobads">No matching jobs found.</p>
+              <p className={styles.noJobads}>No matching jobs found.</p>
             )}
           </div>
 
-          <div className="pagination">
+          <div className={styles.pagination}>
             {Array.from({ length: totalPages }, (_, i) => (
               <button
                 type="button"
