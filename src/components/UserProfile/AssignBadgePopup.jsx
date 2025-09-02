@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
@@ -70,7 +70,9 @@ function AssignBadgePopup(props) {
     );
   };
 
-  let filteredBadges = filterBadges(badgeList);
+  const filteredBadges = useMemo(() => {
+    return filterBadges(badgeList);
+  }, [badgeList, searchedName]);
 
   const addExistBadges = () => {
     if (props.userProfile && props.userProfile.badgeCollection) {
@@ -96,7 +98,7 @@ function AssignBadgePopup(props) {
         }}
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
-        {filteredBadges.length > 0 ? (
+        {!isLoadingBadge && (props.test ?? filteredBadges.length > 0) ? (
           <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
             <thead>
               <tr>
@@ -124,15 +126,9 @@ function AssignBadgePopup(props) {
               </tr>
             </thead>
             <tbody>
-              {!isLoadingBadge &&
-                filteredBadges.map((value, index) => (
-                  <AssignTableRow
-                    badge={value}
-                    index={index}
-                    key={index}
-                    existBadges={existBadges}
-                  />
-                ))}
+              {filteredBadges.map((value, index) => (
+                <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
+              ))}
             </tbody>
           </Table>
         ) : isLoadingBadge && filteredBadges.length === 0 ? (
