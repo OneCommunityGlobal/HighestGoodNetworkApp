@@ -13,7 +13,7 @@ function Page1() {
 
   useEffect(() => {
     if (user?.userid) {
-      dispatch(getUserProfileBasicInfo(user.userid));
+      dispatch(getUserProfileBasicInfo({ userId: user.userid }));
     }
   }, [dispatch, user?.userid]);
 

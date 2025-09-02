@@ -19,6 +19,8 @@ function TotalPeopleReport(props) {
   const [peopleInYear, setPeopleInYear] = useState([]);
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
+  // Added state to show warning if month gap is less than one month
+  const [showWarning, setShowWarning] = useState(false);
 
   const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
   const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
@@ -187,11 +189,17 @@ function TotalPeopleReport(props) {
       setPeopleInYear(generateBarData(summaryOfTimeRange('year'), true));
       if (diffDate <= oneMonth * 12) {
         setShowMonthly(true);
+        setShowWarning(false);
       }
       if (startDate.getFullYear() !== endDate.getFullYear()) {
         setShowYearly(true);
+        setShowWarning(false);
       }
     }
+    // if timedifference is one month
+     if (diffDate <= oneMonth) {
+      setShowWarning(true);
+      }
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
   useEffect(() => {
@@ -302,6 +310,7 @@ function TotalPeopleReport(props) {
           {showYearly && peopleInYear.length > 0 ? (
             <TotalReportBarGraph barData={peopleInYear} range="year" />
           ) : null}
+          {showWarning && <div className='total-warning'>Graphs are shown only if the selected date range is greater than one month.</div>}
         </div>
         {allPeople.length ? (
           <div className="total-detail">
