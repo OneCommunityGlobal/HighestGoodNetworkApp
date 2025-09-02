@@ -216,7 +216,7 @@ describe('User Management Actions', () => {
 
       await store.dispatch(actions.getUserProfileBasicInfo({source: mockSource }));
       expect(store.getActions()).toEqual(expectedActions);
-      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE_BASIC_INFO({source: mockSource }));
+      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE_BASIC_INFO( mockSource ));
     });
 
     it('should handle errors when fetching basic info', async () => {
@@ -227,7 +227,7 @@ describe('User Management Actions', () => {
         { type: 'FETCH_USER_PROFILE_BASIC_INFO_ERROR' }
       ];
 
-      await store.dispatch(actions.getUserProfileBasicInfo({source: mockSource }));
+      await store.dispatch(actions.getUserProfileBasicInfo( mockSource));
       expect(store.getActions()).toEqual(expectedActions);
     });
   });
