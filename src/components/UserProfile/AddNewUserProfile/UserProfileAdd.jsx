@@ -636,7 +636,7 @@ class UserProfileAdd extends Component {
                   block
                   size="lg"
                   data-testid="create-userProfile"
-                  onClick={() => this.createUserProfile(false)}
+                  onClick={() => this.createUserProfile(true)}
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Create
@@ -770,7 +770,7 @@ class UserProfileAdd extends Component {
     else return false;
   };
 
-  createUserProfile = allowsDuplicateName => {
+  createUserProfile = () => {
     let that = this;
     const {
       firstName,
@@ -812,7 +812,7 @@ class UserProfileAdd extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: allowsDuplicateName,
+      allowsDuplicateName: true,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
       actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
@@ -872,14 +872,6 @@ class UserProfileAdd extends Component {
           .then(res => {
             if (res.data.warning) {
               toast.warn(res.data.warning);
-            } else if (
-              this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-              !allowsDuplicateName
-            ) {
-              this.setState({
-                popupOpen: true,
-              });
-              return;
             } else {
               toast.success('User profile created.');
               this.state.userProfile._id = res.data._id;
