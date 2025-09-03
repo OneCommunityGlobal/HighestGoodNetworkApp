@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { fetchInvTypeByType } from 'actions/bmdashboard/invTypeActions';
-import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
+import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
+import { fetchInvUnits } from '~/actions/bmdashboard/invUnitActions';
 import { Accordion, Card } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -11,7 +11,7 @@ import BMError from '../shared/BMError';
 import TypesTable from './TypesTable';
 import UnitsTable from './invUnitsTable';
 import AccordionToggle from './AccordionToggle';
-import './TypesList.css';
+import styles from './TypesList.module.css';
 
 export function InventoryTypesList(props) {
   const { invUnits, errors, dispatch } = props;
@@ -49,10 +49,10 @@ export function InventoryTypesList(props) {
   }
 
   return (
-    <div className="types-list-container">
+    <div className={`${styles.typesListContainer}`}>
       <h1>All Inventory Types</h1>
 
-      <div className="timestamp-container">
+      <div className={`${styles.timestampContainer}`}>
         <span>Time:</span>
         <DatePicker
           selected={currentTime}
@@ -73,7 +73,7 @@ export function InventoryTypesList(props) {
                 {category}
               </AccordionToggle>
               <Accordion.Collapse eventKey={index + 1}>
-                <Card.Body className="accordion-collapse">
+                <Card.Body className={`${styles.accordionCollapse}`}>
                   <TypesTable category={category} />
                 </Card.Body>
               </Accordion.Collapse>
@@ -86,14 +86,14 @@ export function InventoryTypesList(props) {
             Unit of Measurement
           </AccordionToggle>
           <Accordion.Collapse eventKey={categories.length + 1}>
-            <Card.Body className="accordion-collapse">
+            <Card.Body className={`${styles.accordionCollapse}`}>
               <UnitsTable invUnits={invUnits} />
             </Card.Body>
           </Accordion.Collapse>
         </Card>
       </Accordion>
 
-      <div className="button-container">
+      <div className={`${styles.buttonContainer}`}>
         {/* NOTE: should redirect to the Equipment/Tool List Page, which is not implemented yet */}
         <a href="#back-to-previous" target="_blank" id="back-to-previous" role="button">
           Back to previous list page

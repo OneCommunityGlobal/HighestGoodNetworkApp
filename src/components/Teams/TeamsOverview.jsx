@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-one-expression-per-line */
 import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../languages/en/ui';
 import './TeamsOverview.css';
 
