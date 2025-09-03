@@ -26,9 +26,9 @@ import './Badge.css';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
-import { clearSelected } from 'actions/badgeManagement';
+import { clearSelected } from '~/actions/badgeManagement';
 import hasPermission from '../../utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export const Badges = (props) => {
