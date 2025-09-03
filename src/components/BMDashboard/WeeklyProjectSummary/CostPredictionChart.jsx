@@ -121,9 +121,7 @@ function CostPredictionChart({ projectId }) {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>
-        Planned Vs Actual costs tracking
-      </h2>
+      <h2 className={styles.title}>Planned Vs Actual costs tracking</h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
