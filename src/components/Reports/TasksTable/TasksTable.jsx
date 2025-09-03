@@ -7,9 +7,9 @@ import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TasksTable.css';
 import Select from 'react-select';
-import { Checkbox } from 'components/common/Checkbox';
-import TextSearchBox from 'components/UserManagement/TextSearchBox';
-import { boxStyle, boxStyleDark } from 'styles';
+import { Checkbox } from '~/components/common/Checkbox';
+import TextSearchBox from '~/components/UserManagement/TextSearchBox';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { TasksDetail } from '../TasksDetail';
 
 export function TasksTable({ darkMode, tasks, projectId }) {

@@ -1,3 +1,4 @@
+import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
 import LogBar from './LogBar';
@@ -6,8 +7,9 @@ import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
 import './ProjectDetails.css';
 
-function ProjectDetails({ projectId }) {
-  // ✅ Accept projectId as a prop
+function ProjectDetails() {
+  const { projectId } = useParams();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const projects = useSelector(state => state.bmProjects) || [];
   const currProject = projects.find(project => String(project._id) === String(projectId));
 
@@ -21,23 +23,28 @@ function ProjectDetails({ projectId }) {
   }
 
   return (
-    <Container className="project-details" fluid>
-      <Row className="mx-auto">
-        <h1>Project {currProject.name} Dashboard</h1>
-      </Row>
-      <Row className="mx-auto">
-        <LogBar projectId={projectId} />
-      </Row>
-      <Row className="mx-auto">
-        <Col lg="6" md="12">
-          <RentedToolsDisplay />
+    <Container fluid className={`${darkMode ? 'project-details-dark' : 'project-details'}  `}>
+      <Row className="justify-content-center">
+        <Col xs="12" lg="10">
+          <h1
+            className={`${darkMode ? 'project-details-title-dark' : 'project-details-title'} mb-2 `}
+          >
+            {currProject.name} Dashboard{' '}
+          </h1>
+
+          <LogBar projectId={projectId} />
+
+          <Row className="mt-4">
+            <Col md="6" className="mb-4">
+              <RentedToolsDisplay projectId={projectId} />
+            </Col>
+            <Col md="6" className="mb-4">
+              <MaterialsDisplay projectId={projectId} />
+            </Col>
+          </Row>
+
+          <ProjectLog projectId={projectId} />
         </Col>
-        <Col lg="6" md="12">
-          <MaterialsDisplay />
-        </Col>
-      </Row>
-      <Row className="mx-auto">
-        <ProjectLog />
       </Row>
     </Container>
   );

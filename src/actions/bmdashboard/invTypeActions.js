@@ -21,7 +21,7 @@ import {
   RESET_POST_TOOLS_LOG,
 } from '../../constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 export const setConsumableTypes = payload => {
   return {
