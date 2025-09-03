@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import './Announcements.css';
 
 function YoutubeFeatures() {
@@ -99,9 +99,9 @@ function YoutubeFeatures() {
     <div className="social-media-container">
       <div className="social-media">
         <h3>Social Media Post</h3>
-        <label className={darkMode ? 'text-light' : 'text-dark'}>
+        <span className={darkMode ? 'text-light' : 'text-dark'}>
           Click on below social media to post
-        </label>
+        </span>
         <div
           className="social-buttons-container"
           style={{ display: 'flex', gap: '16px', alignItems: 'center' }}
@@ -260,14 +260,13 @@ function YoutubeFeatures() {
           <option value="public">Public</option>
         </select>
         <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <label>
-            <input
-              type="checkbox"
-              checked={isScheduled}
-              onChange={e => setIsScheduled(e.target.checked)}
-            />
-            Schedule Post
-          </label>
+          <input
+            id="schedule-post"
+            type="checkbox"
+            checked={isScheduled}
+            onChange={e => setIsScheduled(e.target.checked)}
+          />
+          <label htmlFor="schedule-post">Schedule Post</label>
           {isScheduled && (
             <input
               type="datetime-local"
