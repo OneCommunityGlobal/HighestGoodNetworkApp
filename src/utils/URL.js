@@ -370,6 +370,25 @@ export const ENDPOINTS = {
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
+  // Job Analytics endpoint
+  JOB_ANALYTICS: (startDate, endDate, roles, granularity) => {
+    const params = [];
+    if (startDate && endDate) {
+      params.push(`startDate=${encodeURIComponent(startDate)}`);
+      params.push(`endDate=${encodeURIComponent(endDate)}`);
+    }
+    if (roles && roles !== 'All') {
+      params.push(`roles=${encodeURIComponent(roles)}`);
+    }
+    if (granularity) {
+      params.push(`granularity=${encodeURIComponent(granularity)}`);
+    }
+    const qs = params.length ? `?${params.join('&')}` : '';
+    return `${APIEndpoint.replace('/api', '')}/job-analytics${qs}`;
+  },
+
+  JOB_ANALYTICS_ROLES: `${APIEndpoint.replace('/api', '')}/job-analytics/roles`,
+
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
