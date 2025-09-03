@@ -1668,6 +1668,7 @@
   dependencies:
     jest-get-type "^29.6.3"
 
+
 "@jest/expect-utils@30.1.1":
   version "30.1.1"
   resolved "https://registry.npmjs.org/@jest/expect-utils/-/expect-utils-30.1.1.tgz"
