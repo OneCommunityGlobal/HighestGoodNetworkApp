@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 
+// eslint-disable-next-line react/display-name
 const AssignTeamField = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
   const [searchText, setSearchText] = useState(() => {
@@ -69,7 +70,10 @@ const AssignTeamField = React.memo(props => {
             })
             .slice(0, 10)
             .map((item, index) => (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
+                role="button"
+                tabIndex={0}
                 key={index}
                 className="team-auto-complete"
                 onClick={() => {

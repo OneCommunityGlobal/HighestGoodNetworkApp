@@ -112,6 +112,7 @@ function UserProfile(props) {
       setIsLoading(false);
       return stringNoRepeat;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       setIsLoading(false);
       toast.error(`It was not possible to retrieve the team codes.
@@ -168,6 +169,7 @@ function UserProfile(props) {
       await loadUserProfile();
       toast.success('Profile Image Removed');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       toast.error('Failed to remove profile Image.');
     }
@@ -310,6 +312,7 @@ function UserProfile(props) {
 
       setSummaryIntro(summaryIntroString);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching team users:', error);
     }
   };
@@ -328,6 +331,7 @@ function UserProfile(props) {
         setTasks(res?.data || []);
         setOriginalTasks(res.data);
       })
+      // eslint-disable-next-line no-console
       .catch(err => console.log(err));
   };
 
@@ -371,6 +375,7 @@ function UserProfile(props) {
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching calculated start date:', error);
       // Fallback to createdDate on error
       const createdDate = userProfile?.createdDate
@@ -455,6 +460,7 @@ function UserProfile(props) {
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
+      // eslint-disable-next-line no-console
       console.log(err);
     }
   };
@@ -489,6 +495,7 @@ function UserProfile(props) {
       }));
       setSummaries(allSummaries);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('Could not load leaderBoard data.', err);
     } finally {
       setLoadingSummaries(false);
@@ -578,8 +585,10 @@ function UserProfile(props) {
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
       if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
+        // eslint-disable-next-line no-alert
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -611,11 +620,15 @@ function UserProfile(props) {
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
+          // eslint-disable-next-line no-console
           console.log('WARNING: Future Blue Square');
+          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
+          // eslint-disable-next-line no-console
           console.log('WARNING: Empty Date');
+          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
@@ -652,6 +665,7 @@ function UserProfile(props) {
             });
           })
           .catch(error => {
+            // eslint-disable-next-line no-console
             console.log('error in modifying bluequare', error);
             toast.error('Failed to add Blue Square!');
           });
@@ -693,6 +707,7 @@ function UserProfile(props) {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      // eslint-disable-next-line no-console
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
@@ -707,6 +722,7 @@ function UserProfile(props) {
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         const errorMessage = err.response.data.error.join('\n');
+        // eslint-disable-next-line no-alert
         alert(errorMessage);
       }
       return err;
@@ -720,6 +736,7 @@ function UserProfile(props) {
     try {
       setSaved(false);
     } catch (err) {
+      // eslint-disable-next-line no-alert
       alert('An error occurred while reload user profile after badge udpate.');
     }
   };
@@ -830,6 +847,7 @@ function UserProfile(props) {
       setOriginalUserProfile(newUserProfile);
       window.location.reload();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to update user status:', error);
     }
     setActiveInactivePopupOpen(false);
@@ -1177,6 +1195,7 @@ function UserProfile(props) {
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
                     // Owner user cannot be deactivated by another user that is not an Owner.
+                    // eslint-disable-next-line no-alert
                     alert('You are not authorized to deactivate an owner.');
                     return;
                   }
@@ -1536,6 +1555,7 @@ function UserProfile(props) {
                   to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
                   onClick={() => {
                     if (targetIsDevAdminUneditable) {
+                      // eslint-disable-next-line no-alert
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                           'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1574,6 +1594,7 @@ function UserProfile(props) {
                     darkMode={darkMode}
                   />
                   {activeTab !== '3' && (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
@@ -1669,6 +1690,7 @@ function UserProfile(props) {
                           }
                           onClick={() => {
                             if (targetIsDevAdminUneditable) {
+                              // eslint-disable-next-line no-alert
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                                   'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1705,6 +1727,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1784,6 +1807,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1880,6 +1904,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1966,6 +1991,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -2039,6 +2065,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);

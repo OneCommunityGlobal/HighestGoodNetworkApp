@@ -1,4 +1,5 @@
 import React from 'react';
+// eslint-disable-next-line testing-library/no-manual-cleanup
 import { render, fireEvent, screen, cleanup, waitFor } from '@testing-library/react';
 import BadgeImage from '../BadgeImage';
 
@@ -22,24 +23,29 @@ describe('BadgeImage Component Tests', () => {
 
     it('receives props correctly', () => {
         const { getByTestId } = render(<BadgeImage {...props} />);
+        // eslint-disable-next-line testing-library/prefer-screen-queries
         const imageElement = getByTestId(`badge-image-${props.index}`)
         expect(imageElement.src).toContain(props.badgeData.imageUrl);
     });
 
     it('renders correct count', () => {
       const { getByTestId, rerender } = render(<BadgeImage { ...props } />);
+      // eslint-disable-next-line testing-library/prefer-screen-queries
       expect(getByTestId('badge_featured_count')).toHaveTextContent('1');
 
       props.count = 101;
       rerender(<BadgeImage {...props} />);
+      // eslint-disable-next-line testing-library/prefer-screen-queries
       expect(getByTestId('badge_featured_count_3_digit')).toHaveTextContent('101');
 
       props.badgeData.type = 'Personal Max';
       rerender(<BadgeImage {...props} />);
+      // eslint-disable-next-line testing-library/prefer-screen-queries
       expect(getByTestId('badge_featured_count_personalmax')).toHaveTextContent('101 hrs');
 
       props.personalBestMaxHrs = 1;
       rerender(<BadgeImage {...props} />);
+      // eslint-disable-next-line testing-library/prefer-screen-queries
       expect(getByTestId('badge_featured_count_personalmax')).toHaveTextContent('1 hr');
     })
 

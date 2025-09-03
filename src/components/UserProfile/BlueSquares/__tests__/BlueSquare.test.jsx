@@ -123,12 +123,15 @@ describe('BlueSquare component', () => {
 
     // Wait for the component to render completely
     await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
       const blueSquareButtonElement = container.querySelector('.blueSquareButton');
       expect(blueSquareButtonElement).toBeInTheDocument();
     });
+    // eslint-disable-next-line testing-library/no-node-access, testing-library/no-container
     const blueSquareButtonElement = container.querySelector('.blueSquareButton');
   
     // Use act to wrap the click event
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       fireEvent.click(blueSquareButtonElement);
     });

@@ -137,6 +137,7 @@ const UserTeamsTable = props => {
 
       isUpdate ? toast.info('Team updated successfully') : setIsOpenModalTeamMember(true);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };

@@ -58,12 +58,14 @@ describe('TabToolTip Component Tests', () => {
 
   it('Test case 1: Renders without crashing', () => {
     const { getByTestId } = mockComponentWithoutNavLink();
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByTestId('test-basictabtips')).toBeInTheDocument();
   });
 
   it('Test case 2: Renders with correct structure', () => {
     const { container } = mockComponentWithoutNavLink();
     // Check if the root div exists
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(container.querySelector('div[data-testid="test-basictabtips"]')).toBeInTheDocument();
   });
 

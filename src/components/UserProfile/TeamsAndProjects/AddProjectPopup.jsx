@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 
+// eslint-disable-next-line react/display-name
 const AddProjectPopup = React.memo(props => {
   const { darkMode } = props;
 
@@ -136,6 +137,7 @@ const AddProjectPopup = React.memo(props => {
     <Modal
       isOpen={props.open}
       toggle={closePopup}
+      // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >

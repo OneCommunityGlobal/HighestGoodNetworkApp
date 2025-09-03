@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 
 
-
+// eslint-disable-next-line react/display-name
 const UserProjectsTable = React.memo(props => {
   const {darkMode} = props;
 
