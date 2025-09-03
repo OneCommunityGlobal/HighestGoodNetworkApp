@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap } from 'react-leaflet';
@@ -97,7 +96,6 @@ function InteractiveMap() {
       setOrgs(data);
       setFilteredOrgs(data);
     } catch (error) {
-      console.error('Error fetching orgs:', error);
     } finally {
       setLoading(false);
     }
@@ -239,8 +237,11 @@ function InteractiveMap() {
           </h3>
           <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
             <div style={{ flex: 1 }}>
-              <label style={styles.filterLabel}>Start Date:</label>
+              <label htmlFor="startDate" style={styles.filterLabel}>
+                Start Date:
+              </label>
               <input
+                id="startDate"
                 type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
@@ -248,8 +249,11 @@ function InteractiveMap() {
               />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={styles.filterLabel}>End Date:</label>
+              <label htmlFor="endDate" style={styles.filterLabel}>
+                End Date:
+              </label>
               <input
+                id="endDate"
                 type="date"
                 value={endDate}
                 onChange={e => setEndDate(e.target.value)}
