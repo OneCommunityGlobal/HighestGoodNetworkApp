@@ -68,17 +68,11 @@ export default function IssuesBreakdownChart() {
             <span className={styles.legendLabel}>Equipment Issues</span>
           </span>
           <span className={styles.legendItem}>
-            <span
-              className={styles.legendBox}
-              style={{ backgroundColor: COLORS.laborIssues }}
-            />
+            <span className={styles.legendBox} style={{ backgroundColor: COLORS.laborIssues }} />
             <span className={styles.legendLabel}>Labor Issues</span>
           </span>
           <span className={styles.legendItem}>
-            <span
-              className={styles.legendBox}
-              style={{ backgroundColor: COLORS.materialIssues }}
-            />
+            <span className={styles.legendBox} style={{ backgroundColor: COLORS.materialIssues }} />
             <span className={styles.legendLabel}>Materials Issues</span>
           </span>
         </div>
