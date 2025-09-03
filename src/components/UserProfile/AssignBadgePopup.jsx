@@ -100,7 +100,13 @@ function AssignBadgePopup(props) {
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
         {!isLoadingBadge && (props.isTableOpen ?? filteredBadges.length > 0) ? (
           <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
-            <thead>
+            <thead
+              style={
+                darkMode
+                  ? { backgroundColor: '#1c2541', color: '#fff' }
+                  : { backgroundColor: '#f0f8ff', color: 'black' }
+              }
+            >
               <tr>
                 <th>Badge</th>
                 <th>Name</th>
@@ -139,7 +145,7 @@ function AssignBadgePopup(props) {
               Loading Badges...
             </h3>
 
-            <Spinner color="primary"/>
+            <Spinner color="primary" />
           </div>
         ) : (
           !isLoadingBadge &&
