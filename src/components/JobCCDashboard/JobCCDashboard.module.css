@@ -1,11 +1,18 @@
 .jobCcDashboard {
   padding: 20px;
   font-family: 'Arial', sans-serif;
+  background-color: #ffffff;
+  color: #000000;
 }
 
-.darkModeJobCcDashboard {
-  /*  #2c2f33 */
-  background-color: #1b2a41;
+/* Dark mode wrapper (applied once at the top) */
+.darkMode {
+  background-color: #1b2a41; /* page bg */
+  color: #ffffff;
+}
+
+.darkMode .jobCcDashboard {
+  background-color: #1b2a41; /* or #2c2f33 */
   color: #ffffff;
 }
 
@@ -16,14 +23,14 @@
 }
 
 .formContainer {
-  background-color: #f8f9fa;
+  background-color: #e9ecef;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
 }
 
-.darkModeJobCcDashboard .formContainer {
+.darkMode .formContainer {
   background-color: #3c3f44;
   color: #ffffff;
 }
@@ -45,8 +52,9 @@
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.darkModeJobCcDashboard .ccListContainer {
+.darkMode .ccListContainer {
   background-color: #3c3f44;
+  color: #ffffff;
 }
 
 .jobCcDashboardTable {
@@ -58,14 +66,33 @@
   color: #ffffff;
 }
 
-.darkModeJobCcDashboard .jobCcDashboardTable th {
+.darkMode .jobCcDashboardTable th {
   background-color: #0056b3;
+  color: #ffffff;
 }
 
 .jobCcDashboardTable td {
   vertical-align: middle;
 }
 
+.darkMode .jobCcDashboardTable td {
+  color: #ffffff;
+}
 .jobCcDashboardTable button {
   font-size: 0.85rem;
+}
+
+.darkMode .formContainer label {
+  color: #ffffff;
+}
+
+.darkMode .formContainer input,
+.darkMode .formContainer select {
+  background-color: #1b1b1b;
+  color: #ffffff;
+  border: 1px solid #555555;
+}
+
+.darkMode .dashboardTitle {
+  filter: brightness(2);
 }
