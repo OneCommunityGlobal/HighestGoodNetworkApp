@@ -221,10 +221,8 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    const skeletonLoadingElement = container.querySelector(
-      '.skeleton-loading-team-member-tasks-row',
-    );
-    expect(skeletonLoadingElement).toBeInTheDocument();
+
+    expect(screen.getByTestId('skeleton-loading-team-member-tasks-header')).toBeInTheDocument();
   });
   it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
     axios.get.mockResolvedValue({
@@ -239,10 +237,7 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    const skeletonLoadingElement = container.querySelector(
-      '.skeleton-loading-team-member-tasks-row',
-    );
-    expect(skeletonLoadingElement).not.toBeInTheDocument();
+    expect(screen.queryByTestId('skeleton-loading-team-member-tasks-row')).not.toBeInTheDocument();
   });
   it('check if class names does not include color when dark mode is false', () => {
     axios.get.mockResolvedValue({
@@ -260,29 +255,20 @@ describe('TeamMemberTasks component', () => {
     const darkModeElement = container.querySelector('.container.team-member-tasks');
     const timeOffElement = container.querySelector('.show-time-off-btn');
     const hoursCompletedElement = container.querySelector('.team-member-tasks-subtable');
-    const oneDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 1 days"]',
-    );
-    const twoDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 2 days"]',
-    );
-    const threeDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 3 days"]',
-    );
-    const fourDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 4 days"]',
-    );
-    const sevenDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 7 days"]',
-    );
+
     expect(darkModeElement).toBeInTheDocument();
     expect(hoursCompletedElement).toBeInTheDocument();
     expect(timeOffElement).toBeInTheDocument();
-    expect(oneDayElement).toBeInTheDocument();
-    expect(twoDayElement).toBeInTheDocument();
-    expect(threeDayElement).toBeInTheDocument();
-    expect(fourDayElement).toBeInTheDocument();
-    expect(sevenDayElement).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 1 days')).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 2 days')).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 3 days')).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 4 days')).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 5 days')).toBeInTheDocument();
   });
   it('check if class names does include color when dark mode is true', () => {
     axios.get.mockResolvedValue({
@@ -312,29 +298,20 @@ describe('TeamMemberTasks component', () => {
     const darkModeElement = container.querySelector('.container.team-member-tasks');
     const timeOffElement = container.querySelector('.show-time-off-btn');
     const hoursCompletedElement = container.querySelector('.team-member-tasks-subtable');
-    const oneDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 1 days"]',
-    );
-    const twoDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 2 days"]',
-    );
-    const threeDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 3 days"]',
-    );
-    const fourDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 4 days"]',
-    );
-    const sevenDayElement = container.querySelector(
-      '[title="Timelogs submitted in the past 7 days"]',
-    );
+
     expect(darkModeElement).toBeInTheDocument();
     expect(hoursCompletedElement).toBeInTheDocument();
     expect(timeOffElement).toBeInTheDocument();
-    expect(oneDayElement).toBeInTheDocument();
-    expect(twoDayElement).toBeInTheDocument();
-    expect(threeDayElement).toBeInTheDocument();
-    expect(fourDayElement).toBeInTheDocument();
-    expect(sevenDayElement).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 1 days')).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 2 days')).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 3 days')).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 4 days')).toBeInTheDocument();
+
+    expect(screen.getByTitle('Timelogs submitted in the past 5 days')).toBeInTheDocument();
   });
   it('check if show time off button works as expected', () => {
     axios.get.mockResolvedValue({
