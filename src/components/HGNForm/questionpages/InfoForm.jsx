@@ -41,13 +41,11 @@ function InfoForm() {
   }, [newVolunteer.name, newVolunteer.slack]);
 
   useEffect(() => {
-    if (user && formData) {
+    if (user && userProfile && formData) {
       setNewVolunteer(prevState => ({
         ...formData,
         ...prevState, // This preserves any user input
-        name: userProfile
-          ? `${userProfile.firstName || ''} ${userProfile.lastName || ''}`.trim()
-          : prevState.name,
+        name: `${userProfile?.firstName} ${userProfile?.lastName}`,
         email: user.email,
         github: prevState.github || formData.github || '', // Preserve GitHub value
         slack: prevState.slack || formData.slack || '', // Preserve
