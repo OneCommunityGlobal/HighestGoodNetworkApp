@@ -453,7 +453,8 @@ class ReportsPage extends Component {
       showAddTimeForm: false,
       showAddProjHistory: false,
       showAddPersonHistory: false,
-      showAddTeamHistory: false
+      showAddTeamHistory: false,
+      showCharts: !prevState.showContributorsReport
     }));
   }
 
