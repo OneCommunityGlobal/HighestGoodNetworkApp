@@ -122,6 +122,7 @@ export const ENDPOINTS = {
 
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
+  APPLICANT_VOLUNTEER_RATIO: `${APIEndpoint}/applicant-volunteer-ratio`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
@@ -260,6 +261,8 @@ export const ENDPOINTS = {
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
+  BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
+  `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
@@ -267,6 +270,12 @@ export const ENDPOINTS = {
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
+  BM_INJURY_CATEGORY_BREAKDOWN: `${APIEndpoint}/bm/injuries/category-breakdown`,
+  BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
+  BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
+  BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
+  BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
+  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
@@ -276,9 +285,6 @@ export const ENDPOINTS = {
     if (params.length > 0) url += `?${params.join('&')}`;
     return url;
   },
-  BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
-  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
-
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
@@ -309,6 +315,8 @@ export const ENDPOINTS = {
   HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
+  HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
+  
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -364,10 +372,15 @@ export const ENDPOINTS = {
   CP_NOSHOW_VIZ_PERIOD: `${APIEndpoint}/communityportal/reports/participation/data`,
   CP_ATTENDENCE_VIZ_DAY: `${APIEndpoint}/communityportal/reports/participation/by-day`,
   CP_NOSHOW_VIZ_UNIQUE_EVENTTYPES: `${APIEndpoint}/communityportal/reports/participation/unique-eventTypes`,
+  CP_ADD_EVENT_FEEDBACK: `${APIEndpoint}/communityportal/activities/eventFeedback`,
 
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
+  // pr dashboard endpoints
+  PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -204,6 +204,7 @@ function Task(props) {
             </td>
             <td
               id={`r_${props.num}_${props.taskId}`}
+              // eslint-disable-next-line jsx-a11y/scope
               scope="row"
               className={`taskNum ${props.hasChildren ? 'has_children' : ''} text-left`}
               onClick={openChild}
@@ -216,6 +217,7 @@ function Task(props) {
                   className={`level-space-${props.level}`}
                   data-tip={`${getAncestorNames(props.mother)}`}
                 >
+                  {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                   <span
                     onClick={openChild}
                     id={`task_name_${props.taskId}`}
@@ -265,6 +267,7 @@ function Task(props) {
                             {initials}{' '}
                           </span>
                         ) : (
+                          // eslint-disable-next-line jsx-a11y/alt-text
                           <img className="img-circle" src={elm.profilePic} />
                         )}
                       </a>
@@ -272,6 +275,7 @@ function Task(props) {
                   })
                 : null}
               {props.resources.length > 2 ? (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <a
                   className="resourceMoreToggle"
                   onClick={() => setShowMoreResources(!showMoreResources)}
