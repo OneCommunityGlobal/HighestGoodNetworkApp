@@ -1,7 +1,13 @@
 /* Announcements/Announcements.jsx */
 import { useState } from 'react';
 import './Announcements.css';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Editor } from '@tinymce/tinymce-react';
+import { boxStyle, boxStyleDark } from '../../styles';
+import { toast } from 'react-toastify';
+import ReactDOMServer from 'react-dom/server';
+import { sendEmail } from '../../actions/sendEmails';
+import WeeklyEmailTemplate from './WeeklyEmailTemplate';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
 import SocialMediaComposer from './SocialMediaComposer';
@@ -9,11 +15,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import EmailPanel from './platforms/email/index.jsx'; // ← new
+import EmailPanel from './platforms/email/index.jsx';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const dispatch = useDispatch();
+  const [emailTo, setEmailTo] = useState('');
+  const [emailList, setEmailList] = useState([]);
+  const [emailContent, setEmailContent] = useState('');
+  const [headerContent, setHeaderContent] = useState('');
+  const [showEditor, setShowEditor] = useState(true);
+  const [templateHtml, setTemplateHtml] = useState('');
+  const [videoTopicImage, setVideoTopicImage] = useState(
+    'https://www.dropbox.com/scl/fi/e4gv4jo2p128u2ezqva4j/topic.jpg?rlkey=10qsu8i15my3fa3bk34z4yjhq&raw=1',
+  );
 
   const getIconColor = id => {
     switch (id) {
@@ -26,6 +42,55 @@ function Announcements({ title, email: initialEmail }) {
       default:
         return undefined;
     }
+  };
+
+  useEffect(() => {
+    // Render WeeklyEmailTemplate as HTML string for the editor
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
+  }, []);
+
+  const editorInit = {
+    license_key: 'gpl',
+    selector: 'Editor#email-editor',
+    height: 500,
+    plugins: [
+      'advlist autolink lists link image paste',
+      'charmap print preview anchor help',
+      'searchreplace visualblocks code',
+      'insertdatetime media table paste wordcount',
+    ],
+    menubar: false,
+    branding: false,
+    image_title: true,
+    automatic_uploads: true,
+    file_picker_callback(cb) {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+
+      input.onchange = () => {
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          const id = `blobid${new Date().getTime()}`;
+          const { blobCache } = window.tinymce.activeEditor.editorUpload;
+          const base64 = reader.result.split(',')[1];
+          const blobInfo = blobCache.create(id, file, base64);
+          blobCache.add(blobInfo);
+          cb(blobInfo.blobUri(), { title: file.name });
+        };
+        reader.readAsDataURL(file);
+      };
+
+      input.click();
+    },
   };
 
   const tabs = [
@@ -60,6 +125,79 @@ function Announcements({ title, email: initialEmail }) {
       customIconSrc: 'social-media-logos/truthsocial_icon.png',
     },
   ];
+
+  useEffect(() => {
+    if (initialEmail) {
+      const trimmedEmail = initialEmail.trim();
+      setEmailTo(initialEmail);
+      setEmailList(trimmedEmail.split(','));
+    }
+  }, [initialEmail]);
+
+  const handleEmailListChange = e => {
+    const { value } = e.target;
+    setEmailTo(value);
+    setEmailList(value.split(','));
+  };
+
+  const handleHeaderContentChange = e => {
+    setHeaderContent(e.target.value);
+  };
+
+  const addHeaderToEmailContent = () => {
+    // Just refresh the template
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
+  };
+
+  const addVideoTopicImageToTemplate = () => {
+    // Just refresh the template
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
+  };
+
+  const validateEmail = email => {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  };
+
+  const handleSendEmails = () => {
+    const editor = window.tinymce.get('email-editor');
+    const htmlContent = editor ? editor.getContent() : emailContent;
+
+    if (emailList.length === 0 || emailList.every(e => !e.trim())) {
+      toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
+      return;
+    }
+
+    if (!htmlContent || htmlContent.trim() === '') {
+      toast.error('Error: Email content cannot be empty.');
+      return;
+    }
+
+    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
+
+    if (invalidEmails.length > 0) {
+      toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
+      return;
+    }
+
+    dispatch(
+      sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent),
+    );
+  };
 
   const columns = Math.ceil(tabs.length / 2);
   const gridStyle = {
