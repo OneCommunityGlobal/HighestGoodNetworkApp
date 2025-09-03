@@ -44,7 +44,7 @@ import BasicToolTips from './ToolTips/BasicTabTips';
 import TeamsTabTips from './ToolTips/TeamsTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode } from '../../actions/allTeamsAction';
+import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import {
@@ -59,7 +59,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
+
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';

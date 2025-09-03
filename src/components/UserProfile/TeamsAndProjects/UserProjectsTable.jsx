@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Button, Col, Tooltip } from 'reactstrap';
+import { Button, Col, Tooltip , NavItem, UncontrolledTooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
 // import styles from './UserProjectsTable.css';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { useLocation } from 'react-router-dom';
+import { useLocation , Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { NavItem, UncontrolledTooltip } from 'reactstrap';
-import { Link } from 'react-router-dom';
+
+
 
 const UserProjectsTable = React.memo(props => {
   const {darkMode} = props;

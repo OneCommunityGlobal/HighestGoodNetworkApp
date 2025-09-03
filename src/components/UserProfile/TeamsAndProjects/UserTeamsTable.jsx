@@ -6,7 +6,7 @@ import hasPermission from '../../../utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
 import Switch from './Switch';
-import './TeamsAndProjects.css';
+
 import './UserTeamsTable.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';

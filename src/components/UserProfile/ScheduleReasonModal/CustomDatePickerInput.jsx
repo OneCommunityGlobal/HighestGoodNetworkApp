@@ -1,5 +1,5 @@
-import React from 'react';
-import { forwardRef } from 'react';
+import React, { forwardRef } from 'react';
+
 import { Form, FormControl, Button } from 'react-bootstrap';
 import { FaCalendarAlt } from 'react-icons/fa';
 import styles from './CustomDatePickerInput.css';

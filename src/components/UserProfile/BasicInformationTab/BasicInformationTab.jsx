@@ -8,7 +8,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 // import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { connect } from 'react-redux';
+import { connect , useDispatch } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
 import './BasicInformationTab.css';
@@ -19,7 +19,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+
 
 const Name = props => {
   const {

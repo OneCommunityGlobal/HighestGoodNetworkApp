@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
+
 import { Dropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 

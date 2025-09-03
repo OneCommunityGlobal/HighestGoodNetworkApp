@@ -45,10 +45,10 @@ describe('BadgeImage Component Tests', () => {
 
     it('toggles popover on hover', async () => {
         render(<BadgeImage {...props} />);
-        const triggerEl = await waitFor(() => screen.getByTestId(`badge-image-${props.index}`))
+        const triggerEl = await screen.findByTestId(`badge-image-${props.index}`)
         expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
         fireEvent.mouseOver(triggerEl);
-        const tooltip = await waitFor(() => screen.getByRole('tooltip'));
+        const tooltip = await screen.findByRole('tooltip');
         expect(tooltip).toBeInTheDocument();
     });
 });
