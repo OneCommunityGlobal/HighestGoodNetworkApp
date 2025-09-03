@@ -6,7 +6,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 
 const FoundUser = props => {
   const {darkMode} = props;

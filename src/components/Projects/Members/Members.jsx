@@ -17,10 +17,10 @@ import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
 import hasPermission from '../../../utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
-import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
-import Loading from 'components/common/Loading';
-import { getProjectDetail } from 'actions/project';
+import { boxStyle, boxStyleDark } from '~/styles';
+import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
+import Loading from '~/components/common/Loading';
+import { getProjectDetail } from '~/actions/project';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
@@ -156,6 +156,7 @@ const Members = props => {
               </div>
 
               <input
+                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 type="text"
                 className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}

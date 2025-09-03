@@ -16,23 +16,22 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate } from '~/utils/formatDate';
 import hasPermission from '../../utils/permissions';
 import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import BadgeImage from './BadgeImage';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState(JSON.parse(JSON.stringify(props.badges)) || []);
   const [numFeatured, setNumFeatured] = useState(0);
