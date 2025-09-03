@@ -4,10 +4,10 @@ import { Link } from 'react-router-dom';
 import './TeamTable.css';
 import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
-import hasPermission from 'utils/permissions';
-import { updateTeam, getAllUserTeams } from 'actions/allTeamsAction';
-import { updateSavedFiltersForIndividualTeamCodeChange } from 'actions/savedFilterActions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { updateTeam, getAllUserTeams } from '~/actions/allTeamsAction';
+import { updateSavedFiltersForIndividualTeamCodeChange } from '~/actions/savedFilterActions';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
   // Display project lists
@@ -103,11 +103,11 @@ function TeamTable({ allTeams, auth, darkMode, refreshTeams }) {
         </td>
         <td className="projects__active--input">
           {team.isActive ? (
-            <div className="isActive">
+            <div className="isActive" data-testid="team-is-active">
               <i className="fa fa-circle" aria-hidden="true" />
             </div>
           ) : (
-            <div className="isNotActive">
+            <div className="isNotActive" data-testid="team-is-inactive">
               <i className="fa fa-circle-o" aria-hidden="true" />
             </div>
           )}

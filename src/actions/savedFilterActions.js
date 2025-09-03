@@ -125,10 +125,25 @@ export const getSavedFilters = () => {
  * @param {Object} filterData The filter data to save.
  */
 export const createSavedFilter = filterData => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch(createSavedFilterBegin());
     try {
-      const response = await axios.post(ENDPOINTS.SAVED_FILTERS(), filterData);
+      const state = getState();
+      const user = state.auth?.user;
+
+      // Create requestor object in the format expected by backend
+      const requestor = {
+        requestorId: user?.userid || user?.requestorId,
+        role: user?.role,
+        permissions: user?.permissions,
+      };
+
+      const requestData = {
+        ...filterData,
+        requestor,
+      };
+
+      const response = await axios.post(ENDPOINTS.SAVED_FILTERS(), requestData);
       dispatch(createSavedFilterSuccess(response.data));
       toast.success('Filter saved successfully!');
       return { status: response.status, data: response.data };
@@ -146,10 +161,22 @@ export const createSavedFilter = filterData => {
  * @param {string} filterId The ID of the filter to delete.
  */
 export const deleteSavedFilter = filterId => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch(deleteSavedFilterBegin());
     try {
-      const response = await axios.delete(ENDPOINTS.SAVED_FILTER_BY_ID(filterId));
+      const state = getState();
+      const user = state.auth?.user;
+
+      // Create requestor object in the format expected by backend
+      const requestor = {
+        requestorId: user?.userid || user?.requestorId,
+        role: user?.role,
+        permissions: user?.permissions,
+      };
+
+      const response = await axios.delete(ENDPOINTS.SAVED_FILTER_BY_ID(filterId), {
+        data: { requestor },
+      });
       dispatch(deleteSavedFilterSuccess(filterId));
       toast.success('Filter deleted successfully!');
       return { status: response.status, data: response.data };
@@ -168,10 +195,25 @@ export const deleteSavedFilter = filterId => {
  * @param {Object} filterData The updated filter data.
  */
 export const updateSavedFilter = (filterId, filterData) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch(updateSavedFilterBegin());
     try {
-      const response = await axios.put(ENDPOINTS.SAVED_FILTER_BY_ID(filterId), filterData);
+      const state = getState();
+      const user = state.auth?.user;
+
+      // Create requestor object in the format expected by backend
+      const requestor = {
+        requestorId: user?.userid || user?.requestorId,
+        role: user?.role,
+        permissions: user?.permissions,
+      };
+
+      const requestData = {
+        ...filterData,
+        requestor,
+      };
+
+      const response = await axios.put(ENDPOINTS.SAVED_FILTER_BY_ID(filterId), requestData);
       dispatch(updateSavedFilterSuccess(response.data));
       toast.success('Filter updated successfully!');
       return { status: response.status, data: response.data };
@@ -205,7 +247,8 @@ export const updateSavedFiltersForTeamCodeChange = (oldTeamCodes, newTeamCode) =
 
       return { status: response.status, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data || 'Failed to update saved filters for team code change';
+      const errorMessage =
+        error.response?.data || 'Failed to update saved filters for team code change';
       toast.error(errorMessage);
       return error.response ? error.response.status : 500;
     }
@@ -235,9 +278,10 @@ export const updateSavedFiltersForIndividualTeamCodeChange = (oldTeamCode, newTe
 
       return { status: response.status, data: response.data };
     } catch (error) {
-      const errorMessage = error.response?.data || 'Failed to update saved filters for individual team code change';
+      const errorMessage =
+        error.response?.data || 'Failed to update saved filters for individual team code change';
       toast.error(errorMessage);
       return error.response ? error.response.status : 500;
     }
   };
-}; 
+};

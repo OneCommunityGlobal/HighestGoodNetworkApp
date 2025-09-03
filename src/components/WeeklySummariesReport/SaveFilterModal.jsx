@@ -11,7 +11,7 @@ import {
   Label,
   Alert,
 } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 function SaveFilterModal({
   isOpen,

@@ -11,10 +11,10 @@ import styles from './WeeklyProjectSummary.module.css';
 
 export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
   const dispatch = useDispatch();
-  const projectFilter = useSelector(state => state.weeklyProjectSummary.projectFilter);
-  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary.dateRangeFilter);
+  const projectFilter = useSelector(state => state.weeklyProjectSummary?.projectFilter);
+  const dateRangeFilter = useSelector(state => state.weeklyProjectSummary?.dateRangeFilter);
   const comparisonPeriodFilter = useSelector(
-    state => state.weeklyProjectSummary.comparisonPeriodFilter,
+    state => state.weeklyProjectSummary?.comparisonPeriodFilter,
   );
   const darkMode = useSelector(state => state.theme.darkMode);
 

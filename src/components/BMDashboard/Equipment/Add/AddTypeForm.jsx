@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Form, FormGroup, FormFeedback, Label, Input, Button } from 'reactstrap';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 
-import { addEquipmentType } from 'actions/bmdashboard/equipmentActions';
+import { addEquipmentType } from '~/actions/bmdashboard/equipmentActions';
 
 const FuelTypes = {
   dies: 'Diesel',
