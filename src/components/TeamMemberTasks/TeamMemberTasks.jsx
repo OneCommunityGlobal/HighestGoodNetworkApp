@@ -1,9 +1,8 @@
-import { Fragment } from 'react';
+import React, { Fragment, useEffect, useState, useCallback } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from '~/actions/task';
-import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { MultiSelect } from 'react-multi-select-component';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -841,5 +840,7 @@ const mapStateToProps = state => ({
   usersWithTimeEntries: state.teamMemberTasks.usersWithTimeEntries,
   darkMode: state.theme.darkMode,
 });
+
+TeamMemberTasks.displayName = 'TeamMemberTasks';
 
 export default connect(mapStateToProps, null)(TeamMemberTasks);
