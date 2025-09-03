@@ -1,13 +1,25 @@
+/* Announcements/Announcements.jsx */
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
+import ReactDOMServer from 'react-dom/server';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import WeeklyEmailTemplate from './WeeklyEmailTemplate';
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import classnames from 'classnames';
+import SocialMediaComposer from './SocialMediaComposer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
+import ReactTooltip from 'react-tooltip';
+import EmailPanel from './platforms/email/index.jsx';
 
 function Announcements({ title, email: initialEmail }) {
+  const [activeTab, setActiveTab] = useState('email');
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
@@ -15,6 +27,10 @@ function Announcements({ title, email: initialEmail }) {
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
+  const [templateHtml, setTemplateHtml] = useState('');
+  const [videoTopicImage, setVideoTopicImage] = useState(
+    'https://www.dropbox.com/scl/fi/e4gv4jo2p128u2ezqva4j/topic.jpg?rlkey=10qsu8i15my3fa3bk34z4yjhq&raw=1',
+  );
   const [videoFile, setVideoFile] = useState(null);
   const [videoURL, setVideoURL] = useState('');
   const [youtubeAccounts, setYoutubeAccounts] = useState([]);
@@ -26,10 +42,30 @@ function Announcements({ title, email: initialEmail }) {
   const [privacyStatus, setPrivacyStatus] = useState('private');
   const [isFileUploaded, setIsFileUploaded] = useState(false);
 
+  const getIconColor = id => {
+    switch (id) {
+      case 'facebook':
+        return '#1877F2';
+      case 'linkedin':
+        return '#0077B5';
+      case 'medium':
+        return '#00ab6c';
+      default:
+        return undefined;
+    }
+  };
+
   useEffect(() => {
-    setShowEditor(false);
-    setTimeout(() => setShowEditor(true), 0);
-  }, [darkMode]);
+    // Render WeeklyEmailTemplate as HTML string for the editor
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
+  }, []);
 
   const editorInit = {
     license_key: 'gpl',
@@ -64,12 +100,40 @@ function Announcements({ title, email: initialEmail }) {
       };
       input.click();
     },
-    a11y_advanced_options: true,
-    toolbar:
-      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
   };
+
+  const tabs = [
+    { id: 'email', icon: faEnvelope, label: 'Email' },
+    { id: 'x', label: 'X', customIconSrc: 'social-media-logos/x_icon.png' },
+    { id: 'facebook', icon: faFacebook, label: 'Facebook' },
+    { id: 'linkedin', icon: faLinkedin, label: 'LinkedIn' },
+    { id: 'pinterest', label: 'Pinterest', customIconSrc: 'social-media-logos/pinterest_icon.png' },
+    { id: 'instagram', label: 'Instagram', customIconSrc: 'social-media-logos/insta_icon.png' },
+    { id: 'threads', label: 'Threads', customIconSrc: 'social-media-logos/threads_icon.png' },
+    { id: 'mastodon', label: 'Mastodon', customIconSrc: 'social-media-logos/mastodon_icon.png' },
+    { id: 'bluesky', label: 'BlueSky', customIconSrc: 'social-media-logos/bluesky_icon.png' },
+    { id: 'youtube', label: 'Youtube', customIconSrc: 'social-media-logos/youtube_icon.png' },
+    { id: 'reddit', label: 'Reddit', customIconSrc: 'social-media-logos/reddit_icon.png' },
+    { id: 'tumblr', label: 'Tumblr', customIconSrc: 'social-media-logos/tumblr_icon.png' },
+    { id: 'imgur', label: 'Imgur', customIconSrc: 'social-media-logos/imgur_icon.png' },
+    { id: 'diigo', label: 'Diigo', customIconSrc: 'social-media-logos/diigo_icon.png' },
+    { id: 'myspace', label: 'Myspace', customIconSrc: 'social-media-logos/myspace_icon.png' },
+    { id: 'medium', icon: faMedium, label: 'Medium' },
+    { id: 'plurk', label: 'Plurk', customIconSrc: 'social-media-logos/plurk_icon.png' },
+    { id: 'bitily', label: 'Bitily', customIconSrc: 'social-media-logos/bitily_icon.png' },
+    {
+      id: 'livejournal',
+      label: 'LiveJournal',
+      customIconSrc: 'social-media-logos/liveJournal_icon.png',
+    },
+    { id: 'slashdot', label: 'Slashdot', customIconSrc: 'social-media-logos/slashdot_icon.png' },
+    { id: 'blogger', label: 'Blogger', customIconSrc: 'social-media-logos/blogger_icon.png' },
+    {
+      id: 'truthsocial',
+      label: 'Truth Social',
+      customIconSrc: 'social-media-logos/truthsocial_icon.png',
+    },
+  ];
 
   useEffect(() => {
     if (initialEmail) {
@@ -90,14 +154,27 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const addHeaderToEmailContent = () => {
-    if (!headerContent) return;
-    const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-    const editor = window.tinymce.get('email-editor');
-    if (editor) {
-      editor.insertContent(imageTag);
-      setEmailContent(editor.getContent());
-    }
-    setHeaderContent('');
+    // Just refresh the template
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
+  };
+
+  const addVideoTopicImageToTemplate = () => {
+    // Just refresh the template
+    const html = ReactDOMServer.renderToStaticMarkup(
+      <WeeklyEmailTemplate
+        headerImageUrl={headerContent || undefined}
+        videoTopicImageUrl={videoTopicImage || undefined}
+        darkMode={darkMode}
+      />,
+    );
+    setTemplateHtml(html);
   };
 
   const convertImageToBase64 = (file, callback) => {
@@ -129,20 +206,26 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const handleSendEmails = () => {
-    const htmlContent = emailContent;
+    const editor = window.tinymce.get('email-editor');
+    const htmlContent = editor ? editor.getContent() : emailContent;
+
     if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
-    if (!isFileUploaded) {
-      toast.error('Error: Please upload a file.');
+
+    if (!htmlContent || htmlContent.trim() === '') {
+      toast.error('Error: Email content cannot be empty.');
       return;
     }
+
     const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
+
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
       return;
     }
+
     dispatch(
       sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent),
     );
@@ -155,6 +238,13 @@ function Announcements({ title, email: initialEmail }) {
     </div>
   `;
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
+  };
+
+  const columns = Math.ceil(tabs.length / 2);
+  const gridStyle = {
+    gridTemplateColumns: `repeat(${columns}, minmax(120px, 1fr))`,
+    padding: '1rem',
+    borderBottom: darkMode ? '1px solid #2b3b50' : '1px solid #ccc',
   };
 
   const handleVideoChange = e => {
@@ -235,122 +325,71 @@ function Announcements({ title, email: initialEmail }) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      <div className="email-update-container">
-        <div className="editor">
-          {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
-
-          <br />
-          {showEditor && (
-            <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={content => {
-                setEmailContent(content);
-              }}
-            />
-          )}
-          {title ? (
-            ''
-          ) : (
-            <div className="email-update-container">
-              <div className="editor">
-                <div className="email-list">
-                  <input
-                    type="text"
-                    value={emailTo}
-                    onChange={handleEmailListChange}
-                    placeholder="Enter email addresses (comma-separated)"
+      <Nav
+        className={classnames('tab-grid', { 'two-rows': columns, dark: darkMode })}
+        style={gridStyle}
+      >
+        {tabs.map(({ id, icon, label, customIconSrc }) => (
+          <NavItem key={id}>
+            <NavLink
+              data-tip={label}
+              className={classnames('tab-nav-item', { active: activeTab === id, dark: darkMode })}
+              onClick={() => setActiveTab(id)}
+              aria-selected={activeTab === id}
+            >
+              <div className="tab-icon">
+                {customIconSrc ? (
+                  <img src={customIconSrc} alt={`${label} icon`} className="tab-icon" />
+                ) : (
+                  <FontAwesomeIcon
+                    icon={icon}
+                    style={{ width: '100%', height: '100%', color: getIconColor(id) }}
                   />
-                </div>
-                <div className="header-image">
-                  <input
-                    type="text"
-                    value={headerContent}
-                    onChange={handleHeaderContentChange}
-                    placeholder="Enter header image URL"
-                  />
-                  <button type="button" onClick={addHeaderToEmailContent}>
-                    Add Header
-                  </button>
-                </div>
-                <div className="file-upload">
-                  <input type="file" onChange={addImageToEmailContent} />
-                </div>
-                <div className="send-buttons">
-                  <button type="button" onClick={handleSendEmails}>
-                    Send Emails
-                  </button>
-                  <button type="button" onClick={handleBroadcastEmails}>
-                    Broadcast to All
-                  </button>
-                </div>
+                )}
               </div>
-            </div>
-          )}
-        </div>
-        <div
-          className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          {title ? (
-            <p>Email</p>
-          ) : (
-            <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Email List (comma-separated)<span className="red-asterisk">* </span>:
-            </label>
-          )}
-          <input
-            type="text"
-            value={emailTo}
-            id="email-list-input"
-            onChange={handleEmailListChange}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={handleSendEmails}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            {title ? 'Send Email' : 'Send mail to specific users'}
-          </button>
+              <div className="tab-label">{label}</div>
+            </NavLink>
+          </NavItem>
+        ))}
+      </Nav>
+      <ReactTooltip place="bottom" type="dark" effect="solid" />
 
-          <hr />
-          <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Insert header or image link:
-          </label>
-          <input
-            type="text"
-            id="header-content-input"
-            onChange={handleHeaderContentChange}
-            value={headerContent}
-            className={`input-text-for-announcement ${
-              darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-            }`}
-          />
-          <button
-            type="button"
-            className="send-button"
-            onClick={addHeaderToEmailContent}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Insert
-          </button>
-          <hr />
-          <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Upload Header (or footer):
-          </label>
-          <input
-            type="file"
-            id="upload-header-input"
-            onChange={addImageToEmailContent}
-            className="input-file-upload"
-          />
-        </div>
+      <div style={{ backgroundColor: darkMode ? '#14233a' : '#fff', padding: '1rem' }}>
+        <TabContent activeTab={activeTab}>
+          {/* Email tab now uses the extracted component */}
+          <TabPane tabId="email">
+            <EmailPanel title={title} initialEmail={initialEmail} />
+          </TabPane>
+
+          {/* Platforms stay the same */}
+          {[
+            'x',
+            'facebook',
+            'linkedin',
+            'pinterest',
+            'instagram',
+            'threads',
+            'mastodon',
+            'bluesky',
+            'youtube',
+            'reddit',
+            'tumblr',
+            'imgur',
+            'diigo',
+            'myspace',
+            'medium',
+            'plurk',
+            'bitily',
+            'livejournal',
+            'slashdot',
+            'blogger',
+            'truthsocial',
+          ].map(platform => (
+            <TabPane tabId={platform} key={platform}>
+              <SocialMediaComposer platform={platform} />
+            </TabPane>
+          ))}
+        </TabContent>
       </div>
       <div className="social-media-container">
         <div className="social-media">
