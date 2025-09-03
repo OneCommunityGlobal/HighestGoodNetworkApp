@@ -546,11 +546,32 @@ const WeeklySummariesReport = props => {
         if (summary?.isActive === false && !isLastWeekReport(summary.startDate, summary.endDate)) {
           return false;
         }
+        const weeklySummaryCount =
+          summary.weeklySummariesCount ||
+          summary.weeklySubmissionCount ||
+          summary.summaryCount ||
+          summary.totalWeeklySummaries ||
+          0;
         const isMeetCriteria =
           summary.totalTangibleHrs > 80 &&
           summary.daysInTeam > 60 &&
           summary.bioPosted !== 'posted';
-        const isBio = !selectedBioStatus || isMeetCriteria;
+        // weeklySummaryCount > 8;
+        // const isBio = !selectedBioStatus || isMeetCriteria;
+        let isBio = true;
+        if (selectedBioStatus) {
+          // When bio filter is ON, exclude Owner and Promoted Review roles
+          const userRole = summary.role;
+          if (userRole === 'Owner' || userRole === 'Promoted Reviewer') {
+            return false; // Exclude these roles completely when bio filter is active
+          }
+          // For other roles, check if they meet criteria
+          isBio = isMeetCriteria;
+        } else {
+          // When bio filter is OFF, show everyone (except for the criteria check)
+          isBio = !selectedBioStatus || isMeetCriteria;
+        }
+
         const isOverHours =
           !selectedOverTime ||
           (summary.weeklycommittedHours > 0 &&
@@ -752,7 +773,7 @@ const WeeklySummariesReport = props => {
         const weekIndex = navItems.indexOf(tab);
 
         props
-          .getWeeklySummariesReport(weekIndex)
+          .getWeeklySummariesReport(weekIndex, true)
           .then(res => {
             if (res && res.data) {
               // Process data
@@ -837,76 +858,182 @@ const WeeklySummariesReport = props => {
     }));
   };
 
-  const handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
+  const handleTeamCodeChange = async (oldTeamCode, newTeamCode, userIdObj) => {
+    //old code
+    // try {
+    //   setState(prevState => {
+    //     let { teamCodes, summaries, selectedCodes } = prevState;
+    //     // Find and update the user's team code in summaries
+    //     summaries = summaries.map(summary => {
+    //       if (userIdObj[summary._id]) {
+    //         return { ...summary, teamCode: newTeamCode };
+    //       }
+    //       return summary;
+    //     });
+    //     let noTeamCodeCount = 0;
+    //     summaries.forEach(summary => {
+    //       if (summary.teamCode.length <= 0) {
+    //         noTeamCodeCount += 1;
+    //       }
+    //     });
+    //     // Count the occurrences of each team code
+    //     const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+    //       acc[teamCode] = (acc[teamCode] || 0) + 1;
+    //       return acc;
+    //     }, {});
+    //     const teamCodeWithUserId = summaries.reduce((acc, { _id, teamCode }) => {
+    //       if (acc && acc[teamCode]) {
+    //         acc[teamCode].push(_id);
+    //       } else {
+    //         acc[teamCode] = [_id];
+    //       }
+    //       return acc;
+    //     }, {});
+    //     // Update teamCodes by filtering out those with zero count
+    //     teamCodes = Object.entries(teamCodeCounts)
+    //       .filter(([code, count]) => code.length > 0 && count > 0)
+    //       .map(([code, count]) => ({
+    //         label: `${code} (${count})`,
+    //         value: code,
+    //         _ids: teamCodeWithUserId[code],
+    //       }));
+    //     // Update selectedCodes labels and filter out those with zero count
+    //     selectedCodes = selectedCodes
+    //       .map(selected => {
+    //         const count = teamCodeCounts[selected.value];
+    //         const ids = teamCodeWithUserId[selected.value];
+    //         if (selected?.label.includes('Select All With NO Code') && noTeamCodeCount > 0) {
+    //           return {
+    //             ...selected,
+    //             label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+    //             _ids: ids,
+    //           };
+    //         }
+    //         if (count !== undefined && count > 0) {
+    //           return { ...selected, label: `${selected.value} (${count})`, _ids: ids };
+    //         }
+    //         return null;
+    //       })
+    //       .filter(Boolean);
+    //     // Sort teamCodes by label
+    //     teamCodes
+    //       .sort((a, b) => a.label.localeCompare(b.label))
+    //       .push({
+    //         value: '',
+    //         label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+    //         _ids: teamCodeWithUserId[''],
+    //       });
+    //     return { ...prevState, summaries, teamCodes, selectedCodes };
+    //   });
+    //   return null;
+    // } catch (error) {
+    //   return null;
+    // }
+    // new code
     try {
-      setState(prevState => {
-        let { teamCodes, summaries, selectedCodes } = prevState;
-        // Find and update the user's team code in summaries
-        summaries = summaries.map(summary => {
-          if (userIdObj[summary._id]) {
-            return { ...summary, teamCode: newTeamCode };
-          }
-          return summary;
-        });
-        let noTeamCodeCount = 0;
-        summaries.forEach(summary => {
-          if (summary.teamCode.length <= 0) {
-            noTeamCodeCount += 1;
-          }
-        });
-        // Count the occurrences of each team code
-        const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
-          acc[teamCode] = (acc[teamCode] || 0) + 1;
-          return acc;
-        }, {});
-        const teamCodeWithUserId = summaries.reduce((acc, { _id, teamCode }) => {
-          if (acc && acc[teamCode]) {
-            acc[teamCode].push(_id);
-          } else {
-            acc[teamCode] = [_id];
-          }
-          return acc;
-        }, {});
+      // First, make the API call to save to backend
+      const userIds = Object.keys(userIdObj).filter(id => userIdObj[id]);
 
-        // Update teamCodes by filtering out those with zero count
-        teamCodes = Object.entries(teamCodeCounts)
-          .filter(([code, count]) => code.length > 0 && count > 0)
-          .map(([code, count]) => ({
-            label: `${code} (${count})`,
-            value: code,
-            _ids: teamCodeWithUserId[code],
-          }));
-        // Update selectedCodes labels and filter out those with zero count
-        selectedCodes = selectedCodes
-          .map(selected => {
-            const count = teamCodeCounts[selected.value];
-            const ids = teamCodeWithUserId[selected.value];
-            if (selected?.label.includes('Select All With NO Code') && noTeamCodeCount > 0) {
-              return {
-                ...selected,
-                label: `Select All With NO Code (${noTeamCodeCount || 0})`,
-                _ids: ids,
-              };
-            }
-            if (count !== undefined && count > 0) {
-              return { ...selected, label: `${selected.value} (${count})`, _ids: ids };
-            }
-            return null;
-          })
-          .filter(Boolean);
-
-        // Sort teamCodes by label
-        teamCodes
-          .sort((a, b) => a.label.localeCompare(b.label))
-          .push({
-            value: '',
-            label: `Select All With NO Code (${noTeamCodeCount || 0})`,
-            _ids: teamCodeWithUserId[''],
-          });
-        return { ...prevState, summaries, teamCodes, selectedCodes };
+      // Make API call to update team code in backend
+      // const response = await axios.put(ENDPOINTS.USER_PROFILE, {
+      //   userIds,
+      //   teamCode: newTeamCode,
+      // });
+      const response = await axios.post(ENDPOINTS.REPLACE_TEAM_CODE, {
+        oldTeamCodes: [oldTeamCode],
+        newTeamCode: newTeamCode,
+        warningUsers: [], // Empty array since this is individual change
+        userIds: userIds, // Add specific user IDs
       });
+
+      // Add this temporarily to your handleAllTeamCodeReplace function
+      // eslint-disable-next-line no-console
+      console.log('Working endpoint URL:', ENDPOINTS.REPLACE_TEAM_CODE);
+      // eslint-disable-next-line no-console
+      console.log('Full URL being called:', `${ENDPOINTS.BASE_URL}${ENDPOINTS.REPLACE_TEAM_CODE}`);
+      // Only update local state if backend update succeeds
+      if (response.status === 200) {
+        setState(prevState => {
+          let { teamCodes, summaries, selectedCodes } = prevState;
+
+          // Find and update the user's team code in summaries
+          summaries = summaries.map(summary => {
+            if (userIdObj[summary._id]) {
+              return { ...summary, teamCode: newTeamCode };
+            }
+            return summary;
+          });
+
+          let noTeamCodeCount = 0;
+          summaries.forEach(summary => {
+            if (summary.teamCode.length <= 0) {
+              noTeamCodeCount += 1;
+            }
+          });
+
+          // Count the occurrences of each team code
+          const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+            acc[teamCode] = (acc[teamCode] || 0) + 1;
+            return acc;
+          }, {});
+
+          const teamCodeWithUserId = summaries.reduce((acc, { _id, teamCode }) => {
+            if (acc && acc[teamCode]) {
+              acc[teamCode].push(_id);
+            } else {
+              acc[teamCode] = [_id];
+            }
+            return acc;
+          }, {});
+
+          // Update teamCodes by filtering out those with zero count
+          teamCodes = Object.entries(teamCodeCounts)
+            .filter(([code, count]) => code.length > 0 && count > 0)
+            .map(([code, count]) => ({
+              label: `${code} (${count})`,
+              value: code,
+              _ids: teamCodeWithUserId[code],
+            }));
+
+          // Update selectedCodes labels and filter out those with zero count
+          selectedCodes = selectedCodes
+            .map(selected => {
+              const count = teamCodeCounts[selected.value];
+              const ids = teamCodeWithUserId[selected.value];
+              if (selected?.label.includes('Select All With NO Code') && noTeamCodeCount > 0) {
+                return {
+                  ...selected,
+                  label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+                  _ids: ids,
+                };
+              }
+              if (count !== undefined && count > 0) {
+                return { ...selected, label: `${selected.value} (${count})`, _ids: ids };
+              }
+              return null;
+            })
+            .filter(Boolean);
+
+          // Sort teamCodes by label
+          teamCodes
+            .sort((a, b) => a.label.localeCompare(b.label))
+            .push({
+              value: '',
+              label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+              _ids: teamCodeWithUserId[''],
+            });
+
+          return { ...prevState, summaries, teamCodes, selectedCodes };
+        });
+
+        // Show success message
+        // toast.success('Team code updated successfully');
+      }
       return null;
     } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error updating team code:', error);
+      // toast.error('Failed to update team code');
       return null;
     }
   };
