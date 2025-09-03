@@ -3,7 +3,7 @@ import { useState } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
 import ReactDOMServer from 'react-dom/server';
 import { sendEmail } from '../../actions/sendEmails';
