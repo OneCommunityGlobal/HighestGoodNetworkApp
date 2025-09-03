@@ -100,6 +100,24 @@ const TeamMemberTask = React.memo(
       Mentor: '#e9dd57', // yellow
     };
 
+    function getTaskCreatorName(task) {
+      if (!task) return 'Unknown';
+      const direct = task.creatorName || task.createdByName || task.createdByEmail || task.creator;
+      if (direct) return direct;
+      const createdBy = task.createdBy || task.creatorId || task.created_by || task.owner;
+      if (createdBy) {
+        if (typeof createdBy === 'string') return createdBy;
+        const first = createdBy.firstName || createdBy.firstname || createdBy.givenName;
+        const last = createdBy.lastName || createdBy.lastname || createdBy.familyName;
+        const full = [first, last].filter(Boolean).join(' ').trim();
+        if (full) return full;
+        if (createdBy.name) return createdBy.name;
+        if (createdBy.email) return createdBy.email;
+        if (createdBy.username) return createdBy.username;
+      }
+      return 'Unknown';
+    }
+
     function getInitials(name) {
       const initials = name
         .split(' ')
@@ -345,7 +363,7 @@ const TeamMemberTask = React.memo(
                                         className="team-member-tasks-content-link"
                                         to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                                         data-testid={`${task.taskName}`}
-                                        title={`Created by: ${task.creatorName}`}
+                                        title={`Created by: ${getTaskCreatorName(task)}`}
                                         style={{ color: darkMode ? '#339CFF' : undefined }}
                                       >
                                         <span>{`${task.num} ${task.taskName}`} </span>
