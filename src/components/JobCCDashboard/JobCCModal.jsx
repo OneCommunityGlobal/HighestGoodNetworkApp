@@ -77,7 +77,7 @@ function JobCCModal({ job, onClose, darkMode, onRefresh }) {
             {loading ? 'Adding...' : 'Add Email'}
           </Button>
         </Form>
-        <h6 className="mt-4">Current CC List</h6>
+        <h6 className>Current CC List</h6>
         <Table striped bordered hover>
           <thead>
             <tr>
