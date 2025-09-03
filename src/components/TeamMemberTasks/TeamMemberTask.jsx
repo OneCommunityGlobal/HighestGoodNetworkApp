@@ -109,7 +109,10 @@ const TeamMemberTask = React.memo(
         if (typeof createdBy === 'string') return createdBy;
         const first = createdBy.firstName || createdBy.firstname || createdBy.givenName;
         const last = createdBy.lastName || createdBy.lastname || createdBy.familyName;
-        const full = [first, last].filter(Boolean).join(' ').trim();
+        const full = [first, last]
+          .filter(Boolean)
+          .join(' ')
+          .trim();
         if (full) return full;
         if (createdBy.name) return createdBy.name;
         if (createdBy.email) return createdBy.email;
