@@ -638,32 +638,13 @@ export default (
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
         <CPProtectedRoute path="/communityportal/activities/:activityId/manage" component={RescheduleEvent} routePermissions={['rescheduleEvent']}/>
-        {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-
-        <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
-
-        <CPProtectedRoute path="/communityportal/activities/:activityid/resources" exact component={Resources}/>
-        <CPProtectedRoute path="/communityportal/activities/:activityid" exact component={Activity} />
-        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
-        <CPProtectedRoute path="/communityportal/reports/event/personalization" exact component={EventStats} />
-        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage}/>
-
-
-
-        {/* Listing and Bidding Routes */}
-        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
-        <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
-        <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
-        <Route path="/lbdashboard/login" component={LBLogin} />
-        <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
-        <Route // Should be LBProtectedRoute
-          path="/lbdashboard/listingshome"
-          render={() => (
-            <>
-              <AutoUpdate />
-              <LBHome />
-            </>
-          )}
+        <CPProtectedRoute
+          path="/communityportal/activities/Feedbackform/:eventId/:email"
+          component={Feedbackform}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/FollowUpEmailTemplate"
+          component={FollowUpEmailTemplate}
         />
 
         {/* Good Education  Portal Routes */}
@@ -734,7 +715,6 @@ export default (
         />
 
         <Route path="*" component={NotFoundPage} />
-        
       </Switch>
     </>
   </Switch>

@@ -1,8 +1,9 @@
 /* Page wrapper */
 .reschedulePage {
-  text-align: center;
-  position: relative;
-  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
 /* Buttons */
@@ -13,7 +14,8 @@
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
 }
 .rescheduleButton:hover {
   background-color: #0066cc;
@@ -58,15 +60,12 @@
 /* Modal backdrop */
 .modalBackdrop {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   background: rgba(20, 20, 20, 0.8) !important;
   display: flex;
-  align-items: flex-start; /* align at top */
   justify-content: center;
-  padding-top: 5%;
+  align-items: center; /* center vertically */
+  padding: 20px;
   z-index: 9999;
 }
 .modalBackdropDark {
@@ -77,13 +76,13 @@
 .modalContent {
   position: relative;
   background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 600px;
-  max-width: 90%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  padding: 24px;
+  border-radius: 10px;
+  width: min(900px, 95%);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
   gap: 20px;
 }
 .modalContentDark {
@@ -94,11 +93,11 @@
 /* Close “×” */
 .modalCloseBtn {
   position: absolute;
-  top: 8px;
-  right: 12px;
+  top: 10px;
+  right: 14px;
   background: transparent;
   border: none;
-  font-size: 1.4rem;
+  font-size: 1.6rem;
   line-height: 1;
   cursor: pointer;
   color: inherit;
@@ -108,14 +107,16 @@
 .eventContainer {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  gap: 10px;
 }
 .eventContainerDark h3,
 .eventContainerDark p {
   color: #ecf0f1;
 }
 .modalTitle {
-  margin-bottom: 10px;
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: bold;
 }
 .eventDetails {
   display: flex;
@@ -126,8 +127,10 @@
 
 /* Time dropdown */
 .timeDropdown {
-  margin-left: 5px;
-  padding: 4px;
+  margin-top: 4px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 .timeDropdownDark {
   background: #34495e;
@@ -141,17 +144,43 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  flex: 1;
+  gap: 8px;
 }
 .rescheduleText {
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  font-weight: 500;
 }
 
 /* Confirmation buttons */
 .confirmationButtons {
   margin-top: 16px;
   display: flex;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modalBody {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.modalBodySingle {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .modalBody {
+    grid-template-columns: 1fr;
+  }
+  .confirmationButtons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .confirmationButtons button {
+    width: 100%;
+  }
 }
 
 /* DatePicker dark theme overrides */
