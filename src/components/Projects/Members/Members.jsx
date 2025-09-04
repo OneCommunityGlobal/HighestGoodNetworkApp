@@ -73,10 +73,10 @@ const Members = props => {
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
 
   // avoid re-filtering the netire list on every render
-  const displayedMembers = useMemo(
-    () => (showActiveMembersOnly ? membersList?.filter(member => member.isActive) : membersList),
-    [membersList, showActiveMembersOnly]
-  );
+  // const displayedMembers = useMemo(
+  //   () => (showActiveMembersOnly ? membersList?.filter(member => member.isActive) : [...membersList]),
+  //   [membersList, showActiveMembersOnly]
+  // );
 
   const handleToggle = async () => {
     setShowActiveMembersOnly(prevState => !prevState);
@@ -187,7 +187,7 @@ const Members = props => {
                     handleFind();
                   }
                 }}
-                disabled={showActiveMembersOnly}
+                // disabled={showActiveMembersOnly}
               />
               <div className="input-group-append">
                 <button
@@ -295,7 +295,7 @@ const Members = props => {
                 </tr>
               </thead>
               <tbody>
-                {displayedMembers.map((member, i) => (
+                {membersList.map((member, i) => (
                   <Member
                     index={i}
                     key={member._id ?? i}
