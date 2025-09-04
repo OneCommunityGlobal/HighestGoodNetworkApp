@@ -1,12 +1,12 @@
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import storage from 'redux-persist/lib/storage';// defaults to localStorage for web
 
 import thunk from 'redux-thunk';
-import { userPreferencesReducer } from 'reducers/lbdashboard/userPreferencesReducer';
-import { messagingReducer } from 'reducers/lbdashboard/messagingReducer';
+import { userPreferencesReducer } from '~/reducers/lbdashboard/userPreferencesReducer';
+import { messagingReducer } from '~/reducers/lbdashboard/messagingReducer';
+import { weeklyProjectSummaryReducer } from '~/reducers/bmdashboard/weeklyProjectSummaryReducer';
 import { localReducers, sessionReducers } from './reducers';
-
 
 const middleware = [thunk];
 const initialState = {};
@@ -17,6 +17,7 @@ const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
 export const rootReducers = combineReducers({
   userPreferences: userPreferencesReducer,
   messages: messagingReducer,
+  weeklyProjectSummary: weeklyProjectSummaryReducer,
   ...localReducers,
   ...sessionReducers,
 });

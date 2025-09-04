@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import './RescheduleEvent.css';
+import styles from './RescheduleEvent.module.css';
 import { useSelector } from 'react-redux';
 
 function RescheduleEvent() {
@@ -35,33 +35,41 @@ function RescheduleEvent() {
     const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
     const period = hour < 12 ? 'AM' : 'PM';
     return `${formattedHour < 10 ? `0${formattedHour}` : formattedHour}:00 ${period}`;
-  };
+    };
 
   return (
-    <div className={`reschedule-page ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
+    <div
+      className={`${styles.reschedulePage} ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
+    >
       {!buttonClicked && (
         <button
           type="button"
           onClick={handleReschedule}
-          className={`reschedule-button ${darkMode ? 'btn-dark-mode' : ''}`}
+          className={`${styles.rescheduleButton} ${darkMode ? styles.btnDarkMode : ''}`}
         >
           Reschedule Event
         </button>
       )}
 
       {showModal && (
-        <div className={`modal-backdrop ${darkMode ? 'dark' : ''}`}>
-          <div className={`modal-content ${darkMode ? 'dark' : ''}`}>
+        <div
+          className={`${styles.modalBackdrop} ${darkMode ? styles.modalBackdropDark : ''}`}
+        >
+          <div
+            className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
+          >
             {/* Close button */}
-            <button type="button" className="modal-close-btn" onClick={closeModal}>
+            <button type="button" className={styles.modalCloseBtn} onClick={closeModal}>
               &times;
             </button>
 
             {!confirmStep ? (
               <>
-                <div className={`event-container ${darkMode ? 'dark' : ''}`}>
-                  <h3 className="modal-title">Event Name</h3>
-                  <div className="event-details">
+                <div
+                  className={`${styles.eventContainer} ${darkMode ? styles.eventContainerDark : ''}`}
+                >
+                  <h3 className={styles.modalTitle}>Event Name</h3>
+                  <div className={styles.eventDetails}>
                     <p>Location: San Francisco, CA 94108</p>
                     <p>Link: Event Link</p>
                     <p>
@@ -69,7 +77,7 @@ function RescheduleEvent() {
                       <select
                         value={selectedTime}
                         onChange={e => setSelectedTime(e.target.value)}
-                        className={`time-dropdown ${darkMode ? 'time-dropdown-dark' : ''}`}
+                        className={`${styles.timeDropdown} ${darkMode ? styles.timeDropdownDark : ''}`}
                       >
                         <option value="">Select time</option>
                         {[...Array(12)].map((_, i) => {
@@ -86,26 +94,27 @@ function RescheduleEvent() {
                   </div>
                 </div>
 
-                <div className="datepicker-container">
-                  <div className="datepicker-wrapper">
-                    <p className="reschedule-text">Choose an available date to reschedule</p>
-                    <DatePicker
-                      selected={selectedDate}
-                      onChange={date => {
-                        setSelectedDate(date);
-                        setConfirmStep(false);
-                      }}
-                      inline
-                      minDate={new Date()}
-                      className={darkMode ? 'react-datepicker dark' : 'react-datepicker'}
-                    />
-                  </div>
+                <div className={styles.datepickerContainer}>
+                  <p className={styles.rescheduleText}>Choose an available date to reschedule</p>
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={date => {
+                      setSelectedDate(date);
+                      setConfirmStep(false);
+                    }}
+                    inline
+                    minDate={new Date()}
+                    /* Keep DatePicker classes global so :global() rules apply */
+                    className={darkMode ? 'react-datepicker dark' : 'react-datepicker'}
+                  />
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setConfirmStep(true)}
-                  className={`reschedule-button ${darkMode ? 'btn-dark-mode' : ''}`}
+                  className={`${styles.rescheduleButton} ${
+                    darkMode ? styles.btnDarkMode : ''
+                  }`}
                   disabled={!selectedDate || !selectedTime}
                 >
                   Reschedule Event
@@ -116,23 +125,24 @@ function RescheduleEvent() {
                 <h2 className={darkMode ? 'text-light' : ''}>
                   Are you sure you want to reschedule?
                 </h2>
-                <div className="event-details">
+                <div className={styles.eventDetails}>
                   <p>Date: {selectedDate?.toDateString()}</p>
                   <p>Time: {selectedTime}</p>
                 </div>
 
-                <div className="confirmation-buttons">
+                <div className={styles.confirmationButtons}>
                   <button
                     type="button"
                     onClick={handleConfirm}
-                    className={`btn ${darkMode ? 'btn-dark-mode' : 'btn-primary'}`}
+                    className={darkMode ? styles.btnDarkMode : styles.btnPrimary}
+                    disabled={!selectedDate || !selectedTime}
                   >
                     Confirm
                   </button>
                   <button
                     type="button"
                     onClick={closeModal}
-                    className={`btn ${darkMode ? 'btn-cancel-dark' : ''}`}
+                    className={styles.btnCancelDark}
                   >
                     Cancel
                   </button>
