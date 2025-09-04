@@ -57,7 +57,7 @@ function JobCCModal({ job, onClose, onRefresh }) {
       <div className={`${darkMode ? styles.darkModeModel : ''}`}>
         <div className={`${styles.modalHeader}`}>
           <h5 className={`${styles.modalTitle}`}>{`Manage CCs for ${job.title}`}</h5>
-          <Button color="danger" className={styles.modalCloseButton} onClick={onClose}>
+          <Button color="danger" className={`${styles.modalCloseButton}`} onClick={onClose}>
             &times;
           </Button>
         </div>
