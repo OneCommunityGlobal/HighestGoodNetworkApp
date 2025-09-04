@@ -122,6 +122,7 @@ function UserProfile(props) {
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
+  const [isSavingImage, setIsSavingImage] = useState(false);
   const [showSelect, setShowSelect] = useState(false);
   const [summaries, setSummaries] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
@@ -537,43 +538,61 @@ function UserProfile(props) {
 
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
-    const file = evt.target.files[0];
-    if (typeof file !== 'undefined') {
-      const filesizeKB = file.size / 1024;
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-      const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
-        .toString()
-        .replaceAll(',', ', ')}`;
-
-      // Input validation: file type
-      if (!allowedTypes.includes(file.type)) {
-        setType('image');
-        setShowModal(true);
-        setModalTitle('Profile Pic Error');
-        setModalMessage(allowedTypesString);
-        return;
-      }
-
-      // Input validation: file size.
-      if (filesizeKB > 50) {
-        const errorMessage = `The file you are trying to upload exceeds the maximum size of 50KB. You can either
-														choose a different file, or use an online file compressor.`;
-
-        setType('image');
-        setShowModal(true);
-        setModalTitle('Profile Pic Error');
-        setModalMessage(errorMessage);
-
-        return;
-      }
-
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onloadend = () => {
-        setUserProfile({ ...userProfile, profilePic: fileReader.result });
-      };
+    const file = evt.target.files?.[0];
+    if (!file) return;
+  
+    const filesizeKB = file.size / 1024;
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(', ')}`;
+  
+    // type check
+    if (!allowedTypes.includes(file.type)) {
+      setType('image');
+      setShowModal(true);
+      setModalTitle('Profile Pic Error');
+      setModalMessage(allowedTypesString);
+      return;
     }
+    // size check
+    if (filesizeKB > 50) {
+      setType('image');
+      setShowModal(true);
+      setModalTitle('Profile Pic Error');
+      setModalMessage(
+        'The file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.'
+      );
+      return;
+    }
+  
+    const fileReader = new FileReader();
+  
+    fileReader.onloadend = async () => {
+      const base64 = fileReader.result;
+  
+      // optimistic preview
+      const prevProfile = userProfileRef.current;
+      const nextProfile = { ...prevProfile, profilePic: base64 };
+      setUserProfile(nextProfile);
+  
+      // persist immediately
+      setIsSavingImage(true);
+      try {
+        await props.updateUserProfile(nextProfile);
+        // keep originals in sync so the Save button doesn't light up unnecessarily
+        setOriginalUserProfile(nextProfile);
+        toast.success('Profile photo updated');
+      } catch (err) {
+        // revert on failure
+        setUserProfile(prevProfile);
+        toast.error('Failed to save profile photo. Please try again.');
+      } finally {
+        setIsSavingImage(false);
+      }
+    };
+  
+    fileReader.readAsDataURL(file);
   };
+  
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
@@ -1072,21 +1091,21 @@ function UserProfile(props) {
         {/* <div className='containerProfile' > */}
 
         <div className="left-top">
-          <div className="profile-img">
+        <div className="profile-img" style={{ position: 'relative' }}>
             <Image
               src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
               alt="Profile Picture"
               roundedCircle
               className="profilePicture bg-white"
-              // this line below should fix the image formatting issue
               style={profilePic ? {} : { width: '240px', height: '240px' }}
             />
+
             {canEdit ? (
               <div
                 className="image-button file btn btn-lg btn-primary"
                 style={darkMode ? boxStyleDark : boxStyle}
               >
-                Change Photo
+                {isSavingImage ? 'Saving…' : 'Change Photo'}
                 <Input
                   style={{ width: '100%', height: '100%', zIndex: '2', cursor: 'pointer' }}
                   type="file"
@@ -1094,10 +1113,28 @@ function UserProfile(props) {
                   id="newProfilePic"
                   onChange={handleImageUpload}
                   accept="image/png,image/jpeg, image/jpg"
+                  disabled={isSavingImage}
                 />
               </div>
             ) : null}
+
+            {isSavingImage && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.25)',
+                  borderRadius: '50%',
+                }}
+              >
+                <i className="fa fa-spinner fa-spin" style={{ fontSize: 24, color: 'white' }} />
+              </div>
+            )}
           </div>
+
           <div
             style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}
           >
