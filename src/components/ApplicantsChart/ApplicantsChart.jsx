@@ -33,30 +33,45 @@ function ApplicantsChart() {
     <div
       className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
       style={{
-        padding: '20px',
+        padding: '1rem',
         borderRadius: '8px',
         minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <TimeFilter onFilterChange={handleFilterChange} />
+      {/* Filter always stays on top */}
+      <div style={{ marginBottom: '1rem' }}>
+        <TimeFilter onFilterChange={handleFilterChange} />
+      </div>
 
-      {loading ? (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '400px',
-            fontSize: '18px',
-            fontWeight: 500,
-            color: darkMode ? '#fff' : '#000',
-          }}
-        >
-          Loading...
-        </div>
-      ) : (
-        <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />
-      )}
+      {/* Content (loading state OR chart) */}
+      <div
+        style={{
+          flex: 1, // take remaining space
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        {loading ? (
+          <div
+            style={{
+              fontSize: 'clamp(16px, 2vw, 20px)', // responsive text sizing
+              fontWeight: 500,
+              color: darkMode ? '#fff' : '#000',
+              textAlign: 'center',
+            }}
+          >
+            Loading...
+          </div>
+        ) : (
+          <div style={{ width: '100%', maxWidth: '1200px' }}>
+            <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
