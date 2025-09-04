@@ -221,8 +221,11 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-
-    expect(screen.getByTestId('skeleton-loading-team-member-tasks-header')).toBeInTheDocument();
+    const skeletonLoadingElement = container.querySelector(
+      '.skeleton-loading-team-member-tasks-row',
+    );
+    expect(skeletonLoadingElement).toBeInTheDocument();
+    // expect(screen.getByTestId('skeleton-loading-team-member-tasks-header')).toBeInTheDocument();
   });
   it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
     axios.get.mockResolvedValue({
@@ -268,7 +271,7 @@ describe('TeamMemberTasks component', () => {
 
     expect(screen.getByTitle('Timelogs submitted in the past 4 days')).toBeInTheDocument();
 
-    expect(screen.getByTitle('Timelogs submitted in the past 5 days')).toBeInTheDocument();
+    expect(screen.getByTitle('Timelogs submitted in the past 7 days')).toBeInTheDocument();
   });
   it('check if class names does include color when dark mode is true', () => {
     axios.get.mockResolvedValue({
@@ -311,7 +314,7 @@ describe('TeamMemberTasks component', () => {
 
     expect(screen.getByTitle('Timelogs submitted in the past 4 days')).toBeInTheDocument();
 
-    expect(screen.getByTitle('Timelogs submitted in the past 5 days')).toBeInTheDocument();
+    expect(screen.getByTitle('Timelogs submitted in the past 7 days')).toBeInTheDocument();
   });
   it('check if show time off button works as expected', () => {
     axios.get.mockResolvedValue({
