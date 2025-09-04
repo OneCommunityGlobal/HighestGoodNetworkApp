@@ -9,7 +9,7 @@ function ApplicantsChart() {
   const [compareLabel, setCompareLabel] = useState('last week');
   const [loading, setLoading] = useState(false);
 
-  // Grab darkMode state from Redux
+  // Get darkMode flag from Redux
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleFilterChange = async filter => {
@@ -17,6 +17,7 @@ function ApplicantsChart() {
     const data = await fetchApplicantsData(filter);
     setChartData(data);
 
+    // Weekly/monthly/yearly → show comparison text, custom → no comparison
     setCompareLabel(
       filter.selectedOption === 'custom' ? null : `last ${filter.selectedOption.slice(0, -2)}`,
     );
@@ -32,35 +33,45 @@ function ApplicantsChart() {
     <div
       className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
       style={{
-        padding: '20px',
+        padding: '1rem',
         borderRadius: '8px',
         minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <TimeFilter onFilterChange={handleFilterChange} darkMode={darkMode} />
+      {/* Filter always stays on top */}
+      <div style={{ marginBottom: '1rem' }}>
+        <TimeFilter onFilterChange={handleFilterChange} />
+      </div>
 
-      {loading ? (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '200px',
-          }}
-        >
-          <p
+      {/* Content (loading state OR chart) */}
+      <div
+        style={{
+          flex: 1, // take remaining space
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
+        }}
+      >
+        {loading ? (
+          <div
             style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
+              fontSize: 'clamp(16px, 2vw, 20px)', // responsive text sizing
+              fontWeight: 500,
               color: darkMode ? '#fff' : '#000',
+              textAlign: 'center',
             }}
           >
             Loading...
-          </p>
-        </div>
-      ) : (
-        <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />
-      )}
+          </div>
+        ) : (
+          <div style={{ width: '100%', maxWidth: '1200px' }}>
+            <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
