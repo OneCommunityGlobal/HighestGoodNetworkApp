@@ -52,6 +52,7 @@ import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
 import CreateFilterModal from './CreateFilterModal';
 import './WeeklySummariesReport.css';
+import SelectFilterModal from './SelectFilterModal';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -111,6 +112,8 @@ const initialState = {
   },
   selectedExtraMembers: [],
   membersFromUnselectedTeam: [],
+  filterChoices: [],
+  filtersDict: {},
 };
 
 const intialPermissionState = {
@@ -120,33 +123,6 @@ const intialPermissionState = {
   canSeeBioHighlight: false,
 };
 
-// Custom option component with checkbox
-// function Option(props) {
-//   return (
-//     <components.Option {...props}>
-//       <input
-//         type="checkbox"
-//         checked={props.isSelected}
-//         onChange={() => {}}
-//         style={{ marginRight: 10 }}
-//       />
-//       {props.label}
-//     </components.Option>
-//   );
-// }
-
-// // Virtualized menu list
-// function MenuList(props) {
-//   const height = 35 * Math.min(8, props.children.length); // up to 8 visible
-//   return (
-//     <components.MenuList {...props}>
-//       <List height={height} itemCount={props.children.length} itemSize={35} width="100%">
-//         {({ index, style }) => <div style={style}>{props.children[index]}</div>}
-//       </List>
-//     </components.MenuList>
-//   );
-// }
-
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
   const { loading, infoCollections, getInfoCollections } = props;
@@ -155,9 +131,11 @@ const WeeklySummariesReport = props => {
   const [permissionState, setPermissionState] = useState(intialPermissionState);
   const [saveFilterDropdownOpen, setSaveFilterDropdownOpen] = useState(false);
   const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
+  const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
 
   const toggleSaveFilterDropdown = () => setSaveFilterDropdownOpen(prev => !prev);
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
+  const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
 
   // Misc functionalities
   /**
@@ -404,6 +382,40 @@ const WeeklySummariesReport = props => {
 
       const chartData = [];
 
+      // Get all filters
+      // TODO: Actually get it from the API
+      const filterList = [
+        {
+          _id: 1,
+          filterName: 'Admin Group',
+          selectedCodes: [
+            {
+              label: '13477      (1) Test',
+              value: '13477test',
+              _ids: ['683e2c879a5196004d2b3e61'],
+            },
+          ],
+          selectedColors: [{ value: 'Not Required', label: 'Not Required' }],
+          selectedExtraMembers: [
+            { label: '0Nicolle VLT Test', value: '644db73845fccb5b38b13c14', role: 'Manager' },
+            { label: '0Eduardo Test', value: '646234ce50b6624774ad46a1', role: 'Volunteer' },
+          ],
+          selectedTrophies: true,
+          selectedSpecialColors: { purple: true, green: true, navy: false },
+          selectedBioStatus: true,
+          selectedOverTime: true,
+        },
+      ];
+      const filterChoices = [];
+      const filtersDict = {};
+      filterList.forEach(filter => {
+        filterChoices.push({
+          label: filter.filterName,
+          value: filter._id,
+        });
+        filtersDict[filter._id] = filter;
+      });
+
       // Store the data in the tab-specific state
       setState(prevState => ({
         ...prevState,
@@ -427,7 +439,8 @@ const WeeklySummariesReport = props => {
         tabsLoading: {
           [activeTab]: false,
         },
-        // membersFromUnselectedTeam,
+        filterChoices,
+        filtersDict,
       }));
 
       // Now load info collections
@@ -1193,6 +1206,22 @@ const WeeklySummariesReport = props => {
     }));
   };
 
+  const applyFilter = selectedFilter => {
+    const filter = state.filtersDict[selectedFilter.value];
+    // TODO: I need to save only the id, and then filter the codes, colors and choice again to get the most updated data
+    setState(prevState => ({
+      ...prevState,
+      selectedCodes: filter.selectedCodes,
+      selectedColors: filter.selectedColors,
+      selectedExtraMembers: filter.selectedExtraMembers,
+      selectedTrophies: filter.selectedTrophies,
+      selectedSpecialColors: filter.selectedSpecialColors,
+      selectedBioStatus: filter.selectedBioStatus,
+      selectedOverTime: filter.selectedOverTime,
+    }));
+    toggleSelectFilterModal();
+  };
+
   // Setup effect hooks for initial data load
   useEffect(() => {
     let isMounted = true;
@@ -1318,6 +1347,7 @@ const WeeklySummariesReport = props => {
               className="mx-1"
               type="button"
               style={darkMode ? boxStyleDark : boxStyle}
+              onClick={() => setSelectFilterModalOpen(true)}
             >
               Select Filter
             </Button>
@@ -1337,12 +1367,17 @@ const WeeklySummariesReport = props => {
                 </DropdownItem>
               </DropdownMenu>
             </ButtonDropdown>
+            <SelectFilterModal
+              isOpen={selectFilterModalOpen}
+              toggle={toggleSelectFilterModal}
+              filters={state.filterChoices}
+              applyFilter={applyFilter}
+            />
             <CreateFilterModal
               isOpen={createFilterModalOpen}
               toggle={toggleCreateFilterModal}
               initialState={{
                 filterName: '',
-                filterDescription: '',
                 teamCodes: state.teamCodes,
                 selectedCodes: state.selectedCodes,
                 teamCodeWarningUsers: state.teamCodeWarningUsers,
@@ -1566,25 +1601,6 @@ const WeeklySummariesReport = props => {
             value={state.selectedExtraMembers}
             onChange={handleSelectExtraMembersChange}
           />
-          {/* <Select
-            isMulti
-            isSearchable
-            options={membersFromUnselectedTeam}
-            value={state.selectedExtraMembers}
-            onChange={handleSelectExtraMembersChange}
-            components={{ Option, MenuList }}
-            closeMenuOnSelect={false}
-            hideSelectedOptions={false}
-            placeholder="Search extra individuals..."
-            controlShouldRenderValue={false}
-            inputValue={inputValue}
-            onInputChange={(newValue, actionMeta) => {
-              if (actionMeta.action !== 'set-value') {
-                setInputValue(newValue);
-              }
-            }}
-            blurInputOnSelect={false}
-          /> */}
         </Col>
         {permissionState.codeEditPermission &&
           state.selectedCodes &&

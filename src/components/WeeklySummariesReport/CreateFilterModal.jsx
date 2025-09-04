@@ -18,6 +18,7 @@ import './CreateFilterModal.css';
 import hasPermission from '../../utils/permissions';
 
 const defaultState = {
+  filterName: '',
   teamCodes: [],
   selectedCodes: [],
   teamCodeWarningUsers: [],
@@ -171,8 +172,18 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
     e.preventDefault();
     if (errors === '') {
       // No errors → submit form
+      const data = {
+        filterName: state.filterName,
+        selectedCodes: state.selectedCodes,
+        selectedColors: state.selectedColors,
+        selectedExtraMembers: state.selectedExtraMembers,
+        selectedTrophies: state.selectedTrophies,
+        selectedSpecialColors: state.selectedSpecialColors,
+        selectedBioStatus: state.selectedBioStatus,
+        selectedOverTime: state.selectedOverTime,
+      };
       // eslint-disable-next-line no-console
-      console.log('Form submitted:');
+      console.log('Form submitted:', data);
       toggle();
     }
   };
@@ -393,7 +404,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
           Create
         </Button>
         <Button color="secondary" onClick={toggle}>
-          Close
+          Cancel
         </Button>
       </ModalFooter>
     </Modal>
