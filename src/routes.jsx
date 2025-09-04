@@ -87,6 +87,7 @@ import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverv
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
+import DemandOverTime from './components/LBDashboard/LbAnalytics/DemandOverTime/DemandOverTime';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -263,6 +264,8 @@ export default (
         </>
       )}
     />
+
+    <LBProtectedRoute path="/lbdashboard/analytics/demand" component={DemandOverTime} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />

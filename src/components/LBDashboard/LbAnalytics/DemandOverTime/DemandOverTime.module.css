@@ -1,0 +1,61 @@
+.container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.filterCard {
+  margin-bottom: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chartCard {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.filterItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.datePicker {
+  width: 100%;
+}
+
+.select {
+  width: 100%;
+}
+
+.radioGroup {
+  width: 100%;
+}
+
+.chartContainer {
+  margin-top: 20px;
+}
+
+.chart {
+  height: 400px;
+  margin-top: 20px;
+}
+
+.metricCategory {
+  color: #1890ff;
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 10px;
+  }
+  
+  .chart {
+    height: 300px;
+  }
+}
