@@ -168,6 +168,29 @@
   border-color: #555;
   color: #fff;
 }
+.selectInput {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.selectInput:focus {
+  background-color: #f0f0f0;
+  outline: none;
+}
+
+.darkModeModel .selectInput {
+  background-color: #2b2e33;
+  color: #fff;
+  border-color: #555;
+}
+
+.darkModeModel .selectInput:focus {
+  background-color: #1e1e2e;
+  color: #fff;
+}
 
 .modalCloseButton {
   font-size: 1.5rem;
