@@ -96,9 +96,15 @@ transition: background-color 0.2s ease,
   margin-bottom: 0.1rem; 
   padding: 1rem;
   flex-flow: row wrap;
-    background-color: #9c0;
-
+  background-color: #9c0;
+  gap:1rem;
+  
 }
+.job-navbar > .btn {
+  padding:0.4rem;
+  margin:0.2rem;
+}
+/* 
 .job-navbar-left input,
 .job-navbar-left select {
   display: flex;
@@ -117,7 +123,7 @@ transition: background-color 0.2s ease,
 .job-navbar-right > .btn {
   padding:0.4rem;
   margin:0.2rem;
-}
+} */
 .search-form input {
   margin-left: 0.5rem; /* 10px; */
   
@@ -141,13 +147,13 @@ select {
 
    display: flex;
   flex-direction: column;
- align-items: center;
+/* align-items: center; updated 07:59 am*/
 }
 .job-list {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 1rem;
   margin:10px;
   padding:10px;
  /* align-items:stretch; */
@@ -160,13 +166,22 @@ select {
   background: linear-gradient(135deg, #fff, #f9f9f9);
   transition: transform 0.3s, box-shadow 0.3s;
   width:250px;
-  height:100px;
+  height:auto; /*100px; */
   overflow: hidden;
-  
+   width: calc((100% - 2rem) / 2);
+  /* width: calc(50% - rem); /* Fixed width for 5 per row */
+  flex-shrink: 0;
+  /*flex:1 1 calc(50% - 10px); /* 2 items per row by default (small screens) */
+}
+.delete-icon {
+  filter:none;
+}
+.delete-icon.dark-mode {
+  filter:invert(1);
 }
 .job-list .job-ad img {
-  height:50px;
-  width:50px;
+  height:105px;
+  width:100%;
   border-bottom: 1px solid #ddd;
 }
 .job-ad h3 {
@@ -191,6 +206,8 @@ select {
 .pagination {
   margin-top: 20px;
   margin-bottom: 20px;
+  display:flex;
+  justify-content: center;
 }
 .pagination button {
   margin: 0 5px;
@@ -225,7 +242,7 @@ select {
   margin-right: 1rem; */
 }
 
-@media (max-width: 1000px) {
+/* @media (max-width: 1000px) {
   .job-list {
     display: block;
     width: 85%;
@@ -262,7 +279,7 @@ select {
     margin-top: 50px;
   }
 }
-
+*/
 
 .user-collaboration-dark-mode {
   background-color: #1B2A41;
@@ -425,4 +442,15 @@ select {
 .user-collaboration-dark-mode .job-select:focus,
 .user-collaboration-dark-mode .job-select:active {
   background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+}
+ @media (min-width:900px) {
+  .job-ad {
+    width:250px;
+  background-color: #9c0;
+     width: calc((100% - 4rem) / 5);
+  /* width: calc(20% - 1rem);  Fixed width for 5 per row */
+  flex-shrink: 0;
+    /* flex: 1 1 calc(20% - 10px); /* 5 items per row by default (big screens) */
+  }
+  
 }
