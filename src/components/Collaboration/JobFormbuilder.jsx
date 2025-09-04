@@ -1,7 +1,7 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
 // eslint-disable-next-line no-alert
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
@@ -11,6 +11,7 @@ import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x14
 import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
+import generateReferralLink from './ReferralLinkGenerator';
 
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
@@ -26,6 +27,9 @@ function JobFormBuilder() {
   const [currentFormId, setCurrentFormId] = useState(null);
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
+  const [referralSource, setReferralSource] = useState('');
+  const [referralLink, setReferralLink] = useState('');
+  const referralInputRef = useRef(null);
   const jobPositions = [
     'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
     'APPLIED THROUGH SITE - GENERAL',
@@ -68,6 +72,27 @@ function JobFormBuilder() {
     'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER - APPLIED THROUGH SITE',
     'DATA ANALYST APPLICATION',
   ];
+
+  // Update referral link when jobTitle or referralSource changes
+  useEffect(() => {
+    if (jobTitle && jobTitle !== 'Please Choose an option') {
+      setReferralLink(generateReferralLink(jobTitle, referralSource));
+    } else {
+      setReferralLink('');
+    }
+  }, [jobTitle, referralSource]);
+
+  const handleCopyReferralLink = async () => {
+    if (referralInputRef.current) {
+      try {
+        await navigator.clipboard.writeText(referralInputRef.current.value);
+        console.log('Referral link copied!');
+        // you can add a toast/snackbar UI here if needed
+      } catch (err) {
+        console.error('Failed to copy referral link:', err);
+      }
+    }
+  };
 
   const [newOption, setNewOption] = useState('');
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -316,8 +341,55 @@ function JobFormBuilder() {
         className={styles.oneCommunityGlobalImg}
       />
       <div className={styles.jobformNavbar}>
+        {/* Referral Link Generator UI */}
+        <div style={{ marginTop: 10 }}>
+          <div style={{ marginTop: 10 }}>
+            <label htmlFor="referralSource" className={styles.jbformLabel}>
+              Source Identifier (e.g., LN, FB):
+            </label>
+            <input
+              id="referralSource"
+              type="text"
+              value={referralSource}
+              onChange={e => setReferralSource(e.target.value)}
+              className={styles.jobformInput}
+              placeholder="Enter source"
+              style={{ width: 120, marginLeft: 8 }}
+              maxLength={10}
+            />
+          </div>
+
+          {referralLink && (
+            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input
+                type="text"
+                value={referralLink}
+                readOnly
+                ref={referralInputRef}
+                className={styles.jobformInput}
+                style={{
+                  width: 250,
+                  marginRight: 8,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  background: '#fff',
+                  cursor: 'pointer',
+                }}
+                title={referralLink} // Tooltip for full link
+              />
+              <button type="button" onClick={handleCopyReferralLink} className={styles.goButton}>
+                Copy Link
+              </button>
+            </div>
+          )}
+        </div>
         <div>
-          <input placeholder="Enter Job Title" className={styles.jobformInput} />
+          <input
+            placeholder="Enter Job Title"
+            className={styles.jobformInput}
+            style={{ width: '120px', minWidth: '0', padding: '8px' }}
+          />
           <button type="button" className={styles.goButton}>
             Go
           </button>
@@ -343,7 +415,7 @@ function JobFormBuilder() {
         <div className={styles.customForm}>
           <p className={styles.jobformDesc}>
             Fill the form with questions about a specific position you want to create an ad for. The
-            default questions will automatically appear and are alredy selected. You can pick and
+            default questions will automatically appear and are already selected. You can pick and
             choose them with the checkbox.
           </p>
           <QuestionSetManager
