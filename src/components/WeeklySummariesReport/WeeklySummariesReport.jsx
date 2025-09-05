@@ -113,7 +113,7 @@ const initialState = {
   selectedExtraMembers: [],
   membersFromUnselectedTeam: [],
   filterChoices: [],
-  filtersDict: {},
+  memberDict: {},
 };
 
 const intialPermissionState = {
@@ -340,6 +340,7 @@ const WeeklySummariesReport = props => {
         '#C8A2C8',
       ];
 
+      const memberDict = {};
       // Process team codes and colors
       summariesCopy.forEach(summary => {
         const code = summary.teamCode || 'noCodeLabel';
@@ -348,6 +349,7 @@ const WeeklySummariesReport = props => {
         } else {
           teamCodeGroup[code] = [summary];
         }
+        memberDict[summary._id] = `${summary.firstName} ${summary.lastName}`;
 
         if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
       });
@@ -398,22 +400,22 @@ const WeeklySummariesReport = props => {
         },
       ];
       const filterChoices = [];
-      const filtersDict = {};
+
       filterList.forEach(filter => {
         filterChoices.push({
           label: filter.filterName,
           value: filter._id,
+          filterData: {
+            filterName: filter.filterName,
+            selectedCodes: new Set(filter.selectedCodes),
+            selectedColors: new Set(filter.selectedColors),
+            selectedExtraMembers: new Set(filter.selectedExtraMembers),
+            selectedTrophies: filter.selectedTrophies,
+            selectedSpecialColors: filter.selectedSpecialColors,
+            selectedBioStatus: filter.selectedBioStatus,
+            selectedOverTime: filter.selectedOverTime,
+          },
         });
-        filtersDict[filter._id] = {
-          filterName: filter.filterName,
-          selectedCodes: new Set(filter.selectedCodes),
-          selectedColors: new Set(filter.selectedColors),
-          selectedExtraMembers: new Set(filter.selectedExtraMembers),
-          selectedTrophies: filter.selectedTrophies,
-          selectedSpecialColors: filter.selectedSpecialColors,
-          selectedBioStatus: filter.selectedBioStatus,
-          selectedOverTime: filter.selectedOverTime,
-        };
       });
 
       // Store the data in the tab-specific state
@@ -440,7 +442,8 @@ const WeeklySummariesReport = props => {
           [activeTab]: false,
         },
         filterChoices,
-        filtersDict,
+
+        memberDict,
       }));
 
       // Now load info collections
@@ -1207,7 +1210,7 @@ const WeeklySummariesReport = props => {
   };
 
   const applyFilter = selectedFilter => {
-    const filter = state.filtersDict[selectedFilter.value];
+    const filter = selectedFilter.filterData;
     const selectedCodesChoice = state.teamCodes.filter(code =>
       filter.selectedCodes.has(code.value),
     );
@@ -1381,6 +1384,7 @@ const WeeklySummariesReport = props => {
               toggle={toggleSelectFilterModal}
               filters={state.filterChoices}
               applyFilter={applyFilter}
+              memberDict={state.memberDict}
             />
             <CreateFilterModal
               isOpen={createFilterModalOpen}

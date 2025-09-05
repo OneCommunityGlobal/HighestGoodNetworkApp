@@ -320,7 +320,10 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                           checked={state.selectedSpecialColors[color]}
                           onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
                         />
-                        <label className="switch-toggle-label" htmlFor={`modal-${color}-toggle`}>
+                        <label
+                          className="switch-toggle-label"
+                          htmlFor={`filter-modal-${color}-toggle`}
+                        >
                           <span className="switch-toggle-inner" />
                           <span className="switch-toggle-switch" />
                         </label>
@@ -354,7 +357,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                     checked={state.selectedBioStatus}
                     onChange={handleBioStatusToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="modal-bio-status-toggle">
+                  <label className="switch-toggle-label" htmlFor="filter-modal-bio-status-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
                   </label>
@@ -372,7 +375,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                     id="filter-modal-trophy-toggle"
                     onChange={handleTrophyToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="modal-trophy-toggle">
+                  <label className="switch-toggle-label" htmlFor="filter-modal-trophy-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
                   </label>
@@ -390,7 +393,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                     id="filter-modal-over-hours-toggle"
                     onChange={handleOverHoursToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="modal-over-hours-toggle">
+                  <label className="switch-toggle-label" htmlFor="filter-modal-over-hours-toggle">
                     <span className="switch-toggle-inner" />
                     <span className="switch-toggle-switch" />
                   </label>
