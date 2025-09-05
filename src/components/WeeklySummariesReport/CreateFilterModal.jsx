@@ -8,12 +8,13 @@ import {
   Label,
   Input,
   Form,
-  FormFeedback,
   Row,
   Col,
+  FormGroup,
 } from 'reactstrap';
 
 import { MultiSelect } from 'react-multi-select-component';
+import Select from 'react-select';
 import './CreateFilterModal.css';
 import hasPermission from '../../utils/permissions';
 
@@ -37,21 +38,21 @@ const defaultState = {
   selectedOverTime: false,
 };
 
-function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissionToFilter }) {
+function CreateFilterModal({
+  isOpen,
+  toggle,
+  initialState,
+  darkMode,
+  hasPermissionToFilter,
+  filters,
+}) {
   const [state, setState] = useState(() => initialState ?? defaultState);
-  const [errors, setErrors] = useState('');
+  const [mode, setMode] = useState('create');
+  const [selectedFilter, setSelectedFilter] = useState(null);
 
   useEffect(() => {
     setState(initialState);
   }, [initialState]);
-
-  useEffect(() => {
-    if (!state.filterName.trim()) {
-      setErrors('Filter name is required');
-    } else {
-      setErrors('');
-    }
-  }, [state.filterName]);
 
   // Update members of membersFromUnselectedTeam dropdown
   useEffect(() => {
@@ -170,40 +171,81 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (errors === '') {
-      // No errors → submit form
-      const data = {
-        filterName: state.filterName,
-        selectedCodes: state.selectedCodes.map(code => code.value),
-        selectedColors: state.selectedColors.map(color => color.value),
-        selectedExtraMembers: state.selectedExtraMembers.map(member => member.value),
-        selectedTrophies: state.selectedTrophies,
-        selectedSpecialColors: state.selectedSpecialColors,
-        selectedBioStatus: state.selectedBioStatus,
-        selectedOverTime: state.selectedOverTime,
-      };
+    if (state.filterName !== '') {
+      if (mode === 'create' || (mode === 'update' && state.selectedFilter !== null)) {
+        // No errors -> submit form
+        const data = {
+          filterName: state.filterName,
+          selectedCodes: state.selectedCodes.map(code => code.value),
+          selectedColors: state.selectedColors.map(color => color.value),
+          selectedExtraMembers: state.selectedExtraMembers.map(member => member.value),
+          selectedTrophies: state.selectedTrophies,
+          selectedSpecialColors: state.selectedSpecialColors,
+          selectedBioStatus: state.selectedBioStatus,
+          selectedOverTime: state.selectedOverTime,
+        };
+        if (mode === 'create') {
+          // eslint-disable-next-line no-console
+          console.log(data);
+          // TODO: Submit
+        } else {
+          data.filterId = selectedFilter.value;
+          // TODO: Update
+        }
 
-      // eslint-disable-next-line no-console
-      console.log('Form submitted:', data);
-      toggle();
+        // eslint-disable-next-line no-console
+        console.log('Form submitted:', data);
+        toggle();
+      }
     }
   };
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
-      <ModalHeader toggle={toggle}>Create A New Filter</ModalHeader>
+      <ModalHeader toggle={toggle}>Create or Update A New Filter</ModalHeader>
       <ModalBody>
         <Form>
-          <Label for="filterName">Filter Name *</Label>
           <Input
-            id="filterName"
-            value={state.filterName}
-            onChange={e => handleFilterNameChange(e.target.value)}
-            placeholder="Enter filter name"
+            type="select"
+            id="mode"
+            className="mb-3"
+            value={mode}
+            onChange={e => setMode(e.target.value)}
             required
-            invalid={!!errors}
-          />
-          <FormFeedback>{errors}</FormFeedback>
+          >
+            <option value="create">Create New</option>
+            <option value="update">Update Existing Filter</option>
+          </Input>
+
+          {mode === 'update' && (
+            <FormGroup>
+              <Label for="filterOverride">Choose a Filter to Override *</Label>
+
+              <Select
+                id="filterOverride"
+                options={filters}
+                value={selectedFilter}
+                onChange={setSelectedFilter}
+                className={!selectedFilter ? 'error-select' : ''}
+              />
+              {!selectedFilter && <div className="error-text">Please select a filter</div>}
+            </FormGroup>
+          )}
+
+          <FormGroup>
+            <Label for="filterName">
+              {mode === 'create' ? 'Filter Name *' : 'New Filter Name *'}
+            </Label>
+            <Input
+              id="filterName"
+              value={state.filterName}
+              onChange={e => handleFilterNameChange(e.target.value)}
+              placeholder="Enter filter name"
+              required
+              invalid={!state.filterName}
+            />
+            {state.filterName === '' && <div className="error-text">Filter name is required</div>}
+          </FormGroup>
 
           <Row className="pt-4">
             <Col md={6} sm={12}>

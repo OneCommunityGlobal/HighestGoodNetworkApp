@@ -22,10 +22,6 @@ import {
   Button,
   Input,
   Spinner,
-  ButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
@@ -129,11 +125,10 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
-  const [saveFilterDropdownOpen, setSaveFilterDropdownOpen] = useState(false);
+
   const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
   const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
 
-  const toggleSaveFilterDropdown = () => setSaveFilterDropdownOpen(prev => !prev);
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
   const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
 
@@ -1363,22 +1358,15 @@ const WeeklySummariesReport = props => {
             >
               Select Filter
             </Button>
-            <ButtonDropdown
+            <Button
+              color="primary"
               className="ml-1"
               style={darkMode ? boxStyleDark : boxStyle}
-              isOpen={saveFilterDropdownOpen}
-              toggle={toggleSaveFilterDropdown}
+              onClick={() => setCreateFilterModalOpen(true)}
             >
-              <DropdownToggle caret color="primary">
-                Save Filter
-              </DropdownToggle>
-              <DropdownMenu right>
-                <DropdownItem>Update Existing Filter</DropdownItem>
-                <DropdownItem onClick={() => setCreateFilterModalOpen(true)}>
-                  Create New Filter
-                </DropdownItem>
-              </DropdownMenu>
-            </ButtonDropdown>
+              Save Filter
+            </Button>
+
             <SelectFilterModal
               isOpen={selectFilterModalOpen}
               toggle={toggleSelectFilterModal}
@@ -1407,6 +1395,7 @@ const WeeklySummariesReport = props => {
               }}
               darkMode={darkMode}
               hasPermissionToFilter={hasPermissionToFilter}
+              filters={state.filterChoices}
             />
           </div>
         </Col>

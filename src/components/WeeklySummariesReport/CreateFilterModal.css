@@ -28,3 +28,12 @@
   justify-content: flex-start;
   flex-wrap: wrap;
 }
+
+.error-text {
+  color: red;
+  font-size: 12px;
+}
+
+.error-select .css-13cymwt-control {
+  border-color: red !important;
+}
