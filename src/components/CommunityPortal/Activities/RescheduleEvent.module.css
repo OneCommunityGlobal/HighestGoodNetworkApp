@@ -183,6 +183,50 @@
   }
 }
 
+.modalFooter {
+  display: flex;
+  justify-content: flex-end; 
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(140, 149, 159, 0.24);
+}
+
+.primaryBtn {
+  padding: 10px 16px;
+  font-size: 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #007fff;
+  color: #fff;
+  cursor: pointer;
+}
+.primaryBtn:hover { background: #0066cc; }
+.primaryBtn:disabled {
+  background: #9bbce5;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  padding: 10px 16px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  background: #fff;
+  color: #24292f;
+}
+
+@media (max-width: 768px) {
+  .modalFooter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .modalFooter .primaryBtn,
+  .modalFooter .secondaryBtn {
+    width: 100%;
+  }
+}
+
+
 /* DatePicker dark theme overrides */
 :global(.react-datepicker.dark) {
   background: #2c3e50;
@@ -195,3 +239,4 @@
 :global(.react-datepicker.dark .react-datepicker__day--selected) {
   background-color: #2980b9;
 }
+

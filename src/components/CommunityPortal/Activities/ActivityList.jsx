@@ -1,7 +1,7 @@
 // Activity List Component
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback  } from 'react';
 import './ActivityList.css';
-// import { useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
@@ -10,6 +10,7 @@ function ActivityList() {
     date: '',
     location: '',
   });
+  const history = useHistory();
 
   useEffect(() => {
     // Fetch activities (mock or replace with API call)
@@ -45,6 +46,10 @@ function ActivityList() {
       (!filter.location || activity.location.includes(filter.location))
     );
   });
+
+   const goToReschedule = useCallback((id) => {
+    history.push(`/communityportal/activities/${id}/manage`);
+  }, [history]);
 
   return (
     <div>
@@ -85,7 +90,16 @@ function ActivityList() {
               <li key={activity.id}>
                 <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
                 {activity.location}
+                <button
+                  type="button"
+                  onClick={() => goToReschedule(activity.id)}
+                  className="reschedule-btn"
+                  aria-label={`Reschedule ${activity.name}`}
+                >
+                  Reschedule
+                </button>
               </li>
+
             ))}
           </ul>
         ) : (
