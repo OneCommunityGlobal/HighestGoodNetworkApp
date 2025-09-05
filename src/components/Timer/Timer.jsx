@@ -14,7 +14,7 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import css from './Timer.module.css';
 import '../Header/DarkMode.css';
 import { ENDPOINTS } from '~/utils/URL';
@@ -23,8 +23,11 @@ import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 import TimerPopout from './TimerPopout';
+import { postTimeEntry } from '../../actions/timeEntries';
+import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
 
 function Timer({ authUser, darkMode, isPopout }) {
+  const dispatch = useDispatch();
   const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
@@ -51,7 +54,8 @@ function Timer({ authUser, darkMode, isPopout }) {
    *  forcedPause: boolean,
    *  started: boolean,
    *  goal: number,
-   *  startAt: Date
+   *  startAt: Date,
+   *  weekEndPause: boolean
    * }
    */
 
@@ -84,6 +88,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     initialGoal: 900000,
     chiming: false,
     startAt: Date.now(),
+    weekEndPause: false,
   };
 
   const MAX_HOURS = 5;
@@ -103,6 +108,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
   const [viewingUserId, setViewingUserId] = useState(null);
+  const [hasAutoLoggedWeekEnd, setHasAutoLoggedWeekEnd] = useState(false);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
@@ -301,6 +307,64 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   };
 
+  const autoLogWeekEndTime = async () => {
+    if (hasAutoLoggedWeekEnd || goal - remaining < 60000) {
+      return; // Don't log if already logged or less than 1 minute
+    }
+
+    try {
+      const timeToLog = moment.duration(goal - remaining);
+      const logHours = timeToLog.hours();
+      const logMinutes = timeToLog.minutes();
+
+      // Ensure we have valid user ID
+      const userId = viewingUserId || authUser?._id;
+      if (!userId) {
+        console.error('No user ID available for auto-logging');
+        toast.error('Cannot auto-log time: No user ID available');
+        return;
+      }
+
+      const timeEntry = {
+        personId: userId,
+        taskId: message.taskId || null, // Include task ID if available
+        hours: logHours,
+        minutes: logMinutes,
+        dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+        description: 'Time logged automatically because the week ended',
+        isTangible: true,
+        entryType: 'default',
+      };
+
+      // Submit the time entry
+      const result = await dispatch(postTimeEntry(timeEntry));
+      
+      if (result === 200 || result === 201) {
+        // Update task time if there was a specific task
+        if (message.taskId) {
+          dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: logHours, minutes: logMinutes },
+              taskId: message.taskId,
+              personId: userId,
+            }),
+          );
+        }
+
+        // Mark as auto-logged and stop the timer
+        setHasAutoLoggedWeekEnd(true);
+        sendStop();
+        
+        toast.success(`Time automatically logged: ${logHours}h ${logMinutes}m - Week ended`);
+      } else {
+        throw new Error(`Unexpected response status: ${result}`);
+      }
+    } catch (error) {
+      console.error('Error auto-logging week-end time:', error);
+      toast.error('Failed to auto-log time for week end');
+    }
+  };
+
   /**
    * This useEffect is to make sure that all the states will be updated before taking effects,
    * so that message state and other states like running, inacMoal ... will be updated together
@@ -318,12 +382,20 @@ function Timer({ authUser, darkMode, isPopout }) {
       forcedPause: forcedPauseLJM,
       started: startedLJM,
       chiming: chimingLJM,
+      weekEndPause: weekEndPauseLJM, // New field to indicate week-end pause
     } = lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
+    
+    const previousMessage = message;
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
     setInacModal(forcedPauseLJM);
     setTimeIsOverModalIsOpen(chimingLJM);
-  }, [lastJsonMessage]);
+
+    // Check if this is a week-end forced pause and we haven't auto-logged yet
+    if (weekEndPauseLJM && !previousMessage?.weekEndPause && !hasAutoLoggedWeekEnd && running) {
+      autoLogWeekEndTime();
+    }
+  }, [lastJsonMessage, hasAutoLoggedWeekEnd, running, message]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -364,6 +436,13 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
     return () => clearInterval(interval);
   }, [running, message]);
+
+  // Reset auto-logged flag when timer starts fresh
+  useEffect(() => {
+    if (running && !message.weekEndPause) {
+      setHasAutoLoggedWeekEnd(false);
+    }
+  }, [running, message.weekEndPause]);
 
   useEffect(() => {
     checkRemainingTime();
