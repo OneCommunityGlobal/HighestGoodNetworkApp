@@ -180,7 +180,18 @@ const SummaryBar = React.forwardRef((props, ref) => {
       setUserProfile(newUserProfile);
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.log('User Profile not loaded.');
+      console.error('User Profile not loaded:', err);
+      // Set a fallback user profile to prevent crashes
+      setUserProfile({
+        firstName: 'User',
+        lastName: '',
+        role: 'User',
+        weeklycommittedHours: 0,
+        missedHours: 0,
+        infringements: [],
+        badgeCollection: [],
+        weeklySummaryOption: 'Not Required',
+      });
     }
   };
 
@@ -193,7 +204,9 @@ const SummaryBar = React.forwardRef((props, ref) => {
       setTasks(newUserTasks.length);
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.log('User Tasks not loaded.');
+      console.error('User Tasks not loaded:', err);
+      // Set fallback value to prevent crashes
+      setTasks(0);
     }
   };
 
@@ -391,18 +404,31 @@ const SummaryBar = React.forwardRef((props, ref) => {
       loadUserProfile();
       getUserTasks();
     } else {
-      setUserProfile(authUser);
-      setTasks(displayUserTask.length);
+      // Ensure authUser has required properties before setting
+      if (authUser && typeof authUser === 'object') {
+        setUserProfile(authUser);
+        setTasks(displayUserTask?.length || 0);
+      }
     }
-  }, [isAuthUser]);
+  }, [isAuthUser, authUser, displayUserTask]);
 
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
-      setInfringements(getInfringements());
-      setBadges(getBadges());
-      setTotalEffort(summaryBarData.tangibletime);
-      setWeeklySummary(getWeeklySummary(displayUserProfile));
-      setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
+      try {
+        setInfringements(getInfringements());
+        setBadges(getBadges());
+        setTotalEffort(summaryBarData.tangibletime || 0);
+        setWeeklySummary(getWeeklySummary(displayUserProfile));
+        setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
+      } catch (error) {
+        console.error('Error processing summary bar data:', error);
+        // Set fallback values
+        setInfringements(0);
+        setBadges(0);
+        setTotalEffort(0);
+        setWeeklySummary(null);
+        setweeklySummaryNotReq(false);
+      }
     }
   }, [displayUserProfile, summaryBarData]);
 

@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import { Component, useEffect } from 'react';
+import { Component, useEffect, useState } from 'react';
 import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -12,10 +12,8 @@ import Loading from './common/Loading';
 import '../App.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
 
-// Check for token
-if (process.env.NODE_ENV !== 'test') {
-  initAuth();
-}
+// Move auth initialization to after store is ready
+let authInitialized = false;
 
 function UpdateDocumentTitle() {
   const location = useLocation();
@@ -108,33 +106,143 @@ function UpdateDocumentTitle() {
     if (token) {
       initMessagingSocket(token);
     } else {
-      Error('❌ No auth token found for WebSocket connection.');
+      console.warn('❌ No auth token found for WebSocket connection.');
     }
   }, []);
 
   return null;
 }
 
+// Error Boundary Component
+class ErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null, errorInfo: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    this.setState({
+      error: error,
+      errorInfo: errorInfo,
+    });
+
+    // Log the error
+    logger.logError(error);
+
+    // Log additional error info for debugging
+    console.error('Error Boundary caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: '100vh' }}
+        >
+          <div className="text-center">
+            <h2>Something went wrong</h2>
+            <p>We are sorry, but something unexpected happened. Please try refreshing the page.</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                this.setState({ hasError: false, error: null, errorInfo: null });
+                window.location.reload();
+              }}
+            >
+              Refresh Page
+            </button>
+            {process.env.NODE_ENV === 'development' && this.state.error && (
+              <details style={{ whiteSpace: 'pre-wrap', marginTop: '20px' }}>
+                <summary>Error Details (Development)</summary>
+                <p>{this.state.error.toString()}</p>
+                <p>{this.state.errorInfo.componentStack}</p>
+              </details>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {}; // Moving state initialization into constructor as per linting rule.
+    this.state = {
+      storeReady: false,
+      authInitialized: false,
+    };
   }
 
-  componentDidCatch(error) {
+  componentDidMount() {
+    // Wait for store to be ready before initializing auth
+    this.setState({ storeReady: true });
+
+    // Initialize auth after a short delay to ensure store is fully ready
+    setTimeout(() => {
+      if (process.env.NODE_ENV !== 'test' && !authInitialized) {
+        try {
+          initAuth();
+          authInitialized = true;
+          this.setState({ authInitialized: true });
+        } catch (error) {
+          console.error('Error initializing auth:', error);
+          logger.logError(error);
+        }
+      }
+    }, 100);
+
+    // Listen for storage events to sync auth state between tabs
+    this.handleStorageChange = this.handleStorageChange.bind(this);
+    window.addEventListener('storage', this.handleStorageChange);
+  }
+
+  componentWillUnmount() {
+    // Clean up storage event listener
+    if (this.handleStorageChange) {
+      window.removeEventListener('storage', this.handleStorageChange);
+    }
+  }
+
+  handleStorageChange(event) {
+    // Sync auth state when localStorage changes in other tabs
+    if (event.key === 'token' || event.key === 'authToken') {
+      if (event.newValue && !authInitialized) {
+        try {
+          initAuth();
+          authInitialized = true;
+          this.setState({ authInitialized: true });
+        } catch (error) {
+          console.error('Error syncing auth from storage event:', error);
+        }
+      }
+    }
+  }
+
+  componentDidCatch(error, errorInfo) {
     logger.logError(error);
+    console.error('App component caught an error:', error, errorInfo);
   }
 
   render() {
     return (
       <Provider store={store}>
         <PersistGate loading={<Loading />} persistor={persistor}>
-          <ModalProvider>
-            <Router>
-              <UpdateDocumentTitle />
-              {routes}
-            </Router>
-          </ModalProvider>
+          <ErrorBoundary>
+            <ModalProvider>
+              <Router>
+                <UpdateDocumentTitle />
+                {routes}
+              </Router>
+            </ModalProvider>
+          </ErrorBoundary>
         </PersistGate>
       </Provider>
     );
