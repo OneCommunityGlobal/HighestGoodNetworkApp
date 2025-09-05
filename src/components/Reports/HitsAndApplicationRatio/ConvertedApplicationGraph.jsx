@@ -1,34 +1,69 @@
 import React, { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  LabelList,
+  ResponsiveContainer,
+  Label,
+} from 'recharts';
 
-const CustomTooltip = ({ active, payload }) => {
+const CustomTooltip = ({ active, payload, isDark, usePercentage }) => {
   if (active && payload && payload.length) {
     const job = payload[0].payload;
+    const textColor = isDark ? '#E5E7EB' : '#1F2937'; // gray-200 (dark) / gray-800 (light)
+    const bgColor = isDark ? '#1F2937' : '#FFFFFF';
+    const borderColor = isDark ? '#4B5563' : '#D1D5DB';
+
     return (
-      <div className="bg-white border border-gray-300 p-2 rounded shadow text-sm">
-        <p><strong>Role:</strong> {job.title}</p>
-        <p><strong>Conversion Rate:</strong> {job.conversionRate}%</p>
-        <p><strong>Hits:</strong> {job.hits}</p>
-        <p><strong>Applications:</strong> {job.applications}</p>
+      <div
+        style={{
+          backgroundColor: bgColor,
+          border: `1px solid ${borderColor}`,
+          color: textColor,
+          padding: '0.5rem',
+          borderRadius: '0.25rem',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+          fontSize: '0.875rem',
+        }}
+      >
+        <p style={{ color: textColor }}>
+          <span style={{ fontWeight: 600 }}>Role:</span> {job.title}
+        </p>
+        <p style={{ color: textColor }}>
+          <span style={{ fontWeight: 600 }}>Conversion Rate:</span>{' '}
+          {usePercentage ? `${job.conversionRate}%` : job.conversionRate}
+        </p>
+        <p style={{ color: textColor }}>
+          <span style={{ fontWeight: 600 }}>Hits:</span> {job.hits}
+        </p>
+        <p style={{ color: textColor }}>
+          <span style={{ fontWeight: 600 }}>Applications:</span> {job.applications}
+        </p>
       </div>
     );
   }
   return null;
 };
 
-function ConvertedApplicationGraph({ data, usePercentage }) {
+function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
   const sortedData = useMemo(() => {
     const key = usePercentage ? 'conversionRate' : 'applications';
     const toNum = (val) => (val == null ? 0 : Number(val));
-    
-    // Sort in descending order and take only top 10
+
     return [...data]
       .sort((a, b) => toNum(b[key]) - toNum(a[key]))
       .slice(0, 10);
   }, [data, usePercentage]);
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow">
+    <div
+      className={`rounded-xl p-4 shadow ${
+        isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'
+      }`}
+    >
       <h2 className="text-lg font-semibold mb-2">
         Top 10 Job Postings by {usePercentage ? 'Conversion Rate' : 'Applications'}
       </h2>
@@ -39,20 +74,49 @@ function ConvertedApplicationGraph({ data, usePercentage }) {
           <BarChart
             layout="vertical"
             data={sortedData}
-            margin={{ top: 20, right: 20, bottom: 20, left: 150 }}
+            margin={{ top: 20, right: 20, bottom: 40, left: 150 }}
           >
             <XAxis
               type="number"
               domain={usePercentage ? [0, 100] : ['auto', 'auto']}
               unit={usePercentage ? '%' : ''}
+              stroke={isDark ? '#D1D5DB' : '#374151'}
+            >
+              <Label
+                value={
+                  usePercentage
+                    ? 'Percentage of hits converted to applications'
+                    : 'Applications'
+                }
+                position="bottom"
+                offset={0}
+                fill={isDark ? '#D1D5DB' : '#374151'}
+              />
+            </XAxis>
+            <YAxis
+              type="category"
+              dataKey="title"
+              width={140}
+              stroke={isDark ? '#D1D5DB' : '#374151'}
+            >
+              <Label
+                value="Job Role"
+                angle={-90}
+                position="left"
+                offset={-5}
+                style={{ textAnchor: 'middle' }}
+                fill={isDark ? '#D1D5DB' : '#374151'}
+              />
+            </YAxis>
+            <Tooltip
+              content={<CustomTooltip isDark={isDark} usePercentage={usePercentage} />}
             />
-            <YAxis type="category" dataKey="title" />
-            <Tooltip content={<CustomTooltip />} />
             <Bar dataKey={usePercentage ? 'conversionRate' : 'applications'} fill="#4CAF50">
               <LabelList
                 dataKey={usePercentage ? 'conversionRate' : 'applications'}
                 position="right"
                 formatter={(value) => `${value}${usePercentage ? '%' : ''}`}
+                fill={isDark ? '#D1D5DB' : '#374151'}
               />
             </Bar>
           </BarChart>

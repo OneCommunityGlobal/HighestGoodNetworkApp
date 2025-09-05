@@ -1,6 +1,15 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useMemo } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, LabelList, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  LabelList,
+  ResponsiveContainer,
+  Label,
+} from 'recharts';
 
 const toNum = (v, d = 0) => {
   const n = Number(v);
@@ -10,23 +19,44 @@ const toNum = (v, d = 0) => {
 const fmtPct = (v) => `${toNum(v)}%`;
 const fmtInt = (v) => toNum(v).toLocaleString();
 
-const CustomTooltip = ({ active, payload, usePercentage }) => {
+const CustomTooltip = ({ active, payload, usePercentage, isDark }) => {
   if (active && payload && payload.length) {
     const job = payload[0].payload;
+    const textColor = isDark ? '#E5E7EB' : '#1F2937'; // gray-200 (dark) / gray-800 (light)
+    const bgColor = isDark ? '#1F2937' : '#FFFFFF';
+    const borderColor = isDark ? '#4B5563' : '#D1D5DB';
+
     return (
-      <div className="bg-white border border-gray-300 p-2 rounded shadow text-sm">
-        <p><strong>Role:</strong> {job.title}</p>
-        <p><strong>Conversion Rate:</strong> {fmtPct(job.conversionRate)}</p>
-        <p><strong>Hits:</strong> {fmtInt(job.hits)}</p>
-        <p><strong>Applications:</strong> {fmtInt(job.applications)}</p>
+      <div
+        style={{
+          backgroundColor: bgColor,
+          border: `1px solid ${borderColor}`,
+          color: textColor,
+          padding: '0.5rem',
+          borderRadius: '0.25rem',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+          fontSize: '0.875rem',
+        }}
+      >
+        <p style={{ color: textColor }}>
+          <span style={{ fontWeight: 600 }}>Role:</span> {job.title}
+        </p>
+        <p style={{ color: textColor }}>
+          <span style={{ fontWeight: 600 }}>Conversion Rate:</span> {fmtPct(job.conversionRate)}
+        </p>
+        <p style={{ color: textColor }}>
+          <span style={{ fontWeight: 600 }}>Hits:</span> {fmtInt(job.hits)}
+        </p>
+        <p style={{ color: textColor }}>
+          <span style={{ fontWeight: 600 }}>Applications:</span> {fmtInt(job.applications)}
+        </p>
       </div>
     );
   }
   return null;
 };
 
-function NonConvertedApplicationsGraph({ data = [], usePercentage = true }) {
-  // normalize first so sorting/axes use numbers
+function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark }) {
   const normalized = useMemo(
     () =>
       (data || []).map((d) => ({
@@ -38,22 +68,19 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true }) {
     [data]
   );
 
-  // sort by active metric (ascending = "lowest"), then take top 10
   const metricKey = usePercentage ? 'conversionRate' : 'applications';
   const rows = useMemo(() => {
     const sorted = [...normalized].sort((a, b) => {
-      const diff = toNum(a[metricKey]) - toNum(b[metricKey]); // ascending
-      // tie-breaker for stable order
+      const diff = toNum(a[metricKey]) - toNum(b[metricKey]);
       return diff !== 0 ? diff : toNum(a.conversionRate) - toNum(b.conversionRate);
     });
     return sorted.slice(0, 10);
   }, [normalized, metricKey]);
 
-  // axis domain
   const maxValue = useMemo(() => {
     if (rows.length === 0) return 1;
     const m = Math.max(...rows.map((r) => toNum(r[metricKey], 0)));
-    return Math.max(1, Math.ceil(m * 1.05)); // a bit of headroom
+    return Math.max(1, Math.ceil(m * 1.05));
   }, [rows, metricKey]);
 
   const xDomain = usePercentage ? [0, 100] : [0, maxValue];
@@ -61,7 +88,11 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true }) {
   const labelFormatter = (v) => (usePercentage ? fmtPct(v) : fmtInt(v));
 
   return (
-    <div className="bg-white rounded-xl p-4 shadow">
+    <div
+      className={`rounded-xl p-4 shadow ${
+        isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'
+      }`}
+    >
       <h2 className="text-lg font-semibold mb-2">
         {usePercentage
           ? 'Top 10 Job Postings with Lowest Conversion Rate'
@@ -75,17 +106,50 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true }) {
           <BarChart
             layout="vertical"
             data={rows}
-            margin={{ top: 20, right: 20, bottom: 20, left: 150 }}
+            margin={{ top: 20, right: 20, bottom: 40, left: 150 }}
           >
-            <XAxis type="number" domain={xDomain} tickFormatter={xTickFormatter} />
-            <YAxis type="category" dataKey="title" width={140} />
-            <Tooltip content={<CustomTooltip usePercentage={usePercentage} />} />
-            <Bar
-              dataKey={metricKey}
-              fill="#F44336"
-              minPointSize={3} // keeps tiny values visible
+            <XAxis
+              type="number"
+              domain={xDomain}
+              tickFormatter={xTickFormatter}
+              stroke={isDark ? '#D1D5DB' : '#374151'}
             >
-              <LabelList dataKey={metricKey} position="right" formatter={labelFormatter} />
+              <Label
+                value={
+                  usePercentage
+                    ? 'Percentage of hits converted to applications'
+                    : 'Applications'
+                }
+                position="bottom"
+                offset={0}
+                fill={isDark ? '#D1D5DB' : '#374151'}
+              />
+            </XAxis>
+            <YAxis
+              type="category"
+              dataKey="title"
+              width={140}
+              stroke={isDark ? '#D1D5DB' : '#374151'}
+            >
+              <Label
+                value="Job Role"
+                angle={-90}
+                position="left"
+                offset={-5}
+                style={{ textAnchor: 'middle' }}
+                fill={isDark ? '#D1D5DB' : '#374151'}
+              />
+            </YAxis>
+            <Tooltip
+              content={<CustomTooltip usePercentage={usePercentage} isDark={isDark} />}
+            />
+            <Bar dataKey={metricKey} fill="#F44336" minPointSize={3}>
+              <LabelList
+                dataKey={metricKey}
+                position="right"
+                formatter={labelFormatter}
+                fill={isDark ? '#D1D5DB' : '#374151'}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>

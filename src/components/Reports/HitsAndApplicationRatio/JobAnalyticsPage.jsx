@@ -13,22 +13,33 @@ function JobAnalyticsPage() {
   const [dateRange, setDateRange] = useState('All');
   const [loading, setLoading] = useState(false);
 
+  // detect dark mode
+  const [isDark, setIsDark] = useState(
+    typeof document !== 'undefined' && document.querySelector('.dark-mode') !== null
+  );
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    const targetNode = document.body;
+    const observer = new MutationObserver(() => {
+      const darkActive = document.querySelector('.dark-mode') !== null;
+      setIsDark(darkActive);
+    });
+
+    observer.observe(targetNode, { attributes: true, subtree: true, attributeFilter: ['class'] });
+
+    return () => observer.disconnect();
+  }, []);
+
   useEffect(() => {
     const { startDate, endDate } = getDateRange(dateRange);
-// eslint-disable-next-line no-console
-console.log(`Fetching data for range: startDate=${startDate}, endDate=${endDate}`);
     const fetchData = async () => {
       setLoading(true);
-      // eslint-disable-next-line no-console
-      console.log('Fetching top converted URL:', ENDPOINTS.TOP_CONVERTED(10, startDate, endDate));
-// eslint-disable-next-line no-console
-console.log('Fetching least converted URL:', ENDPOINTS.LEAST_CONVERTED(10, startDate, endDate));
-
       try {
         const [topRes, leastRes] = await Promise.all([
           httpService.get(ENDPOINTS.TOP_CONVERTED(10, startDate, endDate)),
           httpService.get(ENDPOINTS.LEAST_CONVERTED(10, startDate, endDate)),
-
         ]);
         setConvertedData(topRes.data);
         setNonConvertedData(leastRes.data);
@@ -45,18 +56,45 @@ console.log('Fetching least converted URL:', ENDPOINTS.LEAST_CONVERTED(10, start
     fetchData();
   }, [dateRange]);
 
+  const textColor = isDark ? '#E5E7EB' : '#1F2937';
+  const bgColor = isDark ? '#111827' : '#FFFFFF';
+  const borderColor = isDark ? '#4B5563' : '#D1D5DB';
+
   return (
-    <div className="p-6 space-y-6">
+    <div
+      style={{
+        backgroundColor: bgColor,
+        color: textColor,
+        padding: '1.5rem',
+        borderRadius: '0.75rem',
+        transition: 'background-color 0.3s ease, color 0.3s ease',
+      }}
+    >
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
-          <span className="font-semibold">Date Range:</span>
+          <span style={{ fontWeight: 600, color: textColor }}>Date Range:</span>
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="border rounded px-2 py-1"
+            style={{
+              backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+              color: textColor,
+              border: `1px solid ${borderColor}`,
+              borderRadius: '0.25rem',
+              padding: '0.25rem 0.5rem',
+            }}
           >
             {dateOptions.map((option) => (
-              <option key={option} value={option}>{option}</option>
+              <option
+                key={option}
+                value={option}
+                style={{
+                  backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
+                  color: textColor,
+                }}
+              >
+                {option}
+              </option>
             ))}
           </select>
         </div>
@@ -68,16 +106,29 @@ console.log('Fetching least converted URL:', ENDPOINTS.LEAST_CONVERTED(10, start
             checked={usePercentage}
             onChange={() => setUsePercentage(!usePercentage)}
           />
-          <label htmlFor="toggle-percentage" className="cursor-pointer">Show %</label>
+          <label
+            htmlFor="toggle-percentage"
+            style={{ color: textColor, cursor: 'pointer' }}
+          >
+            Show %
+          </label>
         </div>
       </div>
 
       {loading ? (
-        <p>Loading analytics...</p>
+        <p style={{ color: textColor }}>Loading analytics...</p>
       ) : (
         <>
-          <ConvertedApplicationGraph data={convertedData} usePercentage={usePercentage} />
-          <NonConvertedApplicationsGraph data={nonConvertedData} usePercentage={usePercentage} />
+          <ConvertedApplicationGraph
+            data={convertedData}
+            usePercentage={usePercentage}
+            isDark={isDark}
+          />
+          <NonConvertedApplicationsGraph
+            data={nonConvertedData}
+            usePercentage={usePercentage}
+            isDark={isDark}
+          />
         </>
       )}
     </div>
