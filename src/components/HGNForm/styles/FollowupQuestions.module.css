@@ -77,6 +77,15 @@
 }
 
 
+.followUp textarea {
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 10px 30px;
+  background-color: #e6f5f3;
+}
+
 .questionContainer{
   width:100%;
 }

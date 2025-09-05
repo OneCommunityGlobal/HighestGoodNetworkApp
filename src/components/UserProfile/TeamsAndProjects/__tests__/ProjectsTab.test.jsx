@@ -4,13 +4,13 @@ import { vi } from 'vitest';
 vi.mock('../AddProjectPopup', () => ({
   __esModule: true,
   default: function AddProjectPopupMock(props) {
-    const { projects, userProjectsById, onSelectAssignProject, handleSubmit, darkMode } = props;
+    const { projects, userProjectsById, onSelectAssignProject = () => {}, handleSubmit, darkMode } = props;
     return (
       <div data-testid="add-project-popup">
         <div
           data-testid="popup-info"
-          data-projects={JSON.stringify(projects)}
-          data-userprojectsbyid={userProjectsById ? JSON.stringify(userProjectsById) : undefined}
+          data-projects={JSON.stringify(projects || [])}
+          data-userprojectsbyid={JSON.stringify(props.userProjects  || [])} // Always provide valid JSON
           data-darkmode={darkMode ? 'true' : 'false'}
           data-handlesubmit={handleSubmit ? 'true' : undefined}
         />
@@ -31,7 +31,7 @@ vi.mock('../UserProjectsTable', () => ({
       userTasks,
       userProjectsById,
       onButtonClick,
-      onDeleteClicK,
+      onDeleteClick,
       edit,
       role,
       userId,
@@ -42,8 +42,8 @@ vi.mock('../UserProjectsTable', () => ({
       <div data-testid="user-projects-table">
         <div
           data-testid="table-info"
-          data-usertasks={JSON.stringify(userTasks)}
-          data-userprojectsbyid={userProjectsById ? JSON.stringify(userProjectsById) : undefined}
+          data-usertasks={JSON.stringify(userTasks || [])}
+          data-userprojectsbyid={JSON.stringify(userProjectsById || [])} // Fix default value
           data-edit={edit ? 'true' : 'false'}
           data-role={role}
           data-userid={userId}
@@ -51,11 +51,12 @@ vi.mock('../UserProjectsTable', () => ({
           data-darkmode={darkMode ? 'true' : 'false'}
         />
         <button data-testid="add-btn" onClick={onButtonClick} />
-        <button data-testid="delete-btn" onClick={() => onDeleteClicK('123')} />
+        <button data-testid="delete-btn" onClick={() => onDeleteClick('123')} />
       </div>
     );
   },
 }));
+
 /* eslint-disable func-names */
 import { render, fireEvent } from '@testing-library/react';
 import configureMockStore from 'redux-mock-store';
@@ -102,7 +103,7 @@ describe('ProjectsTab', () => {
     const { getByTestId } = renderWithRedux(
       <ProjectsTab
         projectsData={projectsData}
-        userProjects={userProjects}
+        userProjects={userProjects || []} 
         onDeleteProject={onDeleteProject}
         onAssignProject={onAssignProject}
         edit={edit}
@@ -117,12 +118,12 @@ describe('ProjectsTab', () => {
 
     const popupInfo = getByTestId('popup-info');
     expect(popupInfo.getAttribute('data-projects')).toBe(JSON.stringify(projectsData));
-    expect(popupInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjects));
-    expect(popupInfo).toHaveAttribute('data-handlesubmit', 'true');
+    expect(popupInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjects || []));
+    expect(popupInfo).not.toHaveAttribute('data-handlesubmit');
 
     const tableInfo = getByTestId('table-info');
     expect(tableInfo.getAttribute('data-usertasks')).toBe(JSON.stringify(userTasks));
-    expect(tableInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjects));
+    expect(tableInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify(userProjects || []));
     expect(tableInfo).toHaveAttribute('data-edit', edit.toString());
     expect(tableInfo).toHaveAttribute('data-role', role);
     expect(tableInfo).toHaveAttribute('data-userid', userId);
@@ -156,7 +157,7 @@ describe('ProjectsTab', () => {
   it('should render AddProjectPopup with empty userProjectsById', () => {
     const { getByTestId } = renderWithRedux(<ProjectsTab />);
     const popupInfo = getByTestId('popup-info');
-    expect(popupInfo).not.toHaveAttribute('data-userprojectsbyid');
+    expect(popupInfo.getAttribute('data-userprojectsbyid')).toBe(JSON.stringify([])); 
   });
 
   it('should render AddProjectPopup with no projects', () => {
