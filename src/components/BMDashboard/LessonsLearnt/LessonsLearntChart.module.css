@@ -1,4 +1,4 @@
-.chart-container {
+.chartContainer {
   padding: 1.5rem;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -6,12 +6,12 @@
   max-width: 100%;
 }
 
-.chart-container h2 {
+.chartTitle {
   font-size: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.filter-row {
+.filterRow {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
@@ -24,11 +24,11 @@
   min-width: 200px;
 }
 
-.chart-wrapper {
+.chartWrapper {
   position: relative;
 }
 
-.percentage-labels {
+.percentageLabels {
   position: absolute;
   top: -1.5rem;
   width: 100%;
@@ -37,7 +37,7 @@
   pointer-events: none;
 }
 
-.percentage-label {
+.percentageLabel {
   position: absolute;
   transform: translateX(-50%);
   font-size: 0.875rem;
