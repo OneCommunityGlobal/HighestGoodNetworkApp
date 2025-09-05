@@ -95,6 +95,7 @@ class ReportFilter extends Component {
             wildCardSearchText={this.props.wildCardSearchText}
             onCreateNewTeamClick={this.props.onCreateNewTeamShow}
             onScrollToResults={this.props.scrollToResults}
+            onSearchClick={this.props.onSearchClick}
           />
         </div>
       </div>
