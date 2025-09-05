@@ -3,6 +3,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './RescheduleEvent.module.css';
 import { useSelector } from 'react-redux';
+import { ApiEndpoint } from '~/utils/URL';
 
 function RescheduleEvent({ activity }) {
   const eventInfo =
@@ -39,7 +40,7 @@ function RescheduleEvent({ activity }) {
   };
 
   const formatTime = (hour24) => {
-    const hour = ((hour24 % 24) + 24) % 24; 
+    const hour = ((hour24 % 24) + 24) % 24;
     const h12 = hour % 12 === 0 ? 12 : hour % 12;
     const period = hour < 12 ? 'AM' : 'PM';
     return `${String(h12).padStart(2, '0')}:00 ${period}`;
@@ -48,8 +49,8 @@ function RescheduleEvent({ activity }) {
   const getTimeSlots = (startHour = 8, endHour = 24, step = 2) => {
     const slots = [];
     for (let h = startHour; h + step <= endHour; h += step) {
-      const end = h + step; 
-      slots.push(`${formatTime(h)} - ${formatTime(end)}`); 
+      const end = h + step;
+      slots.push(`${formatTime(h)} - ${formatTime(end)}`);
     }
     return slots;
   };
@@ -80,7 +81,7 @@ function RescheduleEvent({ activity }) {
         (a, b) => new Date(a.dateISO) - new Date(b.dateISO)
       )
     );
-    setSelectedTime(''); 
+    setSelectedTime('');
   };
 
   const removeOption = (idx) => {
@@ -96,46 +97,44 @@ function RescheduleEvent({ activity }) {
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   };
 
-  const handleCreateAndNotify = async () => {
-    try {
-      setLoading(true);
+const handleCreateAndNotify = async () => {
+  try {
+    setLoading(true);
 
-      const beOptions = options.map((opt) => {
-        const [startLabel, endLabel] = opt.timeSlot.split(' - ');
-        return {
-          dateISO: opt.dateISO,
-          start: parse12to24(startLabel),
-          end: parse12to24(endLabel),
-        };
-      });
+    const beOptions = options.map((opt) => {
+      const [startLabel, endLabel] = opt.timeSlot.split(' - ');
+      return {
+        dateISO: opt.dateISO,
+        start: parse12to24(startLabel),
+        end: parse12to24(endLabel),
+      };
+    });
 
-      const resPoll = await fetch(`/api/activities/${eventInfo.id}/reschedule/polls`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          options: beOptions,
-          reason: reason || '',
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        }),
-      });
-      if (!resPoll.ok) throw new Error((await resPoll.text()) || 'Failed to create poll');
-      const { pollId, invitableCount } = await resPoll.json();
+    const res = await fetch(`${ApiEndpoint}/activities/${eventInfo.id}/reschedule/notify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        options: beOptions,
+        reason: reason || '',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }),
+    });
 
-      const resNotify = await fetch(`/api/reschedule/polls/${pollId}/notify`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ channels: ['email', 'inapp'] }),
-      });
-      if (!resNotify.ok) throw new Error((await resNotify.text()) || 'Failed to notify participants');
-
-      alert(`Poll created and notifications sent to ${invitableCount ?? 'participants'}.`);
-      closeModal();
-    } catch (e) {
-      alert(`Error: ${e.message}`);
-    } finally {
-      setLoading(false);
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || `HTTP ${res.status}`);
     }
-  };
+
+    const json = await res.json();
+    alert(`Notification sent to ${json.notified} participants.`);
+    closeModal();
+  } catch (e) {
+    alert(`Error: ${e.message}`);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const canContinue = options.length >= 1;
 
