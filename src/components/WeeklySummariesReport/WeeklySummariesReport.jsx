@@ -388,18 +388,9 @@ const WeeklySummariesReport = props => {
         {
           _id: 1,
           filterName: 'Admin Group',
-          selectedCodes: [
-            {
-              label: '13477      (1) Test',
-              value: '13477test',
-              _ids: ['683e2c879a5196004d2b3e61'],
-            },
-          ],
-          selectedColors: [{ value: 'Not Required', label: 'Not Required' }],
-          selectedExtraMembers: [
-            { label: '0Nicolle VLT Test', value: '644db73845fccb5b38b13c14', role: 'Manager' },
-            { label: '0Eduardo Test', value: '646234ce50b6624774ad46a1', role: 'Volunteer' },
-          ],
+          selectedCodes: ['13477', '13479'],
+          selectedColors: ['Not Required', 'Team'],
+          selectedExtraMembers: ['644db73845fccb5b38b13c14', '646234ce50b6624774ad46a1'],
           selectedTrophies: true,
           selectedSpecialColors: { purple: true, green: true, navy: false },
           selectedBioStatus: true,
@@ -413,7 +404,16 @@ const WeeklySummariesReport = props => {
           label: filter.filterName,
           value: filter._id,
         });
-        filtersDict[filter._id] = filter;
+        filtersDict[filter._id] = {
+          filterName: filter.filterName,
+          selectedCodes: new Set(filter.selectedCodes),
+          selectedColors: new Set(filter.selectedColors),
+          selectedExtraMembers: new Set(filter.selectedExtraMembers),
+          selectedTrophies: filter.selectedTrophies,
+          selectedSpecialColors: filter.selectedSpecialColors,
+          selectedBioStatus: filter.selectedBioStatus,
+          selectedOverTime: filter.selectedOverTime,
+        };
       });
 
       // Store the data in the tab-specific state
@@ -1208,12 +1208,21 @@ const WeeklySummariesReport = props => {
 
   const applyFilter = selectedFilter => {
     const filter = state.filtersDict[selectedFilter.value];
-    // TODO: I need to save only the id, and then filter the codes, colors and choice again to get the most updated data
+    const selectedCodesChoice = state.teamCodes.filter(code =>
+      filter.selectedCodes.has(code.value),
+    );
+    const selectedColorsChoice = state.colorOptions.filter(color =>
+      filter.selectedColors.has(color.value),
+    );
+    const selectedExtraMembersChoice = state.membersFromUnselectedTeam.filter(member =>
+      filter.selectedExtraMembers.has(member.value),
+    );
+
     setState(prevState => ({
       ...prevState,
-      selectedCodes: filter.selectedCodes,
-      selectedColors: filter.selectedColors,
-      selectedExtraMembers: filter.selectedExtraMembers,
+      selectedCodes: selectedCodesChoice,
+      selectedColors: selectedColorsChoice,
+      selectedExtraMembers: selectedExtraMembersChoice,
       selectedTrophies: filter.selectedTrophies,
       selectedSpecialColors: filter.selectedSpecialColors,
       selectedBioStatus: filter.selectedBioStatus,

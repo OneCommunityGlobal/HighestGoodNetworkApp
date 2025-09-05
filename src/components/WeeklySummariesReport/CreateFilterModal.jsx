@@ -174,14 +174,15 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
       // No errors → submit form
       const data = {
         filterName: state.filterName,
-        selectedCodes: state.selectedCodes,
-        selectedColors: state.selectedColors,
-        selectedExtraMembers: state.selectedExtraMembers,
+        selectedCodes: state.selectedCodes.map(code => code.value),
+        selectedColors: state.selectedColors.map(color => color.value),
+        selectedExtraMembers: state.selectedExtraMembers.map(member => member.value),
         selectedTrophies: state.selectedTrophies,
         selectedSpecialColors: state.selectedSpecialColors,
         selectedBioStatus: state.selectedBioStatus,
         selectedOverTime: state.selectedOverTime,
       };
+
       // eslint-disable-next-line no-console
       console.log('Form submitted:', data);
       toggle();
@@ -315,7 +316,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                         <input
                           type="checkbox"
                           className="switch-toggle"
-                          id={`modal-${color}-toggle`}
+                          id={`filter-modal-${color}-toggle`}
                           checked={state.selectedSpecialColors[color]}
                           onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
                         />
@@ -349,7 +350,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                   <input
                     type="checkbox"
                     className="switch-toggle"
-                    id="modal-bio-status-toggle"
+                    id="filter-modal-bio-status-toggle"
                     checked={state.selectedBioStatus}
                     onChange={handleBioStatusToggleChange}
                   />
@@ -368,7 +369,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                     type="checkbox"
                     className="switch-toggle"
                     checked={state.selectedTrophies}
-                    id="modal-trophy-toggle"
+                    id="filter-modal-trophy-toggle"
                     onChange={handleTrophyToggleChange}
                   />
                   <label className="switch-toggle-label" htmlFor="modal-trophy-toggle">
@@ -386,7 +387,7 @@ function CreateFilterModal({ isOpen, toggle, initialState, darkMode, hasPermissi
                     type="checkbox"
                     className="switch-toggle"
                     checked={state.selectedOverTime}
-                    id="modal-over-hours-toggle"
+                    id="filter-modal-over-hours-toggle"
                     onChange={handleOverHoursToggleChange}
                   />
                   <label className="switch-toggle-label" htmlFor="modal-over-hours-toggle">

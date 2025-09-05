@@ -5,7 +5,7 @@ import Select from 'react-select';
 export default function SelectFilterModal({ isOpen, toggle, filters, applyFilter }) {
   const [selectedFilter, setSelectedFilter] = useState('');
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
+    <Modal isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
       <ModalHeader toggle={toggle}>Select a Filter</ModalHeader>
       <ModalBody>
         <Form>
