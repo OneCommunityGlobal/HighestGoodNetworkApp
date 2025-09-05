@@ -453,7 +453,8 @@ class ReportsPage extends Component {
       showAddTimeForm: false,
       showAddProjHistory: false,
       showAddPersonHistory: false,
-      showAddTeamHistory: false
+      showAddTeamHistory: false,
+      showCharts: !prevState.showContributorsReport
     }));
   }
 
@@ -530,7 +531,7 @@ class ReportsPage extends Component {
                 </div>
               )}
               <div className="d-flex align-items-center">
-                <span className={`mr-2 ${textColor}`}>Reports Page</span>
+                <h2 className="mr-2">Reports Page</h2>
                 <EditableInfoModal
                   areaName="ReportsPage"
                   areaTitle="Reports Page"
@@ -543,7 +544,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <p className={textColor}>Select a Category</p>
+              <p className="mr-2">Select a Category</p>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
@@ -593,9 +594,11 @@ class ReportsPage extends Component {
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   <ReportFilter
+                    filterStatus={this.state.filterStatus} 
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
+                    darkMode={darkMode}
                   />
                   <ViewReportByDate
                     minDate={new Date(DATE_PICKER_MIN_DATE)}
