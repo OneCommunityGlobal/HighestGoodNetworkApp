@@ -23,7 +23,7 @@ import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 import TimerPopout from './TimerPopout';
-import { postTimeEntry } from '../../actions/timeEntries';
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
 import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
 
 function Timer({ authUser, darkMode, isPopout }) {
@@ -105,10 +105,13 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
+  const [weekEndTimeLogModal, setWeekEndTimeLogModal] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
   const [viewingUserId, setViewingUserId] = useState(null);
   const [hasAutoLoggedWeekEnd, setHasAutoLoggedWeekEnd] = useState(false);
+  const [tempTimeEntryId, setTempTimeEntryId] = useState(null);
+  const [isWeekEndPaused, setIsWeekEndPaused] = useState(false);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
@@ -226,6 +229,10 @@ function Timer({ authUser, darkMode, isPopout }) {
     sendStartChime(!timeIsOverModalOpen);
   };
 
+  const toggleWeekEndTimeLogModal = () => {
+    setWeekEndTimeLogModal(!weekEndTimeLogModal);
+  };
+
   const checkBtnAvail = useCallback(
     addition => {
       const remainingDuration = moment.duration(remaining);
@@ -327,11 +334,11 @@ function Timer({ authUser, darkMode, isPopout }) {
 
       const timeEntry = {
         personId: userId,
-        taskId: message.taskId || null, // Include task ID if available
+        taskId: message.taskId || null,
         hours: logHours,
         minutes: logMinutes,
         dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
-        description: 'Time logged automatically because the week ended',
+        description: 'This time was logged automatically due to week closing. This is a temporary time log. https://www.onecommunityglobal.org/team/',
         isTangible: true,
         entryType: 'default',
       };
@@ -351,17 +358,43 @@ function Timer({ authUser, darkMode, isPopout }) {
           );
         }
 
-        // Mark as auto-logged and stop the timer
+        // Mark as auto-logged, pause timer, and show modal
         setHasAutoLoggedWeekEnd(true);
-        sendStop();
+        setIsWeekEndPaused(true);
+        setTempTimeEntryId(timeEntry._id || 'temp-id'); // Store temp ID for later update
+        sendPause(); // Pause instead of stop
+        setWeekEndTimeLogModal(true);
         
-        toast.success(`Time automatically logged: ${logHours}h ${logMinutes}m - Week ended`);
+        // Start continuous chime
+        sendStartChime(true);
+        
+        toast.info(`Week ended! Please complete your time log description.`);
       } else {
         throw new Error(`Unexpected response status: ${result}`);
       }
     } catch (error) {
       console.error('Error auto-logging week-end time:', error);
       toast.error('Failed to auto-log time for week end');
+    }
+  };
+
+  // Handle week-end time log completion
+  const handleWeekEndTimeLogComplete = async (updatedTimeEntry) => {
+    try {
+      // Update the temporary time entry with user's description
+      if (tempTimeEntryId && updatedTimeEntry) {
+        await dispatch(editTimeEntry(tempTimeEntryId, updatedTimeEntry, updatedTimeEntry.dateOfWork));
+        toast.success('Time log description updated successfully!');
+      }
+      
+      // Close modal and stop chime
+      setWeekEndTimeLogModal(false);
+      sendStartChime(false);
+      setIsWeekEndPaused(false);
+      setTempTimeEntryId(null);
+    } catch (error) {
+      console.error('Error updating week-end time log:', error);
+      toast.error('Failed to update time log description');
     }
   };
 
@@ -382,8 +415,8 @@ function Timer({ authUser, darkMode, isPopout }) {
       forcedPause: forcedPauseLJM,
       started: startedLJM,
       chiming: chimingLJM,
-      weekEndPause: weekEndPauseLJM, // New field to indicate week-end pause
-    } = lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
+      weekEndPause: weekEndPauseLJM,
+    } = lastJsonMessage || defaultMessage;
     
     const previousMessage = message;
     setMessage(lastJsonMessage || defaultMessage);
@@ -396,6 +429,14 @@ function Timer({ authUser, darkMode, isPopout }) {
       autoLogWeekEndTime();
     }
   }, [lastJsonMessage, hasAutoLoggedWeekEnd, running, message]);
+
+  // Handle continuous chime during week-end pause
+  useEffect(() => {
+    if (isWeekEndPaused && !weekEndTimeLogModal) {
+      // If week-end modal is closed but we're still in week-end pause, restart chime
+      sendStartChime(true);
+    }
+  }, [isWeekEndPaused, weekEndTimeLogModal]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -517,6 +558,27 @@ function Timer({ authUser, darkMode, isPopout }) {
             isOpen={logTimeEntryModal}
             data={logTimer}
             sendStop={sendStop}
+          />
+        )}
+        
+        {weekEndTimeLogModal && (
+          <TimeEntryForm
+            from="WeekEnd"
+            edit={true}
+            toggle={toggleWeekEndTimeLogModal}
+            isOpen={weekEndTimeLogModal}
+            data={{
+              hours: logHours,
+              minutes: logMinutes,
+              personId: viewingUserId || authUser?._id,
+              taskId: message.taskId || null,
+              dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+              description: 'This time was logged automatically due to week closing. This is a temporary time log. https://www.onecommunityglobal.org/team/',
+              isTangible: true,
+              entryType: 'default',
+            }}
+            onComplete={handleWeekEndTimeLogComplete}
+            tempTimeEntryId={tempTimeEntryId}
           />
         )}
         <audio
