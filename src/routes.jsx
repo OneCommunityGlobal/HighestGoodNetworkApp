@@ -3,76 +3,76 @@ import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import AutoUpdate from 'components/AutoUpdate';
-import TaskEditSuggestions from 'components/TaskEditSuggestions/TaskEditSuggestions';
-import RoutePermissions from 'utils/routePermissions';
-import hasPermission from 'utils/permissions';
+import AutoUpdate from './components/AutoUpdate';
+import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
+import RoutePermissions from './utils/routePermissions';
+import hasPermission from './utils/permissions';
 
-import Dashboard from 'components/Dashboard';
-import Login from 'components/Login';
-import Logout from 'components/Logout/Logout';
-import ForgotPassword from 'components/Login/ForgotPassword';
-import ForcePasswordUpdate from 'components/ForcePasswordUpdate';
-import UpdatePassword from 'components/UpdatePassword';
-import NotFoundPage from 'components/NotFound/NotFoundPage';
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import Logout from './components/Logout/Logout';
+import ForgotPassword from './components/Login/ForgotPassword';
+import ForcePasswordUpdate from './components/ForcePasswordUpdate';
+import UpdatePassword from './components/UpdatePassword';
+import NotFoundPage from './components/NotFound/NotFoundPage';
 
-import SetupProfile from 'components/SetupProfile/SetupProfile';
-import Timelog from 'components/Timelog';
-import UserProfileEdit from 'components/UserProfile/UserProfileEdit';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
-import PRDashboard from 'components/PRDashboard';
-import ApplicantsAgeChart from 'components/ApplicantsChart';
-import ApplicationTimeChartPage from 'components/ApplicationTimeChart';
-import ApplicationAnalyticsContainer from 'components/ApplicationAnalytics';
-import UserSkillsProfile from 'components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
+import SetupProfile from './components/SetupProfile/SetupProfile';
+import Timelog from './components/Timelog';
+import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+import EditableInfoModal from './components/UserProfile/EditableModal/EditableInfoModal';
+import RoleInfoCollections from './components/UserProfile/EditableModal/RoleInfoModal';
+import PRDashboard from './components/PRDashboard';
+import ApplicantsAgeChart from './components/ApplicantsChart';
+import ApplicationTimeChartPage from './components/ApplicationTimeChart';
+import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
+import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 
-import WeeklySummaryPage from 'components/VolunteerweeklysummaryBBC/WeeklySummaryPage';
-import EmailSubscribeForm from 'components/EmailSubscribeForm';
-import SubscribePage from 'components/EmailSubscribeForm/SubscribePage';
-import UnsubscribePage from 'components/EmailSubscribeForm/UnsubscribePage';
-import UnsubscribeForm from 'components/EmailSubscribeForm/Unsubscribe';
-import EmailSender from 'components/common/EmailSender/EmailSender';
+import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage';
+import EmailSubscribeForm from './components/EmailSubscribeForm';
+import SubscribePage from './components/EmailSubscribeForm/SubscribePage';
+import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
+import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+import EmailSender from './components/common/EmailSender/EmailSender';
 
-import FormEditor from 'components/Forms/FormEditor';
-import FormViewer from 'components/Forms/FormViewer';
+import FormEditor from './components/Forms/FormEditor';
+import FormViewer from './components/Forms/FormViewer';
 
-import HeaderRenderer from 'components/Header/HeaderRenderer';
-import Announcements from 'components/Announcements';
-import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
+import HeaderRenderer from './components/Header/HeaderRenderer';
+import Announcements from './components/Announcements';
+import JobCCDashboard from './components/JobCCDashboard/JobCCDashboard';
 
-import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
-import LessonForm from 'components/BMDashboard/Lesson/LessonForm';
-import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
-import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
-import EquipmentList from 'components/BMDashboard/Equipment/List';
-import EquipmentDetail from 'components/BMDashboard/Equipment/Detail/EquipmentDetail';
-import UpdateEquipment from 'components/BMDashboard/Equipment/Update/UpdateEquipment';
-import EDailyActivityLog from 'components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
-import LogTools from 'components/BMDashboard/LogTools/LogTools';
-import Toolslist from 'components/BMDashboard/Tools/ToolsList';
-import AddTool from 'components/BMDashboard/Tools/AddTool';
-import ToolDetailPage from 'components/BMDashboard/Tools/ToolDetailPage';
-import EquipmentUpdate from 'components/BMDashboard/Tools/EquipmentUpdate';
-import Issue from 'components/BMDashboard/Issue/Issue';
-import IssueDashboard from 'components/BMDashboard/Issues/IssueDashboard';
-import IssueChart from 'components/BMDashboard/Issues/issueCharts';
-import RentalChart from 'components/BMDashboard/RentalChart/RentalChart';
-import BMTimeLogger from 'components/BMDashboard/BMTimeLogger/BMTimeLogger';
-import AddTeamMember from 'components/BMDashboard/AddTeamMember/AddTeamMember';
-import CreateNewTeam from 'components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-import BMDashboard from 'components/BMDashboard';
-import BMLogin from 'components/BMDashboard/Login';
-import BMProtectedRoute from 'components/common/BMDashboard/BMProtectedRoute';
+import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import LessonForm from './components/BMDashboard/Lesson/LessonForm';
+import LessonList from './components/BMDashboard/LessonList/LessonListForm';
+import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
+import EquipmentList from './components/BMDashboard/Equipment/List';
+import EquipmentDetail from './components/BMDashboard/Equipment/Detail/EquipmentDetail';
+import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
+import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
+import LogTools from './components/BMDashboard/LogTools/LogTools';
+import Toolslist from './components/BMDashboard/Tools/ToolsList';
+import AddTool from './components/BMDashboard/Tools/AddTool';
+import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
+import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+import Issue from './components/BMDashboard/Issue/Issue';
+import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+import IssueChart from './components/BMDashboard/Issues/issueCharts';
+import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
+import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
+import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+import BMDashboard from './components/BMDashboard';
+import BMLogin from './components/BMDashboard/Login';
+import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 
-import FaqSearch from 'components/Faq/FaqSearch';
-import FaqManagement from 'components/Faq/FaqManagement';
-import FaqHistory from 'components/Faq/FaqHistory';
-import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
-import { ExperienceDonutChart } from 'components/ExperienceDonutChart';
+import FaqSearch from './components/Faq/FaqSearch';
+import FaqManagement from './components/Faq/FaqManagement';
+import FaqHistory from './components/Faq/FaqHistory';
+import UnansweredFaqs from './components/Faq/UnansweredFaqs';
+import { ExperienceDonutChart } from './components/ExperienceDonutChart';
 
-import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
-import ResourceUsage from '~/components/CommunityPortal/ResourceUsage/ResourceUsage';
+import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -89,38 +89,38 @@ import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 
-import HelpPage from 'components/LandingPage/HelpPage';
+import HelpPage from './components/LandingPage/HelpPage';
 
-import LandingPage from 'components/HGNHelpSkillsDashboard/LandingPage';
-import SkillsOverviewPage from 'components/HGNHelpSkillsDashboard/SkillsOverviewPage';
-import CommunityMembersPage from 'components/HGNHelpSkillsDashboard/CommunityMembersPage';
-import UserProfilePage from 'components/HGNHelpSkillsDashboard/UserProfilePage';
-import FeedbackModal from 'components/HGNHelpSkillsDashboard/FeedbackModal';
+import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
+import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
+import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
+import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
+import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
 
-import CPLogin from 'components/CommunityPortal/Login';
-import CPDashboard from 'components/CommunityPortal';
-import CPProtectedRoute from 'components/common/CPDashboard/CPProtectedRoute';
-import ActivityList from 'components/CommunityPortal/Activities/ActivityList';
-import Activity from 'components/CommunityPortal/Activities/activityId/Activity';
-import ActivityAttendance from 'components/CommunityPortal/Activities/ActivityAttendance';
-import ActivityAgenda from 'components/CommunityPortal/Activities/ActivityAgenda';
-import ActivitiesPage from 'components/CommunityPortal/Activities/ActivitiesPage';
-import Register from 'components/CommunityPortal/Activities/Register/Register';
-import EventStats from 'components/CommunityPortal/EventPersonalization/EventStats';
-import NoshowViz from 'components/CommunityPortal/Attendence/NoshowViz';
-import Resources from 'components/CommunityPortal/Activities/activityId/Resources';
-import EventParticipation from 'components/CommunityPortal/Reports/Participation/EventParticipation';
+import CPLogin from './components/CommunityPortal/Login';
+import CPDashboard from './components/CommunityPortal';
+import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
+import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
+import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
+import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
+import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
+import Register from './components/CommunityPortal/Activities/Register/Register';
+import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
+import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
+import Resources from './components/CommunityPortal/Activities/activityId/Resources';
+import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 import TeamLocations from './components/TeamLocations';
 import Inventory from './components/Inventory';
 import Collaboration from './components/Collaboration';
-
+import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
-
+import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
 import LBHome from './components/LBDashboard/Home/Home';
 import LBDashboard from './components/LBDashboard';
@@ -133,7 +133,7 @@ import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverv
 import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
-
+import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
@@ -150,7 +150,7 @@ import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTo
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 
-import ProtectedRoute from 'components/common/ProtectedRoute';
+import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 
 // Social Architecture
