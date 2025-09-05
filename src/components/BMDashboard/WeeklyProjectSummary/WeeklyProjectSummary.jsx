@@ -14,6 +14,7 @@ import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
+import ToolsReturnedLateChart from './Tools/ToolsReturnedLateChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
@@ -288,6 +289,16 @@ function WeeklyProjectSummary() {
             <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
+          </div>
+        ),
+      },
+      {
+        title: 'Tools Return Analysis',
+        key: 'Tools Return Analysis',
+        className: 'large',
+        content: (
+          <div className="weekly-project-summary-card normal-card">
+            <ToolsReturnedLateChart darkMode={darkMode} />
           </div>
         ),
       },

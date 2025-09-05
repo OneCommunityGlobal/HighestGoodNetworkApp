@@ -278,6 +278,16 @@ export const ENDPOINTS = {
     if (params.length > 0) url += `?${params.join('&')}`;
     return url;
   },
+  TOOLS_RETURNED_LATE: (projectId, startDate, endDate, tools) => {
+    let url = `${APIEndpoint}/tools/returned-late`;
+    const params = [];
+    if (projectId) params.push(`projectId=${projectId}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (tools && tools.length > 0) params.push(`tools=${tools.join(',')}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
