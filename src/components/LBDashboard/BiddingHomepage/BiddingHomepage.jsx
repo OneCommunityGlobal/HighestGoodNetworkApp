@@ -518,7 +518,10 @@ function BiddingHomepage() {
         {filteredProperties.length > itemsPerPage && (
           <Row className="justify-content-center mb-4">
             <Col xs="auto">
-              <Pagination className={`custom-pagination ${darkMode ? 'dark-mode' : ''}`}>
+              <Pagination
+                className={`custom-pagination ${darkMode ? 'dark-mode' : ''}`}
+                style={darkMode ? { backgroundColor: '#2B3E59' } : {}}
+              >
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink onClick={handlePrevPage}>
                     <FaChevronLeft />
