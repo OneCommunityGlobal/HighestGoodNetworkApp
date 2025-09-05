@@ -46,7 +46,7 @@ const WBS = props => {
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className={`container pt-2 border border-secondary rounded ${darkMode ? 'text-light' : ''}`}style={darkMode ? { backgroundColor: '#1B2A41', alignItems: 'normal' } : { alignItems: 'normal' }}>
+        <div className={`container pt-2 border rounded ${darkMode ? 'text-light' : ''}`}style={darkMode ? { backgroundColor: '#1B2A41', alignItems: 'normal' } : { alignItems: 'normal' }}>
           <nav aria-label="breadcrumb">
             <div className={`d-flex align-items-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} 
               style={{ 
@@ -93,6 +93,7 @@ const WBS = props => {
                   <th scope="col" style={{ textAlign: 'left' }}>
                     Name
                     <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
+                      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                       <i
                         className={`fa ${sortOrder === 'recent' ? 'fa-sort' : sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'}`}
                         onClick={() => handleSortChange(sortOrder === 'asc' ? 'desc' : sortOrder === 'desc' ? 'recent' : 'asc')}

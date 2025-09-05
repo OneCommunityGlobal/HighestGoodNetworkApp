@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getAllUserProfile } from '../../actions/userManagement';
@@ -26,8 +25,7 @@ import {
 /**
  * The header row of the user table.
  */
-const UserTableHeader = React.memo(
-  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
+const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
@@ -317,7 +315,9 @@ const UserTableHeader = React.memo(
         )}
       </tr>
     );
-  },
-);
+  };
+
+const UserTableHeader = React.memo(UserTableHeaderComponent);
+UserTableHeader.displayName = 'UserTableHeader';
 
 export default UserTableHeader;

@@ -1027,7 +1027,7 @@ function LeaderBoard({
                       </td>
                       <td className="align-middle" aria-label="Description or purpose of the cell">
                         <Link
-                          to={`/timelog/${item.personId}`}
+                          to={`/timelog/${item.personId}#currentWeek`}
                           title={`TangibleEffort: ${item.tangibletime} hours`}
                         >
                           <Progress value={item.barprogress} color={item.barcolor} />

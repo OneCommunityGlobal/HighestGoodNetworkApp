@@ -31,6 +31,7 @@ function SameFolderTasks(props) {
           setWBSId(res?.data.wbsId || '');
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error);
       }
     };
@@ -50,6 +51,7 @@ function SameFolderTasks(props) {
           setWbsName(res?.data?.wbsName);
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error);
       }
     };
@@ -71,6 +73,7 @@ function SameFolderTasks(props) {
       }
       setLoading(false);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };
@@ -181,6 +184,7 @@ function SameFolderTasks(props) {
                                 target="_blank"
                                 rel="noreferrer"
                               >
+                                {/* eslint-disable-next-line jsx-a11y/alt-text */}
                                 <img className="img-circle" src={element.profilePic} />
                               </a>
                             );

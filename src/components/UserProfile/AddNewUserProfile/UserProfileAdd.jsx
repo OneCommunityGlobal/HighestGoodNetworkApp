@@ -219,7 +219,7 @@ class UserProfileAdd extends Component {
                         value={lastName}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.lastName)}
+                        invalid={this.state.formSubmitted && (!!this.state.formErrors.lastName || lastName.length < 2)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.lastName && (
@@ -636,7 +636,7 @@ class UserProfileAdd extends Component {
                   block
                   size="lg"
                   data-testid="create-userProfile"
-                  onClick={() => this.createUserProfile(false)}
+                  onClick={() => this.createUserProfile(true)}
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Create
@@ -747,6 +747,9 @@ class UserProfileAdd extends Component {
       return false;
     } else if (firstLength && lastLength && phone.length >= 9) {
       return true;
+    }  else if (this.state.userProfile.lastName.length < 2) {
+      toast.error('Last Name must be at least 2 characters long');
+      return false;
     } else {
       toast.error('Please fill all the required fields');
       return false;
@@ -767,7 +770,7 @@ class UserProfileAdd extends Component {
     else return false;
   };
 
-  createUserProfile = allowsDuplicateName => {
+  createUserProfile = () => {
     let that = this;
     const {
       firstName,
@@ -809,7 +812,7 @@ class UserProfileAdd extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: allowsDuplicateName,
+      allowsDuplicateName: true,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
       actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
@@ -869,14 +872,6 @@ class UserProfileAdd extends Component {
           .then(res => {
             if (res.data.warning) {
               toast.warn(res.data.warning);
-            } else if (
-              this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-              !allowsDuplicateName
-            ) {
-              this.setState({
-                popupOpen: true,
-              });
-              return;
             } else {
               toast.success('User profile created.');
               this.state.userProfile._id = res.data._id;
@@ -894,62 +889,46 @@ class UserProfileAdd extends Component {
             this.props.userCreated();
           })
           .catch(err => {
-            if (err.response?.data?.type) {
-              switch (err.response.data.type) {
+            const res = err.response;
+            const status = res?.status;
+            const data = res?.data || {};
+
+            if (!res) {
+              toast.error(`Network error: ${err.message}`);
+              return;
+            }
+
+            // Handle Mongoose validation error cleanup
+            if (data?.errors && typeof data.errors === 'object') {
+              const firstErrorKey = Object.keys(data.errors)[0];
+              const firstError = data.errors[firstErrorKey];
+              const fieldName = firstError.path || firstErrorKey;
+              const message = firstError.message;
+          
+              toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`);
+              return;
+            }
+
+            // Fallback to known type-based errors
+            if (data.type) {
+              switch (data.type) {
                 case 'email':
-                  this.setState({
-                    formValid: {
-                      ...that.state.formValid,
-                      email: false,
-                    },
-                    formErrors: {
-                      ...that.state.formErrors,
-                      email: 'Email already exists',
-                    },
-                  });
-                  break;
+                  toast.error('Email already exists');
+                  return;
                 case 'phoneNumber':
-                  this.setState({
-                    formValid: {
-                      ...that.state.formValid,
-                      phoneNumber: false,
-                      showphone: false,
-                    },
-                    formErrors: {
-                      ...that.state.formErrors,
-                      phoneNumber: 'Phone number already exists',
-                    },
-                  });
-                  break;
+                  toast.error('Phone number already exists');
+                  return;
                 case 'name':
-                  if (
-                    this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-                    !allowsDuplicateName
-                  ) {
-                    this.setState({
-                      popupOpen: true,
-                    });
-                  }
-                  break;
+                  toast.error('A user with this first and last name already exists');
+                  return;
                 case 'credentials':
-                  this.setState({
-                    formValid: {
-                      ...that.state.formValid,
-                      email: false,
-                    },
-                    formErrors: {
-                      ...that.state.formErrors,
-                      actualEmail: 'Actual email or password may be incorrect',
-                      actualPassword: 'Actual email or password may be incorrect',
-                    },
-                  });
-                  break;
+                  toast.error('Admin credentials were not accepted');
+                  return;
               }
             }
-            toast.error(
-              err.response?.data?.error ||
-              'An unknown error occurred while attempting to create this user.',
-            );
+
+            // Generic fallback
+            toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
           });
       }
     }
@@ -1059,22 +1038,24 @@ class UserProfileAdd extends Component {
           },
         });
         break;
-      case 'lastName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.length > 0,
-          },
-          formErrors: {
-            ...formErrors,
-            lastName: event.target.value.length > 0 ? '' : 'Last Name required',
-          },
-        });
-        break;
+        case 'lastName':
+          this.setState({
+            userProfile: {
+              ...userProfile,
+              [event.target.id]: event.target.value,
+            },
+            formValid: {
+              ...formValid,
+              [event.target.id]: event.target.value.length >= 2,
+            },
+            formErrors: {
+              ...formErrors,
+              lastName: event.target.value.length >= 2
+                ? ''
+                : 'Last Name cannot be less than 2 characters long',
+            },
+          });
+          break;
       case 'email':
         this.setState({
           userProfile: {
