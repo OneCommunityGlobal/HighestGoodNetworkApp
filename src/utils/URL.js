@@ -51,7 +51,8 @@ export const ENDPOINTS = {
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
   ORG_DATA: `${APIEndpoint}/dashboard/leaderboard/org/data`,
-  TROPHY_ICON: (userId, trophyFollowedUp) => `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
+  TROPHY_ICON: (userId, trophyFollowedUp) =>
+    `${APIEndpoint}/dashboard/leaderboard/trophyIcon/${userId}/${trophyFollowedUp}`,
 
   // Questionnaire endpoints
   QUESTIONNAIRE_FEEDBACK_REQUEST: () => `${APIEndpoint}/dashboard/questionaire/feedbackrequest`,
@@ -105,7 +106,8 @@ export const ENDPOINTS = {
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
-    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate || ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
+      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
     `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
       customStartDate ? `&customStartDate=${customStartDate}` : ''
@@ -121,6 +123,7 @@ export const ENDPOINTS = {
 
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
+  APPLICANT_VOLUNTEER_RATIO: `${APIEndpoint}/applicant-volunteer-ratio`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
@@ -229,8 +232,12 @@ export const ENDPOINTS = {
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
   BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
+  BM_EQUIPMENT_LOGS: `${APIEndpoint}/bm/equipments/logRecords`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
+  BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
+  BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
+  BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_UPDATE_MATERIAL_STATUS: `${APIEndpoint}/bm/updateMaterialStatus`,
@@ -247,16 +254,30 @@ export const ENDPOINTS = {
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
+  BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
+    `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
-
   BM_ISSUE_CHART: `${APIEndpoint}/bm/issue/issue-chart`,
 
   BM_ISSUE_FORM: `${APIEndpoint}/bm/issue/add`,
-
-
+  BM_INJURY_CATEGORY_BREAKDOWN: `${APIEndpoint}/bm/injuries/category-breakdown`,
+  BM_INJURY_SEVERITIES: `${APIEndpoint}/bm/injuries/injury-severities`,
+  BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
+  BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
+  BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
+  BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+  TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
+  TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   BM_TAGS: `${APIEndpoint}/bm/tags`,
   BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
@@ -280,9 +301,14 @@ export const ENDPOINTS = {
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 
+  WEEKLY_SUMMARY_EMAIL_BCC: () => `${APIEndpoint}/AssignWeeklySummaryEmail`,
+  DELETE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
+  UPDATE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
+
   HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
+  HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
 
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
@@ -290,11 +316,48 @@ export const ENDPOINTS = {
   GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
   GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 
+  ADD_QUESTION: formId => `${APIEndpoint}/jobforms/${formId}/questions`,
+  UPDATE_QUESTION: (formId, questionIndex) =>
+    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  DELETE_QUESTION: (formId, questionIndex) =>
+    `${APIEndpoint}/jobforms/${formId}/questions/${questionIndex}`,
+  REORDER_QUESTIONS: formId => `${APIEndpoint}/jobforms/${formId}/questions/reorder`,
+
+  GET_ALL_TEMPLATES: `${APIEndpoint}/templates`,
+  CREATE_TEMPLATE: `${APIEndpoint}/templates`,
+  GET_TEMPLATE_BY_ID: id => `${APIEndpoint}/templates/${id}`,
+  UPDATE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
+  DELETE_TEMPLATE: id => `${APIEndpoint}/templates/${id}`,
+
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
+
+  MESSAGING_SERVICE: new URL('/messaging-service', APIEndpoint.replace('http', 'ws')).toString(),
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+  LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
+  LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
+  LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
+  LB_EXISTING_CHATS: `${APIEndpoint}/lb/messages/existing-chats`,
+  LB_SEARCH_USERS: `${APIEndpoint}/lb/messages/search-users`,
+  LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
+  LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
+  LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
 
+  NOTIFICATIONS: `${APIEndpoint}/notification`,
+  MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
+
+  DROPBOX_DELETE: `${APIEndpoint}/dropbox/delete-folder`,
+  DROPBOX_TEAM_FOLDERS: `${APIEndpoint}/dropbox/team-folders`,
+  GITHUB_REMOVE: `${APIEndpoint}/github/remove`,
+  SENTRY_REMOVE: `${APIEndpoint}/sentry/remove`,
+
+  SENTRY_ADD: `${APIEndpoint}/sentry/invite`,
+  GITHUB_ADD: `${APIEndpoint}/github/invite`,
+  DROPBOX_ADD: `${APIEndpoint}/dropbox/invite`,
+  SLACK_ADD: `${APIEndpoint}/slack/invite`,
+  DROPBOX_CREATE_ADD: `${APIEndpoint}/dropbox/create-folder-and-invite`,
+  ACCESS_MANAGEMENT: `${APIEndpoint}/accessManagement`,
 
   // community portal
   CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
@@ -303,11 +366,22 @@ export const ENDPOINTS = {
   CP_NOSHOW_VIZ_PERIOD: `${APIEndpoint}/communityportal/reports/participation/data`,
   CP_ATTENDENCE_VIZ_DAY: `${APIEndpoint}/communityportal/reports/participation/by-day`,
   CP_NOSHOW_VIZ_UNIQUE_EVENTTYPES: `${APIEndpoint}/communityportal/reports/participation/unique-eventTypes`,
+  CP_ADD_EVENT_FEEDBACK: `${APIEndpoint}/communityportal/activities/eventFeedback`,
 
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
+  // Saved Filters endpoints
+  SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
+  SAVED_FILTER_BY_ID: filterId => `${APIEndpoint}/savedFilters/${filterId}`,
+  UPDATE_SAVED_FILTERS_TEAM_CODES: () => `${APIEndpoint}/savedFilters/updateTeamCodes`,
+  UPDATE_SAVED_FILTERS_INDIVIDUAL_TEAM_CODE: () =>
+    `${APIEndpoint}/savedFilters/updateIndividualTeamCode`,
+
+  // pr dashboard endpoints
+  PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
+  PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 };
 
 export const ApiEndpoint = APIEndpoint;

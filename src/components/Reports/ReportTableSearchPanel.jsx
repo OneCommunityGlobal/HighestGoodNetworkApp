@@ -1,40 +1,20 @@
-// eslint-disable-next-line no-unused-vars
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
+import { SEARCH } from '../../languages/en/ui';
 import './reportsPage.css';
 
 /**
  * The search panel stateless component for Report grid
  */
-function ReportTableSearchPanel({ onSearch, wildCardSearchText, onScrollToResults }) {
+function ReportTableSearchPanel({ onSearch, wildCardSearchText }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [inputValue, setInputValue] = useState(wildCardSearchText || '');
-
-  useEffect(() => {
-    setInputValue(wildCardSearchText || '');
-  }, [wildCardSearchText]);
-
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
-
-  const handleSearch = () => {
-    onSearch(inputValue);
-    if (onScrollToResults) {
-      onScrollToResults();
-    }
-  };
-
+  // Destructure onSearch here
   return (
     <div className="input-group" id="new_team">
-      <button
-        type="button"
-        className={`btn btn-primary input-group-prepend ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-        onClick={handleSearch}
-        style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-      >
-        Search
-      </button>
+      <div className="input-group-prepend">
+        <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
+      </div>
+
       <input
         /* eslint-disable-next-line jsx-a11y/no-autofocus */
         autoFocus
@@ -43,10 +23,10 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onScrollToResult
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
-        value={inputValue}
-        onChange={handleInputChange}
-        onKeyDown={e => { if (e.key === 'Enter') handleSearch(); }}
-        style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+        value={wildCardSearchText}
+        onChange={e => {
+          onSearch(e.target.value); // Use destructured onSearch directly
+        }}
       />
     </div>
   );
