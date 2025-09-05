@@ -116,7 +116,7 @@ html, body {
 .category-container > .card-category-item.selected {
   background-color: #d7cdda;
   box-shadow: 0px 8px 16px rgba(78, 32, 125, 0.2);
-  transform: scale(1.03);
+  transform: scale(1.07);
   position: relative;
   z-index: 1;
 }
