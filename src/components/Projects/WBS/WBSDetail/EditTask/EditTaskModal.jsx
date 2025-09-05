@@ -355,14 +355,14 @@ function EditTaskModal(props) {
     ReactTooltip.rebuild();
   }, [links]);
 
-  useEffect(() => {
-    if (!modal) {
-      setStartedDate('');
-      setDueDate('');
-      setStartDateError(false);
-      setEndDateError(false);
-    }
-  }, [modal]);
+  // useEffect(() => {
+  //   if (!modal) {
+  //     setStartedDate('');
+  //     setDueDate('');
+  //     setStartDateError(false);
+  //     setEndDateError(false);
+  //   }
+  // }, [modal]);
 
   useEffect(() => {
     let isMounted = true;
