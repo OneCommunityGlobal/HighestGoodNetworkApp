@@ -56,7 +56,7 @@ const Members = props => {
     // Wait for all members to be assigned
     await Promise.all(
       allUsers.map(user =>
-        props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName),
+        props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName, user.isActive),
       ),
     );
 
@@ -270,6 +270,7 @@ const Members = props => {
                       email={user.email}
                       firstName={user.firstName}
                       lastName={user.lastName}
+                      isActive={user.isActive}
                       assigned={user.assigned}
                       darkMode={darkMode}
                     />

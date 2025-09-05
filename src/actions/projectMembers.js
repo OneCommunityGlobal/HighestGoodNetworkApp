@@ -136,7 +136,7 @@ export const fetchProjectsWithActiveUsers = () => {
 /**
  * Call API to assign/ unassign project
  */
-export const assignProject = (projectId, userId, operation, firstName, lastName) => {
+export const assignProject = (projectId, userId, operation, firstName, lastName, isActive) => {
   const request = axios.post(ENDPOINTS.PROJECT_MEMBER(projectId), {
     projectId,
     users: [
@@ -157,6 +157,7 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
               _id: userId,
               firstName,
               lastName,
+              isActive
             }),
           );
           // dispatch(removeFoundUser(userId));
