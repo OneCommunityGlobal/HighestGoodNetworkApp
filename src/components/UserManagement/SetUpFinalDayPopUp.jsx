@@ -1,34 +1,40 @@
 import moment from 'moment';
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+// import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyleDark, boxStyle } from '../../styles';
 import '../Header/DarkMode.css';
 /**
  * Modal popup to show the user profile in create mode
  */
-const SetUpFinalDayPopUp = React.memo(props => {
-  const darkMode = useSelector(state => state.theme.darkMode);
+const SetUpFinalDayPopUpComponent = ({ open, onClose, onSave, darkMode }) => {
   const [finalDayDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
   const closePopup = () => {
-    props.onClose();
+    onClose();
   };
 
   const deactiveUser = () => {
     if (moment().isBefore(moment(finalDayDate))) {
-      props.onSave(finalDayDate);
+      onSave(finalDayDate); // Pass the selected date to the parent component
     } else {
       setDateError(true);
     }
   };
+  const inputRef = useRef(null);
+
+useEffect(() => {
+  if (open && inputRef.current) {
+    inputRef.current.focus();
+  }
+}, [open]);
 
   return (
     <Modal
-      isOpen={props.open}
+      isOpen={open}
       toggle={closePopup}
-      autoFocus={false}
+      // autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
@@ -36,7 +42,8 @@ const SetUpFinalDayPopUp = React.memo(props => {
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
-          autoFocus
+          // autoFocus
+          innerRef={inputRef}
           type="date"
           name="inactiveDate"
           id="inactiveDate"
@@ -46,6 +53,7 @@ const SetUpFinalDayPopUp = React.memo(props => {
             onDateChange(event.target.value);
           }}
           data-testid="date-input"
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}
         />
         {dateError && <Alert color="danger">Please choose a future date.</Alert>}
       </ModalBody>
@@ -59,5 +67,9 @@ const SetUpFinalDayPopUp = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
+
+const SetUpFinalDayPopUp = React.memo(SetUpFinalDayPopUpComponent);
+SetUpFinalDayPopUp.displayName = 'SetUpFinalDayPopUp';
+
 export default SetUpFinalDayPopUp;

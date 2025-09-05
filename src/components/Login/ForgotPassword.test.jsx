@@ -1,5 +1,4 @@
-import React from 'react';
-import { mount, shallow } from 'enzyme';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
@@ -9,77 +8,64 @@ import ForgotPassword from './ForgotPassword';
 const mockStore = configureMockStore([thunk]);
 const store = mockStore({ theme: { darkMode: false } });
 
-const forgotPassword = mount(
-  <Provider store={store}>
-    <Router>
-      <ForgotPassword />
-    </Router>
-  </Provider>,
-);
+const renderComponent = () =>
+  render(
+    <Provider store={store}>
+      <Router>
+        <ForgotPassword />
+      </Router>
+    </Provider>,
+  );
 
 describe('ForgotPassword', () => {
-  it('should render ForgotPassword with 3 input', () => {
-    const inputs = forgotPassword.find('Input');
-    expect(inputs.length).toBe(3);
-  });
-  it('should render ForgotPassword with 2 button', () => {
-    const buttons = forgotPassword.find('Button');
-    expect(buttons.length).toBe(2);
-  });
-  it('should trigger onEmailChange while entering email', () => {
-    const emailInput = forgotPassword.find('Input').at(0);
-    emailInput.simulate('change', { target: { value: 'abbc@gmail.com' } });
-  });
-  it('should trigger setFirstName while entering email', () => {
-    const firstNameInput = forgotPassword.find('Input').at(1);
-    firstNameInput.simulate('change', { target: { value: 'Test' } });
-  });
-  it('should trigger setLastName while entering email', () => {
-    const lastNameInput = forgotPassword.find('Input').at(2);
-    lastNameInput.simulate('change', { target: { value: 'Admin' } });
+  it('renders three input fields (email, first name, last name)', () => {
+    renderComponent();
+    const inputs = screen.getAllByRole('textbox');
+    expect(inputs).toHaveLength(3);
   });
 
-  // handleInput tests
-  it('should allow user to input email, first name, and last name', () => {
-    const emailInput = forgotPassword.find('Input').at(0);
-    const firstNameInput = forgotPassword.find('Input').at(1);
-    const lastNameInput = forgotPassword.find('Input').at(2);
-
-    expect(emailInput.exists()).toBe(true);
-    expect(firstNameInput.exists()).toBe(true);
-    expect(lastNameInput.exists()).toBe(true);
+  it('renders two buttons (submit + cancel/back)', () => {
+    renderComponent();
+    const buttons = screen.getAllByRole('button');
+    expect(buttons).toHaveLength(2);
   });
 
-  it('should allow user to submit the form', () => {
-    const forgotPasswordMock = jest.fn();
-    const mountedforgotPasswordMock = shallow(<form onSubmit={forgotPasswordMock} />);
-    mountedforgotPasswordMock.find('form').simulate('submit');
-    expect(forgotPasswordMock).toHaveBeenCalled();
+  it('updates the email, first name and last name fields on change', () => {
+    renderComponent();
+    const [emailInput, firstNameInput, lastNameInput] = screen.getAllByRole('textbox');
+
+    fireEvent.change(emailInput, { target: { value: 'abbc@gmail.com' } });
+    expect(emailInput).toHaveValue('abbc@gmail.com');
+
+    fireEvent.change(firstNameInput, { target: { value: 'Test' } });
+    expect(firstNameInput).toHaveValue('Test');
+
+    fireEvent.change(lastNameInput, { target: { value: 'Admin' } });
+    expect(lastNameInput).toHaveValue('Admin');
   });
 
-  it('should not display an error message when a valid email address is inputted', () => {
-    const emailInput = forgotPassword.find('Input').at(0);
-    const errorMessage = forgotPassword.find('.alert.alert-danger');
-    emailInput.simulate('change', { target: { name: 'email', value: 'test@example.com' } });
-
-    expect(errorMessage.exists()).toBe(false);
+  it('submits the form without crashing', () => {
+    renderComponent();
+    const form = screen.getByTestId('forgot-password-form');
+    fireEvent.submit(form); // now triggers validation
   });
 
-  it('should display error message when user inputs invalid first name, last name, and email address', () => {
-    const emailInput = forgotPassword.find('Input').at(0);
-    const firstNameInput = forgotPassword.find('Input').at(1);
-    const lastNameInput = forgotPassword.find('Input').at(2);
+  it('shows no error alerts when a valid email is entered', () => {
+    renderComponent();
+    const emailInput = screen.getAllByRole('textbox')[0];
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 
-    expect(emailInput.exists()).toBe(true);
-    expect(firstNameInput.exists()).toBe(true);
-    expect(lastNameInput.exists()).toBe(true);
+  it('shows three error alerts when submitting with all fields empty', async () => {
+    renderComponent();
+    const submitBtn = screen.getAllByRole('button')[0];
+    fireEvent.click(submitBtn);
 
-    emailInput.simulate('change', { target: { name: 'email', value: '' } });
-    firstNameInput.simulate('change', { target: { name: 'firstName', value: '' } });
-    lastNameInput.simulate('change', { target: { name: 'lastName', value: '' } });
-
-    const emailErrorMessage = forgotPassword.find('.alert.alert-danger').at(0);
-    const firstNameErrorMessage = forgotPassword.find('.alert.alert-danger').at(1);
-    const lastNameErrorMessage = forgotPassword.find('.alert.alert-danger').at(2);
+    await waitFor(() => {
+      expect(screen.getByText('First name should not be empty.')).toBeInTheDocument();
+    });
+    expect(screen.getByText('Last name should not be empty.')).toBeInTheDocument();
+    expect(screen.getByText('Please enter a valid email address.')).toBeInTheDocument();
   });
 });

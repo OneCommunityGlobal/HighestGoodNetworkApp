@@ -15,8 +15,8 @@ import {
   Button,
 } from 'reactstrap';
 import classnames from 'classnames';
-import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';

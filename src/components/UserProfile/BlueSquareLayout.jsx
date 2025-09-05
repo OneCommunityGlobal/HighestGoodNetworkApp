@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal } from 'react-bootstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import TimeOffRequestsTable from './TimeOffRequestsTable/TimeOffRequestsTable';
@@ -10,6 +10,7 @@ import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import BluequareEmailAssignmentPopUp from './BluequareEmailBBCPopUp';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
+import {useHistory } from 'react-router-dom';
 
 
 const BlueSquareLayout = ({
@@ -20,6 +21,7 @@ const BlueSquareLayout = ({
   user,
   darkMode,
 }) => {
+    const history = useHistory();
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
@@ -136,6 +138,22 @@ const BlueSquareLayout = ({
                     sending to active team members, so we don’t have to remove people from the list
                     if they are made inactive. It doesn’t include getting copies of the time-off
                     requests, those already go to any Managers for the teams they are on.
+                  </div>
+                </div>
+              )}
+              {hasBlueSquareEmailBCCRolePermission && (
+                <div className="Job-Email-CC-div">
+                  <Button
+                    variant="primary"
+                    onClick={() => {history.push("/job-notification-dashboard")}}
+                    className="mt-3 w-100 Job-Email-CC-button"
+                    size="md"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Edit Job Application Email CC
+                  </Button>
+                  <div className={`Job-Email-CC-tooltip ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+                    This designates who gets an email for specific job applications.
                   </div>
                 </div>
               )}
