@@ -7,9 +7,10 @@ import { useDispatch } from 'react-redux';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import styles from '../styles/UserSkillsProfile.module.css';
+import jwtDecode from 'jwt-decode';
 
 function UserSkillsProfile() {
-  const { userId } = useParams();
+  const { userId: routeUserId } = useParams();
   const dispatch = useDispatch();
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -20,20 +21,27 @@ function UserSkillsProfile() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        let effectiveUserId = routeUserId;
         const token = localStorage.getItem('token');
         if (!token) {
           throw new Error('No token found. Please log in.');
         }
-
-        if (!userId) {
-          return; // throw new Error('User ID not found in token.');
+        if (!effectiveUserId) {
+          const decodedToken = jwtDecode(token);
+          effectiveUserId = decodedToken.userid;
+        }
+        if (!effectiveUserId) {
+          throw new Error('User ID not found in token.');
         }
 
-        const response = await axios.get(`http://localhost:4500/api/skills/profile/${userId}`, {
-          headers: {
-            Authorization: `${token}`,
+        const response = await axios.get(
+          `http://localhost:4500/api/skills/profile/${effectiveUserId}`,
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
           },
-        });
+        );
         // console.log('Profile Data:', response.data);
 
         const { data } = response;

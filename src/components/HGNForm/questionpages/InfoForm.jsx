@@ -164,7 +164,6 @@ function InfoForm() {
             pattern=".{2,}"
             title="Name must be at least 2 characters long"
             placeholder="Your First and Last Name"
-            disabled={!!(userProfile !== undefined || userProfile !== null)}
           />
           {showError && (
             <span className={`${styles.errorMessage}`}>
