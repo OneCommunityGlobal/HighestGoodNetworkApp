@@ -368,7 +368,7 @@ export const ENDPOINTS = {
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
   GET_TOOLS_RENTAL_COST_DATA: (projectIds, startDate, endDate) => {
-    let url = `${APIEndpoint}/bm/tools/cost-breakdown`;
+    let url = `${APIEndpoint}/bm/tools-rental/cost-breakdown`;
     const params = [];
     if (startDate) params.push(`startDate=${startDate}`);
     if (endDate) params.push(`endDate=${endDate}`);

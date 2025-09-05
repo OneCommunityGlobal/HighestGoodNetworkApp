@@ -24,7 +24,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 const ToolsRentalCostStackedBarChart = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState([]);
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,7 @@ const ToolsRentalCostStackedBarChart = () => {
       setError(null);
       try {
         const response = await axios.get(ENDPOINTS.GET_BM_PROJECTS);
-        setProjects(response.data);
+        setProjects(response.data.projects || response.data);
       } catch (err) {
         // Error logging should be replaced with proper logging service
         // eslint-disable-next-line no-console
@@ -53,18 +53,20 @@ const ToolsRentalCostStackedBarChart = () => {
   }, []);
 
   useEffect(() => {
-    const fetchToolsRentalCostDataWithFilters = async () => {
+    const fetchToolsRentalCostDataWithFilters = async (selectedProject, startDate, endDate) => {
       setLoading(true);
       setError(null);
 
       const formattedStart = startDate ? new Date(startDate).toISOString() : null;
       const formattedEnd = endDate ? new Date(endDate).toISOString() : null;
-      const projectIds = selectedProject.length > 0 ? selectedProject.join(',') : null;
+      const projectIds = selectedProject?.length > 0 ? selectedProject.join(',') : null;
       try {
         const url = ENDPOINTS.GET_TOOLS_RENTAL_COST_DATA(projectIds, formattedStart, formattedEnd);
         const responseData = await axios.get(url);
-        if (responseData && responseData.length > 0) {
-          setData(responseData);
+
+        if (responseData.data && responseData.data.length > 0) {
+          setData(responseData.data);
+          setError(null);
         } else {
           setData(emptyData);
           setError('No tool rental cost data found for this project.');
@@ -79,54 +81,39 @@ const ToolsRentalCostStackedBarChart = () => {
       }
     };
 
-    fetchToolsRentalCostDataWithFilters();
-  }, [selectedProject, startDate, endDate, projects]);
+    fetchToolsRentalCostDataWithFilters(selectedProject, startDate, endDate);
+  }, [selectedProject, startDate, endDate, dateRange]);
 
-  const projectOptions = projects.map(project => ({
-    value: project.projectId,
-    label: project.projectName,
-  }));
-
-  // Handle project selection change
-  const handleProjectChange = selectedOption => {
-    setSelectedProject(selectedOption);
-  };
-
-  // useEffect(() => {
-  //   if (!selectedProject) return;
-  //   const [startDate, endDate] = dateRange;
-
-  //   axios
-  //     .get("http://localhost:5000/api/tools/rental-cost-bar", {
-  //       params: {
-  //         projectId: selectedProject.value,
-  //         startDate,
-  //         endDate,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setChartData({
-  //         labels: res.data.labels,
-  //         datasets: [
-  //           {
-  //             label: "Owned Tools Cost",
-  //             data: res.data.owned,
-  //             backgroundColor: "rgba(54, 162, 235, 0.8)",
-  //           },
-  //           {
-  //             label: "Rented Tools Cost",
-  //             data: res.data.rented,
-  //             backgroundColor: "rgba(255, 99, 132, 0.8)",
-  //           },
-  //         ],
-  //       });
-  //     });
-  // }, [selectedProject, dateRange]);
+  const projectOptions = Array.isArray(projects)
+    ? projects.map(project => ({
+        value: project.projectId,
+        label: project.projectName,
+      }))
+    : [];
 
   // Format date for display
   const formatDate = date => date?.toISOString().split('T')[0];
   const dateRangeLabel =
     startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : '';
+
+  // Transform API response (data state) into chart.js structure
+  const chartData = {
+    labels: data.map(item => item.projectName),
+    datasets: [
+      {
+        label: 'Owned Tool Cost',
+        data: data.map(item => item.ownedToolsCost),
+        backgroundColor: 'rgba(9, 100, 210, 0.8)',
+        stack: 'Tools',
+      },
+      {
+        label: 'Rental Tool Cost',
+        data: data.map(item => item.rentedToolsCost),
+        backgroundColor: 'rgba(197, 9, 50, 0.8)',
+        stack: 'Tools',
+      },
+    ],
+  };
 
   // chartOptions.js
   const stackedBarOptions = {
@@ -136,9 +123,14 @@ const ToolsRentalCostStackedBarChart = () => {
         display: true,
         text: 'How Much of Tools Costs Are Due to Rentals?',
         font: { size: 18 },
+        color: darkMode ? '#FFFFFF' : '#000000',
       },
-      tooltip: { enabled: true },
-      legend: { display: true, position: 'top' },
+      tooltip: { enabled: true, color: darkMode ? '#FFFFFF' : '#000000' },
+      legend: {
+        display: true,
+        position: 'top',
+        labels: { color: darkMode ? '#FFFFFF' : '#000000' },
+      },
       datalabels: {
         display: true,
         color: '#fff',
@@ -146,8 +138,17 @@ const ToolsRentalCostStackedBarChart = () => {
       },
     },
     scales: {
-      x: { stacked: true, title: { display: true, text: 'Projects' } },
-      y: { stacked: true, title: { display: true, text: 'Total Cost' }, beginAtZero: true },
+      x: {
+        stacked: true,
+        title: { display: true, text: 'Projects', color: darkMode ? '#FFFFFF' : '#000000' },
+        ticks: { color: darkMode ? '#FFFFFF' : '#000000' },
+      },
+      y: {
+        stacked: true,
+        title: { display: true, text: 'Total Cost', color: darkMode ? '#FFFFFF' : '#000000' },
+        beginAtZero: true,
+        ticks: { color: darkMode ? '#FFFFFF' : '#000000' },
+      },
     },
   };
 
@@ -165,8 +166,6 @@ const ToolsRentalCostStackedBarChart = () => {
               endDate={endDate}
               onChange={update => {
                 setDateRange(update);
-                const [newStartDate, newEndDate] = update;
-                fetchIssuesWithFilters(selectedProjects, newStartDate, newEndDate, tagFilter);
               }}
               placeholderText={dateRangeLabel || 'Filter by Date Range'}
               className={`date-picker-input form-control ${darkMode ? 'dark-theme' : ''}`}
@@ -183,8 +182,8 @@ const ToolsRentalCostStackedBarChart = () => {
             classNamePrefix="custom-select"
             className="w-100"
             options={projectOptions}
-            value={projectOptions.filter(option => selectedProject.includes(option.value))}
-            onChange={opts => handleProjectChange(opts.map(o => o.value))}
+            value={projectOptions.filter(option => selectedProject?.includes(option.label))}
+            onChange={opts => setSelectedProject(opts.map(o => o.label))}
             placeholder="Filter by Projects"
           />
         </Col>
