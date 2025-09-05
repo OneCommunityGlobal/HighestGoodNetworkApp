@@ -176,7 +176,6 @@ function RescheduleEvent({ activity }) {
                   <h3 id="reschedule-title" className={styles.modalTitle}>
                     Reschedule this event
                   </h3>
-                  <div className="muted">Add up to 5 date+time options participants can vote on.</div>
                 </div>
 
                 <div className={styles.modalBody}>
