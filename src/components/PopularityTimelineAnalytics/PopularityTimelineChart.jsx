@@ -16,12 +16,12 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
+import { useSelector } from 'react-redux'; // ✅ get darkMode from store
 import './PopularityTimelineChart.css';
 
 const fetchPopularityData = async ({ range, selectedRoles, startDate, endDate }) => {
   const roles = selectedRoles.map(role => role.value);
 
-  // Format dates as YYYY-MM
   const start = startDate
     ? `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`
     : null;
@@ -39,7 +39,8 @@ const fetchAllRoles = async () => {
 };
 
 const PopularityTimelineChart = () => {
-  // Generate unique IDs for accessibility
+  const darkMode = useSelector(state => state.theme.darkMode); // ✅ global darkMode
+
   const timeRangeId = useId();
   const roleFilterId = useId();
   const startDateId = useId();
@@ -52,7 +53,6 @@ const PopularityTimelineChart = () => {
   const [endDate, setEndDate] = useState(null);
   const [dateRangeOption, setDateRangeOption] = useState('12months');
 
-  // Fetch all roles
   const { data: rolesData } = useQuery({
     queryKey: ['allRoles'],
     queryFn: fetchAllRoles,
@@ -62,14 +62,12 @@ const PopularityTimelineChart = () => {
     if (rolesData) setAllRoles(rolesData);
   }, [rolesData]);
 
-  // Fetch chart data
   const { data: chartData, isLoading, error } = useQuery({
     queryKey: ['popularityData', range, selectedRoles, startDate, endDate],
     queryFn: () => fetchPopularityData({ range, selectedRoles, startDate, endDate }),
     keepPreviousData: true,
   });
 
-  // Process data for chart
   const parseMonthString = monthStr => {
     const [monthName, year] = monthStr.split(' ');
     const monthIndex = [
@@ -91,11 +89,9 @@ const PopularityTimelineChart = () => {
 
   const processedData = React.useMemo(() => {
     if (!chartData || chartData.length === 0) return [];
-
     return chartData
       .map(item => ({
         ...item,
-        // Convert month to Date object for sorting
         date: item.timestamp ? new Date(item.timestamp) : parseMonthString(item.month),
       }))
       .sort((a, b) => a.date - b.date);
@@ -110,9 +106,12 @@ const PopularityTimelineChart = () => {
   };
 
   return (
-    <div className="pt-container">
-      <h2 className="pt-title">Hits and Applications by Time</h2>
+    <div className={`pt-container ${darkMode ? 'dark-theme' : ''}`}>
+      <div className="pt-header">
+        <h2 className="pt-title">Hits and Applications by Time</h2>
+      </div>
 
+      {/* Filters */}
       <div className="pt-filters">
         <div className="pt-filter-group">
           <label className="pt-label" htmlFor={timeRangeId}>
@@ -140,6 +139,7 @@ const PopularityTimelineChart = () => {
           <div className="pt-filter-group">
             <div className="pt-label">Date Range</div>
             <div className="pt-date-pickers">
+              {/* Start Date */}
               <div>
                 <label className="pt-sublabel" htmlFor={startDateId}>
                   Start Month
@@ -162,6 +162,7 @@ const PopularityTimelineChart = () => {
                   monthClassName={() => 'pt-datepicker-month'}
                 />
               </div>
+              {/* End Date */}
               <div>
                 <label className="pt-sublabel" htmlFor={endDateId}>
                   End Month
@@ -189,6 +190,7 @@ const PopularityTimelineChart = () => {
           </div>
         )}
 
+        {/* Role Filter */}
         <div className="pt-filter-group pt-role-filter">
           <label className="pt-label" htmlFor={roleFilterId}>
             Filter by Role
@@ -207,12 +209,36 @@ const PopularityTimelineChart = () => {
                 ...base,
                 minHeight: '38px',
                 borderRadius: '4px',
-                borderColor: '#ddd',
+                borderColor: darkMode ? '#555' : '#ddd',
+                backgroundColor: darkMode ? '#333' : 'white',
+                color: darkMode ? '#fff' : '#2c3e50',
               }),
               menu: base => ({
                 ...base,
                 zIndex: 10,
+                backgroundColor: darkMode ? '#333' : 'white',
               }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused
+                  ? darkMode
+                    ? '#555'
+                    : '#f0f0f0'
+                  : darkMode
+                  ? '#333'
+                  : 'white',
+                color: darkMode ? '#fff' : '#2c3e50',
+              }),
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#555' : '#e9ecef',
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#2c3e50',
+              }),
+              singleValue: base => ({ ...base, color: darkMode ? '#fff' : '#2c3e50' }),
+              input: base => ({ ...base, color: darkMode ? '#fff' : '#2c3e50' }),
             }}
           />
         </div>
@@ -222,6 +248,7 @@ const PopularityTimelineChart = () => {
         </button>
       </div>
 
+      {/* Chart */}
       {isLoading ? (
         <div className="pt-loading">Loading data...</div>
       ) : error ? (
@@ -230,14 +257,15 @@ const PopularityTimelineChart = () => {
         <div className="pt-chart-wrapper">
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={processedData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#f0f0f0'} />
               <XAxis
                 dataKey="month"
                 label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
                 angle={-45}
                 textAnchor="end"
                 height={70}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
+                stroke={darkMode ? '#ccc' : '#333'}
               />
               <YAxis
                 label={{
@@ -246,8 +274,10 @@ const PopularityTimelineChart = () => {
                   position: 'insideLeft',
                   style: { textAnchor: 'middle' },
                   offset: -10,
+                  fill: darkMode ? '#ccc' : '#333',
                 }}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
+                stroke={darkMode ? '#ccc' : '#333'}
               />
               <Tooltip
                 formatter={(value, name) => [
@@ -257,16 +287,27 @@ const PopularityTimelineChart = () => {
                   name,
                 ]}
                 labelFormatter={label => <strong>{label}</strong>}
-                contentStyle={{ borderRadius: '6px', border: '1px solid #e0e0e0' }}
+                contentStyle={{
+                  borderRadius: '6px',
+                  border: '1px solid #e0e0e0',
+                  backgroundColor: darkMode ? '#333' : '#fff',
+                  color: darkMode ? '#fff' : '#333',
+                }}
               />
-              <Legend verticalAlign="top" height={36} iconType="circle" iconSize={10} />
+              <Legend
+                verticalAlign="top"
+                height={36}
+                iconType="circle"
+                iconSize={10}
+                wrapperStyle={{ color: darkMode ? '#ccc' : '#333' }}
+              />
               <Line
                 type="monotone"
                 dataKey="hitsCount"
                 name="Hits"
                 stroke="#3366cc"
                 strokeWidth={2}
-                dot={{ r: 5, stroke: '#3366cc', strokeWidth: 2, fill: '#fff' }}
+                dot={{ r: 5, stroke: '#3366cc', strokeWidth: 2, fill: darkMode ? '#333' : '#fff' }}
                 activeDot={{ r: 7 }}
               >
                 <LabelList
@@ -282,7 +323,7 @@ const PopularityTimelineChart = () => {
                 name="Applications"
                 stroke="#109618"
                 strokeWidth={2}
-                dot={{ r: 5, stroke: '#109618', strokeWidth: 2, fill: '#fff' }}
+                dot={{ r: 5, stroke: '#109618', strokeWidth: 2, fill: darkMode ? '#333' : '#fff' }}
                 activeDot={{ r: 7 }}
               >
                 <LabelList
