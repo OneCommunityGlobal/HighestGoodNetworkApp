@@ -12,8 +12,7 @@ import {
   findProjectMembers,
   getAllUserProfiles,
   assignProject,
- foundUsers } from '~/actions/projectMembers';
- 
+  foundUsers } from '~/actions/projectMembers';
 import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
@@ -65,12 +64,21 @@ const Members = props => {
 
   useEffect(() => {
     if (!isLoading) {
-      setMembersList(props.state.projectMembers.members);
+      setMembersList(props.state.projectMembers.members.filter(user => !showActiveMembersOnly || user.isActive));
     }
   }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
+
+  useEffect(() => {
+    setMembersList(props.state.projectMembers.members
+      .filter(user => !showActiveMembersOnly || user.isActive))
+  }, [showActiveMembersOnly])
+
+  useEffect(() => {
+    handleFind()
+  }, [membersList])
 
   // avoid re-filtering the netire list on every render
   // const displayedMembers = useMemo(
@@ -90,10 +98,9 @@ const Members = props => {
     const currentValue = event.target.value;
     setQuery(currentValue);
     setSearchText(currentValue);
-  
+
     if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
 
-  
     const timeoutId = setTimeout(() => {
       // Only call findUserProfiles if there's actual search text
       if (currentValue && currentValue.trim() !== '') {
@@ -103,11 +110,11 @@ const Members = props => {
         setShowFindUserList(false);
       }
     }, 300);
-  
     setLastTimeoutId(timeoutId);
   };
+
   const handleFind = () => {
-  const q = (searchText || '').trim();
+    const q = (searchText || '').trim();
     if (!q) {
       setShowFindUserList(false);
       return;
@@ -118,7 +125,7 @@ const Members = props => {
 
   return (
     <React.Fragment>
-      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
         <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
           <nav aria-label="breadcrumb" className="w-100">
             <div
@@ -129,10 +136,9 @@ const Members = props => {
                 margin: '0 0 16px',
                 padding: '12px 16px',
                 position: 'relative',
-                flexWrap: 'wrap', 
+                flexWrap: 'wrap',
               }}
             >
-            
               <div
                 style={{
                   display: 'flex',
@@ -151,14 +157,13 @@ const Members = props => {
               </div>
 
               <div
-                
                 style={{
                   textAlign: 'center',
                   fontWeight: 'bold',
                   fontSize: '1.5rem',
-                  wordBreak: 'break-word', 
-                  flexGrow: 1, 
-                  whiteSpace: 'normal', 
+                  wordBreak: 'break-word',
+                  flexGrow: 1,
+                  whiteSpace: 'normal',
                 }}
               >
                 {projectName}
@@ -187,18 +192,18 @@ const Members = props => {
                     handleFind();
                   }
                 }}
-                // disabled={showActiveMembersOnly}
+              // disabled={showActiveMembersOnly}
               />
               <div className="input-group-append">
                 <button
-                className="btn btn-primary"
-                type="button"
-                disabled={!searchText.trim()}   // enabled only when there’s something to find
-                onClick={handleFind}
+                  className="btn btn-primary"
+                  type="button"
+                  disabled={!searchText.trim()}   // enabled only when there’s something to find
+                  onClick={handleFind}
                 >
-                  Find 
-                  </button>
-                  <button
+                  Find
+                </button>
+                <button
                   className="btn btn-outline-primary"
                   type="button"
                   onClick={() => {
@@ -206,10 +211,10 @@ const Members = props => {
                     props.getAllUserProfiles();
                     setShowFindUserList(true);
                   }}
-                  >
+                >
                   All
-                  </button>
-                  <button
+                </button>
+                <button
                   className="btn btn-outline-danger"
                   type="button"
                   onClick={() => {
@@ -220,17 +225,13 @@ const Members = props => {
                     // clear previous suggestions in Redux (you already imported foundUsers)
                     if (props.dispatch) props.dispatch(foundUsers([]));
                   }}
-                  >
-                  
-                  
+                >
                   Cancel
                 </button>
               </div>
-              
+
             </div>
           ) : null}
-           
-
 
           {showFindUserList && props.state.projectMembers.foundUsers.length > 0 ? (
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
@@ -251,25 +252,27 @@ const Members = props => {
                         style={darkMode ? {} : boxStyle}
                       >
                         All
-                        </button>
+                      </button>
                     </th>
                   ) : null}
                 </tr>
               </thead>
               <tbody>
-                {props.state.projectMembers.foundUsers.map((user, i) => (
-                  <FoundUser
-                    index={i}
-                    key={user._id}
-                    projectId={projectId}
-                    uid={user._id}
-                    email={user.email}
-                    firstName={user.firstName}
-                    lastName={user.lastName}
-                    assigned={user.assigned}
-                    darkMode={darkMode}
-                  />
-                ))}
+                {props.state.projectMembers.foundUsers
+                  .filter(user => !showActiveMembersOnly || user.isActive)
+                  .map((user, i) => (
+                    <FoundUser
+                      index={i}
+                      key={user._id}
+                      projectId={projectId}
+                      uid={user._id}
+                      email={user.email}
+                      firstName={user.firstName}
+                      lastName={user.lastName}
+                      assigned={user.assigned}
+                      darkMode={darkMode}
+                    />
+                  ))}
               </tbody>
             </table>
           ) : null}

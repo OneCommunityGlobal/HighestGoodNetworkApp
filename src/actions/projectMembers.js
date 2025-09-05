@@ -160,7 +160,7 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
               lastName,
             }),
           );
-          dispatch(removeFoundUser(userId));
+          // dispatch(removeFoundUser(userId));
         } else {
           dispatch(deleteMember(userId));
         }
@@ -192,8 +192,8 @@ export const findProjectMembers = (_projectId, query) => {
       );
 
       const list = Array.isArray(data) ? data
-                 : Array.isArray(data?.users) ? data.users
-                 : [];
+        : Array.isArray(data?.users) ? data.users
+          : [];
 
       const assigned = new Set(getState().projectMembers.members.map(m => m._id));
       const users = list.map(u => ({ ...u, assigned: assigned.has(u._id) }));
