@@ -1,9 +1,465 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, useTransition, useId } from 'react';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
+import { createPortal } from 'react-dom';
+
+/* --------------------------- tiny utilities --------------------------- */
+
+const useDebounce = (value, ms = 300) => {
+  const [v, setV] = useState(value);
+  useEffect(() => {
+    const id = setTimeout(() => setV(value), ms);
+    return () => clearTimeout(id);
+  }, [value, ms]);
+  return v;
+};
+
+// super-light cache keyed by url; invalidated on page/category change
+const responseCache = new Map();
+
+/* --------------------------- subcomponents --------------------------- */
+
+function SearchBar({ query, onChange, onSubmit, placeholder = 'Search by title...' }) {
+  return (
+    <form className="search-form" onSubmit={onSubmit} role="search" aria-label="Job search">
+      <input
+        type="text"
+        placeholder={placeholder}
+        value={query}
+        onChange={e => onChange(e.target.value)}
+        aria-label="Search by job title"
+      />
+      <button className="btn btn-secondary" type="submit">
+        Go
+      </button>
+    </form>
+  );
+}
+
+function JobList({ jobAds, onViewDetails, onApply }) {
+  if (!jobAds?.length) {
+    return (
+      <div className="no-results" role="status" aria-live="polite">
+        <h2>No job ads found.</h2>
+      </div>
+    );
+  }
+
+  return (
+    <div className="job-list">
+      {jobAds.map(ad => (
+        <div key={ad._id} className="job-ad">
+          <img
+            src={`/api/placeholder/640/480?text=${encodeURIComponent(
+              ad.category || 'Job Opening',
+            )}`}
+            onError={e => {
+              e.target.onerror = null;
+              if (ad.category === 'Engineering') {
+                e.target.src =
+                  'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
+              } else if (ad.category === 'Marketing') {
+                e.target.src =
+                  'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-1.png';
+              } else if (ad.category === 'Design') {
+                e.target.src = 'https://img.icons8.com/arcade/64/design.png';
+              } else if (ad.category === 'Finance') {
+                e.target.src = 'https://img.icons8.com/cotton/64/merchant-account--v2.png';
+              } else {
+                e.target.src = 'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
+              }
+            }}
+            alt={ad.title || 'Job Position'}
+            loading="lazy"
+          />
+          <a
+            href={`https://www.onecommunityglobal.org/collaboration/seeking-${(
+              ad.category || ''
+            ).toLowerCase()}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <h3>
+              {ad.title} - {ad.category}
+            </h3>
+          </a>
+
+          <div className="job-card-actions">
+            <button className="btn btn-secondary" type="button" onClick={() => onViewDetails(ad)}>
+              View Details
+            </button>
+            <button className="btn btn-primary" type="button" onClick={() => onApply(ad)}>
+              Apply
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Pagination({ totalPages, currentPage, onChange }) {
+  if (!totalPages || totalPages < 2) return null;
+  return (
+    <div className="pagination" role="navigation" aria-label="Pagination">
+      {Array.from({ length: totalPages }, (_, i) => {
+        const page = i + 1;
+        return (
+          <button
+            type="button"
+            key={page}
+            onClick={() => onChange(page)}
+            disabled={currentPage === page}
+            aria-current={currentPage === page ? 'page' : undefined}
+          >
+            {page}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+const FORM_HEADER_ROWS = [
+  [
+    { name: 'name', placeholder: 'name', type: 'text' },
+    { name: 'email', placeholder: 'email', type: 'email' },
+    { name: 'company', placeholder: 'Company & Position', type: 'text' },
+  ],
+  [
+    { name: 'location', placeholder: 'Location & Timezone', type: 'text' },
+    { name: 'phone', placeholder: 'Phone Number', type: 'text' },
+    { name: 'website', placeholder: 'Primary Website/ Social', type: 'text' },
+  ],
+];
+
+const QUESTIONS = [
+  'How did you hear about One Community?',
+  'Are you applying as an individual or organization?',
+  'Why are you wanting to volunteer/work/collaborate with us?',
+  'What skills/experience do you possess?',
+  'How many volunteer hours per week are you willing to commit to?',
+  'For how long do you wish to volunteer with us?',
+];
+
+/* ------------------------ Rich “Learn More” modal ------------------------ */
+/** Inline styles are provided as a fallback to guarantee visibility even if CSS is missing/overridden. */
+function DescModal({ ad, onClose }) {
+  if (!ad) return null;
+
+  const html = ad.longHtml || ad.html;
+
+  const outerStyle = {
+    position: 'fixed',
+    inset: 0,
+    display: 'grid',
+    placeItems: 'center',
+    zIndex: 9999,
+  };
+  const backdropStyle = {
+    position: 'absolute',
+    inset: 0,
+    background: 'rgba(0,0,0,.45)',
+  };
+  const cardStyle = {
+    position: 'relative',
+    zIndex: 1,
+    width: 'min(92vw, 1100px)',
+    maxHeight: '80vh',
+    display: 'flex',
+    flexDirection: 'column',
+    background: 'var(--surface, #fff)',
+    color: 'var(--text, #111)',
+    border: '1px solid var(--ring, #e5e7eb)',
+    borderRadius: 'var(--radius, 12px)',
+    boxShadow: 'var(--shadow, 0 6px 16px rgba(0,0,0,.18))',
+    padding: 'var(--space-5, 20px)',
+  };
+  const bodyStyle = { flex: 1, overflow: 'auto', paddingRight: 8 };
+
+  const Section = ({ title, items }) =>
+    items?.length ? (
+      <section>
+        <h4>{title}</h4>
+        <ul>
+          {items.map((it, idx) => (
+            <li key={idx}>{it}</li>
+          ))}
+        </ul>
+      </section>
+    ) : null;
+
+  const onBackdropKey = e => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+      e.preventDefault();
+      onClose();
+    }
+  };
+
+  return (
+    <div
+      className="modal"
+      style={outerStyle}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
+      {/* Backdrop is operable via keyboard */}
+      <div
+        className="modal__backdrop"
+        style={backdropStyle}
+        onClick={onClose}
+        role="button"
+        tabIndex={0}
+        aria-label="Close dialog"
+        onKeyDown={onBackdropKey}
+      />
+      <div
+        id="job-learnmore-modal"
+        className="modal__card modal__card--xl"
+        style={cardStyle}
+        tabIndex={-1}
+        role="document"
+      >
+        <header className="modal__header modal__header--center">
+          <h2 id="modal-title">{ad.title || 'Position'}</h2>
+        </header>
+
+        <div className="modal__body modal__body--scroll" style={bodyStyle}>
+          {html ? (
+            <article className="modal__article" dangerouslySetInnerHTML={{ __html: html }} />
+          ) : (
+            <article className="modal__article">
+              {ad.description && <p>{ad.description}</p>}
+              <Section title="React.js Position Requirements:" items={ad.requirements} />
+              <Section title="Additional Beneficial Qualifications:" items={ad.qualifications} />
+              {Array.isArray(ad.images) && ad.images.length > 0 && (
+                <div className="modal__image-grid">
+                  {ad.images.map((src, i) => (
+                    <img key={i} src={src} alt={`${ad.title} visual ${i + 1}`} />
+                  ))}
+                </div>
+              )}
+            </article>
+          )}
+        </div>
+
+        <footer className="modal__footer modal__footer--space">
+          <button className="btn btn-primary" type="button" onClick={onClose}>
+            Got it
+          </button>
+          <button className="modal__close-fab" type="button" onClick={onClose} aria-label="Close">
+            X
+          </button>
+        </footer>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------- ModalMount (portal) ------------------------- */
+function ModalMount({ show, ad, onClose }) {
+  useEffect(() => {
+    if (!show) return;
+    const t = setTimeout(() => {
+      const el = document.getElementById('job-learnmore-modal');
+      el?.focus();
+    }, 0);
+    return () => clearTimeout(t);
+  }, [show]);
+
+  if (!show || !ad) return null;
+  return createPortal(<DescModal ad={ad} onClose={onClose} />, document.body);
+}
+
+/* ------------------------------ Application form ------------------------------ */
+
+function ApplicationForm({ chosenAd, onBack, onOpenModal }) {
+  const idPrefix = useId();
+
+  const isSoftwareEngineer =
+    /\bsoftware\s*engineer\b/i.test(chosenAd.title || '') ||
+    /\b(frontend|full[-\s]?stack|mern)\b/i.test(chosenAd.title || '') ||
+    /\bengineering?\b/i.test(chosenAd.category || '');
+
+  return (
+    <section className="apply-card" aria-labelledby="apply-card-title">
+      <div className="apply-card__titlebar">
+        <h2 id="apply-card-title" className="apply-card__title">
+          FORM FOR {chosenAd.title?.toUpperCase()} POSITION
+        </h2>
+        <button className="apply-card__link" type="button" onClick={onOpenModal}>
+          click to know more about this position
+        </button>
+      </div>
+
+      {FORM_HEADER_ROWS.map((row, idx) => (
+        <div key={idx} className="grid grid--3">
+          {row.map(f => (
+            <input
+              key={f.name}
+              className="input"
+              type={f.type}
+              placeholder={f.placeholder}
+              aria-label={f.placeholder}
+            />
+          ))}
+        </div>
+      ))}
+
+      <ol className="qa-list">
+        {QUESTIONS.map((q, i) => {
+          const qId = `${idPrefix}-q-${i}`;
+          return (
+            <li key={i}>
+              <label htmlFor={qId}>{q}</label>
+              <input
+                id={qId}
+                className="input"
+                type="text"
+                placeholder="type your response here"
+                aria-label={q}
+              />
+            </li>
+          );
+        })}
+
+        <li className="qa-row qa-row--inline">
+          <div>
+            <label htmlFor={`${idPrefix}-desired-start`}>What is your desired start date?</label>
+            <input
+              id={`${idPrefix}-desired-start`}
+              className="input"
+              type="date"
+              placeholder="mm/dd/yy"
+              aria-label="Desired start date"
+            />
+          </div>
+          <div>
+            <label htmlFor={`${idPrefix}-doc-hours`}>
+              Will your volunteer time require documentation of your hours?
+            </label>
+            <select
+              id={`${idPrefix}-doc-hours`}
+              className="input"
+              aria-label="Documentation of hours"
+            >
+              <option value="">Select an appropriate option</option>
+              <option>No, I’m volunteering because I want to</option>
+              <option>Yes, I’m on OPT and have my EAD Card</option>
+              <option>Yes, I’m on OPT but don’t yet have my EAD Card</option>
+              <option>Yes, I’m looking to use this for CPT, Co-Op, or similar</option>
+              <option>STEM OPT: Sorry, we are 100% volunteer and don’t qualify</option>
+            </select>
+          </div>
+        </li>
+
+        {isSoftwareEngineer && (
+          <>
+            <li>
+              <label htmlFor={`${idPrefix}-fe-rating`}>
+                On a scale of 1-10, ten being the highest, how would you rate your frontend skills?
+                Please explain, including how long you have worked with React.js and what got you
+                started/interested in React.js.
+              </label>
+              <div className="qa-row qa-row--inline">
+                <input
+                  id={`${idPrefix}-fe-rating`}
+                  className="input input--short"
+                  type="number"
+                  min="1"
+                  max="10"
+                  defaultValue="1"
+                  aria-label="Frontend skill rating from 1 to 10"
+                />
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="type your response here"
+                  aria-label="Frontend experience explanation"
+                />
+              </div>
+            </li>
+
+            <li>
+              <label htmlFor={`${idPrefix}-be-rating`}>
+                On a scale of 1-10, ten being the highest, how would you rate your backend skills?
+                Please explain.
+              </label>
+              <div className="qa-row qa-row--inline">
+                <input
+                  id={`${idPrefix}-be-rating`}
+                  className="input input--short"
+                  type="number"
+                  min="1"
+                  max="10"
+                  defaultValue="1"
+                  aria-label="Backend skill rating from 1 to 10"
+                />
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="type your response here"
+                  aria-label="Backend experience explanation"
+                />
+              </div>
+            </li>
+
+            <li>
+              <label htmlFor={`${idPrefix}-pr-review`}>
+                Do you have PR review experience? (If yes, please explain)
+              </label>
+              <input
+                id={`${idPrefix}-pr-review`}
+                className="input"
+                type="text"
+                placeholder="type your response here"
+                aria-label="PR review experience"
+              />
+            </li>
+          </>
+        )}
+      </ol>
+
+      <div className="apply-card__actions">
+        <button className="btn btn-secondary btn--ghost" type="button" onClick={onBack}>
+          Back
+        </button>
+        <button className="btn btn-primary" type="button">
+          Proceed to submit with details
+        </button>
+      </div>
+
+      <div className="learn-more">
+        <button
+          type="button"
+          className="learn-more__link"
+          onClick={e => {
+            e.preventDefault();
+            e.stopPropagation();
+            onOpenModal();
+          }}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onOpenModal();
+            }
+          }}
+          aria-haspopup="dialog"
+          aria-controls="job-learnmore-modal"
+          aria-label={`Learn more about the ${chosenAd.title} position`}
+        >
+          Learn more about the {chosenAd.title} position
+        </button>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------ main ------------------------------ */
 
 function Collaboration() {
   const [query, setQuery] = useState('');
@@ -19,7 +475,15 @@ function Collaboration() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState(null);
 
+  const [chosenAd, setChosenAd] = useState(null);
+  const [showDescModal, setShowDescModal] = useState(false);
+  const [applyDropValue, setApplyDropValue] = useState('');
+
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [isPending, startTransition] = useTransition(); // eslint-disable-line no-unused-vars
+
+  // eslint-disable-next-line no-unused-vars
+  const debouncedQuery = useDebounce(query, 250); // kept for future live-search wiring
 
   useEffect(() => {
     const tooltipDismissed = localStorage.getItem('tooltipDismissed');
@@ -29,65 +493,97 @@ function Collaboration() {
     }
   }, []);
 
+  const controllerRef = useRef(null);
+
   const fetchJobAds = async (givenQuery, givenCategory) => {
     const adsPerPage = 20;
+    const url = `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${givenQuery}&category=${givenCategory}`;
+
+    if (responseCache.has(url)) {
+      const cached = responseCache.get(url);
+      setJobAds(cached.jobs);
+      setTotalPages(cached.pagination.totalPages);
+      return;
+    }
+
+    controllerRef.current?.abort?.();
+    const ctrl = new AbortController();
+    controllerRef.current = ctrl;
 
     try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${givenQuery}&category=${givenCategory}`,
-        {
-          method: 'GET',
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch jobs: ${response.statusText}`);
-      }
-
-      const data = await response.json();
+      const res = await fetch(url, { method: 'GET', signal: ctrl.signal });
+      if (!res.ok) throw new Error(`Failed to fetch jobs: ${res.statusText}`);
+      const data = await res.json();
+      responseCache.set(url, data);
       setJobAds(data.jobs);
       setTotalPages(data.pagination.totalPages);
-    } catch (error) {
-      toast.error('Error fetching jobs');
+    } catch (err) {
+      if (err.name !== 'AbortError') toast.error('Error fetching jobs');
     }
   };
 
   const fetchCategories = async () => {
+    const url = `${ApiEndpoint}/jobs/categories`;
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch categories: ${response.statusText}`);
+      if (responseCache.has(url)) {
+        const data = responseCache.get(url);
+        setCategories(data.categories.sort((a, b) => a.localeCompare(b)));
+        return;
       }
-
-      const data = await response.json();
-      const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
-      setCategories(sortedCategories);
+      const res = await fetch(url, { method: 'GET' });
+      if (!res.ok) throw new Error(`Failed to fetch categories: ${res.statusText}`);
+      const data = await res.json();
+      responseCache.set(url, data);
+      setCategories((data.categories || []).sort((a, b) => a.localeCompare(b)));
     } catch (error) {
       toast.error('Error fetching categories');
     }
   };
 
-  const handleSearch = event => {
-    setQuery(event.target.value);
+  useEffect(() => {
+    fetchJobAds(searchTerm || '', selectedCategory || '');
+    fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
+
+  useEffect(() => () => controllerRef.current?.abort?.(), []);
+
+  const handleSearchInput = val => {
+    setQuery(val);
     if (!selectedCategory && !localStorage.getItem('tooltipDismissed')) {
       setTooltipPosition('category');
       setShowTooltip(true);
     }
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
+  const normalize = s => (s || '').trim().toLowerCase();
+
+  const findAdByExactTitle = title => {
+    const t = normalize(title);
+    if (!t) return null;
+    return jobAds.find(ad => normalize(ad?.title) === t) || null;
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    const exact = findAdByExactTitle(query);
+    if (exact) {
+      setChosenAd(exact);
+      setShowSearchResults(false);
+      setSummaries(null);
+      return;
+    }
     setSearchTerm(query);
     setSelectedCategory(category);
     setShowSearchResults(true);
     setSummaries(null);
     setCurrentPage(1);
+    responseCache.clear();
     fetchJobAds(query, category);
   };
 
-  const handleCategoryChange = event => {
-    const selectedValue = event.target.value;
-    setCategory(selectedValue);
+  const handleCategoryChange = val => {
+    setCategory(val);
     if (!searchTerm && !localStorage.getItem('tooltipDismissed')) {
       setTooltipPosition('search');
       setShowTooltip(true);
@@ -97,29 +593,28 @@ function Collaboration() {
   const handleRemoveQuery = () => {
     setQuery('');
     setSearchTerm('');
+    responseCache.clear();
     fetchJobAds('', category);
   };
 
   const handleRemoveCategory = () => {
     setCategory('');
     setSelectedCategory('');
+    responseCache.clear();
     fetchJobAds(query, '');
   };
 
   const handleShowSummaries = async () => {
+    const url = `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`;
     try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
-        {
-          method: 'GET',
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch summaries: ${response.statusText}`);
+      if (responseCache.has(url)) {
+        setSummaries(responseCache.get(url));
+        return;
       }
-
-      const data = await response.json();
+      const response = await fetch(url, { method: 'GET' });
+      if (!response.ok) throw new Error(`Failed to fetch summaries: ${response.statusText}`);
+      const data = await response.json(); // fixed
+      responseCache.set(url, data);
       setSummaries(data);
     } catch (error) {
       toast.error('Error fetching summaries');
@@ -130,15 +625,63 @@ function Collaboration() {
     setShowTooltip(false);
     localStorage.setItem('tooltipDismissed', 'true');
   };
+  const dismissSearchTooltip = () => setTooltipPosition('category');
 
-  const dismissSearchTooltip = () => {
-    setTooltipPosition('category');
+  const applyOptions = useMemo(() => {
+    return (jobAds || []).map(ad => ({ value: ad._id, label: ad.title || 'Untitled' }));
+  }, [jobAds]);
+
+  const onApplyChange = id => {
+    setApplyDropValue(id);
+    const ad = jobAds.find(j => j._id === id);
+    if (ad) {
+      setChosenAd(ad);
+      setShowSearchResults(false);
+      setSummaries(null);
+    }
   };
 
+  const onViewDetails = ad => {
+    setChosenAd(ad);
+    setShowDescModal(true);
+  };
+
+  const onApply = ad => {
+    startTransition(() => {
+      setChosenAd(ad);
+      setShowSearchResults(false);
+      setSummaries(null);
+    });
+  };
+
+  const exitApplicationForm = () => {
+    setChosenAd(null);
+  };
+
+  // Keep scroll lock & Escape handling centralized here
   useEffect(() => {
-    fetchJobAds(query, category);
-    fetchCategories();
-  }, [currentPage]); // Re-fetch job ads when page or category changes
+    const previousOverflow = document.body.style.overflow;
+    if (showDescModal) document.body.style.overflow = 'hidden';
+    else document.body.style.overflow = previousOverflow || '';
+    const onKeyDown = e => {
+      if (e.key === 'Escape' && showDescModal) setShowDescModal(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow || '';
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [showDescModal]);
+
+  // SAFER open: only open if there’s a selected ad
+  const openModalSafe = () => {
+    if (chosenAd) setShowDescModal(true);
+  };
+
+  // Pre-construct the portal; will render outside the chosenAd conditional
+  const ModalPortal = (
+    <ModalMount show={showDescModal} ad={chosenAd} onClose={() => setShowDescModal(false)} />
+  );
 
   if (summaries) {
     return (
@@ -147,25 +690,21 @@ function Collaboration() {
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
+
         <div className="user-collaboration-container">
-          <nav className="job-navbar">
+          <nav className="job-navbar job-navbar--hero" aria-label="Job search bar">
             <div className="job-navbar-left">
-              <form className="search-form">
-                <input
-                  type="text"
-                  placeholder="Search by title..."
-                  value={query}
-                  onChange={handleSearch}
-                />
-                <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
-                  Go
-                </button>
-              </form>
+              <SearchBar
+                query={query}
+                onChange={handleSearchInput}
+                onSubmit={handleSubmit}
+                placeholder="Enter Job Title"
+              />
               {showTooltip && tooltipPosition === 'search' && (
                 <div className="job-tooltip">
                   <p>Use the search bar to refine your search further!</p>
@@ -181,28 +720,53 @@ function Collaboration() {
             </div>
 
             <div className="job-navbar-right">
-              <select className="job-select" value={category} onChange={handleCategoryChange}>
-                <option value="">Select from Categories</option>
-                {categories.map(specificCategory => (
-                  <option key={specificCategory} value={specificCategory}>
-                    {specificCategory}
-                  </option>
-                ))}
-              </select>
-              {showTooltip && tooltipPosition === 'category' && (
-                <div className="job-tooltip category-tooltip">
-                  <p>Use the categories to refine your search further!</p>
-                  <button
-                    type="button"
-                    className="job-tooltip-dismiss"
-                    onClick={dismissCategoryTooltip}
-                  >
-                    Got it
-                  </button>
-                </div>
+              {applyOptions.length > 0 && (
+                <select
+                  className="job-select apply-select hero-apply"
+                  value={applyDropValue}
+                  onChange={e => onApplyChange(e.target.value)}
+                  aria-label="Apply to a position"
+                >
+                  <option value="">Software Engineer</option>
+                  {applyOptions.map(opt => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               )}
             </div>
           </nav>
+
+          <div className="category-inline">
+            <select
+              className="job-select"
+              value={category}
+              onChange={e => handleCategoryChange(e.target.value)}
+              aria-label="Filter by category"
+            >
+              <option value="">Select from Categories</option>
+              {categories.map(cat => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+
+            {showTooltip && tooltipPosition === 'category' && (
+              <div className="job-tooltip category-tooltip">
+                <p>Use the categories to refine your search further!</p>
+                <button
+                  type="button"
+                  className="job-tooltip-dismiss"
+                  onClick={dismissCategoryTooltip}
+                >
+                  Got it
+                </button>
+              </div>
+            )}
+          </div>
+
           <div className="job-queries">
             {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
               <p className="job-query">
@@ -235,12 +799,17 @@ function Collaboration() {
             {searchTerm && (
               <div className="query-option btn btn-secondary " type="button">
                 <span>{searchTerm}</span>
-                <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                <button
+                  className="cross-button"
+                  type="button"
+                  onClick={handleRemoveQuery}
+                  aria-label="Clear search term"
+                >
                   <img
                     width="30"
                     height="30"
                     src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                    alt="delete-sign"
+                    alt=""
                   />
                 </button>
               </div>
@@ -248,23 +817,31 @@ function Collaboration() {
             {selectedCategory && (
               <div className="btn btn-secondary query-option" type="button">
                 {selectedCategory}
-                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                <button
+                  className="cross-button"
+                  type="button"
+                  onClick={handleRemoveCategory}
+                  aria-label="Clear category filter"
+                >
                   <img
                     width="30"
                     height="30"
                     src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                    alt="delete-sign"
+                    alt=""
                   />
                 </button>
               </div>
             )}
           </div>
+
           <div className="jobs-summaries-list">
             {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
               summaries.jobs.map(summary => (
                 <div key={summary._id} className="job-summary-item">
                   <h3>
-                    <a href={summary.jobDetailsLink}>{summary.title}</a>
+                    <a href={summary.jobDetailsLink} target="_blank" rel="noopener noreferrer">
+                      {summary.title}
+                    </a>
                   </h3>
                   <div className="job-summary-content">
                     <p>{summary.description}</p>
@@ -277,6 +854,9 @@ function Collaboration() {
             )}
           </div>
         </div>
+
+        {/* Modal portal rendered OUTSIDE all conditionals */}
+        {ModalPortal}
       </div>
     );
   }
@@ -287,25 +867,21 @@ function Collaboration() {
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
         >
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
+
       <div className="user-collaboration-container">
-        <nav className="job-navbar">
+        <nav className="job-navbar job-navbar--hero" aria-label="Job search bar">
           <div className="job-navbar-left">
-            <form className="search-form">
-              <input
-                type="text"
-                placeholder="Search by title..."
-                value={query}
-                onChange={handleSearch}
-              />
-              <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
-                Go
-              </button>
-            </form>
+            <SearchBar
+              query={query}
+              onChange={handleSearchInput}
+              onSubmit={handleSubmit}
+              placeholder="Enter Job Title"
+            />
             {showTooltip && tooltipPosition === 'search' && (
               <div className="job-tooltip">
                 <p>Use the search bar to refine your search further!</p>
@@ -321,147 +897,147 @@ function Collaboration() {
           </div>
 
           <div className="job-navbar-right">
-            <select className="job-select" value={category} onChange={handleCategoryChange}>
-              <option value="">Select from Categories</option>
-              {categories.map(cat => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
-            {showTooltip && tooltipPosition === 'category' && (
-              <div className="job-tooltip category-tooltip">
-                <p>Use the categories to refine your search further!</p>
-                <button
-                  type="button"
-                  className="job-tooltip-dismiss"
-                  onClick={dismissCategoryTooltip}
-                >
-                  Got it
-                </button>
-              </div>
+            {applyOptions.length > 0 && (
+              <select
+                className="job-select apply-select hero-apply"
+                value={applyDropValue}
+                onChange={e => onApplyChange(e.target.value)}
+                aria-label="Apply to a position"
+              >
+                <option value="">Software Engineer</option>
+                {applyOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             )}
           </div>
         </nav>
 
-        {showSearchResults ? (
-          <div>
-            <div className="job-queries">
-              {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
-                <p className="job-query">
-                  Listing results for
-                  {searchTerm && !selectedCategory && <strong> &apos;{searchTerm}&apos;</strong>}
-                  {selectedCategory && !searchTerm && (
-                    <strong> &apos;{selectedCategory}&apos;</strong>
-                  )}
-                  {searchTerm && selectedCategory && (
-                    <strong>
-                      {' '}
-                      &apos;{searchTerm} + {selectedCategory}&apos;
-                    </strong>
-                  )}
-                  .
-                </p>
-              ) : (
-                <p className="job-query">Listing all job ads.</p>
-              )}
-              <button className="btn btn-secondary" type="button" onClick={handleShowSummaries}>
-                Show Summaries
+        <div className="category-inline">
+          <select
+            className="job-select"
+            value={category}
+            onChange={e => handleCategoryChange(e.target.value)}
+            aria-label="Filter by category"
+          >
+            <option value="">Select from Categories</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+
+          {showTooltip && tooltipPosition === 'category' && (
+            <div className="job-tooltip category-tooltip">
+              <p>Use the categories to refine your search further!</p>
+              <button
+                type="button"
+                className="job-tooltip-dismiss"
+                onClick={dismissCategoryTooltip}
+              >
+                Got it
               </button>
-              {searchTerm && (
-                <div className="query-option btn btn-secondary " type="button">
-                  <span>{searchTerm}</span>
-                  <button className="cross-button" type="button" onClick={handleRemoveQuery}>
-                    <img
-                      width="30"
-                      height="30"
-                      src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                      alt="delete-sign"
-                    />
-                  </button>
-                </div>
-              )}
-              {selectedCategory && (
-                <div className="btn btn-secondary query-option" type="button">
-                  {selectedCategory}
-                  <button className="cross-button" type="button" onClick={handleRemoveCategory}>
-                    <img
-                      width="30"
-                      height="30"
-                      src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                      alt="delete-sign"
-                    />
-                  </button>
-                </div>
-              )}
             </div>
+          )}
+        </div>
 
-            {jobAds.length !== 0 ? (
-              <div className="job-list">
-                {jobAds.map(ad => (
-                  <div key={ad._id} className="job-ad">
-                    <img
-                      src={`/api/placeholder/640/480?text=${encodeURIComponent(
-                        ad.category || 'Job Opening',
-                      )}`}
-                      onError={e => {
-                        e.target.onerror = null;
-                        if (ad.category === 'Engineering') {
-                          e.target.src =
-                            'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
-                        } else if (ad.category === 'Marketing') {
-                          e.target.src =
-                            'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
-                        } else if (ad.category === 'Design') {
-                          e.target.src = 'https://img.icons8.com/arcade/64/design.png';
-                        } else if (ad.category === 'Finance') {
-                          e.target.src =
-                            'https://img.icons8.com/cotton/64/merchant-account--v2.png';
-                        } else {
-                          e.target.src =
-                            'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
-                        }
-                      }}
-                      alt={ad.title || 'Job Position'}
-                      loading="lazy"
-                    />
+        {chosenAd ? (
+          <>
+            <ApplicationForm
+              chosenAd={chosenAd}
+              onBack={exitApplicationForm}
+              onOpenModal={openModalSafe}
+            />
+          </>
+        ) : (
+          <>
+            {showSearchResults ? (
+              <div>
+                <div className="job-queries">
+                  {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
+                    <p className="job-query">
+                      Listing results for
+                      {searchTerm && !selectedCategory && (
+                        <strong> &apos;{searchTerm}&apos;</strong>
+                      )}
+                      {selectedCategory && !searchTerm && (
+                        <strong> &apos;{selectedCategory}&apos;</strong>
+                      )}
+                      {searchTerm && selectedCategory && (
+                        <strong>
+                          {' '}
+                          &apos;{searchTerm} + {selectedCategory}&apos;
+                        </strong>
+                      )}
+                      .
+                    </p>
+                  ) : (
+                    <p className="job-query">Listing all job ads.</p>
+                  )}
+                  <button className="btn btn-secondary" type="button" onClick={handleShowSummaries}>
+                    Show Summaries
+                  </button>
+                  {searchTerm && (
+                    <div className="query-option btn btn-secondary " type="button">
+                      <span>{searchTerm}</span>
+                      <button
+                        className="cross-button"
+                        type="button"
+                        onClick={handleRemoveQuery}
+                        aria-label="Clear search term"
+                      >
+                        <img
+                          width="30"
+                          height="30"
+                          src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
+                          alt=""
+                        />
+                      </button>
+                    </div>
+                  )}
+                  {selectedCategory && (
+                    <div className="btn btn-secondary query-option" type="button">
+                      {selectedCategory}
+                      <button
+                        className="cross-button"
+                        type="button"
+                        onClick={handleRemoveCategory}
+                        aria-label="Clear category filter"
+                      >
+                        <img
+                          width="30"
+                          height="30"
+                          src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
+                          alt=""
+                        />
+                      </button>
+                    </div>
+                  )}
+                </div>
 
-                    <a
-                      href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
-                    >
-                      <h3>
-                        {ad.title} - {ad.category}
-                      </h3>
-                    </a>
-                  </div>
-                ))}
+                <JobList jobAds={jobAds} onViewDetails={onViewDetails} onApply={onApply} />
+
+                <Pagination
+                  totalPages={totalPages}
+                  currentPage={currentPage}
+                  onChange={p => setCurrentPage(p)}
+                />
               </div>
             ) : (
-              <div className="no-results">
-                <h2>No job ads found.</h2>
+              <div className={`job-headings ${darkMode ? ' user-collaboration-dark-mode' : ''}`}>
+                <h1 className="job-head">Like to Work With Us? Apply Now!</h1>
+                <p className="job-intro"> Learn about who we are and who we want to work with!</p>
               </div>
             )}
-
-            <div className="pagination">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  type="button"
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  disabled={currentPage === i + 1}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div className={`job-headings ${darkMode ? ' user-collaboration-dark-mode' : ''}`}>
-            <h1 className="job-head">Like to Work With Us? Apply Now!</h1>
-            <p className="job-intro"> Learn about who we are and who we want to work with!</p>
-          </div>
+          </>
         )}
       </div>
+
+      {/* Modal portal rendered OUTSIDE all conditionals */}
+      {ModalPortal}
     </div>
   );
 }
