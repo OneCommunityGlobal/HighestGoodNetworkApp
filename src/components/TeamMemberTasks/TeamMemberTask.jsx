@@ -204,7 +204,10 @@ const TeamMemberTask = React.memo(
                               data-testid="icon"
                             />
 
-                            <Link to={`/timelog/${user.personId}`} className="timelog-info">
+                            <Link
+                              to={`/timelog/${user.personId}#currentWeek`}
+                              className="timelog-info"
+                            >
                               <i
                                 className="fa fa-clock-o"
                                 aria-hidden="true"
@@ -430,7 +433,7 @@ const TeamMemberTask = React.memo(
                                       )}
                                       <TeamMemberTaskIconsInfo />
                                     </div>
-                                    <div>
+                                    <div className="team-member-task-review-button">
                                       <ReviewButton
                                         user={user}
                                         userId={userId}

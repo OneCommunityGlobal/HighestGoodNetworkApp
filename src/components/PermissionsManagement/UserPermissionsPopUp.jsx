@@ -44,6 +44,7 @@ function UserPermissionsPopUp({
 
   const setToDefault = () => {
     setUserPermissions([]);
+    setUserRemovedDefaultPermissions([]);
   };
 
   useEffect(() => {
