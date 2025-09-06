@@ -1,26 +1,11 @@
 import { useState, useEffect } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import { useHistory } from 'react-router-dom'; // For React Router v5
+import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import './CPDashboard.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const history = useHistory(); // Use useHistory for navigation
 
   useEffect(() => {
     const mockEvents = [
@@ -52,12 +37,6 @@ export function CPDashboard() {
     setEvents(mockEvents);
   }, []);
 
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
-  const handleNavigation = path => {
-    history.push(path); // Navigate to the selected path
-  };
-
   return (
     <Container fluid className="dashboard-container">
       <header className="dashboard-header">
@@ -72,7 +51,7 @@ export function CPDashboard() {
               className="dashboard-search"
             />
           </div>
-          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
+          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
             <DropdownToggle caret color="secondary">
               Community Portal
             </DropdownToggle>
@@ -82,7 +61,7 @@ export function CPDashboard() {
               <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
               <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
             </DropdownMenu>
-          </Dropdown>
+          </Dropdown> */}
         </div>
       </header>
 
@@ -91,7 +70,7 @@ export function CPDashboard() {
           <div className="filter-section">
             <h4>Search Filters</h4>
             <div className="filter-item">
-              <label>Dates</label>
+              <label htmlFor="date-tomorrow"> Dates</label>
               <div className="filter-options-horizontal">
                 <div>
                   <Input type="radio" name="dates" /> Tomorrow
@@ -103,25 +82,25 @@ export function CPDashboard() {
               <Input type="date" placeholder="Ending After" className="date-filter" />
             </div>
             <div className="filter-item">
-              <label>Online</label>
+              <label htmlFor="online-only">Online</label>
               <div>
                 <Input type="checkbox" /> Online Only
               </div>
             </div>
             <div className="filter-item">
-              <label>Branches</label>
+              <label htmlFor="branches">Branches</label>
               <Input type="select">
                 <option>Select branches</option>
               </Input>
             </div>
             <div className="filter-item">
-              <label>Themes</label>
+              <label htmlFor="themes">Themes</label>
               <Input type="select">
                 <option>Select themes</option>
               </Input>
             </div>
             <div className="filter-item">
-              <label>Categories</label>
+              <label htmlFor="categories">Categories</label>
               <Input type="select">
                 <option>Select categories</option>
               </Input>

@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import {
   postNewWarning,
   getWarningDescriptions,
@@ -141,11 +141,9 @@ function WarningTrackerModal({
     dispatch(deleteWarningDescription(warningId)).then(res => {
       if (res.error) {
         setError(res.error);
-        return;
       }
-      setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
-      getUsersWarnings();
     });
+    setWarningDescriptions(prev => prev.filter(warning => warning._id !== warningId));
   };
 
   const handleEditWarningDescription = (e, warningId) => {

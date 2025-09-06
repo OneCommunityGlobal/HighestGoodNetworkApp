@@ -1,26 +1,30 @@
 import configureMockStore from 'redux-mock-store'; // Import mock store configuration
 import thunk from 'redux-thunk'; // Import thunk middleware
+import jwtDecode from 'jwt-decode'; // Import jwtDecode
+import axios from 'axios'; // Import axios
+
+
 import httpService from '../../services/httpService'; // Import httpService
 import {
   loginUser, // Import loginUser action
   loginBMUser, // Import loginBMUser action
-  getHeaderData, // Import getHeaderData action
   logoutUser, // Import logoutUser action
   refreshToken as refreshUserToken, // Import refreshToken action and rename it to avoid conflict
   setCurrentUser, // Import setCurrentUser action
   setHeaderData, // Import setHeaderData action
 } from '../authActions'; // Import actions from authActions
-import { SET_CURRENT_USER, GET_ERRORS, SET_HEADER_DATA } from '../../constants/auth'; // Import constants
-import jwtDecode from 'jwt-decode'; // Import jwtDecode
-import axios from 'axios'; // Import axios
+import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth'; // Import constants
+
 
 const middlewares = [thunk]; // Define middlewares
 const mockStore = configureMockStore(middlewares); // Create mock store with middlewares
 
-jest.mock('jwt-decode', () => jest.fn()); // Mock jwtDecode
+vi.mock('jwt-decode', () => ({
+  default: vi.fn(),
+}));
 
-jest.mock('../../services/httpService'); // Mock httpService
-jest.mock('axios'); // Mock axios
+vi.mock('../../services/httpService'); // Mock httpService
+vi.mock('axios'); // Mock axios
 
 describe('authActions', () => {
   it('creates SET_CURRENT_USER when loginUser is successful', async () => {
@@ -106,5 +110,4 @@ describe('authActions', () => {
 
     expect(setHeaderData(data)).toEqual(expectedAction); // Assert the action
   });
-
 });

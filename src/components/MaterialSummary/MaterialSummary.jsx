@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { mockProjects, mockMaterialData, chartColors } from './Data';
+import styles from './MaterialSummary.module.css';
 
 // Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -116,48 +117,25 @@ export default function MaterialUsageDashboard() {
   ];
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '16px' }}>
-      <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', marginBottom: '24px' }}>
-        Material Usage Dashboard
-      </h1>
-
-      <div style={{ display: 'grid', gap: '24px' }} className="grid-container">
+    <div className={styles.dashboardWrapper}>
+      <h1 className={styles.dashboardTitle}>Material Usage Dashboard</h1>
+      <div className={styles.gridContainer}>
         {/* Filters Section */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              padding: '16px',
-            }}
-          >
+        <div className={styles.filterPanel}>
+          <div className={styles.filterCard}>
             <div style={{ marginBottom: '16px' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '4px' }}>
-                Filters
-              </h2>
-              <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-                Select options to filter the chart data
-              </p>
+              <h2 className={styles.filterCardTitle}>Filters</h2>
+              <p className={styles.filterCardDesc}>Select options to filter the chart data</p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className={styles.filterFields}>
               {/* Project Filter */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label
-                  htmlFor="project"
-                  style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500' }}
-                >
+              <div className={styles.fieldGroup}>
+                <label htmlFor="project" className={styles.fieldLabel}>
                   Project
                 </label>
                 <select
                   id="project"
-                  style={{
-                    width: '100%',
-                    padding: '8px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    outline: 'none',
-                  }}
+                  className={styles.selectInput}
                   value={selectedProject}
                   onChange={e => setSelectedProject(Number.parseInt(e.target.value, 10))}
                 >
@@ -170,22 +148,13 @@ export default function MaterialUsageDashboard() {
               </div>
 
               {/* Material Type Filter */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <label
-                  htmlFor="material"
-                  style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500' }}
-                >
+              <div className={styles.fieldGroup}>
+                <label htmlFor="material" className={styles.fieldLabel}>
                   Material Type
                 </label>
                 <select
                   id="material"
-                  style={{
-                    width: '100%',
-                    padding: '8px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    outline: 'none',
-                  }}
+                  className={styles.selectInput}
                   value={selectedMaterial}
                   onChange={e => setSelectedMaterial(e.target.value)}
                 >
@@ -201,15 +170,15 @@ export default function MaterialUsageDashboard() {
               </div>
 
               {/* Increase Over Last Week Filter */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', paddingTop: '8px' }}>
+              <div className={styles.checkboxGroup}>
                 <input
                   type="checkbox"
                   id="increase"
                   checked={showIncreaseOnly}
                   onChange={e => setShowIncreaseOnly(e.target.checked)}
-                  style={{ height: '16px', width: '16px' }}
+                  className={styles.checkboxInput}
                 />
-                <label htmlFor="increase" style={{ fontSize: '0.875rem', cursor: 'pointer' }}>
+                <label htmlFor="increase" className={styles.checkboxLabel}>
                   Show only materials with increased usage
                 </label>
               </div>
@@ -218,33 +187,19 @@ export default function MaterialUsageDashboard() {
 
           {/* Increase Counter */}
           {showIncreaseOnly && increasePercentage !== 0 && (
-            <div
-              style={{
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                padding: '16px',
-              }}
-            >
-              <div style={{ marginBottom: '8px' }}>
-                <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>Usage Trend</h2>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className={styles.increaseCard}>
+              <div className={styles.increaseCardTitle}>Usage Trend</div>
+              <div className={styles.increaseTrendRow}>
                 <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    padding: '2px 10px',
-                    borderRadius: '9999px',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    backgroundColor: increasePercentage > 0 ? '#dcfce7' : '#fee2e2',
-                    color: increasePercentage > 0 ? '#166534' : '#991b1b',
-                  }}
+                  className={
+                    increasePercentage > 0
+                      ? `${styles.trendBadge} ${styles.trendBadgeIncrease}`
+                      : `${styles.trendBadge} ${styles.trendBadgeDecrease}`
+                  }
                 >
                   {increasePercentage > 0 ? '↑' : '↓'} {Math.abs(increasePercentage).toFixed(1)}%
                 </span>
-                <span style={{ marginLeft: '8px', fontSize: '0.875rem' }}>
+                <span className={styles.increaseText}>
                   {increasePercentage > 0
                     ? 'Increase in material usage'
                     : 'Decrease in material usage'}{' '}
@@ -257,55 +212,24 @@ export default function MaterialUsageDashboard() {
 
         {/* Chart Section */}
         <div>
-          <div
-            style={{
-              backgroundColor: 'white',
-              borderRadius: '8px',
-              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-              padding: '16px',
-            }}
-          >
+          <div className={styles.chartPanel}>
             <div style={{ marginBottom: '16px' }}>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>
+              <h2 className={styles.chartPanelTitle}>
                 Material Usage Breakdown
                 {selectedMaterial !== 'all' &&
                   ` - ${selectedMaterial.charAt(0).toUpperCase() + selectedMaterial.slice(1)}`}
               </h2>
-              <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+              <p className={styles.chartPanelDesc}>
                 {mockProjects.find(p => p.id === selectedProject)?.name}
               </p>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '220px',
-              }}
-            >
+            <div className={styles.chartArea}>
               {loading && (
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <div
-                    style={{
-                      animation: 'spin 1s linear infinite',
-                      borderRadius: '50%',
-                      height: '48px',
-                      width: '48px',
-                      borderBottom: '2px solid #3b82f6',
-                      marginBottom: '8px',
-                    }}
-                  />
+                <div className={styles.loadingArea}>
+                  <div className={styles.loadingSpinner} />
                   <p>Loading data...</p>
                 </div>
               )}
-
               {!loading && chartData && (
                 <div style={{ width: '100%', maxWidth: '300px' }}>
                   <Pie
@@ -319,9 +243,7 @@ export default function MaterialUsageDashboard() {
                           position: 'center',
                           labels: {
                             padding: 10,
-                            font: {
-                              size: 12,
-                            },
+                            font: { size: 12 },
                             boxWidth: 12,
                           },
                         },
@@ -340,60 +262,29 @@ export default function MaterialUsageDashboard() {
                   />
                 </div>
               )}
-
               {!loading && !chartData && <p>No data available</p>}
             </div>
             {/* Material Breakdown List */}
             {chartData && !loading && (
-              <div
-                style={{ marginTop: '24px', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}
-              >
-                <h3 style={{ fontSize: '1.125rem', fontWeight: '500', marginBottom: '12px' }}>
-                  Material Breakdown
-                </h3>
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                    gap: '16px',
-                  }}
-                >
+              <div className={styles.materialBreakdown}>
+                <h3 className={styles.materialBreakdownTitle}>Material Breakdown</h3>
+                <div className={styles.materialBreakdownGrid}>
                   {chartData.datasets[0].data.map((value, index) => {
                     const label = chartData.labels[index].split(':')[0];
                     const color = chartData.datasets[0].backgroundColor[index];
                     return (
                       <div
                         key={`${chartData.labels[index]}-${value}`}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px',
-                          padding: '12px',
-                          borderRadius: '6px',
-                          backgroundColor: '#f9fafb',
-                        }}
+                        className={styles.materialBreakdownItem}
                       >
                         <div
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            borderRadius: '50%',
-                            backgroundColor: color,
-                          }}
+                          className={styles.materialBreakdownDot}
+                          style={{ backgroundColor: color }}
                         />
                         <div>
-                          <p style={{ fontWeight: '500' }}>{label}</p>
-                          <p style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>
-                            {value}{' '}
-                            <span
-                              style={{
-                                fontSize: '0.875rem',
-                                color: '#6b7280',
-                                fontWeight: 'normal',
-                              }}
-                            >
-                              units
-                            </span>
+                          <p className={styles.materialBreakdownName}>{label}</p>
+                          <p className={styles.materialBreakdownValue}>
+                            {value} <span className={styles.materialBreakdownUnit}>units</span>
                           </p>
                         </div>
                       </div>
@@ -405,23 +296,6 @@ export default function MaterialUsageDashboard() {
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @media (min-width: 1024px) {
-          .grid-container {
-            grid-template-columns: 1fr 3fr;
-          }
-        }
-      `}</style>
     </div>
   );
 }
