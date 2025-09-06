@@ -1,9 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 
-import { useState } from 'react';
+import { useState, useId } from "react";
 import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
 import './ProjectPieChart.css';
+
 
 
 const generateRandomHexColor = () => {
@@ -88,6 +89,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   const [activeIndices, setActiveIndices] = useState([]);
   const [showAllValues, setShowAllValues] = useState(false);
   const [accumulatedValues, setAccumulatedValues] = useState(0);
+  const switchId = useId();
 
   const onPieEnter = (data, index, event) => {
     if (event.ctrlKey) {
@@ -120,7 +122,11 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   return (
     <div className={`position-relative ${darkMode ? 'text-light' : ''} h-100`}>
       <div className="button-container">
-        <TwoWayToggleSwitch isOn={showAllValues} handleToggle={toggleShowAllValues} />
+        <TwoWayToggleSwitch
+          id={switchId}
+          isOn={showAllValues} 
+          handleToggle={toggleShowAllValues} 
+        />
       </div>
       <ResponsiveContainer maxWidth={640} maxHeight={640} minWidth={350} minHeight={350}>
         <PieChart>
