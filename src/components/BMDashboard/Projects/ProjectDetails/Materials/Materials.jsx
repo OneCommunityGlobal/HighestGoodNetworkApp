@@ -1,8 +1,8 @@
 import MaterialCard from './MaterialCard';
-
+import styles from '../ProjectDetails.module.css';
 function Materials() {
   return (
-    <div className="cards-container__content">
+    <div className={`${styles.cardsContainerContent}`}>
       <MaterialCard />
       <MaterialCard />
       <MaterialCard />
