@@ -233,6 +233,7 @@
 
 .darkMode .formBuilderContainer {
   background-color: #1B2A41;
+  margin-top: 0;
 }
 
 .darkMode .jobformNavbar {

@@ -340,6 +340,7 @@ function JobFormBuilder() {
           </div>
         </div>
         {console.log(role)}
+        <h1 className={styles.jobformTitle}>FORM CREATION</h1>
         {role === 'Owner' || role === 'Administrator' ? (
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
