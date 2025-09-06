@@ -37,6 +37,16 @@ import {
   updateSummaryReportFromServerAction,
   updateSummaryReport,
 } from '../../actions/weeklySummaries';
+
+import {
+  getSavedFilters,
+  createSavedFilter,
+  deleteSavedFilter,
+  updateSavedFilter,
+  updateSavedFiltersForTeamCodeChange,
+  updateSavedFiltersForIndividualTeamCodeChange,
+} from '../../actions/savedFilterActions';
+
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
@@ -49,6 +59,7 @@ import PasswordInputModal from './PasswordInputModal';
 import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
+import SaveFilterModal from './SaveFilterModal';
 import styles from './WeeklySummariesReport.module.css';
 import Select, { components } from 'react-select';
 import { SlideToggle } from './components';
@@ -159,6 +170,8 @@ const initialState = {
     green: false,
     navy: false,
   },
+  // Saved filters functionality
+  saveFilterModalOpen: false,
 };
 
 const intialPermissionState = {
@@ -173,6 +186,10 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+
+  // Saved filters functionality
+  const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
+  const [showModificationModal, setShowModificationModal] = useState(false);
 
   // Misc functionalities
   /**
@@ -1046,9 +1063,11 @@ const WeeklySummariesReport = props => {
   //   }));
   // }; // old working code
   const handleSelectCodeChange = event => {
-    const selectedCodesArray = event.map(e => e.value);
+    const selectedValues = event.map(e => e.value);
+
+    // Filter summaries based on selected codes
     const selectedSummaries = state.summaries.filter(summary =>
-      selectedCodesArray.includes(summary.teamCode),
+      selectedValues.includes(summary.teamCode),
     );
 
     // Count how many users have each color selected
@@ -1060,13 +1079,27 @@ const WeeklySummariesReport = props => {
       return acc;
     }, {});
 
-    setState(prev => ({
-      ...prev,
-      selectedCodes: event,
-      bulkSelectedColors: { purple: false, green: false, navy: false }, // always reset on team change
-    }));
+    setState(prev => {
+      // Move selected codes to the front of the dropdown list
+      const reorderedTeamCodes = [
+        ...prev.teamCodes.filter(code => selectedValues.includes(code.value)), // selected first
+        ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)), // then the rest
+      ];
 
-    filterWeeklySummaries(); // inside set state
+      return {
+        ...prev,
+        selectedCodes: event,
+        teamCodes: reorderedTeamCodes,
+        bulkSelectedColors: { purple: false, green: false, navy: false }, // always reset on team change
+      };
+    });
+
+    // Clear current applied filter if selection is cleared
+    if (currentAppliedFilter && event.length === 0) {
+      setCurrentAppliedFilter(null);
+    }
+
+    filterWeeklySummaries(); // apply filtering after state change
   };
 
   const handleOverHoursToggleChange = () => {
@@ -1156,13 +1189,202 @@ const WeeklySummariesReport = props => {
             label: `Select All With NO Code (${noTeamCodeCount || 0})`,
             _ids: teamCodeWithUserId[''],
           });
-        return { ...prevState, summaries, teamCodes, selectedCodes };
+
+        return {
+          ...prevState,
+          summaries,
+          teamCodes,
+          selectedCodes,
+        };
       });
+
+      // Update saved filters in the database with the new team code
+      if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
+        // Get the user ID from the userIdObj
+        const userId = Object.keys(userIdObj)[0];
+        props.updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId);
+
+        // Refresh saved filters after the update
+        setTimeout(() => {
+          props.getSavedFilters();
+        }, 1000);
+      }
+
       return null;
     } catch (error) {
       return null;
     }
   };
+
+  // const handleSelectColorChange = event => {
+  //   setState(prevState => ({
+  //     ...prevState,
+  //     selectedColors: event,
+  //   }));
+  // };
+
+  // const handleReplaceCode = e => {
+  //   try {
+  //     e.persist();
+  //     setState(prevState => ({ ...prevState, replaceCode: e.target?.value }));
+  //     return e;
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // };
+
+  // const handleTrophyToggleChange = () => {
+  //   setState(prevState => ({
+  //     ...prevState,
+  //     selectedTrophies: !prevState.selectedTrophies,
+  //   }));
+  // };
+
+  // const handleSpecialColorToggleChange = (color, isEnabled) => {
+  //   setState(prevState => ({
+  //     ...prevState,
+  //     selectedSpecialColors: {
+  //       ...prevState.selectedSpecialColors,
+  //       [color]: isEnabled,
+  //     },
+  //   }));
+  // };
+
+  // const handleSpecialColorDotClick = (userId, color) => {
+  //   setState(prevState => {
+  //     const updatedSummaries = prevState.summaries.map(summary => {
+  //       if (summary._id === userId) {
+  //         return { ...summary, filterColor: color };
+  //       }
+  //       return summary;
+  //     });
+
+  //     // Also update the tab-specific cache
+  //     const updatedSummariesByTab = {
+  //       ...prevState.summariesByTab,
+  //       [prevState.activeTab]: updatedSummaries,
+  //     };
+
+  //     return {
+  //       ...prevState,
+  //       summaries: updatedSummaries,
+  //       summariesByTab: updatedSummariesByTab,
+  //     };
+  //   });
+  // };
+
+  // Saved filters functionality
+  const handleSaveFilter = async filterName => {
+    const filterConfig = {
+      selectedCodes: state.selectedCodes.map(code => code.value),
+    };
+
+    const result = await props.createSavedFilter({
+      name: filterName,
+      filterConfig,
+    });
+
+    if (result.status === 201) {
+      setState(prevState => ({
+        ...prevState,
+        saveFilterModalOpen: false,
+      }));
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleUpdateFilter = async filterName => {
+    if (!currentAppliedFilter) return;
+
+    const filterConfig = {
+      selectedCodes: state.selectedCodes.map(code => code.value),
+    };
+
+    const result = await props.updateSavedFilter(currentAppliedFilter._id, {
+      name: filterName,
+      filterConfig,
+    });
+
+    if (result.status === 200) {
+      setShowModificationModal(false);
+      // Update the current applied filter with the new data
+      setCurrentAppliedFilter(result.data);
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleApplyFilter = filter => {
+    // Validate that the saved filter codes still exist in current team codes
+    const validCodes = filter.filterConfig.selectedCodes
+      .map(codeValue => state.teamCodes.find(currentCode => currentCode.value === codeValue))
+      .filter(Boolean);
+
+    setState(prevState => ({
+      ...prevState,
+      selectedCodes: validCodes,
+    }));
+
+    // Set the current applied filter
+    setCurrentAppliedFilter(filter);
+  };
+
+  const handleDeleteFilter = async filterId => {
+    const result = await props.deleteSavedFilter(filterId);
+    if (result.status === 200) {
+      // Clear current applied filter if it was deleted
+      if (currentAppliedFilter && currentAppliedFilter._id === filterId) {
+        setCurrentAppliedFilter(null);
+      }
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleOpenSaveFilterModal = () => {
+    // If no current filter is applied, always create a new filter
+    if (!currentAppliedFilter) {
+      setState(prevState => ({
+        ...prevState,
+        saveFilterModalOpen: true,
+      }));
+      return;
+    }
+
+    // If there's a current filter applied, always show modification modal
+    // regardless of whether the selection has changed or not
+    setShowModificationModal(true);
+  };
+
+  const handleCloseSaveFilterModal = () => {
+    setState(prevState => ({
+      ...prevState,
+      saveFilterModalOpen: false,
+    }));
+  };
+
+  const handleCloseModificationModal = () => {
+    setShowModificationModal(false);
+  };
+
+  // const passwordInputModalToggle = () => {
+  //   try {
+  //     return (
+  //       <PasswordInputModal
+  //         open={state.passwordModalOpen}
+  //         onClose={onpasswordModalClose}
+  //         checkForValidPwd={checkForValidPwd}
+  //         isValidPwd={state.isValidPwd}
+  //         setSummaryRecepientsPopup={setSummaryRecepientsPopup}
+  //         setAuthpassword={setAuthpassword}
+  //         authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
+  //       />
+  //     );
+  //   } catch (error) {
+  //     return null;
+  //   }
+  // };
 
   const handleAllTeamCodeReplace = async () => {
     try {
@@ -1247,6 +1469,9 @@ const WeeklySummariesReport = props => {
             updatedWarningUsers.splice(existingIndex, 1);
           }
         });
+
+        // Update saved filters in the database with the new team code
+        await props.updateSavedFiltersForTeamCodeChange(oldTeamCodes, replaceCode);
 
         setState(prev => ({
           ...prev,
@@ -1573,6 +1798,38 @@ const WeeklySummariesReport = props => {
     state.summaries,
     state.activeTab,
   ]);
+  useEffect(() => {
+    // On mount: fetch all badges before deriving permissions
+    const fetchInitialPermissions = async () => {
+      try {
+        // Fetch all badges first so we can derive up‑to‑date permissions
+        await props.fetchAllBadges();
+        setPermissionState(prev => ({
+          ...prev,
+          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
+          // codeEditPermission: props.hasPermission('replaceTeamCodes'),
+          // allow team‑code edits for specific roles or permissions
+          codeEditPermission:
+            props.hasPermission('editTeamCode') ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
+          // Permit editing of summary hour counts if the user has that badge
+          canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
+          // Show bio highlights only to users with that permission
+          canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
+        }));
+      } catch (error) {
+        // log failure fetching badges or permissions
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch badges or permissions', error);
+      }
+    };
+
+    fetchInitialPermissions();
+
+    // Load saved filters when component mounts
+    props.getSavedFilters();
+  }, []);
 
   // workingggggggggg
   // When Redux summaries change, store ONLY for current tab
@@ -1742,6 +1999,25 @@ const WeeklySummariesReport = props => {
     >
       {passwordInputModalToggle()}
       {popUpElements()}
+      <SaveFilterModal
+        isOpen={state.saveFilterModalOpen}
+        onClose={handleCloseSaveFilterModal}
+        onSave={handleSaveFilter}
+        selectedCodes={state.selectedCodes}
+        darkMode={darkMode}
+        existingFilterNames={props.savedFilters.map(filter => filter.name)}
+      />
+      <SaveFilterModal
+        isOpen={showModificationModal}
+        onClose={handleCloseModificationModal}
+        onSave={handleSaveFilter}
+        onUpdate={handleUpdateFilter}
+        selectedCodes={state.selectedCodes}
+        darkMode={darkMode}
+        existingFilterNames={props.savedFilters.map(filter => filter.name)}
+        currentFilter={currentAppliedFilter}
+        isModification
+      />
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -1827,21 +2103,49 @@ const WeeklySummariesReport = props => {
               </ReactTooltip>
             </>
           )}
-          <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
-              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-            }`}
-            options={state.teamCodes.map(item => {
-              const [code, count] = item.label.split(' (');
-              return {
-                ...item,
-                label: `${code.padEnd(10, ' ')} (${count}`,
-              };
-            })}
-            value={state.selectedCodes}
-            onChange={handleSelectCodeChange}
-            labelledBy="Select"
-          />
+
+          {/* MultiSelect with Save/Delete Buttons */}
+          <div style={{ position: 'relative' }}>
+            <MultiSelect
+              className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
+                state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+              }`}
+              options={state.teamCodes.map(item => {
+                const [code, count] = item.label.split(' (');
+                return {
+                  ...item,
+                  label: `${code.padEnd(10, ' ')} (${count}`,
+                };
+              })}
+              value={state.selectedCodes}
+              onChange={handleSelectCodeChange}
+              labelledBy="Select"
+            />
+
+            {/* Save/Delete Buttons - only visible when codes are selected */}
+            {state.selectedCodes.length > 0 && hasPermissionToFilter && (
+              <div className={styles['filter-save-buttons']}>
+                <button
+                  type="button"
+                  className={`${styles['filter-save-btn']} ${styles.save}`}
+                  onClick={handleOpenSaveFilterModal}
+                  title="Save current filter"
+                  aria-label="Save current filter"
+                >
+                  <i className="fa fa-save" />
+                </button>
+                <button
+                  type="button"
+                  className={`${styles['filter-save-btn']} ${styles.clear}`}
+                  onClick={() => handleSelectCodeChange([])}
+                  title="Clear selection"
+                  aria-label="Clear selection"
+                >
+                  <i className="fa fa-times" />
+                </button>
+              </div>
+            )}
+          </div>
         </Col>
 
         <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
@@ -2002,6 +2306,59 @@ const WeeklySummariesReport = props => {
           </div>
         </Col>
       </Row>
+
+      {/* Saved Filter Buttons */}
+      {props.savedFilters && props.savedFilters.length > 0 && (
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}>
+              {props.savedFilters.map(filter => (
+                <div
+                  key={filter._id}
+                  className={`${styles['saved-filter-button']} ${
+                    darkMode ? styles['dark-mode'] : ''
+                  } ${
+                    currentAppliedFilter && currentAppliedFilter._id === filter._id
+                      ? styles['active-filter']
+                      : ''
+                  }`}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-link p-0 mr-1"
+                    style={{
+                      color: 'inherit',
+                      textDecoration: 'none',
+                      fontSize: '0.875rem',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      fontWeight:
+                        currentAppliedFilter && currentAppliedFilter._id === filter._id
+                          ? 'bold'
+                          : 'normal',
+                    }}
+                    onClick={() => handleApplyFilter(filter)}
+                    title={`Apply filter: ${filter.name}`}
+                  >
+                    {filter.name}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles['saved-filter-delete-btn']}
+                    onClick={() => handleDeleteFilter(filter._id)}
+                    title="Delete filter"
+                    aria-label={`Delete filter ${filter.name}`}
+                  >
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </Col>
+        </Row>
+      )}
+
       {permissionState.codeEditPermission && state.selectedCodes && state.selectedCodes.length > 0 && (
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
@@ -2172,6 +2529,9 @@ const mapStateToProps = state => {
     allBadgeData: state.badge?.allBadgeData || [],
     infoCollections: state.infoCollections?.infos || [],
     role: state?.auth?.user?.role || '',
+    savedFilters: state.savedFilters?.savedFilters || [],
+    savedFiltersLoading: state.savedFilters?.loading || false,
+    savedFiltersError: state.savedFilters?.error || null,
     auth: state?.auth || {},
     darkMode: state?.theme?.darkMode || false,
     authEmailWeeklySummaryRecipient: state?.auth?.user?.email || '',
@@ -2186,6 +2546,14 @@ const mapDispatchToProps = dispatch => ({
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
+  createSavedFilter: filter => dispatch(createSavedFilter(filter)),
+  deleteSavedFilter: filterId => dispatch(deleteSavedFilter(filterId)),
+  updateSavedFilter: (filterId, filterData) => dispatch(updateSavedFilter(filterId, filterData)),
+  getSavedFilters: () => dispatch(getSavedFilters()),
+  updateSavedFiltersForTeamCodeChange: (oldTeamCodes, newTeamCode) =>
+    dispatch(updateSavedFiltersForTeamCodeChange(oldTeamCodes, newTeamCode)),
+  updateSavedFiltersForIndividualTeamCodeChange: (oldTeamCode, newTeamCode, userId) =>
+    dispatch(updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId)),
   updateOneSummaryReport: (userId, updatedField) =>
     dispatch(updateOneSummaryReport(userId, updatedField)),
   updateSummaryReport: payload => dispatch(updateSummaryReport(payload)), // ✅ added
