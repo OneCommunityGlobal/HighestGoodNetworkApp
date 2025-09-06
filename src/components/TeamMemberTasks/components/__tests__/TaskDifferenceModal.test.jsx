@@ -147,15 +147,12 @@ describe('TaskDifferenceModal component', () => {
   });
   it('check if Start Date and End Date does not get displayed when Start and End Date is set to null', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    const startDateLabel = screen.getByText('Start Date');
-    const startDateElement = startDateLabel.nextElementSibling;
-    const startSpanElement = startDateElement.querySelector('span');
-    expect(startSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
 
-    const endDateLabel = screen.getByText('End Date');
-    const endDateElement = endDateLabel.nextElementSibling;
-    const endSpanElement = endDateElement.querySelector('span');
-    expect(endSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
+    expect(screen.getByText('Start Date')).toBeInTheDocument();
+    expect(screen.getByText('End Date')).toBeInTheDocument();
+
+    expect(screen.queryByTestId('start-date-value')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('end-date-value')).not.toBeInTheDocument();
   });
   it('check if Start Date and End Date get displayed when Start and End Date is not set to null', () => {
     const newTaskNotifications = [
@@ -180,15 +177,12 @@ describe('TaskDifferenceModal component', () => {
   });
   it('check if links, resources does not get displayed when the array size is 0', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    const resourceLabel = screen.getByText('Resources');
-    const resourceElement = resourceLabel.nextElementSibling;
-    const resourceSpanElement = resourceElement.querySelector('span');
-    expect(resourceSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
 
-    const linksLabel = screen.getByText('Links');
-    const linksElement = linksLabel.nextElementSibling;
-    const linksSpanElement = linksElement.querySelector('span');
-    expect(linksSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
+    expect(screen.getByText('Resources')).toBeInTheDocument();
+    expect(screen.getByText('Links')).toBeInTheDocument();
+
+    expect(screen.queryByTestId('resources-value')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('links-value')).not.toBeInTheDocument();
   });
   it('check if links and resources get displayed as expected when links and resources arrays are set to entries more than 0', () => {
     const newResource = [
