@@ -42,28 +42,25 @@ const AddProjectPopup = React.memo(props => {
     try {
       if (isUserIsNotSelectedAutoComplete) {
         const validateProjectName = validationProjectName();
-  
+
         if (!validateProjectName) {
           isSetShowAlert(true);
           setIsOpenDropdown(true);
           return;
         }
       }
-  
+
       if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
         await props.onSelectAssignProject(selectedProject);
         onSelectProject(undefined);
         if (props.handleSubmit !== undefined) {
-         await props.handleSubmit();
+          await props.handleSubmit();
         }
         toast.success('Project assigned successfully');
       } else {
         onValidation(false);
       }
-    } catch (error) {
-      
-    }
-   
+    } catch (error) {}
   };
 
   const selectProject = project => {
@@ -78,13 +75,13 @@ const AddProjectPopup = React.memo(props => {
 
   const finishFetch = status => {
     setIsOpenDropdown(false);
-    
+
     toast.success(
       status === 200
         ? 'Project created successfully'
         : 'Project created successfully, but it is not possible to retrieve the new project.',
     );
-  
+
     setDropdownText(dropdownText);
   };
 

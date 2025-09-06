@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 
@@ -7,14 +6,14 @@ const AssignTeamField = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
   const [searchText, setSearchText] = useState(() => {
     if (props.editMode) {
-      return (props.value == undefined ? "" : props.value.teamName)
+      return props.value == undefined ? '' : props.value.teamName;
     } else {
-      return props.searchText
+      return props.searchText;
     }
-  })
- 
+  });
+
   const darkMode = useSelector(state => state.theme.darkMode);
- 
+
   React.useEffect(() => {
     if (props.selectedTeam && props.selectedTeam.teamName !== searchText) {
       props.onSelectTeam(undefined);

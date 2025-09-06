@@ -5,7 +5,7 @@ import { createStore } from 'redux';
 import WeeklySummaryOptions from '../WeeklySummaryOptions';
 
 // Mock Redux store for darkMode
-const mockStore = (initialState) => {
+const mockStore = initialState => {
   return createStore((state = initialState, action) => state);
 };
 
@@ -19,12 +19,12 @@ describe('WeeklySummaryOptions Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryOptions handleUserProfile={() => {}} />
-      </Provider>
+      </Provider>,
     );
 
     // Check if the select dropdown is rendered
     expect(screen.getByRole('combobox')).toBeInTheDocument();
-    
+
     // Ensure all options are present in the dropdown
     const options = screen.getAllByRole('option');
     expect(options).toHaveLength(9);
@@ -41,7 +41,7 @@ describe('WeeklySummaryOptions Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryOptions handleUserProfile={handleUserProfile} />
-      </Provider>
+      </Provider>,
     );
 
     // Simulate a change in the select dropdown
@@ -60,7 +60,7 @@ describe('WeeklySummaryOptions Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryOptions handleUserProfile={() => {}} />
-      </Provider>
+      </Provider>,
     );
 
     // Check if the default value is "Required"
@@ -76,7 +76,7 @@ describe('WeeklySummaryOptions Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryOptions handleUserProfile={() => {}} />
-      </Provider>
+      </Provider>,
     );
 
     // Test if the options have the correct value attributes
@@ -98,7 +98,7 @@ describe('WeeklySummaryOptions Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryOptions handleUserProfile={handleUserProfile} />
-      </Provider>
+      </Provider>,
     );
 
     // Select a different option
@@ -117,15 +117,12 @@ describe('WeeklySummaryOptions Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryOptions handleUserProfile={() => {}} />
-      </Provider>
+      </Provider>,
     );
 
     // Test if the select element has a value attribute set to "Required" (default) or not
     expect(screen.getByRole('combobox').value).toBe('Required');
   });
-
-  
-  
 
   // Test if dark mode styling is applied
   test('applies dark mode styling', () => {
@@ -136,7 +133,7 @@ describe('WeeklySummaryOptions Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryOptions handleUserProfile={() => {}} />
-      </Provider>
+      </Provider>,
     );
 
     const selectElement = screen.getByRole('combobox');
@@ -156,7 +153,7 @@ describe('WeeklySummaryOptions Component', () => {
     render(
       <Provider store={store}>
         <WeeklySummaryOptions handleUserProfile={() => {}} />
-      </Provider>
+      </Provider>,
     );
 
     const selectElement = screen.getByRole('combobox');

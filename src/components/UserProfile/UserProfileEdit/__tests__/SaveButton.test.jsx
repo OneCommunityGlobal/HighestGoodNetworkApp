@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen, render} from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { userProfileMock } from '../../../../__tests__/mockStates';
 import SaveButton from '../SaveButton';
@@ -11,12 +11,12 @@ describe('<SaveButton />', () => {
       handleSubmit: vi.fn(),
       disabled: true,
       userProfile: userProfileMock,
-      setSaved:vi.fn(),
+      setSaved: vi.fn(),
       darkMode: true,
-      }
+    };
     render(<SaveButton {...props} />);
     const button = screen.getByRole('button', { name: /save changes/i });
-    expect(button).toBeInTheDocument(); 
+    expect(button).toBeInTheDocument();
   });
 
   describe('Behavior', () => {
@@ -26,13 +26,13 @@ describe('<SaveButton />', () => {
         handleSubmit: vi.fn(),
         disabled: true,
         userProfile: userProfileMock,
-        setSaved:vi.fn(),
+        setSaved: vi.fn(),
         darkMode: true,
-        } 
+      };
       render(<SaveButton {...props} />);
       const button = screen.getByRole('button', { name: /save changes/i });
-      expect(button).toBeInTheDocument(); 
-      expect(button).toBeDisabled(); 
+      expect(button).toBeInTheDocument();
+      expect(button).toBeDisabled();
     });
 
     // Test Case 2: It should render the modal after clicking save changes button
@@ -41,13 +41,13 @@ describe('<SaveButton />', () => {
         handleSubmit: vi.fn(),
         disabled: false,
         userProfile: userProfileMock,
-        setSaved:vi.fn(),
+        setSaved: vi.fn(),
         darkMode: true,
-        } 
+      };
       render(<SaveButton {...props} />);
       const button = screen.getByRole('button', { name: /save changes/i });
-      expect(button).not.toBeDisabled(); 
-      userEvent.click(button);
+      expect(button).not.toBeDisabled();
+      await userEvent.click(button);
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
   });

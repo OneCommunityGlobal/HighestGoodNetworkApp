@@ -9,24 +9,19 @@ import {
   faExclamationTriangle,
   faUserPlus,
   faUserMinus,
-  faSync
+  faSync,
 } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../../utils/URL';
 import './AccessManagementModal.css';
 
-const AccessManagementModal = ({
-  isOpen,
-  onClose,
-  userProfile,
-  darkMode = false,
-}) => {
+const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false }) => {
   const [accessData, setAccessData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [actionInProgress, setActionInProgress] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [credentialsInput, setCredentialsInput] = useState({});
   const [inputTouched, setInputTouched] = useState({});
-  
+
   const targetUserId = userProfile._id;
   const role = userProfile.role;
 
@@ -36,26 +31,26 @@ const AccessManagementModal = ({
       name: 'GitHub',
       icon: '/github_icon.png',
       color: '#333',
-      bgColor: '#f6f8fa'
+      bgColor: '#f6f8fa',
     },
     dropbox: {
       name: 'Dropbox',
       icon: '/dropbox_icon.png',
       color: '#0061fe',
-      bgColor: '#f0f8ff'
+      bgColor: '#f0f8ff',
     },
     slack: {
       name: 'Slack',
       icon: '/slack_icon.png',
       color: '#4a154b',
-      bgColor: '#f8f0ff'
+      bgColor: '#f8f0ff',
     },
     sentry: {
       name: 'Sentry',
       icon: '/sentry_icon.png',
       color: '#362d59',
-      bgColor: '#f5f0ff'
-    }
+      bgColor: '#f5f0ff',
+    },
   };
 
   // Fetch access data when modal opens
@@ -93,7 +88,7 @@ const AccessManagementModal = ({
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = status => {
     switch (status) {
       case 'invited':
         return <FontAwesomeIcon icon={faCheckCircle} className="text-success" />;
@@ -107,26 +102,30 @@ const AccessManagementModal = ({
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = status => {
     const statusConfig = {
       invited: { color: 'success', text: 'Invited' },
       revoked: { color: 'danger', text: 'Revoked' },
       failed: { color: 'danger', text: 'Failed' },
-      none: { color: 'secondary', text: 'No Access' }
+      none: { color: 'secondary', text: 'No Access' },
     };
-    
+
     const config = statusConfig[status] || statusConfig.none;
-    return <Badge color={config.color} className="status-badge">{config.text}</Badge>;
+    return (
+      <Badge color={config.color} className="status-badge">
+        {config.text}
+      </Badge>
+    );
   };
 
-  const getAppStatus = (appName) => {
+  const getAppStatus = appName => {
     if (!accessData?.found || !accessData?.data?.apps) {
       return 'none';
     }
-    
+
     const app = accessData.data.apps.find(a => a.app === appName);
     if (!app) return 'none';
-    
+
     return app.status || 'none';
   };
 
@@ -152,7 +151,7 @@ const AccessManagementModal = ({
   const getRevokableApps = () => {
     return Object.keys(appConfigs).filter(appName => {
       const status = getAppStatus(appName);
-      return (status === 'invited') && appName !== 'slack';
+      return status === 'invited' && appName !== 'slack';
     });
   };
 
@@ -167,19 +166,19 @@ const AccessManagementModal = ({
     setActionInProgress(true);
     try {
       const results = await Promise.allSettled(
-        invitableApps.map(appName => handleInviteApp(appName))
+        invitableApps.map(appName => handleInviteApp(appName)),
       );
-      
+
       const successCount = results.filter(result => result.status === 'fulfilled').length;
       const failCount = results.length - successCount;
-      
+
       if (successCount > 0) {
         toast.success(`Successfully invited to ${successCount} app${successCount > 1 ? 's' : ''}`);
       }
       if (failCount > 0) {
         toast.error(`Failed to invite to ${failCount} app${failCount > 1 ? 's' : ''}`);
       }
-      
+
       await fetchAccessData(); // Refresh data
     } catch (error) {
       //console.error('Error in bulk invite:', error);
@@ -200,19 +199,21 @@ const AccessManagementModal = ({
     setActionInProgress(true);
     try {
       const results = await Promise.allSettled(
-        revokableApps.map(appName => handleRevokeApp(appName))
+        revokableApps.map(appName => handleRevokeApp(appName)),
       );
-      
+
       const successCount = results.filter(result => result.status === 'fulfilled').length;
       const failCount = results.length - successCount;
-      
+
       if (successCount > 0) {
-        toast.success(`Successfully revoked access from ${successCount} app${successCount > 1 ? 's' : ''}`);
+        toast.success(
+          `Successfully revoked access from ${successCount} app${successCount > 1 ? 's' : ''}`,
+        );
       }
       if (failCount > 0) {
         toast.error(`Failed to revoke access from ${failCount} app${failCount > 1 ? 's' : ''}`);
       }
-      
+
       await fetchAccessData(); // Refresh data
     } catch (error) {
       //console.error('Error in bulk revoke:', error.response);
@@ -222,7 +223,7 @@ const AccessManagementModal = ({
     }
   };
 
-  const handleInviteApp = async (appName) => {
+  const handleInviteApp = async appName => {
     setActionInProgress(true);
 
     const credential = credentialsInput[appName]?.trim();
@@ -239,9 +240,9 @@ const AccessManagementModal = ({
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_CREATE_ADD;
-          payload = { 
+          payload = {
             folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
-            targetUser: { targetUserId, role, email } 
+            targetUser: { targetUserId, role, email },
           };
           break;
         case 'slack':
@@ -266,15 +267,15 @@ const AccessManagementModal = ({
     }
   };
 
-  const handleRevokeApp = async (appName) => {
+  const handleRevokeApp = async appName => {
     setActionInProgress(true);
     const email = accessData?.data?.apps?.find(a => a.app === 'sentry')?.credentials || '';
     const username = accessData?.data?.apps?.find(a => a.app === 'github')?.credentials || '';
-    
+
     try {
       let endpoint;
       let payload;
-      
+
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_REMOVE;
@@ -282,9 +283,9 @@ const AccessManagementModal = ({
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_DELETE;
-          payload = { 
+          payload = {
             folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
-            targetUser: { targetUserId, role } 
+            targetUser: { targetUserId, role },
           };
           break;
         case 'sentry':
@@ -294,7 +295,7 @@ const AccessManagementModal = ({
         default:
           throw new Error('Unknown app');
       }
-      
+
       await axios.delete(endpoint, { data: payload });
       toast.success(`${appConfigs[appName].name} access revoked successfully`);
       await fetchAccessData(); // Refresh data
@@ -306,7 +307,7 @@ const AccessManagementModal = ({
     }
   };
 
-  const renderAppCard = (appName) => {
+  const renderAppCard = appName => {
     const config = appConfigs[appName];
     const status = getAppStatus(appName);
     const app = accessData?.data?.apps?.find(a => a.app === appName);
@@ -315,30 +316,29 @@ const AccessManagementModal = ({
     const isGithub = appName === 'github';
     const isCredentialValid = credentialValue.trim().length > 0;
     return (
-      <div 
-        key={appName}
-        className="app-card"
-      >
+      <div key={appName} className="app-card">
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
             <span
-              as={"span"}
+              as={'span'}
               className="app-icon"
               style={{ display: 'inline-block', width: 32, height: 32, marginRight: 12 }}
             >
-              <img src={config.icon} alt={config.name + ' icon'} style={{ width: 32, height: 32, objectFit: 'contain' }} />
+              <img
+                src={config.icon}
+                alt={config.name + ' icon'}
+                style={{ width: 32, height: 32, objectFit: 'contain' }}
+              />
             </span>
             <div>
-              <h6 className="app-name">
-                {config.name}
-              </h6>
+              <h6 className="app-name">{config.name}</h6>
               <div className="status-container">
                 {getStatusIcon(status)}
                 {getStatusBadge(status)}
               </div>
             </div>
           </div>
-          
+
           <div className="action-container">
             {status === 'none' && !app?.revokedOn && (
               <>
@@ -364,26 +364,26 @@ const AccessManagementModal = ({
                 </Button>
               </>
             )}
-            
+
             {status === 'none' && app?.revokedOn && (
               <div className="text-muted small">
                 <FontAwesomeIcon icon={faTimesCircle} className="mr-1" />
                 Access previously revoked
               </div>
             )}
-            
+
             {status === 'none' && !app?.revokedOn && touched && !isCredentialValid && (
               <div className="text-danger small" style={{ marginLeft: 8 }}>
                 {isGithub ? 'GitHub username is required' : 'Email is required'}
               </div>
             )}
-            
+
             {status === 'invited' && (
               <div className="text-muted small">
                 Invited: {app?.invitedOn ? new Date(app.invitedOn).toLocaleDateString() : 'N/A'}
               </div>
             )}
-            
+
             {(status === 'active' || status === 'invited') && appName !== 'slack' && (
               <Button
                 color="danger"
@@ -396,20 +396,20 @@ const AccessManagementModal = ({
                 Revoke
               </Button>
             )}
-            
+
             {(status === 'active' || status === 'invited') && appName === 'slack' && (
               <div className="text-muted small">
                 <FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />
                 Manual removal required
               </div>
             )}
-            
+
             {status === 'revoked' && (
               <div className="text-muted small">
                 Revoked: {app?.revokedOn ? new Date(app.revokedOn).toLocaleDateString() : 'N/A'}
               </div>
             )}
-            
+
             {status === 'failed' && (
               <div className="text-danger small">
                 Failed: {app?.failedReason || 'Unknown error'}
@@ -417,7 +417,7 @@ const AccessManagementModal = ({
             )}
           </div>
         </div>
-        
+
         {app?.credentials && (
           <div className="credentials">
             <strong>Credentials:</strong> {app.credentials}
@@ -429,22 +429,34 @@ const AccessManagementModal = ({
 
   const renderConfirmationModal = () => {
     if (!confirmAction) return null;
-    
+
     const { type, app } = confirmAction;
-    
+
     // Handle bulk actions
     if (type === 'invite-all') {
       const invitableApps = getInvitableApps();
       return (
-        <Modal isOpen={!!confirmAction} toggle={() => setConfirmAction(null)} size="md" className={darkMode ? 'text-light dark-mode' : ''}>
-          <ModalHeader toggle={() => setConfirmAction(null)} className={darkMode ? 'bg-space-cadet' : ''}>
+        <Modal
+          isOpen={!!confirmAction}
+          toggle={() => setConfirmAction(null)}
+          size="md"
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader
+            toggle={() => setConfirmAction(null)}
+            className={darkMode ? 'bg-space-cadet' : ''}
+          >
             Confirm Invite All Access
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <div className="d-flex align-items-center mb-3">
               <FontAwesomeIcon icon={faUserPlus} className="mr-2 text-success" />
               <span>
-                Are you sure you want to invite <strong>{userProfile?.firstName} {userProfile?.lastName}</strong> to all available applications?
+                Are you sure you want to invite{' '}
+                <strong>
+                  {userProfile?.firstName} {userProfile?.lastName}
+                </strong>{' '}
+                to all available applications?
               </span>
             </div>
             <div className="alert alert-info">
@@ -452,14 +464,15 @@ const AccessManagementModal = ({
               <ul className="mb-0 mt-2">
                 {invitableApps.map(appName => (
                   <li key={appName}>
-                    <strong>{appConfigs[appName].name}</strong> - {appName === 'github' ? 'Username' : 'Email'}: {credentialsInput[appName]}
+                    <strong>{appConfigs[appName].name}</strong> -{' '}
+                    {appName === 'github' ? 'Username' : 'Email'}: {credentialsInput[appName]}
                   </li>
                 ))}
               </ul>
             </div>
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button 
+            <Button
               color="success"
               onClick={() => {
                 handleInviteAll();
@@ -476,24 +489,38 @@ const AccessManagementModal = ({
                 'Yes, Invite All'
               )}
             </Button>
-            <Button color="secondary" onClick={() => setConfirmAction(null)} disabled={actionInProgress}>
+            <Button
+              color="secondary"
+              onClick={() => setConfirmAction(null)}
+              disabled={actionInProgress}
+            >
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
       );
     }
-    
+
     if (type === 'revoke-all') {
       const revokableApps = getRevokableApps();
       return (
-        <Modal isOpen={!!confirmAction} toggle={() => setConfirmAction(null)} size="md" className={darkMode ? 'text-light dark-mode' : ''}>
-          <ModalHeader toggle={() => setConfirmAction(null)} className={darkMode ? 'bg-space-cadet' : ''}>
+        <Modal
+          isOpen={!!confirmAction}
+          toggle={() => setConfirmAction(null)}
+          size="md"
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader
+            toggle={() => setConfirmAction(null)}
+            className={darkMode ? 'bg-space-cadet' : ''}
+          >
             Whoa Tiger!
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <div className="alert alert-danger">
-              <strong>Whoa Tiger! Are you sure you want to do this? This action is not reversible.</strong>
+              <strong>
+                Whoa Tiger! Are you sure you want to do this? This action is not reversible.
+              </strong>
             </div>
             <div className="alert alert-info">
               <strong>Apps to be revoked:</strong>
@@ -507,7 +534,7 @@ const AccessManagementModal = ({
             </div>
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button 
+            <Button
               color="danger"
               onClick={() => {
                 handleRevokeAll();
@@ -524,33 +551,47 @@ const AccessManagementModal = ({
                 "Yes, I'm sure"
               )}
             </Button>
-            <Button color="secondary" onClick={() => setConfirmAction(null)} disabled={actionInProgress}>
+            <Button
+              color="secondary"
+              onClick={() => setConfirmAction(null)}
+              disabled={actionInProgress}
+            >
               No, take me back!
             </Button>
           </ModalFooter>
         </Modal>
       );
     }
-    
+
     // Handle individual app actions
     const config = appConfigs[app];
-    
+
     return (
-      <Modal isOpen={!!confirmAction} toggle={() => setConfirmAction(null)} size="md" className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader toggle={() => setConfirmAction(null)} className={darkMode ? 'bg-space-cadet' : ''}>
+      <Modal
+        isOpen={!!confirmAction}
+        toggle={() => setConfirmAction(null)}
+        size="md"
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader
+          toggle={() => setConfirmAction(null)}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
           {type === 'revoke' ? 'Whoa Tiger!' : 'Confirm Invite Access'}
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {type === 'revoke' && (
             <>
               <div className="alert alert-danger">
-                <strong>Whoa Tiger! Are you sure you want to do this? This action is not reversible.</strong>
+                <strong>
+                  Whoa Tiger! Are you sure you want to do this? This action is not reversible.
+                </strong>
               </div>
             </>
           )}
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button 
+          <Button
             color={type === 'revoke' ? 'danger' : 'primary'}
             onClick={() => {
               if (type === 'revoke') {
@@ -567,11 +608,17 @@ const AccessManagementModal = ({
                 <Spinner size="sm" className="mr-2" />
                 {type === 'revoke' ? 'Revoking...' : 'Inviting...'}
               </>
+            ) : type === 'revoke' ? (
+              "Yes, I'm sure"
             ) : (
-              type === 'revoke' ? "Yes, I'm sure" : `Yes, ${type} access`
+              `Yes, ${type} access`
             )}
           </Button>
-          <Button color="secondary" onClick={() => setConfirmAction(null)} disabled={actionInProgress}>
+          <Button
+            color="secondary"
+            onClick={() => setConfirmAction(null)}
+            disabled={actionInProgress}
+          >
             {type === 'revoke' ? 'No, take me back!' : 'Cancel'}
           </Button>
         </ModalFooter>
@@ -587,7 +634,12 @@ const AccessManagementModal = ({
 
   return (
     <>
-      <Modal isOpen={isOpen} toggle={onClose} size="lg" className={`access-management-modal ${darkMode ? 'text-light dark-mode' : ''}`}>
+      <Modal
+        isOpen={isOpen}
+        toggle={onClose}
+        size="lg"
+        className={`access-management-modal ${darkMode ? 'text-light dark-mode' : ''}`}
+      >
         <ModalHeader toggle={onClose} className={darkMode ? 'bg-space-cadet' : ''}>
           <div className="d-flex align-items-center">
             <FontAwesomeIcon icon={faSync} className="mr-2" />
@@ -603,23 +655,25 @@ const AccessManagementModal = ({
           ) : (
             <div>
               <div className="user-info">
-                <h6>Managing access for: <strong>{userProfile?.firstName} {userProfile?.lastName}</strong></h6>
+                <h6>
+                  Managing access for:{' '}
+                  <strong>
+                    {userProfile?.firstName} {userProfile?.lastName}
+                  </strong>
+                </h6>
                 <p className="text-muted mb-0">Email: {userProfile?.email}</p>
               </div>
-              
+
               <div className="mb-3">
                 <h6>Application Access Status</h6>
                 <p className="text-muted small">
-                  {accessData?.found 
+                  {accessData?.found
                     ? 'User has access records. Manage their permissions below.'
-                    : 'No access records found. You can invite this user to applications.'
-                  }
+                    : 'No access records found. You can invite this user to applications.'}
                 </p>
               </div>
-              
-              <div className="apps-container">
-                {Object.keys(appConfigs).map(renderAppCard)}
-              </div>
+
+              <div className="apps-container">{Object.keys(appConfigs).map(renderAppCard)}</div>
 
               {/* Bulk Action Buttons */}
               <div className="d-flex mb-3">
@@ -655,21 +709,17 @@ const AccessManagementModal = ({
             Close
           </Button>
           {accessData?.found && (
-            <Button 
-              color="outline-primary" 
-              onClick={fetchAccessData}
-              disabled={loading}
-            >
+            <Button color="outline-primary" onClick={fetchAccessData} disabled={loading}>
               <FontAwesomeIcon icon={faSync} className="mr-1" />
               Refresh
             </Button>
           )}
         </ModalFooter>
       </Modal>
-      
+
       {renderConfirmationModal()}
     </>
   );
 };
 
-export default AccessManagementModal; 
+export default AccessManagementModal;

@@ -22,7 +22,7 @@ const AssignTeamCodeField = React.memo(props => {
   });
   const [isOpen, toggle] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
-  
+
   useEffect(() => {
     if (selectedTeamCode && selectedTeamCode !== searchText) {
       onSelectTeamCode(undefined);

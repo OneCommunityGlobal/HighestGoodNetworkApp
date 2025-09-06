@@ -21,87 +21,86 @@ const mockStore = configureStore([thunk]);
 
 const userTaskMock = [
   {
-    priority: "Primary",
+    priority: 'Primary',
     isAssigned: true,
-    status: "Complete",
-    _id: "6470477897eefd0a38475112",
+    status: 'Complete',
+    _id: '6470477897eefd0a38475112',
     resources: [
-        {
-            completedTask: true,
-            reviewStatus: "Unsubmitted",
-            _id: "6470477897eefd0a38475113",
-            userID: "645325bea0067106d4423119",
-        },
-        {
-            completedTask: true,
-            reviewStatus: "Unsubmitted",
-            _id: "64751f5009107205627746fb",
-            userID: "6453268aa0067106d4423160",
-        }
+      {
+        completedTask: true,
+        reviewStatus: 'Unsubmitted',
+        _id: '6470477897eefd0a38475113',
+        userID: '645325bea0067106d4423119',
+      },
+      {
+        completedTask: true,
+        reviewStatus: 'Unsubmitted',
+        _id: '64751f5009107205627746fb',
+        userID: '6453268aa0067106d4423160',
+      },
     ],
-    wbsId: "6470473f97eefd0a38475104",
-    taskName: "Task 1",
-    num: "1",
-    category: "Food",
-    projectId: "1"
-},
-{
-    priority: "Primary",
+    wbsId: '6470473f97eefd0a38475104',
+    taskName: 'Task 1',
+    num: '1',
+    category: 'Food',
+    projectId: '1',
+  },
+  {
+    priority: 'Primary',
     isAssigned: false,
-    status: "Active",
+    status: 'Active',
     isActive: true,
-    _id: "64b6f347d34321075b7734fe",
+    _id: '64b6f347d34321075b7734fe',
     resources: [
-        {
-            completedTask: false,
-            reviewStatus: "Unsubmitted",
-            _id: "64b6f347d34321075b773531",
-            name: "User 1",
-            userID: "6453266da0067106d4423158"
-        },
-        {
-            completedTask: false,
-            reviewStatus: "Unsubmitted",
-            _id: "64b6f347d34321075b773532",
-            name: "User 2",
-            userID: "6453268aa0067106d4423160"
-        }
+      {
+        completedTask: false,
+        reviewStatus: 'Unsubmitted',
+        _id: '64b6f347d34321075b773531',
+        name: 'User 1',
+        userID: '6453266da0067106d4423158',
+      },
+      {
+        completedTask: false,
+        reviewStatus: 'Unsubmitted',
+        _id: '64b6f347d34321075b773532',
+        name: 'User 2',
+        userID: '6453268aa0067106d4423160',
+      },
     ],
-    wbsId: "64b6f33cd34321075b7734de",
-    taskName: "Task 2",
-    num: "2.1.1.0",
-    projectId: "2"
-},
-]
+    wbsId: '64b6f33cd34321075b7734de',
+    taskName: 'Task 2',
+    num: '2.1.1.0',
+    projectId: '2',
+  },
+];
 
 const mockUserProfile = {
   userProjects: [
-  { _id: '1', category: 'Society', projectName: 'Project1' },
-  { _id: '2', category: 'Test', projectName: 'Project2' }
-],
-userProfile: userProfileMock,
-userTasks: []
+    { _id: '1', category: 'Society', projectName: 'Project1' },
+    { _id: '2', category: 'Test', projectName: 'Project2' },
+  ],
+  userProfile: userProfileMock,
+  userTasks: [],
 };
-
 
 const renderComponent = mockProps => {
   const store = mockStore({
     auth: {
       user: {
-        role: 'Owner', 
+        role: 'Owner',
         permissions: {
           frontPermissions: [],
         },
       },
     },
-      disabled: false,
-      edit: true,
-      role: "Administrator",
-      userProfile: {
-       ...mockProps.userProfile,
-      },
-      hasPermission: vi.fn((a) => true),
-      userTasks: []
+    disabled: false,
+    edit: true,
+    role: 'Administrator',
+    userProfile: {
+      ...mockProps.userProfile,
+    },
+    hasPermission: vi.fn(a => true),
+    userTasks: [],
   });
 
   return render(
@@ -113,18 +112,16 @@ const renderComponent = mockProps => {
         role={mockProps.role}
         disabled={mockProps.disabled}
         userId={mockProps.userProfile._id}
-        hasPermission={vi.fn((a) => true)}
+        hasPermission={vi.fn(a => true)}
         userTasks={mockProps.userTasks}
       />
     </Provider>,
   );
 };
 
-
 describe('User Projects Table Component', () => {
   it('render without crashing', () => {
     renderComponent(mockUserProfile);
-
   });
 
   it('renders correct number of projects the user is assigned to', () => {
@@ -135,7 +132,7 @@ describe('User Projects Table Component', () => {
   // Test for correct rendering of project names
   it('renders correct project names', () => {
     renderComponent(mockUserProfile);
-    const projectRows = within(screen.getByTestId('userProjectTest')).getAllByRole('row'); 
+    const projectRows = within(screen.getByTestId('userProjectTest')).getAllByRole('row');
     expect(projectRows.length).toBe(2); // Ensure we have 2 project rows
 
     const projectNames = projectRows.map(row => {
@@ -148,7 +145,7 @@ describe('User Projects Table Component', () => {
   it('renders correct number of tasks', () => {
     mockUserProfile.userTasks = userTaskMock;
     renderComponent(mockUserProfile);
-    const taskRows = within(screen.getByTestId('userProjectTaskTest')).getAllByRole('row'); 
+    const taskRows = within(screen.getByTestId('userProjectTaskTest')).getAllByRole('row');
     expect(taskRows.length).toBe(2); // Ensure we have 2 task rows
   });
 });

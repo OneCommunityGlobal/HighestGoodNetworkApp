@@ -30,11 +30,10 @@ const ScheduleReasonModal = ({
     .isoWeekday(7)
     .startOf('day');
   const nextSunday = new Date(nextSundayStr.year(), nextSundayStr.month(), nextSundayStr.date());
-  
-  const currSundayStr = moment()
-    .startOf('week');
+
+  const currSundayStr = moment().startOf('week');
   const currSunday = new Date(currSundayStr.year(), currSundayStr.month(), currSundayStr.date());
-  
+
   const initialRequestData = {
     dateOfLeave: nextSunday,
     numberOfWeeks: 1,
@@ -253,7 +252,7 @@ const ScheduleReasonModal = ({
     return day === 0;
   };
 
-  const handleSave = ( data = requestData ) => {
+  const handleSave = (data = requestData) => {
     const { intervals, startDate } = getWeekIntervals(data);
     setConfirmationModalData({
       offTimeWeeks: intervals,
@@ -261,19 +260,18 @@ const ScheduleReasonModal = ({
       reasonForLeave: data.reasonForLeave,
     });
     toggleConfirmationModal();
-  }
+  };
 
-  const handleWeekStart = (selectedSunday) => {
+  const handleWeekStart = selectedSunday => {
     setRequestData(prev => {
       const newData = {
-      ...prev,
-      dateOfLeave: selectedSunday,
-      }
+        ...prev,
+        dateOfLeave: selectedSunday,
+      };
       handleSave(newData);
       return newData;
-    })
-    
-  }
+    });
+  };
 
   const handleSaveReason = e => {
     e.preventDefault();
@@ -285,10 +283,9 @@ const ScheduleReasonModal = ({
     if (!validateNumberOfWeeks(requestData)) return;
     if (!validateReasonForLeave(requestData)) return;
 
-    if(nextSunday.getTime() === requestData.dateOfLeave.getTime()){
+    if (nextSunday.getTime() === requestData.dateOfLeave.getTime()) {
       toggleStartWeekConfirmationModal();
-    }
-    else{
+    } else {
       handleSave();
     }
   };
@@ -504,11 +501,14 @@ const ScheduleReasonModal = ({
                   </Container>
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Button variant="primary" onClick={()=>{
-                    handleStartWeekConfirmationModal()
-                    handelConfirmReason()
-                    handleClose()
-                  }}>
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      handleStartWeekConfirmationModal();
+                      handelConfirmReason();
+                      handleClose();
+                    }}
+                  >
                     Confirm
                   </Button>
                   <Button variant="secondary" onClick={toggleConfirmationModal}>
@@ -532,31 +532,38 @@ const ScheduleReasonModal = ({
                   </Button>
                 </ModalFooter>
               </NestedModal>
-              <NestedModal isOpen={showStartWeekModal} toggle={toggleStartWeekConfirmationModal} className={darkMode ? 'text-light dark-mode' : ''}>
+              <NestedModal
+                isOpen={showStartWeekModal}
+                toggle={toggleStartWeekConfirmationModal}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Container>
-                    <Row>You are about to schedule time off starting next week. Please confirm this is what you want to do.</Row>
+                    <Row>
+                      You are about to schedule time off starting next week. Please confirm this is
+                      what you want to do.
+                    </Row>
                   </Container>
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button
-                      variant="primary"
-                      onClick={()=>handleWeekStart(nextSunday)}
-                      className="w-100"
-                      size="md"
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      Yes, NEXT WEEK is when I want my time off to start! 
+                    variant="primary"
+                    onClick={() => handleWeekStart(nextSunday)}
+                    className="w-100"
+                    size="md"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Yes, NEXT WEEK is when I want my time off to start!
                   </Button>
                   <Button
-                      variant="primary"
-                      onClick={()=>handleWeekStart(currSunday)}
-                      className="w-100"
-                      size="md"
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      No, I meant to start my time off THIS WEEK.
-                      Please adjust this request to start this week instead. 
+                    variant="primary"
+                    onClick={() => handleWeekStart(currSunday)}
+                    className="w-100"
+                    size="md"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    No, I meant to start my time off THIS WEEK. Please adjust this request to start
+                    this week instead.
                   </Button>
                 </ModalFooter>
               </NestedModal>

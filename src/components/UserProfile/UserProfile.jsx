@@ -44,7 +44,7 @@ import BasicToolTips from './ToolTips/BasicTabTips';
 import TeamsTabTips from './ToolTips/TeamsTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode } from '../../actions/allTeamsAction';
+import { getAllTeamCode, getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import {
@@ -59,7 +59,6 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
@@ -91,8 +90,7 @@ function UserProfile(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-
-   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
+  // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
   //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
   //        child component with access global redux store data (complexity)
   // Explaination:
@@ -118,7 +116,6 @@ function UserProfile(props) {
       Please try again by clicking the icon inside the input auto complete.`);
     }
   };
-
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -185,7 +182,7 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
-  const [calculatedStartDate, setCalculatedStartDate] = useState(''); 
+  const [calculatedStartDate, setCalculatedStartDate] = useState('');
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
@@ -196,7 +193,6 @@ function UserProfile(props) {
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false);
 
- 
   const updateProjetTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -357,7 +353,11 @@ function UserProfile(props) {
   const fetchCalculatedStartDate = async (userId, userProfileData) => {
     try {
       const startDate = await dispatch(
-        getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
+        getTimeStartDateEntriesByPeriod(
+          userId,
+          userProfileData.createdDate,
+          userProfileData.endDate,
+        ),
       );
 
       if (startDate !== 'N/A') {
@@ -365,17 +365,13 @@ function UserProfile(props) {
         setCalculatedStartDate(formattedStartDate);
       } else {
         // No time entries yet, use createdDate as fallback
-        const createdDate = userProfile?.createdDate
-          ? userProfile.createdDate.split('T')[0]
-          : '';
+        const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
       console.error('Error fetching calculated start date:', error);
       // Fallback to createdDate on error
-      const createdDate = userProfile?.createdDate
-        ? userProfile.createdDate.split('T')[0]
-        : '';
+      const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
       setCalculatedStartDate(createdDate);
     }
   };
@@ -969,7 +965,7 @@ function UserProfile(props) {
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -1005,7 +1001,7 @@ function UserProfile(props) {
     setUserProfile(prev => ({
       ...prev,
       startDate: startDate,
-      isStartDateManuallyModified: true
+      isStartDateManuallyModified: true,
     }));
   };
 
@@ -1138,7 +1134,7 @@ function UserProfile(props) {
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
             updateUserProfile={props.updateUserProfile}
-            fetchTeamCodeAllUsers = {fetchTeamCodeAllUsers}
+            fetchTeamCodeAllUsers={fetchTeamCodeAllUsers}
           />
         </div>
 
@@ -1227,13 +1223,11 @@ function UserProfile(props) {
                   style={{ padding: '0', border: 'none', background: 'none' }}
                   size="sm"
                   onClick={() => setShowAccessManagementModal(true)}
-                  title={
-                    'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
-                  }
+                  title={'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'}
                 >
                   <img
-                    src='/HGN_Add_Access.png'
-                    alt='Add Access'
+                    src="/HGN_Add_Access.png"
+                    alt="Add Access"
                     style={{ width: '20px', height: '20px' }}
                   />
                 </Button>
@@ -1286,7 +1280,10 @@ function UserProfile(props) {
             )}
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
-          <p className={`proile-rating ${darkMode ? 'text-light' : ''}`} style={{ textAlign: 'left' }}>
+          <p
+            className={`proile-rating ${darkMode ? 'text-light' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
             From:{' '}
             <span className={darkMode ? 'text-light' : ''}>

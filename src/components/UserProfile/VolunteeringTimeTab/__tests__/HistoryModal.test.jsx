@@ -17,7 +17,7 @@ describe('HistoryModal Component', () => {
   const userName = 'John Doe';
   const userHistory = [
     { _id: '1', hours: 10, dateChanged: new Date(2021, 0, 1) },
-    { _id: '2', hours: 8, dateChanged: new Date(2020, 5, 15) }
+    { _id: '2', hours: 8, dateChanged: new Date(2020, 5, 15) },
   ];
 
   test('renders modal when isOpen is true', () => {
@@ -48,7 +48,11 @@ describe('HistoryModal Component', () => {
   });
 
   test('shows message when there is no user history', () => {
-    render(<Provider store={store}><HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={[]} /></Provider>);
+    render(
+      <Provider store={store}>
+        <HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={[]} />
+      </Provider>,
+    );
 
     expect(
       screen.getByText(`${userName} has never made any changes to the promised hours.`),
@@ -57,7 +61,9 @@ describe('HistoryModal Component', () => {
 
   test('toggle button closes the modal', () => {
     render(
-      <Provider store={store}><HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={userHistory} /></Provider>,
+      <Provider store={store}>
+        <HistoryModal isOpen toggle={mockToggle} userName={userName} userHistory={userHistory} />
+      </Provider>,
     );
 
     // Use a regular expression to match the button text more flexibly

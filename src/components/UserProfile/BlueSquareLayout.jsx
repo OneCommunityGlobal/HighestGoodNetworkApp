@@ -10,8 +10,7 @@ import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import BluequareEmailAssignmentPopUp from './BluequareEmailBBCPopUp';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
-import {useHistory } from 'react-router-dom';
-
+import { useHistory } from 'react-router-dom';
 
 const BlueSquareLayout = ({
   userProfile,
@@ -21,7 +20,7 @@ const BlueSquareLayout = ({
   user,
   darkMode,
 }) => {
-    const history = useHistory();
+  const history = useHistory();
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
@@ -133,7 +132,11 @@ const BlueSquareLayout = ({
                   >
                     Blue Square Email BCCs
                   </Button>
-                  <div className={`Blue-Square-Email-BCC-tooltip ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+                  <div
+                    className={`Blue-Square-Email-BCC-tooltip ${
+                      darkMode ? 'bg-space-cadet text-light' : ''
+                    }`}
+                  >
                     This designates who gets a copy of the blue square emails. It includes ONLY
                     sending to active team members, so we don’t have to remove people from the list
                     if they are made inactive. It doesn’t include getting copies of the time-off
@@ -145,14 +148,20 @@ const BlueSquareLayout = ({
                 <div className="Job-Email-CC-div">
                   <Button
                     variant="primary"
-                    onClick={() => {history.push("/job-notification-dashboard")}}
+                    onClick={() => {
+                      history.push('/job-notification-dashboard');
+                    }}
                     className="mt-3 w-100 Job-Email-CC-button"
                     size="md"
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
                     Edit Job Application Email CC
                   </Button>
-                  <div className={`Job-Email-CC-tooltip ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+                  <div
+                    className={`Job-Email-CC-tooltip ${
+                      darkMode ? 'bg-space-cadet text-light' : ''
+                    }`}
+                  >
                     This designates who gets an email for specific job applications.
                   </div>
                 </div>
@@ -176,7 +185,11 @@ const BlueSquareLayout = ({
           />
         </Modal>
         {show && (
-          <Modal show={show} onHide={handleClose} className={darkMode ? 'text-light dark-mode' : ''}>
+          <Modal
+            show={show}
+            onHide={handleClose}
+            className={darkMode ? 'text-light dark-mode' : ''}
+          >
             <ScheduleReasonModal
               handleClose={handleClose}
               userId={userProfile._id}
@@ -190,7 +203,6 @@ const BlueSquareLayout = ({
         )}
       </div>
     );
-
   }
   return (
     <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">

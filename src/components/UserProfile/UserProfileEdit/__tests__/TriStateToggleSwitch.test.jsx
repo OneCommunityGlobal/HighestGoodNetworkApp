@@ -8,7 +8,7 @@ describe('TriStateToggleSwitch Component', () => {
     const { container, rerender } = render(<TriStateToggleSwitch pos="posted" />);
     const wrapper = container.querySelector('.toggle-switch');
     const knob = container.querySelector('.knob');
-    
+
     expect(wrapper).toHaveClass('toggle-switch', 'bg-blue');
     expect(knob).toHaveClass('posted');
 
@@ -16,7 +16,6 @@ describe('TriStateToggleSwitch Component', () => {
     expect(wrapper).toHaveClass('toggle-switch', 'bg-darkgray');
     expect(container.querySelector('.knob')).toHaveClass('default');
 
-    
     rerender(<TriStateToggleSwitch pos="requested" />);
     expect(wrapper).toHaveClass('toggle-switch', 'bg-green');
     expect(container.querySelector('.knob')).toHaveClass('requested');
@@ -28,20 +27,17 @@ describe('TriStateToggleSwitch Component', () => {
     const wrapper = container.querySelector('.toggle-switch');
     const options = container.querySelectorAll('.knob-area div');
 
-    
     fireEvent.click(options[0]);
     expect(handleChange).toHaveBeenCalledWith('posted');
     expect(wrapper).toHaveClass('bg-blue');
     expect(container.querySelector('.knob')).toHaveClass('posted');
 
-    
     handleChange.mockClear();
     fireEvent.click(options[1]);
     expect(handleChange).toHaveBeenCalledWith('default');
     expect(wrapper).toHaveClass('bg-darkgray');
     expect(container.querySelector('.knob')).toHaveClass('default');
 
-   
     handleChange.mockClear();
     fireEvent.click(options[2]);
     expect(handleChange).toHaveBeenCalledWith('requested');
@@ -62,10 +58,9 @@ describe('TriStateToggleSwitch Component', () => {
   it('does not call onChange on mount or prop change', () => {
     const handleChange = vi.fn();
     const { rerender } = render(<TriStateToggleSwitch pos="posted" onChange={handleChange} />);
-    
+
     expect(handleChange).not.toHaveBeenCalled();
 
-    
     rerender(<TriStateToggleSwitch pos="default" onChange={handleChange} />);
     expect(handleChange).not.toHaveBeenCalled();
   });
@@ -85,17 +80,15 @@ describe('TriStateToggleSwitch Component', () => {
   it('wrapper has exactly two classes (toggle-switch and bg-color) for each state', () => {
     const { container, rerender } = render(<TriStateToggleSwitch pos="default" />);
     const wrapper = container.querySelector('.toggle-switch');
-    
+
     expect(wrapper.classList.length).toBe(2);
     expect(wrapper.classList.contains('toggle-switch')).toBe(true);
     expect(wrapper.classList.contains('bg-darkgray')).toBe(true);
 
-    
     rerender(<TriStateToggleSwitch pos="posted" />);
     expect(wrapper.classList.length).toBe(2);
     expect(wrapper.classList.contains('bg-blue')).toBe(true);
 
-    
     rerender(<TriStateToggleSwitch pos="requested" />);
     expect(wrapper.classList.length).toBe(2);
     expect(wrapper.classList.contains('bg-green')).toBe(true);
@@ -113,5 +106,4 @@ describe('TriStateToggleSwitch Component', () => {
       expect(container.querySelector('.knob')).toHaveClass(expected);
     });
   });
-
 });

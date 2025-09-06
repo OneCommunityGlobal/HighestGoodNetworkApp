@@ -3,21 +3,16 @@ import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from '~/utils/formatDate';
 
-
-const BlueSquare = (props) => {
-  const {
-    blueSquares,
-    handleBlueSquare,
-    hasPermission,
-    darkMode
-  } = props;
+const BlueSquare = props => {
+  const { blueSquares, handleBlueSquare, hasPermission, darkMode } = props;
 
   const canAddInfringements = hasPermission('addInfringements');
   const canEditInfringements = hasPermission('editInfringements');
   const canDeleteInfringements = hasPermission('deleteInfringements');
-  const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements;
+  const isInfringementAuthorizer =
+    canAddInfringements || canEditInfringements || canDeleteInfringements;
 
-  const handleOnClick = (blueSquare) => {    
+  const handleOnClick = blueSquare => {
     if (!blueSquare._id) {
       handleBlueSquare, darkMode(isInfringementAuthorizer, 'message', 'none');
     } else if (canEditInfringements || canDeleteInfringements) {
@@ -25,13 +20,13 @@ const BlueSquare = (props) => {
     } else {
       handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
     }
-  };    
+  };
   return (
     <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length ? (
           blueSquares
-            .sort((a, b) => (a.date > b.date ? 1 : -1))  // sorting by most recent date(awareded) last
+            .sort((a, b) => (a.date > b.date ? 1 : -1)) // sorting by most recent date(awareded) last
             .map((blueSquare, index) => (
               <div
                 key={index}
@@ -45,7 +40,9 @@ const BlueSquare = (props) => {
                   <div className="title">{formatDate(blueSquare.date)}</div>
                   {blueSquare.description && (
                     <div className="summary">
-                      {blueSquare.createdDate ? `${formatCreatedDate(blueSquare.createdDate)}: ` : ''}
+                      {blueSquare.createdDate
+                        ? `${formatCreatedDate(blueSquare.createdDate)}: `
+                        : ''}
                       {blueSquare.description}
                     </div>
                   )}
@@ -69,7 +66,5 @@ const BlueSquare = (props) => {
     </div>
   );
 };
-
-
 
 export default connect(null, { hasPermission })(BlueSquare);

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardBody, Row, Col, Button } from 'reactstrap';
 import moment from 'moment-timezone';
 
-function ScheduleReasonModalCard({ request , handleDeleteRequest }) {
+function ScheduleReasonModalCard({ request, handleDeleteRequest }) {
   const [showFullText, setShowFullText] = useState(false);
   const toggleShowText = () => {
     setShowFullText(!showFullText);
@@ -11,18 +11,18 @@ function ScheduleReasonModalCard({ request , handleDeleteRequest }) {
     <Card className="mb-2">
       <CardBody>
         <Row>
-          <Col md='7'>
+          <Col md="7">
             <p>
               <strong>Date Of Leave: </strong>
               {moment(request.startingDate).format('MMM Do YYYY')}
             </p>
-          </Col >
-          <Col md='5'>
-          <p>
+          </Col>
+          <Col md="5">
+            <p>
               <strong>Duration: </strong>
-              {request.duration}{Number(request.duration) > 1 ? ` weeks`: ` week`}
+              {request.duration}
+              {Number(request.duration) > 1 ? ` weeks` : ` week`}
             </p>
-
           </Col>
         </Row>
         <Row>

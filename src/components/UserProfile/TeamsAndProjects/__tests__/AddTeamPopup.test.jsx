@@ -81,7 +81,7 @@ describe('AddTeamPopup component', () => {
       allTeams: [],
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Add Team')).toBeInTheDocument();
+    expect(screen.getByText('Add Team')).toBeInTheDocument();
   });
 
   it('does not render modal elements when addTeamPopupOpen is true', () => {
@@ -117,7 +117,7 @@ describe('AddTeamPopup component', () => {
     const searchElement = modalBodyElement.querySelector('.form-control');
 
     fireEvent.change(searchElement, { target: { value: 'team1' } });
-    await waitFor(() => { });
+    await waitFor(() => {});
     const team12Element = screen.getByText('team12');
     fireEvent.click(team12Element);
     const confirmElement = screen.getByText('Confirm');
@@ -153,14 +153,14 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Add to Team')).toBeInTheDocument();
+    expect(screen.getByText('Add to Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
     const modalBodyElement = modalContentElement.querySelector('.modal-body');
     const searchElement = modalBodyElement.querySelector('.form-control');
 
     fireEvent.change(searchElement, { target: { value: 'team111' } });
-    await waitFor(() => { });
+    await waitFor(() => {});
     const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
     fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
     expect(
@@ -179,14 +179,14 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Add to Team')).toBeInTheDocument();
+    expect(screen.getByText('Add to Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
     const modalBodyElement = modalContentElement.querySelector('.modal-body');
     const searchElement = modalBodyElement.querySelector('.form-control');
 
     fireEvent.change(searchElement, { target: { value: 'team1' } });
-    await waitFor(() => { });
+    await waitFor(() => {});
     expect(screen.getByText('team11')).toBeInTheDocument();
     expect(screen.getByText('team12')).toBeInTheDocument();
     expect(screen.getByText('team13')).toBeInTheDocument();
@@ -204,17 +204,17 @@ describe('AddTeamPopup component', () => {
       allTeams: store.getState().allTeams,
     };
     renderComponent(true, teamsData, userTeams);
-    expect(screen.queryByText('Add to Team')).toBeInTheDocument();
+    expect(screen.getByText('Add to Team')).toBeInTheDocument();
     const modalFadeElement = screen.getByRole('document');
     const modalContentElement = modalFadeElement.querySelector('.modal-content');
     const modalBodyElement = modalContentElement.querySelector('.modal-body');
     const searchElement = modalBodyElement.querySelector('.form-control');
 
     fireEvent.change(searchElement, { target: { value: '' } });
-    await waitFor(() => { });
+    await waitFor(() => {});
     const nextDivElement = modalBodyElement.querySelector('.input-group-prepend');
     fireEvent.click(nextDivElement.querySelector('.btn.btn-primary'));
-    expect(screen.queryByText('Hey, You need to pick a team first!')).toBeInTheDocument();
+    expect(screen.getByText('Hey, You need to pick a team first!')).toBeInTheDocument();
   });
   it('check if postNewTeam action works as expected', async () => {
     const responseData = { teamName: 'New Team', isActive: true };

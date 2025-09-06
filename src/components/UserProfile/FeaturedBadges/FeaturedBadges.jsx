@@ -34,12 +34,12 @@ const FeaturedBadges = props => {
   return (
     <div data-testid="badge_featured_container" className="badge_featured_container">
       {filteredBadges.map((value, index) => (
-        <BadgeImage 
-          personalBestMaxHrs={props.personalBestMaxHrs} 
-          count={value.count} 
-          badgeData={value.badge} 
-          index={index} 
-          key={value.badge?._id || index} 
+        <BadgeImage
+          personalBestMaxHrs={props.personalBestMaxHrs}
+          count={value.count}
+          badgeData={value.badge}
+          index={index}
+          key={value.badge?._id || index}
         />
       ))}
     </div>

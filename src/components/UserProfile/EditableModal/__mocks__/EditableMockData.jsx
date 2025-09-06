@@ -1,11 +1,8 @@
-
-
 export const infoCollectionsMockData1 = {
   infos: [
     {
-      areaName:'a',
-      areaContent:'edit',
+      areaName: 'a',
+      areaContent: 'edit',
     },
   ],
 };
-

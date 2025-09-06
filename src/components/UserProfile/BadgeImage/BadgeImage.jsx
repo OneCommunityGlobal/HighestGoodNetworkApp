@@ -8,19 +8,17 @@ const BadgeImage = props => {
   const toggle = () => setOpen(isOpen => !isOpen);
 
   const updateBadgeValue = (countValue, personalBestMaxHrs) => {
-    if(props.badgeData.type == 'Personal Max'){ 
+    if (props.badgeData.type == 'Personal Max') {
       // show the personal best hours or mannually updated hours
       if (countValue > personalBestMaxHrs) {
         setBadgeValue(countValue);
-      }
-      else{
+      } else {
         setBadgeValue(personalBestMaxHrs);
       }
-    }
-    else{
+    } else {
       setBadgeValue(countValue);
     }
-  }
+  };
 
   useEffect(() => {
     // update the badge value when save changes simultaneously
@@ -39,13 +37,23 @@ const BadgeImage = props => {
           />
 
           {props.badgeData.type == 'Personal Max' ? (
-            <span data-testid="badge_featured_count_personalmax" className={'badge_featured_count_personalmax'}>
+            <span
+              data-testid="badge_featured_count_personalmax"
+              className={'badge_featured_count_personalmax'}
+            >
               {`${Math.floor(badgeValue)} ${Math.floor(badgeValue) <= 1 ? ' hr' : ' hrs'}`}
             </span>
           ) : props.count < 100 ? (
-            <span data-testid="badge_featured_count" className={'badge_featured_count'}>{Math.round(badgeValue)}</span>
+            <span data-testid="badge_featured_count" className={'badge_featured_count'}>
+              {Math.round(badgeValue)}
+            </span>
           ) : (
-            <span data-testid="badge_featured_count_3_digit" className="badge_featured_count_3_digit">{Math.round(badgeValue)}</span>
+            <span
+              data-testid="badge_featured_count_3_digit"
+              className="badge_featured_count_3_digit"
+            >
+              {Math.round(badgeValue)}
+            </span>
           )}
         </div>
       </div>

@@ -6,7 +6,7 @@ import LinkModButton from '../LinkModButton';
 // Mock child component
 vi.mock('../../UserProfileModal/EditLinkModal', () => ({
   __esModule: true,
-  default: (props) => (
+  default: props => (
     <div data-testid="edit-modal">
       {/* only render inner <div> when isOpen=true */}
       {props.isOpen && <div data-testid="modal">mocked EditLinkModal</div>}

@@ -53,7 +53,7 @@ import { addTeamMember, deleteTeamMember } from '../../../../actions/allTeamsAct
 import { toast } from 'react-toastify';
 
 describe('TeamsTab (unit)', () => {
-    beforeEach(() => {
+  beforeEach(() => {
     vi.clearAllMocks();
   });
   const baseProps = {
@@ -106,7 +106,7 @@ describe('TeamsTab (unit)', () => {
   it('5. closes the popup when AddTeamPopup is clicked (onClose)', () => {
     render(<TeamsTab {...baseProps} />);
     fireEvent.click(screen.getByTestId('user-teams-table')); // open
-    fireEvent.click(screen.getByTestId('add-team-popup'));    // close
+    fireEvent.click(screen.getByTestId('add-team-popup')); // close
     expect(screen.getByTestId('add-team-popup')).toHaveAttribute('data-open', 'false');
   });
 

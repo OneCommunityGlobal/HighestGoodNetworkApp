@@ -1,8 +1,8 @@
-import "./Switch.css"
-const Switch = ({ isOn, handleToggle}) => {
+import './Switch.css';
+const Switch = ({ isOn, handleToggle }) => {
   return (
-    <div className='switch-container'>
-      <p className='switch-title'>invisible</p>
+    <div className="switch-container">
+      <p className="switch-title">invisible</p>
       <input
         checked={isOn}
         onChange={handleToggle}
@@ -11,15 +11,15 @@ const Switch = ({ isOn, handleToggle}) => {
         type="checkbox"
       />
       <label
-        style={{ background: isOn ? "#0062cc" : " " }}
+        style={{ background: isOn ? '#0062cc' : ' ' }}
         className="switch-label"
         htmlFor="switch"
       >
         <span className="switch-button" />
       </label>
-      <p className='switch-title'>visible</p>
+      <p className="switch-title">visible</p>
     </div>
   );
-}
+};
 
-export default Switch
+export default Switch;

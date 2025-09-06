@@ -1,7 +1,7 @@
-import React from 'react'; 
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import TimeOffRequestsTable from '../TimeOffRequestsTable'; 
+import TimeOffRequestsTable from '../TimeOffRequestsTable';
 import moment from 'moment';
 
 describe('TimeOffRequestsTable Component', () => {
@@ -28,13 +28,17 @@ describe('TimeOffRequestsTable Component', () => {
   });
 
   it('should display the correct number of requests', () => {
-    render(<TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />);
-    const entries = screen.getAllByText(/\/\d{2}\/\d{4}$/); 
+    render(
+      <TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />,
+    );
+    const entries = screen.getAllByText(/\/\d{2}\/\d{4}$/);
     expect(entries).toHaveLength(4);
   });
 
   it('renders duration in weeks correctly', () => {
-    render(<TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />);
+    render(
+      <TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />,
+    );
 
     const durationCells = screen.getAllByText(/2 Weeks|1 week/);
     expect(durationCells).toHaveLength(2);
@@ -44,7 +48,9 @@ describe('TimeOffRequestsTable Component', () => {
   });
 
   it('should correctly display request details', () => {
-    render(<TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />);
+    render(
+      <TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />,
+    );
     mockRequests.forEach(request => {
       const dateElement = screen.getAllByText(moment(request.startingDate).format('MM/DD/YYYY'))[0];
       const durationElement = screen.getAllByText(request.duration.toString())[0];
@@ -57,11 +63,11 @@ describe('TimeOffRequestsTable Component', () => {
   });
 
   it('should open modal when clicking on the icon', () => {
-    render(<TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />);
+    render(
+      <TimeOffRequestsTable requests={mockRequests} openModal={mockOpenModal} darkMode={false} />,
+    );
     const icon = document.querySelector('.user-profile-time-off-div-table-entry-icon svg');
     fireEvent.click(icon.closest('div'));
     expect(mockOpenModal).toHaveBeenCalled();
   });
 });
-
-

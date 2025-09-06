@@ -38,7 +38,7 @@ const mockallTeams = [
 const mockhandleTeam = vi.fn();
 
 describe('Team Table Data component', () => {
-    beforeEach(() => {
+  beforeEach(() => {
     mockhandleTeam.mockClear();
   });
 
@@ -60,7 +60,7 @@ describe('Team Table Data component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('team11')).toBeInTheDocument();
+    expect(screen.getByText('team11')).toBeInTheDocument();
   });
   it('check if team name not getting displayed when user is not assigned to a team', () => {
     const teamsData = [];
@@ -155,7 +155,7 @@ describe('Teams component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('Teams')).toBeInTheDocument();
+    expect(screen.getByText('Teams')).toBeInTheDocument();
   });
   it('check modal opens when add a team button is clicked', () => {
     const teamsData = [];
@@ -171,7 +171,7 @@ describe('Teams component', () => {
     );
     const buttonElement = screen.getByText('Add a Team');
     fireEvent.click(buttonElement);
-    expect(screen.queryByText('Modal title')).toBeInTheDocument();
+    expect(screen.getByText('Modal title')).toBeInTheDocument();
   });
   it('check if modal does not open when add a team button is not clicked', () => {
     const teamsData = [];

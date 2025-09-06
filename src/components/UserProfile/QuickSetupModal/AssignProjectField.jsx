@@ -3,11 +3,11 @@ import { Dropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 
 const AssignProjectField = React.memo(props => {
-  const [searchText, onInputChange] = useState(()=>{
-    if(props.editMode){
-      return props.value.projectName
-    }else{
-      return ''
+  const [searchText, onInputChange] = useState(() => {
+    if (props.editMode) {
+      return props.value.projectName;
+    } else {
+      return '';
     }
   });
   const [isOpen, toggle] = useState(false);

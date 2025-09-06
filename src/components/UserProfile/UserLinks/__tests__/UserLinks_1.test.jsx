@@ -11,11 +11,7 @@ const initialState = { theme: themeMock };
 const store = mockStore(initialState);
 
 const renderWithProviders = (ui, { store }) => {
-  return renderWithRouter(
-    <Provider store={store}>
-      {ui}
-    </Provider>
-  );
+  return renderWithRouter(<Provider store={store}>{ui}</Provider>);
 };
 
 describe('user links tests', () => {

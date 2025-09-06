@@ -3,14 +3,18 @@ import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
-import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
+import {
+  assignBadgesByUserID,
+  clearNameAndSelected,
+  addSelectBadge,
+} from '../../actions/badgeManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 
 function AssignBadgePopup(props) {
-  const {darkMode} = props;
+  const { darkMode } = props;
   const [searchedName, setSearchedName] = useState('');
   const [badgeList, setBadgeList] = useState([]);
   // Added state to disable confirm button while updating.
@@ -22,7 +26,7 @@ function AssignBadgePopup(props) {
 
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
-    if(props.isRecordBelongsToJaeAndUneditable){
+    if (props.isRecordBelongsToJaeAndUneditable) {
       alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
@@ -55,13 +59,13 @@ function AssignBadgePopup(props) {
     } catch (error) {}
   };
 
- const filterBadges = (allBadges = []) => {
-   // guard against non-array inputs
-   if (!Array.isArray(allBadges)) return [];
-   return allBadges.filter(({ badgeName }) =>
-     badgeName.toLowerCase().includes(searchedName.toLowerCase())
-   );
- };
+  const filterBadges = (allBadges = []) => {
+    // guard against non-array inputs
+    if (!Array.isArray(allBadges)) return [];
+    return allBadges.filter(({ badgeName }) =>
+      badgeName.toLowerCase().includes(searchedName.toLowerCase()),
+    );
+  };
 
   let filteredBadges = filterBadges(badgeList);
 
@@ -76,8 +80,6 @@ function AssignBadgePopup(props) {
   };
 
   let existBadges = addExistBadges();
-
-
 
   return (
     <div data-testid="test-assignbadgepopup">
@@ -126,12 +128,12 @@ function AssignBadgePopup(props) {
       </div>
       <Button
         className="btn--dark-sea-green float-right"
-        style={darkMode ? {...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
+        style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
         onClick={assignBadges}
         disabled={shouldConfirmButtonDisable}
         data-testid="test-button"
       >
-        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'} 
+        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'}
       </Button>
     </div>
   );

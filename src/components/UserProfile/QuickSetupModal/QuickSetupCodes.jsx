@@ -7,9 +7,8 @@ function QuickSetupCodes({
   setShowAddTitle,
   editMode,
   assignMode,
-  teamCodes
+  teamCodes,
 }) {
-
   return (
     <div className="blueSquares mt-3" id="qsc-outer-wrapper">
       {titles.map(title => {

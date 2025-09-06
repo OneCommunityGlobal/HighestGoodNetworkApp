@@ -42,7 +42,11 @@ const TimeZoneDropDown = props => {
           timeZoneString.toLocaleLowerCase().includes(props.filter.toLocaleLowerCase())
         ) {
           return (
-            <option data-testid="time_zone_option" value={timeZoneName} key={`timeZone-${timeZoneName}`}>
+            <option
+              data-testid="time_zone_option"
+              value={timeZoneName}
+              key={`timeZone-${timeZoneName}`}
+            >
               {timeZoneString}
             </option>
           );

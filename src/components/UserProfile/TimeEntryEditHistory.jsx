@@ -12,12 +12,12 @@ import { boxStyle, boxStyleDark } from '~/styles';
  * @returns
  */
 const TimeEntryEditHistory = props => {
-  const {darkMode, tabletView} = props;
+  const { darkMode, tabletView } = props;
 
   const editHistory = [...props.userProfile.timeEntryEditHistory].reverse();
 
-  const canDeleteTimeEntry = props.hasPermission('deleteTimeEntry') ;
- 
+  const canDeleteTimeEntry = props.hasPermission('deleteTimeEntry');
+
   const secondsToHms = seconds => {
     let h = new String(Math.floor(seconds / 3600));
     let m = new String(Math.floor((seconds % 3600) / 60));
@@ -40,10 +40,12 @@ const TimeEntryEditHistory = props => {
 
   return (
     <>
-      <p className={darkMode ? 'text-light' : ''} style={{textAlign: 'left'}}>Time Entry Edit History</p>
+      <p className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left' }}>
+        Time Entry Edit History
+      </p>
       <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`} width="100%">
         <thead>
-          <tr style={tabletView ? {fontSize: "10px"} : {}}>
+          <tr style={tabletView ? { fontSize: '10px' } : {}}>
             <th className={darkMode ? 'bg-space-cadet p-2' : 'p-2'}>
               Date / Time
               <br />
@@ -59,10 +61,12 @@ const TimeEntryEditHistory = props => {
               <br />
               (HH:MM:SS)
             </th>
-            {canDeleteTimeEntry && editHistory.length > 0 && <th className={darkMode ? 'bg-space-cadet' : ''}></th>}
+            {canDeleteTimeEntry && editHistory.length > 0 && (
+              <th className={darkMode ? 'bg-space-cadet' : ''}></th>
+            )}
           </tr>
         </thead>
-        <tbody style={tabletView ? {fontSize: "10px"} : {}}>
+        <tbody style={tabletView ? { fontSize: '10px' } : {}}>
           {editHistory.map(item => {
             return (
               <tr key={`edit-history-${item._id}`}>
@@ -75,7 +79,14 @@ const TimeEntryEditHistory = props => {
                 <td>{secondsToHms(item.newSeconds)}</td>
                 {canDeleteTimeEntry && !props.isRecordBelongsToJaeAndUneditable && (
                   <td>
-                    <Button variant="danger" onClick={() => deleteEdit(item._id)} style={{...(tabletView ? {fontSize: "10px"} : {}), ...(darkMode ? boxStyleDark : boxStyle)}}>
+                    <Button
+                      variant="danger"
+                      onClick={() => deleteEdit(item._id)}
+                      style={{
+                        ...(tabletView ? { fontSize: '10px' } : {}),
+                        ...(darkMode ? boxStyleDark : boxStyle),
+                      }}
+                    >
                       Delete&nbsp;Edit
                     </Button>
                   </td>

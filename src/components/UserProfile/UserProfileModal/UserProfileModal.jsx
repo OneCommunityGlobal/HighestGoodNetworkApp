@@ -13,7 +13,7 @@ import {
   Col,
 } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/DarkMode.css'
+import '../../Header/DarkMode.css';
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
 
@@ -29,8 +29,7 @@ const UserProfileModal = props => {
     userProfile,
     id,
   } = props;
-  let blueSquare = [
-  ];
+  let blueSquare = [];
 
   if (type !== 'message' && type !== 'addBlueSquare') {
     if (id.length > 0) {
@@ -38,7 +37,7 @@ const UserProfileModal = props => {
     }
   }
 
-  const darkMode = useSelector(state=>state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canEditInfringements = props.hasPermission('editInfringements');
@@ -52,27 +51,26 @@ const UserProfileModal = props => {
 
   const getCurrentDate = () => {
     const today = new Date();
-    return today.toLocaleDateString('en-CA').split('T')[0]; 
+    return today.toLocaleDateString('en-CA').split('T')[0];
   };
 
   // Fallback to a meaningful default if no data found
   if (blueSquare.length === 0) {
     blueSquare = [
       {
-        date: getCurrentDate(),  
-        description: 'This is auto-generated text. You must save the document first before viewing newly created blue squares.',
+        date: getCurrentDate(),
+        description:
+          'This is auto-generated text. You must save the document first before viewing newly created blue squares.',
       },
     ];
   }
 
-  
   const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || getCurrentDate());
 
   const [summary, setSummary] = useState(blueSquare[0]?.description || '');
 
-
-  const [addButton, setAddButton] = useState(false); 
-  const [summaryFieldView, setSummaryFieldView] = useState(false); 
+  const [addButton, setAddButton] = useState(false);
+  const [summaryFieldView, setSummaryFieldView] = useState(false);
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
@@ -148,16 +146,15 @@ const UserProfileModal = props => {
     }
   };
 
-    function checkFields(field1, field2) { 
-      if (field1.trim() && field2.trim()) {
-        setAddButton(false);
-      } else {
-        setAddButton(true);
-      }
+  function checkFields(field1, field2) {
+    if (field1.trim() && field2.trim()) {
+      setAddButton(false);
+    } else {
+      setAddButton(true);
     }
-    
+  }
 
-  const adjustTextareaHeight = (textarea) => {
+  const adjustTextareaHeight = textarea => {
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
   };
@@ -167,14 +164,18 @@ const UserProfileModal = props => {
 
   return (
     <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
+      <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>
+        {modalTitle}
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         {type === 'updateLink' && (
           <div>
             {canPutUserProfile && (
               <CardBody>
                 <Card>
-                  <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                  <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>
+                    Admin Links:
+                  </Label>
                   <Col>
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <div className="customTitle">Name</div>
@@ -249,7 +250,9 @@ const UserProfileModal = props => {
             )}
             <CardBody>
               <Card>
-                <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
+                <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>
+                  Personal Links:
+                </Label>
                 <Col>
                   <div style={{ display: 'flex', margin: '5px' }}>
                     <div className="customTitle">Name</div>
@@ -329,19 +332,23 @@ const UserProfileModal = props => {
         {type === 'addBlueSquare' && (
           <>
             <FormGroup>
-              <Label className={fontColor} for="date">Date</Label>
+              <Label className={fontColor} for="date">
+                Date
+              </Label>
               <Input type="date" name="date" id="date" value={dateStamp} onChange={handleChange} />
             </FormGroup>
 
             <FormGroup hidden={summaryFieldView}>
-              <Label className={fontColor} for="report">Summary</Label>
-              <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
-                style={{ minHeight: '200px', overflow: 'hidden'}} 
-                onInput={e => adjustTextareaHeight(e.target)} 
+              <Label className={fontColor} for="report">
+                Summary
+              </Label>
+              <Input
+                type="textarea"
+                id="summary"
+                onChange={handleChange}
+                value={summary}
+                style={{ minHeight: '200px', overflow: 'hidden' }}
+                onInput={e => adjustTextareaHeight(e.target)}
               />
             </FormGroup>
           </>
@@ -350,9 +357,14 @@ const UserProfileModal = props => {
         {type === 'modBlueSquare' && (
           <>
             <FormGroup>
-              <Label className={fontColor} for="date">Date:</Label>
-              {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
-              : <span> {blueSquare[0]?.date}</span>}
+              <Label className={fontColor} for="date">
+                Date:
+              </Label>
+              {canEditInfringements ? (
+                <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              ) : (
+                <span> {blueSquare[0]?.date}</span>
+              )}
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
@@ -361,25 +373,30 @@ const UserProfileModal = props => {
               </Label>
             </FormGroup>
             <FormGroup>
-              <Label className={fontColor} for="report">Summary</Label>
-              {canEditInfringements ? <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
-                style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
-                onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
-              />
-              :<p>{blueSquare[0]?.description}</p>}
+              <Label className={fontColor} for="report">
+                Summary
+              </Label>
+              {canEditInfringements ? (
+                <Input
+                  type="textarea"
+                  id="summary"
+                  onChange={handleChange}
+                  value={summary}
+                  style={{ minHeight: '200px', overflow: 'hidden' }} // 4x taller than usual
+                  onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
+                />
+              ) : (
+                <p>{blueSquare[0]?.description}</p>
+              )}
             </FormGroup>
           </>
         )}
 
-        {type === 'viewBlueSquare'  && (
+        {type === 'viewBlueSquare' && (
           <>
             <FormGroup>
               <Label className={fontColor} for="date">
-                Date: 
+                Date:
                 <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
@@ -390,7 +407,9 @@ const UserProfileModal = props => {
               </Label>
             </FormGroup>
             <FormGroup>
-              <Label className={fontColor} for="description">Summary</Label>
+              <Label className={fontColor} for="description">
+                Summary
+              </Label>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
@@ -419,8 +438,8 @@ const UserProfileModal = props => {
         )}
 
         {type === 'modBlueSquare' && (
-            <>
-            {canEditInfringements && 
+          <>
+            {canEditInfringements && (
               <Button
                 color="info"
                 onClick={() => {
@@ -430,8 +449,8 @@ const UserProfileModal = props => {
               >
                 Update
               </Button>
-              }
-            {canDeleteInfringements &&
+            )}
+            {canDeleteInfringements && (
               <Button
                 color="danger"
                 onClick={() => {
@@ -441,7 +460,7 @@ const UserProfileModal = props => {
               >
                 Delete
               </Button>
-            }
+            )}
           </>
         )}
 

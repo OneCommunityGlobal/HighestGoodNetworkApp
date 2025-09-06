@@ -133,21 +133,20 @@ class UserProfileAdd extends Component {
   fetchTeamCodeAllUsers = async () => {
     const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
     try {
-      this.setState({ isLoading: true })
+      this.setState({ isLoading: true });
 
       const response = await axios.get(url);
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)
         .filter((item, index, array) => array.indexOf(item) === index);
-      this.setState({ inputAutoComplete: stringNoRepeat })
+      this.setState({ inputAutoComplete: stringNoRepeat });
 
-      this.setState({ inputAutoStatus: response.status })
-      this.setState({ isLoading: false })
-
+      this.setState({ inputAutoStatus: response.status });
+      this.setState({ isLoading: false });
     } catch (error) {
       console.log(error);
-      this.setState({ isLoading: false })
+      this.setState({ isLoading: false });
       toast.error(`It was not possible to retrieve the team codes. 
       Please try again by clicking the icon inside the input auto complete.`);
     }
@@ -189,7 +188,9 @@ class UserProfileAdd extends Component {
               <Form>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>
+                      Name <span style={{ color: 'red' }}>*</span>{' '}
+                    </Label>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -198,7 +199,7 @@ class UserProfileAdd extends Component {
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="First Name"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
@@ -217,7 +218,7 @@ class UserProfileAdd extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Last Name"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.lastName)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
@@ -232,7 +233,9 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Job Title <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>
+                      Job Title <span style={{ color: 'red' }}>*</span>{' '}
+                    </Label>
                   </Col>
                   <Col md={{ size: 6 }}>
                     <FormGroup>
@@ -241,7 +244,7 @@ class UserProfileAdd extends Component {
                         name="jobTitle"
                         id="jobTitle"
                         value={jobTitle}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Job Title"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
@@ -249,13 +252,16 @@ class UserProfileAdd extends Component {
                       {this.state.formSubmitted && this.state.formErrors.jobTitle && (
                         <FormFeedback className={fontWeight}>
                           {this.state.formErrors.jobTitle}
-                        </FormFeedback>)}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Email <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>
+                      Email <span style={{ color: 'red' }}>*</span>{' '}
+                    </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -264,7 +270,7 @@ class UserProfileAdd extends Component {
                         name="email"
                         id="email"
                         value={email}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Email"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
@@ -272,7 +278,8 @@ class UserProfileAdd extends Component {
                       {this.state.formSubmitted && this.state.formErrors.email && (
                         <FormFeedback className={fontWeight}>
                           {this.state.formErrors.email}
-                        </FormFeedback>)}
+                        </FormFeedback>
+                      )}
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -283,7 +290,9 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Phone <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>
+                      Phone <span style={{ color: 'red' }}>*</span>{' '}
+                    </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -309,7 +318,9 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Weekly Committed Hours <span style={{ color: 'red' }}>*</span></Label>
+                    <Label className={fontColor}>
+                      Weekly Committed Hours <span style={{ color: 'red' }}>*</span>
+                    </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -320,13 +331,13 @@ class UserProfileAdd extends Component {
                         max={168}
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         onKeyDown={event => {
                           if (event.key === 'Backspace' || event.key === 'Delete') {
                             this.setState({
                               userProfile: {
                                 ...this.state.userProfile,
-                                [event.target.id]: "",
+                                [event.target.id]: '',
                               },
                               formValid: {
                                 ...this.state.formValid,
@@ -347,7 +358,9 @@ class UserProfileAdd extends Component {
                         }
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback className={fontWeight}>
+                        {this.state.formErrors.weeklyCommittedHours}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -362,7 +375,7 @@ class UserProfileAdd extends Component {
                         name="role"
                         id="role"
                         defaultValue="Volunteer"
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
@@ -391,7 +404,6 @@ class UserProfileAdd extends Component {
                         value={DEFAULT_PASSWORD}
                         disabled
                         readOnly
-                        
                         className="d-flex justify-start items-start"
                       />
                     </FormGroup>
@@ -410,12 +422,14 @@ class UserProfileAdd extends Component {
                             name="actualEmail"
                             id="actualEmail"
                             value={actualEmail}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
                             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                           />
-                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
+                          <FormFeedback className={fontWeight}>
+                            {this.state.formErrors.actualEmail}
+                          </FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
@@ -430,7 +444,7 @@ class UserProfileAdd extends Component {
                             name="actualPassword"
                             id="actualPassword"
                             value={actualPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Actual Password"
                             invalid={!!this.state.formErrors.actualPassword}
                             className="d-flex justify-start items-start"
@@ -449,9 +463,13 @@ class UserProfileAdd extends Component {
                             name="actualConfirmedPassword"
                             id="actualConfirmedPassword"
                             value={actualConfirmedPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Confirm Actual Password"
-                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                            invalid={
+                              actualPassword !== actualConfirmedPassword
+                                ? 'Passwords do not match'
+                                : ''
+                            }
                             className="d-flex justify-start items-start"
                           />
                         </FormGroup>
@@ -461,7 +479,9 @@ class UserProfileAdd extends Component {
                 )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
+                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>
+                      Weekly Summary Options
+                    </Label>
                   </Col>
                   <Col md="6">
                     <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
@@ -478,7 +498,7 @@ class UserProfileAdd extends Component {
                         name="collaborationPreference"
                         id="collaborationPreference"
                         value={this.state.userProfile.collaborationPreference}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
@@ -496,7 +516,7 @@ class UserProfileAdd extends Component {
                         name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Google Doc"
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
@@ -514,7 +534,7 @@ class UserProfileAdd extends Component {
                         name="dropboxDoc"
                         id="dropboxDoc"
                         value={this.state.userProfile.dropboxDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
@@ -528,7 +548,11 @@ class UserProfileAdd extends Component {
                   <Col md="6">
                     <Row>
                       <Col md="6">
-                        <Input id="location" onChange={this.handleLocation} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}/>
+                        <Input
+                          id="location"
+                          onChange={this.handleLocation}
+                          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                        />
                       </Col>
                       <Col md="6">
                         <div className="w-100 pt-1 mb-2 mx-auto">
@@ -554,7 +578,7 @@ class UserProfileAdd extends Component {
                     <FormGroup>
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
@@ -579,7 +603,9 @@ class UserProfileAdd extends Component {
                               },
                             })
                           }
-                          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                          className={`form-control ${
+                            darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                          }`}
                         />
                       </div>
                     </FormGroup>
@@ -699,7 +725,7 @@ class UserProfileAdd extends Component {
     this.setState({ projects: initialUserProject });
   };
 
-  // Function to call TimeZoneService with location 
+  // Function to call TimeZoneService with location
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
 
@@ -708,22 +734,25 @@ class UserProfileAdd extends Component {
       return;
     }
 
-    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if (res.status === 200) {
-        const { timezone, currentLocation } = res.data;
-        this.setState({
-          ...this.state,
-          timeZoneFilter: timezone,
-          userProfile: {
-            ...this.state.userProfile,
-            location: currentLocation,
-            timeZone: timezone,
-          },
-        });
-      }
-    }).catch(err => {
-      toast.error(`An error occurred : ${err.response.data}`);
-    });
+    axios
+      .get(ENDPOINTS.TIMEZONE_LOCATION(location))
+      .then(res => {
+        if (res.status === 200) {
+          const { timezone, currentLocation } = res.data;
+          this.setState({
+            ...this.state,
+            timeZoneFilter: timezone,
+            userProfile: {
+              ...this.state.userProfile,
+              location: currentLocation,
+              timeZone: timezone,
+            },
+          });
+        }
+      })
+      .catch(err => {
+        toast.error(`An error occurred : ${err.response.data}`);
+      });
   };
 
   fieldsAreValid = () => {
@@ -732,7 +761,7 @@ class UserProfileAdd extends Component {
     const phone = this.state.userProfile.phoneNumber;
     const role = this.state.userProfile.role;
     const defaultPassword = this.state.userProfile.defaultPassword;
-    
+
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
@@ -948,7 +977,7 @@ class UserProfileAdd extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-              'An unknown error occurred while attempting to create this user.',
+                'An unknown error occurred while attempting to create this user.',
             );
           });
       }
@@ -1137,9 +1166,9 @@ class UserProfileAdd extends Component {
       case 'weeklyCommittedHours':
         let val = Number(event.target.value);
         if (val > 168) {
-          val = 168
+          val = 168;
         } else if (val < 0) {
-          val = 0
+          val = 0;
         }
         this.setState({
           userProfile: {
@@ -1262,7 +1291,8 @@ class UserProfileAdd extends Component {
           },
           formErrors: {
             ...formErrors,
-            actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
+            actualConfirmedPassword:
+              event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
           },
         });
         break;
@@ -1294,7 +1324,6 @@ const mapStateToProps = state => ({
   role: state.role,
   state,
 });
-
 
 export default connect(mapStateToProps, {
   getUserProfile,

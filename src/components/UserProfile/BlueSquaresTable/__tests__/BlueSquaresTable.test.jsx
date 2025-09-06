@@ -1,13 +1,13 @@
-import React from "react";
-import { Provider } from "react-redux";
+import React from 'react';
+import { Provider } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import BlueSquaresTable from "../BlueSquaresTable";
-import thunk from "redux-thunk";
+import BlueSquaresTable from '../BlueSquaresTable';
+import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import EditableInfoModal from "~/components/UserProfile/EditableModal/EditableInfoModal";
-import axios from "axios";
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import axios from 'axios';
 
 vi.mock('axios');
 
@@ -19,7 +19,13 @@ const initialState = {
   auth: {
     user: {
       permissions: {
-        frontPermissions: ['addInfringements', 'editInfringements', 'deleteInfringements', 'infringementAuthorizer', 'putUserProfileImportantInfo'],
+        frontPermissions: [
+          'addInfringements',
+          'editInfringements',
+          'deleteInfringements',
+          'infringementAuthorizer',
+          'putUserProfileImportantInfo',
+        ],
         backPermissions: [],
       },
       role: 'Volunteer',
@@ -44,7 +50,7 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("BlueSquaresTable component unit tests", () => {
+describe('BlueSquaresTable component unit tests', () => {
   const renderComponent = (canEdit, isPrivate, darkMode = false, loading = true) => {
     return render(
       <Provider store={store}>
@@ -57,7 +63,7 @@ describe("BlueSquaresTable component unit tests", () => {
           handleBlueSquare={mockHandleBlueSquare}
           darkMode={darkMode}
         />
-      </Provider>
+      </Provider>,
     );
   };
   it('renders BlueSquaresTable with editable toggle when canEdit is true', () => {
@@ -74,7 +80,9 @@ describe("BlueSquaresTable component unit tests", () => {
 
   it('applies darkmode styling when darkmode is true', () => {
     const { container } = renderComponent(true, false, true, true);
-    expect(container.querySelector('.user-profile-blue-square-div-header')).toHaveClass('bg-space-cadet');
+    expect(container.querySelector('.user-profile-blue-square-div-header')).toHaveClass(
+      'bg-space-cadet',
+    );
   });
 
   it('calls handleUserProfile when toggleClass is clicked', () => {
@@ -90,5 +98,4 @@ describe("BlueSquaresTable component unit tests", () => {
     fireEvent.click(blueSquareButton);
     expect(mockHandleBlueSquare).toHaveBeenCalled();
   });
-
 });

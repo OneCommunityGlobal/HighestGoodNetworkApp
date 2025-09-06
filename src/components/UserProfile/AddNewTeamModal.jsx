@@ -14,7 +14,7 @@ import {
 import { useSelector } from 'react-redux';
 
 const AddNewTeamModal = props => {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const { isOpen, toggle, teams, submitHandler } = props;
   const [newTeam, setTeam] = useState('');
@@ -31,7 +31,9 @@ const AddNewTeamModal = props => {
   return (
     <React.Fragment>
       <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Modal title</ModalHeader>
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+          Modal title
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Form>
             <FormGroup>

@@ -7,11 +7,16 @@ import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from '~/utils/formatDate';
+import {
+  formatDate,
+  formatDateYYYYMMDD,
+  formatDateMMDDYYYY,
+  CREATED_DATE_CRITERIA,
+} from '~/utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
-const darkModeClass = "bg-darkmode-liblack text-light border-0";
+const darkModeClass = 'bg-darkmode-liblack text-light border-0';
 
 const startEndDateValidation = props => {
   return (
@@ -24,7 +29,7 @@ const StartDate = props => {
   //determine which date to display
   const displayDate = props.userProfile.isStartDateManuallyModified
     ? props.userProfile.startDate
-    : (props.calculatedStartDate || props.userProfile.startDate);
+    : props.calculatedStartDate || props.userProfile.startDate;
 
   if (!props.canEdit) {
     return (
@@ -39,9 +44,13 @@ const StartDate = props => {
         type="date"
         name="StartDate"
         id="startDate"
-        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${
+          darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
+        }`}
         value={displayDate}
-        min={props.userProfile.createdDate < CREATED_DATE_CRITERIA ? '' : props.userProfile.createdDate}
+        min={
+          props.userProfile.createdDate < CREATED_DATE_CRITERIA ? '' : props.userProfile.createdDate
+        }
         onChange={e => {
           props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
           props.onStartDateComponent(e.target.value);
@@ -50,9 +59,7 @@ const StartDate = props => {
         invalid={!props.canEdit}
         max={props.userProfile.endDate || '9999-12-31'}
       />
-      {startDateAlert && (
-        <FormFeedback style={{ display: 'block' }}>{startDateAlert}</FormFeedback>
-      )}
+      {startDateAlert && <FormFeedback style={{ display: 'block' }}>{startDateAlert}</FormFeedback>}
     </FormGroup>
   );
 };
@@ -71,29 +78,23 @@ const EndDate = props => {
   return (
     <FormGroup>
       <Input
-        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+        className={`${startEndDateValidation(props) ? 'border-error-validation' : ''} ${
+          darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
+        }`}
         type="date"
         name="EndDate"
         id="endDate"
-        value={
-          props.userProfile.endDate ? props.userProfile.endDate : ''
-        }
+        value={props.userProfile.endDate ? props.userProfile.endDate : ''}
         onChange={e => {
           props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
           props.onEndDateComponent(e.target.value);
         }}
         placeholder="End Date"
         invalid={!props.canEdit}
-        min={
-          props.userProfile.startDate
-            ? props.userProfile.startDate
-            : ''
-        }
+        min={props.userProfile.startDate ? props.userProfile.startDate : ''}
         max={'9999-12-31'}
       />
-      {endDateAlert && (
-        <FormFeedback style={{ display: 'block' }}>{endDateAlert}</FormFeedback>
-      )}
+      {endDateAlert && <FormFeedback style={{ display: 'block' }}>{endDateAlert}</FormFeedback>}
     </FormGroup>
   );
 };
@@ -260,7 +261,14 @@ const TotalIntangibleHours = props => {
  * @returns
  */
 const ViewTab = props => {
-  const { userProfile, setUserProfile, role, canEdit, canUpdateSummaryRequirements, darkMode } = props;
+  const {
+    userProfile,
+    setUserProfile,
+    role,
+    canEdit,
+    canUpdateSummaryRequirements,
+    darkMode,
+  } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
@@ -364,17 +372,20 @@ const ViewTab = props => {
 
   useEffect(() => {
     if (userProfile.startDate === '') {
-      setStartDateAlert("Invalid date");
-    } else if (userProfile.createdDate >= CREATED_DATE_CRITERIA && userProfile.startDate < userProfile.createdDate) {
-      setStartDateAlert("The start date is before the account created date");
+      setStartDateAlert('Invalid date');
+    } else if (
+      userProfile.createdDate >= CREATED_DATE_CRITERIA &&
+      userProfile.startDate < userProfile.createdDate
+    ) {
+      setStartDateAlert('The start date is before the account created date');
     } else {
-      setStartDateAlert('')
+      setStartDateAlert('');
     }
   }, [userProfile.startDate, userProfile.createdDate]);
 
   useEffect(() => {
     if (userProfile.endDate !== '' && userProfile.endDate < userProfile.startDate) {
-      setEndDateAlert("The end date is before the start date");
+      setEndDateAlert('The end date is before the start date');
     } else {
       setEndDateAlert('');
     }
@@ -384,10 +395,14 @@ const ViewTab = props => {
     <div data-testid="volunteering-time-tab">
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+            Account Created Date
+          </Label>
         </Col>
         <Col md="6">
-        <p className={darkMode ? 'text-azure' : ''} style={{ textAlign: 'left' }}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+          <p className={darkMode ? 'text-azure' : ''} style={{ textAlign: 'left' }}>
+            {formatDateMMDDYYYY(userProfile.createdDate)}
+          </p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -395,16 +410,16 @@ const ViewTab = props => {
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Start Date</Label>
         </Col>
         <Col md="6">
-         <StartDate
-           role={role}
-           userProfile={userProfile}
-           setUserProfile={setUserProfile}
-           canEdit={canEdit}
-           onStartDateComponent={handleStartDates}
-           darkMode={darkMode}
-           startDateAlert={startDateAlert}
-           calculatedStartDate={props.calculatedStartDate}
-         />
+          <StartDate
+            role={role}
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            canEdit={canEdit}
+            onStartDateComponent={handleStartDates}
+            darkMode={darkMode}
+            startDateAlert={startDateAlert}
+            calculatedStartDate={props.calculatedStartDate}
+          />
         </Col>
       </Row>
 
@@ -432,7 +447,10 @@ const ViewTab = props => {
           </Label>
         </Col>
         <Col md="6">
-          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`} style={{textAlign: 'left'}}>
+          <p
+            className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
             {totalTangibleHoursThisWeek}
           </p>
         </Col>
@@ -535,39 +553,39 @@ const ViewTab = props => {
       </Row>
       {props?.userProfile?.hoursByCategory
         ? Object.keys(userProfile.hoursByCategory).map(key => (
-          <React.Fragment key={'hours-by-category-' + key}>
-            <Row className="volunteering-time-row">
-              <Col md="6">
-                <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
-                  {key !== 'unassigned' ? (
-                    <>Total Tangible {capitalize(key)} Hours</>
+            <React.Fragment key={'hours-by-category-' + key}>
+              <Row className="volunteering-time-row">
+                <Col md="6">
+                  <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+                    {key !== 'unassigned' ? (
+                      <>Total Tangible {capitalize(key)} Hours</>
+                    ) : (
+                      <>Total Unassigned Category Hours</>
+                    )}
+                  </Label>
+                </Col>
+                <Col md="6">
+                  {canEdit ? (
+                    <Input
+                      type="number"
+                      pattern="^\d*\.?\d{0,2}$"
+                      id={`${key}Hours`}
+                      step=".01"
+                      min="0"
+                      className={darkMode ? darkModeClass : ''}
+                      value={roundToTwo(userProfile.hoursByCategory[key])}
+                      onChange={e => handleOnChangeHours(e, key)}
+                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                    />
                   ) : (
-                    <>Total Unassigned Category Hours</>
+                    <p className={darkMode ? 'text-azure' : ''}>
+                      {userProfile.hoursByCategory[key]?.toFixed(2)}
+                    </p>
                   )}
-                </Label>
-              </Col>
-              <Col md="6">
-                {canEdit ? (
-                  <Input
-                    type="number"
-                    pattern="^\d*\.?\d{0,2}$"
-                    id={`${key}Hours`}
-                    step=".01"
-                    min="0"
-                    className={darkMode ? darkModeClass : ''}
-                    value={roundToTwo(userProfile.hoursByCategory[key])}
-                    onChange={e => handleOnChangeHours(e, key)}
-                    placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                  />
-                ) : (
-                  <p className={darkMode ? 'text-azure' : ''}>
-                    {userProfile.hoursByCategory[key]?.toFixed(2)}
-                  </p>
-                )}
-              </Col>
-            </Row>
-          </React.Fragment>
-        ))
+                </Col>
+              </Row>
+            </React.Fragment>
+          ))
         : []}
     </div>
   );

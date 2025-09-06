@@ -24,7 +24,7 @@ const AddTeamsAutoComplete = React.memo(props => {
           props.setSearchText(e.target.value);
           toggle(true);
         }}
-        className={darkMode ? "bg-darkmode-liblack border-0 text-light" : ""}
+        className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
       />
 
       {props.searchText !== '' && props.teamsData ? (
@@ -54,7 +54,7 @@ const AddTeamsAutoComplete = React.memo(props => {
                       props.setInputs(inputs => ({
                         ...inputs,
                         teamId: item._id,
-                      }))
+                      }));
                       toggle(false);
                     }}
                   >

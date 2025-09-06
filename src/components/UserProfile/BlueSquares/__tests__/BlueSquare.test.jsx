@@ -15,7 +15,13 @@ const initialState = {
   auth: {
     user: {
       permissions: {
-        frontPermissions: ['addInfringements', 'editInfringements', 'deleteInfringements', 'infringementAuthorizer', 'putUserProfileImportantInfo'],
+        frontPermissions: [
+          'addInfringements',
+          'editInfringements',
+          'deleteInfringements',
+          'infringementAuthorizer',
+          'putUserProfileImportantInfo',
+        ],
         backPermissions: [],
       },
       role: 'Volunteer',
@@ -40,7 +46,7 @@ afterEach(() => {
 });
 
 describe('BlueSquare component', () => {
-    beforeEach(() => {
+  beforeEach(() => {
     handleBlueSquare.mockClear();
   });
 
@@ -80,10 +86,10 @@ describe('BlueSquare component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('Dec-03-23')).toBeInTheDocument();
-    expect(screen.queryByText('Dec-10-23')).toBeInTheDocument();
-    expect(screen.queryByText('some reason')).toBeInTheDocument();
-    expect(screen.queryByText('test reason')).toBeInTheDocument();
+    expect(screen.getByText('Dec-03-23')).toBeInTheDocument();
+    expect(screen.getByText('Dec-10-23')).toBeInTheDocument();
+    expect(screen.getByText('some reason')).toBeInTheDocument();
+    expect(screen.getByText('test reason')).toBeInTheDocument();
   });
   it('check if + sign is visible when addInfringements permission is not added', () => {
     const mockInitialState = JSON.parse(JSON.stringify(initialState));
@@ -109,7 +115,7 @@ describe('BlueSquare component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('+')).toBeInTheDocument();
+    expect(screen.getByText('+')).toBeInTheDocument();
   });
   it('check if handleBlueSquare is called when user clicks on the button', async () => {
     const { container } = render(
@@ -127,12 +133,12 @@ describe('BlueSquare component', () => {
       expect(blueSquareButtonElement).toBeInTheDocument();
     });
     const blueSquareButtonElement = container.querySelector('.blueSquareButton');
-  
+
     // Use act to wrap the click event
     await act(async () => {
       fireEvent.click(blueSquareButtonElement);
     });
-    
+
     // Wait for the handler to be called
     await waitFor(() => {
       expect(handleBlueSquare).toHaveBeenCalled();
@@ -150,7 +156,7 @@ describe('BlueSquare component', () => {
     );
     expect(handleBlueSquare).not.toHaveBeenCalled();
   });
-  
+
   it('check hasPermission function returns false if permission is not present', () => {
     const mockInitialState = JSON.parse(JSON.stringify(initialState));
     mockInitialState.auth.user.permissions.frontPermissions = [];

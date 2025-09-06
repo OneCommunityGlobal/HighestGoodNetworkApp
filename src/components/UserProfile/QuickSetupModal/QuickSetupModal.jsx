@@ -28,7 +28,7 @@ function QuickSetupModal(props) {
   const [adminLinks, setAdminLinks] = useState([]);
   const [editModal, showEditModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [QSTTeamCodes, setQSTTeamCodes] = useState([])
+  const [QSTTeamCodes, setQSTTeamCodes] = useState([]);
 
   const stateTeamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
@@ -52,19 +52,19 @@ function QuickSetupModal(props) {
     }
   };
 
- useEffect(() => {
-  if (props.fetchTeamCodeAllUsers) {
-    props.fetchTeamCodeAllUsers()
-      .then((fetchedCodes) => {
-        if (fetchedCodes?.length) {
-          const formatted = fetchedCodes.map(code => ({ value: code }));
-          setQSTTeamCodes(formatted);
-        }
-      })
-      .catch((err) => console.error('Failed to fetch team codes:', err));
-  }
-}, [stateTeamCodes.length, props.teamsData && props.teamsData.allTeamCode]);
-
+  useEffect(() => {
+    if (props.fetchTeamCodeAllUsers) {
+      props
+        .fetchTeamCodeAllUsers()
+        .then(fetchedCodes => {
+          if (fetchedCodes?.length) {
+            const formatted = fetchedCodes.map(code => ({ value: code }));
+            setQSTTeamCodes(formatted);
+          }
+        })
+        .catch(err => console.error('Failed to fetch team codes:', err));
+    }
+  }, [stateTeamCodes.length, props.teamsData && props.teamsData.allTeamCode]);
 
   return (
     <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
