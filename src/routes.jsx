@@ -231,6 +231,14 @@ export default (
       )}
     />
     <Route
+      path="/lbdashboard"
+      render={() => (
+        <>
+          <LBDashboard />
+        </>
+      )}
+    />
+    <Route
       path="/lbdashboard/login"
       render={() => (
         <>
