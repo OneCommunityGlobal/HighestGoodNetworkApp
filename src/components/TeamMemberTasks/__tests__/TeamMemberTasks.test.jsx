@@ -222,7 +222,7 @@ describe('TeamMemberTasks component', () => {
       </Provider>,
     );
 
-    expect(screen.getAllByTestId('skeleton-loading-team-member-tasks-row')).not.toHaveLength(0);
+    expect(screen.getAllByTestId('team-member-tasks-row')).not.toHaveLength(0);
   });
   it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
     axios.get.mockResolvedValue({
@@ -237,7 +237,7 @@ describe('TeamMemberTasks component', () => {
         </MemoryRouter>
       </Provider>,
     );
-    expect(screen.queryByTestId('skeleton-loading-team-member-tasks-row')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('team-member-tasks-row')).not.toBeInTheDocument();
   });
   it('check if class names does not include color when dark mode is false', () => {
     axios.get.mockResolvedValue({
