@@ -23,7 +23,7 @@ module.exports = {
   },
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
-  setupFiles: ['<rootDir>src/setupTests.js'],
+  setupFiles: ['<rootDir>/src/setupTests.js'],
 
   // The test environment that will be used for testing
   testEnvironment: 'jsdom',
@@ -44,9 +44,6 @@ module.exports = {
   transform: {
     '^.+\\.[jt]sx?$': 'babel-jest',
   },
-
-  // Include snapshot serializers
-  snapshotSerializers: ['enzyme-to-json/serializer'],
 
   // Indicates whether each individual test should be reported during the run
   verbose: false,

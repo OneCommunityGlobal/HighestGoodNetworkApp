@@ -3,7 +3,7 @@ import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
-import './MostFrequentKeywords.css';
+import styles from './MostFrequentKeywords.module.css';
 import Select from 'react-select';
 
 function MostFrequentKeywords() {
@@ -73,6 +73,7 @@ function MostFrequentKeywords() {
       const svgEl = svgRef.current;
       if (!tags?.length || !svgEl) return;
 
+      // eslint-disable-next-line testing-library/no-node-access
       const svg = d3.select(svgEl);
       svg.selectAll('*').remove();
 
@@ -172,9 +173,11 @@ function MostFrequentKeywords() {
           .attr('role', 'button')
           .attr('aria-label', `Keyword: ${tag.tag}`)
           .on('mouseover', function() {
+            // eslint-disable-next-line testing-library/no-node-access
             d3.select(this).attr('fill', '#BFDBFE');
           })
           .on('mouseout', function() {
+            // eslint-disable-next-line testing-library/no-node-access
             d3.select(this).attr('fill', '#E0F2FE');
           })
           .on('click', () => {
@@ -198,14 +201,16 @@ function MostFrequentKeywords() {
   }, [tags]);
 
   return (
-    <div className="mfk-container">
-      <h3 className="mfk-title">📊 Most Frequent Keywords</h3>
-      <div className="mfk-controls">
+    <div className={styles.mfkContainer}>
+      <h3 className={styles.mfkTitle}>📊 Most Frequent Keywords</h3>
+      <div className={styles.mfkControls}>
         <div>
-          <label htmlFor="project-select">Project</label>
+          <label htmlFor="project-select" className={styles.mfkLabel}>
+            Project
+          </label>
           <Select
             inputId="project-select"
-            className="mfk-select"
+            className={styles.mfkSelect}
             options={projects.map(p => ({
               label: p.projectName,
               value: p._id,
@@ -219,32 +224,36 @@ function MostFrequentKeywords() {
           />
         </div>
         <div>
-          <label htmlFor="start-date">From</label>
+          <label htmlFor="start-date" className={styles.mfkLabel}>
+            From
+          </label>
           <DatePicker
             id="start-date"
             selected={startDate}
             onChange={date => setStartDate(date)}
-            className="mfk-datepicker"
+            className={styles.mfkDatepicker}
             placeholderText="Start date"
           />
         </div>
         <div>
-          <label htmlFor="end-date">To</label>
+          <label htmlFor="end-date" className={styles.mfkLabel}>
+            To
+          </label>
           <DatePicker
             id="end-date"
             selected={endDate}
             onChange={date => setEndDate(date)}
-            className="mfk-datepicker"
+            className={styles.mfkDatepicker}
             placeholderText="End date"
           />
         </div>
       </div>
 
-      <div className="mfk-chart-container">
-        {isLoading && <div className="mfk-loading">Loading...</div>}
-        {!isLoading && error && <div className="mfk-error">{error}</div>}
+      <div className={styles.mfkChartContainer}>
+        {isLoading && <div className={styles.mfkLoading}>Loading...</div>}
+        {!isLoading && error && <div className={styles.mfkError}>{error}</div>}
         {!isLoading && !error && tags.length === 0 && (
-          <div className="mfk-empty">No tags found for this selection.</div>
+          <div className={styles.mfkEmpty}>No tags found for this selection.</div>
         )}
         {!isLoading && !error && tags.length > 0 && <svg ref={svgRef} />}
       </div>

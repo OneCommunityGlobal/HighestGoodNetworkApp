@@ -1,8 +1,7 @@
 /* General Styling */
 .header-wrapper {
   height: fit-content;
-  width: 100%;
-  padding: 0 1rem;
+  width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
 .close-button {
   position: absolute;
@@ -15,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
 }
@@ -40,20 +39,13 @@
 }
 
 .navbar {
+  z-index: 100;
+  white-space: nowrap;
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  white-space: nowrap;
-}
-
-.timer-message-section {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-  gap: 1rem;
   white-space: nowrap;
 }
 
@@ -76,14 +68,11 @@
 
 .owner-message {
   margin-right: 1rem;
-  white-space: nowrap; /* Prevent text from wrapping */
-  flex-shrink: 0; /* Prevent shrinking */
   
 }
 
 .navbar {
   z-index: 100;
-  flex-wrap: wrap;
   overflow: visible;
 }
 
@@ -91,8 +80,6 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap; /* Allow wrapping of nav items */
   overflow: visible;
 }
 
@@ -138,12 +125,13 @@
     text-align: center;
     width: 100%;
   }
-.nav-links {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
-  overflow: visible;
-  flex-wrap: wrap;
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    overflow: visible;
+    flex-wrap: wrap;
+  }
 }
 
 @media screen and (max-width: 768px) {
@@ -222,4 +210,4 @@
     transform: scale(1) !important;
     vertical-align: middle !important;
   }
-}}
+}

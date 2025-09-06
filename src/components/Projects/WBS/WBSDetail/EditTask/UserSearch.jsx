@@ -9,8 +9,8 @@ function UserSearch({ addedUsers, onAddUser }) {
 
   const { users: results, loading, error } = useUserSearch(searchTerm);
 
-  const handleInputChange = (event) => {
-    setSearchTerm(event.target.value);
+  const handleInputChange = (value) => {
+    setSearchTerm(value);
   };
 
   const isSelected = (id) => addedUsers.find(user => user.userID === id);
@@ -26,7 +26,7 @@ function UserSearch({ addedUsers, onAddUser }) {
         type="text"
         placeholder="Search users..."
         value={searchTerm}
-        onChange={handleInputChange}
+        onChange={()=>handleInputChange(event.target.value)}
       />
 
       {show && (
@@ -64,6 +64,9 @@ function UserSearch({ addedUsers, onAddUser }) {
                 onMouseDown={() => {
                   if (!selected) {
                     onAddUser(_id, firstName, lastName);
+                    if(firstName.includes(searchTerm) || lastName.includes(searchTerm)){
+                      handleInputChange('')
+                    }
                   }
                 }}
                 style={{
