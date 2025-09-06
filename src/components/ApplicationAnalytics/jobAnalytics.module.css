@@ -1,4 +1,4 @@
-.job-analytics-container {
+.jobAnalyticsContainer {
   display: flex;
   align-items: flex-start;
   gap: 20px;
@@ -9,7 +9,7 @@
   font-family: Arial, sans-serif;
 }
 
-.chart-container {
+.chartContainer {
   flex: 1;
   border: 2px solid #4285f4;
   border-radius: 8px;
@@ -18,7 +18,7 @@
   min-width: 800px; 
 }
 
-.chart-title {
+.chartTitle {
   font-size: 24px;
   font-weight: 400;
   color: #5f6368;
@@ -26,7 +26,7 @@
   text-align: center;
 }
 
-.chart-area {
+.chartArea {
   min-height: 400px;
   position: relative;
   padding-left: 170px;
@@ -36,7 +36,7 @@
   width: 100%; 
 }
 
-.grid-lines {
+.gridLines {
   position: absolute;
   left: 170px;
   right: 40px; 
@@ -49,7 +49,7 @@
   opacity: 0.5;
 }
 
-.y-axis {
+.yAxis {
   position: absolute;
   left: 0;
   top: 20px;
@@ -60,7 +60,7 @@
   justify-content: space-between;
 }
 
-.y-axis-label {
+.yAxisLabel {
   height: 80px;
   display: flex;
   align-items: center;
@@ -74,7 +74,7 @@
   text-overflow: ellipsis;
 }
 
-.x-axis {
+.xAxis {
   position: absolute;
   left: 170px;
   right: 40px; 
@@ -83,7 +83,7 @@
   border-top: 1px solid #9aa0a6;
 }
 
-.x-axis-tick {
+.xAxisTick {
   position: absolute;
   font-size: 12px;
   color: #5f6368;
@@ -91,7 +91,7 @@
   top: 5px;
 }
 
-.x-axis-label {
+.xAxisLabel {
   position: absolute;
   bottom: 10px;
   left: 50%;
@@ -101,7 +101,7 @@
   font-weight: 500;
 }
 
-.bars-container {
+.barsContainer {
   position: absolute;
   left: 170px;
   right: 40px; 
@@ -112,7 +112,7 @@
   justify-content: space-between;
 }
 
-.bar-row {
+.barRow {
   height: 80px; 
   display: flex;
   align-items: center;
@@ -138,7 +138,7 @@
   transform: scaleY(1.1);
 }
 
-.data-label {
+.dataLabel {
   position: absolute;
   right: -25px;
   font-size: 14px;
@@ -173,7 +173,7 @@
   border-right-color: #333;
 }
 
-.no-data {
+.noData {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -182,7 +182,7 @@
   font-size: 16px;
 }
 
-.summary-info {
+.summaryInfo {
   margin-top: 20px;
   padding: 15px;
   background-color: #f8f9fa;
@@ -191,15 +191,15 @@
   color: #5f6368;
 }
 
-.summary-info div {
+.summaryInfo div {
   margin-bottom: 5px;
 }
 
-.summary-info div:last-child {
+.summaryInfo div:last-child {
   margin-bottom: 0;
 }
 
-.filters-panel {
+.filtersPanel {
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -207,21 +207,21 @@
   flex-shrink: 0; 
 }
 
-.filter-group {
+.filterGroup {
   border: 1px solid #dadce0;
   border-radius: 4px;
   padding: 8px;
   background-color: #ffffff;
 }
 
-.filter-label {
+.filterLabel {
   font-size: 14px;
   font-weight: 500;
   color: #3c4043;
   margin-bottom: 4px;
 }
 
-.filter-select-job-analytics {
+.filterSelectJobAnalytics {
   width: 100%;
   padding: 6px 8px;
   border: 1px solid #dadce0;
@@ -233,131 +233,132 @@
   height: 32px !important;
 }
 
-.filter-select-job-analytics:focus {
+.filterSelectJobAnalytics:focus {
   outline: none;
   border-color: #4285f4;
 }
 
-.filter-select-job-analytics:hover {
+.filterSelectJobAnalytics:hover {
   border-color: #9aa0a6;
 }
 
 /* Dark Mode Support */
-[data-theme="dark"] .job-analytics-container,
-.dark .job-analytics-container {
+:global([data-theme="dark"]) .jobAnalyticsContainer,
+:global(.dark) .jobAnalyticsContainer {
   background-color: #1a1a1a;
   color: #ffffff;
 }
 
-[data-theme="dark"] .chart-container,
-.dark .chart-container {
+:global([data-theme="dark"]) .chartContainer,
+:global(.dark) .chartContainer {
   background-color: #2d2d2d;
   border-color: #444;
 }
 
-[data-theme="dark"] .y-axis-label,
-.dark .y-axis-label {
+:global([data-theme="dark"]) .yAxisLabel,
+:global(.dark) .yAxisLabel {
   color: #e8eaed;
   border-color: #5f6368;
 }
 
-[data-theme="dark"] .x-axis-tick,
-.dark .x-axis-tick {
+:global([data-theme="dark"]) .xAxisTick,
+:global(.dark) .xAxisTick {
   color: #e8eaed;
 }
 
-[data-theme="dark"] .filters-panel select,
-.dark .filters-panel select {
+:global([data-theme="dark"]) .filtersPanel select,
+:global(.dark) .filtersPanel select {
   background-color: #2d2d2d;
   color: #ffffff;
   border-color: #5f6368;
 }
 
-[data-theme="dark"] .chart-title,
-.dark .chart-title {
+:global([data-theme="dark"]) .chartTitle,
+:global(.dark) .chartTitle {
   color: #e8eaed;
 }
 
-[data-theme="dark"] .summary-info,
-.dark .summary-info {
+:global([data-theme="dark"]) .summaryInfo,
+:global(.dark) .summaryInfo {
   background-color: #333;
   color: #e8eaed;
 }
 
+
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .chart-container {
+  .chartContainer {
     min-width: 700px;
   }
 }
 
 @media (max-width: 768px) {
-  .job-analytics-container {
+  .jobAnalyticsContainer {
     flex-direction: column;
     padding: 10px;
   }
   
-  .filters-panel {
+  .filtersPanel {
     flex-direction: row;
     min-width: auto;
     width: 100%;
   }
   
-  .chart-container {
+  .chartContainer {
     min-width: auto;
     width: 100%;
   }
   
-  .chart-area {
+  .chartArea {
     padding-left: 120px;
     padding-right: 20px;
   }
   
-  .y-axis {
+  .yAxis {
     width: 110px;
   }
   
-  .y-axis-label {
+  .yAxisLabel {
     font-size: 11px;
   }
   
-  .bars-container {
+  .barsContainer {
     left: 120px;
     right: 20px;
   }
   
-  .grid-lines {
+  .gridLines {
     left: 120px;
     right: 20px;
   }
   
-  .x-axis {
+  .xAxis {
     left: 120px;
     right: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .chart-area {
+  .chartArea {
     padding-left: 100px;
     padding-right: 10px;
   }
   
-  .y-axis {
+  .yAxis {
     width: 90px;
   }
   
-  .bars-container {
+  .barsContainer {
     left: 100px;
     right: 10px;
   }
   
-  .grid-lines {
+  .gridLines {
     left: 100px;
     right: 10px;
   }
   
-  .x-axis {
+  .xAxis {
     left: 100px;
     right: 10px;
   }
