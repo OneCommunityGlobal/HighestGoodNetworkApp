@@ -7,13 +7,16 @@ import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
+import { hasPermissionSimple } from '~/utils/permissions';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
 
 function JobFormBuilder() {
-  const { role } = useSelector(state => state.auth.user);
+  const { auth } = useSelector(state => state);
+  const userPermissions = auth?.user?.permissions?.frontPermissions || [];
+  const userRole = auth?.user?.role;
   const [formFields, setFormFields] = useState([]);
   const [newField, setNewField] = useState({
     questionText: '',
@@ -297,6 +300,10 @@ function JobFormBuilder() {
         title: jobTitle,
         questions: formFields,
         description: '',
+        requestor: {
+          requestorId: auth.user.userid,
+          role: userRole,
+        },
       });
 
       console.log('Form updated successfully');
@@ -339,7 +346,7 @@ function JobFormBuilder() {
       </div>
       <h1 className={styles.jobformTitle}>FORM CREATION</h1>
 
-      {role === 'Owner' ? (
+      {hasPermissionSimple(userPermissions, 'manageJobForms') || userRole === 'Owner' ? (
         <div className={styles.customForm}>
           <p className={styles.jobformDesc}>
             Fill the form with questions about a specific position you want to create an ad for. The
@@ -492,7 +499,28 @@ function JobFormBuilder() {
             />
           )}
         </div>
-      ) : null}
+      ) : (
+        <div className={styles.customForm}>
+          <div className="alert alert-warning" role="alert">
+            <h4 className="alert-heading">Access Restricted</h4>
+            <p>
+              You do not have permission to manage job application forms. Contact an administrator
+              to request the following permissions:
+            </p>
+            <ul className="mb-0">
+              <li>
+                <strong>Manage Job Forms</strong> - Create, edit, and manage job application forms
+              </li>
+              <li>
+                <strong>Create Form Questions</strong> - Create reusable question sets
+              </li>
+              <li>
+                <strong>Edit Form Questions</strong> - Modify existing questions and forms
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
