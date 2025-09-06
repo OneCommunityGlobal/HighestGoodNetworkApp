@@ -336,3 +336,7 @@
   border-radius: 3px;
   margin-bottom: 5px;
 }
+
+.darkMode .jobformTitle {
+  color: white;
+}
