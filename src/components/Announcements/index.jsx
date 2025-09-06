@@ -2,13 +2,20 @@
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import { Label, Input, Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 import { FaFacebook, FaTwitter } from 'react-icons/fa';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReactTooltip from 'react-tooltip';
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
+import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
+
 import {
   sendTweet,
   scheduleTweet,
@@ -21,6 +28,7 @@ import {
 } from '../../actions/sendSocialMediaPosts';
 
 function Announcements({ title, email: initialEmail }) {
+  const [activeTab, setActiveTab] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailTo, setEmailTo] = useState('');
@@ -63,6 +71,59 @@ function Announcements({ title, email: initialEmail }) {
   const [selectedDateRange, setSelectedDateRange] = useState('');
   const [repeatAnnually, setRepeatAnnually] = useState(false);
   const [numYears, setNumYears] = useState(1);
+
+  const getIconColor = id => {
+    switch (id) {
+      case 'facebook':
+        return '#1877F2';
+      case 'linkedin':
+        return '#0077B5';
+      case 'medium':
+        return '#00ab6c';
+      default:
+        return undefined;
+    }
+  };
+
+  const tabs = [
+    { id: 'email', icon: faEnvelope, label: 'Email' },
+    { id: 'twitter', label: 'Twitter', customIconSrc: 'social-media-logos/x_icon.png' },
+    { id: 'facebook', icon: faFacebook, label: 'Facebook' },
+    { id: 'linkedin', icon: faLinkedin, label: 'LinkedIn' },
+    { id: 'pinterest', label: 'Pinterest', customIconSrc: 'social-media-logos/pinterest_icon.png' },
+    { id: 'instagram', label: 'Instagram', customIconSrc: 'social-media-logos/insta_icon.png' },
+    { id: 'threads', label: 'Threads', customIconSrc: 'social-media-logos/threads_icon.png' },
+    { id: 'mastodon', label: 'Mastodon', customIconSrc: 'social-media-logos/mastodon_icon.png' },
+    { id: 'bluesky', label: 'BlueSky', customIconSrc: 'social-media-logos/bluesky_icon.png' },
+    { id: 'youtube', label: 'Youtube', customIconSrc: 'social-media-logos/youtube_icon.png' },
+    { id: 'reddit', label: 'Reddit', customIconSrc: 'social-media-logos/reddit_icon.png' },
+    { id: 'tumblr', label: 'Tumblr', customIconSrc: 'social-media-logos/tumblr_icon.png' },
+    { id: 'imgur', label: 'Imgur', customIconSrc: 'social-media-logos/imgur_icon.png' },
+    { id: 'diigo', label: 'Diigo', customIconSrc: 'social-media-logos/diigo_icon.png' },
+    { id: 'myspace', label: 'Myspace', customIconSrc: 'social-media-logos/myspace_icon.png' },
+    { id: 'medium', icon: faMedium, label: 'Medium' },
+    { id: 'plurk', label: 'Plurk', customIconSrc: 'social-media-logos/plurk_icon.png' },
+    { id: 'bitily', label: 'Bitily', customIconSrc: 'social-media-logos/bitily_icon.png' },
+    {
+      id: 'livejournal',
+      label: 'LiveJournal',
+      customIconSrc: 'social-media-logos/liveJournal_icon.png',
+    },
+    { id: 'slashdot', label: 'Slashdot', customIconSrc: 'social-media-logos/slashdot_icon.png' },
+    { id: 'blogger', label: 'Blogger', customIconSrc: 'social-media-logos/blogger_icon.png' },
+    {
+      id: 'truthsocial',
+      label: 'Truth Social',
+      customIconSrc: 'social-media-logos/truthsocial_icon.png',
+    },
+  ];
+
+  const columns = Math.ceil(tabs.length / 2);
+  const gridStyle = {
+    gridTemplateColumns: `repeat(${columns}, minmax(120px, 1fr))`,
+    padding: '1rem',
+    borderBottom: darkMode ? '1px solid #2b3b50' : '1px solid #ccc',
+  };
 
   useEffect(() => {
     setShowEditor(false);
@@ -423,9 +484,11 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const handlePlatformClick = platform => {
+    setActiveTab(platform);
     setActivePlatform(platform);
     // reset to first hint of that platform
     setCurrentHint(platformHints[platform][0]);
+    //setSelectedPlatforms([platform]);
     if (platform === 'facebook') {
       setSelectedPlatforms(['facebook']);
     } else if (platform === 'twitter') {
@@ -470,25 +533,45 @@ function Announcements({ title, email: initialEmail }) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
+      {title ? (
+        <h3 className="social-media-title">{title}</h3>
+      ) : (
+        <h3 className="social-media-title">Select Social Media Platforms</h3>
+      )}
+      <Nav
+        className={classnames('tab-grid', { 'two-rows': columns, dark: darkMode })}
+        style={gridStyle}
+      >
+        {tabs.map(({ id, icon, label, customIconSrc }) => (
+          <NavItem key={id}>
+            <NavLink
+              data-tip={label}
+              className={classnames('tab-nav-item', { active: activeTab === id, dark: darkMode })}
+              //onClick={() => setActiveTab(id)}
+              onClick={() => handlePlatformClick(id)}
+              aria-selected={activeTab === id}
+            >
+              <div className="tab-icon">
+                {customIconSrc ? (
+                  <img src={customIconSrc} alt={`${label} icon`} className="tab-icon" />
+                ) : (
+                  <FontAwesomeIcon
+                    icon={icon}
+                    style={{ width: '100%', height: '100%', color: getIconColor(id) }}
+                  />
+                )}
+              </div>
+              <div className="tab-label">{label}</div>
+            </NavLink>
+          </NavItem>
+        ))}
+      </Nav>
+      <ReactTooltip place="bottom" type="dark" effect="solid" />
+
       <div className="email-update-container">
         <div className="editor">
           {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
           <br />
-          <div className="flex justify-center space-x-6 mb-4">
-            <FaFacebook
-              size={40}
-              color={activePlatform === 'facebook' ? '#1877F2' : '#888'}
-              onClick={() => handlePlatformClick('facebook')}
-              className="cursor-pointer hover:scale-110 transition-transform"
-            />
-            <FaTwitter
-              size={40}
-              color={activePlatform === 'twitter' ? '#E1306C' : '#888'}
-              onClick={() => handlePlatformClick('twitter')}
-              className="cursor-pointer hover:scale-110 transition-transform"
-            />
-          </div>
-
           {!showDropdown ? (
             <button
               className="send-button mr-1 ml-1"
@@ -722,10 +805,7 @@ function Announcements({ title, email: initialEmail }) {
             </button>
           </div>
         </div>
-
-        {title ? (
-          ''
-        ) : (
+        {activeTab === 'email' && !title && (
           <div
             className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
             style={darkMode ? boxStyleDark : boxStyle}
@@ -790,7 +870,7 @@ function Announcements({ title, email: initialEmail }) {
       </div>
 
       {showDropdown && (
-        <div className="social-media-container" style={{ marginTop: '10px' }}>
+        <div className="social-media-container" style={{ marginTop: '1px' }}>
           <div className="social-media">
             {title ? <h3>{title}</h3> : <h3>Schedule Post on Social Media</h3>}
             {title ? null : (
@@ -810,7 +890,8 @@ function Announcements({ title, email: initialEmail }) {
       )}
 
       {showDropdownPost && (
-        <div className="social-media-container" style={{ marginTop: '10px' }}>
+        // <div className="social-media-container" style={{ marginTop: '10px' }}>
+        <div className="social-media-container">
           <div className="social-media">
             {title ? <h3>{title}</h3> : <h3>Post on Social Media</h3>}
             {title ? null : (

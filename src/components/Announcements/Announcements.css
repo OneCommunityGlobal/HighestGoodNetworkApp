@@ -59,28 +59,41 @@ button.send-button:hover {
 .ck-editor__editable {
   min-height: 500px;
 }
+.social-media-title {
+  padding: 10px 0; /* vertical spacing */
+  text-align: center; /* center horizontally */
+}
+
 
 .email-update-container {
   padding: 70px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  box-sizing: border-box; /* Ensures padding is included in width */
+  box-sizing: border-box; 
+  margin-bottom: 10px;/* Ensures padding is included in width */
+}
+
+.email-update-container .editor > div > .send-button {
+  margin-top: 10px; /* reduced from 20px */
+  margin-bottom: 10px; /* optional: control bottom spacing */
 }
 
 
 .social-media-container {
-  padding: 70px;
+  margin-top: 20px; /* reduce from previous 70px */
+  padding: 70px; 
   display: flex;
-  gap: 10px;
+  gap: 1px;
   flex-wrap: wrap;
-
   justify-content: flex-start;
+}
+.editor + .social-media-container {
+  margin-top: 15px; /* brings it closer to the editor */
 }
 
 .social-media {
   flex: 1;
-
   margin-right: 20px;
 }
 
@@ -236,4 +249,164 @@ button.send-button:hover {
   justify-content: flex-end;
   gap: 10px;
 }
+}
+
+summary {
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+.tab-nav-container {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: -1px;
+  position: relative;
+  z-index: 1;
+}
+
+.tab-nav-item {
+  border: 1px solid #ccc;
+  border-bottom: none;
+  background: linear-gradient(to bottom, #f3f3f3, #ddd);
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  margin-right: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 12px 10px;
+  min-height: 72px;
+}
+
+.tab-nav-item.active {
+  background: white;
+  border-color: #aaa;
+  color: #222;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid white;
+}
+
+.tab-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  margin: 0 auto;
+  display: block;
+}
+
+.tab-label {
+  font-size: 0.75rem;
+  text-align: center;
+  margin-top: 6px;
+  line-height: 1rem;
+}
+
+.tab-nav-item.dark {
+  background: linear-gradient(to bottom, #2b3b50, #1e2d44);
+  color: #ddd;
+  border-color: #2b3b50;
+}
+
+.tab-nav-item.dark .tab-label {
+  color: #ddd;
+}
+
+.tab-nav-item.active.dark {
+  background: #14233a;
+  color: #fff;
+  border-bottom: 1px solid #14233a;
+  border-color: #4a5568;
+}
+
+.tab-nav-item.active.dark .tab-label {
+  color: #fff;
+}
+
+/* Tab Container */
+/* Tab Container */
+/* Tab Container */
+/* Tab Container */
+.tab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* uniform width */
+  gap: 8px;      /* space between tabs */
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+}
+
+/* Individual Tabs */
+.tab-grid .tab-nav-item {
+  height: 100px;                 /* uniform height */
+  border-radius: 12px 12px 0 0;
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  text-align: center;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* Active Tab */
+.tab-grid .tab-nav-item.active {
+  background: #ffffff;
+  border-color: #4285f4;
+  color: #4285f4;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Hover effect */
+.tab-grid .tab-nav-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Dark Mode */
+.tab-grid.dark .tab-nav-item {
+  background: #2b3b50;
+  border-color: #1e2d44;
+  color: #ddd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.tab-grid.dark .tab-nav-item.active {
+  background: #14233a;
+  border-color: #4a5568;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+/* Tab Icon & Label */
+.tab-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  margin-bottom: 4px;
+}
+
+.tab-label {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+/* Responsive: small screens */
+@media (max-width: 700px) {
+  .tab-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+  .tab-label { display: none; }
+  .tab-icon { width: 32px; height: 32px; }
 }
