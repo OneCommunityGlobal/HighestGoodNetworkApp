@@ -8,6 +8,7 @@ const mockEvents = [
     noShowRate: '12%',
     dropOffRate: '54%',
     location: 'New York',
+    capacity: 40,
   },
   {
     id: 2,
@@ -18,6 +19,7 @@ const mockEvents = [
     noShowRate: '10%',
     dropOffRate: '50%',
     location: 'San Francisco',
+    capacity: 40,
   },
   {
     id: 3,
@@ -28,6 +30,7 @@ const mockEvents = [
     noShowRate: '15%',
     dropOffRate: '60%',
     location: 'Los Angeles',
+    capacity: 40,
   },
   {
     id: 4,
@@ -38,6 +41,7 @@ const mockEvents = [
     noShowRate: '8%',
     dropOffRate: '45%',
     location: 'Chicago',
+    capacity: 40,
   },
   {
     id: 5,
@@ -48,6 +52,7 @@ const mockEvents = [
     noShowRate: '36%',
     dropOffRate: '19%',
     location: 'Chicago',
+    capacity: 40,
   },
   {
     id: 6,
@@ -58,6 +63,7 @@ const mockEvents = [
     noShowRate: '85%',
     dropOffRate: '25%',
     location: 'Chicago',
+    capacity: 40,
   },
   {
     id: 7,
@@ -68,6 +74,18 @@ const mockEvents = [
     noShowRate: '18%',
     dropOffRate: '40%',
     location: 'Chicago',
+    capacity: 40,
+  },
+  {
+    id: 8,
+    eventType: 'Fitness Bootcamp 3',
+    eventTime: '8:00-9:00 am Jan 21, 2026',
+    eventName: 'Event 8',
+    attendees: 50,
+    noShowRate: '18%',
+    dropOffRate: '40%',
+    location: 'Chicago',
+    capacity: 0,
   },
 ];
 
