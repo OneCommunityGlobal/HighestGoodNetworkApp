@@ -256,26 +256,28 @@ function PermissionListItem(props) {
                   changedPermission(permission) ? 'show-tooltip' : ''
                 }`}
               >
-                <button
-                  className={`changed-permission ${
-                    darkMode ? 'dark-background' : 'light-background'
-                  } ${
-                    changedPermission(permission)
-                      ? checkChangePermission(permission)
-                        ? 'green'
-                        : 'red'
-                      : darkMode
-                      ? 'dark'
-                      : 'light'
-                  }
-                  `}
-                  aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
-                  disabled
-                  type="button"
-                >
-                  {' '}
-                  ★{' '}
-                </button>
+                {immutablePermissions.length > 0 && (
+                  <button
+                    className={`changed-permission ${
+                      darkMode ? 'dark-background' : 'light-background'
+                    } ${
+                      changedPermission(permission)
+                        ? checkChangePermission(permission)
+                          ? 'green'
+                          : 'red'
+                        : darkMode
+                        ? 'dark'
+                        : 'light'
+                    }
+                    `}
+                    aria-label={changedPermission(permission) ? 'Modified Permission' : ''}
+                    disabled
+                    type="button"
+                  >
+                    {' '}
+                    ★{' '}
+                  </button>
+                )}
                 <p className="permission-tooltip-text">
                   Permission {checkChangePermission(permission) ? 'added' : 'removed'}
                 </p>
