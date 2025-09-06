@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 import { teamMemberTasksReducer } from '~/components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from '~/components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
