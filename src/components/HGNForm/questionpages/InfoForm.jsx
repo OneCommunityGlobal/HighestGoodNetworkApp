@@ -4,12 +4,14 @@ import { useDispatch, useSelector, useSelector as useReduxSelector } from 'react
 import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import styles from '../styles/InfoForm.module.css';
+import { getBoxStyling, getFontColor } from '../../../styles';
 
 function InfoForm() {
   const darkMode = useReduxSelector(state => state.theme.darkMode);
   const formData = useSelector(state => state.hgnForm);
   const dispatch = useDispatch();
   const user = useSelector(state => state.auth.user);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const isOwner = user.role === 'Owner';
   const userProfile = useSelector(state => state.allUserProfilesBasicInfo?.userProfilesBasicInfo);
 
@@ -147,14 +149,26 @@ function InfoForm() {
   };
 
   return !loading ? (
+<<<<<<< HEAD
     <div className={`${styles.infoFormContainer} ${darkMode ? styles.dark : ''}`}>
+=======
+    <div
+      className={`${styles.infoFormContainer} ${darkMode ? 'bg-space-cadet' : ''}`}
+      style={getBoxStyling(darkMode)}
+    >
+>>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
       <form onSubmit={handleNext}>
         <div className={`${styles.formInputs}`}>
-          <label htmlFor="name">
+          <label htmlFor="name" className={`${getFontColor(darkMode)}`}>
             Name <span style={{ color: 'red' }}>*</span>
           </label>
           <input
-            className={`${styles.infoInput} ${showError ? styles.error : ''}`}
+            className={`
+              ${styles.infoInput}
+              ${darkMode ? 'bg-yinmn-blue' : ''}
+              ${getFontColor(darkMode)}
+              ${showError ? styles.error : ''}
+            `}
             type="text"
             id="name"
             value={newVolunteer.name}
@@ -167,17 +181,21 @@ function InfoForm() {
             placeholder="Your First and Last Name"
           />
           {showError && (
-            <span className={`${styles.errorMessage}`}>
+            <span className={`${styles.errorMessage} `}>
               Name must be at least 2 characters long
             </span>
           )}
         </div>
         <div className={`${styles.formInputs}`}>
-          <label htmlFor="email">
+          <label htmlFor="email" className={`${getFontColor(darkMode)}`}>
             Email <span style={{ color: 'red' }}>*</span>
           </label>
           <input
-            className={`${styles.infoInput}`}
+            className={`
+              ${styles.infoInput}
+              ${darkMode ? 'bg-yinmn-blue' : ''}
+              ${getFontColor(darkMode)}
+            `}
             type="email"
             id="email"
             value={newVolunteer.email}
@@ -188,11 +206,19 @@ function InfoForm() {
           />
         </div>
         <div className={`${styles.formInputs}`}>
+<<<<<<< HEAD
           <label htmlFor="github" className={`${styles.labelInline}`}>
+=======
+          <label htmlFor="github" className={`${getFontColor(darkMode)}`}>
+>>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
             GitHub <span style={{ color: 'red' }}>*</span>
           </label>
           <input
-            className={`${styles.infoInput}`}
+            className={`
+              ${styles.infoInput}
+              ${darkMode ? 'bg-yinmn-blue' : ''}
+              ${getFontColor(darkMode)}
+            `}
             type="text"
             id="github"
             value={newVolunteer.github}
@@ -203,11 +229,19 @@ function InfoForm() {
           />
         </div>
         <div className={`${styles.formInputs}`}>
+<<<<<<< HEAD
           <label htmlFor="slack" className={`${styles.labelInline}`}>
+=======
+          <label htmlFor="slack" className={`${getFontColor(darkMode)}`}>
+>>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
             Slack <span style={{ color: 'red' }}>*</span>
           </label>
           <input
-            className={`${styles.infoInput}`}
+            className={`
+              ${styles.infoInput}
+              ${darkMode ? 'bg-yinmn-blue' : ''}
+              ${getFontColor(darkMode)}
+            `}
             type="text"
             id="slack"
             value={newVolunteer.slack}
@@ -235,20 +269,35 @@ function InfoForm() {
           />
 
           <label
+<<<<<<< HEAD
             style={{ color: darkMode ? '#78a5c4' : '#2f5061', margin: '0 5px' }}
             htmlFor="sameAsName"
+=======
+            style={{ color: '#2f5061', margin: '0 5px' }}
+            htmlFor="sameAsName"
+            className={`${getFontColor(darkMode)}`}
+>>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
           >
             Yes, my Slack handle is my first and last name <span style={{ color: 'red' }}>*</span>
           </label>
         </div>
 
         <span
+<<<<<<< HEAD
           className={`${styles.errorMessage}`}
           style={{ color: darkMode ? '#b5bac5' : '#2e5163', margin: '20px 20px' }}
         >
           <strong style={{ color: darkMode ? '#78a5c4' : '#2f5061' }}>NOTE:</strong> Your name and
           email need to match what is on your DropBox and Google Doc. Please edit them on your
           Profile Page if they don’t.{' '}
+=======
+          className={`${styles.errorMessage} ${getFontColor(darkMode)}`}
+          style={{ color: '#2e5163', margin: '20px 20px' }}
+        >
+          <strong className={`${getFontColor(darkMode)}`}>NOTE:</strong> Your name and email need to
+          match what is on your DropBox and Google Doc. Please edit them on your Profile Page if
+          they don’t.{' '}
+>>>>>>> f4bb365f3 (add dark mode to infoForm.jsx)
         </span>
 
         <div className={`${styles.buttonContainer}`}>
