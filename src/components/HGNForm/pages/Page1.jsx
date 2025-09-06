@@ -1,14 +1,15 @@
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import Banner from '../questionpages/Banner';
 import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
-import '../styles/hgnform.module.css';
+import styles from '../styles/hgnform.module.css';
 
 function Page1() {
   const user = useSelector(state => state.auth.user);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -22,7 +23,7 @@ function Page1() {
   }, []);
 
   return (
-    <div className="hgnform">
+    <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />
