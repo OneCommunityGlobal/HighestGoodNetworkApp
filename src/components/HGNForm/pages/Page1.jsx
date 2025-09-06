@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { useEffect, useState } from 'react';
+=======
+import { use, useEffect } from 'react';
+>>>>>>> a2dce1bdb (add dark mode for questionnaire)
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
@@ -10,7 +14,13 @@ import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
 import styles from '../styles/hgnform.module.css';
 
+<<<<<<< HEAD
 export default function Page1() {
+=======
+function Page1() {
+  const user = useSelector(state => state.auth.user);
+  const darkMode = useSelector(state => state.theme.darkMode);
+>>>>>>> a2dce1bdb (add dark mode for questionnaire)
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const authUser = useSelector(state => state.auth.user);
@@ -76,7 +86,11 @@ export default function Page1() {
   }
 
   return (
+<<<<<<< HEAD
     <div className={`${styles['container-hgnform-wrapper']} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+=======
+    <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+>>>>>>> a2dce1bdb (add dark mode for questionnaire)
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />
