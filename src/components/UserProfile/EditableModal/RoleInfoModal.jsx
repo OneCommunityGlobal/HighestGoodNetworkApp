@@ -7,6 +7,7 @@ import { updateInfoCollection } from '../../../actions/information'
 import { boxStyle, boxStyleDark } from '~/styles';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import DOMPurify from 'dompurify';
 import RichTextEditor from './RichTextEditor';
 
 const RoleInfoModal = ({ info, auth}) => {
@@ -18,8 +19,19 @@ const RoleInfoModal = ({ info, auth}) => {
   const [infoContentModal, setInfoContentModal] = useState('');
   const dispatch = useDispatch();
 
+  // Sanitize HTML content to prevent XSS attacks
+  const sanitizeHTML = (htmlContent) => {
+    if (!htmlContent || typeof htmlContent !== 'string') return '';
+    
+    return DOMPurify.sanitize(htmlContent, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'span', 'div'],
+      ALLOWED_ATTR: ['href', 'class', 'style'],
+      ALLOW_DATA_ATTR: false,
+    });
+  };
+
   useEffect(() => {
-    setInfoContentModal(infoContent);
+    setInfoContentModal(sanitizeHTML(infoContent));
   }, [infoContent]);
 
   const handleSaveSuccess = async () => {
@@ -49,7 +61,7 @@ const RoleInfoModal = ({ info, auth}) => {
   };
 
   const handleInputChange = (content) => {
-    setInfoContentModal(content);
+    setInfoContentModal(sanitizeHTML(content));
   };
 
   const handleSave = async (e) => {
@@ -73,6 +85,9 @@ const RoleInfoModal = ({ info, auth}) => {
   }
 
   if (CanRead) {
+    // Apply additional sanitization before rendering
+    const safeContent = sanitizeHTML(infoContentModal);
+    
     return (
       <span>
          <i
@@ -92,7 +107,7 @@ const RoleInfoModal = ({ info, auth}) => {
                 <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} darkMode={darkMode}/> :
                 <div
                   style={{ paddingLeft: '20px' }}
-                  dangerouslySetInnerHTML={{ __html: infoContentModal }}
+                  dangerouslySetInnerHTML={{ __html: safeContent }}
                   onClick={() => setIsEditing(true)}
                 />}
             </ModalBody>
