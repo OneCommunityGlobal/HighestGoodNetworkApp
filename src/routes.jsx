@@ -42,8 +42,6 @@ import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 import Timelog from './components/Timelog';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
-import MaterialSummary from './components/MaterialSummary/MaterialSummary';
-
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
 import Login from './components/Login';
@@ -132,6 +130,7 @@ import EventParticipation from './components/CommunityPortal/Reports/Participati
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 
