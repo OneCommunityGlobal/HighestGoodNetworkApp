@@ -147,11 +147,80 @@ const QUESTIONS = [
 
 /* ------------------------ Rich “Learn More” modal ------------------------ */
 /** Inline styles are provided as a fallback to guarantee visibility even if CSS is missing/overridden. */
+/* -------------------- modal helpers -------------------- */
+const toList = val => {
+  if (!val) return [];
+  if (Array.isArray(val))
+    return val
+      .map(String)
+      .map(s => s.trim())
+      .filter(Boolean);
+  // Accept newline or bullet-prefixed text (•, -, *)
+  return String(val)
+    .split(/\r?\n|[\u2022•]|^\s*-\s+|^\s*\*\s+/gm)
+    .map(s => s.trim())
+    .filter(Boolean);
+};
+
+const firstVal = (obj, keys) => {
+  for (const k of keys) {
+    if (obj && obj[k] != null && String(obj[k]).trim() !== '') return obj[k];
+  }
+  return null;
+};
+
+const isReactish = ad =>
+  /\b(react|mern|frontend)\b/i.test(`${ad?.title || ''} ${ad?.category || ''}`);
+
+const buildSections = ad => {
+  const reqTitle = isReactish(ad) ? 'React.js Position Requirements:' : 'Position Requirements:';
+  const groups = [
+    { title: 'Role Responsibilities', keys: ['responsibilities', 'whatYoullDo', 'expectations'] },
+    {
+      title: reqTitle,
+      keys: ['requirements', 'positionRequirements', 'required', 'mustHave', 'reactRequirements'],
+    },
+    {
+      title: 'Additional Beneficial Qualifications:',
+      keys: ['qualifications', 'beneficialQualifications', 'niceToHave', 'preferred'],
+    },
+    {
+      title: 'Availability & Commitment',
+      keys: ['commitment', 'availability', 'hours', 'timeRequirements'],
+    },
+    { title: 'Tech / Tools We Use', keys: ['stack', 'techStack', 'tools', 'technologies'] },
+    { title: 'Benefits & What You’ll Gain', keys: ['benefits', 'perks'] },
+  ];
+
+  return groups
+    .map(g => ({ title: g.title, items: toList(firstVal(ad, g.keys)) }))
+    .filter(sec => sec.items.length > 0);
+};
+
 function DescModal({ ad, onClose }) {
   if (!ad) return null;
 
+  // --- derive heading: "Seeking Experienced {Job Name}" ---
+  const stripPrefix = s =>
+    String(s || '')
+      .replace(/^seeking\s+experienced\s+/i, '')
+      .trim();
+  const jobName = stripPrefix(ad.title || ad.category || 'Position');
+  const heading = `Seeking Experienced ${jobName}`;
+
+  // rich HTML from API (optional)
   const html = ad.longHtml || ad.html;
 
+  // One Community blurb (can be overridden by backend via ad.aboutOneCommunity)
+  const aboutOneCommunity =
+    ad.aboutOneCommunity ||
+    `One Community is a 100%-volunteer global sustainability organization. We're a software team of over 100 developers working on the 5 phases of this open source team management software: ` +
+      `<a href="https://www.onecommunityglobal.org/highest-good-network/" target="_blank" rel="noopener noreferrer">www.onecommunityglobal.org/highest-good-network/</a>`;
+
+  // build content groups (Requirements, Responsibilities, etc.)
+  const sections = buildSections(ad);
+
+  // --- styles (kept inline for resilience) ---
   const outerStyle = {
     position: 'fixed',
     inset: 0,
@@ -159,11 +228,7 @@ function DescModal({ ad, onClose }) {
     placeItems: 'center',
     zIndex: 9999,
   };
-  const backdropStyle = {
-    position: 'absolute',
-    inset: 0,
-    background: 'rgba(0,0,0,.45)',
-  };
+  const backdropStyle = { position: 'absolute', inset: 0, background: 'rgba(0,0,0,.45)' };
   const cardStyle = {
     position: 'relative',
     zIndex: 1,
@@ -171,20 +236,32 @@ function DescModal({ ad, onClose }) {
     maxHeight: '80vh',
     display: 'flex',
     flexDirection: 'column',
-    background: 'var(--surface, #fff)',
-    color: 'var(--text, #111)',
-    border: '1px solid var(--ring, #e5e7eb)',
-    borderRadius: 'var(--radius, 12px)',
-    boxShadow: 'var(--shadow, 0 6px 16px rgba(0,0,0,.18))',
-    padding: 'var(--space-5, 20px)',
+    background: 'var(--surface,#fff)',
+    color: 'var(--text,#111)',
+    border: '1px solid var(--ring,#e5e7eb)',
+    borderRadius: 'var(--radius,12px)',
+    boxShadow: 'var(--shadow,0 6px 16px rgba(0,0,0,.18))',
+    padding: 'var(--space-5,20px)',
   };
   const bodyStyle = { flex: 1, overflow: 'auto', paddingRight: 8 };
+  const chipRowStyle = { display: 'flex', flexWrap: 'wrap', gap: 8, margin: '8px 0 12px' };
+  const chipStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '4px 10px',
+    borderRadius: 999,
+    border: '1px solid var(--ring,#e5e7eb)',
+    background: 'var(--card,#f7f7f9)',
+    fontSize: 12,
+  };
+  const sectionStyle = { marginBottom: 16 };
+  const listStyle = { paddingLeft: '1.25rem', margin: '8px 0 16px' };
 
   const Section = ({ title, items }) =>
     items?.length ? (
-      <section>
+      <section style={sectionStyle}>
         <h4>{title}</h4>
-        <ul>
+        <ul style={listStyle}>
           {items.map((it, idx) => (
             <li key={idx}>{it}</li>
           ))}
@@ -199,6 +276,26 @@ function DescModal({ ad, onClose }) {
     }
   };
 
+  // Meta chips under title
+  const chips = [];
+  if (ad.category) chips.push(ad.category);
+  if (ad.location) chips.push(ad.location);
+  if (ad.timezone) chips.push(ad.timezone);
+  const hours = ad.commitmentHours || ad.hours;
+  if (hours) chips.push(`${hours} hrs/wk`);
+  if (ad.datePosted) {
+    try {
+      chips.push(new Date(ad.datePosted).toLocaleDateString());
+    } catch {}
+  }
+
+  const detailsLink =
+    ad.jobDetailsLink ||
+    (ad.category &&
+      `https://www.onecommunityglobal.org/collaboration/seeking-${(
+        ad.category || ''
+      ).toLowerCase()}`);
+
   return (
     <div
       className="modal"
@@ -207,7 +304,6 @@ function DescModal({ ad, onClose }) {
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      {/* Backdrop is operable via keyboard */}
       <div
         className="modal__backdrop"
         style={backdropStyle}
@@ -224,35 +320,64 @@ function DescModal({ ad, onClose }) {
         tabIndex={-1}
         role="document"
       >
-        <header className="modal__header modal__header--center">
-          <h2 id="modal-title">{ad.title || 'Position'}</h2>
+        <header className="modal__header modal__header--stack">
+          <h2 id="modal-title" className="modal__title">
+            {heading}
+          </h2>
+
+          {chips.length > 0 && (
+            <div className="modal__meta" aria-label="Job meta">
+              {chips.map((c, i) => (
+                <span key={i} className="chip">
+                  {c}
+                </span>
+              ))}
+            </div>
+          )}
         </header>
 
         <div className="modal__body modal__body--scroll" style={bodyStyle}>
-          {html ? (
+          {/* One Community blurb immediately under the heading */}
+          <p className="modal__about" dangerouslySetInnerHTML={{ __html: aboutOneCommunity }} />
+
+          {/* If backend supplies rich HTML, show it after the intro */}
+          {html && (
             <article className="modal__article" dangerouslySetInnerHTML={{ __html: html }} />
-          ) : (
+          )}
+
+          {/* Fallback role description if no HTML */}
+          {!html && ad.description && (
             <article className="modal__article">
-              {ad.description && <p>{ad.description}</p>}
-              <Section title="React.js Position Requirements:" items={ad.requirements} />
-              <Section title="Additional Beneficial Qualifications:" items={ad.qualifications} />
-              {Array.isArray(ad.images) && ad.images.length > 0 && (
-                <div className="modal__image-grid">
-                  {ad.images.map((src, i) => (
-                    <img key={i} src={src} alt={`${ad.title} visual ${i + 1}`} />
-                  ))}
-                </div>
-              )}
+              <h4>About the role</h4>
+              <p>{ad.description}</p>
             </article>
+          )}
+
+          {/* Auto-built sections (Requirements, Responsibilities, etc.) */}
+          {sections.map((s, i) => (
+            <section key={i} className="modal__section">
+              <h4>{s.title}</h4>
+              <ul>
+                {s.items.map((it, idx) => (
+                  <li key={idx}>{it}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+
+          {/* Image grid + details link (unchanged) */}
+          {Array.isArray(ad.images) && ad.images.length > 0 && (
+            <div className="modal__image-grid">
+              {ad.images.map((src, i) => (
+                <img key={i} src={src} alt={`${ad.title || 'Position'} visual ${i + 1}`} />
+              ))}
+            </div>
           )}
         </div>
 
-        <footer className="modal__footer modal__footer--space">
+        <footer className="modal__footer">
           <button className="btn btn-primary" type="button" onClick={onClose}>
             Got it
-          </button>
-          <button className="modal__close-fab" type="button" onClick={onClose} aria-label="Close">
-            X
           </button>
         </footer>
       </div>
@@ -727,7 +852,9 @@ function Collaboration() {
                   onChange={e => onApplyChange(e.target.value)}
                   aria-label="Apply to a position"
                 >
-                  <option value="">Software Engineer</option>
+                  <option value="" disabled>
+                    Select a position
+                  </option>
                   {applyOptions.map(opt => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -904,7 +1031,9 @@ function Collaboration() {
                 onChange={e => onApplyChange(e.target.value)}
                 aria-label="Apply to a position"
               >
-                <option value="">Software Engineer</option>
+                <option value="" disabled>
+                  Select a position
+                </option>
                 {applyOptions.map(opt => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}

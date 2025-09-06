@@ -294,3 +294,105 @@ body {
 }
 #root, .job-landing { min-height: 100vh; overflow: visible; }
 .user-collaboration-container { max-height: none; overflow: visible; }
+
+/* ---------- Modal layout & typography ---------- */
+/* Card must be relative so the close button stays inside */
+.modal__card { position: relative; }
+
+/* Header is now a simple vertical stack */
+.modal__header--stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-right: 48px; /* space for the close button */
+}
+
+/* Full-width, readable title */
+.modal__title {
+  margin: 0;
+  font-size: clamp(28px, 3.6vw, 48px);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  width: 100%;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Meta chips under the title */
+.modal__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--ring, #e5e7eb);
+  background: var(--card, #f7f7f9);
+  font-size: 12px;
+  color: var(--text, #111);
+}
+
+/* Close button INSIDE the card, top-right */
+.modal__close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #111;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,.12);
+}
+
+/* Intro paragraph below the heading */
+.modal__about {
+  margin: 8px 0 6px;
+  color: #4b5563;        /* gray-600 */
+  line-height: 1.5;
+  font-size: 15px;
+}
+.modal__about a { color: #2563eb; text-decoration: underline; }
+
+/* Body content spacing */
+.modal__article { margin: 10px 0 4px; }
+.modal__section { margin: 16px 0; }
+.modal__section h4 { margin: 0 0 8px; font-size: 18px; line-height: 1.35; }
+.modal__body p { margin: 0 0 10px; color: #374151; }
+.modal__body ul { padding-left: 1.25rem; margin: 8px 0 16px; }
+.modal__body li { margin: 6px 0; }
+
+/* Image grid stays contained */
+.modal__image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+.modal__image-grid img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Footer is simple now */
+.modal__footer {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 12px;
+}
+
+/* Responsive: nothing fancy required; stacked header already behaves well */
+@media (max-width: 560px) {
+  .modal__title { font-size: clamp(22px, 6vw, 30px); }
+}
