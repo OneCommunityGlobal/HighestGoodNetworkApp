@@ -1,11 +1,22 @@
 /* eslint-disable import/prefer-default-export */
 
-import { useState, useId } from "react";
+import { useState, useId, useEffect, useRef } from "react";
 import { PieChart, Pie, Sector, ResponsiveContainer, LabelList} from 'recharts';
 import TwoWayToggleSwitch from '../../../common/TwoWayToggleSwitch/TwoWayToggleSwitch';
 import './ProjectPieChart.css';
 
+const RAD = Math.PI / 180;
 
+function dodgeY(items, minGap, top, bottom) {
+  // items: [{ idx, side, sx, sy, tx, rawY, text, y }]
+  items.sort((a, b) => a.rawY - b.rawY);
+  let last = top;
+  for (const it of items) {
+    const y = Math.max(it.rawY, last + minGap);
+    it.y = Math.min(y, bottom);
+    last = it.y;
+  }
+}
 
 const generateRandomHexColor = () => {
 
@@ -90,6 +101,8 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   const [showAllValues, setShowAllValues] = useState(false);
   const [accumulatedValues, setAccumulatedValues] = useState(0);
   const switchId = useId();
+  const layoutRef = useRef(null);
+  useEffect(() => { layoutRef.current = null; }, [userData, windowSize, showAllValues, darkMode]);
 
   const onPieEnter = (data, index, event) => {
     if (event.ctrlKey) {
@@ -146,21 +159,81 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
             {showAllValues && (
               <LabelList
                 dataKey="value"
-                position="outside"
-                fill={darkMode ? 'white' : '#333'}
-                color={darkMode ? "white" : "black"}
-                // eslint-disable-next-line react/no-unstable-nested-components
                 content={(props) => {
-                  const { cx, cy, value, index, viewBox} = props;
-                  const entry = userData[index];
-                  const midAngle = (viewBox.startAngle + viewBox.endAngle) / 2;
-                  const RADIAN = Math.PI / 180;
-                  const x = cx + (viewBox.outerRadius + 90) * Math.cos(-RADIAN * midAngle);
-                  const y = cy + (viewBox.outerRadius + 10) * Math.sin(-RADIAN * midAngle);
+                  const { viewBox, index, value } = props;
+                  if (!viewBox) return null;
+
+                  // build layout once
+                  if (!layoutRef.current) {
+                    const { cx, cy, outerRadius } = viewBox;
+                    const R = outerRadius + 6;
+                    const textOffset = 80;
+                    const minGap = 16;
+                    const topBound = cy - (R + 60);
+                    const botBound = cy + (R + 60);
+
+                    const total = userData.reduce((s, d) => s + d.value, 0) || 1;
+                    let acc = 0;
+                    const left = [], right = [];
+
+                    userData.forEach((d, i) => {
+                      const mid = ((acc + d.value / 2) / total) * 360; 
+                      acc += d.value;
+
+                      const cos = Math.cos(-RAD * mid);
+                      const sin = Math.sin(-RAD * mid);
+                      const side = cos >= 0 ? 'right' : 'left';
+
+                      const sx = cx + (R - 8) * cos;
+                      const sy = cy + (R - 8) * sin;
+                      const tx = cx + (R + textOffset) * (side === 'right' ? 1 : -1);
+                      const rawY = cy + (R + 8) * sin;
+
+                      const pct = (d.value * 100 / (d.totalHoursCalculated || total)) || 0;
+                      const text = `${d.name.substring(0,14)} ${d.lastName?.[0] ?? ''} ${d.value.toFixed(2)}Hrs (${pct.toFixed(1)}%)`;
+
+                      const item = { idx: i, side, sx, sy, tx, rawY, y: rawY, text };
+                      (side === 'right' ? right : left).push(item);
+                    });
+
+                    // helpers
+                    const dodgeY = (items, gap, top, bottom) => {
+                      items.sort((a, b) => a.rawY - b.rawY);
+                      let last = top;
+                      for (const it of items) {
+                        const y = Math.max(it.rawY, last + gap);
+                        it.y = Math.min(y, bottom);
+                        last = it.y;
+                      }
+                    };
+                    dodgeY(left, minGap, topBound, botBound);
+                    dodgeY(right, minGap, topBound, botBound);
+
+                    const map = {};
+                    [...left, ...right].forEach(it => { map[it.idx] = it; });
+                    layoutRef.current = map;
+                  }
+
+                  const node = layoutRef.current[index];
+                  if (!node) return null;
+
                   return (
-                    <text x={x} y={y} fill={darkMode ? 'white' : '#333'} textAnchor="middle">
-                      {`${entry.name.substring(0, 14)} ${entry.lastName.substring(0, 1)} ${value.toFixed(2)}Hrs (${(value * 100 / entry.totalHoursCalculated).toFixed(2)}%)`}
-                    </text>
+                    <g>
+                      <path
+                        d={`M${node.sx},${node.sy} L${(node.sx + node.tx)/2},${node.y} L${node.tx},${node.y}`}
+                        stroke={darkMode ? '#fff' : '#333'}
+                        fill="none"
+                      />
+                      <text
+                        x={node.tx}
+                        y={node.y}
+                        textAnchor={node.side === 'right' ? 'start' : 'end'}
+                        fill={darkMode ? '#fff' : '#333'}
+                        dominantBaseline="middle"
+                      >
+                        {node.text}
+                      </text>
+                    </g>
                   );
                 }}
               />
