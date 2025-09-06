@@ -214,18 +214,15 @@ describe('TeamMemberTasks component', () => {
       timeOffRequests,
       infoCollections: { loading: false },
     });
-    const { container } = render(
+    render(
       <Provider store={testStore}>
         <MemoryRouter>
           <TeamMemberTasks />
         </MemoryRouter>
       </Provider>,
     );
-    const skeletonLoadingElement = container.querySelector(
-      '.skeleton-loading-team-member-tasks-row',
-    );
-    expect(skeletonLoadingElement).toBeInTheDocument();
-    // expect(screen.getByTestId('skeleton-loading-team-member-tasks-row')).toBeInTheDocument();
+
+    expect(screen.getByTestId('skeleton-loading-team-member-tasks-row')).toBeInTheDocument();
   });
   it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
     axios.get.mockResolvedValue({
