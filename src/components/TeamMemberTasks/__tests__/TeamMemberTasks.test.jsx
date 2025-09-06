@@ -214,7 +214,7 @@ describe('TeamMemberTasks component', () => {
       timeOffRequests,
       infoCollections: { loading: false },
     });
-    render(
+    const { container } = render(
       <Provider store={testStore}>
         <MemoryRouter>
           <TeamMemberTasks />
@@ -222,7 +222,7 @@ describe('TeamMemberTasks component', () => {
       </Provider>,
     );
 
-    expect(screen.getByTestId('skeleton-loading-team-member-tasks-row')).toBeInTheDocument();
+    expect(screen.getAllByTestId('skeleton-loading-team-member-tasks-row')).not.toHaveLength(0);
   });
   it('check if the skeleton loading html elements are not shown when isLoading is false', () => {
     axios.get.mockResolvedValue({
