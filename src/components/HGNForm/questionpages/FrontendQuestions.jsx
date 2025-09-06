@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import styles from '../styles/FrontendBackendQuestions.module.css';
+import { getBoxStyling, getFontColor } from '../../../styles';
 
 function FrontendQuestions() {
   const navigate = useHistory();
@@ -22,6 +23,7 @@ function FrontendQuestions() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedText, setEditedText] = useState('');
   const [loading, setLoading] = useState(true);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch data from database
   useEffect(() => {
@@ -115,10 +117,15 @@ function FrontendQuestions() {
   }
 
   return (
+<<<<<<< HEAD
     <div className={`${styles.frontendBackendQuestions} ${darkMode ? styles.darkContainer : ''}`}>
       <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
         Frontend Questions
       </h3>
+=======
+    <div className={`${styles.frontendBackendQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}>
+      <h3 className={`${styles.blueStrip}`}>Frontend Questions</h3>
+>>>>>>> 611be96be (add dark mode styling to page3)
       <form onSubmit={handleNext}>
         {questions.map((question, index) => {
           const fieldName = fieldNameMap[index] || `frontend_Question_${index}`;
@@ -127,14 +134,18 @@ function FrontendQuestions() {
             <div className="frontend-backend" key={question._id || index}>
               <div className={`${styles.questionContainer}`}>
                 {editingIndex === index && isOwner ? (
-                  <div className={`${styles.editQuestionContainer}`}>
-                    <p className={`${styles.editTitle}`}>Edit Question</p>
+                  <div
+                    className={`${styles.editQuestionContainer} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+                  >
+                    <p className={`${styles.editTitle} ${getFontColor(darkMode)}`}>Edit Question</p>
                     <div className={`${styles.editQuestion}`}>
                       <input
                         type="text"
                         value={editedText}
                         onChange={e => setEditedText(e.target.value)}
-                        className={`${styles.editInput}`}
+                        className={`${styles.editInput} ${getFontColor(darkMode)} ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
                       />
                       <FaRegSave
                         title="Save"
@@ -144,7 +155,7 @@ function FrontendQuestions() {
                     </div>
                   </div>
                 ) : (
-                  <p className={`${styles.question}`}>
+                  <p className={`${styles.question} ${getFontColor(darkMode)}`}>
                     {searchQuestion(3, index + 1)}
                     {isOwner && (
                       <FaEdit
@@ -160,7 +171,12 @@ function FrontendQuestions() {
               <div className={`${styles.frontendBackendRating}`}>
                 {Array.from({ length: 10 }, (_, i) => (
                   <div key={i}>
-                    <label htmlFor={`${fieldName}_${i + 1}`}>{i + 1}</label>
+                    <label
+                      htmlFor={`${fieldName}_${i + 1}`}
+                      className={`${getFontColor(darkMode)}`}
+                    >
+                      {i + 1}
+                    </label>
                     <input
                       type="radio"
                       name={fieldName}
