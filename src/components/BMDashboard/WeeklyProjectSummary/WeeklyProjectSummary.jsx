@@ -20,6 +20,7 @@ import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMate
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 
 const projectStatusButtons = [
   {
@@ -352,7 +353,7 @@ function WeeklyProjectSummary() {
               key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
-              {index === 1 ? <PaidLaborCost /> : '📊 Card'}
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
             </div>
           );
         }),

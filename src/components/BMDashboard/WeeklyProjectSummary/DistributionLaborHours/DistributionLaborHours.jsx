@@ -1,6 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import styles from './DistributionOfLaborHours.module.css';
+import styles from './DistributionLaborHours.module.css';
 
 const COLORS = ['#003f5c', '#2f4b7c', '#ffa600', '#ff6361', '#f3e5ab'];
 
@@ -12,7 +12,7 @@ const data = [
   { name: 'Task 3', value: 14.8 },
 ];
 
-export default function DistributionOfLaborHours() {
+export default function DistributionLaborHours() {
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>Distribution of Labor Hours</h3>
