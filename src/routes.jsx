@@ -133,6 +133,8 @@ import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
+import SocialMediaPostDetails from './components/Announcements/SocialMediaPostDetails';
+
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 
 import HelpPage from './components/LandingPage/HelpPage';
@@ -671,6 +673,8 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <ProtectedRoute path="/socialMediaPosts/:postId" component={SocialMediaPostDetails} />
+
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}

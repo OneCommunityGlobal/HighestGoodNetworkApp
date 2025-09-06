@@ -1,6 +1,6 @@
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
-
+//const APIEndpoint = `http://localhost:4500/api`
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
@@ -206,6 +206,7 @@ export const ENDPOINTS = {
 
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
+  CREATE_FB_POST: () => `${APIEndpoint}/createFbPost`,
 
   FAQS: `${APIEndpoint}/faqs`,
   FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
@@ -300,6 +301,13 @@ export const ENDPOINTS = {
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
+
+  // social media poster api
+  POST_TWEETS: `${APIEndpoint}/createTweet`,
+  SCHEDULE_TWEETS: `${APIEndpoint}/scheduleTweet`,
+  SCHEDULE_FBPOSTS: `${APIEndpoint}/scheduleFbPost`,
+  SOCIAL_MEDIA_POSTS: `${APIEndpoint}/posts`,
+  POST_FB: `${APIEndpoint}/createFb`,
 
   WEEKLY_SUMMARY_EMAIL_BCC: () => `${APIEndpoint}/AssignWeeklySummaryEmail`,
   DELETE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
