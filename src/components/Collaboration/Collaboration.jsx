@@ -15,7 +15,7 @@ function Collaboration() {
   const [totalPages, setTotalPages] = useState(0);
   const [categories, setCategories] = useState([]);
   const [summaries, setSummaries] = useState(null);
-  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showSearchResults, setShowSearchResults] = useState(true);
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState(null);
 
@@ -30,7 +30,7 @@ function Collaboration() {
   }, []);
 
   const fetchJobAds = async (givenQuery, givenCategory) => {
-    const adsPerPage = 20;
+    const adsPerPage = 18;
 
     try {
       const response = await fetch(
@@ -139,6 +139,11 @@ function Collaboration() {
     fetchJobAds(query, category);
     fetchCategories();
   }, [currentPage]); // Re-fetch job ads when page or category changes
+
+  useEffect(() => {
+    fetchJobAds('', ''); // Fetch all jobs initially
+    fetchCategories();
+  }, []); // Empty dependency array means this runs once on mount
 
   if (summaries) {
     return (

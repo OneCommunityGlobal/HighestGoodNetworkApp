@@ -54,6 +54,7 @@ describe('ImportTask', () => {
     expect(
       screen.getByRole('button', { name: /import tasks/i })
     ).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(container.querySelector('.modal')).toBeNull();
   });
 
@@ -70,6 +71,7 @@ describe('ImportTask', () => {
     fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
 
     // file <input id="file" /> lives in the portal
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const fileInput = document.querySelector('input#file');
     fireEvent.change(fileInput, {
       target: { files: [ new File([], 'tasks.xlsx') ] }
@@ -80,9 +82,7 @@ describe('ImportTask', () => {
     fireEvent.click(uploadBtn);
 
     // finally, "File Uploaded!" should be visible
-    await waitFor(() =>
-      expect(screen.getByText(/file uploaded!/i)).toBeInTheDocument()
-    );
+    await screen.findByText(/file uploaded!/i);
   });
 
   it('resets back to file chooser when Reset is clicked', async () => {
@@ -91,6 +91,7 @@ describe('ImportTask', () => {
     renderComponent();
     fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const fileInput = document.querySelector('input#file');
     fireEvent.change(fileInput, { target: { files: [ new File([], 'a.xlsx') ] } });
 
@@ -98,6 +99,7 @@ describe('ImportTask', () => {
     const resetBtn = await screen.findByRole('button', { name: /reset/i });
     fireEvent.click(resetBtn);
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(document.querySelector('input#file')).toBeInTheDocument();
     expect(
       screen.queryByText(/are you sure you want to upload it\?/i)
@@ -111,6 +113,7 @@ describe('ImportTask', () => {
     renderComponent();
     fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const fileInput = document.querySelector('input#file');
     fireEvent.change(fileInput, { target: { files: [ new File([], 'b.xlsx') ] } });
 
@@ -118,6 +121,7 @@ describe('ImportTask', () => {
     const uploadBtn = await screen.findByRole('button', { name: /upload/i });
     fireEvent.click(uploadBtn);
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(document.querySelector('.spinner-grow')).toBeInTheDocument();
   });
 
@@ -131,6 +135,7 @@ describe('ImportTask', () => {
     renderComponent();
     fireEvent.click(screen.getByRole('button', { name: /import tasks/i }));
 
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const fileInput = document.querySelector('input#file');
     fireEvent.change(fileInput, { target: { files: [ new File([], 'bad.xlsx') ] } });
 
