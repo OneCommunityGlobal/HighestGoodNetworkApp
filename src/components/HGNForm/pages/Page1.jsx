@@ -1,21 +1,22 @@
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import Banner from '../questionpages/Banner';
 import QuestionnaireInfo from '../questionpages/QuestionnaireInfo';
 import InfoForm from '../questionpages/InfoForm';
 import Progress from '../questionpages/Progress';
-import '../styles/hgnform.module.css';
+import styles from '../styles/hgnform.module.css';
 
 function Page1() {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
   dispatch(getUserProfileBasicInfo());
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="hgnform">
+    <div className={`${styles['container-hgnform-wrapper']} ${darkMode ? 'bg-oxford-blue' : ''}`}>
       <Banner />
       <QuestionnaireInfo />
       <InfoForm />
