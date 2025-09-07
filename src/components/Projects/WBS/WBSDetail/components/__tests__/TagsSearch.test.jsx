@@ -108,12 +108,20 @@ describe('TagsSearch Component', () => {
     expect(volunteerOption).toBeInTheDocument();
     expect(ownerOption).toBeInTheDocument();
 
-    // Simulate clicking the filtered options
+    // Click first filtered option
     fireEvent.mouseDown(volunteerOption);
-    fireEvent.mouseDown(ownerOption);
-
-    // Check if addResources was called with the correct arguments
     await waitFor(() => expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', undefined));
+
+    // Re-open dropdown and click second option
+    const searchInputElement2 = screen.getByPlaceholderText('Add resources');
+    fireEvent.focus(searchInputElement2);
+    fireEvent.change(searchInputElement2, { target: { value: 'aaa' } });
+    act(() => {
+      vi.advanceTimersByTime(400);
+    });
+    const ownerOption2 = await screen.findByText('aaa owner');
+    fireEvent.mouseDown(ownerOption2);
+
     await waitFor(() => expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', undefined));
     
   });

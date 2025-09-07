@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
 import { Provider } from 'react-redux'; 
 import { configureStore } from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
@@ -8,9 +9,9 @@ import RoleInfoModal from '../RoleInfoModal';
 const mockStore = configureStore([]);
 
 // Mock the action functions to return plain objects instead of functions
-jest.mock('../../../../actions/information', () => ({
-  updateInfoCollection: jest.fn(() => ({ type: 'UPDATE_INFO_COLLECTION' })),
-  addInfoCollection: jest.fn(() => ({ type: 'ADD_INFO_COLLECTION' })),
+vi.mock('../../../../actions/information', () => ({
+  updateInfoCollection: vi.fn(() => ({ type: 'UPDATE_INFO_COLLECTION' })),
+  addInfoCollection: vi.fn(() => ({ type: 'ADD_INFO_COLLECTION' })),
 }));
 
 describe('RoleInfoModal component Test cases', () => {
