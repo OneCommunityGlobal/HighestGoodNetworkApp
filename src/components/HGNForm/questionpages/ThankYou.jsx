@@ -1,5 +1,6 @@
 import styles from '../styles/QuestionnaireInfo.module.css';
 import { useSelector } from 'react-redux';
+<<<<<<< HEAD
 
 function ThankYou() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -10,9 +11,29 @@ function ThankYou() {
       <div className={stripClass} />
       <h1 style={{ marginBottom: '40px' }}>HGN Development Team Questionnaire</h1>
       <p style={{ marginBottom: '30px', fontSize: '16px', fontWeight: 'bold' }}>
+=======
+import { getBoxStyling, getFontColor } from '../../../styles';
+
+function ThankYou() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  return (
+    <div
+      className={`${styles.questionnaireInfo} ${darkMode ? 'bg-space-cadet' : ''}`}
+      style={getBoxStyling(darkMode)}
+    >
+      <div className={`${styles.blueStrip}`} />
+      <h1 className={`${getFontColor(darkMode)}`} style={{ marginBottom: '40px' }}>
+        HGN Development Team Questionnaire
+      </h1>
+      <p
+        className={`${getFontColor(darkMode)}`}
+        style={{ marginBottom: '30px', fontSize: '16px', fontWeight: 'bold' }}
+      >
+>>>>>>> 8b0d5c684 (add dark mode styling to page6)
         Thank you for your response! Your answers have been successfully recorded.
       </p>
-      <p style={{ marginBottom: '30px', fontSize: '14px' }}>
+      <p className={`${getFontColor(darkMode)}`} style={{ marginBottom: '30px', fontSize: '14px' }}>
         You can now safely close this window. We appreciate your time!
       </p>
     </div>
