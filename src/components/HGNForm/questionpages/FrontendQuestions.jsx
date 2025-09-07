@@ -118,12 +118,19 @@ function FrontendQuestions() {
 
   return (
 <<<<<<< HEAD
+<<<<<<< HEAD
     <div className={`${styles.frontendBackendQuestions} ${darkMode ? styles.darkContainer : ''}`}>
       <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
         Frontend Questions
       </h3>
 =======
     <div className={`${styles.frontendBackendQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}>
+=======
+    <div
+      className={`${styles.frontendBackendQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}
+      style={getBoxStyling(darkMode)}
+    >
+>>>>>>> 85f9e9e48 (add dark mode styling to page 4)
       <h3 className={`${styles.blueStrip}`}>Frontend Questions</h3>
 >>>>>>> 611be96be (add dark mode styling to page3)
       <form onSubmit={handleNext}>
