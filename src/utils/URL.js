@@ -20,7 +20,6 @@ export const ENDPOINTS = {
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
   USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
-  SEARCH_USER: `${APIEndpoint}/users/search`,
   TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
@@ -125,7 +124,8 @@ export const ENDPOINTS = {
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
   APPLICANT_VOLUNTEER_RATIO: `${APIEndpoint}/applicant-volunteer-ratio`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
-  BADGE: () => `${APIEndpoint}/badge`,
+  // BADGE: () => `${APIEndpoint}/badge`,
+  BADGE: () => `${APIEndpoint}/badge/getAllBadges`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
 
