@@ -110,7 +110,7 @@ function DonutChart() {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: true, // Changed to false for better control
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'bottom',
@@ -127,7 +127,7 @@ function DonutChart() {
       datalabels: {
         color: darkMode ? '#fff' : '#000',
         font: {
-          size: 14, // Reduced font size
+          size: 14,
           weight: 'bold',
         },
         formatter: (value, context) => {
@@ -153,13 +153,17 @@ function DonutChart() {
 
   return (
     <div className={` ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
-      <div className={`container py-4 ${darkMode ? 'text-light' : ''}`}>
+      <div className={`container-fluid py-4 h-100 ${darkMode ? 'text-light' : ''}`}>
         <div className="row mb-4 align-items-center">
           <div className="col-md-6">
             <h2 className={`mb-3 ${darkMode ? 'text-light' : ''}`}>PROJECT STATUS</h2>
           </div>
           <div className="col-md-6">
-            <div className="d-flex gap-2 align-items-center justify-content-md-end">
+            <div
+              className={`d-flex gap-2 align-items-center justify-content-md-end ${
+                darkMode ? 'text-light' : ''
+              }`}
+            >
               <DatePicker
                 selected={startDate}
                 onChange={setStartDate}
@@ -184,10 +188,10 @@ function DonutChart() {
         </div>
 
         <div className="row">
-          <div className="col-md-8  align-items-center">
+          <div className="col-md-9 align-items-center">
             {/* chart */}
-            <div className="row w-full position-relative">
-              <Doughnut data={data} options={options} style={{ width: '100%', height: '100%' }} />
+            <div className="row w-full position-relative flex-grow-1">
+              <Doughnut data={data} options={options} style={{ width: '90%', height: '90%' }} />
             </div>
             <div
               className="row w-full text-center mt-3 mt-md-0 ms-md-4"
@@ -200,7 +204,7 @@ function DonutChart() {
             </div>
           </div>
 
-          <div className="col-md-4 mt-4 mt-md-0">
+          <div className="col-md-3 mt-4 mt-md-0">
             {/* Chart Info */}
             <div className="mb-3 text-right">
               <span className={darkMode ? 'text-light' : 'text-muted'}>{formattedDate}</span>
