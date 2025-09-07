@@ -116,7 +116,10 @@ function FrontendQuestions() {
   }
 
   return (
-    <div className={`${styles.frontendBackendQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}>
+    <div
+      className={`${styles.frontendBackendQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}
+      style={getBoxStyling(darkMode)}
+    >
       <h3 className={`${styles.blueStrip}`}>Frontend Questions</h3>
       <form onSubmit={handleNext}>
         {questions.map((question, index) => {
