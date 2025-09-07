@@ -1,6 +1,6 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyleDark, boxStyle } from '../../../styles';
 import DiffedText from './DiffedText';
+import { boxStyleDark, boxStyle } from '~/styles';
 import '../../Header/DarkMode.css';
 
 export const resourcesToString = resources => {

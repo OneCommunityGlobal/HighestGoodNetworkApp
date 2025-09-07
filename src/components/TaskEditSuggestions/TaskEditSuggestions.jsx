@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Container, Table } from 'reactstrap';
 import { FaUndoAlt } from 'react-icons/fa';
 import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
-import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
+import TaskEditSuggestionsModal from './Components/TaskEditSuggestionsModal';
 import getTaskEditSuggestionsData from './selectors';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
 import { fetchTaskEditSuggestions } from './thunks';
@@ -70,10 +70,12 @@ function TaskEditSuggestions() {
               <thead className={darkMode ? 'text-light' : ''}>
                 <tr>
                   <th onClick={() => dispatch(toggleDateSuggestedSortDirection())}>
-                    Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection} />
+                    Date Suggested
+                    <SortArrow sortDirection={dateSuggestedSortDirection} />
                   </th>
                   <th onClick={() => dispatch(toggleUserSortDirection())}>
-                    User <SortArrow sortDirection={userSortDirection} />
+                    User
+                    <SortArrow sortDirection={userSortDirection} />
                   </th>
                   <th>Task</th>
                   <th aria-label="Task" />
