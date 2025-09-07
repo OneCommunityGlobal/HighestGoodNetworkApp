@@ -1,5 +1,5 @@
-import Loading from 'components/common/Loading';
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import Loading from '~/components/common/Loading';
 
 const COLORS = [
   '#F285BB',

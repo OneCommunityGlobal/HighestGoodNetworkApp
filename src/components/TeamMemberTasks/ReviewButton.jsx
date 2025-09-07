@@ -16,14 +16,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import './style.css';
 import './reviewButton.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-import { boxStyle, boxStyleDark } from '../../styles';
-import { ApiEndpoint } from '../../utils/URL';
-import hasPermission from '../../utils/permissions';
 import httpService from '../../services/httpService';
+import { ApiEndpoint } from '~/utils/URL';
+import hasPermission from '~/utils/permissions';
 
 function ReviewButton({ user, task, updateTask }) {
   const dispatch = useDispatch();
@@ -405,7 +405,11 @@ function ReviewButton({ user, task, updateTask }) {
             >
               Work Submitted and Awaiting Review
             </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+            <DropdownMenu
+              className={
+                darkMode ? 'review-button-dropdown bg-space-cadet' : 'review-button-dropdown'
+              }
+            >
               {task.relatedWorkLinks &&
                 // eslint-disable-next-line no-shadow
                 task.relatedWorkLinks.map(link => (
@@ -444,7 +448,11 @@ function ReviewButton({ user, task, updateTask }) {
             >
               Ready for Review
             </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+            <DropdownMenu
+              className={
+                darkMode ? 'review-button-dropdown bg-space-cadet' : 'review-button-dropdown'
+              }
+            >
               {task.relatedWorkLinks &&
                 task.relatedWorkLinks.map(dropLink => (
                   <DropdownItem

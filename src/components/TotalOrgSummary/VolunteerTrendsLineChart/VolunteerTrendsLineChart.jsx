@@ -1,10 +1,10 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
-import './styles.css';
 import { useEffect, useState } from 'react';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import Loading from 'components/common/Loading';
 import DatePicker from 'react-datepicker';
+import { ENDPOINTS } from '~/utils/URL';
+import Loading from '~/components/common/Loading';
+import styles from './VolunteerTrendsStyles.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
 const formatChartData = rawData => {
@@ -161,9 +161,15 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
         >
           <h6 style={{ color: 'black' }}>
             {interval === 'week' ? 'Week ' : ''}
-            {label}, {year}
+            {label}
+            {`, `}
+            {year}
           </h6>
-          <h6 style={{ color: '#328D1B' }}>{payload[0].value} hours</h6>
+
+          <h6 style={{ color: '#328D1B' }}>
+            {payload[0].value}
+            {' hours'}
+          </h6>
         </div>
       );
     }
@@ -201,9 +207,9 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   }
 
   return (
-    <div className="chart-container">
+    <div className={styles.chartContainer}>
       {/* DATE FILTERS */}
-      <div className="date-filter-container">
+      <div className={styles.dateFilterContainer}>
         <select name="timeframe-filter" id="timeframe-filter" onChange={setTimeframeFilter}>
           <option value="years1">This year</option>
           <option value="years2">Last 2 years</option>
@@ -221,25 +227,28 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
       </div>
 
       {/* DATE PICKER */}
-      <div className="date-picker-container">
-        {showDatePicker && (
-          <DatePicker
-            selected={customStartDate}
-            onChange={handleCustomDateRange}
-            startDate={customStartDate}
-            endDate={customEndDate}
-            selectsRange
-            inline
-            dateFormat="MM-dd-yyyy"
-            className="date-picker"
-          />
-        )}
+      <div className={styles.datePickerContainer}>
+        <div className={styles.datePickerPostion}>
+          {showDatePicker && (
+            <DatePicker
+              selected={customStartDate}
+              onChange={handleCustomDateRange}
+              startDate={customStartDate}
+              endDate={customEndDate}
+              selectsRange
+              inline
+              dateFormat="MM-dd-yyyy"
+              className="date-picker"
+            />
+          )}
+        </div>
       </div>
 
       {/* CUSTOM DATE RANGE */}
       {customDateRange.every(date => date) && (
-        <div className="custom-date-range">
-          <span>{dateToYYYYMMDD(customDateRange[0])}</span> to{' '}
+        <div className={styles.customDateRange}>
+          <span>{dateToYYYYMMDD(customDateRange[0])}</span>
+          <span> to </span>
           <span>{dateToYYYYMMDD(customDateRange[1])}</span>
         </div>
       )}

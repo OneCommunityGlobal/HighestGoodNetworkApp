@@ -1,0 +1,24 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo ""
+echo "🛡️  Husky pre-commit hook triggered"
+echo "🛠️  Attempting to auto-fix lint issues (if possible)..."
+echo "🔍 Running ESLint via lint-staged on staged files:"
+git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' || echo "No JS/TS files staged."
+
+# Run lint-staged only if relevant files are staged
+if git diff --cached --name-only | grep -qE '\.(js|jsx|ts|tsx)$'; then
+  npx lint-staged
+  lint_exit_code=$?
+
+  if [ $lint_exit_code -eq 0 ]; then
+    echo "✅ Lint passed or was auto-fixed. Proceeding with commit."
+  else
+    echo "❌ Lint failed. Some issues couldn't be auto-fixed. Commit aborted."
+    echo "💡 Please fix the errors and try again."
+    exit $lint_exit_code
+  fi
+else
+  echo "ℹ️  No JS/TS files to lint. Skipping lint-staged."
+fi

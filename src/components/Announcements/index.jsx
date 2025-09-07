@@ -3,9 +3,9 @@ import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { toast } from 'react-toastify';
-import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails.jsx';
 
 function Announcements({ title, email: initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -16,6 +16,8 @@ function Announcements({ title, email: initialEmail }) {
   const [headerContent, setHeaderContent] = useState('');
   const [showEditor, setShowEditor] = useState(true);
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const [fileInputKey, setFileInputKey] = useState(0);
+
   const editorRef = useRef(null);
 
   useEffect(() => {
@@ -28,36 +30,23 @@ function Announcements({ title, email: initialEmail }) {
     selector: 'Editor#email-editor',
     height: 500,
     plugins: [
-      'advlist autolink lists link image paste',
+      'advlist autolink lists link image',
       'charmap print preview anchor help',
       'searchreplace visualblocks code',
-      'insertdatetime media table paste wordcount',
+      'insertdatetime media table wordcount',
     ],
     menubar: false,
     branding: false,
     image_title: true,
     automatic_uploads: true,
-    file_picker_callback(cb) {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
 
-      input.onchange = () => {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const id = `blobid${new Date().getTime()}`;
-          const { blobCache } = window.tinymce.activeEditor.editorUpload;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-          cb(blobInfo.blobUri(), { title: file.name });
-        };
-        reader.readAsDataURL(file);
-      };
+    images_upload_handler: (blobInfo, _progress) =>
+      new Promise(resolve => {
+        const base64 = blobInfo.base64();
+        const mime = blobInfo.blob().type || 'image/png';
+        resolve(`data:${mime};base64,${base64}`);
+      }),
 
-      input.click();
-    },
     a11y_advanced_options: true,
     toolbar:
       'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
@@ -86,7 +75,7 @@ function Announcements({ title, email: initialEmail }) {
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-    const editor = window.tinymce.get('email-editor');
+    const editor = editorRef.current;
     if (editor) {
       editor.insertContent(imageTag);
       setEmailContent(editor.getContent());
@@ -103,22 +92,27 @@ function Announcements({ title, email: initialEmail }) {
   };
 
   const addImageToEmailContent = e => {
-    const imageFile = document.querySelector('input[type="file"]').files[0];
+    const imageFile = e.target.files && e.target.files[0];
+    if (!imageFile) {
+      setFileInputKey(k => k + 1);
+      return;
+    }
+
     setIsFileUploaded(true);
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
       setHeaderContent(prevContent => `${imageTag}${prevContent}`);
-      const editor = window.tinymce.get('email-editor');
+      const editor = editorRef.current;
       if (editor) {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
       }
+      setFileInputKey(k => k + 1);
     });
-    e.target.value = '';
   };
 
   const validateEmail = email => {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
   };
 
@@ -171,7 +165,7 @@ function Announcements({ title, email: initialEmail }) {
               onEditorChange={content => {
                 setEmailContent(content);
               }}
-              onInit={(evt, editor) => {
+              onInit={(_, editor) => {
                 editorRef.current = editor;
               }}
             />
@@ -187,7 +181,7 @@ function Announcements({ title, email: initialEmail }) {
           ''
         ) : (
           <div
-            className={`emails${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+            className={`emails ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
@@ -240,6 +234,7 @@ function Announcements({ title, email: initialEmail }) {
               Upload Header (or footer):
             </label>
             <input
+              key={fileInputKey}
               type="file"
               id="upload-header-input"
               onChange={addImageToEmailContent}

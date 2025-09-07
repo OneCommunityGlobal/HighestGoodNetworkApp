@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo, useCallback } from 'react';
-import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 import './TotalReport.css';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
@@ -21,18 +21,27 @@ function TotalContributorsReport({ startDate, endDate, userProfiles, darkMode, u
 
   // Fetch time entries for the selected period
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
+    const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+
+    if (!url) {
+      return;
+    }
     try {
       const response = await axios.post(
-        `${ENDPOINTS.APIEndpoint()}/TimeEntry/reports`,
-        {
-          fromDate,
-          toDate,
-          userList,
-        },
+        url,
+        { users: userList, fromDate, toDate },
         { signal: controller.signal }
       );
-      setTimeEntries(response.data);
+      const mappedTimeEntries = response.data.map(entry => ({
+        userId: entry.personId,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      }));
+      setTimeEntries(mappedTimeEntries);
     } catch (error) {
+      // eslint-disable-next-line import/no-named-as-default-member
       if (!axios.isCancel(error)) {
         // Handle error silently or show user-friendly message
         setTimeEntries([]);

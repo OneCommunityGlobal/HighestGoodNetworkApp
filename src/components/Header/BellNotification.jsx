@@ -3,7 +3,10 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { getMessagingSocket } from '../../utils/messagingSocket';
-import { clearDBNotifications, clearNotifications } from '../../actions/lbdashboard/messagingActions';
+import {
+  clearDBNotifications,
+  clearNotifications,
+} from '../../actions/lbdashboard/messagingActions';
 import { ENDPOINTS } from '../../utils/URL';
 
 export default function BellNotification({ userId }) {
@@ -13,11 +16,10 @@ export default function BellNotification({ userId }) {
   const [showNotification, setShowNotification] = useState(false);
   const notificationRef = useRef(null);
 
-
   const [dbNotifications, setDbNotifications] = useState([]); // Notifications from the database
   const [messageNotifications, setMessageNotifications] = useState([]);
   const [hasMessageNotification, setHasMessageNotification] = useState(false);
-  const notifications = useSelector((state) => {
+  const notifications = useSelector(state => {
     return state.messages?.notifications || [];
   });
   // Fetching data from the Redux store
@@ -26,13 +28,12 @@ export default function BellNotification({ userId }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
-  // const userId = useSelector(state => 
+  // const userId = useSelector(state =>
   //   console.log(state.auth)
   //   return state.auth.user?.userid});
   // const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   // const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   // const [displayUserId, setDisplayUserId] = useState( viewingUser?.userId || userId);
-
 
   /**
    * Memoized function to calculate the total effort (hours + minutes) logged by the user
@@ -93,13 +94,11 @@ export default function BellNotification({ userId }) {
       dispatch(clearNotifications());
       dispatch(clearDBNotifications());
     } catch (error) {
-      Error("❌ Error marking notifications as read:", error);
+      Error('❌ Error marking notifications as read:', error);
     }
     localStorage.setItem(`${userId}_notificationSeen`, 'true');
     localStorage.setItem(`${userId}_weekNumber`, getCurrentWeekNumber().toString());
   };
-
-
 
   useEffect(() => {
     const fetchDbNotifications = async () => {
@@ -110,22 +109,20 @@ export default function BellNotification({ userId }) {
           setHasMessageNotification(true);
         }
       } catch (error) {
-        Error("❌ Error fetching notifications from DB:", error);
+        Error('❌ Error fetching notifications from DB:', error);
       }
     };
-  
-    fetchDbNotifications();
 
+    fetchDbNotifications();
   }, [userId]);
 
-  const allNotifications = [...dbNotifications, ...messageNotifications];
+  const allNotifications = [...(dbNotifications || []), ...messageNotifications];
 
   useEffect(() => {
     if (notifications.length > 0) {
       setMessageNotifications(notifications);
       setHasMessageNotification(true);
     }
-
   }, [notifications]);
   /**
    * useEffect to check if a notification should be triggered based on time and effort logged.
@@ -171,23 +168,23 @@ export default function BellNotification({ userId }) {
   useEffect(() => {
     const socket = getMessagingSocket();
 
-    const handleNewMessageNotification = (event) => {
+    const handleNewMessageNotification = event => {
       try {
         const data = JSON.parse(event.data);
 
         if (data.action === 'NEW_NOTIFICATION') {
-          setMessageNotifications((prev) => [...prev, { message: data.payload }]);
+          setMessageNotifications(prev => [...prev, { message: data.payload }]);
           setHasMessageNotification(true);
         }
       } catch (error) {
-        Error("❌ Error handling WebSocket notification:", error);
+        Error('❌ Error handling WebSocket notification:', error);
       }
     };
 
     if (socket) {
       socket.addEventListener('message', handleNewMessageNotification);
     } else {
-      Error("❌ WebSocket is not connected.");
+      Error('❌ WebSocket is not connected.');
     }
 
     return () => {
@@ -197,20 +194,18 @@ export default function BellNotification({ userId }) {
     };
   }, [messageNotifications]);
 
-
   const handleMessageNotificationClick = async () => {
-    setShowNotification((prev) => !prev);
+    setShowNotification(prev => !prev);
 
     if (!showNotification) {
       try {
         // Ensure notification IDs are valid before making the API call
-        const notificationIds = dbNotifications.map((notification) => notification._id);
-      if (notificationIds.length > 0) {
-        await axios.post(`${ENDPOINTS.MSG_NOTIFICATION}/mark-as-read`, { notificationIds });
-      }
-
+        const notificationIds = dbNotifications.map(notification => notification._id);
+        if (notificationIds.length > 0) {
+          await axios.post(`${ENDPOINTS.MSG_NOTIFICATION}/mark-as-read`, { notificationIds });
+        }
       } catch (error) {
-        Error("❌ Error marking message notifications as read:", error);
+        Error('❌ Error marking message notifications as read:', error);
       }
     }
   };
@@ -230,7 +225,6 @@ export default function BellNotification({ userId }) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
 
   /**
    * Utility function to format time values in hours and minutes
@@ -258,14 +252,19 @@ export default function BellNotification({ userId }) {
   return (
     <>
       {isDataReady && (
-        <i
-          className={`fa fa-bell i-large ${hasNotification || hasMessageNotification ? 'has-notification' : ''
-            }`}
+        <button
+          type="button"
           onClick={handleMessageNotificationClick}
+          className={`fa fa-bell i-large ${
+            hasNotification || hasMessageNotification ? 'has-notification' : ''
+          }`}
           style={{
             position: 'relative',
             cursor: 'pointer',
+            background: 'none',
+            border: 'none',
             color: hasNotification || hasMessageNotification ? 'white' : 'rgba(255, 255, 255, .5)',
+            padding: 0,
           }}
           aria-label={
             hasNotification || hasMessageNotification
@@ -293,7 +292,7 @@ export default function BellNotification({ userId }) {
               }}
             />
           )}
-        </i>
+        </button>
       )}
       {showNotification && (
         <div
@@ -327,9 +326,7 @@ export default function BellNotification({ userId }) {
             <div>
               <strong>New Messages:</strong>
               {allNotifications.map((notification, index) => (
-                <div key={notification._id || index}>
-                  {notification.message || notification}
-                </div>
+                <div key={notification._id || index}>{notification.message || notification}</div>
               ))}
             </div>
           )}

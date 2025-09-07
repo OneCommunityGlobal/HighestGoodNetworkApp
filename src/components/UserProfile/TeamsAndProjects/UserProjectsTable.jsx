@@ -2,16 +2,21 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Button, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
-import styles from './UserProjectsTable.css';
-import { boxStyle, boxStyleDark } from 'styles';
+// import styles from './UserProjectsTable.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { NavItem, UncontrolledTooltip } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 const UserProjectsTable = React.memo(props => {
   const {darkMode} = props;
+  const ensureArray = (value, fallback = []) => {
+    if (Array.isArray(value)) return value;
+    if (value === null || value === undefined) return fallback;
+    return fallback;
+  };
 
   const [tooltipOpen, setTooltip] = useState(false);
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
@@ -20,8 +25,8 @@ const UserProjectsTable = React.memo(props => {
   const canDeleteTasks = props.hasPermission('deleteTask')
   const canPostTask = props.hasPermission('postTask');
 
-  const userProjects = props.userProjectsById;
-  const userTasks = props.userTasks;
+  const userProjects = ensureArray(props.userProjectsById);
+  const userTasks = ensureArray(props.userTasks);
   const [actualType, setActualType] = useState('active');
 
   const location = useLocation();
@@ -40,7 +45,7 @@ const UserProjectsTable = React.memo(props => {
   }, [userTasks]);
 
   const tasksByProject = userProjects?.map(project => {
-    const tasks = sortedTasksByNumber?.filter(task => task.projectId.includes(project._id));
+    const tasks = sortedTasksByNumber?.filter(task => task.projectId?.includes(project._id));
     return { ...project, tasks };
   });
 
@@ -49,7 +54,7 @@ const UserProjectsTable = React.memo(props => {
       if (sortedTasksByNumber) {
         return userProjects?.map(project => {
           const filteredTasks = sortedTasksByNumber.filter(task => {
-            const isTaskForProject = task.projectId.includes(project._id);
+            const isTaskForProject = task.projectId?.includes(project._id);
             const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
     
             if (isTaskForProject) {
@@ -179,23 +184,33 @@ const UserProjectsTable = React.memo(props => {
                       <td className="taskName">{project.projectName}</td>
                       {props.role && canPostTask && (
                         <td className='table-cell'>
-                          <NavItem tag={Link} to={`/project/wbs/${project._id}` } id={`wbs-tooltip-${project._id}`}>
-                            <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+                          <Link to={`/project/wbs/${project._id}`}>
+                            <button
+                              id={`wbs-tooltip-${project._id}`}
+                              type="button"
+                              className="btn btn-outline-info"
+                              style={darkMode ? {} : boxStyle}
+                            >
                               <i className="fa fa-tasks" aria-hidden="true"></i>
                             </button>
-                          </NavItem>
-                          <UncontrolledTooltip placement="left" target={`wbs-tooltip-${project._id}`}>
+                          </Link>
+
+                          <UncontrolledTooltip
+                            placement="left"
+                            target={`wbs-tooltip-${project._id}`}
+                            delay={{ show: 250, hide: 100 }} // Optional: smoother UX
+                          >
                             Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
                           </UncontrolledTooltip>
                         </td>
                       )}
-                      {props.edit && props.role && canDeleteProjects &&(
+                      {props.edit && props.role && canDeleteProjects && (
                         <td className='table-cell'>
                           <Button
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClicK(project._id);
+                              props.onDeleteClick(project._id);
                               deleteTasksTemporarily(project._id);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
@@ -205,7 +220,6 @@ const UserProjectsTable = React.memo(props => {
                         </td>
                       )}
                     </tr>
-
                   ))
                 ) : (
                   <></>
@@ -376,7 +390,7 @@ const UserProjectsTable = React.memo(props => {
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClicK(project._id);
+                              props.onDeleteClick(project._id);
                               deleteTasksTemporarily(project._id);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}

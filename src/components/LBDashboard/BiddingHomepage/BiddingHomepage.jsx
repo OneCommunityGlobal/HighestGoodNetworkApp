@@ -485,7 +485,7 @@ function BiddingHomepage() {
         <Row className="property-listings mb-3">
           {currentProperties.length > 0 ? (
             currentProperties.map(property => (
-              <Col md={4} key={property.id} className="property-card-col">
+              <Col key={property.id} className="property-card-col">
                 <div className={`property-card property-card-gray ${darkMode ? 'dark-mode' : ''}`}>
                   <div className="property-image">
                     <img src={property.image} alt={property.title} />

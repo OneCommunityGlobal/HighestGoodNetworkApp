@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { Table, Button, FormGroup, Label, Input } from 'reactstrap';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import JobCCModal from './JobCCModal'; // Modal for managing CC list
 import JobCategoryCCModal from './JobCategoryCCModal';
 import styles from './JobCCDashboard.module.css';

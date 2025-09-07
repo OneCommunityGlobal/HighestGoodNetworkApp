@@ -71,15 +71,14 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   return (
     <div
       style={{
-        height: '548px',
-        minHeight: '548px',
+        height: '380px',
+        minHeight: '300px',
         maxHeight: '548px',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
       <div style={{ textAlign: 'center', marginBottom: 0 }} />
-      <div style={{ height: 47 }} />
       <div style={{ flex: 1, minHeight: 0 }}>
         {isLoading ? (
           <div className="d-flex justify-content-center align-items-center">

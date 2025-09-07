@@ -1,13 +1,14 @@
-/* eslint-disable react/sort-comp */
-/* eslint-disable react/no-unused-class-component-methods */
+/* eslint-disable react/no-direct-mutation-state */
 /* eslint-disable react/no-unused-state */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/sort-comp */
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Button } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { searchWithAccent } from 'utils/search';
 import moment from 'moment-timezone';
+import { boxStyle, boxStyleDark } from '~/styles';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { searchWithAccent } from '~/utils/search';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
@@ -122,12 +123,14 @@ class ReportsPage extends Component {
       userProfile => userProfile._id,
     );
 
-    const timeEntriesHours = await this.props.getUsersTotalHoursForSpecifiedPeriod(
+    let timeEntriesHours = await this.props.getUsersTotalHoursForSpecifiedPeriod(
       userIds,
       new Date(DATE_PICKER_MIN_DATE),
       new Date(),
     );
-
+    if (!Array.isArray(timeEntriesHours)) {
+      timeEntriesHours = [];
+    }
     const userProfilesMappedWithHours = timeEntriesHours.map(entry => ({
       id: entry.userId,
       totalHours: Math.round(entry.totalHours * 10) / 10,
@@ -160,23 +163,23 @@ class ReportsPage extends Component {
     });
   }
 
-  setActive() {
-    this.setState(() => ({
-      checkActive: 'true',
-    }));
-  }
+  // setActive() {
+  //   this.setState(() => ({
+  //     checkActive: 'true',
+  //   }));
+  // }
 
-  setAll() {
-    this.setState(() => ({
-      checkActive: '',
-    }));
-  }
+  // setAll() {
+  //   this.setState(() => ({
+  //     checkActive: '',
+  //   }));
+  // }
 
-  setInActive() {
-    this.setState(() => ({
-      checkActive: 'false',
-    }));
-  }
+  // setInActive() {
+  //   this.setState(() => ({
+  //     checkActive: 'false',
+  //   }));
+  // }
 
   setTeamMemberList(list) {
     this.setState(() => ({
@@ -262,11 +265,11 @@ class ReportsPage extends Component {
     return filteredList;
   };
 
-  setRemainedTeams(teams) {
-    this.setState(() => ({
-      remainedTeams: teams,
-    }));
-  }
+  // setRemainedTeams(teams) {
+  //   this.setState(() => ({
+  //     remainedTeams: teams,
+  //   }));
+  // }
 
   showProjectTable() {
     this.setState(prevState => ({
@@ -450,7 +453,8 @@ class ReportsPage extends Component {
       showAddTimeForm: false,
       showAddProjHistory: false,
       showAddPersonHistory: false,
-      showAddTeamHistory: false
+      showAddTeamHistory: false,
+      showCharts: !prevState.showContributorsReport
     }));
   }
 
@@ -527,7 +531,7 @@ class ReportsPage extends Component {
                 </div>
               )}
               <div className="d-flex align-items-center">
-                <span className={`mr-2 ${textColor}`}>Reports Page</span>
+                <h2 className="mr-2">Reports Page</h2>
                 <EditableInfoModal
                   areaName="ReportsPage"
                   areaTitle="Reports Page"
@@ -540,7 +544,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <p className={textColor} >Select a Category</p>
+              <p className="mr-2">Select a Category</p>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
@@ -554,7 +558,8 @@ class ReportsPage extends Component {
                   >
                     <h3 className="card-category-item-title"> Projects</h3>
                     <h3 className="card-category-item-number">
-                      {this.state.projectSearchData.length}{' '}
+                      {this.state.projectSearchData.length}
+                      {' '}
                     </h3>
                     <img src={projectsImage} alt="Projects" />
                   </button>
@@ -589,9 +594,11 @@ class ReportsPage extends Component {
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   <ReportFilter
+                    filterStatus={this.state.filterStatus} 
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
+                    darkMode={darkMode}
                   />
                   <ViewReportByDate
                     minDate={new Date(DATE_PICKER_MIN_DATE)}
@@ -635,7 +642,7 @@ class ReportsPage extends Component {
                         />
                       </div>
                     </div>
-                      <div className="total-report-item">
+                    <div className="total-report-item">
                       <Button color="info" onClick={this.showTotalTeam}>
                         {this.state.showTotalTeam
                           ? 'Hide Total Team Report'
@@ -653,27 +660,27 @@ class ReportsPage extends Component {
                       </div>
 
                     </div>
-                  <div className="total-report-item">
-                    <Button 
-                      type="button" 
-                      color="info" 
-                      onClick={this.showContributorsReport}
-                    >
-                      {this.state.showContributorsReport
+                    <div className="total-report-item">
+                      <Button 
+                        type="button" 
+                        color="info" 
+                        onClick={this.showContributorsReport}
+                      >
+                        {this.state.showContributorsReport
                         ? 'Hide Contributors Report'
                         : 'Show Contributors Report'}
-                    </Button>
-                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                      <EditableInfoModal
-                        areaName="contributorsReportInfoPoint"
-                        areaTitle="Contributors Report"
-                        role={myRole}
-                        fontSize={15}
-                        isPermissionPage
-                        darkMode={darkMode}
-                        defaultText="Click this to see only people who logged/contributed a minimum of 10 tangible hours. This is used for identifying actual contributors vs. people who never started, were immediately terminated, etc."
-                      />
-                    </div>
+                      </Button>
+                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                        <EditableInfoModal
+                          areaName="contributorsReportInfoPoint"
+                          areaTitle="Contributors Report"
+                          role={myRole}
+                          fontSize={15}
+                          isPermissionPage
+                          darkMode={darkMode}
+                          defaultText="Click this to see only people who logged/contributed a minimum of 10 tangible hours. This is used for identifying actual contributors vs. people who never started, were immediately terminated, etc."
+                        />
+                      </div>
                     </div>
                   </div>
                   {myRole !== 'Owner' && (
@@ -851,22 +858,22 @@ class ReportsPage extends Component {
                     />
                   )}
                   {this.state.showContributorsReport && (
-              <TotalContributorsReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                darkMode={darkMode}
-                userRole={userRole}
-              />
+                  <TotalContributorsReport
+                    startDate={this.state.startDate}
+                    endDate={this.state.endDate}
+                    userProfiles={userProfilesBasicInfo}
+                    darkMode={darkMode}
+                    userRole={userRole}
+                  />
             )}
-            {this.state.showAddTimeForm && myRole === 'Owner' && (
-                    <AddLostTime
-                      isOpen={this.state.showAddTimeForm}
-                      toggle={this.setAddTime}
-                      projects={projects}
-                      teams={allTeams}
-                      users={userProfilesBasicInfo}
-                    />
+                  {this.state.showAddTimeForm && myRole === 'Owner' && (
+                  <AddLostTime
+                    isOpen={this.state.showAddTimeForm}
+                    toggle={this.setAddTime}
+                    projects={projects}
+                    teams={allTeams}
+                    users={userProfilesBasicInfo}
+                  />
                   )}
                   {this.state.showAddPersonHistory && (
                     <LostTimeHistory
