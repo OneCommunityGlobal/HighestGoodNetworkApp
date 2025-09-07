@@ -88,6 +88,8 @@ import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHom
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
+import ReviewWordCloud from './components/LBDashboard/ReviewWordCloud/ReviewWordCloud';
+
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -263,6 +265,15 @@ export default (
         </>
       )}
     />
+
+    <LBProtectedRoute exact path="/lbdashboard" component={LBDashboard} />
+    <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
+    <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+    <LBProtectedRoute path="/lbdashboard/map/masterplan" component={MasterPlan} />
+    <LBProtectedRoute path="/lbdashboard/listingoverview" component={ListOveriew} />
+    <LBProtectedRoute path="/lbdashboard/biddingoverview" component={LBBidOverview} />
+    <LBProtectedRoute path="/lbdashboard/biddinghomepage" component={BiddingHomepage} />
+    <LBProtectedRoute path="/lbdashboard/reviewwordcloud" component={ReviewWordCloud} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />

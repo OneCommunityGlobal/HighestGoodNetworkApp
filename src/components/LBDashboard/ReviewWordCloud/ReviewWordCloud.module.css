@@ -1,0 +1,82 @@
+.container {
+  width: 100%;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.wordCloudsContainer {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.wordCloudBox {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.filterBox {
+  margin-bottom: 16px;
+}
+
+.filterLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+}
+
+.select {
+  width: 100%;
+}
+
+.cloudContainer {
+  height: 300px;
+  background-color: white;
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.wordCloud {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.noData {
+  color: #999;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .wordCloudsContainer {
+    flex-direction: column;
+  }
+  
+  .wordCloudBox {
+    width: 100%;
+  }
+}
