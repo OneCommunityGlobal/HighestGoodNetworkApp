@@ -106,12 +106,15 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [showTimer, setShowTimer] = useState(false);
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [weekEndTimeLogModal, setWeekEndTimeLogModal] = useState(false);
+  const [scheduledTimeLogModal, setScheduledTimeLogModal] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
   const [viewingUserId, setViewingUserId] = useState(null);
   const [hasAutoLoggedWeekEnd, setHasAutoLoggedWeekEnd] = useState(false);
+  const [hasAutoLoggedScheduled, setHasAutoLoggedScheduled] = useState(false);
   const [tempTimeEntryId, setTempTimeEntryId] = useState(null);
   const [isWeekEndPaused, setIsWeekEndPaused] = useState(false);
+  const [isScheduledPaused, setIsScheduledPaused] = useState(false);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
@@ -233,6 +236,10 @@ function Timer({ authUser, darkMode, isPopout }) {
     setWeekEndTimeLogModal(!weekEndTimeLogModal);
   };
 
+  const toggleScheduledTimeLogModal = () => {
+    setScheduledTimeLogModal(!scheduledTimeLogModal);
+  };
+
   const checkBtnAvail = useCallback(
     addition => {
       const remainingDuration = moment.duration(remaining);
@@ -325,9 +332,9 @@ function Timer({ authUser, darkMode, isPopout }) {
       const logMinutes = timeToLog.minutes();
 
       // Ensure we have valid user ID
-      const userId = viewingUserId || authUser?._id;
+      const userId = viewingUserId || authUser?.userid;
       if (!userId) {
-        console.error('No user ID available for auto-logging');
+        console.error('No user ID available for auto-logging', { viewingUserId, authUser });
         toast.error('Cannot auto-log time: No user ID available');
         return;
       }
@@ -378,6 +385,85 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   };
 
+  // Handle scheduled forced pause auto-log
+  const autoLogScheduledTime = async () => {
+    if (hasAutoLoggedScheduled || goal - remaining < 60000) {
+      return;
+    }
+
+    try {
+      const timeToLogDur = moment.duration(goal - remaining);
+      const logH = timeToLogDur.hours();
+      const logM = timeToLogDur.minutes();
+
+      const userId = viewingUserId || authUser?.userid;
+      if (!userId) {
+        console.error('No user ID available for auto-logging (scheduled)', { viewingUserId, authUser });
+        toast.error('Cannot auto-log time: No user ID available');
+        return;
+      }
+
+      const timeEntry = {
+        personId: userId,
+        taskId: message.taskId || null,
+        hours: logH,
+        minutes: logM,
+        dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+        description:
+          'This time was logged automatically due to a scheduled pause. This is a temporary time log. https://www.onecommunityglobal.org/team/',
+        isTangible: true,
+        entryType: 'default',
+      };
+
+      const result = await dispatch(postTimeEntry(timeEntry));
+
+      if (result === 200 || result === 201) {
+        if (message.taskId) {
+          dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: logH, minutes: logM },
+              taskId: message.taskId,
+              personId: userId,
+            }),
+          );
+        }
+
+        setHasAutoLoggedScheduled(true);
+        setIsScheduledPaused(true);
+        setTempTimeEntryId(timeEntry._id || 'temp-id');
+        sendPause();
+        setScheduledTimeLogModal(true);
+        sendStartChime(true);
+        toast.info('Timer paused by schedule. Please complete your time log description.');
+      } else {
+        throw new Error(`Unexpected response status: ${result}`);
+      }
+    } catch (error) {
+      console.error('Error auto-logging scheduled pause time:', error);
+      toast.error('Failed to auto-log time for scheduled pause');
+    }
+  };
+
+  // Handle scheduled time log completion
+  const handleScheduledTimeLogComplete = async updatedTimeEntry => {
+    try {
+      if (tempTimeEntryId && updatedTimeEntry) {
+        await dispatch(
+          editTimeEntry(tempTimeEntryId, updatedTimeEntry, updatedTimeEntry.dateOfWork),
+        );
+        toast.success('Time log description updated successfully!');
+      }
+
+      setScheduledTimeLogModal(false);
+      sendStartChime(false);
+      setIsScheduledPaused(false);
+      setTempTimeEntryId(null);
+    } catch (error) {
+      console.error('Error updating scheduled pause time log:', error);
+      toast.error('Failed to update time log description');
+    }
+  };
+
   // Handle week-end time log completion
   const handleWeekEndTimeLogComplete = async (updatedTimeEntry) => {
     try {
@@ -410,6 +496,15 @@ function Timer({ authUser, darkMode, isPopout }) {
       return;
     }
 
+    // Handle explicit forced pause action messages (e.g., scheduled pauses)
+    if (lastJsonMessage && lastJsonMessage.action === 'FORCED_PAUSE') {
+      // Auto-log like week-end, but mark as scheduled pause
+      if (!hasAutoLoggedScheduled && running) {
+        autoLogScheduledTime();
+      }
+      // Do not open the inactivity modal here; we open the scheduled log modal instead
+    }
+
     const {
       paused: pausedLJM,
       forcedPause: forcedPauseLJM,
@@ -437,6 +532,13 @@ function Timer({ authUser, darkMode, isPopout }) {
       sendStartChime(true);
     }
   }, [isWeekEndPaused, weekEndTimeLogModal]);
+
+  // Handle continuous chime during scheduled pause
+  useEffect(() => {
+    if (isScheduledPaused && !scheduledTimeLogModal) {
+      sendStartChime(true);
+    }
+  }, [isScheduledPaused, scheduledTimeLogModal]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -484,6 +586,13 @@ function Timer({ authUser, darkMode, isPopout }) {
       setHasAutoLoggedWeekEnd(false);
     }
   }, [running, message.weekEndPause]);
+
+  // Reset scheduled auto-logged flag when timer starts fresh
+  useEffect(() => {
+    if (running) {
+      setHasAutoLoggedScheduled(false);
+    }
+  }, [running]);
 
   useEffect(() => {
     checkRemainingTime();
@@ -570,7 +679,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             data={{
               hours: logHours,
               minutes: logMinutes,
-              personId: viewingUserId || authUser?._id,
+              personId: viewingUserId || authUser?.userid,
               taskId: message.taskId || null,
               dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
               description: 'This time was logged automatically due to week closing. This is a temporary time log. https://www.onecommunityglobal.org/team/',
@@ -578,6 +687,27 @@ function Timer({ authUser, darkMode, isPopout }) {
               entryType: 'default',
             }}
             onComplete={handleWeekEndTimeLogComplete}
+            tempTimeEntryId={tempTimeEntryId}
+          />
+        )}
+        {scheduledTimeLogModal && (
+          <TimeEntryForm
+            from="ScheduledPause"
+            edit={true}
+            toggle={toggleScheduledTimeLogModal}
+            isOpen={scheduledTimeLogModal}
+            data={{
+              hours: logHours,
+              minutes: logMinutes,
+              personId: viewingUserId || authUser?.userid,
+              taskId: message.taskId || null,
+              dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+              description:
+                'This time was logged automatically due to a scheduled pause. This is a temporary time log. https://www.onecommunityglobal.org/team/',
+              isTangible: true,
+              entryType: 'default',
+            }}
+            onComplete={handleScheduledTimeLogComplete}
             tempTimeEntryId={tempTimeEntryId}
           />
         )}
@@ -887,6 +1017,27 @@ function Timer({ authUser, darkMode, isPopout }) {
           isOpen={logTimeEntryModal}
           data={logTimer}
           sendStop={sendStop}
+        />
+      )}
+      {scheduledTimeLogModal && (
+        <TimeEntryForm
+          from="ScheduledPause"
+          edit={true}
+          toggle={toggleScheduledTimeLogModal}
+          isOpen={scheduledTimeLogModal}
+          data={{
+            hours: logHours,
+            minutes: logMinutes,
+            personId: viewingUserId || authUser?._id,
+            taskId: message.taskId || null,
+            dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+            description:
+              'This time was logged automatically due to a scheduled pause. This is a temporary time log. https://www.onecommunityglobal.org/team/',
+            isTangible: true,
+            entryType: 'default',
+          }}
+          onComplete={handleScheduledTimeLogComplete}
+          tempTimeEntryId={tempTimeEntryId}
         />
       )}
       <audio
