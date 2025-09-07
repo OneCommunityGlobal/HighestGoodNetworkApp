@@ -152,115 +152,99 @@ function DonutChart() {
   };
 
   return (
-    <div className={`container py-4 ${darkMode ? 'bg-dark text-light' : ''}`}>
-      <div className="row mb-4 align-items-center">
-        <div className="col-md-6">
-          <h2 className="mb-3">PROJECT STATUS</h2>
-        </div>
-        <div className="col-md-6">
-          <div className="d-flex gap-2 align-items-center justify-content-md-end">
-            <DatePicker
-              selected={startDate}
-              onChange={setStartDate}
-              placeholderText="From Date"
-              className={`form-control ${darkMode ? 'bg-secondary text-light border-dark' : ''}`}
-              popperPlacement="bottom-start"
-              wrapperClassName={darkMode ? 'dark-datepicker' : ''}
-            />
-            <DatePicker
-              selected={endDate}
-              onChange={setEndDate}
-              placeholderText="To Date"
-              className={`form-control ${darkMode ? 'bg-secondary text-light border-dark' : ''}`}
-              popperPlacement="bottom-start"
-              wrapperClassName={darkMode ? 'dark-datepicker' : ''}
-            />
-            <button type="button" className="btn btn-primary" onClick={handleApplyClick}>
-              Apply
-            </button>
+    <div className={` ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
+      <div className={`container py-4 ${darkMode ? 'text-light' : ''}`}>
+        <div className="row mb-4 align-items-center">
+          <div className="col-md-6">
+            <h2 className={`mb-3 ${darkMode ? 'text-light' : ''}`}>PROJECT STATUS</h2>
           </div>
-        </div>
-      </div>
-
-      <div className="row">
-        <div className="col-md-8  align-items-center">
-          {/* chart */}
-          <div className="row w-full position-relative">
-            <Doughnut data={data} options={options} style={{ width: '100%', height: '100%' }} />
-          </div>
-          <div
-            className="row w-full text-center mt-3 mt-md-0 ms-md-4"
-            style={{ pointerEvents: 'none' }}
-          >
-            <p className={`mb-1 ${darkMode ? 'text-light' : ''}`} style={{ fontSize: '1.5rem' }}>
-              Total Projects:
-              <b>{chartData?.totalProjects}</b>
-            </p>
+          <div className="col-md-6">
+            <div className="d-flex gap-2 align-items-center justify-content-md-end">
+              <DatePicker
+                selected={startDate}
+                onChange={setStartDate}
+                placeholderText="From Date"
+                className={`form-control ${darkMode ? 'bg-secondary text-light border-dark' : ''}`}
+                popperPlacement="bottom-start"
+                wrapperClassName={darkMode ? 'dark-datepicker' : ''}
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={setEndDate}
+                placeholderText="To Date"
+                className={`form-control ${darkMode ? 'bg-secondary text-light border-dark' : ''}`}
+                popperPlacement="bottom-start"
+                wrapperClassName={darkMode ? 'dark-datepicker' : ''}
+              />
+              <button type="button" className="btn btn-primary" onClick={handleApplyClick}>
+                Apply
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="col-md-4 mt-4 mt-md-0">
-          {/* Chart Info */}
-          <div className="mb-3 text-right">
-            <span className={darkMode ? 'text-light' : 'text-muted'}>{formattedDate}</span>
+        <div className="row">
+          <div className="col-md-8  align-items-center">
+            {/* chart */}
+            <div className="row w-full position-relative">
+              <Doughnut data={data} options={options} style={{ width: '100%', height: '100%' }} />
+            </div>
+            <div
+              className="row w-full text-center mt-3 mt-md-0 ms-md-4"
+              style={{ pointerEvents: 'none' }}
+            >
+              <p className={`mb-1 ${darkMode ? 'text-light' : ''}`} style={{ fontSize: '1.5rem' }}>
+                Total Projects:
+                <b>{chartData?.totalProjects}</b>
+              </p>
+            </div>
           </div>
-          <div>
-            {[
-              { label: 'ACTIVE PROJECTS', value: chartData?.activeProjects },
-              { label: 'COMPLETED PROJECTS', value: chartData?.completedProjects },
-              { label: 'DELAYED PROJECTS', value: chartData?.delayedProjects },
-            ].map(item => (
-              <div key={item.label} className="mb-3">
-                <div
-                  className={`card shadow-sm ${
-                    darkMode ? 'bg-dark text-light border-secondary' : ''
-                  }`}
-                >
-                  <div className="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                      {item.label.split(' ').map(word => (
-                        <span
-                          key={word}
-                          className={`d-block text-uppercase small ${
-                            darkMode ? 'text-light' : 'text-secondary'
-                          }`}
-                        >
-                          {word}
-                        </span>
-                      ))}
+
+          <div className="col-md-4 mt-4 mt-md-0">
+            {/* Chart Info */}
+            <div className="mb-3 text-right">
+              <span className={darkMode ? 'text-light' : 'text-muted'}>{formattedDate}</span>
+            </div>
+            <div>
+              {[
+                { label: 'ACTIVE PROJECTS', value: chartData?.activeProjects },
+                { label: 'COMPLETED PROJECTS', value: chartData?.completedProjects },
+                { label: 'DELAYED PROJECTS', value: chartData?.delayedProjects },
+              ].map(item => (
+                <div key={item.label} className="mb-3">
+                  <div
+                    className={`card shadow-sm ${
+                      darkMode ? 'bg-dark text-light border-secondary' : ''
+                    }`}
+                  >
+                    <div
+                      className={`card-body d-flex justify-content-between align-items-center ${
+                        darkMode ? 'bg-yinmn-blue' : ''
+                      }`}
+                    >
+                      <div>
+                        {item.label.split(' ').map(word => (
+                          <span
+                            key={word}
+                            className={`d-block text-uppercase small ${
+                              darkMode ? 'text-light' : 'text-secondary'
+                            }`}
+                          >
+                            {word}
+                          </span>
+                        ))}
+                      </div>
+                      <span className={`fs-4 fw-bold ${darkMode ? 'text-light' : ''}`}>
+                        {item.value}
+                      </span>
                     </div>
-                    <span className={`fs-4 fw-bold ${darkMode ? 'text-light' : ''}`}>
-                      {item.value}
-                    </span>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-
-      <style>{`
-        .dark-datepicker .react-datepicker {
-          background-color: #343a40;
-          border-color: #6c757d;
-        }
-        .dark-datepicker .react-datepicker__header {
-          background-color: #454d55;
-          border-bottom-color: #6c757d;
-        }
-        .dark-datepicker .react-datepicker__current-month,
-        .dark-datepicker .react-datepicker__day-name,
-        .dark-datepicker .react-datepicker__day {
-          color: #fff;
-        }
-        .dark-datepicker .react-datepicker__day:hover {
-          background-color: #495057;
-        }
-        .dark-datepicker .react-datepicker__day--selected {
-          background-color: #007bff;
-        }
-      `}</style>
     </div>
   );
 }
