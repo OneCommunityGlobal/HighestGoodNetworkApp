@@ -45,6 +45,9 @@ export const Badges = (props) => {
 
   // Added restriction: Jae's badges only editable by Jae or Owner
   const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
+  // const canAssignBadges = props.hasPermission('assignBadges');
+  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
+
   const toggle = () => setOpen(!isOpen);
   
   const toggleBadge = () => {setIsBadgeOpen(!isBadgeOpen)};
@@ -126,7 +129,7 @@ export const Badges = (props) => {
             </span>
 
             <div className='d-flex'>
-              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
+              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator' || canModifyBadgeAmount) && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured

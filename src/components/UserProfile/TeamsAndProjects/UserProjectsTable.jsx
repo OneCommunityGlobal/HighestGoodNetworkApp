@@ -12,6 +12,11 @@ import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableIn
 // eslint-disable-next-line react/display-name
 const UserProjectsTable = React.memo(props => {
   const {darkMode} = props;
+  const ensureArray = (value, fallback = []) => {
+    if (Array.isArray(value)) return value;
+    if (value === null || value === undefined) return fallback;
+    return fallback;
+  };
 
   const [tooltipOpen, setTooltip] = useState(false);
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
@@ -20,8 +25,8 @@ const UserProjectsTable = React.memo(props => {
   const canDeleteTasks = props.hasPermission('deleteTask')
   const canPostTask = props.hasPermission('postTask');
 
-  const userProjects = props.userProjectsById;
-  const userTasks = props.userTasks;
+  const userProjects = ensureArray(props.userProjectsById);
+  const userTasks = ensureArray(props.userTasks);
   const [actualType, setActualType] = useState('active');
 
   const location = useLocation();
@@ -205,7 +210,7 @@ const UserProjectsTable = React.memo(props => {
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClicK(project._id);
+                              props.onDeleteClick(project._id);
                               deleteTasksTemporarily(project._id);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
@@ -385,7 +390,7 @@ const UserProjectsTable = React.memo(props => {
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClicK(project._id);
+                              props.onDeleteClick(project._id);
                               deleteTasksTemporarily(project._id);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
