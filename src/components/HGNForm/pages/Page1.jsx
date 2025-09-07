@@ -10,7 +10,14 @@ import styles from '../styles/hgnform.module.css';
 function Page1() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  dispatch(getUserProfileBasicInfo());
+  const user = useSelector(state => state.auth.user);
+  
+  useEffect(() => {
+    if (user?.userid) {
+      dispatch(getUserProfileBasicInfo(user.userid));
+    }
+  }, [dispatch, user?.userid]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
