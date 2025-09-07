@@ -21,6 +21,7 @@ import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import ToolsRentalCostLineChart from '../Tools/ToolsRentals/ToolsRentalCostLineChart';
 import ToolsRentalCostStackedBarChart from '../Tools/ToolsRentals/ToolsRentalCostStackedBarChart';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
   {
@@ -172,7 +173,6 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -298,9 +298,7 @@ function WeeklyProjectSummary() {
         key: 'Lessons Learned',
         className: 'half',
         content: [
-          <div key="text-card" className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>,
+          <MostFrequentKeywords key="frequent-tags-card" />,
           <div key="injury-chart" className="weekly-project-summary-card normal-card">
             <InjuryCategoryBarChart />
           </div>,
