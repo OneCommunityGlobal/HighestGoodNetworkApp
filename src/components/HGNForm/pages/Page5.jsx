@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import Banner from '../questionpages/Banner';
 import FollowupQuestions from '../questionpages/FollowupQuestions';
 import Progress from '../questionpages/Progress';
+<<<<<<< HEAD
 import containerStyles from '../styles/hgnform.module.css';
 
 function Page5() {
@@ -18,6 +19,22 @@ function Page5() {
         darkMode ? 'bg-oxford-blue' : ''
       }`}
     >
+=======
+import { useSelector } from 'react-redux';
+import styles from '../styles/hgnform.module.css';
+import { getBoxStyling, getFontColor } from '../../../styles';
+
+function Page5() {
+  const headerRef = useRef(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+>>>>>>> 9e2264a47 (add dark mode styling to page 5)
       <Banner />
       <FollowupQuestions />
       <Progress progressValue={16.67 * 5} />
