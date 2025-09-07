@@ -2,15 +2,32 @@ import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import styles from './DistributionLaborHours.module.css';
 
-const COLORS = ['#003f5c', '#2f4b7c', '#ffa600', '#ff6361', '#f3e5ab'];
+const COLORS = ['#f9f3e3', '#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbbff'];
 
-const data = [
+const originalData = [
   { name: 'Stud Wall Construction', value: 25.9 },
   { name: 'Foundation Concreting', value: 18.5 },
   { name: 'Task 1', value: 22.2 },
   { name: 'Task 2', value: 18.5 },
   { name: 'Task 3', value: 14.8 },
+  { name: 'Electrical', value: 10 },
+  { name: 'Welding', value: 8 },
 ];
+
+const processData = data => {
+  const sorted = [...data].sort((a, b) => b.value - a.value);
+  const topFive = sorted.slice(0, 5);
+  const others = sorted.slice(5);
+  const othersTotal = others.reduce((sum, item) => sum + item.value, 0);
+
+  if (others.length > 0) {
+    topFive.push({ name: 'Others', value: othersTotal });
+  }
+
+  return topFive;
+};
+
+const data = processData(originalData);
 
 export default function DistributionLaborHours() {
   return (
