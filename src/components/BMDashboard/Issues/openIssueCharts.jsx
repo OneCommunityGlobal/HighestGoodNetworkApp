@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,14 +20,12 @@ import {
 } from '../../../actions/bmdashboard/issueChartActions';
 import './issueCharts.css';
 
-function IssueCharts() {
+function OpenIssueCharts() {
   const dispatch = useDispatch();
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const chartContainerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -44,22 +42,12 @@ function IssueCharts() {
       const today = new Date().toISOString().split('T')[0];
       dateRange = [`${startDate.toISOString().split('T')[0]},${today}`];
     } else if (!startDate && endDate) {
+      // Fetch all issues from the beginning of time until the end date
       dateRange = [`1980-01-01,${endDate.toISOString().split('T')[0]}`];
     }
 
     dispatch(fetchLongestOpenIssues(dateRange, selectedProjects));
   }, [dispatch, startDate, endDate, selectedProjects]);
-
-  useEffect(() => {
-    function handleResize() {
-      if (chartContainerRef.current) {
-        setContainerWidth(chartContainerRef.current.offsetWidth);
-      }
-    }
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initial set
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleProjectChange = selected => {
     dispatch(setProjectFilter(selected ? selected.map(option => option.value) : []));
@@ -70,20 +58,6 @@ function IssueCharts() {
     label: project.name,
   }));
 
-  // Calculate margins and YAxis width based on container width
-  const getChartLayout = () => {
-    // Margins and YAxis width scale with container width
-    const leftRightMargin = Math.max(20, Math.min(200, containerWidth * 0.12));
-    const yAxisWidth = Math.max(60, Math.min(180, containerWidth * 0.13));
-    return {
-      margin: { top: 20, right: leftRightMargin, left: leftRightMargin, bottom: 5 },
-      yAxisWidth,
-    };
-  };
-
-  const { margin, yAxisWidth } = getChartLayout();
-
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -92,44 +66,47 @@ function IssueCharts() {
 
       <div className="filters-container">
         <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+          <label className="issue-chart-label" htmlFor="date-range-picker">
             Date Range:
           </label>
-          <div className="date-range-picker">
-            <DatePicker
-              id="start-date"
-              selected={startDate}
-              onChange={date => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              maxDate={endDate}
-              placeholderText="Start Date"
-              isClearable
-              className="filter-select"
-            />
+          <div id="date-range-picker" className="date-range-picker">
+            <div className="date-picker-wrapper">
+              <DatePicker
+                selected={startDate}
+                onChange={date => setStartDate(date)}
+                selectsStart
+                startDate={startDate}
+                endDate={endDate}
+                maxDate={endDate}
+                placeholderText="Start Date"
+                isClearable
+                className="filter-select"
+              />
+            </div>
             <span>to</span>
-            <DatePicker
-              selected={endDate}
-              onChange={date => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              maxDate={new Date()}
-              placeholderText="End Date"
-              isClearable
-              className="filter-select"
-            />
+            <div className="date-picker-wrapper">
+              <DatePicker
+                selected={endDate}
+                onChange={date => setEndDate(date)}
+                selectsEnd
+                startDate={startDate}
+                endDate={endDate}
+                minDate={startDate}
+                maxDate={new Date()}
+                placeholderText="End Date"
+                isClearable
+                className="filter-select"
+              />
+            </div>
           </div>
         </div>
 
         <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+          <label className="issue-chart-label" htmlFor="project-select">
             Projects:
           </label>
           <Select
-            id="start-date"
+            id="project-select"
             isMulti
             options={projectOptions}
             onChange={handleProjectChange}
@@ -140,8 +117,13 @@ function IssueCharts() {
         </div>
       </div>
 
-      <div className="chart-container" ref={chartContainerRef}>
-        {!issues || issues.length === 0 ? (
+      <div className="chart-container">
+        {loading && (
+          <div className="loading-overlay">
+            <div className="spinner"></div>
+          </div>
+        )}
+        {!loading && !error && (!issues || issues.length === 0) ? (
           <div className="no-data-message">
             <div className="no-data-content">
               <h3>No Open Issues Found</h3>
@@ -151,23 +133,24 @@ function IssueCharts() {
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={issues} layout="vertical" margin={margin}>
+            <BarChart
+              data={issues}
+              layout="vertical"
+              margin={{ top: 20, right: 50, left: 100, bottom: 20 }}
+              barCategoryGap="20%"
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 type="number"
-                label={{ value: 'Duration in Months', position: 'insideBottom', offset: -5 }}
+                label={{ value: 'Duration in Months', position: 'insideBottom', offset: -10 }}
               />
-              <YAxis
-                dataKey="issueName"
-                type="category"
-                tick={{ fontSize: 14, fontWeight: 500 }}
-                width={yAxisWidth}
-              />
+              <YAxis dataKey="issueName" type="category" tick={{ fontSize: 12 }} width={150} />
               <Tooltip
                 formatter={value => `${value} months`}
                 labelFormatter={label => `Issue: ${label}`}
+                cursor={{ fill: 'rgba(206, 206, 206, 0.2)' }}
               />
-              <Bar dataKey="durationOpen" fill="#6495ED" barSize={30}>
+              <Bar dataKey="durationOpen" fill="#6495ED" barSize={25}>
                 <LabelList
                   dataKey="durationOpen"
                   position="right"
@@ -183,4 +166,4 @@ function IssueCharts() {
   );
 }
 
-export default IssueCharts;
+export default OpenIssueCharts;
