@@ -45,7 +45,7 @@ const SkeletonLoading = ({ template, className }) => {
               <td
                 colSpan={6}
                 className="skeleton-loading-team-member-tasks-row"
-                data-testid="skeleton-loading-team-member-tasks-row"
+                data-testid="team-member-tasks-row"
               />
             </tr>,
           );
