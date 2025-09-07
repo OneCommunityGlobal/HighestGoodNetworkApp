@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Col, Row} from 'reactstrap';
 import { updateInfoCollection, addInfoCollection } from '../../../actions/information'
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import RichTextEditor from './RichTextEditor';

@@ -4,6 +4,8 @@
   border-radius: 15px;
   margin: 10px;
   box-shadow: 1px 1px #e0e0e0;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .Collapsible__contentInner {
