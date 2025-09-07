@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
@@ -6,7 +7,7 @@ import configureMockStore from 'redux-mock-store';
 import { BrowserRouter } from 'react-router-dom';
 import thunk from 'redux-thunk';
 import TagsSearch from '../TagsSearch';
-import { findProjectMembers } from '~/actions/projectMembers';
+
 
 // Mock member data
 const allMembers = [
@@ -21,10 +22,9 @@ const mockStore = configureMockStore(middlewares);
 
 // Mock functions for resource management
 const mockFunctions = mockResourceItems => {
-  const addResources = vi.fn((userID, firstName, lastName) => {
-    mockResourceItems.push({ userID, name: `${firstName} ${lastName}` });
+  const addResources = vi.fn((userID, firstName, lastName, profilePic) => {
+    mockResourceItems.push({ userID, name: `${firstName} ${lastName}`, profilePic });
   });
-
   const removeResources = vi.fn(userID => {
     const index = mockResourceItems.findIndex(item => item.userID === userID);
     if (index !== -1) mockResourceItems.splice(index, 1);
@@ -87,13 +87,8 @@ describe('TagsSearch Component', () => {
       vi.advanceTimersByTime(400);
     });
 
-    await waitFor(() => {
-      expect(screen.getByText('aaa volunteer')).toBeInTheDocument();
-      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
-      expect(screen.getByText('aaa owner')).toBeInTheDocument();
-      // expect(screen.queryByText('bbb test')).not.toBeInTheDocument();
-      // expect(screen.queryByText('ccc manager')).not.toBeInTheDocument();
-    });
+    await screen.findByText('aaa volunteer');
+    await screen.findByText('aaa owner');
   });
 
   it('adds a resource when clicking a filtered member', async () => {
@@ -108,24 +103,27 @@ describe('TagsSearch Component', () => {
     });
 
     // Wait for the dropdown to display filtered options
-    await waitFor(() => {
-      const volunteerOption = screen.getByText('aaa volunteer');
-      const ownerOption = screen.getByText('aaa owner');
-      expect(volunteerOption).toBeInTheDocument();
-      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
-      expect(ownerOption).toBeInTheDocument();
+    const volunteerOption = await screen.findByText('aaa volunteer');
+    const ownerOption = await screen.findByText('aaa owner');
+    expect(volunteerOption).toBeInTheDocument();
+    expect(ownerOption).toBeInTheDocument();
 
-      // Simulate clicking the filtered options
-      // eslint-disable-next-line testing-library/no-wait-for-side-effects
-      fireEvent.mouseDown(volunteerOption);
-      // eslint-disable-next-line testing-library/no-wait-for-side-effects
-      fireEvent.mouseDown(ownerOption);
+    // Click first filtered option
+    fireEvent.mouseDown(volunteerOption);
+    await waitFor(() => expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', undefined));
+
+    // Re-open dropdown and click second option
+    const searchInputElement2 = screen.getByPlaceholderText('Add resources');
+    fireEvent.focus(searchInputElement2);
+    fireEvent.change(searchInputElement2, { target: { value: 'aaa' } });
+    act(() => {
+      vi.advanceTimersByTime(400);
     });
+    const ownerOption2 = await screen.findByText('aaa owner');
+    fireEvent.mouseDown(ownerOption2);
 
-    /** await waitFor(() => {
-      expect(addResources).toHaveBeenCalledWith('aaa123', 'aaa', 'volunteer', 'pic1.jpg');
-      expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', 'pic4.jpg');
-    }); */
+    await waitFor(() => expect(addResources).toHaveBeenCalledWith('aaa067', 'aaa', 'owner', undefined));
+    
   });
 
   it('does not add resource if no member is clicked', async () => {

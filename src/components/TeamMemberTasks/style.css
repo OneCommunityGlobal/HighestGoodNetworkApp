@@ -526,6 +526,15 @@
   color: #fff !important;
 }
 
+.multi-select-filter {
+  position: relative;
+  z-index: 20;
+}
+
+.multi-select-filter:focus-within {
+  z-index: 30;
+}
+
 @media (max-width: 1240px) and (min-width: 992px) {
   .header-box {
     flex-direction: column;
