@@ -12,7 +12,9 @@ import {
   findProjectMembers,
   getAllUserProfiles,
   assignProject,
-  foundUsers } from '~/actions/projectMembers';
+  foundUsers
+} from '~/actions/projectMembers';
+
 import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
@@ -72,8 +74,7 @@ const Members = props => {
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
 
   useEffect(() => {
-    setMembersList(props.state.projectMembers.members
-      .filter(user => !showActiveMembersOnly || user.isActive))
+    setMembersList(props.state.projectMembers.members?.filter(user => !showActiveMembersOnly || user.isActive))
   }, [showActiveMembersOnly])
 
   useEffect(() => {
@@ -299,7 +300,7 @@ const Members = props => {
                 </tr>
               </thead>
               <tbody>
-                {membersList.map((member, i) => (
+                {membersList?.map((member, i) => (
                   <Member
                     index={i}
                     key={member._id ?? i}
