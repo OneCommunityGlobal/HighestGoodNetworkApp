@@ -243,6 +243,17 @@ export default (
 
     <Route
       exact
+      path="/lbdashboard/bidOverview"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <LBBidOverview />
+        </>
+      )}
+    />
+    <Route
+      exact
       path="/lbdashboard/wishlists"
       render={() => (
         <>

@@ -343,6 +343,7 @@ export const ENDPOINTS = {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+  LB_BID_OVERVIEW: `${APIEndpoint}/lb/bidOverview`,
 
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
@@ -369,7 +370,7 @@ export const ENDPOINTS = {
   CP_ADD_EVENT_FEEDBACK: `${APIEndpoint}/communityportal/activities/eventFeedback`,
 
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
-  LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
+  LB_LISTINGS_BASE: `${APIEndpoint}/lb/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
   // Saved Filters endpoints
