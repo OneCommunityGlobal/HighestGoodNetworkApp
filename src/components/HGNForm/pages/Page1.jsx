@@ -11,7 +11,7 @@ function Page1() {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
   const user = useSelector(state => state.auth.user);
-  
+
   useEffect(() => {
     if (user?.userid) {
       dispatch(getUserProfileBasicInfo(user.userid));
