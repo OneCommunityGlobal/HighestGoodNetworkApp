@@ -37,7 +37,6 @@ module.exports = [
       'src/components/TeamMemberTasks/**',
       'src/components/Teams/TeamMembersPopup.jsx',
       'src/components/UserProfile/**',
-      'src/components/Announcements/index.jsx',
     ],
   },
 
