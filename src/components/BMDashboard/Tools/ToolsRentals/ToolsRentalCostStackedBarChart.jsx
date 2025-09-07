@@ -17,14 +17,14 @@ import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import { Button, Row, Col } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
-import './ToolsRentalChartStyles.css';
+import styles from './ToolsRentalChartStyles.module.css';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
 
 const ToolsRentalCostStackedBarChart = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState([]);
+  const [selectedProject, setSelectedProjects] = useState([]);
   const [dateRange, setDateRange] = useState([null, null]);
   const [startDate, endDate] = dateRange;
   const [loading, setLoading] = useState(false);
@@ -153,13 +153,13 @@ const ToolsRentalCostStackedBarChart = () => {
   };
 
   return (
-    <div className={`tools-rental-page ${darkMode ? 'dark-mode' : ''}`}>
-      <h3 className={`tools-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.toolsRentalPage} ${darkMode ? 'darkTheme' : ''}`}>
+      <h3 className={`${styles.toolsChartTitle} ${darkMode ? 'darkTheme' : ''}`}>
         Tools Rental Cost Chart
       </h3>
       <Row className="mb-3 align-items-center">
         <Col xs={12} md={6}>
-          <div className="datepicker-wrapper">
+          <div className={styles.datepickerWrapper}>
             <DatePicker
               selectsRange
               startDate={startDate}
@@ -168,8 +168,8 @@ const ToolsRentalCostStackedBarChart = () => {
                 setDateRange(update);
               }}
               placeholderText={dateRangeLabel || 'Filter by Date Range'}
-              className={`date-picker-input form-control ${darkMode ? 'dark-theme' : ''}`}
-              calendarClassName={darkMode ? 'dark-theme-calendar' : ''}
+              className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
+              calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
             />
             <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
               ✕
@@ -179,11 +179,11 @@ const ToolsRentalCostStackedBarChart = () => {
         <Col xs={12} md={4}>
           <Select
             isMulti
-            classNamePrefix="custom-select"
+            classNamePrefix="customSelect"
             className="w-100"
             options={projectOptions}
             value={projectOptions.filter(option => selectedProject?.includes(option.label))}
-            onChange={opts => setSelectedProject(opts.map(o => o.label))}
+            onChange={opts => setSelectedProjects(opts.map(o => o.label))}
             placeholder="Filter by Projects"
           />
         </Col>
@@ -192,7 +192,6 @@ const ToolsRentalCostStackedBarChart = () => {
             variant="danger"
             size="sm"
             onClick={() => {
-              setTagFilter(null);
               setSelectedProjects([]);
               setDateRange([null, null]);
             }}
@@ -201,16 +200,16 @@ const ToolsRentalCostStackedBarChart = () => {
           </Button>
         </Col>
       </Row>
-      <div className="tools-line-chart-container">
-        {error && <div className="tools-chart-error">{error}</div>}
-        {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
+      <div className={styles.toolsLineChartContainer}>
+        {error && <div className={styles.toolsChartError}>{error}</div>}
+        {loading && <div className={styles.toolsChartLoad}>Loading tool availability data...</div>}
 
         {!loading && selectedProject && data.length > 0 && (
           <Bar data={chartData} options={stackedBarOptions} />
         )}
 
         {!loading && selectedProject && data.length === 0 && (
-          <div className="tools-chart-empty">
+          <div className={styles.toolsChartNoData}>
             <p>No data available for the selected filters.</p>
           </div>
         )}

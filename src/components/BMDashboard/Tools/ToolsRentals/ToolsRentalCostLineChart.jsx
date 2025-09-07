@@ -18,8 +18,7 @@ import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import { Button, Row, Col } from 'react-bootstrap';
 import 'react-datepicker/dist/react-datepicker.css';
-import './ToolsRentalChartStyles.css';
-import { color } from 'd3';
+import styles from './ToolsRentalChartStyles.module.css';
 
 ChartJS.register(
   CategoryScale,
@@ -188,13 +187,13 @@ const ToolsRentalCostLineChart = () => {
   };
 
   return (
-    <div className={`tools-rental-page ${darkMode ? 'dark-mode' : ''}`}>
-      <h3 className={`tools-chart-title ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.toolsRentalPage} ${darkMode ? 'darkTheme' : ''}`}>
+      <h3 className={`${styles.toolsChartTitle} ${darkMode ? 'darkTheme' : ''}`}>
         Tools Rental Cost Over Time
       </h3>
       <Row className="mb-3 align-items-center">
         <Col xs={12} md={6}>
-          <div className="datepicker-wrapper">
+          <div className={styles.datepickerWrapper}>
             <DatePicker
               selectsRange
               startDate={startDate}
@@ -203,8 +202,8 @@ const ToolsRentalCostLineChart = () => {
                 setDateRange(update);
               }}
               placeholderText={dateRangeLabel || 'Filter by Date Range'}
-              className={`date-picker-input form-control ${darkMode ? 'dark-theme' : ''}`}
-              calendarClassName={darkMode ? 'dark-theme-calendar' : ''}
+              className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
+              calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
             />
             <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
               ✕
@@ -213,7 +212,7 @@ const ToolsRentalCostLineChart = () => {
         </Col>
         <Col xs={12} md={4}>
           <Select
-            classNamePrefix="custom-select"
+            classNamePrefix="customSelect"
             className="w-100"
             options={projectOptions}
             value={selectedProject}
@@ -234,16 +233,16 @@ const ToolsRentalCostLineChart = () => {
           </Button>
         </Col>
       </Row>
-      <div className="tools-line-chart-container">
-        {error && <div className="tools-chart-error">{error}</div>}
-        {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
+      <div className={styles.toolsBarChartContainer}>
+        {error && <div className={styles.toolsChartError}>{error}</div>}
+        {loading && <div className={styles.toolsChartLoad}>Loading tool availability data...</div>}
 
         {!loading && selectedProject && data.length > 0 && (
           <Line data={chartData} options={lineChartOptions} />
         )}
 
         {!loading && selectedProject && data.length === 0 && (
-          <div className="tools-chart-empty">
+          <div className={`${styles.toolsChartNoData} ${darkMode ? 'darkTheme' : ''}`}>
             <p>No data available for the selected filters.</p>
           </div>
         )}
