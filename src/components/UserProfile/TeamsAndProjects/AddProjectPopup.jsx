@@ -46,7 +46,7 @@ import { assignProject } from '~/actions/projectMembers';
 
 // eslint-disable-next-line react/display-name
 const AddProjectPopup = React.memo(props => {
-  const { darkMode } = props;
+  const { darkMode, projects = [], onClose } = props;
 
   const dispatch = useDispatch();
 
@@ -167,13 +167,13 @@ const AddProjectPopup = React.memo(props => {
   return (
     <Modal
       isOpen={props.open}
-      toggle={closePopup}
+      toggle={onClose}
       // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-        {isOpenDropdown ? 'Create' : '  Add'} Project{' '}
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose}>
+        {creatingNew ? 'Create' : '  Add'} Project{' '}
       </ModalHeader>
 
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
