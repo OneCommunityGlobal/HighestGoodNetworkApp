@@ -545,6 +545,7 @@ function UserProfile(props) {
   };
 
 const onAssignProject = assignedProject => {
+  // eslint-disable-next-line no-console
   console.log("Adding project to state:", assignedProject);
   
   // Always create a new array to trigger React re-render
@@ -554,13 +555,16 @@ const onAssignProject = assignedProject => {
     const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
     
     if (currentProjects.some(proj => proj._id === assignedProject._id)) {
+      // eslint-disable-next-line no-console
       console.log("Project already exists, not adding duplicate");
       return currentProjects; 
     }
     
     // Add project and log the new state
+    // eslint-disable-next-line no-console
     console.log("Adding new project:", assignedProject.projectName);
     const newProjects = [...currentProjects, assignedProject];
+    // eslint-disable-next-line no-console
     console.log("Updated projects state:", newProjects);
     return newProjects; // Return the new array with the project added
   });
@@ -780,6 +784,7 @@ const onAssignProject = assignedProject => {
         ...(updatedUserProfile || userProfileRef.current),
         projects, // Ensure projects are included in the payload
         };
+        // eslint-disable-next-line no-console
         console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
       const result = await props.updateUserProfile(userProfileToUpdate);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {

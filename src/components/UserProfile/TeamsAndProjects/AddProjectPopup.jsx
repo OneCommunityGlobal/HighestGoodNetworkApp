@@ -19,7 +19,7 @@ import { assignProject } from '~/actions/projectMembers';
      isActive: true,
    });
  };
-const AddProjectPopup = React.memo(function AddProjectPopup(props) {
+/*const AddProjectPopup = React.memo(function AddProjectPopup(props) {
   const {
     open,
     onClose,
@@ -42,7 +42,7 @@ const AddProjectPopup = React.memo(function AddProjectPopup(props) {
       new Set(safeProjects.map(p => p?.category).filter(Boolean))
     );
     setCategoryOptions(categories.length ? categories : ['Unspecified']);
-  }, [projects]);
+  }, [projects]);*/
 
 // eslint-disable-next-line react/display-name
 const AddProjectPopup = React.memo(props => {
@@ -116,6 +116,7 @@ const AddProjectPopup = React.memo(props => {
     toast.success(`Assigned to "${selectedProject.projectName}".`);
     props.onClose?.();
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error('Error Assigning Project:', e);
     toast.error('Failed to assign project. Please try again.');
   }
