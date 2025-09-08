@@ -519,6 +519,10 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
+                      <DropdownItem divider />
+                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
+                        PR Team Analytics
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
@@ -591,6 +595,7 @@ export function Header(props) {
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
         />
       )}
+      <PermissionWatcher props={props} />
       {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
           firstName={viewingUser?.firstName || firstName}
