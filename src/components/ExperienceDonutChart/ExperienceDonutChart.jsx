@@ -1,229 +1,323 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
-import { Pie } from 'react-chartjs-2';
-import 'chart.js/auto';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import './ExperienceDonutChart.css';
 
-function LoadingSpinner() {
-  return <div className="spinner">Loading...</div>;
+const SEGMENT_COLORS = [
+  '#FF6384',
+  '#36A2EB',
+  '#FFCE56',
+  '#4BC0C0',
+  '#FF9F40',
+  '#8B5CF6',
+  '#10B981',
+];
+const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
+
+function Spinner() {
+  return (
+    <div className="spinner-container" role="status" aria-live="polite" aria-busy="true">
+      <div className="spinner" />
+      <p>Loading…</p>
+    </div>
+  );
 }
 
-function ExperienceDonutChart() {
+export default function ExperienceDonutChart() {
+  // filters (unapplied)
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
 
+  // applied filters (source of truth for fetch)
+  const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
+
   const [chartData, setChartData] = useState(null);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const segmentColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'];
-  const experienceLabels = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
+  // hover/active
+  const [activeIndex, setActiveIndex] = useState(null);
+  const pieRef = useRef(null);
 
-  // Helper to fetch data with given filters
-  const fetchDataWithFilters = async ({
-    startDate: filterStartDate,
-    endDate: filterEndDate,
-    roles: filterRoles,
-  }) => {
+  const baseURL =
+    import.meta?.env?.VITE_API_BASE_URL ||
+    process.env?.REACT_APP_API_BASE_URL ||
+    'http://localhost:4500';
+
+  const hasFilters = useMemo(
+    () =>
+      Boolean(
+        appliedFilters.startDate ||
+          appliedFilters.endDate ||
+          (appliedFilters.roles?.length ?? 0) > 0,
+      ),
+    [appliedFilters],
+  );
+
+  const fetchData = async () => {
     setLoading(true);
     setError(null);
+    setActiveIndex(null);
 
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
-      const url = 'http://localhost:4500/api/experience-breakdown';
       const params = {};
+      if (appliedFilters.startDate) params.startDate = appliedFilters.startDate;
+      if (appliedFilters.endDate) params.endDate = appliedFilters.endDate;
+      if (appliedFilters.roles?.length) params.roles = appliedFilters.roles.join(',');
 
-      if (filterStartDate && filterEndDate) {
-        params.startDate = filterStartDate;
-        params.endDate = filterEndDate;
-      } else if (filterRoles && filterRoles.length > 0) {
-        params.roles = filterRoles.join(',');
-      }
-
-      const response = await axios.get(url, {
+      const res = await axios.get(`${baseURL}/api/experience-breakdown`, {
         headers: { Authorization: token },
         params,
       });
 
-      const { data } = response;
-
-      if (!data || data.length === 0) {
-        setChartData(null);
-        setLoading(false);
-        return;
-      }
-
-      const counts = experienceLabels.map(label => {
-        const found = data.find(d => d.experience === label);
-        return found ? found.count : 0;
+      const data = Array.isArray(res.data) ? res.data : [];
+      // normalize & order by labels
+      const normalized = EXPERIENCE_LABELS.map((label, i) => {
+        const found = data.find(d => (d.experience ?? d.Experience ?? d.name) === label);
+        const count = found ? Number(found.count ?? found.value ?? 0) : 0;
+        return { name: label, value: count, color: SEGMENT_COLORS[i % SEGMENT_COLORS.length] };
       });
 
-      const totalCount = counts.reduce((a, b) => a + b, 0);
+      const filtered = normalized.filter(d => d.value > 0);
+      const totalCount = filtered.reduce((s, d) => s + d.value, 0);
 
-      const chart = {
-        labels: experienceLabels,
-        datasets: [
-          {
-            data: counts,
-            backgroundColor: segmentColors,
-            hoverOffset: 20,
-          },
-        ],
-      };
-
-      setChartData({ chart, totalCount });
-    } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Error fetching data.');
+      setChartData(filtered.length ? filtered : null);
+      setTotal(totalCount);
+    } catch (e) {
+      console.error(e);
       setChartData(null);
+      setTotal(0);
+      setError(e?.response?.data?.message || e?.message || 'Error fetching data.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch initial data with no filters
   useEffect(() => {
-    fetchDataWithFilters({ startDate: '', endDate: '', roles: [] });
-  }, []);
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [appliedFilters.startDate, appliedFilters.endDate, JSON.stringify(appliedFilters.roles)]);
 
-  // Handle Roles change: clear dates, fetch by roles
-  const handleRoleChange = e => {
-    const newRoles = Array.from(e.target.selectedOptions, option => option.value);
-    setSelectedRoles(newRoles);
-
-    // Clear dates
-    if (startDate !== '' || endDate !== '') {
-      setStartDate('');
-      setEndDate('');
-    }
-
-    fetchDataWithFilters({ roles: newRoles, startDate: '', endDate: '' });
+  // handlers
+  const onRolesChange = e => {
+    const next = Array.from(e.target.selectedOptions, o => o.value);
+    setSelectedRoles(next);
   };
 
-  // Handle Start Date change: clear roles, fetch if endDate present
-  const handleStartDateChange = e => {
-    const newStart = e.target.value;
-    setStartDate(newStart);
-
-    if (selectedRoles.length > 0) {
-      setSelectedRoles([]);
+  const applyFilters = () => {
+    if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+      setError('Start date cannot be after end date.');
+      return;
     }
-
-    if (newStart && endDate) {
-      fetchDataWithFilters({ startDate: newStart, endDate, roles: [] });
-    }
+    setAppliedFilters({ startDate, endDate, roles: selectedRoles });
   };
 
-  // Handle End Date change: clear roles, fetch if startDate present
-  const handleEndDateChange = e => {
-    const newEnd = e.target.value;
-    setEndDate(newEnd);
-
-    if (selectedRoles.length > 0) {
-      setSelectedRoles([]);
-    }
-
-    if (startDate && newEnd) {
-      fetchDataWithFilters({ startDate, endDate: newEnd, roles: [] });
-    }
+  const resetFilters = () => {
+    setStartDate('');
+    setEndDate('');
+    setSelectedRoles([]);
+    setAppliedFilters({ startDate: '', endDate: '', roles: [] });
   };
 
-  // Optionally, you can keep the apply button for manual fetch or remove it since we fetch on change now
+  // Always-visible details (directly under the chart)
+  const DetailsPanel = () => {
+    if (!chartData || total === 0) return null;
+    return (
+      <div className="chart-details" aria-label="Breakdown details">
+        {chartData.map((d, idx) => {
+          const pct = total ? ((d.value / total) * 100).toFixed(1) : '0.0';
+          const isActive = activeIndex === idx;
+          return (
+            <div
+              key={d.name}
+              className={`detail-item ${isActive ? 'active' : ''}`}
+              onMouseEnter={() => setActiveIndex(idx)}
+              onMouseLeave={() => setActiveIndex(null)}
+              role="listitem"
+            >
+              <span className="detail-dot" style={{ backgroundColor: d.color }} />
+              <span className="detail-name">{d.name}</span>
+              <span className="detail-sep">•</span>
+              <span className="detail-count">{d.value.toLocaleString()}</span>
+              <span className="detail-sub">applicants</span>
+              <span className="detail-pct">{pct}%</span>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
-  const options = chartData
-    ? {
-        cutout: '70%',
-        plugins: {
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              label: context => {
-                const count = context.parsed || 0;
-                const total = chartData.totalCount || 1;
-                const percentage = ((count / total) * 100).toFixed(1);
-                return `${context.label}: ${percentage}% (${count})`;
-              },
-            },
-          },
-          datalabels: {
-            color: '#fff',
-            font: {
-              weight: 'bold',
-              size: 14,
-            },
-            formatter: value => {
-              const count = value;
-              const total = chartData.totalCount || 1;
-              const percentage = ((count / total) * 100).toFixed(1);
-              return `${percentage}%\n(${count})`;
-            },
-          },
-          legend: {
-            display: false,
-          },
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-      }
-    : {};
+  // custom tooltip (optional; not required to see values)
+  const CustomTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null;
+    const d = payload[0]?.payload;
+    const pct = total ? ((d.value / total) * 100).toFixed(1) : '0.0';
+    return (
+      <div className="custom-tooltip" role="dialog" aria-live="polite">
+        <p className="tooltip-content">
+          <strong>{d.name}</strong>
+          <br />
+          Count: {d.value.toLocaleString()}
+          <br />
+          Percentage: {pct}%
+        </p>
+      </div>
+    );
+  };
 
   return (
-    <div className="chart-container">
-      <h2>Breakdown of Applicants by Experience</h2>
-
-      <div className="filter-section">
-        <div className="filter-group">
-          <label htmlFor="startDate">Start Date</label>
-          <input
-            id="startDate"
-            type="date"
-            value={startDate}
-            onChange={handleStartDateChange}
-            max={endDate || ''}
-          />
-        </div>
-
-        <div className="filter-group">
-          <label htmlFor="endDate">End Date</label>
-          <input
-            id="endDate"
-            type="date"
-            value={endDate}
-            onChange={handleEndDateChange}
-            min={startDate || ''}
-          />
-        </div>
-
-        <div className="filter-group">
-          <label htmlFor="roles">Roles</label>
-          <select id="roles" multiple value={selectedRoles} onChange={handleRoleChange}>
-            <option value="Frontend Developer">Frontend Developer</option>
-            <option value="DevOps Engineer">DevOps Engineer</option>
-            <option value="Project Manager">Project Manager</option>
-            <option value="Junior Developer">Junior Developer</option>
-            <option value="Full Stack Developer">Full Stack Developer</option>
-          </select>
-        </div>
-
-        {/* Optional: Remove if not needed */}
-        {/* <button type="button" onClick={() => fetchDataWithFilters({ startDate, endDate, roles: selectedRoles })}>
-          Apply Filters
-        </button> */}
+    <div className="experience-chart-container">
+      <div className="chart-header">
+        <h2 className="chart-title">Applicants by Experience</h2>
       </div>
 
-      <div className="chart-area" style={{ minHeight: '320px', position: 'relative' }}>
-        {loading && <LoadingSpinner />}
-        {!loading && error && <p className="error-message">{error}</p>}
-        {!loading && !error && !chartData && <p className="no-data-available">No Data Available</p>}
-        {!loading && chartData && (
-          <Pie data={chartData.chart} options={options} plugins={[ChartDataLabels]} />
-        )}
-      </div>
+      <section className="filter-section" aria-label="Filters">
+        <div className="filter-row">
+          <div className="filter-group">
+            <label htmlFor="startDate" className="filter-label">
+              Start Date
+            </label>
+            <input
+              id="startDate"
+              type="date"
+              className="filter-input"
+              value={startDate}
+              onChange={e => setStartDate(e.target.value)}
+              max={endDate || undefined}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="endDate" className="filter-label">
+              End Date
+            </label>
+            <input
+              id="endDate"
+              type="date"
+              className="filter-input"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+              min={startDate || undefined}
+            />
+          </div>
+
+          <div className="filter-group">
+            <label htmlFor="roles" className="filter-label">
+              Roles
+            </label>
+            <select
+              id="roles"
+              className="filter-select"
+              multiple
+              size={5}
+              aria-describedby="roles-hint"
+              value={selectedRoles}
+              onChange={onRolesChange}
+            >
+              <option value="Frontend Developer">Frontend Developer</option>
+              <option value="DevOps Engineer">DevOps Engineer</option>
+              <option value="Project Manager">Project Manager</option>
+              <option value="Junior Developer">Junior Developer</option>
+              <option value="Full Stack Developer">Full Stack Developer</option>
+            </select>
+            <small id="roles-hint" className="filter-hint">
+              Hold Ctrl/Cmd to select multiple
+            </small>
+          </div>
+        </div>
+
+        <div className="filter-actions">
+          <button
+            type="button"
+            className="btn primary"
+            onClick={applyFilters}
+            aria-label="Apply filters"
+          >
+            Apply
+          </button>
+          <button
+            type="button"
+            className="btn ghost"
+            onClick={resetFilters}
+            aria-label="Reset filters"
+            disabled={!hasFilters && !startDate && !endDate && selectedRoles.length === 0}
+          >
+            Reset
+          </button>
+        </div>
+      </section>
+
+      <section className="chart-section">
+        <div className="chart-area">
+          {loading && <Spinner />}
+
+          {!loading && error && (
+            <div className="error-container" role="alert">
+              <p className="error-message">{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && (!chartData || total === 0) && (
+            <div className="no-data-container">
+              <p className="no-data-message">No Data Available</p>
+              <p className="no-data-subtitle">Try adjusting your filters and click Apply.</p>
+            </div>
+          )}
+
+          {!loading && !error && chartData && total > 0 && (
+            <>
+              <div className="chart-canvas">
+                <ResponsiveContainer width="100%" aspect={1} minWidth={240}>
+                  <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                    <Pie
+                      data={chartData}
+                      cx="50%"
+                      cy="50%"
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius="55%"
+                      outerRadius="82%"
+                      paddingAngle={1.5}
+                      stroke="#fff"
+                      strokeWidth={3}
+                      onMouseEnter={(_, idx) => setActiveIndex(idx)}
+                      onMouseLeave={() => setActiveIndex(null)}
+                      onClick={(_, idx) => setActiveIndex(activeIndex === idx ? null : idx)}
+                    >
+                      {chartData.map((d, i) => (
+                        <Cell
+                          key={d.name}
+                          className="pie-cell"
+                          fill={d.color}
+                          opacity={activeIndex == null || activeIndex === i ? 1 : 0.45}
+                        />
+                      ))}
+                      <text
+                        x="50%"
+                        y="50%"
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        style={{ fontWeight: 800, fontSize: '1rem', fill: '#0f172a' }}
+                      >
+                        {total.toLocaleString()}
+                      </text>
+                    </Pie>
+                    {/* <Tooltip content={<CustomTooltip />} /> */}
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+              {/* Details RIGHT BELOW the chart, inside the same card */}
+              <DetailsPanel />
+            </>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
-
-export default ExperienceDonutChart;
