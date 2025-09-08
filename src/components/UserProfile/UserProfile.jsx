@@ -47,8 +47,12 @@ import Badges from './Badges';
 import { getAllTeamCode } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
-import { updateUserProfile } from "../../actions/userProfile";
+import {
+  updateUserStatus,
+  updateRehireableStatus,
+  toggleVisibility,
+} from '../../actions/userManagement';
+import { updateUserProfile } from '../../actions/userProfile';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -76,7 +80,7 @@ import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 
-function UserProfile(props) { 
+function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
   const initialFormValid = {
@@ -88,8 +92,7 @@ function UserProfile(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
-
-   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
+  // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
   //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
   //        child component with access global redux store data (complexity)
   // Explaination:
@@ -115,7 +118,6 @@ function UserProfile(props) {
       Please try again by clicking the icon inside the input auto complete.`);
     }
   };
-
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -183,7 +185,7 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
-  const [calculatedStartDate, setCalculatedStartDate] = useState(''); 
+  const [calculatedStartDate, setCalculatedStartDate] = useState('');
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
@@ -194,7 +196,6 @@ function UserProfile(props) {
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false);
 
- 
   const updateProjectTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -355,7 +356,11 @@ function UserProfile(props) {
   const fetchCalculatedStartDate = async (userId, userProfileData) => {
     try {
       const startDate = await dispatch(
-        getTimeStartDateEntriesByPeriod(userId, userProfileData.createdDate, userProfileData.endDate),
+        getTimeStartDateEntriesByPeriod(
+          userId,
+          userProfileData.createdDate,
+          userProfileData.endDate,
+        ),
       );
 
       if (startDate !== 'N/A') {
@@ -363,17 +368,13 @@ function UserProfile(props) {
         setCalculatedStartDate(formattedStartDate);
       } else {
         // No time entries yet, use createdDate as fallback
-        const createdDate = userProfile?.createdDate
-          ? userProfile.createdDate.split('T')[0]
-          : '';
+        const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
       console.error('Error fetching calculated start date:', error);
       // Fallback to createdDate on error
-      const createdDate = userProfile?.createdDate
-        ? userProfile.createdDate.split('T')[0]
-        : '';
+      const createdDate = userProfile?.createdDate ? userProfile.createdDate.split('T')[0] : '';
       setCalculatedStartDate(createdDate);
     }
   };
@@ -421,9 +422,9 @@ function UserProfile(props) {
         const { data } = await axios.get(
           ENDPOINTS.USER_PROJECTS
             ? ENDPOINTS.USER_PROJECTS(userId)
-            : `${ENDPOINTS.PROJECTS}/user/${userId}`
+            : `${ENDPOINTS.PROJECTS}/user/${userId}`,
         );
-        const normalized = (data || []).map((row) => {
+        const normalized = (data || []).map(row => {
           // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
           if (row?.project?.projectName) return row.project;
           if (row?.projectId?.projectName) return row.projectId;
@@ -537,27 +538,26 @@ function UserProfile(props) {
     setTeams(prevState => [...prevState, assignedTeam]);
   };
 
-const onAssignProject = assignedProject => {
-  console.log("Adding project to state:", assignedProject);
-  
-  // Always create a new array to trigger React re-render
-  setProjects(prevProjects => 
-    {
-    // Ensure prevProjects is an array
-    const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
-    
-    if (currentProjects.some(proj => proj._id === assignedProject._id)) {
-      console.log("Project already exists, not adding duplicate");
-      return currentProjects; 
-    }
-    
-    // Add project and log the new state
-    console.log("Adding new project:", assignedProject.projectName);
-    const newProjects = [...currentProjects, assignedProject];
-    console.log("Updated projects state:", newProjects);
-    return newProjects; // Return the new array with the project added
-  });
-};
+  const onAssignProject = assignedProject => {
+    console.log('Adding project to state:', assignedProject);
+
+    // Always create a new array to trigger React re-render
+    setProjects(prevProjects => {
+      // Ensure prevProjects is an array
+      const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
+
+      if (currentProjects.some(proj => proj._id === assignedProject._id)) {
+        console.log('Project already exists, not adding duplicate');
+        return currentProjects;
+      }
+
+      // Add project and log the new state
+      console.log('Adding new project:', assignedProject.projectName);
+      const newProjects = [...currentProjects, assignedProject];
+      console.log('Updated projects state:', newProjects);
+      return newProjects; // Return the new array with the project added
+    });
+  };
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
@@ -586,11 +586,13 @@ const onAssignProject = assignedProject => {
     if (evt) evt.preventDefault();
     const file = evt.target.files?.[0];
     if (!file) return;
-  
+
     const filesizeKB = file.size / 1024;
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-    const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(', ')}`;
-  
+    const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(
+      ', ',
+    )}`;
+
     // type check
     if (!allowedTypes.includes(file.type)) {
       setType('image');
@@ -605,21 +607,21 @@ const onAssignProject = assignedProject => {
       setShowModal(true);
       setModalTitle('Profile Pic Error');
       setModalMessage(
-        'The file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.'
+        'The file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.',
       );
       return;
     }
-  
+
     const fileReader = new FileReader();
-  
+
     fileReader.onloadend = async () => {
       const base64 = fileReader.result;
-  
+
       // optimistic preview
       const prevProfile = userProfileRef.current;
       const nextProfile = { ...prevProfile, profilePic: base64 };
       setUserProfile(nextProfile);
-  
+
       // persist immediately
       setIsSavingImage(true);
       try {
@@ -635,10 +637,9 @@ const onAssignProject = assignedProject => {
         setIsSavingImage(false);
       }
     };
-  
+
     fileReader.readAsDataURL(file);
   };
-  
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
@@ -761,11 +762,11 @@ const onAssignProject = assignedProject => {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-       const userProfileToUpdate = {
+      const userProfileToUpdate = {
         ...(updatedUserProfile || userProfileRef.current),
         projects, // Ensure projects are included in the payload
-        };
-        console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
+      };
+      console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
       const result = await props.updateUserProfile(userProfileToUpdate);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -1008,13 +1009,28 @@ const onAssignProject = assignedProject => {
     setShowToggleVisibilityModal(false);
   };
 
-  if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
-    return ( 
+  if (showLoading && !props.isAddNewUser) {
+    return (
       <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
         </Row>
       </Container>
+    );
+  } else if (userProfile === undefined) {
+    return (
+      <div className={`messageUserNotFound ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <div className={`test`} style={{backgroundColor: `${darkMode? '#3a506b' : 'white'}`}}>
+          <h1 className={`${darkMode ? 'text-white' : 'text-dark'}`}>User Not Found</h1>
+          <h3 className={`${darkMode ? 'text-white' : 'text-dark'}`}>
+            This does not exist, but you can go back to the dashboard by clicking the button below.
+          </h3>
+          {/* Back to the dashboard page */}
+          <Link to="/" className="btn btn-primary">
+            Back to Dashboard
+          </Link>
+        </div>
+      </div>
     );
   }
 
@@ -1038,7 +1054,7 @@ const onAssignProject = assignedProject => {
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -1074,7 +1090,7 @@ const onAssignProject = assignedProject => {
     setUserProfile(prev => ({
       ...prev,
       startDate: startDate,
-      isStartDateManuallyModified: true
+      isStartDateManuallyModified: true,
     }));
   };
 
@@ -1141,7 +1157,7 @@ const onAssignProject = assignedProject => {
         {/* <div className='containerProfile' > */}
 
         <div className="left-top">
-        <div className="profile-img" style={{ position: 'relative' }}>
+          <div className="profile-img" style={{ position: 'relative' }}>
             <Image
               src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
               alt="Profile Picture"
@@ -1225,7 +1241,7 @@ const onAssignProject = assignedProject => {
             titleOnSet={titleOnSet}
             setTitleOnSet={setTitleOnSet}
             updateUserProfile={props.updateUserProfile}
-            fetchTeamCodeAllUsers = {fetchTeamCodeAllUsers}
+            fetchTeamCodeAllUsers={fetchTeamCodeAllUsers}
           />
         </div>
 
@@ -1314,13 +1330,11 @@ const onAssignProject = assignedProject => {
                   style={{ padding: '0', border: 'none', background: 'none' }}
                   size="sm"
                   onClick={() => setShowAccessManagementModal(true)}
-                  title={
-                    'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'
-                  }
+                  title={'Click to add user access to GitHub, Dropbox, Slack, and Sentry.'}
                 >
                   <img
-                    src='/HGN_Add_Access.png'
-                    alt='Add Access'
+                    src="/HGN_Add_Access.png"
+                    alt="Add Access"
                     style={{ width: '20px', height: '20px' }}
                   />
                 </Button>
@@ -1373,7 +1387,10 @@ const onAssignProject = assignedProject => {
             )}
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
-          <p className={`proile-rating ${darkMode ? 'text-light' : ''}`} style={{ textAlign: 'left' }}>
+          <p
+            className={`proile-rating ${darkMode ? 'text-light' : ''}`}
+            style={{ textAlign: 'left' }}
+          >
             {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
             From:{' '}
             <span className={darkMode ? 'text-light' : ''}>
@@ -1555,7 +1572,9 @@ const onAssignProject = assignedProject => {
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEditVisibility}
                   handleSubmit={handleSubmit}
-                  disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !codeValid}
+                  disabled={
+                    !formValid.firstName || !formValid.lastName || !formValid.email || !codeValid
+                  }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
@@ -1570,30 +1589,27 @@ const onAssignProject = assignedProject => {
                 />
               </TabPane>
               <TabPane tabId="4">
-                {
-                  activeTab === '4' && (
-                    <ProjectsTab
-                      userProjects={userProfile.projects || []}
-                      userTasks={tasks}
-                      projectsData={props?.allProjects?.projects || []}
-                      onAssignProject={onAssignProject}
-                      onDeleteProject={onDeleteProject}
-                      edit={canEdit}
-                      role={requestorRole}
-                      userId={props.match.params.userId}
-                      updateTask={onUpdateTask}
-                      handleSubmit={handleSubmit}
-                      disabled={
-                        !formValid.firstName ||
-                        !formValid.lastName ||
-                        !formValid.email ||
-                        !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                      }
-                      darkMode={darkMode}
-                    />
-                  )
-                }
-
+                {activeTab === '4' && (
+                  <ProjectsTab
+                    userProjects={userProfile.projects || []}
+                    userTasks={tasks}
+                    projectsData={props?.allProjects?.projects || []}
+                    onAssignProject={onAssignProject}
+                    onDeleteProject={onDeleteProject}
+                    edit={canEdit}
+                    role={requestorRole}
+                    userId={props.match.params.userId}
+                    updateTask={onUpdateTask}
+                    handleSubmit={handleSubmit}
+                    disabled={
+                      !formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                    }
+                    darkMode={darkMode}
+                  />
+                )}
               </TabPane>
               <TabPane tabId="5">
                 <TimeEntryEditHistory
@@ -2187,15 +2203,16 @@ const onAssignProject = assignedProject => {
   );
 }
 
- const mapStateToProps = state => ({
-   allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array
-   allTeams: state.allTeams || {},
-   auth: state.auth,
-   role: state.role || {},
- });
+const mapStateToProps = state => ({
+  allProjects: state.allProjects || state.projects || {}, // <- gives you .projects array
+  allTeams: state.allTeams || {},
+  auth: state.auth,
+  role: state.role || {},
+});
 
-export default connect(
-  mapStateToProps,
-  { hasPermission, updateUserStatus, updateUserProfile, getTimeEntriesForWeek }
-)(UserProfile);
-
+export default connect(mapStateToProps, {
+  hasPermission,
+  updateUserStatus,
+  updateUserProfile,
+  getTimeEntriesForWeek,
+})(UserProfile);
