@@ -1273,23 +1273,28 @@ const onAssignProject = assignedProject => {
             </span>
             {canEdit && (
               <span className="mr-2">
+              <Link
+                to={`/timelog/${targetUserId}#currentWeek`}
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                    return; // Let browser handle it — new tab, etc.
+                  }
+            
+                  e.preventDefault(); // SPA navigation
+                  props.history.push(`/timelog/${targetUserId}#currentWeek`);
+                  setActiveInactivePopupOpen(true);
+                }}
+                style={{ textDecoration: 'none' }}
+                title="Click to see user's timelog"
+              >
                 <i
                   data-toggle="tooltip"
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                  title="Click to see user's timelog"
-                  onClick={e => {
-                    if (e.metaKey || e.ctrlKey) {
-                      window.open(`/timelog/${targetUserId}`, '_blank');
-                    } else {
-                      e.preventDefault();
-                      props.history.push(`/timelog/${targetUserId}`);
-                      setActiveInactivePopupOpen(true);
-                    }
-                  }}
+                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px', color: 'black' }}
                 />
-              </span>
+              </Link>
+            </span>
             )}
             {canSeeReports && (
               <span className="mr-2">
