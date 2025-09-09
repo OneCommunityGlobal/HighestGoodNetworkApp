@@ -12,13 +12,13 @@ import {
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
-import './MonthsPledgedChart.css';
+import styles from './MonthsPledgedChart.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
 import { useSelector } from 'react-redux';
 
 const MonthsPledgedChart = () => {
-  const darkMode = useSelector(state => state.theme.darkMode); // true or false
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [data, setData] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -69,94 +69,56 @@ const MonthsPledgedChart = () => {
   const maxValue = Math.max(...data.map(item => item.avgMonthsPledged), 10);
 
   // Colors based on theme
-  const bgColor = darkMode ? '#1e1e2f' : 'white';
   const textColor = darkMode ? 'white' : 'black';
   const gridColor = darkMode ? '#444' : '#e0e0e0';
   const tooltipBg = darkMode ? '#2a2a3b' : 'white';
   const tooltipText = darkMode ? 'white' : 'black';
-  const barColor = '#FFD700'; // keep same for light/dark
+  const barColor = '#FFD700';
 
   return (
-    <div
-      style={{
-        backgroundColor: bgColor,
-        padding: '24px',
-        borderRadius: '8px',
-        boxShadow: darkMode ? '0 2px 10px rgba(0,0,0,0.5)' : '0 2px 10px rgba(0,0,0,0.1)',
-        margin: '20px',
-      }}
-    >
-      <h2
-        style={{
-          color: textColor,
-          marginBottom: '24px',
-          fontSize: '20px',
-          fontWeight: '600',
-          textAlign: 'center',
-        }}
-      >
+    <div className={`${styles['months-pledged-chart']} ${darkMode ? styles.dark : ''}`}>
+      <h2 className={styles['months-pledged-chart__title']}>
         Average Number of Months Pledged by Role
       </h2>
 
-      <div
-        style={{
-          display: 'flex',
-          gap: '20px',
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ flex: 1, minWidth: '300px' }}>
-          <label htmlFor="startDate" style={{ color: textColor, fontWeight: '500' }}>
-            Date Range
+      {/* Filters */}
+      <div className={styles['months-pledged-chart__filters']}>
+        {/* Date range */}
+        <div className={styles['months-pledged-chart__date-filter']}>
+          <label htmlFor="startDate" className={styles['months-pledged-chart__filter-label']}>
+            Date Range:
           </label>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <DatePicker
-              id="startDate"
-              selected={startDate}
-              onChange={date => setStartDate(date)}
-              selectsStart
-              startDate={startDate}
-              endDate={endDate}
-              placeholderText="Start Date"
-              dateFormat="yyyy-MM-dd"
-              isClearable
-              className={`date-picker ${darkMode ? 'dark' : ''}`}
-            />
-            <label
-              htmlFor="endDate"
-              style={{
-                position: 'absolute',
-                width: 1,
-                height: 1,
-                padding: 0,
-                overflow: 'hidden',
-                clip: 'rect(0,0,0,0)',
-                whiteSpace: 'nowrap',
-                border: 0,
-              }}
-            >
-              End Date
-            </label>
-            <DatePicker
-              id="endDate"
-              selected={endDate}
-              onChange={date => setEndDate(date)}
-              selectsEnd
-              startDate={startDate}
-              endDate={endDate}
-              minDate={startDate}
-              placeholderText="End Date"
-              dateFormat="yyyy-MM-dd"
-              isClearable
-              className={`date-picker ${darkMode ? 'dark' : ''}`}
-            />
-          </div>
+          <DatePicker
+            id="startDate"
+            selected={startDate}
+            onChange={date => setStartDate(date)}
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+            placeholderText="Start Date"
+            dateFormat="yyyy-MM-dd"
+            isClearable
+            className={styles['months-pledged-chart__date-picker']}
+          />
+          <DatePicker
+            id="endDate"
+            selected={endDate}
+            onChange={date => setEndDate(date)}
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+            minDate={startDate}
+            placeholderText="End Date"
+            dateFormat="yyyy-MM-dd"
+            isClearable
+            className={styles['months-pledged-chart__date-picker']}
+          />
         </div>
 
-        <div style={{ flex: 1, minWidth: '300px' }}>
-          <label htmlFor="filterRoles" style={{ color: textColor, fontWeight: '500' }}>
-            Filter Roles
+        {/* Roles */}
+        <div className={styles['months-pledged-chart__role-filter']}>
+          <label htmlFor="filterRoles" className={styles['months-pledged-chart__filter-label']}>
+            Filter Roles:
           </label>
           <Select
             inputId="filterRoles"
@@ -165,46 +127,21 @@ const MonthsPledgedChart = () => {
             value={selectedRoles}
             onChange={setSelectedRoles}
             placeholder="All Roles"
-            styles={{
-              control: base => ({
-                ...base,
-                border: '1px solid #ddd',
-                minHeight: '38px',
-                backgroundColor: darkMode ? '#2a2a3b' : '#FFF8DC',
-                color: textColor,
-              }),
-              singleValue: base => ({ ...base, color: textColor }),
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#444' : '#DAA520',
-              }),
-              multiValueLabel: base => ({ ...base, color: darkMode ? 'white' : 'white' }),
-            }}
+            className={styles['months-pledged-chart__role-select']}
+            classNamePrefix="months-pledged-chart__select"
           />
         </div>
 
-        <button
-          onClick={resetFilters}
-          style={{
-            alignSelf: 'flex-end',
-            padding: '8px 16px',
-            backgroundColor: darkMode ? '#2a2a3b' : '#f5f5f5',
-            border: `1px solid ${darkMode ? '#444' : '#ddd'}`,
-            borderRadius: '4px',
-            cursor: 'pointer',
-            color: textColor,
-          }}
-        >
+        <button onClick={resetFilters} className={styles['months-pledged-chart__reset-btn']}>
           Reset Filters
         </button>
       </div>
 
+      {/* Chart */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: textColor }}>
-          Loading data...
-        </div>
+        <div className={styles['months-pledged-chart__loading']}>Loading data...</div>
       ) : data.length > 0 ? (
-        <div style={{ height: '500px' }}>
+        <div className={styles['months-pledged-chart__container']}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               layout="vertical"
@@ -215,52 +152,22 @@ const MonthsPledgedChart = () => {
               <XAxis
                 type="number"
                 domain={[0, maxValue * 1.1]}
-                stroke={textColor} // axis line
-                tick={props => {
-                  const { x, y, payload } = props;
-                  return (
-                    <text
-                      x={x}
-                      y={y + 5} // adjust vertical alignment
-                      textAnchor="middle"
-                      fill={textColor}
-                      fontWeight="500"
-                      fontSize="12"
-                    >
-                      {payload.value}
-                    </text>
-                  );
-                }}
+                stroke={textColor}
+                tick={{ fill: textColor, fontSize: 12, fontWeight: 500 }}
                 label={{
                   value: 'Average Months Pledged',
                   position: 'bottom',
-                  offset: 0,
                   fill: textColor,
                   fontSize: 14,
                   fontWeight: '500',
                 }}
               />
-
               <YAxis
                 dataKey="role"
                 type="category"
-                stroke={textColor} // axis line
+                stroke={textColor}
                 width={150}
-                tick={props => {
-                  const { x, y, payload } = props;
-                  return (
-                    <text
-                      x={x - 10} // shift left a bit
-                      y={y + 5} // adjust vertical alignment
-                      textAnchor="end"
-                      fill={textColor}
-                      fontWeight="500"
-                      fontSize="12"
-                    >
-                      {payload.value}
-                    </text>
-                  );
-                }}
+                tick={{ fill: textColor, fontSize: 12, fontWeight: 500 }}
                 label={{
                   value: 'Roles',
                   angle: -90,
@@ -270,7 +177,6 @@ const MonthsPledgedChart = () => {
                   fontWeight: '500',
                 }}
               />
-
               <Tooltip
                 content={({ payload, label, active }) => {
                   if (active && payload && payload.length) {
@@ -282,32 +188,29 @@ const MonthsPledgedChart = () => {
                           padding: '8px 12px',
                           borderRadius: '4px',
                           color: tooltipText,
-                          minWidth: '120px',
                         }}
                       >
-                        <div style={{ fontWeight: '600', color: tooltipText }}>Role: {label}</div>
-                        <div style={{ color: tooltipText }}>Average: {payload[0].value} months</div>
+                        <div style={{ fontWeight: '600' }}>Role: {label}</div>
+                        <div>Average: {payload[0].value} months</div>
                       </div>
                     );
                   }
                   return null;
                 }}
               />
-
               <Bar dataKey="avgMonthsPledged" fill={barColor} barSize={30} radius={[0, 4, 4, 0]}>
                 <LabelList
                   dataKey="avgMonthsPledged"
                   position="right"
                   formatter={value => `${value.toFixed(1)}`}
-                  fill={textColor} // bar labels color
-                  style={{ fontWeight: '500' }}
+                  className={styles['months-pledged-chart__bar-label']}
                 />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
       ) : (
-        <div style={{ textAlign: 'center', padding: '40px', color: textColor }}>
+        <div className={styles['months-pledged-chart__empty']}>
           No data available for selected filters
         </div>
       )}
