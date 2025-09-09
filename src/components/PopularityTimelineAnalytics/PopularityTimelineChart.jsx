@@ -16,8 +16,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import { useSelector } from 'react-redux'; // ✅ get darkMode from store
-import './PopularityTimelineChart.css';
+import { useSelector } from 'react-redux';
+import styles from './PopularityTimelineChart.module.css'; // ✅ module import
 
 const fetchPopularityData = async ({ range, selectedRoles, startDate, endDate }) => {
   const roles = selectedRoles.map(role => role.value);
@@ -39,7 +39,7 @@ const fetchAllRoles = async () => {
 };
 
 const PopularityTimelineChart = () => {
-  const darkMode = useSelector(state => state.theme.darkMode); // ✅ global darkMode
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const timeRangeId = useId();
   const roleFilterId = useId();
@@ -106,15 +106,15 @@ const PopularityTimelineChart = () => {
   };
 
   return (
-    <div className={`pt-container ${darkMode ? 'dark-theme' : ''}`}>
-      <div className="pt-header">
-        <h2 className="pt-title">Hits and Applications by Time</h2>
+    <div className={`${styles['pt-container']} ${darkMode ? styles['dark-theme'] : ''}`}>
+      <div className={styles['pt-header']}>
+        <h2 className={styles['pt-title']}>Hits and Applications by Time</h2>
       </div>
 
       {/* Filters */}
-      <div className="pt-filters">
-        <div className="pt-filter-group">
-          <label className="pt-label" htmlFor={timeRangeId}>
+      <div className={styles['pt-filters']}>
+        <div className={styles['pt-filter-group']}>
+          <label className={styles['pt-label']} htmlFor={timeRangeId}>
             Time Range
           </label>
           <select
@@ -126,7 +126,7 @@ const PopularityTimelineChart = () => {
                 setRange(e.target.value.replace('months', ''));
               }
             }}
-            className="pt-select"
+            className={styles['pt-select']}
           >
             <option value="3months">Last 3 Months</option>
             <option value="6months">Last 6 Months</option>
@@ -136,12 +136,11 @@ const PopularityTimelineChart = () => {
         </div>
 
         {dateRangeOption === 'custom' && (
-          <div className="pt-filter-group">
-            <div className="pt-label">Date Range</div>
-            <div className="pt-date-pickers">
-              {/* Start Date */}
+          <div className={styles['pt-filter-group']}>
+            <div className={styles['pt-label']}>Date Range</div>
+            <div className={styles['pt-date-pickers']}>
               <div>
-                <label className="pt-sublabel" htmlFor={startDateId}>
+                <label className={styles['pt-sublabel']} htmlFor={startDateId}>
                   Start Month
                 </label>
                 <DatePicker
@@ -155,16 +154,13 @@ const PopularityTimelineChart = () => {
                   dateFormat="MMM yyyy"
                   showMonthYearPicker
                   isClearable
-                  className="pt-date-picker"
-                  popperClassName="pt-datepicker-popper"
-                  wrapperClassName="pt-datepicker-wrapper"
-                  calendarClassName="pt-datepicker-calendar"
-                  monthClassName={() => 'pt-datepicker-month'}
+                  className={styles['pt-date-picker']}
+                  popperClassName={styles['pt-datepicker-popper']}
+                  calendarClassName={styles['pt-datepicker-calendar']}
                 />
               </div>
-              {/* End Date */}
               <div>
-                <label className="pt-sublabel" htmlFor={endDateId}>
+                <label className={styles['pt-sublabel']} htmlFor={endDateId}>
                   End Month
                 </label>
                 <DatePicker
@@ -179,11 +175,9 @@ const PopularityTimelineChart = () => {
                   dateFormat="MMM yyyy"
                   showMonthYearPicker
                   isClearable
-                  className="pt-date-picker"
-                  popperClassName="pt-datepicker-popper"
-                  wrapperClassName="pt-datepicker-wrapper"
-                  calendarClassName="pt-datepicker-calendar"
-                  monthClassName={() => 'pt-datepicker-month'}
+                  className={styles['pt-date-picker']}
+                  popperClassName={styles['pt-datepicker-popper']}
+                  calendarClassName={styles['pt-datepicker-calendar']}
                 />
               </div>
             </div>
@@ -191,8 +185,8 @@ const PopularityTimelineChart = () => {
         )}
 
         {/* Role Filter */}
-        <div className="pt-filter-group pt-role-filter">
-          <label className="pt-label" htmlFor={roleFilterId}>
+        <div className={`${styles['pt-filter-group']} ${styles['pt-role-filter']}`}>
+          <label className={styles['pt-label']} htmlFor={roleFilterId}>
             Filter by Role
           </label>
           <Select
@@ -202,7 +196,7 @@ const PopularityTimelineChart = () => {
             value={selectedRoles}
             onChange={setSelectedRoles}
             placeholder="Select roles..."
-            className="pt-multiselect"
+            className={styles['pt-multiselect']}
             classNamePrefix="pt-select"
             styles={{
               control: base => ({
@@ -213,48 +207,22 @@ const PopularityTimelineChart = () => {
                 backgroundColor: darkMode ? '#333' : 'white',
                 color: darkMode ? '#fff' : '#2c3e50',
               }),
-              menu: base => ({
-                ...base,
-                zIndex: 10,
-                backgroundColor: darkMode ? '#333' : 'white',
-              }),
-              option: (base, state) => ({
-                ...base,
-                backgroundColor: state.isFocused
-                  ? darkMode
-                    ? '#555'
-                    : '#f0f0f0'
-                  : darkMode
-                  ? '#333'
-                  : 'white',
-                color: darkMode ? '#fff' : '#2c3e50',
-              }),
-              multiValue: base => ({
-                ...base,
-                backgroundColor: darkMode ? '#555' : '#e9ecef',
-              }),
-              multiValueLabel: base => ({
-                ...base,
-                color: darkMode ? '#fff' : '#2c3e50',
-              }),
-              singleValue: base => ({ ...base, color: darkMode ? '#fff' : '#2c3e50' }),
-              input: base => ({ ...base, color: darkMode ? '#fff' : '#2c3e50' }),
             }}
           />
         </div>
 
-        <button onClick={resetFilters} className="pt-reset-btn">
+        <button onClick={resetFilters} className={styles['pt-reset-btn']}>
           Reset Filters
         </button>
       </div>
 
       {/* Chart */}
       {isLoading ? (
-        <div className="pt-loading">Loading data...</div>
+        <div className={styles['pt-loading']}>Loading data...</div>
       ) : error ? (
-        <div className="pt-error">Error: {error.message}</div>
+        <div className={styles['pt-error']}>Error: {error.message}</div>
       ) : processedData.length > 0 ? (
-        <div className="pt-chart-wrapper">
+        <div className={styles['pt-chart-wrapper']}>
           <ResponsiveContainer width="100%" height={400}>
             <LineChart data={processedData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#f0f0f0'} />
@@ -280,13 +248,6 @@ const PopularityTimelineChart = () => {
                 stroke={darkMode ? '#ccc' : '#333'}
               />
               <Tooltip
-                formatter={(value, name) => [
-                  <span key={name} style={{ color: name === 'Hits' ? '#3366cc' : '#109618' }}>
-                    {value}
-                  </span>,
-                  name,
-                ]}
-                labelFormatter={label => <strong>{label}</strong>}
                 contentStyle={{
                   borderRadius: '6px',
                   border: '1px solid #e0e0e0',
@@ -294,50 +255,19 @@ const PopularityTimelineChart = () => {
                   color: darkMode ? '#fff' : '#333',
                 }}
               />
-              <Legend
-                verticalAlign="top"
-                height={36}
-                iconType="circle"
-                iconSize={10}
-                wrapperStyle={{ color: darkMode ? '#ccc' : '#333' }}
-              />
+              <Legend verticalAlign="top" height={36} iconType="circle" iconSize={10} />
+              <Line dataKey="hitsCount" name="Hits" stroke="#3366cc" strokeWidth={2} />
               <Line
-                type="monotone"
-                dataKey="hitsCount"
-                name="Hits"
-                stroke="#3366cc"
-                strokeWidth={2}
-                dot={{ r: 5, stroke: '#3366cc', strokeWidth: 2, fill: darkMode ? '#333' : '#fff' }}
-                activeDot={{ r: 7 }}
-              >
-                <LabelList
-                  dataKey="hitsCount"
-                  position="top"
-                  formatter={value => value.toLocaleString()}
-                  style={{ fontSize: 10, fill: '#3366cc', fontWeight: 500 }}
-                />
-              </Line>
-              <Line
-                type="monotone"
                 dataKey="applicationsCount"
                 name="Applications"
                 stroke="#109618"
                 strokeWidth={2}
-                dot={{ r: 5, stroke: '#109618', strokeWidth: 2, fill: darkMode ? '#333' : '#fff' }}
-                activeDot={{ r: 7 }}
-              >
-                <LabelList
-                  dataKey="applicationsCount"
-                  position="top"
-                  formatter={value => value.toLocaleString()}
-                  style={{ fontSize: 10, fill: '#109618', fontWeight: 500 }}
-                />
-              </Line>
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="pt-no-data">No data available for selected filters</div>
+        <div className={styles['pt-no-data']}>No data available for selected filters</div>
       )}
     </div>
   );
