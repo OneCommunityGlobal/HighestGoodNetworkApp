@@ -214,6 +214,9 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
+const PopularityTimelineChart = lazy(() =>
+  import('./components/PopularityTimelineAnalytics/PopularityTimelineChart'),
+);
 
 export default (
   <Switch>
@@ -240,7 +243,6 @@ export default (
         </>
       )}
     />
-
     <Route
       exact
       path="/lbdashboard/wishlists"
@@ -267,13 +269,9 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-
     <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
-
     <Route path="/TestEventReg" component={TestEventRegistration} />
-
     <Route path="/logattendance" component={AttendanceNoShow} />
-
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
@@ -305,7 +303,6 @@ export default (
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
-
         <ProtectedRoute
           path="/inventory/:projectId"
           component={Inventory}
@@ -316,7 +313,6 @@ export default (
           component={Inventory}
           routePermissions={RoutePermissions.inventoryProjectWbs}
         />
-
         <ProtectedRoute
           path="/weeklysummariesreport"
           exact
@@ -384,7 +380,6 @@ export default (
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
         />
-
         <ProtectedRoute
           path="/communityportal/activity/:activityId/resources"
           exact
@@ -439,28 +434,24 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.teams}
         />
-
         <ProtectedRoute path="/applicants-chart" exact component={ApplicantsAgeChart} fallback />
         <ProtectedRoute
           path="/applicant-volunteer-ratio"
           exact
           component={ApplicantVolunteerRatio}
         />
-
         <ProtectedRoute
           path="/application-time-chart"
           exact
           component={ApplicationTimeChartPage}
           fallback
         />
-
         <ProtectedRoute
           path="/application-analytics"
           exact
           component={ApplicationAnalyticsContainer}
           fallback
         />
-
         <ProtectedRoute
           path="/announcements"
           exact
@@ -474,30 +465,25 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.projects}
         />
-
         <ProtectedRoute path="/faq" exact component={FaqSearch} />
-
         <ProtectedRoute
           path="/faq-management"
           exact
           component={FaqManagement}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/faqs/:id/history"
           exact
           component={FaqHistory}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/unanswered-faqs"
           exact
           component={UnansweredFaqs}
           routePermissions={RoutePermissions.faqManagement}
         />
-
         <ProtectedRoute
           path="/totalorgsummary"
           exact
@@ -520,14 +506,12 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
-
+        <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />;
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
-
         <Route path="/UtilizationChart" component={UtilizationChart} />
-
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
           fallback
@@ -568,7 +552,6 @@ export default (
           fallback
           component={PurchaseConsumable}
         />
-
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
@@ -612,26 +595,21 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
-
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
-
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
-
         <BMProtectedRoute
           path="/bmdashboard/timelog/:projectId"
           fallback
           component={BMTimeLogCard}
         />
-
         <BMProtectedRoute
           path="/bmdashboard/tools-availability"
           fallback
           exact
           component={ToolsAvailabilityPage}
         />
-
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
@@ -644,11 +622,9 @@ export default (
           path="/communityportal/activities/FollowUpEmailTemplate"
           component={FollowUpEmailTemplate}
         />
-
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
-
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
@@ -656,7 +632,6 @@ export default (
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
-
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
@@ -702,16 +677,13 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
-
         <ProtectedRoute path="/" exact component={Dashboard} />
-
         {/* ----- PR Dashboard  ----- */}
         <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PromotionEligibility}
         />
-
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
