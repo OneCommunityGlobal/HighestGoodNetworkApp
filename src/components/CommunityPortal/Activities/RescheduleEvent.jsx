@@ -8,7 +8,7 @@ import { ApiEndpoint } from '~/utils/URL';
 function RescheduleEvent({ activity }) {
   const eventInfo =
     activity || {
-      id: 'activity_1',
+      _id: '1',
       name: 'Event Name',
       location: 'San Francisco, CA 94108',
       link: 'Event Link',
@@ -110,9 +110,10 @@ const handleCreateAndNotify = async () => {
       };
     });
 
-    const res = await fetch(`${ApiEndpoint}/activities/${eventInfo.id}/reschedule/notify`, {
+    const token = localStorage.getItem('token');
+    const res = await fetch(`${ApiEndpoint}/activities/${eventInfo._id}/reschedule/notify`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {Authorization: token, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         options: beOptions,
         reason: reason || '',
