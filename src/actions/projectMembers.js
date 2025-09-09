@@ -54,6 +54,7 @@ export const findUserProfiles = (keyword, activeOnly = true) => {
       const { data } = await axios.get(url);
 
       // DEBUG: Log the API response for troubleshooting
+      // eslint-disable-next-line no-console
       console.log('findUserProfiles API response:', data);
 
       // FIX: Support both array and object with 'users' property
