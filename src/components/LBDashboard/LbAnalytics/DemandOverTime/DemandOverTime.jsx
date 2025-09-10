@@ -9,18 +9,29 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const DemandOverTime = () => {
+const DemandOverTime = ({
+  masterMetricCategory,
+  masterMetric,
+  compareType: initialCompareType,
+}) => {
   // Default to last 365 days
   const [dateRange, setDateRange] = useState([moment().subtract(365, 'days'), moment()]);
 
-  // Default to comparing villages
-  const [compareType, setCompareType] = useState('villages');
+  // Use the prop for initial compareType if provided, otherwise default to villages
+  const [compareType, setCompareType] = useState(initialCompareType || 'villages');
 
   // Default to All (both listing and bidding)
   const [listingType, setListingType] = useState('all');
 
-  // Default to page visits
-  const [metric, setMetric] = useState('pageVisits');
+  // Use the prop for initial metric if provided, otherwise default to pageVisits
+  const [metric, setMetric] = useState(masterMetric || 'pageVisits');
+
+  // Update metric when masterMetric changes
+  useEffect(() => {
+    if (masterMetric) {
+      setMetric(masterMetric);
+    }
+  }, [masterMetric]);
 
   // Sample data - in a real app, this would come from an API
   const [data, setData] = useState([]);
@@ -86,8 +97,6 @@ const DemandOverTime = () => {
 
   return (
     <div className={styles.container}>
-      <Title level={2}>Demand Analytics Over Time</Title>
-
       <Card className={styles.filterCard}>
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
@@ -102,19 +111,21 @@ const DemandOverTime = () => {
             </div>
           </Col>
 
-          <Col xs={24} sm={12} md={6}>
-            <div className={styles.filterItem}>
-              <Text strong>Compare:</Text>
-              <Radio.Group
-                value={compareType}
-                onChange={handleCompareTypeChange}
-                className={styles.radioGroup}
-              >
-                <Radio.Button value="villages">Villages</Radio.Button>
-                <Radio.Button value="properties">Properties</Radio.Button>
-              </Radio.Group>
-            </div>
-          </Col>
+          {!initialCompareType && (
+            <Col xs={24} sm={12} md={6}>
+              <div className={styles.filterItem}>
+                <Text strong>Compare:</Text>
+                <Radio.Group
+                  value={compareType}
+                  onChange={handleCompareTypeChange}
+                  className={styles.radioGroup}
+                >
+                  <Radio.Button value="villages">Villages</Radio.Button>
+                  <Radio.Button value="properties">Properties</Radio.Button>
+                </Radio.Group>
+              </div>
+            </Col>
+          )}
 
           <Col xs={24} sm={12} md={6}>
             <div className={styles.filterItem}>
@@ -161,8 +172,6 @@ const DemandOverTime = () => {
           </Col>
         </Row>
       </Card>
-
-      <Divider />
 
       <div className={styles.chartContainer}>
         {compareType === 'villages' ? (

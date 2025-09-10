@@ -265,7 +265,7 @@ export default (
       )}
     />
 
-    <LBProtectedRoute path="/lbdashboard/analytics/demand" component={DemandOverTime} />
+    <LBProtectedRoute path="/lbdashboard" component={LBDashboard} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
