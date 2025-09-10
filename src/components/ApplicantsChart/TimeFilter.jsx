@@ -6,66 +6,94 @@ function TimeFilter({ onFilterChange, darkMode }) {
   const [selectedOption, setSelectedOption] = useState('weekly');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    onFilterChange({ selectedOption, startDate, endDate });
+    if (selectedOption === 'custom' && startDate && endDate) {
+      if (startDate > endDate) {
+        setError('🚨 Start date cannot be after end date.');
+        return;
+      } else {
+        setError('');
+      }
+    } else {
+      setError('');
+    }
+
+    onFilterChange({ selectedOption, startDate, endDate, error: '' });
   }, [selectedOption, startDate, endDate]);
 
   return (
     <div
       style={{
         display: 'flex',
-        justifyContent: 'center',
+        flexDirection: 'column',
         alignItems: 'center',
-        gap: '16px',
+        gap: '12px',
         margin: '20px auto',
-        flexWrap: 'wrap',
       }}
     >
-      <label
-        htmlFor="timeFilterSelect"
-        style={{
-          fontWeight: 600,
-          color: darkMode ? '#fff' : '#000', // title flips with dark mode
-        }}
-      >
-        Time Filter:
-      </label>
+      {/* Top row */}
+      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <label
+          htmlFor="timeFilterSelect"
+          style={{
+            fontWeight: 600,
+            color: darkMode ? '#fff' : '#000',
+          }}
+        >
+          Time Filter:
+        </label>
 
-      <select
-        id="timeFilterSelect"
-        value={selectedOption}
-        onChange={e => setSelectedOption(e.target.value)}
-        style={{
-          padding: '6px 12px',
-          borderRadius: '4px',
-          border: '1px solid #ccc',
-          fontSize: '14px',
-        }}
-      >
-        <option value="weekly">Weekly</option>
-        <option value="monthly">Monthly</option>
-        <option value="yearly">Yearly</option>
-        <option value="custom">Custom Dates</option>
-      </select>
+        <select
+          id="timeFilterSelect"
+          value={selectedOption}
+          onChange={e => setSelectedOption(e.target.value)}
+          style={{
+            padding: '6px 12px',
+            borderRadius: '4px',
+            border: '1px solid #ccc',
+            fontSize: '14px',
+          }}
+        >
+          <option value="weekly">Weekly</option>
+          <option value="monthly">Monthly</option>
+          <option value="yearly">Yearly</option>
+          <option value="custom">Custom Dates</option>
+        </select>
 
-      {selectedOption === 'custom' && (
-        <>
-          <DatePicker
-            selected={startDate}
-            onChange={date => setStartDate(date)}
-            placeholderText="Start Date"
-            dateFormat="yyyy/MM/dd"
-            style={{ marginRight: '10px' }}
-          />
-          <span style={{ color: darkMode ? '#fff' : '#000' }}>to</span>
-          <DatePicker
-            selected={endDate}
-            onChange={date => setEndDate(date)}
-            placeholderText="End Date"
-            dateFormat="yyyy/MM/dd"
-          />
-        </>
+        {selectedOption === 'custom' && (
+          <>
+            <DatePicker
+              selected={startDate}
+              onChange={date => setStartDate(date)}
+              placeholderText="Start Date"
+              dateFormat="yyyy/MM/dd"
+            />
+            <span style={{ color: darkMode ? '#fff' : '#000' }}>to</span>
+            <DatePicker
+              selected={endDate}
+              onChange={date => setEndDate(date)}
+              placeholderText="End Date"
+              dateFormat="yyyy/MM/dd"
+            />
+          </>
+        )}
+      </div>
+
+      {/* Error message */}
+      {error && (
+        <p
+          style={{
+            color: 'red',
+            fontSize: '18px',
+            fontWeight: '600',
+            textAlign: 'center',
+            marginTop: '8px',
+          }}
+        >
+          {error}
+        </p>
       )}
     </div>
   );
