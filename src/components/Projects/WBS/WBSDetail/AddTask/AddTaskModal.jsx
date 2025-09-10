@@ -143,6 +143,16 @@ function AddTaskModal(props) {
   const [hoursWarning, setHoursWarning] = useState(false);
   const priorityRef = useRef(null);
 
+  // Auto-default the category from the parent project when creating a new task.
+// This runs when the modal opens and when defaultCategory becomes available.
+// Ensure category is set to parent project's category by default when creating a new task
+useEffect(() => {
+  if (modal && !props.taskId) {
+    // Always set category to defaultCategory when modal opens for new task
+    setCategory(defaultCategory);
+  }
+}, [modal, defaultCategory, props.taskId]);
+
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
     { value: 'Housing', label: 'Housing' },
