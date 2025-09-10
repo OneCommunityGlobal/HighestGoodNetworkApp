@@ -1,0 +1,65 @@
+.mostWastedMaterialsContainer {
+  width: '100%';
+  max-width: '1200px';
+  margin: '0 auto';
+  padding: '24px';
+  background-color: '#f9fafb';
+  min-height: '100vh';
+}
+
+.mostWastedMaterialsHeader {
+  text-align: 'center';
+  margin-bottom: '32px';
+}
+
+.mostWastedMaterialsHeader h1 {
+  font-size: '32px';
+  font-weight: 'bold';
+  color: '#111827';
+  margin: '0';
+}
+
+.mostWastedMaterialsCard {
+  padding: 16px;
+  border-radius: 8px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mostWastedMaterialsFilter {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.mostWastedMaterialsFilterItem {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 200px;
+}
+
+.dateFilterGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.dateInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.dateLabel {
+  font-size: 12px;
+  color: #6b7280;
+}
+.dateInput:focus,
+.dropdown:focus {
+  border-color: #2563eb; /* highlight on focus */
+}
