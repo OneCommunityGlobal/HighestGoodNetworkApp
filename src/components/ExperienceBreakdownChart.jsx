@@ -72,7 +72,9 @@ const ExperienceBreakdownChart = () => {
       if (startDate) params.startDate = startDate.toISOString().split('T')[0];
       if (endDate) params.endDate = endDate.toISOString().split('T')[0];
       if (selectedRoles.length > 0) params.roles = selectedRoles.map(r => r.value).join(',');
-      const res = await axios.get('/api/applicants/experience-breakdown', { params });
+      const res = await axios.get('/api/applicants/experience-breakdown', {
+        params,
+      });
       setData(res.data);
       if (res.data.length === 0) setNoData(true);
     } catch (error) {
@@ -109,14 +111,12 @@ const ExperienceBreakdownChart = () => {
       style={{
         padding: '20px',
         width: '100%',
-        minHeight: '100vh', // full screen height
+        minHeight: '100vh',
       }}
     >
       {/* Filters */}
       <div
-        className={`mb-6 rounded-lg shadow ${
-          darkMode ? 'bg-space-cadet text-light' : 'bg-white'
-        }`}
+        className={`mb-6 rounded-lg shadow ${darkMode ? 'bg-space-cadet text-light' : 'bg-white'}`}
         style={{
           padding: '15px 20px',
           display: 'flex',
@@ -127,7 +127,7 @@ const ExperienceBreakdownChart = () => {
       >
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <label
-            htmlFor='startDate'
+            htmlFor="startDate"
             style={{
               fontSize: 14,
               fontWeight: 600,
@@ -147,7 +147,7 @@ const ExperienceBreakdownChart = () => {
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <label
-            htmlFor='endDate'
+            htmlFor="endDate"
             style={{
               fontSize: 14,
               fontWeight: 600,
@@ -167,7 +167,7 @@ const ExperienceBreakdownChart = () => {
 
         <div style={{ display: 'flex', flexDirection: 'column', minWidth: 250 }}>
           <label
-            htmlFor='roles'
+            htmlFor="roles"
             style={{
               fontSize: 14,
               fontWeight: 600,
@@ -178,53 +178,46 @@ const ExperienceBreakdownChart = () => {
             Roles
           </label>
           <Select
-  isMulti
-  options={roles}
-  value={selectedRoles}
-  onChange={setSelectedRoles}
-  placeholder="Select roles"
-  classNamePrefix={darkMode ? 'react-select-dark' : 'react-select'}
-  styles={{
-    control: (base) => ({
-      ...base,
-      backgroundColor: darkMode ? '#1b1f3b' : '#fff',
-      color: darkMode ? '#fff' : '#000',
-    }),
-    menu: (base) => ({
-      ...base,
-      backgroundColor: darkMode ? '#1b1f3b' : '#fff',
-      color: darkMode ? '#fff' : '#000',
-    }),
-    option: (base, { isFocused, isSelected }) => ({
-      ...base,
-      backgroundColor: isSelected
-        ? darkMode
-          ? '#4a4f74'  // A noticeable light blue in dark mode
-          : '#d1d1d1'  // Grey in light mode for selected
-        : isFocused
-        ? darkMode
-          ? '#2c2f4a'
-          : '#eee'
-        : 'transparent',
-      color: isSelected
-        ? darkMode
-          ? '#fff'  // White text on selected in dark mode
-          : '#000'  // Black text on selected in light mode
-        : darkMode
-        ? '#fff'  // Default text color in dark mode
-        : '#000', // Default text color in light mode
-    }),
-    singleValue: (base) => ({
-      ...base,
-      color: darkMode ? '#fff' : '#000',
-    }),
-    multiValueLabel: (base) => ({
-      ...base,
-      color: darkMode ? 'red' : '#000',
-    }),
-  }}
-/>
-
+            isMulti
+            options={roles}
+            value={selectedRoles}
+            onChange={setSelectedRoles}
+            placeholder="Select roles"
+            classNamePrefix={darkMode ? 'react-select-dark' : 'react-select'}
+            styles={{
+              control: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+              }),
+              option: (base, { isFocused, isSelected }) => ({
+                ...base,
+                backgroundColor: isSelected
+                  ? darkMode
+                    ? '#4a4f74'
+                    : '#d1d1d1'
+                  : isFocused
+                  ? darkMode
+                    ? '#2c2f4a'
+                    : '#eee'
+                  : 'transparent',
+                color: isSelected ? (darkMode ? '#fff' : '#000') : darkMode ? '#fff' : '#000',
+              }),
+              singleValue: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#000',
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? 'red' : '#000',
+              }),
+            }}
+          />
         </div>
 
         <button

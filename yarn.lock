@@ -1242,8 +1242,11 @@
 
 "@esbuild/linux-x64@0.25.6":
   version "0.25.6"
-  resolved "https://registry.npmjs.org/@esbuild/darwin-arm64/-/darwin-arm64-0.25.6.tgz"
-  integrity sha512-FFCssz3XBavjxcFxKsGy2DYK5VSvJqa6y5HXljKzhRZ87LvEi13brPrf/wdyl/BbpbMKJNOr1Sd0jtW4Ge1pAA==
+
+"@esbuild/win32-x64@0.25.6":
+  version "0.25.6"
+  resolved "https://registry.npmjs.org/@esbuild/win32-x64/-/win32-x64-0.25.6.tgz"
+  integrity sha512-NgJPHHbEpLQgDH2MjQu90pzW/5vvXIZ7KOnPyNBm92A6WgZ/7b6fJyUBjoumLqeOQQGqY2QjQxRo97ah4Sj0cA==
 
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0", "@eslint-community/eslint-utils@^4.7.0":
   version "4.7.0"
