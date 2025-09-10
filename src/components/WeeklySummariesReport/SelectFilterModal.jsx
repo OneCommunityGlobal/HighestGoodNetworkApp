@@ -6,6 +6,12 @@ import styles from './SelectFilterModal.module.scss';
 export default function SelectFilterModal({ isOpen, toggle, filters, applyFilter, memberDict }) {
   const [selectedFilter, setSelectedFilter] = useState(null);
 
+  const handleSelectedFilter = () => {
+    applyFilter(selectedFilter);
+    setSelectedFilter(null);
+    toggle();
+  };
+
   return (
     <Modal isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
       <ModalHeader toggle={toggle}>Select a Filter</ModalHeader>
@@ -145,7 +151,7 @@ export default function SelectFilterModal({ isOpen, toggle, filters, applyFilter
         </Form>
       </ModalBody>
       <ModalFooter>
-        <Button color="primary" onClick={() => applyFilter(selectedFilter)}>
+        <Button color="primary" onClick={handleSelectedFilter}>
           Apply
         </Button>
         <Button color="secondary" onClick={toggle}>

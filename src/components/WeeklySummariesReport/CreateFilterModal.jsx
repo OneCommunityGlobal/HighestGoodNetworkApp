@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 import {
   Modal,
   ModalHeader,
@@ -14,6 +16,7 @@ import {
 } from 'reactstrap';
 
 import { MultiSelect } from 'react-multi-select-component';
+import { ENDPOINTS } from 'utils/URL';
 import Select from 'react-select';
 import './CreateFilterModal.css';
 import hasPermission from '../../utils/permissions';
@@ -45,6 +48,7 @@ function CreateFilterModal({
   darkMode,
   hasPermissionToFilter,
   filters,
+  refetchFilters,
 }) {
   const [state, setState] = useState(() => initialState ?? defaultState);
   const [mode, setMode] = useState('create');
@@ -169,7 +173,7 @@ function CreateFilterModal({
     }));
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
     if (state.filterName !== '') {
       if (mode === 'create' || (mode === 'update' && state.selectedFilter !== null)) {
@@ -187,10 +191,32 @@ function CreateFilterModal({
         if (mode === 'create') {
           // eslint-disable-next-line no-console
           console.log(data);
-          // TODO: Submit
+          try {
+            const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS, data);
+            if (res.status < 200 || res.status >= 300) {
+              toast.error(`Failed to save new filter. Status ${res.status}`);
+            } else {
+              toast.success(`Successfully created filter ${state.filterName}`);
+            }
+            refetchFilters();
+          } catch (error) {
+            toast.error(`Failed to save new filter. Error ${error}`);
+          }
         } else {
-          data.filterId = selectedFilter.value;
-          // TODO: Update
+          try {
+            const res = await axios.patch(
+              ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(selectedFilter.value),
+              data,
+            );
+            if (res.status < 200 || res.status >= 300) {
+              toast.error(`Failed to save new filter. Status ${res.status}`);
+            } else {
+              toast.success(`Successfully update filter ${selectedFilter.label}`);
+            }
+            refetchFilters();
+          } catch (error) {
+            toast.error(`Failed to save new filter. Error ${error}`);
+          }
         }
 
         // eslint-disable-next-line no-console
@@ -447,7 +473,7 @@ function CreateFilterModal({
       </ModalBody>
       <ModalFooter>
         <Button color="primary" onClick={handleSubmit}>
-          Create
+          Save
         </Button>
         <Button color="secondary" onClick={toggle}>
           Cancel

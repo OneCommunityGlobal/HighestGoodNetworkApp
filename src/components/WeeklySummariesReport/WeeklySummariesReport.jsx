@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
   Alert,
   Container,
@@ -224,6 +225,44 @@ const WeeklySummariesReport = props => {
     }
   };
 
+  const fetchFilters = async () => {
+    // Get all filters
+    let filterList = [];
+
+    try {
+      const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
+      if (filterResponse.status < 200 || filterResponse.status >= 300) {
+        toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
+      } else {
+        filterList = filterResponse.data;
+      }
+    } catch (e) {
+      toast.error(`API request to get filter list failed with error ${e}`);
+    }
+    const filterChoices = [];
+
+    filterList.forEach(filter => {
+      filterChoices.push({
+        label: filter.filterName,
+        value: filter._id,
+        filterData: {
+          filterName: filter.filterName,
+          selectedCodes: new Set(filter.selectedCodes),
+          selectedColors: new Set(filter.selectedColors),
+          selectedExtraMembers: new Set(filter.selectedExtraMembers),
+          selectedTrophies: filter.selectedTrophies,
+          selectedSpecialColors: filter.selectedSpecialColors,
+          selectedBioStatus: filter.selectedBioStatus,
+          selectedOverTime: filter.selectedOverTime,
+        },
+      });
+    });
+    setState(prevState => ({
+      ...prevState,
+      filterChoices,
+    }));
+  };
+
   // Initial data loading
   const createIntialSummaries = async () => {
     try {
@@ -380,38 +419,37 @@ const WeeklySummariesReport = props => {
       const chartData = [];
 
       // Get all filters
-      // TODO: Actually get it from the API
-      const filterList = [
-        {
-          _id: 1,
-          filterName: 'Admin Group',
-          selectedCodes: ['13477', '13479'],
-          selectedColors: ['Not Required', 'Team'],
-          selectedExtraMembers: ['644db73845fccb5b38b13c14', '646234ce50b6624774ad46a1'],
-          selectedTrophies: true,
-          selectedSpecialColors: { purple: true, green: true, navy: false },
-          selectedBioStatus: true,
-          selectedOverTime: true,
-        },
-      ];
-      const filterChoices = [];
+      fetchFilters();
+      // let filterList = [];
 
-      filterList.forEach(filter => {
-        filterChoices.push({
-          label: filter.filterName,
-          value: filter._id,
-          filterData: {
-            filterName: filter.filterName,
-            selectedCodes: new Set(filter.selectedCodes),
-            selectedColors: new Set(filter.selectedColors),
-            selectedExtraMembers: new Set(filter.selectedExtraMembers),
-            selectedTrophies: filter.selectedTrophies,
-            selectedSpecialColors: filter.selectedSpecialColors,
-            selectedBioStatus: filter.selectedBioStatus,
-            selectedOverTime: filter.selectedOverTime,
-          },
-        });
-      });
+      // try {
+      //   const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
+      //   if (filterResponse.status < 200 || filterResponse.status >= 300) {
+      //     toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
+      //   } else {
+      //     filterList = filterResponse.data;
+      //   }
+      // } catch (e) {
+      //   toast.error(`API request to get filter list failed with error ${e}`);
+      // }
+      // const filterChoices = [];
+
+      // filterList.forEach(filter => {
+      //   filterChoices.push({
+      //     label: filter.filterName,
+      //     value: filter._id,
+      //     filterData: {
+      //       filterName: filter.filterName,
+      //       selectedCodes: new Set(filter.selectedCodes),
+      //       selectedColors: new Set(filter.selectedColors),
+      //       selectedExtraMembers: new Set(filter.selectedExtraMembers),
+      //       selectedTrophies: filter.selectedTrophies,
+      //       selectedSpecialColors: filter.selectedSpecialColors,
+      //       selectedBioStatus: filter.selectedBioStatus,
+      //       selectedOverTime: filter.selectedOverTime,
+      //     },
+      //   });
+      // });
 
       // Store the data in the tab-specific state
       setState(prevState => ({
@@ -436,8 +474,6 @@ const WeeklySummariesReport = props => {
         tabsLoading: {
           [activeTab]: false,
         },
-        filterChoices,
-
         memberDict,
       }));
 
@@ -1226,7 +1262,6 @@ const WeeklySummariesReport = props => {
       selectedBioStatus: filter.selectedBioStatus,
       selectedOverTime: filter.selectedOverTime,
     }));
-    toggleSelectFilterModal();
   };
 
   // Setup effect hooks for initial data load
@@ -1396,6 +1431,7 @@ const WeeklySummariesReport = props => {
               darkMode={darkMode}
               hasPermissionToFilter={hasPermissionToFilter}
               filters={state.filterChoices}
+              refetchFilters={fetchFilters}
             />
           </div>
         </Col>

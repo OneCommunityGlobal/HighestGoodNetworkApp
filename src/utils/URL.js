@@ -92,6 +92,8 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
+  WEEKLY_SUMMARIES_FILTERS:`${APIEndpoint}/weekly-summaries-filters`,
+  WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weekly-summaries-filters/${filterId}`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
