@@ -344,15 +344,18 @@ function Timer({ authUser, darkMode, isPopout }) {
         taskId: message.taskId || null,
         hours: logHours,
         minutes: logMinutes,
-        dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
-        description: 'This time was logged automatically due to week closing. This is a temporary time log. https://www.onecommunityglobal.org/team/',
+        dateOfWork: moment()
+          .tz('America/Los_Angeles')
+          .format('YYYY-MM-DD'),
+        description:
+          'This time was logged automatically due to week closing. This is a temporary time log. https://www.onecommunityglobal.org/team/',
         isTangible: true,
         entryType: 'default',
       };
 
       // Submit the time entry
       const result = await dispatch(postTimeEntry(timeEntry));
-      
+
       if (result === 200 || result === 201) {
         // Update task time if there was a specific task
         if (message.taskId) {
@@ -371,10 +374,10 @@ function Timer({ authUser, darkMode, isPopout }) {
         setTempTimeEntryId(timeEntry._id || 'temp-id'); // Store temp ID for later update
         sendPause(); // Pause instead of stop
         setWeekEndTimeLogModal(true);
-        
+
         // Start continuous chime
         sendStartChime(true);
-        
+
         toast.info(`Week ended! Please complete your time log description.`);
       } else {
         throw new Error(`Unexpected response status: ${result}`);
@@ -398,7 +401,10 @@ function Timer({ authUser, darkMode, isPopout }) {
 
       const userId = viewingUserId || authUser?.userid;
       if (!userId) {
-        console.error('No user ID available for auto-logging (scheduled)', { viewingUserId, authUser });
+        console.error('No user ID available for auto-logging (scheduled)', {
+          viewingUserId,
+          authUser,
+        });
         toast.error('Cannot auto-log time: No user ID available');
         return;
       }
@@ -406,13 +412,17 @@ function Timer({ authUser, darkMode, isPopout }) {
       const timeEntry = {
         personId: userId,
         taskId: message.taskId || null,
+        wbsId: null,
         hours: logH,
         minutes: logM,
-        dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
-        description:
+        dateOfWork: moment()
+          .tz('America/Los_Angeles')
+          .format('YYYY-MM-DD'),
+        notes:
           'This time was logged automatically due to a scheduled pause. This is a temporary time log. https://www.onecommunityglobal.org/team/',
         isTangible: true,
         entryType: 'default',
+        projectId: null,
       };
 
       const result = await dispatch(postTimeEntry(timeEntry));
@@ -445,44 +455,46 @@ function Timer({ authUser, darkMode, isPopout }) {
   };
 
   // Handle scheduled time log completion
-  const handleScheduledTimeLogComplete = async updatedTimeEntry => {
-    try {
-      if (tempTimeEntryId && updatedTimeEntry) {
-        await dispatch(
-          editTimeEntry(tempTimeEntryId, updatedTimeEntry, updatedTimeEntry.dateOfWork),
-        );
-        toast.success('Time log description updated successfully!');
-      }
+  // const handleScheduledTimeLogComplete = async updatedTimeEntry => {
+  //   try {
+  //     if (tempTimeEntryId && updatedTimeEntry) {
+  //       await dispatch(
+  //         editTimeEntry(tempTimeEntryId, updatedTimeEntry, updatedTimeEntry.dateOfWork),
+  //       );
+  //       toast.success('Time log description updated successfully!');
+  //     }
 
-      setScheduledTimeLogModal(false);
-      sendStartChime(false);
-      setIsScheduledPaused(false);
-      setTempTimeEntryId(null);
-    } catch (error) {
-      console.error('Error updating scheduled pause time log:', error);
-      toast.error('Failed to update time log description');
-    }
-  };
+  //     setScheduledTimeLogModal(false);
+  //     sendStartChime(false);
+  //     setIsScheduledPaused(false);
+  //     setTempTimeEntryId(null);
+  //   } catch (error) {
+  //     console.error('Error updating scheduled pause time log:', error);
+  //     toast.error('Failed to update time log description');
+  //   }
+  // };
 
-  // Handle week-end time log completion
-  const handleWeekEndTimeLogComplete = async (updatedTimeEntry) => {
-    try {
-      // Update the temporary time entry with user's description
-      if (tempTimeEntryId && updatedTimeEntry) {
-        await dispatch(editTimeEntry(tempTimeEntryId, updatedTimeEntry, updatedTimeEntry.dateOfWork));
-        toast.success('Time log description updated successfully!');
-      }
-      
-      // Close modal and stop chime
-      setWeekEndTimeLogModal(false);
-      sendStartChime(false);
-      setIsWeekEndPaused(false);
-      setTempTimeEntryId(null);
-    } catch (error) {
-      console.error('Error updating week-end time log:', error);
-      toast.error('Failed to update time log description');
-    }
-  };
+  // // Handle week-end time log completion
+  // const handleWeekEndTimeLogComplete = async updatedTimeEntry => {
+  //   try {
+  //     // Update the temporary time entry with user's description
+  //     if (tempTimeEntryId && updatedTimeEntry) {
+  //       await dispatch(
+  //         editTimeEntry(tempTimeEntryId, updatedTimeEntry, updatedTimeEntry.dateOfWork),
+  //       );
+  //       toast.success('Time log description updated successfully!');
+  //     }
+
+  //     // Close modal and stop chime
+  //     setWeekEndTimeLogModal(false);
+  //     sendStartChime(false);
+  //     setIsWeekEndPaused(false);
+  //     setTempTimeEntryId(null);
+  //   } catch (error) {
+  //     console.error('Error updating week-end time log:', error);
+  //     toast.error('Failed to update time log description');
+  //   }
+  // };
 
   /**
    * This useEffect is to make sure that all the states will be updated before taking effects,
@@ -512,7 +524,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       chiming: chimingLJM,
       weekEndPause: weekEndPauseLJM,
     } = lastJsonMessage || defaultMessage;
-    
+
     const previousMessage = message;
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
@@ -669,7 +681,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             sendStop={sendStop}
           />
         )}
-        
+
         {weekEndTimeLogModal && (
           <TimeEntryForm
             from="WeekEnd"
@@ -681,12 +693,15 @@ function Timer({ authUser, darkMode, isPopout }) {
               minutes: logMinutes,
               personId: viewingUserId || authUser?.userid,
               taskId: message.taskId || null,
-              dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
-              description: 'This time was logged automatically due to week closing. This is a temporary time log. https://www.onecommunityglobal.org/team/',
+              dateOfWork: moment()
+                .tz('America/Los_Angeles')
+                .format('YYYY-MM-DD'),
+              description:
+                'This time was logged automatically due to week closing. This is a temporary time log. https://www.onecommunityglobal.org/team/',
               isTangible: true,
               entryType: 'default',
             }}
-            onComplete={handleWeekEndTimeLogComplete}
+            // onComplete={handleWeekEndTimeLogComplete}
             tempTimeEntryId={tempTimeEntryId}
           />
         )}
@@ -701,13 +716,15 @@ function Timer({ authUser, darkMode, isPopout }) {
               minutes: logMinutes,
               personId: viewingUserId || authUser?.userid,
               taskId: message.taskId || null,
-              dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+              dateOfWork: moment()
+                .tz('America/Los_Angeles')
+                .format('YYYY-MM-DD'),
               description:
                 'This time was logged automatically due to a scheduled pause. This is a temporary time log. https://www.onecommunityglobal.org/team/',
               isTangible: true,
               entryType: 'default',
             }}
-            onComplete={handleScheduledTimeLogComplete}
+            // onComplete={handleScheduledTimeLogComplete}
             tempTimeEntryId={tempTimeEntryId}
           />
         )}
@@ -1030,13 +1047,15 @@ function Timer({ authUser, darkMode, isPopout }) {
             minutes: logMinutes,
             personId: viewingUserId || authUser?._id,
             taskId: message.taskId || null,
-            dateOfWork: moment().tz('America/Los_Angeles').format('YYYY-MM-DD'),
+            dateOfWork: moment()
+              .tz('America/Los_Angeles')
+              .format('YYYY-MM-DD'),
             description:
               'This time was logged automatically due to a scheduled pause. This is a temporary time log. https://www.onecommunityglobal.org/team/',
             isTangible: true,
             entryType: 'default',
           }}
-          onComplete={handleScheduledTimeLogComplete}
+          // onComplete={handleScheduledTimeLogComplete}
           tempTimeEntryId={tempTimeEntryId}
         />
       )}
