@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
 import { Upload, Calendar, X, Loader, Edit, Trash2 } from 'lucide-react';
 

@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ENDPOINTS } from 'utils/URL';
+import { useState, useEffect, useMemo, React } from 'react';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -23,8 +22,8 @@ import {
   Button,
   Card,
 } from 'reactstrap';
-import PopUpBar from 'components/PopUpBar';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import PopUpBar from '~/components/PopUpBar';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
@@ -62,6 +61,7 @@ import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
+import PermissionWatcher from '../Auth/PermissionWatcher';
 
 export function Header(props) {
   const location = useLocation();
@@ -74,6 +74,7 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const [isAckLoading, setIsAckLoading] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -153,7 +154,6 @@ export function Header(props) {
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [isAckLoading, setIsAckLoading] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -217,28 +217,30 @@ export function Header(props) {
   const openModal = () => {
     setLogoutPopup(true);
   };
-  
+
   const handlePermissionChangeAck = async () => {
     // handle setting the ack true
     try {
-      setIsAckLoading(true)
-      const {firstName: name, lastName, personalLinks, adminLinks, _id} = props.userProfile
-      axios.put(ENDPOINTS.USER_PROFILE(_id), {
-        // req fields for updation
-        firstName: name, 
-        lastName, 
-        personalLinks,
-        adminLinks,
-        
-        isAcknowledged: true,
-      }).then(()=>{
-        setIsAckLoading(false);
-        dispatch(getUserProfile(_id));
-      });
+      setIsAckLoading(true);
+      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
+      axios
+        .put(ENDPOINTS.USER_PROFILE(_id), {
+          // req fields for updation
+          firstName: name,
+          lastName,
+          personalLinks,
+          adminLinks,
+
+          isAcknowledged: true,
+        })
+        .then(() => {
+          setIsAckLoading(false);
+          dispatch(getUserProfile(_id));
+        });
     } catch (e) {
       // console.log('update ack', e);
     }
-  }
+  };
 
   const removeViewingUser = () => {
     setPopup(false);
@@ -271,7 +273,7 @@ export function Header(props) {
     if (!userId || hasProfileLoaded) return;
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response.data;
+      const newUserProfile = response?.data;
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
@@ -327,9 +329,9 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
-  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className="header-wrapper">
+    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
@@ -366,7 +368,7 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/timelog">
+                  <NavLink tag={Link} to="/timelog#currentWeek">
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
@@ -466,7 +468,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <BellNotification userId={displayUserId}/>
+                  <BellNotification userId={displayUserId} />
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -517,6 +519,10 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
+                      <DropdownItem divider />
+                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
+                        PR Team Analytics
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
@@ -531,7 +537,7 @@ export function Header(props) {
                         backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
                       }}
                       className="dashboardimg"
                     />
@@ -587,18 +593,18 @@ export function Header(props) {
           lastName={viewingUser.lastName}
           message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          />
+        />
       )}
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
+      <PermissionWatcher props={props} />
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
-          firstName={viewingUser.firstName}
-          lastName={viewingUser.lastName}
+          firstName={viewingUser?.firstName || firstName}
+          lastName={viewingUser?.lastName}
           message="Heads Up, there were permission changes made to this account"
           onClickClose={handlePermissionChangeAck}
           textColor="black_text"
           isLoading={isAckLoading}
         />
-
       )}
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
@@ -620,7 +626,7 @@ export function Header(props) {
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className='headerCard'>
+          <Card color="primary" className="headerCard">
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>

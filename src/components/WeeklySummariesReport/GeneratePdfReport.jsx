@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment-timezone';
 import { Button } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 function GeneratePdfReport({ summaries, weekIndex, weekDates, darkMode }) {
   const generateFormattedReport = () => {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
     // Replace any style copied into the weekly summary message.
     const styleRegex = /<style([\S\s]*?)>([\S\s]*?)<\/style>/gim;
     const styleInlineRegex = /style="([\S\s]*?)"/gim;

@@ -87,20 +87,42 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
             <th className="team-locations-table-header small-column" scope="col">
               <div
                 className="cursor-pointer"
+                role="button"
+                tabIndex={0}
                 onClick={() => toggleSortOrder('setActiveUsers')}
-                aria-label="Sort by active users"
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    toggleSortOrder('setActiveUsers');
+                  }
+                }}
               >
                 <i className="cursor-pointer fa fa-user-o" aria-hidden="true" />
               </div>
             </th>
             <th className="team-locations-table-header medium-column">
-              <div className="cursor-pointer" onClick={() => toggleSortOrder('name')}>
+              <div
+                className="cursor-pointer"
+                onClick={() => toggleSortOrder('name')}
+                onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && toggleSortOrder('name')}
+                role="button"
+                tabIndex={0}
+              >
                 <span className="column-header">Team Member</span>
                 <i className={`fa fa-caret-${nameSortOrder === 'asc' ? 'down' : 'up'}`} />
               </div>
             </th>
             <th className="team-locations-table-header large-column">
-              <div className="cursor-pointer" onClick={() => toggleSortOrder('location')}>
+              <div
+                className="cursor-pointer"
+                onClick={() => toggleSortOrder('location')}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    toggleSortOrder('location');
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+              >
                 <span className="column-header">Location</span>
                 <i className={`fa fa-caret-${locationSortOrder === 'asc' ? 'down' : 'up'}`} />
               </div>
@@ -132,7 +154,7 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
         <tbody>
           {newfilteredMapMarkers.map((user, index) => (
             <tr
-              key={user.id}
+              key={user._id || user.id || index}
               onClick={() => setCurrentUser(user)}
               className={`team-locations-table-row ${
                 index % 2 === 0 ? 'team-locations-table-row-even' : ''
@@ -146,22 +168,19 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
                 />
               </td>
               <td className="team-locations-table-data">
-                <span
-                  style={{ color: darkMode ? 'white' : 'black' }}
-                  className="column-content"
-                >{`${user.firstName} ${user.lastName.charAt(0)}.`}</span>
+                <span style={{ color: darkMode ? 'white' : 'black' }} className="column-content">
+                  {`${user.firstName} ${user.lastName.charAt(0)}.`}
+                </span>
               </td>
               <td className="team-locations-table-data">
                 {user.location.city ? (
-                  <span
-                    style={{ color: darkMode ? 'white' : 'black' }}
-                    className="column-content"
-                  >{`${user.location.city}, ${user.location.country}`}</span>
+                  <span style={{ color: darkMode ? 'white' : 'black' }} className="column-content">
+                    {`${user.location.city}, ${user.location.country}`}
+                  </span>
                 ) : (
-                  <span
-                    style={{ color: darkMode ? 'white' : 'black' }}
-                    className="column-content"
-                  >{`${user.location.country}`}</span>
+                  <span style={{ color: darkMode ? 'white' : 'black' }} className="column-content">
+                    {`${user.location.country}`}
+                  </span>
                 )}
               </td>
               <td className="team-locations-table-data" />
