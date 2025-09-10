@@ -367,10 +367,35 @@ select {
 .user-collaboration-dark-mode .job-select:active {
   background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
 }
+<<<<<<<< HEAD:src/components/Collaboration/Collaboration.module.css
  @media (min-width:768px) {
   .job-ad {
   background-color: #9c0;
      width: calc((100% - 4rem) / 5);
   }
   
+========
+
+.green-header-single {
+  display: flex;
+  justify-content: flex-start; /* Changed from center to flex-start */
+  background-color: #9bc53d;
+  padding: 0.5rem 0;
+}
+
+.green-header-button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s;
+}
+
+.green-header-button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+>>>>>>>> fc9ad4006b1a6c2181c343799b40c54fa6fd6ed0:src/components/Collaboration/Collaboration.css
 }

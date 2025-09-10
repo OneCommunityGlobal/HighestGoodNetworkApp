@@ -102,7 +102,18 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
-
+  const activeMembers = useMemo(
+    () =>
+      (allMembers ?? []).filter((u) => {
+        if (!u) return false;
+        // accept boolean true, string "true", or status === "Active"
+        const activeFlag =
+          u.isActive === true || u.isActive === 'true' || u.status === 'Active';
+        return Boolean(activeFlag);
+      }),
+    [allMembers]
+  );
+  
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
       const task = tasks.find(({ _id }) => _id === props.taskId);
@@ -396,11 +407,11 @@ function AddTaskModal(props) {
   }, [modal]);
 
   useEffect(() => {
-    if (modal && props.projectId) {
+    if (modal && props.projectId && (!allMembers || allMembers.length === 0)) {
       props.fetchAllMembers(props.projectId);
     }
-  }, [modal, props.projectId]);
-
+  }, [modal, props.projectId, allMembers?.length]);
+  
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -481,7 +492,7 @@ function AddTaskModal(props) {
                 <div className="add_new_task_form-input_area">
                   <TagsSearch
                     placeholder="Add resources"
-                    members={allMembers?.filter(user => user.isActive)}
+                    members={activeMembers}
                     addResources={addResources}
                     removeResource={removeResource}
                     resourceItems={resourceItems}
