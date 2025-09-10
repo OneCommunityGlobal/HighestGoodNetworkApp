@@ -754,33 +754,70 @@ const onAssignProject = assignedProject => {
     }
   };
 
-  const handleSubmit = async updatedUserProfile => {
-    for (let i = 0; i < updatedTasks.length; i += 1) {
-      const updatedTask = updatedTasks[i];
-      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+  // Extract an id from many possible shapes coming from UI/components/APIs
+const extractProjectId = (p) => {
+  if (!p) return null;
+  if (typeof p === 'string') return p;                 // already an id
+  if (p._id) return p._id;                             // { _id }
+  if (p.projectId && p.projectId._id) return p.projectId._id; // { projectId: { _id } }
+  if (p.project && p.project._id) return p.project._id;       // { project: { _id } }
+  if (p.id) return p.id;                               // { id }
+  if (p.value) return p.value;                         // react-select style
+  return null;
+};
+
+const isValidObjectIdHex = (id) =>
+  typeof id === 'string' && /^[a-fA-F0-9]{24}$/.test(id);
+
+// Normalize to a de-duped, validated array of ids
+const serializeProjectsForPut = (arr) => {
+  const ids = (Array.isArray(arr) ? arr : [])
+    .map(extractProjectId)
+    .filter(Boolean)
+    .map((s) => String(s).trim())
+    .filter(isValidObjectIdHex);
+
+  // de-dupe
+  return Array.from(new Set(ids));
+};
+
+const handleSubmit = async (updatedUserProfile) => {
+  // persist any task updates first
+  for (let i = 0; i < updatedTasks.length; i += 1) {
+    const updatedTask = updatedTasks[i];
+    const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+    axios.put(url, updatedTask.updatedTask).catch((err) => console.log(err));
+  }
+
+  try {
+    const userProfileToUpdate = {
+      ...(updatedUserProfile || userProfileRef.current),
+      // 🔒 send only clean, valid ids
+      projects: serializeProjectsForPut(projects),
+    };
+
+    await Promise.resolve(props.updateUserProfile?.(userProfileToUpdate));
+
+    if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+      props.refreshToken?.(userProfile._id);
     }
-    try {
-       const userProfileToUpdate = {
-        ...(updatedUserProfile || userProfileRef.current),
-        projects, // Ensure projects are included in the payload
-        };
-        console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
-      const result = await props.updateUserProfile(userProfileToUpdate);
-      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-        await props.refreshToken(userProfile._id);
-      }
-      await loadUserProfile();
-      await loadUserTasks();
-      setSaved(false);
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
-        const errorMessage = err.response.data.error.join('\n');
-        alert(errorMessage);
-      }
-      return err;
+
+    // non-blocking refresh
+    loadUserProfile();
+    loadUserTasks();
+
+    setSaved(false);
+  } catch (err) {
+    if (err?.response?.data?.error) {
+      const msg = Array.isArray(err.response.data.error)
+        ? err.response.data.error.join('\n')
+        : err.response.data.error;
+      alert(msg);
     }
-  };
+    return err;
+  }
+};
+
 
   // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit.
   // AssignBadgePopup already has onSubmit action to call an API to update the user badges.
