@@ -1,0 +1,19 @@
+.tooltipWrapper {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+}
+
+.tooltipLabel {
+  font-weight: 500;
+  color: #2563eb;
+  margin: 0 0 4px 0;
+}
+
+.tooltipValue {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}

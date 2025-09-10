@@ -23,14 +23,16 @@ export default function MostWastedMaterialsDashboard() {
   return (
     <div className={`${styles.mostWastedMaterialsContainer}`}>
       <div className={`${styles.mostWastedMaterialsHeader}`}>
-        <h1>Most Wasted Materials</h1>
+        <h1 className={`${styles.headerTitle}`}>Most Wasted Materials</h1>
       </div>
 
       <div className={`${styles.mostWastedMaterialsCard}`}>
         <div className={`${styles.mostWastedMaterialsFilter}`}>
           {/* Project Filter */}
           <div className={`${styles.mostWastedMaterialsFilterItem}`}>
-            <label htmlFor="project-filter">Project Filter</label>
+            <label htmlFor="project-filter" className={`${styles.filterLabel}`}>
+              Project Filter
+            </label>
             <CustomDropdown
               options={mockProjects}
               selected={selectedProject}
@@ -40,7 +42,9 @@ export default function MostWastedMaterialsDashboard() {
 
           {/* Date Filter */}
           <div className={`${styles.mostWastedMaterialsFilterItem}`}>
-            <label htmlFor="date-filter">Date Filter</label>
+            <label htmlFor="date-filter" className={`${styles.filterLabel}`}>
+              Date Filter
+            </label>
             <div className={`${styles.dateFilterGrid}`}>
               <div>
                 <label htmlFor="date-from" className={`${styles.dateLabel}`}>
@@ -72,27 +76,11 @@ export default function MostWastedMaterialsDashboard() {
       </div>
 
       {/* Chart */}
-      <div
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          padding: '24px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <div style={{ width: '100%', height: '500px' }}>
+      <div className={`${styles.chartWrapper}`}>
+        <div className={`${styles.chartContainer}`}>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={chartData}
-              margin={{
-                top: 30,
-                right: 30,
-                left: 20,
-                bottom: 60,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <BarChart data={chartData} margin={{ top: 30, right: 30, left: 20, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" className={`${styles.chartGrid}`} />
               <XAxis
                 dataKey="material"
                 angle={-45}
