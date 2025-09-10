@@ -58,9 +58,9 @@ class Collaboration extends Component {
     try {
       const response = await fetch(
         `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}` +
-        `&search=${encodeURIComponent(searchTerm)}` +
-        `&category=${encodeURIComponent(selectedCategory)}`,
-        { method: 'GET' }
+          `&search=${encodeURIComponent(searchTerm)}` +
+          `&category=${encodeURIComponent(selectedCategory)}`,
+        { method: 'GET' },
       );
 
       if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
@@ -90,14 +90,14 @@ class Collaboration extends Component {
     }
   };
 
-  handleSearch = (e) => this.setState({ searchTerm: e.target.value });
+  handleSearch = e => this.setState({ searchTerm: e.target.value });
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     e.preventDefault();
     this.setState({ summaries: null, currentPage: 1 }, this.fetchJobAds);
   };
 
-  handleCategoryChange = (e) => {
+  handleCategoryChange = e => {
     const selectedValue = e.target.value;
     this.setState(
       {
@@ -105,17 +105,16 @@ class Collaboration extends Component {
         currentPage: 1,
         summaries: null,
       },
-      this.fetchJobAds
+      this.fetchJobAds,
     );
   };
 
   handleResetFilters = async () => {
     try {
       const adsPerPage = this.calculateAdsPerPage();
-      const response = await fetch(
-        `${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`,
-        { method: 'GET' }
-      );
+      const response = await fetch(`${ApiEndpoint}/jobs/reset-filters?page=1&limit=${adsPerPage}`, {
+        method: 'GET',
+      });
 
       if (!response.ok) throw new Error(`Failed to reset filters: ${response.statusText}`);
 
@@ -137,7 +136,7 @@ class Collaboration extends Component {
     }
   };
 
-  setPage = (pageNumber) => {
+  setPage = pageNumber => {
     this.setState({ currentPage: pageNumber }, this.fetchJobAds);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -147,8 +146,8 @@ class Collaboration extends Component {
     try {
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(searchTerm)}` +
-        `&category=${encodeURIComponent(selectedCategory)}`,
-        { method: 'GET' }
+          `&category=${encodeURIComponent(selectedCategory)}`,
+        { method: 'GET' },
       );
 
       if (!response.ok) throw new Error(`Failed to fetch summaries: ${response.statusText}`);
@@ -168,13 +167,14 @@ class Collaboration extends Component {
     }
   };
 
-  setSummariesPage = (page) => {
+  setSummariesPage = page => {
     this.setState(
-      (prev) => {
-        const next = page < 1 ? 1 : page > prev.summariesTotalPages ? prev.summariesTotalPages : page;
+      prev => {
+        const next =
+          page < 1 ? 1 : page > prev.summariesTotalPages ? prev.summariesTotalPages : page;
         return { summariesPage: next };
       },
-      () => window.scrollTo({ top: 0, behavior: 'smooth' })
+      () => window.scrollTo({ top: 0, behavior: 'smooth' }),
     );
   };
 
@@ -194,8 +194,13 @@ class Collaboration extends Component {
 
   renderSummaries() {
     const {
-      searchTerm, selectedCategory, categories,
-      summariesAll, summariesPage, summariesPageSize, summariesTotalPages
+      searchTerm,
+      selectedCategory,
+      categories,
+      summariesAll,
+      summariesPage,
+      summariesPageSize,
+      summariesTotalPages,
     } = this.state;
 
     const start = (summariesPage - 1) * summariesPageSize;
@@ -210,7 +215,11 @@ class Collaboration extends Component {
             target="_blank"
             rel="noreferrer"
           >
-            <img src={OneCommunityImage} alt="One Community Logo" className={styles.responsiveImg} />
+            <img
+              src={OneCommunityImage}
+              alt="One Community Logo"
+              className={styles.responsiveImg}
+            />
           </a>
         </div>
 
@@ -224,11 +233,21 @@ class Collaboration extends Component {
                   value={searchTerm}
                   onChange={this.handleSearch}
                 />
-                <button className={styles.searchButton} type="submit">Go</button>
-                <button className={styles.resetButton} type="button" onClick={this.handleResetFilters}>
+                <button className={styles.searchButton} type="submit">
+                  Go
+                </button>
+                <button
+                  className={styles.resetButton}
+                  type="button"
+                  onClick={this.handleResetFilters}
+                >
                   Reset
                 </button>
-                <button className={styles.showSummaries} type="button" onClick={this.handleShowSummaries}>
+                <button
+                  className={styles.showSummaries}
+                  type="button"
+                  onClick={this.handleShowSummaries}
+                >
                   Show Summaries
                 </button>
               </form>
@@ -237,8 +256,10 @@ class Collaboration extends Component {
             <div className={styles.navbarRight}>
               <select value={selectedCategory} onChange={this.handleCategoryChange}>
                 <option value="">Select from Categories</option>
-                {categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                {categories.map(c => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </div>
@@ -248,7 +269,7 @@ class Collaboration extends Component {
             <h1>Summaries</h1>
 
             {pageItems.length > 0 ? (
-              pageItems.map((summary) => (
+              pageItems.map(summary => (
                 <div
                   key={summary._id || summary.jobDetailsLink || summary.title}
                   className={styles.summariesItem}
@@ -260,7 +281,8 @@ class Collaboration extends Component {
                   </h3>
                   <p>{summary.description}</p>
                   <p className={styles.date}>
-                    Date Posted: {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
+                    Date Posted:{' '}
+                    {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
                   </p>
                 </div>
               ))
@@ -310,7 +332,11 @@ class Collaboration extends Component {
             target="_blank"
             rel="noreferrer"
           >
-            <img src={OneCommunityImage} alt="One Community Logo" className={styles.responsiveImg} />
+            <img
+              src={OneCommunityImage}
+              alt="One Community Logo"
+              className={styles.responsiveImg}
+            />
           </a>
         </div>
 
@@ -324,11 +350,21 @@ class Collaboration extends Component {
                   value={searchTerm}
                   onChange={this.handleSearch}
                 />
-                <button className={styles.searchButton} type="submit">Go</button>
-                <button className={styles.resetButton} type="button" onClick={this.handleResetFilters}>
+                <button className={styles.searchButton} type="submit">
+                  Go
+                </button>
+                <button
+                  className={styles.resetButton}
+                  type="button"
+                  onClick={this.handleResetFilters}
+                >
                   Reset
                 </button>
-                <button className={styles.showSummaries} type="button" onClick={this.handleShowSummaries}>
+                <button
+                  className={styles.showSummaries}
+                  type="button"
+                  onClick={this.handleShowSummaries}
+                >
                   Show Summaries
                 </button>
               </form>
@@ -337,8 +373,10 @@ class Collaboration extends Component {
             <div className={styles.navbarRight}>
               <select value={selectedCategory} onChange={this.handleCategoryChange}>
                 <option value="">Select from Categories</option>
-                {categories.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                {categories.map(c => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </div>
@@ -351,13 +389,18 @@ class Collaboration extends Component {
 
           <div className={styles.jobList}>
             {jobAds.length > 0 ? (
-              jobAds.map((ad) => (
+              jobAds.map(ad => (
                 <div key={ad._id} className={styles.jobAd}>
                   <img
-                    src={ad.imageUrl || `/api/placeholder/640/480?text=${encodeURIComponent(ad.category || 'Job Opening')}`}
+                    src={
+                      ad.imageUrl ||
+                      `/api/placeholder/640/480?text=${encodeURIComponent(
+                        ad.category || 'Job Opening',
+                      )}`
+                    }
                     alt={ad.title ? `${ad.title}` : 'Job image'}
                     loading="lazy"
-                    onError={(e) => {
+                    onError={e => {
                       e.currentTarget.onerror = null;
                       if (ad?.category === 'Engineering') {
                         e.currentTarget.src =
@@ -368,14 +411,18 @@ class Collaboration extends Component {
                       } else if (ad?.category === 'Design') {
                         e.currentTarget.src = 'https://img.icons8.com/arcade/64/design.png';
                       } else if (ad?.category === 'Finance') {
-                        e.currentTarget.src = 'https://img.icons8.com/cotton/64/merchant-account--v2.png';
+                        e.currentTarget.src =
+                          'https://img.icons8.com/cotton/64/merchant-account--v2.png';
                       } else {
-                        e.currentTarget.src = 'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
+                        e.currentTarget.src =
+                          'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
                       }
                     }}
                   />
                   <a
-                    href={`https://www.onecommunityglobal.org/collaboration/seeking-${(ad.category || '').toLowerCase()}`}
+                    href={`https://www.onecommunityglobal.org/collaboration/seeking-${(
+                      ad.category || ''
+                    ).toLowerCase()}`}
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -411,7 +458,7 @@ class Collaboration extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
 });
 
