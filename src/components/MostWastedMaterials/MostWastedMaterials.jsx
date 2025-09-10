@@ -1,171 +1,10 @@
-'use client';
-
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from 'recharts';
-
-// Mock data for demonstration
-const mockProjects = [
-  { id: 'all', name: 'All Projects' },
-  { id: 'project-1', name: 'Construction Site A' },
-  { id: 'project-2', name: 'Office Building B' },
-  { id: 'project-3', name: 'Residential Complex C' },
-];
-
-const mockData = {
-  all: [
-    { material: 'Concrete', wastePercentage: 15.8 },
-    { material: 'Steel Rebar', wastePercentage: 12.3 },
-    { material: 'Lumber', wastePercentage: 11.7 },
-    { material: 'Drywall', wastePercentage: 9.4 },
-    { material: 'Insulation', wastePercentage: 8.9 },
-    { material: 'Tiles', wastePercentage: 7.2 },
-    { material: 'Paint', wastePercentage: 6.8 },
-    { material: 'Electrical Wire', wastePercentage: 5.1 },
-  ],
-  'project-1': [
-    { material: 'Concrete', wastePercentage: 18.2 },
-    { material: 'Steel Rebar', wastePercentage: 14.1 },
-    { material: 'Lumber', wastePercentage: 10.3 },
-    { material: 'Drywall', wastePercentage: 8.7 },
-    { material: 'Insulation', wastePercentage: 7.9 },
-  ],
-  'project-2': [
-    { material: 'Drywall', wastePercentage: 13.5 },
-    { material: 'Steel Rebar', wastePercentage: 11.8 },
-    { material: 'Concrete', wastePercentage: 10.9 },
-    { material: 'Tiles', wastePercentage: 9.2 },
-    { material: 'Paint', wastePercentage: 8.4 },
-  ],
-  'project-3': [
-    { material: 'Lumber', wastePercentage: 16.3 },
-    { material: 'Insulation', wastePercentage: 12.7 },
-    { material: 'Drywall', wastePercentage: 11.1 },
-    { material: 'Paint', wastePercentage: 9.8 },
-    { material: 'Tiles', wastePercentage: 6.5 },
-  ],
-};
-
-// Custom Dropdown Component
-function CustomDropdown({ options, selected, onSelect }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = event => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  return (
-    <div style={{ position: 'relative' }} ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        style={{
-          width: '100%',
-          padding: '8px 16px',
-          textAlign: 'left',
-          backgroundColor: '#ffffff',
-          border: '1px solid #d1d5db',
-          borderRadius: '6px',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <span>{selected.name}</span>
-        <span style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>▼</span>
-      </button>
-
-      {isOpen && (
-        <div
-          style={{
-            position: 'absolute',
-            zIndex: 10,
-            width: '100%',
-            marginTop: '4px',
-            backgroundColor: '#ffffff',
-            border: '1px solid #d1d5db',
-            borderRadius: '6px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          }}
-        >
-          {options.map(option => (
-            <button
-              type="button"
-              key={option.id}
-              onClick={() => {
-                onSelect(option);
-                setIsOpen(false);
-              }}
-              style={{
-                width: '100%',
-                padding: '8px 16px',
-                textAlign: 'left',
-                backgroundColor: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-              onMouseEnter={e => {
-                e.target.style.backgroundColor = '#f3f4f6';
-              }}
-              onMouseLeave={e => {
-                e.target.style.backgroundColor = 'transparent';
-              }}
-            >
-              {option.name}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Custom Label component for displaying percentages on bars
-function CustomLabel(props) {
-  const { x, y, width, value } = props;
-  return (
-    <text
-      x={x + width / 2}
-      y={y - 5}
-      fill="#374151"
-      textAnchor="middle"
-      fontSize="12"
-      fontWeight="500"
-    >
-      {`${value}%`}
-    </text>
-  );
-}
-
-// Custom Tooltip Component
-function CustomTooltip({ active, payload, label }) {
-  if (active && payload && payload.length) {
-    return (
-      <div
-        style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e5e7eb',
-          borderRadius: '8px',
-          boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-          padding: '12px',
-        }}
-      >
-        <p style={{ fontWeight: '500', color: '#111827', margin: '0 0 4px 0' }}>{label}</p>
-        <p style={{ fontSize: '14px', color: '#6b7280', margin: '0' }}>
-          Waste: {payload[0].value}%
-        </p>
-      </div>
-    );
-  }
-  return null;
-}
+import { mockProjects, mockData } from './mockData';
+import CustomDropdown from './DropDown';
+import CustomLabel from './Label';
+import CustomTooltip from './Tooltip';
+import styles from './MostWastedMaterials.module.css';
 
 export default function MostWastedMaterialsDashboard() {
   const [selectedProject, setSelectedProject] = useState(mockProjects[0]);
@@ -182,60 +21,16 @@ export default function MostWastedMaterialsDashboard() {
   }, [selectedProject, dateRange]);
 
   return (
-    <div
-      style={{
-        width: '100%',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '24px',
-        backgroundColor: '#f9fafb',
-        minHeight: '100vh',
-      }}
-    >
-      <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-        <h1
-          style={{
-            fontSize: '32px',
-            fontWeight: 'bold',
-            color: '#111827',
-            margin: '0',
-          }}
-        >
-          Most Wasted Materials
-        </h1>
+    <div className={`${styles.mostWastedMaterialsContainer}`}>
+      <div className={`${styles.mostWastedMaterialsHeader}`}>
+        <h1>Most Wasted Materials</h1>
       </div>
 
-      <div
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '8px',
-          border: '1px solid #e5e7eb',
-          padding: '24px',
-          marginBottom: '24px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '20px',
-          }}
-        >
+      <div className={`${styles.mostWastedMaterialsCard}`}>
+        <div className={`${styles.mostWastedMaterialsFilter}`}>
           {/* Project Filter */}
-          <div>
-            <label
-              htmlFor="project-filter"
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px',
-              }}
-            >
-              Project Filter
-            </label>
+          <div className={`${styles.mostWastedMaterialsFilterItem}`}>
+            <label htmlFor="project-filter">Project Filter</label>
             <CustomDropdown
               options={mockProjects}
               selected={selectedProject}
@@ -243,23 +38,12 @@ export default function MostWastedMaterialsDashboard() {
             />
           </div>
 
-          {/* Date Range Filter */}
-          <div>
-            <label
-              htmlFor="date-filter"
-              style={{
-                display: 'block',
-                fontSize: '14px',
-                fontWeight: '600',
-                color: '#374151',
-                marginBottom: '8px',
-              }}
-            >
-              Date Filter
-            </label>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          {/* Date Filter */}
+          <div className={`${styles.mostWastedMaterialsFilterItem}`}>
+            <label htmlFor="date-filter">Date Filter</label>
+            <div className={`${styles.dateFilterGrid}`}>
               <div>
-                <label htmlFor="date-from" style={{ fontSize: '12px', color: '#6b7280' }}>
+                <label htmlFor="date-from" className={`${styles.dateLabel}`}>
                   From
                 </label>
                 <input
@@ -267,17 +51,11 @@ export default function MostWastedMaterialsDashboard() {
                   type="date"
                   value={dateRange.from}
                   onChange={e => setDateRange(prev => ({ ...prev, from: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                  }}
+                  className={`${styles.dateInput}`}
                 />
               </div>
               <div>
-                <label htmlFor="date-to" style={{ fontSize: '12px', color: '#6b7280' }}>
+                <label htmlFor="date-to" className={`${styles.dateLabel}`}>
                   To
                 </label>
                 <input
@@ -285,13 +63,7 @@ export default function MostWastedMaterialsDashboard() {
                   type="date"
                   value={dateRange.to}
                   onChange={e => setDateRange(prev => ({ ...prev, to: e.target.value }))}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    border: '1px solid #d1d5db',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                  }}
+                  className={`${styles.dateInput}`}
                 />
               </div>
             </div>
