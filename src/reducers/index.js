@@ -42,6 +42,7 @@ import WeeklySummaryEmailAssignment from './WeeklySummaryEmailAssignment';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
+import savedFilterReducer from './savedFilterReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -67,10 +68,11 @@ import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
-import { userPreferencesReducer } from './lbdashboard/userPreferencesReducer';
-
+import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
+import userSkillsReducer from './userSkillsReducer';
 // community portal
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
+import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
@@ -83,6 +85,7 @@ const localReducers = {
   allUserProfiles: allUserProfilesReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
+  savedFilters: savedFilterReducer,
   allProjects: allProjectsReducer,
   projectReport: projectReportReducer,
   projectMembers: projectMembershipReducer,
@@ -136,6 +139,7 @@ const localReducers = {
 
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
+  eventFeedback: eventFeedbackReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
@@ -148,6 +152,7 @@ const localReducers = {
 };
 
 const sessionReducers = {
+  userSkills: userSkillsReducer,
   hgnForm: HGNFormReducer,
   userPagination: changeUserPageStatusReducer,
   userProfileEdit: enableUserInfoEditReducer,
