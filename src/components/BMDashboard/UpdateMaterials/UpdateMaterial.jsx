@@ -1,10 +1,8 @@
-import { Container } from 'reactstrap';
-import * as moment from 'moment';
-import { FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
-import { useState } from 'react';
+import moment from 'moment';
+import { FormGroup, Input, Label, Form, Col, Button, Container } from 'reactstrap';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect } from 'react';
-import { postMaterialUpdate } from 'actions/bmdashboard/materialsActions';
+import { postMaterialUpdate } from '~/actions/bmdashboard/materialsActions';
 import { toast } from 'react-toastify';
 import styles from './UpdateMaterial.module.css';
 

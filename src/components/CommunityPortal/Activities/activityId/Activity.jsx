@@ -186,30 +186,34 @@ function Activity() {
         </div>
 
         <div className="activity-event-tabs">
-          <span
+          <button
             className={`activity-tab ${tab === 'Description' ? 'active' : ''}`}
             onClick={() => handleTabClick('Description')}
+            type="button"
           >
             Description
-          </span>
-          <span
+          </button>
+          <button
             className={`activity-tab ${tab === 'Participates' ? 'active' : ''}`}
             onClick={() => handleTabClick('Participates')}
+            type="button"
           >
             Participates
-          </span>
-          <span
+          </button>
+          <button
             className={`activity-tab ${tab === 'Comments' ? 'active' : ''}`}
             onClick={() => handleTabClick('Comments')}
+            type="button"
           >
             Comments
-          </span>
-          <span
+          </button>
+          <button
             className={`activity-tab ${tab === 'FAQs' ? 'active' : ''}`}
             onClick={() => handleTabClick('FAQs')}
+            type="button"
           >
             FAQs
-          </span>
+          </button>
         </div>
         {tab === 'Description' && (
           <div className="activity-event-description">

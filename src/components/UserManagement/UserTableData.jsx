@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Tooltip } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { Tooltip, UncontrolledTooltip } from 'reactstrap';
+import { connect, useSelector, useDispatch} from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 // import { Link, useHistory } from 'react-router-dom';
 import { useHistory } from 'react-router-dom';
-import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
-import { UncontrolledTooltip } from 'reactstrap';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
@@ -18,16 +15,14 @@ import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
-import hasPermission from '../../utils/permissions';
 import { boxStyle } from '../../styles';
-import { formatDateLocal } from '../../utils/formatDate';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
+import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
  */
-const UserTableData = React.memo(props => {
+const UserTableDataComponent = (props) => {
   const { darkMode } = props;
   const editUser = useSelector(state => state.userProfileEdit?.editable);
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
@@ -47,8 +42,8 @@ const UserTableData = React.memo(props => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDate(props.user.startDate),
-    endDate: formatDate(props.user.endDate),
+    startDate: formatDateUtcYYYYMMDD(props.user.startDate) || '',
+    endDate: formatDateUtcYYYYMMDD(props.user.endDate) || '',
   });
   const dispatch = useDispatch();
   const history = useHistory();
@@ -107,8 +102,8 @@ const UserTableData = React.memo(props => {
       jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
-      startDate: formatDateYYYYMMDD(props.user.startDate),
-      endDate: formatDateYYYYMMDD(props.user.endDate),
+      startDate: formatDateUtcYYYYMMDD(props.user.startDate),
+      endDate: formatDateUtcYYYYMMDD(props.user.endDate),
     });
   }, [props.user]);
 
@@ -510,7 +505,7 @@ const UserTableData = React.memo(props => {
       <td>
         {editUser?.startDate ? (
           <span>
-            {props.user.startDate ? formatDate(formData.startDate) : 'N/A'}
+            { props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A' }
             {/* {formData.startDate},{props.user.startDate} */}
           </span>
         ) : (
@@ -528,13 +523,13 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDate(formData.endDate) : 'N/A'}
+            {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(
-                  props.user.endDate ? formatDate(formData.endDate) : 'N/A',
+                  props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A',
                 );
                 toast.success('End Date Copied!');
               }}
@@ -596,7 +591,10 @@ const UserTableData = React.memo(props => {
       )}
     </tr>
   );
-});
+};
+
+const UserTableData = React.memo(UserTableDataComponent);
+UserTableData.displayName = 'UserTableData';
 
 const mapStateToProps = state => ({
   auth: state.auth,

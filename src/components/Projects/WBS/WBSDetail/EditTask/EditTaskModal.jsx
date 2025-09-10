@@ -2,20 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from 'languages/en/messages';
-import DayPickerInput from 'react-day-picker/DayPickerInput';
-import 'react-day-picker/lib/style.css';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '~/languages/en/messages';
+import { DayPicker, useInput } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
 import parseISO from 'date-fns/parseISO';
 import { isValid } from 'date-fns';
 import { utcToZonedTime } from 'date-fns-tz';
-import { updateTask } from 'actions/task';
+import { updateTask } from '~/actions/task';
 import { Editor } from '@tinymce/tinymce-react';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle, boxStyleDark } from 'styles';
+import { ENDPOINTS } from '~/utils/URL';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { toast } from 'react-toastify';
 import UserSearch from './UserSearch';
 import UserTag from './UserTag';
@@ -23,10 +23,41 @@ import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css';
 import '../wbs.css';
 import TagsSearch from '../components/TagsSearch';
-import {
-  START_DATE_ERROR_MESSAGE,
-  END_DATE_ERROR_MESSAGE,
-} from '../../../../../languages/en/messages.js';
+
+
+/** tiny reusable v8 DateInput using useInput + DayPicker **/
+function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
+  const { inputProps, dayPickerProps, show, toggle } = useInput({
+    mode: 'single',
+    selected: value ? new Date(value) : undefined,
+    onDayChange: (date) => {
+      // format back into MM/dd/yy
+      const f = dateFnsFormat(utcToZonedTime(date, TIMEZONE), FORMAT);
+      onChange(f);
+      toggle(false);
+    },
+  });
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <input
+        {...inputProps}
+        id={id}
+        aria-label={ariaLabel}
+        placeholder={placeholder}
+        onFocus={() => !disabled && toggle(true)}
+        readOnly
+        disabled={disabled}
+        className={disabled && darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+      />
+      {show && !disabled && (
+        <div style={{ position: 'absolute', zIndex: 10 }}>
+          <DayPicker {...dayPickerProps} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 function EditTaskModal(props) {
   /*
@@ -85,7 +116,7 @@ function EditTaskModal(props) {
   const EditorInit = {
     license_key: 'gpl',
     menubar: false,
-    plugins: 'advlist autolink autoresize lists link charmap table paste help',
+    plugins: 'advlist autolink autoresize lists link charmap table help',
     toolbar:
       'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
                         styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
@@ -275,6 +306,7 @@ function EditTaskModal(props) {
       // Handle date string in FORMAT format
       return date;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };
@@ -291,6 +323,7 @@ function EditTaskModal(props) {
         setThisTask(res?.data || {});
         setOldTask(res?.data || {});
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error);
       }
     };
@@ -371,14 +404,17 @@ function EditTaskModal(props) {
           >
             <tbody>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" data-tip="task ID">
                   Task #
                 </td>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   {thisTask?.num}
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Task Name<span className="red-asterisk">* </span>
                 </td>
@@ -400,6 +436,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Priority
                 </td>
@@ -421,9 +458,11 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Resources
                 </td>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   <div>
                     <TagsSearch
@@ -439,6 +478,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Assigned
                 </td>
@@ -476,6 +516,7 @@ function EditTaskModal(props) {
                           onChange={e => setAssigned(false)}
                           checked={!assigned}
                         />
+                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                         <label
                           className={`form-check-label ${darkMode ? 'text-light' : ''}`}
                           htmlFor="false"
@@ -490,6 +531,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Status
                 </td>
@@ -589,9 +631,11 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Hours
                 </td>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" className="w-100">
                   <div className="py-2 flex-responsive">
                     <label
@@ -710,9 +754,11 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Links
                 </td>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   {ReadOnlySectionWrapper(
                     <div>
@@ -772,6 +818,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Category
                 </td>
@@ -795,6 +842,7 @@ function EditTaskModal(props) {
               </tr>
 
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper(
@@ -815,6 +863,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Design Intent:</div>
                   {ReadOnlySectionWrapper(
@@ -835,6 +884,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Endstate:</div>
                   {ReadOnlySectionWrapper(
@@ -855,49 +905,53 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Start Date
                 </td>
                 <td id="edit-modal-td">
-                  {ReadOnlySectionWrapper(
-                    <div className="text-dark end-modal-dt">
-                      <DayPickerInput
-                        format={FORMAT}
-                        formatDate={formatDate}
-                        placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                        onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                        value={startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : '' ? dateFnsFormat(new Date(startedDate), FORMAT) : ''}
-                      />
-                      <div className="warning text-danger">
-                        {startDateError ? START_DATE_ERROR_MESSAGE : ''}
-                      </div>
-                    </div>,
-                    editable,
-                    convertDate(startedDate),
-                  )}
+                {ReadOnlySectionWrapper(
+                  <div className="text-dark">
+                    <DateInput
+                      id="start-date-input"
+                      ariaLabel="Start Date"
+                      placeholder={dateFnsFormat(new Date(), FORMAT)}
+                      value={startedDate}
+                      onChange={changeDateStart}
+                      disabled={!editable}
+                    />
+                    <div className="warning text-danger">
+                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    </div>
+                  </div>,
+                  editable,
+                  convertDate(startedDate),
+                )}
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   End Date
                 </td>
                 <td id="edit-modal-td">
-                  {ReadOnlySectionWrapper(
-                    <div className="text-dark end-modal-dt">
-                      <DayPickerInput
-                        format={FORMAT}
-                        formatDate={formatDate}
-                        placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                        onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                        value={dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''}value={dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''} 
-                      />
-                      <div className="warning text-danger">
-                        {endDateError ? END_DATE_ERROR_MESSAGE : ''}
-                      </div>
-                    </div>,
-                    editable,
-                    convertDate(dueDate),
-                  )}
+                {ReadOnlySectionWrapper(
+                  <div className="text-dark">
+                    <DateInput
+                      id="start-date-input"
+                      ariaLabel="Start Date"
+                      placeholder={dateFnsFormat(new Date(), FORMAT)}
+                      value={startedDate}
+                      onChange={changeDateStart}
+                      disabled={!editable}
+                    />
+                    <div className="warning text-danger">
+                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    </div>
+                  </div>,
+                  editable,
+                  convertDate(startedDate),
+                )}
                 </td>
               </tr>
             </tbody>
@@ -910,7 +964,6 @@ function EditTaskModal(props) {
                 color="primary"
                 onClick={updateTask}
                 disabled={startDateError || endDateError} style={darkMode ? boxStyleDark : boxStyle}
-                disabled={dateWarning}
                >
                 Update
               </Button>

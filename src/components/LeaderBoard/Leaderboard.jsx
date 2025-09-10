@@ -16,6 +16,7 @@ import {
   DropdownItem,
   Spinner,
   Input,
+  Tooltip,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
@@ -24,23 +25,21 @@ import {
   assignStarDotColors,
   showStar,
   viewZeroHouraMembers,
-} from 'utils/leaderboardPermissions';
-import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
-import hasPermission from 'utils/permissions';
-// import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
+} from '~/utils/leaderboardPermissions';
+import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
+import hasPermission from '~/utils/permissions';
+// import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
-import { Tooltip } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import axios from 'axios';
-import { getUserProfile } from 'actions/userProfile';
-import { useDispatch } from 'react-redux';
+import { getUserProfile } from '~/actions/userProfile';
+import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
-import { ENDPOINTS } from '../../utils/URL';
-import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -551,7 +550,6 @@ function LeaderBoard({
                       onChange={e => handleInputSearchTeams(e)}
                       style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
                       placeholder="Search teams"
-                      autoFocus
                       value={refInput.current}
                     />
                   </div>
@@ -656,6 +654,7 @@ function LeaderBoard({
               />
             </div>
             <Table
+              data-testid="dark-mode-table"
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
@@ -771,7 +770,9 @@ function LeaderBoard({
                         .reduce((total, user) => total + parseFloat(user.totaltime), 0)
                         .toFixed(2)}{' '}
                       of{' '}
-                      {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
+                      {filteredUsers
+                        .reduce((total, user) => total + (user.weeklycommittedHours || 0), 0)
+                        .toFixed(2)}
                     </span>
                   </td>
                   <td aria-label="Placeholder" />
@@ -1026,7 +1027,7 @@ function LeaderBoard({
                       </td>
                       <td className="align-middle" aria-label="Description or purpose of the cell">
                         <Link
-                          to={`/timelog/${item.personId}`}
+                          to={`/timelog/${item.personId}#currentWeek`}
                           title={`TangibleEffort: ${item.tangibletime} hours`}
                         >
                           <Progress value={item.barprogress} color={item.barcolor} />
