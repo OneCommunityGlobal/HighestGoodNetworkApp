@@ -275,6 +275,12 @@ export const permissionLabels = [
           'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
       },
       {
+        label: 'Modify Badge Amount',
+        key: 'modifyBadgeAmount',
+        description:
+          'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
+      },
+      {
         label: 'Assign Badges',
         key: 'assignBadges',
         description:
@@ -595,6 +601,12 @@ export const permissionLabels = [
         key: 'seeUsersInDashboard',
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
+      {
+        label: 'Access HGN Skills Dashboard',
+        key: 'accessHgnSkillsDashboard',
+        description:
+          'Lets the user access the HGN skills dashboard, which provides insights into user skills and competencies.',
       },
     ],
   },
