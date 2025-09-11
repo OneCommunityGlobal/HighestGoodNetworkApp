@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import JobReorderModal from './JobReorderModal';
+import FAQSection from './FAQSection';
 
 function Collaboration() {
   const [query, setQuery] = useState('');
@@ -515,6 +516,7 @@ function Collaboration() {
           <div className={`job-headings ${darkMode ? ' user-collaboration-dark-mode' : ''}`}>
             <h1 className="job-head">Like to Work With Us? Apply Now!</h1>
             <p className="job-intro"> Learn about who we are and who we want to work with!</p>
+            <FAQSection />
           </div>
         )}
       </div>

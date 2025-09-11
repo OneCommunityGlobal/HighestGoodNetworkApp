@@ -1,0 +1,97 @@
+/* QuestionnaireForm.css */
+
+.page-container {
+  min-height: 100vh;
+  background-color: #eff6ff; /* Tailwind's bg-blue-50 */
+  padding: 2rem;
+}
+
+.form-wrapper {
+  max-width: 64rem; /* Tailwind's max-w-4xl */
+  margin: 0 auto;
+}
+
+.form-frame {
+  position: relative;
+  border: 4px solid #3b82f6; /* Tailwind's border-blue-500 */
+  background-color: #ffffff;
+}
+
+.corner-square {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  background-color: #3b82f6;
+}
+
+.corner-square.top-left { top: -0.5rem; left: -0.5rem; }
+.corner-square.top-right { top: -0.5rem; right: -0.5rem; }
+.corner-square.bottom-left { bottom: -0.5rem; left: -0.5rem; }
+.corner-square.bottom-right { bottom: -0.5rem; right: -0.5rem; }
+.corner-square.mid-left { top: 50%; left: -0.5rem; transform: translateY(-50%); }
+.corner-square.mid-right { top: 50%; right: -0.5rem; transform: translateY(-50%); }
+.corner-square.mid-top { top: -0.5rem; left: 50%; transform: translateX(-50%); }
+.corner-square.mid-bottom { bottom: -0.5rem; left: 50%; transform: translateX(-50%); }
+
+.form-content {
+  padding: 3rem;
+}
+
+.form-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.form-header-box {
+  border: 2px dashed #d8b4fe; /* Tailwind's border-purple-300 */
+  background-color: #faf5ff; /* Tailwind's bg-purple-50 */
+  padding: 1.5rem;
+  margin: 0 auto;
+  max-width: 28rem;
+}
+
+.form-header h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937; /* text-gray-800 */
+  margin-bottom: 0.5rem;
+}
+
+.form-header p {
+  color: #4b5563; /* text-gray-600 */
+}
+
+.form-section {
+  border: 2px dashed #d8b4fe;
+  background-color: #faf5ff;
+  padding: 2rem;
+}
+
+.question {
+  margin-bottom: 2rem;
+}
+
+.question label {
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.select-box,
+.checkbox {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db; /* Tailwind's border-gray-300 */
+  border-radius: 0.375rem;
+  background-color: #ffffff;
+}
+
+.checkbox {
+  margin-right: 0.75rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+.checkbox-label {
+  color: #374151; /* text-gray-700 */
+}

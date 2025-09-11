@@ -1,0 +1,37 @@
+/* FAQSection.module.css */
+
+.faqTwoColumn {
+  display: flex;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.faqLeft {
+  flex: 2;
+}
+
+.faqRight {
+  flex: 1;
+}
+
+.faqItem {
+  margin-bottom: 1.5em;
+}
+
+.faqQuestion {
+  font-weight: bold;
+}
+
+.faqAnswer {
+  margin-top: 0.5em;
+}
+
+.videoWrapper {
+  margin-top: 1em;
+}
+
+.videoIframe {
+  width: 400px;
+  height: 225px;
+  border: none;
+}
