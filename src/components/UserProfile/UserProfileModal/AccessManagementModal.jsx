@@ -322,6 +322,7 @@ const AccessManagementModal = ({
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
             <span
+              // eslint-disable-next-line react/no-unknown-property
               as={"span"}
               className="app-icon"
               style={{ display: 'inline-block', width: 32, height: 32, marginRight: 12 }}
