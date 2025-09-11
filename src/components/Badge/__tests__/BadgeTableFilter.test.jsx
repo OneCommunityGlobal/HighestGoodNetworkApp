@@ -47,7 +47,7 @@ describe('BadgeTableFilter component', () => {
       order: '',
     };
     const { container } = renderComponent(mockData);
-    const nameElement = container.querySelector('#search_badge_name_search');
+    const nameElement = screen.getByRole('textbox');
     expect(nameElement.value).toBe('badge');
   });
   it('Check description box', () => {
@@ -58,7 +58,7 @@ describe('BadgeTableFilter component', () => {
       order: '',
     };
     const { container } = renderComponent(mockData);
-    const descriptionElement = container.querySelector('#search_badge_description_search');
+    const descriptionElement = screen.getAllByRole('textbox')[1];
     expect(descriptionElement.value).toBe('personal record');
   });
   it('Check type dropdown', () => {
@@ -69,7 +69,7 @@ describe('BadgeTableFilter component', () => {
       order: '',
     };
     const { container } = renderComponent(mockData);
-    const typeElement = container.querySelector('#search_badge_types_search');
+    const typeElement = screen.getByDisplayValue('Personal Max');
 
     expect(typeElement.value).toBe('Personal Max');
     Array.from(typeElement.options).forEach(option => {
@@ -88,7 +88,7 @@ describe('BadgeTableFilter component', () => {
       order: 'Descending',
     };
     const { container } = renderComponent(mockData);
-    const orderElement = container.querySelector('#search_badge_ranking_sort');
+    const orderElement = screen.getByDisplayValue('Descending');
 
     expect(orderElement.value).toBe('Descending');
     Array.from(orderElement.options).forEach(option => {
@@ -99,7 +99,7 @@ describe('BadgeTableFilter component', () => {
       }
     });
     expect(screen.getByText('Descending')).toBeInTheDocument();
-    expect(screen.getByText('Ascending')).not.toBeInTheDocument;
+    expect(screen.queryByText('Ascending')).not.toBeInTheDocument();
   });
   it('Check if reset filter button works properly', () => {
     const mockData = {
