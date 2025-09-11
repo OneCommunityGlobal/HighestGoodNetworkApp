@@ -111,7 +111,7 @@ const handleCreateAndNotify = async () => {
     });
 
     const token = localStorage.getItem('token');
-    const res = await fetch(`${ApiEndpoint}/activities/${eventInfo._id}/reschedule/notify`, {
+    const res = await fetch(`${ApiEndpoint}/communityportal/activities/${eventInfo._id}/reschedule/notify`, {
       method: 'POST',
       headers: {Authorization: token, 'Content-Type': 'application/json' },
       body: JSON.stringify({
