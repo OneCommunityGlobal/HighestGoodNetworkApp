@@ -228,7 +228,7 @@ function CreateFilterModal({
 
   return (
     <Modal size="lg" isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
-      <ModalHeader toggle={toggle}>Create or Update A New Filter</ModalHeader>
+      <ModalHeader toggle={toggle}>Create A New Filter or Override Existing Filter</ModalHeader>
       <ModalBody>
         <Form>
           <Input
@@ -240,7 +240,7 @@ function CreateFilterModal({
             required
           >
             <option value="create">Create New</option>
-            <option value="update">Update Existing Filter</option>
+            <option value="update">Override Existing Filter</option>
           </Input>
 
           {mode === 'update' && (

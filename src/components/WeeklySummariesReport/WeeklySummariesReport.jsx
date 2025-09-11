@@ -603,7 +603,7 @@ const WeeklySummariesReport = props => {
         selectedOverTime,
         selectedBioStatus,
         selectedTrophies,
-        tableData,
+        // tableData,
         COLORS,
         selectedSpecialColors,
         selectedExtraMembers,
@@ -674,15 +674,35 @@ const WeeklySummariesReport = props => {
         );
       });
 
+      // Use Dict and Set for quick access
+      const filteredTeamDict = {};
+      const filteredIdSet = new Set();
+      filteredTeamDict[''] = [];
+
+      temp.forEach(summary => {
+        if (summary.teamCode) {
+          if (!(summary.teamCode in filteredTeamDict)) {
+            filteredTeamDict[summary.teamCode] = [];
+          }
+          filteredTeamDict[summary.teamCode].push(summary);
+        } else {
+          filteredTeamDict[''].push(summary);
+        }
+        filteredIdSet.add(summary._id);
+      });
+
+      // Get chartData and structuredTeamTableData
       if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
         if (selectedCodes.length >= 52) {
           selectedCodes.forEach(code => {
             if (code.value === '') return;
             chartData.push({
               name: code.label,
-              value: temp.filter(summary => summary.teamCode === code.value).length,
+              value: code.value in filteredTeamDict ? filteredTeamDict[code.value].length : 0,
+              // value: temp.filter(summary => summary.teamCode === code.value).length,
             });
-            const team = tableData[code.value];
+            const team = filteredTeamDict[code.value];
+            // const team = tableData[code.value];
             const index = selectedCodesArray.indexOf(code.value);
             const color = COLORS[index % COLORS.length];
             const members = [];
@@ -698,9 +718,11 @@ const WeeklySummariesReport = props => {
         } else {
           chartData.push({
             name: 'All With NO Code',
-            value: temp.filter(summary => summary.teamCode === '').length,
+            value: '' in filteredTeamDict ? filteredTeamDict[''].length : 0,
+            // value: temp.filter(summary => summary.teamCode === '').length,
           });
-          const team = tableData.noCodeLabel;
+          // const team = tableData.noCodeLabel;
+          const team = filteredTeamDict[''];
           const index = selectedCodesArray.indexOf('noCodeLabel');
           const color = COLORS[index % COLORS.length];
           const members = [];
@@ -715,14 +737,16 @@ const WeeklySummariesReport = props => {
         }
       } else {
         selectedCodes.forEach(code => {
-          const val = temp.filter(summary => summary.teamCode === code.value).length;
+          const val = code.value in filteredTeamDict ? filteredTeamDict[code.value].length : 0;
+          // const val = temp.filter(summary => summary.teamCode === code.value).length;
           if (val > 0) {
             chartData.push({
               name: code.label,
               value: val,
             });
           }
-          const team = tableData[code.value];
+          // const team = tableData[code.value];
+          const team = filteredTeamDict[code.value];
           const index = selectedCodesArray.indexOf(code.value);
           const color = COLORS[index % COLORS.length];
           const members = [];
@@ -741,25 +765,30 @@ const WeeklySummariesReport = props => {
 
       // Add Extra Members data to chartData and structuredTeamTableData
       if (selectedExtraMembersArray.length > 0) {
-        chartData.push({
-          name: 'Extra Members',
-          value: selectedExtraMembersArray.length,
-        });
         const color = COLORS[selectedCodesArray.length % COLORS.length];
         const members = [];
         selectedExtraMembers.forEach(option => {
-          members.push({
-            name: option.label,
-            role: option.role,
-            id: option.value,
-          });
+          if (filteredIdSet.has(option.value)) {
+            members.push({
+              name: option.label,
+              role: option.role,
+              id: option.value,
+            });
+          }
         });
+        if (members.length > 0) {
+          chartData.push({
+            name: 'Extra Members',
+            value: members.length,
+          });
+        }
         structuredTeamTableData.push({ team: 'Extra Members', color, members });
       }
 
       chartData.sort();
       temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
       structuredTeamTableData.sort();
+
       setState(prev => ({
         ...prev,
         total: temptotal,
