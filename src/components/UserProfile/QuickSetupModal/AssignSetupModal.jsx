@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import hasPermission from '../../../utils/permissions';
-import { deleteTitleById } from 'actions/title';
+import { deleteTitleById } from '~/actions/title';
 import { useSelector } from 'react-redux';
 import '../../Header/DarkMode.css';
 import { toast } from "react-toastify";
@@ -107,6 +107,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         setIsOpen(false);
       })
       .catch(e => {
+        // eslint-disable-next-line no-console
         console.log(e);
       });
   };

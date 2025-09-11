@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import * as types from '../constants/mouseoverTextConstants';
 
 export const getMouseoverTextAction = payload => {

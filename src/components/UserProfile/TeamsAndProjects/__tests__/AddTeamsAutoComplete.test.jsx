@@ -2,20 +2,20 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import AddTeamsAutoComplete from '../AddTeamsAutoComplete';
 import { toast } from 'react-toastify';
 
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    error: jest.fn(),
+    error: vi.fn(),
   },
 }));
 
 describe('AddTeamsAutoComplete Component', () => {
-  const mockSetSearchText = jest.fn();
-  const mockOnCreateNewTeam = jest.fn();
-  const mockSetInputs = jest.fn();
+  const mockSetSearchText = vi.fn();
+  const mockOnCreateNewTeam = vi.fn();
+  const mockSetInputs = vi.fn();
   const teamsData = {
     allTeams: [
       { _id: '1', teamName: 'Engineering' },
@@ -31,7 +31,7 @@ describe('AddTeamsAutoComplete Component', () => {
   const store = mockStore(initialState);
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renders without crashing', () => {
@@ -157,7 +157,7 @@ describe('AddTeamsAutoComplete Component', () => {
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Test' } });
 
-    expect(screen.queryByRole('menu')).toBeInTheDocument();
+    expect(screen.getByRole('menu')).toBeInTheDocument();
     expect(screen.queryByText('No teams found')).not.toBeInTheDocument(); // Because toast error would handle this case
   });
 

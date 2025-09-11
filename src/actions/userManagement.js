@@ -15,8 +15,8 @@ import {
   CHANGE_USER_PROFILE_PAGE,
   START_USER_INFO_UPDATE,
 } from '../constants/userManagement';
-import { ENDPOINTS } from '../utils/URL';
-import { UserStatus } from '../utils/enums';
+import { ENDPOINTS } from '~/utils/URL';
+import { UserStatus } from '~/utils/enums';
 import { getTimeEndDateEntriesByPeriod } from './timeEntries';
 
 /**
@@ -261,9 +261,7 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
       const patchData = {
         status,
         endDate: finalDayDate
-          ? moment(finalDayDate)
-              .add(1, 'days')
-              .format('YYYY-MM-DD')
+          ? moment.utc(finalDayDate).format('YYYY-MM-DD')
           : undefined,
         isSet,
       };
@@ -288,10 +286,14 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
 /**
  * fetching all user profiles basic info
  */
-export const getUserProfileBasicInfo = () => {
+export const getUserProfileBasicInfo = (userId) => {
   // API request to fetch basic user profile information
-  const userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
-
+ let userProfileBasicInfoPromise;
+ if (userId)
+    userProfileBasicInfoPromise = axios.get(`${ENDPOINTS.USER_PROFILE_BASIC_INFO}?userId=${userId}`);
+ else
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+  
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process
     await dispatch(userProfilesBasicInfoFetchStartAction());
