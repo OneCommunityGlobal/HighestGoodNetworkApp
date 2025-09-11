@@ -44,7 +44,7 @@ import BasicToolTips from './ToolTips/BasicTabTips';
 import TeamsTabTips from './ToolTips/TeamsTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode } from '../../actions/allTeamsAction';
+import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
@@ -56,7 +56,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
+
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
@@ -109,6 +109,7 @@ function UserProfile(props) {
       setIsLoading(false);
       return stringNoRepeat;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       setIsLoading(false);
       toast.error(`It was not possible to retrieve the team codes.
@@ -166,6 +167,7 @@ function UserProfile(props) {
       await loadUserProfile();
       toast.success('Profile Image Removed');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       toast.error('Failed to remove profile Image.');
     }
@@ -308,6 +310,7 @@ function UserProfile(props) {
 
       setSummaryIntro(summaryIntroString);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching team users:', error);
     }
   };
@@ -326,6 +329,7 @@ function UserProfile(props) {
         setTasks(res?.data || []);
         setOriginalTasks(res.data);
       })
+      // eslint-disable-next-line no-console
       .catch(err => console.log(err));
   };
 
@@ -369,6 +373,7 @@ function UserProfile(props) {
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching calculated start date:', error);
       // Fallback to createdDate on error
       const createdDate = userProfile?.createdDate
@@ -485,6 +490,7 @@ function UserProfile(props) {
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
+      // eslint-disable-next-line no-console
       console.log(err);
     }
   };
@@ -519,6 +525,7 @@ function UserProfile(props) {
       }));
       setSummaries(allSummaries);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('Could not load leaderBoard data.', err);
     } finally {
       setLoadingSummaries(false);
@@ -538,6 +545,7 @@ function UserProfile(props) {
   };
 
 const onAssignProject = assignedProject => {
+  // eslint-disable-next-line no-console
   console.log("Adding project to state:", assignedProject);
   
   // Always create a new array to trigger React re-render
@@ -547,13 +555,16 @@ const onAssignProject = assignedProject => {
     const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
     
     if (currentProjects.some(proj => proj._id === assignedProject._id)) {
+      // eslint-disable-next-line no-console
       console.log("Project already exists, not adding duplicate");
       return currentProjects; 
     }
     
     // Add project and log the new state
+    // eslint-disable-next-line no-console
     console.log("Adding new project:", assignedProject.projectName);
     const newProjects = [...currentProjects, assignedProject];
+    // eslint-disable-next-line no-console
     console.log("Updated projects state:", newProjects);
     return newProjects; // Return the new array with the project added
   });
@@ -643,8 +654,10 @@ const onAssignProject = assignedProject => {
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
       if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
+        // eslint-disable-next-line no-alert
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -676,11 +689,15 @@ const onAssignProject = assignedProject => {
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
+          // eslint-disable-next-line no-console
           console.log('WARNING: Future Blue Square');
+          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
+          // eslint-disable-next-line no-console
           console.log('WARNING: Empty Date');
+          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
@@ -717,6 +734,7 @@ const onAssignProject = assignedProject => {
             });
           })
           .catch(error => {
+            // eslint-disable-next-line no-console
             console.log('error in modifying bluequare', error);
             toast.error('Failed to add Blue Square!');
           });
@@ -758,6 +776,7 @@ const onAssignProject = assignedProject => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      // eslint-disable-next-line no-console
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
@@ -765,6 +784,7 @@ const onAssignProject = assignedProject => {
         ...(updatedUserProfile || userProfileRef.current),
         projects, // Ensure projects are included in the payload
         };
+        // eslint-disable-next-line no-console
         console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
       const result = await props.updateUserProfile(userProfileToUpdate);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
@@ -776,6 +796,7 @@ const onAssignProject = assignedProject => {
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         const errorMessage = err.response.data.error.join('\n');
+        // eslint-disable-next-line no-alert
         alert(errorMessage);
       }
       return err;
@@ -789,6 +810,7 @@ const onAssignProject = assignedProject => {
     try {
       setSaved(false);
     } catch (err) {
+      // eslint-disable-next-line no-alert
       alert('An error occurred while reload user profile after badge udpate.');
     }
   };
@@ -899,6 +921,7 @@ const onAssignProject = assignedProject => {
       setOriginalUserProfile(newUserProfile);
       window.location.reload();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to update user status:', error);
     }
     setActiveInactivePopupOpen(false);
@@ -1264,6 +1287,7 @@ const onAssignProject = assignedProject => {
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
                     // Owner user cannot be deactivated by another user that is not an Owner.
+                    // eslint-disable-next-line no-alert
                     alert('You are not authorized to deactivate an owner.');
                     return;
                   }
@@ -1624,6 +1648,7 @@ const onAssignProject = assignedProject => {
                   to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
                   onClick={() => {
                     if (targetIsDevAdminUneditable) {
+                      // eslint-disable-next-line no-alert
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                           'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1662,6 +1687,7 @@ const onAssignProject = assignedProject => {
                     darkMode={darkMode}
                   />
                   {activeTab !== '3' && (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
@@ -1757,6 +1783,7 @@ const onAssignProject = assignedProject => {
                           }
                           onClick={() => {
                             if (targetIsDevAdminUneditable) {
+                              // eslint-disable-next-line no-alert
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                                   'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1793,6 +1820,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1872,6 +1900,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1968,6 +1997,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -2054,6 +2084,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -2127,6 +2158,7 @@ const onAssignProject = assignedProject => {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
