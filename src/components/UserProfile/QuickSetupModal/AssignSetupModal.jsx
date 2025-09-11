@@ -107,6 +107,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         setIsOpen(false);
       })
       .catch(e => {
+        // eslint-disable-next-line no-console
         console.log(e);
       });
   };
