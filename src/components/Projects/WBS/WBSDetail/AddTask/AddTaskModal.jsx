@@ -102,18 +102,20 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
-  const activeMembers = useMemo(
-    () =>
-      (allMembers ?? []).filter((u) => {
-        if (!u) return false;
-        // accept boolean true, string "true", or status === "Active"
-        const activeFlag =
-          u.isActive === true || u.isActive === 'true' || u.status === 'Active';
-        return Boolean(activeFlag);
-      }),
-    [allMembers]
-  );
-  
+   const activeMembers = useMemo(() => {
+        const members = Array.isArray(allMembers) ? allMembers : [];
+        const filtered = members.filter(u => {
+          if (!u) return false;
+          // Treat only explicit “inactive” as excluded; accept truthy/unknown as active
+          const isInactive =
+            u.status === 'Inactive' ||
+            u.isActive === false ||
+            String(u?.isActive).toLowerCase() === 'false';
+          return !isInactive;
+        });
+        return filtered.length ? filtered : members; // fallback so the list isn't empty
+      }, [allMembers]);
+      
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
       const task = tasks.find(({ _id }) => _id === props.taskId);
@@ -407,10 +409,11 @@ function AddTaskModal(props) {
   }, [modal]);
 
   useEffect(() => {
-    if (modal && props.projectId && (!allMembers || allMembers.length === 0)) {
-      props.fetchAllMembers(props.projectId);
-    }
-  }, [modal, props.projectId, allMembers?.length]);
+        if (modal) {
+          // Fetch for this project whenever modal opens (or project changes)
+          props.fetchAllMembers(props.projectId ?? '');
+        }
+      }, [modal, props.projectId]);
   
   const fontColor = darkMode ? 'text-light' : '';
 

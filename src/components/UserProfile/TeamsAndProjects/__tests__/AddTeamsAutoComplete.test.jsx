@@ -157,7 +157,7 @@ describe('AddTeamsAutoComplete Component', () => {
 
     fireEvent.change(screen.getByRole('textbox'), { target: { value: 'Test' } });
 
-    expect(screen.queryByRole('menu')).toBeInTheDocument();
+    expect(screen.getByRole('menu')).toBeInTheDocument();
     expect(screen.queryByText('No teams found')).not.toBeInTheDocument(); // Because toast error would handle this case
   });
 
