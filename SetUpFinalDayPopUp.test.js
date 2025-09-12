@@ -5,8 +5,6 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
 
-
-
 const mockStore = configureStore([]);
 const onSaveMock = jest.fn();
 const onCloseMock = jest.fn();
@@ -15,7 +13,7 @@ const renderComponent = (store, props) =>
   render(
     <Provider store={store}>
       <SetUpFinalDayPopUp {...props} />
-    </Provider>
+    </Provider>,
   );
 
 describe('SetUpFinalDayPopUp Component', () => {
@@ -67,9 +65,7 @@ describe('SetUpFinalDayPopUp Component', () => {
     });
     fireEvent.click(screen.getByText('Save'));
 
-    expect(
-      screen.getByText('Please choose a future date.')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Please choose a future date.')).toBeInTheDocument();
     expect(onSaveMock).not.toHaveBeenCalled();
   });
 
@@ -90,9 +86,7 @@ describe('SetUpFinalDayPopUp Component', () => {
     fireEvent.click(screen.getByText('Save'));
 
     expect(onSaveMock).toHaveBeenCalledWith(futureDate);
-    expect(
-      screen.queryByText('Please choose a future date.')
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Please choose a future date.')).not.toBeInTheDocument();
   });
 
   it('applies dark mode styles when darkMode is true', () => {
@@ -124,9 +118,7 @@ describe('SetUpFinalDayPopUp Component', () => {
       onSave: onSaveMock,
     });
 
-    expect(
-      screen.queryByText('Set Your Final Day')
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText('Set Your Final Day')).not.toBeInTheDocument();
   });
 
   it('shows error and does not call onSave on invalid past date', () => {
@@ -145,9 +137,7 @@ describe('SetUpFinalDayPopUp Component', () => {
     });
     fireEvent.click(screen.getByText('Save'));
 
-    expect(
-      screen.getByText('Please choose a future date.')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Please choose a future date.')).toBeInTheDocument();
     expect(onSaveMock).not.toHaveBeenCalled();
   });
 
