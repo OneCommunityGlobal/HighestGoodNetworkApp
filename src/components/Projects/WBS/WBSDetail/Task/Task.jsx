@@ -6,7 +6,6 @@ import ControllerRow from '../ControllerRow';
 import {
   moveTasks,
   deleteTask,
-  copyTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
@@ -14,8 +13,8 @@ import './task.css';
 import '../../../../Header/DarkMode.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate } from '~/utils/formatDate';
 
 function Task(props) {
   /*
@@ -23,6 +22,8 @@ function Task(props) {
    */
   // props from store
   const { tasks, darkMode } = props;
+
+  const { copyCurrentTask } = props;
 
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
@@ -51,6 +52,11 @@ function Task(props) {
   const [children, setChildren] = useState([]);
   const [showMoreResources, setShowMoreResources] = useState(false);
   const tableRowRef = useRef();
+  const [currentTask, setCurrentTask] = useState(undefined);
+
+  useEffect(() => {
+    setCurrentTask(tasks.find(t => t._id === props.taskId));
+  }, [tasks])
 
   /*
    * -------------------------------- functions --------------------------------
@@ -198,8 +204,9 @@ function Task(props) {
             </td>
             <td
               id={`r_${props.num}_${props.taskId}`}
+              // eslint-disable-next-line jsx-a11y/scope
               scope="row"
-              className={`taskNum ${props.hasChildren ? 'has_children' : ''}`}
+              className={`taskNum ${props.hasChildren ? 'has_children' : ''} text-left`}
               onClick={openChild}
             >
               {props.num.replaceAll('.0', '')}
@@ -210,6 +217,7 @@ function Task(props) {
                   className={`level-space-${props.level}`}
                   data-tip={`${getAncestorNames(props.mother)}`}
                 >
+                  {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                   <span
                     onClick={openChild}
                     id={`task_name_${props.taskId}`}
@@ -259,6 +267,7 @@ function Task(props) {
                             {initials}{' '}
                           </span>
                         ) : (
+                          // eslint-disable-next-line jsx-a11y/alt-text
                           <img className="img-circle" src={elm.profilePic} />
                         )}
                       </a>
@@ -266,6 +275,7 @@ function Task(props) {
                   })
                 : null}
               {props.resources.length > 2 ? (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <a
                   className="resourceMoreToggle"
                   onClick={() => setShowMoreResources(!showMoreResources)}
@@ -376,6 +386,8 @@ function Task(props) {
           </tr>
           {controllerRow ? (
             <ControllerRow
+              currentTask={currentTask}
+              copyCurrentTask={copyCurrentTask}
               tableColNum={tableColNum}
               num={props.num}
               taskId={props.taskId}
@@ -392,7 +404,6 @@ function Task(props) {
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
-              setIsLoading={props.setIsLoading}
             />
           ) : null}
         </>
@@ -402,6 +413,8 @@ function Task(props) {
         isOpen && children.length
           ? children.map((task, i) => (
             <ConnectedTask
+              copyCurrentTask={copyCurrentTask}
+              tasks={tasks}
               key={`${task._id}${i}`}
               taskId={task._id}
               level={task.level}
@@ -448,14 +461,13 @@ function Task(props) {
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
   darkMode: state.theme.darkMode,
 });
 
 const ConnectedTask = connect(mapStateToProps, {
   moveTasks,
   deleteTask,
-  copyTask,
   getPopupById,
   deleteChildrenTasks,
 })(Task);

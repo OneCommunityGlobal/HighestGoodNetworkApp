@@ -13,7 +13,7 @@ import {
   Table,
 } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
@@ -122,6 +122,7 @@ function AssignBadge(props) {
           style={{ fontWeight: 'bold', marginBottom: 10 }}
         >
           Search by Full Name
+          <span className="red-asterisk">* </span>
           <i
             className="fa fa-info-circle ml-2"
             id="NameInfo"

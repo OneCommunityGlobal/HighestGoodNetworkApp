@@ -34,5 +34,8 @@ const RoutePermissions = {
     'suggestTask',
   ],
   announcements: ['sendEmails'],
+  faq: [''],
+  faqManagement: ['manageFAQs'],
+  accessHgnSkillsDashboard: ['accessHgnSkillsDashboard'],
 };
 export default RoutePermissions;

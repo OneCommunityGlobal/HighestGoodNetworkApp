@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import './PermissionChangeLogTable.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { formatDate, formattedAmPmTime } from 'utils/formatDate';
+import { formatDate, formattedAmPmTime } from '~/utils/formatDate';
 import { permissionLabelKeyMappingObj } from './PermissionsConst';
 
 function PermissionChangeLogTable({ changeLogs, darkMode }) {
@@ -23,9 +23,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
   };
 
   const formatName = name => {
-    // if (name.startsWith('INDIVIDUAL:')) {
-    //   return name.replace('INDIVIDUAL:', '').trim();
-    // }
+    if (name.startsWith('INDIVIDUAL:')) {
+      return name.replace('INDIVIDUAL:', '').trim();
+    }
     return name;
   };
 
@@ -122,15 +122,12 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 )} ${formattedAmPmTime(log.logDateTime)}`}</td>
                 <td
                   className={`permission-change-log-table--cell ${bgYinmnBlue}`}
-                  style={
-                    {
-                      // Commented out the below code as log.name is undefined currently so accessing it causes the white
-                      // screen error on the Permissions Management page
-                      // fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
-                    }
-                  }
+                  style={{
+                    // Uncommented lines below and in formatName, using individualName for users, and roleName for role changes
+                    fontWeight: log?.individualName ? 'bold' : 'normal',
+                  }}
                 >
-                  {formatName(log.name)}
+                  {log?.individualName ? formatName(log.individualName) : log.roleName}
                 </td>
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissions, log._id)}
