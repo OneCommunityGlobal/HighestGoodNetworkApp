@@ -24,7 +24,6 @@ import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 import TimerPopout from './TimerPopout';
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
-import { updateIndividualTaskTime } from '../TeamMemberTasks/actions';
 
 function Timer({ authUser, darkMode, isPopout }) {
   const dispatch = useDispatch();
@@ -334,7 +333,7 @@ function Timer({ authUser, darkMode, isPopout }) {
 
       const timeEntry = {
         personId: userId,
-        taskId: message.taskId || null,
+        taskId: null,
         wbsId: null,
         projectId: null,
         hours: logHours,
@@ -352,17 +351,6 @@ function Timer({ authUser, darkMode, isPopout }) {
       const result = await dispatch(postTimeEntry(timeEntry));
 
       if (result === 200 || result === 201) {
-        // Update task time if there was a specific task
-        if (message.taskId) {
-          dispatch(
-            updateIndividualTaskTime({
-              newTime: { hours: logHours, minutes: logMinutes },
-              taskId: message.taskId,
-              personId: userId,
-            }),
-          );
-        }
-
         // Mark as auto-logged and stop timer
         setHasAutoLoggedWeekEnd(true);
         setAutoLogModalType('weekend');
@@ -402,7 +390,7 @@ function Timer({ authUser, darkMode, isPopout }) {
 
       const timeEntry = {
         personId: userId,
-        taskId: message.taskId || null,
+        taskId: null,
         wbsId: null,
         projectId: null,
         hours: logH,
@@ -419,16 +407,6 @@ function Timer({ authUser, darkMode, isPopout }) {
       const result = await dispatch(postTimeEntry(timeEntry));
 
       if (result === 200 || result === 201) {
-        if (message.taskId) {
-          dispatch(
-            updateIndividualTaskTime({
-              newTime: { hours: logH, minutes: logM },
-              taskId: message.taskId,
-              personId: userId,
-            }),
-          );
-        }
-
         setHasAutoLoggedScheduled(true);
         setAutoLogModalType('scheduled');
         setAutoLogModal(true);
