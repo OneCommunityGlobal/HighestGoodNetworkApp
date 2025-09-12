@@ -233,7 +233,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     setAutoLogModal(!autoLogModal);
   };
 
-
   const checkBtnAvail = useCallback(
     addition => {
       const remainingDuration = moment.duration(remaining);
@@ -434,7 +433,6 @@ function Timer({ authUser, darkMode, isPopout }) {
         setAutoLogModalType('scheduled');
         setAutoLogModal(true);
         sendStop(); // Stop and reset timer like normal time logging
-        sendStartChime(true);
         toast.info('Timer paused by schedule. Please complete your time log description.');
       } else {
         throw new Error(`Unexpected response status: ${result}`);
@@ -444,7 +442,6 @@ function Timer({ authUser, darkMode, isPopout }) {
       toast.error('Failed to auto-log time for scheduled pause');
     }
   };
-
 
   /**
    * This useEffect is to make sure that all the states will be updated before taking effects,
@@ -459,8 +456,10 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
 
     // Check if this is an auto-log action first
-    const isAutoLogAction = lastJsonMessage && 
-      (lastJsonMessage.action === 'SCHEDULED_PAUSE' || lastJsonMessage.action === 'WEEK_CLOSE_PAUSE');
+    const isAutoLogAction =
+      lastJsonMessage &&
+      (lastJsonMessage.action === 'SCHEDULED_PAUSE' ||
+        lastJsonMessage.action === 'WEEK_CLOSE_PAUSE');
 
     // Handle explicit scheduled pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'SCHEDULED_PAUSE') {
@@ -491,15 +490,17 @@ function Timer({ authUser, darkMode, isPopout }) {
     const previousMessage = message;
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
-    
+
     // Only show inactivity or time-over modals if NOT an auto-log action
     if (!isAutoLogAction) {
       setInacModal(forcedPauseLJM);
       setTimeIsOverModalIsOpen(chimingLJM);
+    } else {
+      // For auto-log actions, ensure these modals are closed
+      setInacModal(false);
+      setTimeIsOverModalIsOpen(false);
     }
-
   }, [lastJsonMessage, hasAutoLoggedWeekEnd, hasAutoLoggedScheduled, running, message]);
-
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -751,14 +752,18 @@ function Timer({ authUser, darkMode, isPopout }) {
           <ModalBody className={bodyBg}>
             {autoLogModalType === 'weekend' ? (
               <>
-                Your time has been automatically logged due to week closing. Please edit your latest time entry to reflect the correct task and project details.
-                <br /><br />
+                Your time has been automatically logged due to week closing. Please edit your latest
+                time entry to reflect the correct task and project details.
+                <br />
+                <br />
                 You can find and edit your time entries in the Time Log section.
               </>
             ) : (
               <>
-                Your time has been automatically logged due to a scheduled pause. Please edit your latest time entry to reflect the correct task and project details.
-                <br /><br />
+                Your time has been automatically logged due to a scheduled pause. Please edit your
+                latest time entry to reflect the correct task and project details.
+                <br />
+                <br />
                 You can find and edit your time entries in the Time Log section.
               </>
             )}
@@ -1094,14 +1099,18 @@ function Timer({ authUser, darkMode, isPopout }) {
         <ModalBody className={bodyBg}>
           {autoLogModalType === 'weekend' ? (
             <>
-              Your time has been automatically logged due to week closing. Please edit your latest time entry to reflect the correct task and project details.
-              <br /><br />
+              Your time has been automatically logged due to week closing. Please edit your latest
+              time entry to reflect the correct task and project details.
+              <br />
+              <br />
               You can find and edit your time entries in the Time Log section.
             </>
           ) : (
             <>
-              Your time has been automatically logged due to a scheduled pause. Please edit your latest time entry to reflect the correct task and project details.
-              <br /><br />
+              Your time has been automatically logged due to a scheduled pause. Please edit your
+              latest time entry to reflect the correct task and project details.
+              <br />
+              <br />
               You can find and edit your time entries in the Time Log section.
             </>
           )}
