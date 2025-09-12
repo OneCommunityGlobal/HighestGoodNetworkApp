@@ -15,12 +15,12 @@
     max-width: 150px;
   }
   
-  h2 {
+  .h2 {
     text-align: left;
     color: #333;
   }
   
-  p {
+  .p {
     font-size: 16px;
     color: #555;
     margin: 5px 0;
@@ -54,11 +54,11 @@
     box-shadow: none;
   }
   
-  ul {
+  .ul {
     padding-left: 20px;
   }
   
-  ul li {
+  .ul li {
     margin-bottom: 5px;
   }
   
