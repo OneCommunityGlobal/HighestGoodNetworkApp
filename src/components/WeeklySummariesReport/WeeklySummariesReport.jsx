@@ -465,11 +465,9 @@ const WeeklySummariesReport = props => {
     }
   };
 
-  // Update members of membersFromUnselectedTeam dropdown
-  useEffect(() => {
+  const updateMembersFromUnselectedTeam = () => {
     // Add all selected member in a Set
     const selectedMemberSet = new Set();
-
     state.selectedCodes.forEach(code => {
       if (code.value === '') return;
       if (code.value in state.tableData) {
@@ -495,10 +493,15 @@ const WeeklySummariesReport = props => {
       ...prev,
       membersFromUnselectedTeam: newMembersFromUnselectedTeam,
       // Remove individuals that is in selected team
-      selectedExtraMembers: state.selectedExtraMembers.filter(
+      selectedExtraMembers: prev.selectedExtraMembers.filter(
         member => !selectedMemberSet.has(member.value),
       ),
     }));
+  };
+
+  // Update members of membersFromUnselectedTeam dropdown
+  useEffect(() => {
+    updateMembersFromUnselectedTeam();
   }, [state.selectedCodes, state.summaries]);
 
   const onSummaryRecepientsPopupClose = () => {
@@ -946,12 +949,23 @@ const WeeklySummariesReport = props => {
   };
 
   const handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
+    // TODO: This one is NOT updated to the database???
     try {
       setState(prevState => {
         let { teamCodes, summaries, selectedCodes } = prevState;
+        const { tableData } = prevState;
         // Find and update the user's team code in summaries
         summaries = summaries.map(summary => {
           if (userIdObj[summary._id]) {
+            // Update tableData
+            tableData[summary.teamCode] = tableData[summary.teamCode].filter(
+              member => member._id !== summary._id,
+            );
+            if (newTeamCode in tableData) {
+              tableData[newTeamCode].push(summary);
+            } else {
+              tableData[newTeamCode] = [summary];
+            }
             return { ...summary, teamCode: newTeamCode };
           }
           return summary;
@@ -1021,7 +1035,14 @@ const WeeklySummariesReport = props => {
             label: `Select All With NO Code (${noTeamCodeCount || 0})`,
             _ids: teamCodeWithUserId[''],
           });
-        return { ...prevState, summaries, teamCodes, selectedCodes };
+
+        return {
+          ...prevState,
+          summaries,
+          teamCodes,
+          selectedCodes,
+          tableData,
+        };
       });
       return null;
     } catch (error) {
@@ -1128,6 +1149,7 @@ const WeeklySummariesReport = props => {
         });
 
         // Update filters
+        // TODO: To improve speed, maybe I should do all of this in the backend, and make sure to handle extra members too
         await Promise.all(
           filterChoices.map(async filterChoice => {
             const oldSelectedCodeLength = filterChoice.filterData.selectedCodes.size;
