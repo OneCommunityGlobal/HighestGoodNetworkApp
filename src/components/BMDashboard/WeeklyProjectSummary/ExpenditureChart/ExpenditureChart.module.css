@@ -1,0 +1,63 @@
+.expenditure-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.expenditure-chart-card {
+  flex: 1 1 220px;
+  max-width: 260px;
+  padding: 12px 10px;
+  min-height: 300px;
+  background: var(--card-bg);
+  box-shadow: 0 2px 4px var(--card-shadow);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.expenditure-chart-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.recharts-legend-wrapper {
+  margin-top: -10px !important;
+}
+
+.recharts-legend-item-text {
+  font-size: 12px !important;
+  white-space: nowrap;
+}
+
+.recharts-pie-label-text {
+  font-size: 10px !important;
+  font-weight: 600;
+  fill: white;
+  text-anchor: middle;
+  alignment-baseline: central;
+  white-space: nowrap;
+}
+
+.dark-mode .expenditure-chart-card {
+  background: var(--card-bg);
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .expenditure-chart-title {
+  color: var(--text-color);
+}
+
+.dark-mode .recharts-default-tooltip {
+  background-color: #333 !important;
+  color: #fff !important;
+  border: 1px solid #555 !important;
+}
