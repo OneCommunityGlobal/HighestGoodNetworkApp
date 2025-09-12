@@ -77,9 +77,6 @@ describe('SetUpFinalDayPopUp.jsx Component', () => {
     expect(modalBody).toHaveClass('modal-body');
   });
 
-
-
-
   ////////////////////////////
 
   it('should apply autoFocus to the date input field', () => {
