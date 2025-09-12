@@ -3,10 +3,13 @@ import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
+import { connect } from 'react-redux';
 
 import 'leaflet/dist/leaflet.css';
-import { connect } from 'react-redux';
 import 'react-day-picker/dist/style.css';
+import QuestionnaireForm from './QuestionnaireForm.jsx';
+
+// <-- import form
 
 /* eslint-disable */
 class Collaboration extends Component {
@@ -27,6 +30,7 @@ class Collaboration extends Component {
       columns: this.getColumnsFromMQ(),
     };
   }
+
   componentDidMount() {
     this.fetchJobAds();
     this.fetchCategories();
@@ -100,11 +104,7 @@ class Collaboration extends Component {
   handleCategoryChange = e => {
     const selectedValue = e.target.value;
     this.setState(
-      {
-        selectedCategory: selectedValue || '',
-        currentPage: 1,
-        summaries: null,
-      },
+      { selectedCategory: selectedValue || '', currentPage: 1, summaries: null },
       this.fetchJobAds,
     );
   };
@@ -141,43 +141,6 @@ class Collaboration extends Component {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  handleShowSummaries = async () => {
-    const { searchTerm, selectedCategory, summariesPageSize } = this.state;
-    try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(searchTerm)}` +
-          `&category=${encodeURIComponent(selectedCategory)}`,
-        { method: 'GET' },
-      );
-
-      if (!response.ok) throw new Error(`Failed to fetch summaries: ${response.statusText}`);
-
-      const data = await response.json();
-      const summariesData = Array.isArray(data?.jobs) ? data.jobs : [];
-
-      this.setState({
-        summaries: { jobs: summariesData },
-        summariesAll: summariesData,
-        summariesPage: 1,
-        summariesTotalPages: Math.max(1, Math.ceil(summariesData.length / summariesPageSize)),
-      });
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (error) {
-      toast.error('Error fetching summaries');
-    }
-  };
-
-  setSummariesPage = page => {
-    this.setState(
-      prev => {
-        const next =
-          page < 1 ? 1 : page > prev.summariesTotalPages ? prev.summariesTotalPages : page;
-        return { summariesPage: next };
-      },
-      () => window.scrollTo({ top: 0, behavior: 'smooth' }),
-    );
-  };
-
   debounce = (fn, ms = 150) => {
     let t;
     return (...args) => {
@@ -192,125 +155,6 @@ class Collaboration extends Component {
     this.setState({ columns: newCols, currentPage: 1 }, this.fetchJobAds);
   }, 200);
 
-  renderSummaries() {
-    const {
-      searchTerm,
-      selectedCategory,
-      categories,
-      summariesAll,
-      summariesPage,
-      summariesPageSize,
-      summariesTotalPages,
-    } = this.state;
-
-    const start = (summariesPage - 1) * summariesPageSize;
-    const end = start + summariesPageSize;
-    const pageItems = summariesAll.slice(start, end);
-
-    return (
-      <div className={`${styles.jobLanding} ${this.props.darkMode ? styles.jobLandingDark : ''}`}>
-        <div className={styles.header}>
-          <a
-            href="https://www.onecommunityglobal.org/collaboration/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <img
-              src={OneCommunityImage}
-              alt="One Community Logo"
-              className={styles.responsiveImg}
-            />
-          </a>
-        </div>
-
-        <div className={styles.collabContainer}>
-          <nav className={styles.navbar}>
-            <div className={styles.navbarLeft}>
-              <form className={styles.searchForm} onSubmit={this.handleSubmit}>
-                <input
-                  type="text"
-                  placeholder="Search by title..."
-                  value={searchTerm}
-                  onChange={this.handleSearch}
-                />
-                <button className={styles.searchButton} type="submit">
-                  Go
-                </button>
-                <button
-                  className={styles.resetButton}
-                  type="button"
-                  onClick={this.handleResetFilters}
-                >
-                  Reset
-                </button>
-                <button
-                  className={styles.showSummaries}
-                  type="button"
-                  onClick={this.handleShowSummaries}
-                >
-                  Show Summaries
-                </button>
-              </form>
-            </div>
-
-            <div className={styles.navbarRight}>
-              <select value={selectedCategory} onChange={this.handleCategoryChange}>
-                <option value="">Select from Categories</option>
-                {categories.map(c => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </nav>
-
-          <div className={styles.summariesList}>
-            <h1>Summaries</h1>
-
-            {pageItems.length > 0 ? (
-              pageItems.map(summary => (
-                <div
-                  key={summary._id || summary.jobDetailsLink || summary.title}
-                  className={styles.summariesItem}
-                >
-                  <h3>
-                    <a href={summary.jobDetailsLink} target="_blank" rel="noreferrer">
-                      {summary.title}
-                    </a>
-                  </h3>
-                  <p>{summary.description}</p>
-                  <p className={styles.date}>
-                    Date Posted:{' '}
-                    {summary.datePosted ? new Date(summary.datePosted).toLocaleDateString() : '—'}
-                  </p>
-                </div>
-              ))
-            ) : (
-              <p>No summaries found.</p>
-            )}
-
-            {summariesTotalPages > 1 && (
-              <div className={styles.pagination}>
-                {Array.from({ length: summariesTotalPages }, (_, i) => (
-                  <button
-                    type="button"
-                    key={`summaries-${i}`}
-                    onClick={() => this.setSummariesPage(i + 1)}
-                    disabled={summariesPage === i + 1}
-                    className={this.props.darkMode ? 'bg-space-cadet text-light border-0' : ''}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   render() {
     const {
       searchTerm,
@@ -319,10 +163,7 @@ class Collaboration extends Component {
       jobAds,
       totalPages,
       categories,
-      summaries,
     } = this.state;
-
-    if (summaries) return this.renderSummaries();
 
     return (
       <div className={`${styles.jobLanding} ${this.props.darkMode ? styles.jobLandingDark : ''}`}>
@@ -341,6 +182,7 @@ class Collaboration extends Component {
         </div>
 
         <div className={styles.collabContainer}>
+          {/* Navbar */}
           <nav className={styles.navbar}>
             <div className={styles.navbarLeft}>
               <form className={styles.searchForm} onSubmit={this.handleSubmit}>
@@ -360,16 +202,8 @@ class Collaboration extends Component {
                 >
                   Reset
                 </button>
-                <button
-                  className={styles.showSummaries}
-                  type="button"
-                  onClick={this.handleShowSummaries}
-                >
-                  Show Summaries
-                </button>
               </form>
             </div>
-
             <div className={styles.navbarRight}>
               <select value={selectedCategory} onChange={this.handleCategoryChange}>
                 <option value="">Select from Categories</option>
@@ -382,6 +216,7 @@ class Collaboration extends Component {
             </div>
           </nav>
 
+          {/* Job Listings */}
           <div className={styles.headings}>
             <h1>Like to Work With Us? Apply Now!</h1>
             <p>Learn about who we are and who we want to work with!</p>
@@ -398,26 +233,8 @@ class Collaboration extends Component {
                         ad.category || 'Job Opening',
                       )}`
                     }
-                    alt={ad.title ? `${ad.title}` : 'Job image'}
+                    alt={ad.title || 'Job image'}
                     loading="lazy"
-                    onError={e => {
-                      e.currentTarget.onerror = null;
-                      if (ad?.category === 'Engineering') {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
-                      } else if (ad?.category === 'Marketing') {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
-                      } else if (ad?.category === 'Design') {
-                        e.currentTarget.src = 'https://img.icons8.com/arcade/64/design.png';
-                      } else if (ad?.category === 'Finance') {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/cotton/64/merchant-account--v2.png';
-                      } else {
-                        e.currentTarget.src =
-                          'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
-                      }
-                    }}
                   />
                   <a
                     href={`https://www.onecommunityglobal.org/collaboration/seeking-${(
@@ -441,17 +258,19 @@ class Collaboration extends Component {
             <div className={styles.pagination}>
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
-                  type="button"
                   key={i}
+                  type="button"
                   onClick={() => this.setPage(i + 1)}
                   disabled={currentPage === i + 1}
-                  className={this.props.darkMode ? 'bg-space-cadet text-light border-0' : ''}
                 >
                   {i + 1}
                 </button>
               ))}
             </div>
           )}
+
+          {/* Questionnaire Form at the end */}
+          <QuestionnaireForm />
         </div>
       </div>
     );
