@@ -3,11 +3,15 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+<<<<<<< HEAD
 import { toast } from 'react-toastify';
 import config from '~/config.json';
 import httpService from '~/services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from '../styles/UserSkillsProfile.module.css';
+=======
+import { useDispatch, useSelector } from 'react-redux';
+>>>>>>> becaa773b (add dark mode to base userProfileSkills page components)
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 
@@ -18,8 +22,12 @@ export default function UserSkillsProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const history = useHistory();
+<<<<<<< HEAD
   const location = useLocation();
   const darkMode = useSelector(state => state?.theme?.darkMode);
+=======
+  const darkMode = useSelector(state => state.theme.darkMode);
+>>>>>>> becaa773b (add dark mode to base userProfileSkills page components)
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -138,9 +146,16 @@ export default function UserSkillsProfile() {
   }
 
   return (
+<<<<<<< HEAD
     <div className={`${styles.userProfileHome} ${darkMode ? 'dark-mode' : ''}`}>
       <div className={styles.dashboardContainer}>
         <LeftSection />
+=======
+    <div className={styles.userProfileHome + (darkMode ? ' bg-oxford-blue' : '')}>
+      <div className={styles.dashboardContainer + (darkMode ? ' bg-space-cadet' : '')}>
+        <LeftSection />
+        <div className={styles.verticalSeparator} />
+>>>>>>> becaa773b (add dark mode to base userProfileSkills page components)
         <RightSection />
       </div>
     </div>
