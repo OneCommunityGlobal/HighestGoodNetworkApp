@@ -44,14 +44,11 @@ import BasicToolTips from './ToolTips/BasicTabTips';
 import TeamsTabTips from './ToolTips/TeamsTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode } from '../../actions/allTeamsAction';
+import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import {
-  updateUserStatus,
-  updateRehireableStatus,
-  toggleVisibility,
-} from '../../actions/userManagement';
+import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
+import { updateUserProfile } from "../../actions/userProfile";
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -59,7 +56,7 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
+
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
@@ -79,7 +76,7 @@ import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 
-function UserProfile(props) {
+function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
   const initialFormValid = {
@@ -112,6 +109,7 @@ function UserProfile(props) {
       setIsLoading(false);
       return stringNoRepeat;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       setIsLoading(false);
       toast.error(`It was not possible to retrieve the team codes.
@@ -122,6 +120,7 @@ function UserProfile(props) {
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
+  const [isSavingImage, setIsSavingImage] = useState(false);
   const [showSelect, setShowSelect] = useState(false);
   const [summaries, setSummaries] = useState(undefined);
   const [userProfile, setUserProfile] = useState(undefined);
@@ -168,6 +167,7 @@ function UserProfile(props) {
       await loadUserProfile();
       toast.success('Profile Image Removed');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       toast.error('Failed to remove profile Image.');
     }
@@ -197,7 +197,7 @@ function UserProfile(props) {
   const [titleOnSet, setTitleOnSet] = useState(false);
 
  
-  const updateProjetTouserProfile = () => {
+  const updateProjectTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
 
@@ -310,6 +310,7 @@ function UserProfile(props) {
 
       setSummaryIntro(summaryIntroString);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching team users:', error);
     }
   };
@@ -328,6 +329,7 @@ function UserProfile(props) {
         setTasks(res?.data || []);
         setOriginalTasks(res.data);
       })
+      // eslint-disable-next-line no-console
       .catch(err => console.log(err));
   };
 
@@ -371,6 +373,7 @@ function UserProfile(props) {
         setCalculatedStartDate(createdDate);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching calculated start date:', error);
       // Fallback to createdDate on error
       const createdDate = userProfile?.createdDate
@@ -418,12 +421,44 @@ function UserProfile(props) {
       // sanitize data first
       newUserProfile.teams = (newUserProfile.teams || []).filter(team => team !== null);
       newUserProfile.projects = (newUserProfile.projects || []).filter(project => project !== null);
+      try {
+        // Prefer a typed helper like ENDPOINTS.USER_PROJECTS(userId) if you have it.
+        const { data } = await axios.get(
+          ENDPOINTS.USER_PROJECTS
+            ? ENDPOINTS.USER_PROJECTS(userId)
+            : `${ENDPOINTS.PROJECTS}/user/${userId}`
+        );
+        const normalized = (data || []).map((row) => {
+          // common shapes: {project: {...}}, {projectId: {...}}, or already {...}
+          if (row?.project?.projectName) return row.project;
+          if (row?.projectId?.projectName) return row.projectId;
+          return row; // fallback if API already returns the project document
+        });
+        setProjects(normalized);
+        setOriginalProjects(normalized);
+        setResetProjects(normalized);
+        // keep profile copy in sync so Save/Cancel logic works
+        newUserProfile.projects = normalized;
+      } catch {
+        // fallback to whatever came on the profile (might be empty on your env)
+        const fallback = newUserProfile.projects || [];
+        setProjects(fallback);
+        setOriginalProjects(fallback);
+        setResetProjects(fallback);
+      }
 
-      // set values first so UI can start rendering
-      setTeams(newUserProfile.teams);
-      setProjects(newUserProfile.projects);
-      setOriginalProjects(newUserProfile.projects);
-      setResetProjects(newUserProfile.projects);
+      // keep userProfile in sync for Save/Cancel logic
+      // membershipProjects is not defined, so this line should be removed or replaced if needed
+      // newUserProfile.projects = membershipProjects || [];
+      // If you need to assign something, ensure membershipProjects is defined above
+      // Otherwise, remove this line
+      // Removed as it causes a reference error
+      // } catch (e) {
+      //   // fallback to whatever the profile returned (may be empty)
+      //   setProjects(newUserProfile.projects || []);
+      //   setOriginalProjects(newUserProfile.projects || []);
+      //   setResetProjects(newUserProfile.projects || []);
+      // }
 
       const profileWithFormattedDates = {
         ...newUserProfile,
@@ -455,6 +490,7 @@ function UserProfile(props) {
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
+      // eslint-disable-next-line no-console
       console.log(err);
     }
   };
@@ -489,6 +525,7 @@ function UserProfile(props) {
       }));
       setSummaries(allSummaries);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('Could not load leaderBoard data.', err);
     } finally {
       setLoadingSummaries(false);
@@ -507,10 +544,31 @@ function UserProfile(props) {
     setTeams(prevState => [...prevState, assignedTeam]);
   };
 
-  const onAssignProject = assignedProject => {
-    setProjects(prevProjects => [...prevProjects, assignedProject]);
-  };
-
+const onAssignProject = assignedProject => {
+  // eslint-disable-next-line no-console
+  console.log("Adding project to state:", assignedProject);
+  
+  // Always create a new array to trigger React re-render
+  setProjects(prevProjects => 
+    {
+    // Ensure prevProjects is an array
+    const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
+    
+    if (currentProjects.some(proj => proj._id === assignedProject._id)) {
+      // eslint-disable-next-line no-console
+      console.log("Project already exists, not adding duplicate");
+      return currentProjects; 
+    }
+    
+    // Add project and log the new state
+    // eslint-disable-next-line no-console
+    console.log("Adding new project:", assignedProject.projectName);
+    const newProjects = [...currentProjects, assignedProject];
+    // eslint-disable-next-line no-console
+    console.log("Updated projects state:", newProjects);
+    return newProjects; // Return the new array with the project added
+  });
+};
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
@@ -537,49 +595,69 @@ function UserProfile(props) {
 
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
-    const file = evt.target.files[0];
-    if (typeof file !== 'undefined') {
-      const filesizeKB = file.size / 1024;
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-      const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes
-        .toString()
-        .replaceAll(',', ', ')}`;
-
-      // Input validation: file type
-      if (!allowedTypes.includes(file.type)) {
-        setType('image');
-        setShowModal(true);
-        setModalTitle('Profile Pic Error');
-        setModalMessage(allowedTypesString);
-        return;
-      }
-
-      // Input validation: file size.
-      if (filesizeKB > 50) {
-        const errorMessage = `The file you are trying to upload exceeds the maximum size of 50KB. You can either
-														choose a different file, or use an online file compressor.`;
-
-        setType('image');
-        setShowModal(true);
-        setModalTitle('Profile Pic Error');
-        setModalMessage(errorMessage);
-
-        return;
-      }
-
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onloadend = () => {
-        setUserProfile({ ...userProfile, profilePic: fileReader.result });
-      };
+    const file = evt.target.files?.[0];
+    if (!file) return;
+  
+    const filesizeKB = file.size / 1024;
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(', ')}`;
+  
+    // type check
+    if (!allowedTypes.includes(file.type)) {
+      setType('image');
+      setShowModal(true);
+      setModalTitle('Profile Pic Error');
+      setModalMessage(allowedTypesString);
+      return;
     }
+    // size check
+    if (filesizeKB > 50) {
+      setType('image');
+      setShowModal(true);
+      setModalTitle('Profile Pic Error');
+      setModalMessage(
+        'The file you are trying to upload exceeds the maximum size of 50KB. You can either choose a different file, or use an online file compressor.'
+      );
+      return;
+    }
+  
+    const fileReader = new FileReader();
+  
+    fileReader.onloadend = async () => {
+      const base64 = fileReader.result;
+  
+      // optimistic preview
+      const prevProfile = userProfileRef.current;
+      const nextProfile = { ...prevProfile, profilePic: base64 };
+      setUserProfile(nextProfile);
+  
+      // persist immediately
+      setIsSavingImage(true);
+      try {
+        await props.updateUserProfile(nextProfile);
+        // keep originals in sync so the Save button doesn't light up unnecessarily
+        setOriginalUserProfile(nextProfile);
+        toast.success('Profile photo updated');
+      } catch (err) {
+        // revert on failure
+        setUserProfile(prevProfile);
+        toast.error('Failed to save profile photo. Please try again.');
+      } finally {
+        setIsSavingImage(false);
+      }
+    };
+  
+    fileReader.readAsDataURL(file);
   };
+  
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
       if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert
         alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
       } else {
+        // eslint-disable-next-line no-alert
         alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       }
       return;
@@ -611,11 +689,15 @@ function UserProfile(props) {
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
         if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
+          // eslint-disable-next-line no-console
           console.log('WARNING: Future Blue Square');
+          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with a Future Date');
         }
         if (dateStamp === '') {
+          // eslint-disable-next-line no-console
           console.log('WARNING: Empty Date');
+          // eslint-disable-next-line no-alert
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
       } else {
@@ -652,6 +734,7 @@ function UserProfile(props) {
             });
           })
           .catch(error => {
+            // eslint-disable-next-line no-console
             console.log('error in modifying bluequare', error);
             toast.error('Failed to add Blue Square!');
           });
@@ -693,10 +776,16 @@ function UserProfile(props) {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+      // eslint-disable-next-line no-console
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      const userProfileToUpdate = updatedUserProfile || userProfileRef.current;
+       const userProfileToUpdate = {
+        ...(updatedUserProfile || userProfileRef.current),
+        projects, // Ensure projects are included in the payload
+        };
+        // eslint-disable-next-line no-console
+        console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
       const result = await props.updateUserProfile(userProfileToUpdate);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
@@ -707,6 +796,7 @@ function UserProfile(props) {
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
         const errorMessage = err.response.data.error.join('\n');
+        // eslint-disable-next-line no-alert
         alert(errorMessage);
       }
       return err;
@@ -720,6 +810,7 @@ function UserProfile(props) {
     try {
       setSaved(false);
     } catch (err) {
+      // eslint-disable-next-line no-alert
       alert('An error occurred while reload user profile after badge udpate.');
     }
   };
@@ -743,7 +834,7 @@ function UserProfile(props) {
   useEffect(() => {
     const helper = async () => {
       try {
-        await updateProjetTouserProfile();
+        await updateProjectTouserProfile();
       } catch (error) {}
     };
     helper();
@@ -830,6 +921,7 @@ function UserProfile(props) {
       setOriginalUserProfile(newUserProfile);
       window.location.reload();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to update user status:', error);
     }
     setActiveInactivePopupOpen(false);
@@ -940,7 +1032,7 @@ function UserProfile(props) {
   };
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
-    return (
+    return ( 
       <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
@@ -1072,21 +1164,21 @@ function UserProfile(props) {
         {/* <div className='containerProfile' > */}
 
         <div className="left-top">
-          <div className="profile-img">
+        <div className="profile-img" style={{ position: 'relative' }}>
             <Image
               src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
               alt="Profile Picture"
               roundedCircle
               className="profilePicture bg-white"
-              // this line below should fix the image formatting issue
               style={profilePic ? {} : { width: '240px', height: '240px' }}
             />
+
             {canEdit ? (
               <div
                 className="image-button file btn btn-lg btn-primary"
                 style={darkMode ? boxStyleDark : boxStyle}
               >
-                Change Photo
+                {isSavingImage ? 'Saving…' : 'Change Photo'}
                 <Input
                   style={{ width: '100%', height: '100%', zIndex: '2', cursor: 'pointer' }}
                   type="file"
@@ -1094,10 +1186,28 @@ function UserProfile(props) {
                   id="newProfilePic"
                   onChange={handleImageUpload}
                   accept="image/png,image/jpeg, image/jpg"
+                  disabled={isSavingImage}
                 />
               </div>
             ) : null}
+
+            {isSavingImage && (
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  background: 'rgba(0,0,0,0.25)',
+                  borderRadius: '50%',
+                }}
+              >
+                <i className="fa fa-spinner fa-spin" style={{ fontSize: 24, color: 'white' }} />
+              </div>
+            )}
           </div>
+
           <div
             style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}
           >
@@ -1177,6 +1287,7 @@ function UserProfile(props) {
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
                     // Owner user cannot be deactivated by another user that is not an Owner.
+                    // eslint-disable-next-line no-alert
                     alert('You are not authorized to deactivate an owner.');
                     return;
                   }
@@ -1186,23 +1297,28 @@ function UserProfile(props) {
             </span>
             {canEdit && (
               <span className="mr-2">
+              <Link
+                to={`/timelog/${targetUserId}#currentWeek`}
+                onClick={(e) => {
+                  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+                    return; // Let browser handle it — new tab, etc.
+                  }
+            
+                  e.preventDefault(); // SPA navigation
+                  props.history.push(`/timelog/${targetUserId}#currentWeek`);
+                  setActiveInactivePopupOpen(true);
+                }}
+                style={{ textDecoration: 'none' }}
+                title="Click to see user's timelog"
+              >
                 <i
                   data-toggle="tooltip"
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                  title="Click to see user's timelog"
-                  onClick={e => {
-                    if (e.metaKey || e.ctrlKey) {
-                      window.open(`/timelog/${targetUserId}`, '_blank');
-                    } else {
-                      e.preventDefault();
-                      props.history.push(`/timelog/${targetUserId}`);
-                      setActiveInactivePopupOpen(true);
-                    }
-                  }}
+                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px', color: 'black' }}
                 />
-              </span>
+              </Link>
+            </span>
             )}
             {canSeeReports && (
               <span className="mr-2">
@@ -1468,12 +1584,7 @@ function UserProfile(props) {
                   isVisible={userProfile.isVisible}
                   canEditVisibility={canEditVisibility}
                   handleSubmit={handleSubmit}
-                  disabled={
-                    !formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                  }
+                  disabled={!formValid.firstName || !formValid.lastName || !formValid.email || !codeValid}
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
@@ -1511,6 +1622,7 @@ function UserProfile(props) {
                     />
                   )
                 }
+
               </TabPane>
               <TabPane tabId="5">
                 <TimeEntryEditHistory
@@ -1536,6 +1648,7 @@ function UserProfile(props) {
                   to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
                   onClick={() => {
                     if (targetIsDevAdminUneditable) {
+                      // eslint-disable-next-line no-alert
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                           'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1574,6 +1687,7 @@ function UserProfile(props) {
                     darkMode={darkMode}
                   />
                   {activeTab !== '3' && (
+                    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                     <span
                       onClick={() => {
                         setUserProfile(originalUserProfile);
@@ -1669,6 +1783,7 @@ function UserProfile(props) {
                           }
                           onClick={() => {
                             if (targetIsDevAdminUneditable) {
+                              // eslint-disable-next-line no-alert
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
                                   'You shouldn’t even be using this account except to create your own accounts to use. ' +
@@ -1705,6 +1820,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1784,6 +1900,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1880,6 +1997,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -1966,6 +2084,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -2039,6 +2158,7 @@ function UserProfile(props) {
                             setSaved={() => setSaved(true)}
                             darkMode={darkMode}
                           />
+                          {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
                           <span
                             onClick={() => {
                               setUserProfile(originalUserProfile);
@@ -2104,6 +2224,15 @@ function UserProfile(props) {
   );
 }
 
-export default connect(null, { hasPermission, updateUserStatus, getTimeEntriesForWeek })(
-  UserProfile,
-);
+ const mapStateToProps = state => ({
+   allProjects: state.allProjects || state.projects || {},   // <- gives you .projects array
+   allTeams: state.allTeams || {},
+   auth: state.auth,
+   role: state.role || {},
+ });
+
+export default connect(
+  mapStateToProps,
+  { hasPermission, updateUserStatus, updateUserProfile, getTimeEntriesForWeek }
+)(UserProfile);
+
