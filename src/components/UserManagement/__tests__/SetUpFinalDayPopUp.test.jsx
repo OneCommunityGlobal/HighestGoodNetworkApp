@@ -17,7 +17,7 @@ const renderComponent = (store, props) => {
   );
 };
 
-describe('SetUpFinalDayPopUp Component', () => {
+describe('SetUpFinalDayPopUp.jsx Component', () => {
   let store;
 
   beforeEach(() => {
