@@ -158,6 +158,7 @@ import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+import YoutubeFeatures from './components/Announcements/YoutubeFeatures';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -468,6 +469,7 @@ export default (
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
+        <ProtectedRoute path="/announcements/youtube-posting" exact component={YoutubeFeatures} />
         <ProtectedRoute
           path="/sendemail"
           exact
