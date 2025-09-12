@@ -420,36 +420,6 @@ const WeeklySummariesReport = props => {
 
       // Get all filters
       fetchFilters();
-      // let filterList = [];
-
-      // try {
-      //   const filterResponse = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS);
-      //   if (filterResponse.status < 200 || filterResponse.status >= 300) {
-      //     toast.error(`API request to get filter list failed with status ${filterResponse.status}`);
-      //   } else {
-      //     filterList = filterResponse.data;
-      //   }
-      // } catch (e) {
-      //   toast.error(`API request to get filter list failed with error ${e}`);
-      // }
-      // const filterChoices = [];
-
-      // filterList.forEach(filter => {
-      //   filterChoices.push({
-      //     label: filter.filterName,
-      //     value: filter._id,
-      //     filterData: {
-      //       filterName: filter.filterName,
-      //       selectedCodes: new Set(filter.selectedCodes),
-      //       selectedColors: new Set(filter.selectedColors),
-      //       selectedExtraMembers: new Set(filter.selectedExtraMembers),
-      //       selectedTrophies: filter.selectedTrophies,
-      //       selectedSpecialColors: filter.selectedSpecialColors,
-      //       selectedBioStatus: filter.selectedBioStatus,
-      //       selectedOverTime: filter.selectedOverTime,
-      //     },
-      //   });
-      // });
 
       // Store the data in the tab-specific state
       setState(prevState => ({
@@ -1068,6 +1038,7 @@ const WeeklySummariesReport = props => {
         teamCodes,
         teamCodeWarningUsers,
         tableData,
+        filterChoices,
       } = state;
 
       setState(prev => ({
@@ -1156,6 +1127,34 @@ const WeeklySummariesReport = props => {
           updatedTableData[code] = updatedSummaries.filter(s => s.teamCode === code);
         });
 
+        // Update filters
+        await Promise.all(
+          filterChoices.map(async filterChoice => {
+            const oldSelectedCodeLength = filterChoice.filterData.selectedCodes.size;
+            oldTeamCodes.forEach(code => filterChoice.filterData.selectedCodes.delete(code));
+            if (oldSelectedCodeLength !== filterChoice.filterData.selectedCodes.size) {
+              filterChoice.filterData.selectedCodes.add(replaceCode);
+              try {
+                const res = await axios.patch(
+                  ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(filterChoice.value),
+                  {
+                    selectedCodes: [...filterChoice.filterData.selectedCodes],
+                  },
+                );
+                if (res.status < 200 || res.status >= 300) {
+                  toast.error(
+                    `Failed to update new team code for filter ${filterChoice.label}. Status ${res.status}`,
+                  );
+                }
+              } catch (err) {
+                toast.error(
+                  `Failed to update new team code for filter ${filterChoice.label}. Error ${err.message}`,
+                );
+              }
+            }
+          }),
+        );
+
         setState(prev => ({
           ...prev,
           summaries: updatedSummaries,
@@ -1165,6 +1164,7 @@ const WeeklySummariesReport = props => {
           replaceCodeError: null,
           teamCodeWarningUsers: updatedWarningUsers,
           tableData: updatedTableData,
+          filterChoices,
         }));
 
         filterWeeklySummaries();
