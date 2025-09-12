@@ -4,8 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
-
+import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp.jsx';
 const mockStore = configureStore([]);
 const onSaveMock = jest.fn();
 const onCloseMock = jest.fn();
@@ -118,7 +117,6 @@ describe('SetUpFinalDayPopUp Component', () => {
     const pastDate = moment().subtract(5, 'days').format('YYYY-MM-DD');
     fireEvent.change(screen.getByTestId('date-input'), { target: { value: pastDate } });
     fireEvent.click(screen.getByText('Save'));
-  
     expect(screen.getByText('Please choose a future date.')).toBeInTheDocument();
     expect(onSaveMock).not.toHaveBeenCalled();
   });
