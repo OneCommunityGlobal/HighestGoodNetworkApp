@@ -2276,6 +2276,7 @@
   resolved "https://registry.npmjs.org/@sinclair/typebox/-/typebox-0.34.41.tgz"
   integrity sha512-6gS8pZzSXdyRHTIqoqSVknxolr1kzfy4/CeDnrzsVz8TTIWUbOBr6gnzOmTYJ3eXQNh4IYHIGi5aIL7sOZ2G/g==
 
+
 "@sinonjs/commons@^3.0.0":
   version "3.0.1"
   resolved "https://registry.npmjs.org/@sinonjs/commons/-/commons-3.0.1.tgz"
@@ -2563,6 +2564,7 @@
   version "0.0.29"
   resolved "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
+
 
 "@types/node@*", "@types/node@^18.0.0 || ^20.0.0 || >=22.0.0", "@types/node@>=18":
   version "24.3.0"
@@ -4373,10 +4375,12 @@ duplexer2@~0.1.4:
   dependencies:
     readable-stream "^2.0.2"
 
+
 electron-to-chromium@^1.5.211:
   version "1.5.211"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.211.tgz"
   integrity sha512-IGBvimJkotaLzFnwIVgW9/UD/AOJ2tByUmeOrtqBfACSbAw5b1G0XpvdaieKyc7ULmbwXVx+4e4Be8pOPBrYkw==
+
 
 elliptic@^6.5.3, elliptic@^6.5.5, elliptic@^6.6.1:
   version "6.6.1"
