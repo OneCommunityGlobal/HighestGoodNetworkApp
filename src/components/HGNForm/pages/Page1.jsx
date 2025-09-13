@@ -1,8 +1,12 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { useEffect, useState } from 'react';
 =======
 import { use, useEffect } from 'react';
 >>>>>>> a2dce1bdb (add dark mode for questionnaire)
+=======
+import { useEffect } from 'react';
+>>>>>>> 47c2f6ce9 (fix accidental code additions)
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';

@@ -1,7 +1,11 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 import { Chart, Radar } from 'react-chartjs-2';
 >>>>>>> ae1908b9d (add dark mode styling to RadarChart component)
+=======
+import { Radar } from 'react-chartjs-2';
+>>>>>>> 47c2f6ce9 (fix accidental code additions)
 import {
   Chart as ChartJS,
   Filler,
