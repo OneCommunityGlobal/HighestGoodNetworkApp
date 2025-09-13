@@ -23,10 +23,10 @@ module.exports = {
   },
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
-  setupFiles: ['<rootDir>src/setupTests.js', '<rootDir>/src/graceful-fs.js'],
+  setupFiles: ['<rootDir>/src/setupTests.js'],
 
   // The test environment that will be used for testing
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
 
   // The glob patterns Jest uses to detect test files
   testMatch: ['**/__tests__/**/*.js?(x)', '**/?(*.)+(spec|test).js?(x)'],
@@ -34,22 +34,12 @@ module.exports = {
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   testPathIgnorePatterns: ['\\\\node_modules\\\\'],
 
-  testEnvironmentOptions: {
-    url: 'http://localhost',
-  },
-
   // This option sets the URL for the jsdom environment. It is reflected in properties such as location.href
-  // testURL: 'http://localhost',
+  testURL: 'http://localhost',
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   transformIgnorePatterns: ['/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)'],
 
-  // Include snapshot serializers
-  snapshotSerializers: ['enzyme-to-json/serializer'],
-
   // Indicates whether each individual test should be reported during the run
   verbose: false,
-  globals: {
-    global: globalThis,
-  },
 };
