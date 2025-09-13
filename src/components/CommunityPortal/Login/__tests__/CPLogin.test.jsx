@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-container, testing-library/no-node-access */
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -33,7 +34,9 @@ beforeEach(() => {
 
 vi.mock('axios');
 
-vi.mock('jwt-decode', () => ({ default: vi.fn(token => ({ decodedPayload: 'mocked_decoded_payload' })) }));
+vi.mock('jwt-decode', () => ({
+  default: vi.fn(token => ({ decodedPayload: 'mocked_decoded_payload' })),
+}));
 
 const history = {
   push: vi.fn(),
@@ -158,12 +161,15 @@ describe('CPLogin component', () => {
     ).not.toBeInTheDocument();
     expect(emailElement).not.toBeInvalid();
     expect(passwordElement).not.toBeInvalid();
-    
+
     // Wait for the axios call to complete and the redirect to happen
-    await waitFor(() => {
-      expect(axios.post).toHaveBeenCalled();
-    }, { timeout: 3000 });
-    
+    await waitFor(
+      () => {
+        expect(axios.post).toHaveBeenCalled();
+      },
+      { timeout: 3000 },
+    );
+
     // The history.push might not be called in the test environment due to mocking issues
     // This is a common issue with testing navigation in React components
     // The important thing is that the form validation passes and axios is called

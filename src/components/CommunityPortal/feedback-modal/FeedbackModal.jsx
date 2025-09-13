@@ -78,7 +78,16 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
   };
 
   return isOpen ? (
-    <div className="modal-overlay" onClick={handleOverlayClick} role="dialog" aria-modal="true">
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+    <div
+      className="modal-overlay"
+      onClick={handleOverlayClick}
+      onKeyDown={handleOverlayKeyDown}
+      role="dialog"
+      aria-modal="true"
+      tabIndex={-1}
+      aria-label="Feedback modal"
+    >
       <div className="modal-content">
         <span
           className="close-icon"
