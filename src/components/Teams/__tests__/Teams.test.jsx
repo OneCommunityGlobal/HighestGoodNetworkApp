@@ -1,7 +1,7 @@
 // Teams.test.jsx
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { Teams } from '../Teams'; 
+import { Teams } from '../Teams';
 import { toast } from 'react-toastify';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
@@ -92,12 +92,8 @@ describe('Teams Component', () => {
     vi.clearAllMocks();
   });
 
-  const renderWithProvider = (component) => {
-    return render(
-      <Provider store={store}>
-        {component}
-      </Provider>
-    );
+  const renderWithProvider = component => {
+    return render(<Provider store={store}>{component}</Provider>);
   };
 
   it('should render without crashing', () => {

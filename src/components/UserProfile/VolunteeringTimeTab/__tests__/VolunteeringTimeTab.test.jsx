@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-unnecessary-act */
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import axios from 'axios';
