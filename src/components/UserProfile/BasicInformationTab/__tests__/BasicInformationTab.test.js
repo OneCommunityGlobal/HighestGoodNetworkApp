@@ -1,4 +1,4 @@
-
+import React from 'react';
 import {Name, Title, Email, formatPhoneNumber , Phone, TimeZoneDifference} from '../BasicInformationTab';
 import BasicInformationTab from '../BasicInformationTab';
 import { render, screen, fireEvent,   waitFor, act } from '@testing-library/react';
@@ -8,11 +8,10 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import mockAdminState from '__tests__/mockAdminState';
 
-
 // Mock components 
-jest.mock('../../UserProfileEdit/ToggleSwitch', () => (props) => <div data-testid="toggleswitch">{props.id}</div>);
-jest.mock('react-phone-input-2', () => (props) => <div data-testid="phoneinput">{props.id}</div>);
-jest.mock('../../EditableModal/EditableInfoModal', () => () => <div data-testid="editablemodel">RoleInfo</div>);
+jest.mock('../../UserProfileEdit/ToggleSwitch', () => (props) => React.createElement('div', { 'data-testid': 'toggleswitch' }, props.id));
+jest.mock('react-phone-input-2', () => (props) => React.createElement('div', { 'data-testid': 'phoneinput' }, props.id));
+jest.mock('../../EditableModal/EditableInfoModal', () => () => React.createElement('div', { 'data-testid': 'editablemodel' }, 'RoleInfo'));
 
 
 //Test Suites 
