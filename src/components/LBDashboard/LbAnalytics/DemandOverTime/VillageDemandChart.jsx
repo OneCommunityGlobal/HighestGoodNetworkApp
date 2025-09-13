@@ -15,7 +15,17 @@ const metricLabels = {
   averageDuration: 'Average Duration of Stay (days)',
 };
 
-const VillageDemandChart = ({ data, metric, dateRange }) => {
+const metricCategories = {
+  pageVisits: 'Demand',
+  numberOfBids: 'Demand',
+  averageRating: 'Demand',
+  averageBid: 'Revenue',
+  finalPrice: 'Revenue',
+  occupancyRate: 'Vacancy',
+  averageDuration: 'Vacancy',
+};
+
+const VillageDemandChart = ({ data, metric, dateRange, chartLabel }) => {
   // Process data for the chart
   const processedData = [];
 
@@ -73,9 +83,14 @@ const VillageDemandChart = ({ data, metric, dateRange }) => {
     },
   };
 
+  // Use the provided chart label or generate a default one
+  const chartTitle =
+    chartLabel ||
+    `${metricCategories[metric] || 'Metric'}: ${metricLabels[metric] || metric} by Village`;
+
   return (
     <Card className={styles.chartCard}>
-      <Title level={3}>Comparing Demand of Villages across time</Title>
+      <Title level={3}>{chartTitle}</Title>
       <div className={styles.chart}>
         <Line {...config} />
       </div>

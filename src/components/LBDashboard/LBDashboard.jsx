@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container } from 'reactstrap';
-import { Card, Button, Radio, Dropdown, Menu, Row, Col, Typography, Collapse } from 'antd';
+import { Card, Button, Dropdown, Menu, Row, Col, Typography, Collapse } from 'antd';
 import { ArrowLeftOutlined, DownOutlined } from '@ant-design/icons';
 import styles from './LBDashboard.module.css';
 import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
@@ -13,31 +13,16 @@ export function LBDashboard() {
   const [masterMetricCategory, setMasterMetricCategory] = useState('demand');
   const [masterMetric, setMasterMetric] = useState('pageVisits');
 
-  // Handle master metric category change
-  const handleMetricCategoryChange = e => {
-    const category = e.target.value;
+  // Handle master metric category and metric change
+  const handleMetricChange = (category, metric) => {
     setMasterMetricCategory(category);
-
-    // Set default metric based on category
-    switch (category) {
-      case 'demand':
-        setMasterMetric('pageVisits');
-        break;
-      case 'revenue':
-        setMasterMetric('finalPrice');
-        break;
-      case 'vacancy':
-        setMasterMetric('occupancyRate');
-        break;
-      default:
-        setMasterMetric('pageVisits');
-    }
+    setMasterMetric(metric);
   };
 
   // Menu for demand metrics dropdown
   const demandMenu = (
-    <Menu onClick={({ key }) => setMasterMetric(key)}>
-      <Menu.Item key="pageVisits">Page Visits</Menu.Item>
+    <Menu onClick={({ key }) => handleMetricChange('demand', key)}>
+      <Menu.Item key="pageVisits">Number of Views</Menu.Item>
       <Menu.Item key="numberOfBids">Number of Bids</Menu.Item>
       <Menu.Item key="averageRating">Average Rating</Menu.Item>
     </Menu>
@@ -45,7 +30,7 @@ export function LBDashboard() {
 
   // Menu for revenue metrics dropdown
   const revenueMenu = (
-    <Menu onClick={({ key }) => setMasterMetric(key)}>
+    <Menu onClick={({ key }) => handleMetricChange('revenue', key)}>
       <Menu.Item key="averageBid">Average Bid</Menu.Item>
       <Menu.Item key="finalPrice">Final Price/Income</Menu.Item>
     </Menu>
@@ -53,23 +38,31 @@ export function LBDashboard() {
 
   // Menu for vacancy metrics dropdown
   const vacancyMenu = (
-    <Menu onClick={({ key }) => setMasterMetric(key)}>
+    <Menu onClick={({ key }) => handleMetricChange('vacancy', key)}>
       <Menu.Item key="occupancyRate">Occupancy Rate</Menu.Item>
       <Menu.Item key="averageDuration">Average Duration of Stay</Menu.Item>
     </Menu>
   );
 
-  // Get the appropriate menu based on selected category
-  const getDropdownMenu = () => {
-    switch (masterMetricCategory) {
-      case 'demand':
-        return demandMenu;
-      case 'revenue':
-        return revenueMenu;
-      case 'vacancy':
-        return vacancyMenu;
+  // Get display name for the selected metric
+  const getMetricDisplayName = () => {
+    switch (masterMetric) {
+      case 'pageVisits':
+        return 'Number of Views';
+      case 'numberOfBids':
+        return 'Number of Bids';
+      case 'averageRating':
+        return 'Average Rating';
+      case 'averageBid':
+        return 'Average Bid';
+      case 'finalPrice':
+        return 'Final Price/Income';
+      case 'occupancyRate':
+        return 'Occupancy Rate';
+      case 'averageDuration':
+        return 'Average Duration of Stay';
       default:
-        return demandMenu;
+        return 'Select Metric';
     }
   };
 
@@ -88,39 +81,45 @@ export function LBDashboard() {
         <Title level={2}>Listing and Bidding Platform Dashboard</Title>
       </header>
 
-      {/* Master Filters */}
-      <Card className={styles.filterCard}>
-        <Title level={4}>Preset Overview Filters</Title>
-        <Row gutter={[16, 16]} align="middle">
-          <Col xs={24} md={16}>
-            <Radio.Group
-              value={masterMetricCategory}
-              onChange={handleMetricCategoryChange}
-              className={styles.masterRadioGroup}
-            >
-              <Radio.Button value="demand">DEMAND</Radio.Button>
-              <Radio.Button value="revenue">REVENUE</Radio.Button>
-              <Radio.Button value="vacancy">VACANCY</Radio.Button>
-            </Radio.Group>
-          </Col>
-          <Col xs={24} md={8}>
-            <Dropdown overlay={getDropdownMenu()} trigger={['click']}>
-              <Button className={styles.dropdownButton}>
-                {masterMetric === 'pageVisits' && 'Page Visits'}
-                {masterMetric === 'numberOfBids' && 'Number of Bids'}
-                {masterMetric === 'averageRating' && 'Average Rating'}
-                {masterMetric === 'averageBid' && 'Average Bid'}
-                {masterMetric === 'finalPrice' && 'Final Price/Income'}
-                {masterMetric === 'occupancyRate' && 'Occupancy Rate'}
-                {masterMetric === 'averageDuration' && 'Average Duration of Stay'}
-                <DownOutlined />
-              </Button>
-            </Dropdown>
-          </Col>
-        </Row>
-      </Card>
+      {/* Updated Filter UI */}
+      <div className={styles.filterContainer}>
+        <span className={styles.filterLabel}>Choose Metric to view</span>
 
-      {/* Collapsible Sections */}
+        <Dropdown overlay={demandMenu} trigger={['click']}>
+          <Button
+            className={`${styles.categoryButton} ${
+              masterMetricCategory === 'demand' ? styles.activeButton : styles.inactiveButton
+            }`}
+          >
+            Demand {masterMetricCategory === 'demand' && `(${getMetricDisplayName()})`}
+            <DownOutlined />
+          </Button>
+        </Dropdown>
+
+        <Dropdown overlay={vacancyMenu} trigger={['click']}>
+          <Button
+            className={`${styles.categoryButton} ${
+              masterMetricCategory === 'vacancy' ? styles.activeButton : styles.inactiveButton
+            }`}
+          >
+            Vacancy {masterMetricCategory === 'vacancy' && `(${getMetricDisplayName()})`}
+            <DownOutlined />
+          </Button>
+        </Dropdown>
+
+        <Dropdown overlay={revenueMenu} trigger={['click']}>
+          <Button
+            className={`${styles.categoryButton} ${
+              masterMetricCategory === 'revenue' ? styles.activeButton : styles.inactiveButton
+            }`}
+          >
+            Revenue {masterMetricCategory === 'revenue' && `(${getMetricDisplayName()})`}
+            <DownOutlined />
+          </Button>
+        </Dropdown>
+      </div>
+
+      {/* Rest of the component remains the same */}
       <Collapse defaultActiveKey={['1']} className={styles.collapseContainer}>
         {/* By Village Section */}
         <Panel

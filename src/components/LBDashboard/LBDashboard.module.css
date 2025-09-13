@@ -27,6 +27,47 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.filterContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filterLabel {
+  margin-right: 15px;
+  color: #555;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.categoryButton {
+  min-width: 200px;
+  height: 38px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px;
+}
+
+.activeButton {
+  background-color: #444;
+  color: white;
+  border-color: #444;
+}
+
+.inactiveButton {
+  background-color: #8c68cd;
+  color: white;
+  border-color: #8c68cd;
+}
+
+.chartContainer {
+  margin-bottom: 20px;
+}
+
 .masterRadioGroup {
   margin-right: 16px;
 }
