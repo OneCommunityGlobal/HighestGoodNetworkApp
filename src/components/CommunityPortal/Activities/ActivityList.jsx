@@ -87,25 +87,27 @@ function ActivityList() {
         {filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
-              <li 
-                key={activity.id} 
-                className="activity-item"
-                onClick={() => handleActivityClick(activity.id)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    handleActivityClick(activity.id);
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                style={{ cursor: 'pointer', padding: '10px', border: '1px solid #ccc', margin: '5px 0', borderRadius: '5px' }}
-              >
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-                {activity.location}
-                <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
-                  Click to leave feedback
-                </div>
+              <li key={activity.id}>
+                <button
+                  className="activity-item"
+                  onClick={() => handleActivityClick(activity.id)}
+                  style={{ 
+                    cursor: 'pointer', 
+                    padding: '10px', 
+                    border: '1px solid #ccc', 
+                    margin: '5px 0', 
+                    borderRadius: '5px',
+                    width: '100%',
+                    textAlign: 'left',
+                    backgroundColor: 'transparent'
+                  }}
+                >
+                  <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
+                  {activity.location}
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                    Click to leave feedback
+                  </div>
+                </button>
               </li>
             ))}
           </ul>

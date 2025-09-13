@@ -81,7 +81,6 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
     <div 
       className="modal-overlay" 
       onClick={handleOverlayClick}
-      onKeyDown={handleOverlayKeyDown}
       role="dialog"
       aria-modal="true"
     >
