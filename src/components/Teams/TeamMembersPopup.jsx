@@ -215,6 +215,7 @@ export const TeamMembersPopup = React.memo(props => {
       <Modal
         isOpen={props.open}
         toggle={closePopup}
+        /* eslint-disable-next-line jsx-a11y/no-autofocus */
         autoFocus={false}
         size="lg"
         className={`${darkMode ? 'dark-mode text-light' : ''} ${
@@ -299,8 +300,8 @@ export const TeamMembersPopup = React.memo(props => {
                     {checkedStatus}
                   </button>
                 </th>
-                <th class="def-width">#</th>
-                <th class="def-width">User Name</th>
+                <th className="def-width">#</th>
+                <th className="def-width">User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
                   Date Added{' '}
                   <FontAwesomeIcon
@@ -453,5 +454,7 @@ export const TeamMembersPopup = React.memo(props => {
     </Container>
   );
 });
+
+TeamMembersPopup.displayName = 'TeamMembersPopup';
 
 export default connect(null, { hasPermission })(TeamMembersPopup);
