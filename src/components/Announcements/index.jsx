@@ -15,6 +15,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactTooltip from 'react-tooltip';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
+import { zonedTimeToUtc } from 'date-fns-tz';
 
 import {
   sendTweet,
@@ -164,7 +165,7 @@ function Announcements({ title, email: initialEmail }) {
     if (activePlatform === 'facebook') {
       setCurrentHint(facebookHints[0]);
     } else if (activePlatform === 'twitter') {
-      setCurrentHint('Twitter Tip: Use high-quality visuals and concise captions.');
+      setCurrentHint(twitterHints[0]);
     }
   }, [activePlatform]);
 
@@ -349,26 +350,32 @@ function Announcements({ title, email: initialEmail }) {
       toast.error('Please select at least one platform.');
       return;
     }
-    const baseDate = new Date(`${dateContent}T${timeContent}`);
     const schedules = [];
+    const [hours, minutes] = timeContent.split(':').map(Number);
+    const baseLocalDate = new Date(dateContent);
+    baseLocalDate.setHours(hours, minutes, 0, 0);
+
     if (repeatAnnually) {
       for (let i = 0; i < numYears; i++) {
-        const newDate = new Date(baseDate);
-        newDate.setFullYear(baseDate.getFullYear() + i);
+        const newDate = new Date(baseLocalDate);
+        newDate.setFullYear(baseLocalDate.getFullYear() + i);
         schedules.push(newDate);
       }
     } else {
-      schedules.push(baseDate);
+      schedules.push(baseLocalDate);
     }
+
     for (const scheduleDate of schedules) {
-      const dateStr = scheduleDate.toISOString().split('T')[0];
-      const timeStr = scheduleDate.toTimeString().slice(0, 5);
+      const utcDate = zonedTimeToUtc(scheduleDate, 'America/Los_Angeles');
+
+      const pstDate = scheduleDate.toISOString().split('T')[0];
+      const pstTime = scheduleDate.toTimeString().slice(0, 5); // HH:MM
 
       if (scheduleSelectedPlatforms.includes('facebook')) {
-        await dispatch(scheduleFbPost(dateStr, timeStr, emailContent));
+        await dispatch(scheduleFbPost(pstDate, pstTime, emailContent));
       }
       if (scheduleSelectedPlatforms.includes('twitter')) {
-        await dispatch(scheduleTweet(dateStr, timeStr, emailContent));
+        await dispatch(scheduleTweet(pstDate, pstTime, emailContent));
       }
     }
     toast.success(`Scheduled ${schedules.length} post(s) successfully!`);
