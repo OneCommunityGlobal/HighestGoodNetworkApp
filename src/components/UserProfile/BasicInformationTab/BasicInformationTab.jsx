@@ -21,11 +21,6 @@ import { isString } from 'lodash';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 
-
-
-export const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
-
 const Name = props => {
   const {
     userProfile,
@@ -146,9 +141,8 @@ const Name = props => {
   );
 };
 
-export const Title = props => {
+  const Title = props => {
   const { userProfile, setUserProfile, canEdit, desktopDisplay, darkMode } = props;
-
   const { jobTitle } = userProfile;
 
   if (canEdit) {
@@ -202,8 +196,6 @@ export const Title = props => {
   );
 };
 
-  const Email = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
 
 const Email = props => {
   const {
@@ -271,7 +263,7 @@ const Email = props => {
               id="emailSubscription"
               state={emailSubscriptions? emailSubscriptions : false}
 
-              state={emailSubscriptions ? emailSubscriptions : false}
+              // state={emailSubscriptions ? emailSubscriptions : false}
 
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
@@ -341,16 +333,6 @@ export const formatPhoneNumber = str => {
 
 export const Phone = props => {
   const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay ,darkMode} = props;
-
-const Phone = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    handleUserProfile,
-    canEdit,
-    desktopDisplay,
-    darkMode,
-  } = props;
   const { phoneNumber, privacySettings } = userProfile;
   const phoneInputWrapperRef = useRef(null);
   if (canEdit) {
@@ -397,7 +379,6 @@ const Phone = props => {
                 zIndex: 2,
               }}
             />
-          </div>
             <ToggleSwitch
               switchType="phone"
               state={privacySettings?.phoneNumber}
