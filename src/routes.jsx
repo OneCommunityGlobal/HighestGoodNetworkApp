@@ -119,7 +119,7 @@ import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
-import CommunityFeedbackModal from './components/CommunityPortal/feedback-modal/FeedbackModal';
+import CommunityFeedbackModal from './components/CommunityPortal/feedback-modal/CommunityFeedbackModal';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
