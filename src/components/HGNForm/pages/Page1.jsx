@@ -1,4 +1,4 @@
-import { use, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfileBasicInfo } from '~/actions/userManagement';
 import Banner from '../questionpages/Banner';
