@@ -1,4 +1,4 @@
-import { CPHeader } from '~/components/CommunityPortal';
+import CPHeader from '~/components/CommunityPortal/CPHeader/CPHeader';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
