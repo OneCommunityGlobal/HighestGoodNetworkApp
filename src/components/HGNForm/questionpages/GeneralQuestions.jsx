@@ -9,7 +9,6 @@ import { Spinner } from 'reactstrap';
 import { ENDPOINTS } from '~/utils/URL';
 import styles from '../styles/GeneralQuestions.module.css';
 import { getBoxStyling, getFontColor } from '../../../styles';
-import { get } from 'lodash';
 
 function GeneralQuestions() {
   const navigate = useHistory();
