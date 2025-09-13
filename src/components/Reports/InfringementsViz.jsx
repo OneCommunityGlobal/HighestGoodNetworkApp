@@ -1,5 +1,7 @@
+/* eslint-disable testing-library/no-node-access */
 import React from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import * as d3 from 'd3';
+
 import { Button, Modal } from 'react-bootstrap';
 import './PeopleReport/PeopleReport.css';
 import { boxStyle, boxStyleDark } from '../../styles';
@@ -33,23 +35,22 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
 
       const height = 400 - margin.top - margin.bottom;
 
-      const tooltipEl = function(d) {
+      const tooltipEl = function tooltipEl(d) {
         return (
           `${'<div class="tip__container">' +
-            '<div class="close">' +
-            '<button>&times</button>' +
-            '</div>' +
-            '<div>' +
-            'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
-          `Count: ${
-            d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
+          '<div class="close">' +
+          '<button>&times</button>' +
+          '</div>' +
+          '<div>' +
+          'Exact date: '}${d3.timeFormat('%A, %B %e, %Y')(d.date)}<br>` +
+          `Count: ${d.count === 1 ? d.count : `${d.count} <span class="detailsModal"><a>See All</a></span>`
           }<br>` +
           `Description: ${d.des[0]}</div>` +
           `</div>`
         );
       };
 
-      const legendEl = function() {
+      const legendEl = function legendEl() {
         return (
           '<div class="lengendSubContainer">' +
           '<div class="infLabelsOff">' +
@@ -120,7 +121,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         .attr('stroke', '#69b3a2')
         .attr('stroke-width', 3)
         .attr('fill', 'white')
-        .on('click', function(event, d) {
+        .on('click', function handleCircleClick(event, d) {
           const prevTooltip = d3.select(`.inf${d.id}`);
 
           if (prevTooltip.empty()) {
@@ -142,11 +143,11 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
               .style('top', `${event.pageY}px`)
               .style('opacity', 1);
 
-            Tooltip.select('.close').on('click', function() {
+            Tooltip.select('.close').on('click', function handleCloseClick() {
               Tooltip.remove();
             });
 
-            Tooltip.select('.detailsModal').on('click', function() {
+            Tooltip.select('.detailsModal').on('click', function handleDetailsModalClick() {
               handleModalShow(d);
             });
           }
@@ -186,17 +187,17 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         .attr('class', 'legendContainer');
       legend.html(legendEl());
 
-      legend.select('.infLabelsOff').on('click', function() {
+      legend.select('.infLabelsOff').on('click', function handleLabelsOffClick() {
         d3.selectAll('.infCountLabel').style('display', 'none');
         d3.selectAll('.infDateLabel').style('display', 'none');
       });
 
-      legend.select('.infCountLabelsOn').on('click', function() {
+      legend.select('.infCountLabelsOn').on('click', function handleCountLabelsOnClick() {
         d3.selectAll('.infCountLabel').style('display', 'block');
         d3.selectAll('.infDateLabel').style('display', 'none');
       });
 
-      legend.select('.infDateLabelsOn').on('click', function() {
+      legend.select('.infDateLabelsOn').on('click', function handleDateLabelsOnClick() {
         d3.selectAll('.infDateLabel').style('display', 'block');
         d3.selectAll('.infCountLabel').style('display', 'none');
       });
@@ -260,9 +261,6 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       });
     }
 
-    // eslint-disable-next-line no-console
-    // console.log('INFvalues', value);
-
     displayGraph(value, maxSquareCount);
   };
 
@@ -275,7 +273,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
       <Button onClick={handleModalShow} aria-expanded={graphVisible} style={darkMode ? boxStyleDark : boxStyle}>
         {graphVisible ? 'Hide Infringements Graph' : 'Show Infringements Graph'}
       </Button>
-      <div className={`kaitest ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" />
+      <div className={`kaitest ${darkMode ? 'bg-light mt-2' : ''}`} id="infplot" data-testid="infplot" />
 
       <Modal size="lg" show={modalVisible} onHide={handleModalClose}>
         <Modal.Header closeButton>
@@ -283,22 +281,22 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         </Modal.Header>
         <Modal.Body>
           <div id="inf">
-            <thead>
-              <tr>
-                <th>Descriptions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {focusedInf.des
-                ? focusedInf.des.map(desc => {
-                    return (
-                      <tr>
-                        <td>{desc}</td>
-                      </tr>
-                    );
-                  })
-                : null}
-            </tbody>
+            <table>
+              <thead>
+                <tr>
+                  <th>Descriptions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {focusedInf.des
+                  ? focusedInf.des.map((desc) => (
+                    <tr key={desc}>
+                      <td>{desc}</td>
+                    </tr>
+                  ))
+                  : null}
+              </tbody>
+            </table>
           </div>
         </Modal.Body>
         <Modal.Footer>

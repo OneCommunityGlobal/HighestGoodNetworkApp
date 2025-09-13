@@ -1,62 +1,38 @@
-import React, { Component, useEffect } from 'react';
-import jwtDecode from 'jwt-decode';
+/* eslint-disable no-undef */
+import { Component, useEffect } from 'react';
 import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
+import { ModalProvider } from '../context/ModalContext';
+import { persistor, store } from '../store';
+import initAuth from '../utils/authInit';
 import routes from '../routes';
 import logger from '../services/logService';
-
-import httpService from '../services/httpService';
-import { setCurrentUser, logoutUser } from '../actions/authActions';
-
-import configureStore from '../store';
 import Loading from './common/Loading';
-
-import config from '../config.json';
-import './CommunityPortal/feedback-modal/styles/App.css';
-import { ModalProvider } from 'context/ModalContext';
-
-const { persistor, store } = configureStore();
-const { tokenKey } = config;
-// Require re-login 2 days before the token expires on server side
-// Avoid failure due to token expiration when user is working
-const TOKEN_LIFETIME_BUFFER = 86400 * 2;
+import '../App.css';
+import { initMessagingSocket } from '../utils/messagingSocket';
 
 // Check for token
-if (localStorage.getItem(tokenKey)) {
-  // Decode token and get user info and exp
-  const decoded = jwtDecode(localStorage.getItem(tokenKey));
-  // Check for expired token
-  const currentTime = Date.now() / 1000;
-  const expiryTime = new Date(decoded.expiryTimestamp).getTime() / 1000;
-  // console.log(currentTime, expiryTime);
-  if (expiryTime - TOKEN_LIFETIME_BUFFER < currentTime) {
-    // Logout user
-    store.dispatch(logoutUser());
-  } else {
-    // Set auth token header auth
-    httpService.setjwt(localStorage.getItem(tokenKey));
-    // Set user and isAuthenticated
-    store.dispatch(setCurrentUser(decoded));
-  }
+if (process.env.NODE_ENV !== 'test') {
+  initAuth();
 }
 
 function UpdateDocumentTitle() {
   const location = useLocation();
   const authUser = useSelector(state => state.userProfile);
-  const fullName = authUser?.firstName && authUser?.lastName
-    ? `${authUser.firstName} ${authUser.lastName}`
-    : 'User';
-
+  const fullName =
+    authUser?.firstName && authUser?.lastName
+      ? `${authUser.firstName} ${authUser.lastName}`
+      : 'User';
   // Define the routes array with pattern and title
-  const routes = [
+  const Routes = [
     { pattern: /^\/ProfileInitialSetup\/[^/]+$/, title: 'Profile Initial Setup' },
     { pattern: /^\/dashboard$/, title: `Dashboard - ${fullName}` },
     { pattern: /^\/dashboard\/[^/]+$/, title: `Dashboard - ${fullName}` },
     { pattern: /^\/project\/members\/[^/]+$/, title: 'Project Members' },
     { pattern: /^\/timelog\/?$/, title: `Timelog - ${fullName}` },
     { pattern: /^\/timelog\/[^/]+$/, title: `Timelog - ${fullName}` },
-    { pattern: /^\/peoplereport\/[^/]+$/, title: `People Report- ${fullName}` },
+    { pattern: /^\/peoplereport\/[^/]+$/, title: `People Report - ${fullName}` },
     { pattern: /^\/projectreport\/[^/]+$/, title: 'Project Report' },
     { pattern: /^\/teamreport\/[^/]+$/, title: 'Team Report' },
     { pattern: /^\/taskeditsuggestions$/, title: 'Task Edit Suggestions' },
@@ -101,17 +77,19 @@ function UpdateDocumentTitle() {
     { pattern: /^\/bmdashboard\/tools\/[^/]+\/update$/, title: 'Update Tool' },
     { pattern: /^\/bmdashboard\/tools$/, title: 'Tools List' },
     { pattern: /^\/bmdashboard\/tools\/add$/, title: 'Add Tool' },
+    { pattern: /^\/bmdashboard\/tools\/equipmentupdate$/, title: 'Update Equipment or Tool' },
     { pattern: /^\/bmdashboard\/tools\/log$/, title: 'Log Tools' },
     { pattern: /^\/bmdashboard\/tools\/[^/]+$/, title: 'Tool Detail' },
     { pattern: /^\/bmdashboard\/lessonform\/[^/]*$/, title: 'Lesson Form' },
     { pattern: /^\/bmdashboard\/inventorytypes$/, title: 'Inventory Types List' },
+    { pattern: /^\/bmdashboard\/totalconstructionsummary$/, title: 'Total Construction Summary' },
     { pattern: /^\/login$/, title: 'Login' },
     { pattern: /^\/forgotpassword$/, title: 'Forgot Password' },
     { pattern: /^\/email-subscribe$/, title: 'Email Subscribe' },
     { pattern: /^\/email-unsubscribe$/, title: 'Unsubscribe' },
     { pattern: /^\/infoCollections$/, title: 'Info Collections' },
-    { pattern: /^\/userprofile\/[^/]+$/, title: `User Profile- ${fullName}` },
-    { pattern: /^\/userprofileedit\/[^/]+$/, title: `Edit User Profile- ${fullName}` },
+    { pattern: /^\/userprofile\/[^/]+$/, title: `User Profile` },
+    { pattern: /^\/userprofileedit\/[^/]+$/, title: `Edit User Profile` },
     { pattern: /^\/updatepassword\/[^/]+$/, title: 'Update Password' },
     { pattern: /^\/Logout$/, title: 'Logout' },
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
@@ -121,19 +99,29 @@ function UpdateDocumentTitle() {
 
   useEffect(() => {
     // Find the first matching route and set the document title
-    const match = routes.find(route => route.pattern.test(location.pathname));
+    const match = Routes.find(route => route.pattern.test(location.pathname));
     document.title = match.title;
   }, [location, fullName]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      initMessagingSocket(token);
+    } else {
+      Error('❌ No auth token found for WebSocket connection.');
+    }
+  }, []);
 
   return null;
 }
 
-
-
 class App extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {}; // Moving state initialization into constructor as per linting rule.
+  }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error) {
     logger.logError(error);
   }
 

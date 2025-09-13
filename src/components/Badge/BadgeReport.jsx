@@ -5,39 +5,33 @@ import {
   Button,
   ButtonGroup,
   Input,
-  Card,
-  CardTitle,
-  CardBody,
-  CardImg,
-  CardText,
   DropdownToggle,
   Modal,
   ModalBody,
   ModalFooter,
   FormGroup,
   UncontrolledDropdown,
-  UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
   UncontrolledTooltip,
 } from 'reactstrap';
 import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
+import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate } from '~/utils/formatDate';
 import hasPermission from '../../utils/permissions';
 import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import BadgeImage from './BadgeImage';
 
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState(JSON.parse(JSON.stringify(props.badges)) || []);
   const [numFeatured, setNumFeatured] = useState(0);
@@ -47,8 +41,9 @@ function BadgeReport(props) {
 
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
-
   const darkMode = props.darkMode;
+  const canAssignBadges = props.hasPermission('assignBadges');
+  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
@@ -87,54 +82,68 @@ function BadgeReport(props) {
     };
   }
 
-  const FormatReportForPdf = (badges, callback) => {
-    const bgReport = [];
-    bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-  <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-      props.lastName
-    }</h4></div>
-  <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+  const FormatReportForPdf = async (badges, callback) => {
+    try {
+      const bgReport = [];
+      bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
+        <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+        props.lastName
+      }</h4></div>
+        <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
 
-    for (let i = 0; i < badges.length; i += 1) {
-      imageToUri(badges[i].badge.imageUrl, function(uri) {
-        bgReport[i + 1] = `
-      <table>
-        <thead>
-          <tr>
-            <th>Badge Image</th>
-            <th>Badge Name, Count Awarded & Badge Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="width:160px">
-              <div><img height="150" width="150" src=${uri}/></div>
-            </td>
-            <td style="width:500px">
-              <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
-              <div><b>Count:</b> ${badges[i].count}</div>
-              <div><b>Description:</b> ${badges[i].badge.description}</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      ${
-        (i + 1) % 4 === 0 && i + 1 !== badges.length
-          ? `</br></br></br>
-      <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-              props.lastName
-            }</h4></div>
-    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
-      `
-          : ''
-      }`;
-        if (i === badges.length - 1) {
-          setTimeout(() => {
-            callback(bgReport.join('\n'));
-          }, 100);
-        }
+      const badgePromises = badges.map((badge, i) => {
+        const imageUrl = badge.badge?.imageUrl || ''; // Fallback to empty string if imageUrl is missing
+        const badgeName = badge.badge?.badgeName || 'Unknown Badge'; // Fallback for missing badgeName
+        const description = badge.badge?.description || 'No description available'; // Fallback for missing description
+
+        return new Promise(resolve => {
+          imageToUri(imageUrl, uri => {
+            const badgeHtml = `
+              <table>
+                <thead>
+                  <tr>
+                    <th>Badge Image</th>
+                    <th>Badge Name, Count Awarded & Badge Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="width:160px">
+                      <div><img height="150" width="150" src="${uri}" /></div>
+                    </td>
+                    <td style="width:500px">
+                      <div><b>Name:</b> <span class="name">${badgeName}</span></div>
+                      <div><b>Count:</b> ${badge.count}</div>
+                      <div><b>Description:</b> ${description}</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              ${
+                (i + 1) % 4 === 0 && i + 1 !== badges.length
+                  ? `</br></br></br>
+              <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(
+                      badges.length / 4,
+                    )})</h3>
+              <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+                      props.lastName
+                    }</h4></div>
+              <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
+              `
+                  : ''
+              }`;
+            resolve(badgeHtml);
+          });
+        });
       });
+
+      const badgeHtmlArray = await Promise.all(badgePromises);
+      bgReport.push(...badgeHtmlArray);
+
+      callback(bgReport.join('\n'));
+    } catch (error) {
+      console.error('Error generating badge report:', error);
+      callback('<p>Error generating badge report. Please try again later.</p>');
     }
   };
 
@@ -216,7 +225,6 @@ function BadgeReport(props) {
     setSortBadges(newBadges);
   }, [props.badges]);
 
-
   const countChange = (badge, index, newValue) => {
     let copyOfExisitingBadges = [...sortBadges];
     newValue = newValue === null || newValue === undefined ? -1 : parseInt(newValue);
@@ -281,8 +289,6 @@ function BadgeReport(props) {
       return;
     }
   };
-
-
 
   const featuredChange = (badge, index, e) => {
     let newBadges = [...sortBadges];
@@ -356,8 +362,7 @@ function BadgeReport(props) {
 
       props.handleSubmit();
       // Close the modal
-      if(!openModal)
-        props.close();
+      if (!openModal) props.close();
     } catch (error) {
       // Handle errors and display error message
       toast.error('Failed to save badges. Please try again.');
@@ -365,7 +370,6 @@ function BadgeReport(props) {
       setSavingChanges(false);
     }
   };
-
 
   return (
     <div>
@@ -380,7 +384,10 @@ function BadgeReport(props) {
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '110px' }}>Earned Dates</th>
+                <th style={{ width: '110px' }} data-testid="desktop-earned-dates">
+                  Earned Dates
+                </th>{' '}
+                {/* Earned dates for desktop view */}
                 <th style={{ width: '90px' }}>Count</th>
                 {canDeleteBadges ? <th>Delete</th> : []}
                 <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
@@ -392,26 +399,15 @@ function BadgeReport(props) {
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <BadgeImage
+                        personalBestMaxHrs={props.personalBestMaxHrs}
+                        count={value.count}
+                        badgeData={value.badge}
+                        index={index}
+                        key={index}
+                        cssSuffix={'_report'}
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
@@ -458,7 +454,7 @@ function BadgeReport(props) {
                       </>
                     </td>
                     <td>
-                      {canUpdateBadges ? (
+                      {canUpdateBadges || canModifyBadgeAmount ? (
                         <Input
                           type="number"
                           value={Math.round(value.count)}
@@ -498,6 +494,7 @@ function BadgeReport(props) {
                           onChange={e => {
                             featuredChange(value, index, e);
                           }}
+                          disabled={canModifyBadgeAmount && !(canUpdateBadges || canAssignBadges)}
                         />
                       </FormGroup>
                     </td>
@@ -518,7 +515,7 @@ function BadgeReport(props) {
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           disabled={savingChanges}
           onClick={e => {
-            saveChanges(sortBadges,false);
+            saveChanges(sortBadges, false);
           }}
         >
           Save Changes
@@ -564,7 +561,11 @@ function BadgeReport(props) {
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '100%', zIndex: '10' }}>Earned</th>
+                <th style={{ width: '110px' }} data-testid="tablet-earned-dates">
+                  Earned Dates
+                </th>{' '}
+                {/*Earned dates for tablet view*/}
+                <th style={{ width: '80px' }}></th> {/* Ensure Options column is included here */}
               </tr>
             </thead>
             <tbody>
@@ -573,26 +574,15 @@ function BadgeReport(props) {
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <BadgeImage
+                        personalBestMaxHrs={props.personalBestMaxHrs}
+                        count={value.count}
+                        badgeData={value.badge}
+                        index={index}
+                        key={index}
+                        cssSuffix={'_report'}
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
@@ -601,7 +591,30 @@ function BadgeReport(props) {
                             timeZone: 'America/Los_Angeles',
                           })}
                     </td>
-
+                    <td>
+                      {' '}
+                      {/* Add Dates */}
+                      <UncontrolledDropdown className="me-2" direction="down">
+                        <DropdownToggle
+                          caret
+                          color="primary"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '80px',
+                          }}
+                        >
+                          Dates
+                        </DropdownToggle>
+                        <DropdownMenu className="badge_dropdown">
+                          {value.earnedDate.map((date, i) => (
+                            <DropdownItem key={i}>{date}</DropdownItem>
+                          ))}
+                        </DropdownMenu>
+                      </UncontrolledDropdown>
+                    </td>{' '}
+                    {/* Add dates */}
                     <td>
                       <ButtonGroup style={{ marginLeft: '8px' }}>
                         <UncontrolledDropdown>
@@ -714,7 +727,7 @@ function BadgeReport(props) {
               if (props.isRecordBelongsToJaeAndUneditable) {
                 alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
-              saveChanges(sortBadges,false);
+              saveChanges(sortBadges, false);
             }}
           >
             <span>Save Changes</span>
@@ -738,8 +751,6 @@ function BadgeReport(props) {
         <Modal isOpen={showModal} className={darkMode ? 'text-light dark-mode' : ''}>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-            
-            
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>

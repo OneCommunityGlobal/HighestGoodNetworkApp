@@ -12,9 +12,9 @@ import {
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
 import './EditLinkModal.css';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { connect, useSelector } from 'react-redux';
-import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
 
 const EditLinkModal = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
@@ -140,6 +140,7 @@ const EditLinkModal = props => {
       const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
       return pattern.test(url);
     } catch (err) {
+      // eslint-disable-next-line no-console  
       console.log(err);
       return false;
     }
@@ -166,6 +167,24 @@ const EditLinkModal = props => {
   useEffect(() => {
     isDifferentMediaUrl();
   }, [mediaFolderLink.Link, userProfile.mediaUrl]);
+
+  useEffect(() => {
+    if (userProfile.adminLinks) {
+      setGoogleLink(
+        userProfile.adminLinks.find(link => link.Name === 'Google Doc')
+        || initialAdminLinkState[0],
+      );
+      setMediaFolderLink(
+        userProfile.adminLinks.find(link => link.Name === 'Media Folder')
+        || initialAdminLinkState[1],
+      );
+      setAdminLinks(
+        userProfile.adminLinks
+          .filter(link => link.Name !== 'Google Doc')
+          .filter(link => link.Name !== 'Media Folder'),
+      );
+    }
+  }, [userProfile.adminLinks]);
 
   return (
     <React.Fragment>

@@ -41,14 +41,27 @@ export function CPDashboard() {
     <Container fluid className="dashboard-container">
       <header className="dashboard-header">
         <h1>All Events</h1>
-        <div className="dashboard-search-container">
-          <Input
-            type="search"
-            placeholder="Search events..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="dashboard-search"
-          />
+        <div className="dashboard-controls">
+          <div className="dashboard-search-container">
+            <Input
+              type="search"
+              placeholder="Search events..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="dashboard-search"
+            />
+          </div>
+          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
+            <DropdownToggle caret color="secondary">
+              Community Portal
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => handleNavigation('/home')}>Home</DropdownItem>
+              <DropdownItem onClick={() => handleNavigation('/events')}>Events</DropdownItem>
+              <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
+              <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
+            </DropdownMenu>
+          </Dropdown> */}
         </div>
       </header>
 
@@ -57,7 +70,7 @@ export function CPDashboard() {
           <div className="filter-section">
             <h4>Search Filters</h4>
             <div className="filter-item">
-              <label>Dates</label>
+              <label htmlFor="date-tomorrow"> Dates</label>
               <div className="filter-options-horizontal">
                 <div>
                   <Input type="radio" name="dates" /> Tomorrow
@@ -69,25 +82,25 @@ export function CPDashboard() {
               <Input type="date" placeholder="Ending After" className="date-filter" />
             </div>
             <div className="filter-item">
-              <label>Online</label>
+              <label htmlFor="online-only">Online</label>
               <div>
                 <Input type="checkbox" /> Online Only
               </div>
             </div>
             <div className="filter-item">
-              <label>Branches</label>
+              <label htmlFor="branches">Branches</label>
               <Input type="select">
                 <option>Select branches</option>
               </Input>
             </div>
             <div className="filter-item">
-              <label>Themes</label>
+              <label htmlFor="themes">Themes</label>
               <Input type="select">
                 <option>Select themes</option>
               </Input>
             </div>
             <div className="filter-item">
-              <label>Categories</label>
+              <label htmlFor="categories">Categories</label>
               <Input type="select">
                 <option>Select categories</option>
               </Input>

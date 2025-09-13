@@ -26,9 +26,9 @@ import './Badge.css';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
-import { clearSelected } from 'actions/badgeManagement';
+import { clearSelected } from '~/actions/badgeManagement';
 import hasPermission from '../../utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export const Badges = (props) => {
@@ -45,6 +45,9 @@ export const Badges = (props) => {
 
   // Added restriction: Jae's badges only editable by Jae or Owner
   const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
+  // const canAssignBadges = props.hasPermission('assignBadges');
+  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
+
   const toggle = () => setOpen(!isOpen);
   
   const toggleBadge = () => {setIsBadgeOpen(!isBadgeOpen)};
@@ -63,29 +66,38 @@ export const Badges = (props) => {
   useEffect(() => {
     try {
       if (props.userProfile.badgeCollection && props.userProfile.badgeCollection.length) {
-        const sortBadges = [...props.userProfile.badgeCollection].sort((a, b) => {
-          if (a?.badge?.ranking === 0) return 1;
-          if (b?.badge?.ranking === 0) return -1;
-          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
-          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
-          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
-          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
-          return 0;
-        });
+        const sortBadges = [...props.userProfile.badgeCollection]
+          .filter(badge => badge && badge.badge) // Filter out any null or undefined badges
+          .sort((a, b) => {
+            const rankingA = a.badge?.ranking ?? Infinity;
+            const rankingB = b.badge?.ranking ?? Infinity;
+            const nameA = a.badge?.badgeName ?? '';
+            const nameB = b.badge?.badgeName ?? '';
+  
+            if (rankingA === 0) return 1;
+            if (rankingB === 0) return -1;
+            if (rankingA > rankingB) return 1;
+            if (rankingA < rankingB) return -1;
+            return nameA.localeCompare(nameB);
+          });
         setSortedBadges(sortBadges);
+      } else {
+        setSortedBadges([]);
       }
     } catch (error) {
-       console.log(error);
+      // eslint-disable-next-line no-console
+      console.error("Error sorting badges:", error);
+      setSortedBadges([]);
     }
-   
   }, [props.userProfile.badgeCollection]);
 
   // Determines what congratulatory text should displayed.
   const badgesEarned = props.userProfile.badgeCollection.reduce((acc, badge) => {
-    if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+    if (!badge || !badge.badge) return acc;
+    if (badge.badge.badgeName === 'Personal Max' || badge.badge.type === 'Personal Max') {
       return acc + 1;
     }
-    return acc + Math.round(Number(badge.count));
+    return acc + (Math.round(Number(badge.count)) || 0);
   }, 0);
 
   const subject = props.isUserSelf ? 'You have' : 'This person has';
@@ -117,7 +129,7 @@ export const Badges = (props) => {
             </span>
 
             <div className='d-flex'>
-              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
+              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator' || canModifyBadgeAmount) && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
@@ -138,6 +150,7 @@ export const Badges = (props) => {
                         isUserSelf={props.isUserSelf}
                         isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
                         darkMode={darkMode}
+                        personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                       />
                     </ModalBody>
                   </Modal>
@@ -184,6 +197,7 @@ export const Badges = (props) => {
           <div>
             {badgesEarned ? (
               <div>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 Bravo! {subject} earned <a href="#" onClick={toggleBadge} >{badgesEarned}</a> {object}!
               </div>
             ) : (
@@ -225,7 +239,7 @@ export const Badges = (props) => {
                     <tbody>
                     {props.userProfile.badgeCollection && props.userProfile.badgeCollection.length>0 ? (
                       sortedBadges &&
-                      sortedBadges.map(value => value &&(
+                      sortedBadges.map(value => value && value.badge &&(
                         <tr key={value.badge._id}>
                           <td className="badge_image_sm">
                             {' '}
