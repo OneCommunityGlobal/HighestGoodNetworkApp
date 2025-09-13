@@ -1,7 +1,7 @@
 /* General Styling */
 .header-wrapper {
   height: fit-content;
-  width: clamp(100vw, 0.1rem + 1vw, 100%);
+  width: 100%;
 }
 .close-button {
   position: absolute;
@@ -14,7 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* flex-wrap: wrap; */
+  flex-wrap: wrap;
   width: 100%;
   gap: 1rem;
 }
@@ -33,6 +33,17 @@
   margin-right: 50px;
 }
 
+@media (max-width: 900px) {
+  .headerCard {
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+  .card-content {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
 .card-wrapper {
   padding-top: 1rem;
   padding-bottom: 1rem;
@@ -42,7 +53,7 @@
   z-index: 100;
   white-space: nowrap;
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   width: 100%;
@@ -115,15 +126,21 @@
 
 @media (max-width: 1050px) {
   .timer-message-section {
+    flex-direction: column;
+    align-items: center;
     width: 100%;
     margin-right: 0;
+    gap: 0.5rem;
   }
-
   .owner-message {
     display: block;
     margin-right: 0;
     text-align: center;
     width: 100%;
+    margin-top: 0.5rem;
+    font-size: 1.1em;
+    font-style: italic;
+    white-space: normal;
   }
   .nav-links {
     flex-direction: column;
