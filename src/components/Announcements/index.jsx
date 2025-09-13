@@ -1,15 +1,13 @@
-/* eslint-disable no-undef */
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import { Label, Input, Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { Link } from 'react-router-dom';
-import { FaFacebook, FaTwitter } from 'react-icons/fa';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactTooltip from 'react-tooltip';
@@ -369,7 +367,7 @@ function Announcements({ title, email: initialEmail }) {
       const utcDate = zonedTimeToUtc(scheduleDate, 'America/Los_Angeles');
 
       const pstDate = scheduleDate.toISOString().split('T')[0];
-      const pstTime = scheduleDate.toTimeString().slice(0, 5); // HH:MM
+      const pstTime = scheduleDate.toTimeString().slice(0, 5);
 
       if (scheduleSelectedPlatforms.includes('facebook')) {
         await dispatch(scheduleFbPost(pstDate, pstTime, emailContent));
@@ -456,7 +454,7 @@ function Announcements({ title, email: initialEmail }) {
     const [hours, minutes] = scheduledTime.split(':');
     let hour = parseInt(hours, 10);
     const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12 || 12; // Convert 0 to 12 for 12 AM
+    hour = hour % 12 || 12;
     const formattedTime = `${hour}:${minutes} ${ampm} PST`;
     return formattedTime;
   };
@@ -493,9 +491,7 @@ function Announcements({ title, email: initialEmail }) {
   const handlePlatformClick = platform => {
     setActiveTab(platform);
     setActivePlatform(platform);
-    // reset to first hint of that platform
     setCurrentHint(platformHints[platform][0]);
-    //setSelectedPlatforms([platform]);
     if (platform === 'facebook') {
       setSelectedPlatforms(['facebook']);
     } else if (platform === 'twitter') {
@@ -554,7 +550,6 @@ function Announcements({ title, email: initialEmail }) {
             <NavLink
               data-tip={label}
               className={classnames('tab-nav-item', { active: activeTab === id, dark: darkMode })}
-              //onClick={() => setActiveTab(id)}
               onClick={() => handlePlatformClick(id)}
               aria-selected={activeTab === id}
             >
