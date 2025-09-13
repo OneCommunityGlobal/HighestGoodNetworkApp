@@ -1,12 +1,18 @@
 import { useSelector } from 'react-redux';
 import styles from '../styles/SkillsSection.module.css';
+<<<<<<< HEAD
 import { getColorClass } from '../utils/skillUtils';
+=======
+import { useSelector } from 'react-redux';
+import { getFontColor } from '../../../../styles';
+>>>>>>> 4630879e7 (add dark mode styling to FrontendSkills component)
 
 function FrontendSkills({ profileData }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const frontend = skillInfo.frontend || {};
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const skills = [
     { value: frontend.overall, label: 'Overall Frontend' },
@@ -26,7 +32,7 @@ function FrontendSkills({ profileData }) {
         {skills.map(skill => (
           <div key={skill.label} className={`${styles.skillItem}`}>
             <span className={getColorClass(skill.value)}>{skill.value || 0}</span>
-            <span className={`${styles.skillLabel}`}>{skill.label}</span>
+            <span className={`${styles.skillLabel} ${getFontColor(darkMode)}`}>{skill.label}</span>
           </div>
         ))}
       </div>
