@@ -47,7 +47,7 @@ function ActivityList() {
     );
   });
 
-  const handleActivityClick = (activityId) => {
+  const handleActivityClick = activityId => {
     history.push(`/communityportal/activity/${activityId}/feedback`);
   };
 
@@ -91,15 +91,15 @@ function ActivityList() {
                 <button
                   className="activity-item"
                   onClick={() => handleActivityClick(activity.id)}
-                  style={{ 
-                    cursor: 'pointer', 
-                    padding: '10px', 
-                    border: '1px solid #ccc', 
-                    margin: '5px 0', 
+                  style={{
+                    cursor: 'pointer',
+                    padding: '10px',
+                    border: '1px solid #ccc',
+                    margin: '5px 0',
                     borderRadius: '5px',
                     width: '100%',
                     textAlign: 'left',
-                    backgroundColor: 'transparent'
+                    backgroundColor: 'transparent',
                   }}
                 >
                   <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}

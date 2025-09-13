@@ -30,13 +30,13 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
 
   const handleSubmit = e => {
     e.preventDefault();
-    
+
     // Prevent resubmission if already submitted
     if (hasSubmitted) {
       setErrorMessage('You have already submitted feedback for this activity.');
       return;
     }
-    
+
     if (rating === 0) {
       setErrorMessage('Please select a rating.');
       setSuccessMessage(''); // Clear any success message
@@ -46,12 +46,12 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
         'Thank you for submitting the feedback! We appreciate you taking the time to submit.',
       );
       setSubmitted(true);
-      
+
       // Call the callback to mark feedback as submitted
       if (onFeedbackSubmitted) {
         onFeedbackSubmitted();
       }
-      
+
       // Optional: Clear form after successful submission
       // setRating(0);
       // setComment('');
@@ -78,17 +78,12 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
   };
 
   return isOpen ? (
-    <div 
-      className="modal-overlay" 
-      onClick={handleOverlayClick}
-      role="dialog"
-      aria-modal="true"
-    >
+    <div className="modal-overlay" onClick={handleOverlayClick} role="dialog" aria-modal="true">
       <div className="modal-content">
-        <span 
-          className="close-icon" 
+        <span
+          className="close-icon"
           onClick={handleClose}
-          onKeyDown={(e) => {
+          onKeyDown={e => {
             if (e.key === 'Enter' || e.key === ' ') {
               e.preventDefault();
               handleClose();
@@ -101,10 +96,12 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
           &times;
         </span>
         <h2 className="header-feedback">Your feedback is very important to us!</h2>
-        
+
         {hasSubmitted && !submitted && (
           <div>
-            <p className="success-message">You have already submitted feedback for this activity.</p>
+            <p className="success-message">
+              You have already submitted feedback for this activity.
+            </p>
             <p className="para">Thank you for your feedback!</p>
             <div className="modal-buttons">
               <button type="button" className="cancel-btn" onClick={handleClose}>
@@ -113,9 +110,9 @@ function FeedbackModal({ isOpen, onClose, onFeedbackSubmitted, hasSubmitted, act
             </div>
           </div>
         )}
-        
+
         {submitted && <p className="success-message">{successMessage}</p>}
-        
+
         {!hasSubmitted && !submitted && (
           <div>
             <p className="para">

@@ -13,23 +13,23 @@ function CommunityFeedbackModal() {
     // We'll use a combination of localStorage and a session flag
     const submittedKey = `feedback_submitted_${activityId}`;
     const sessionFlag = `session_active_${activityId}`;
-    
+
     // Check if this is a new session (page refresh or new tab)
     const isNewSession = !sessionStorage.getItem(sessionFlag);
-    
+
     if (isNewSession) {
       // Clear any existing submission flags for this activity
       localStorage.removeItem(submittedKey);
       // Set session flag
       sessionStorage.setItem(sessionFlag, 'true');
     }
-    
+
     const alreadySubmitted = localStorage.getItem(submittedKey) === 'true';
-    
+
     if (alreadySubmitted) {
       setHasSubmitted(true);
     }
-    
+
     // Set the modal to open when the component mounts
     setIsOpen(true);
   }, [activityId]);
@@ -49,9 +49,9 @@ function CommunityFeedbackModal() {
 
   return (
     <div>
-      <FeedbackModal 
-        isOpen={isOpen} 
-        onClose={handleClose} 
+      <FeedbackModal
+        isOpen={isOpen}
+        onClose={handleClose}
         onFeedbackSubmitted={handleFeedbackSubmitted}
         hasSubmitted={hasSubmitted}
         activityId={activityId}
