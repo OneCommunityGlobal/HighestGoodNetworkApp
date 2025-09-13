@@ -217,19 +217,25 @@ function Collaboration() {
         </div>
       );
     return summaries && summaries.jobs && summaries.jobs.length > 0 ? (
-      summaries.jobs.map(summary => (
-        <div key={summary._id} className={styles['job-summary-item']}>
-          <h3>
-            <a href={`${summary.jobDetailsLink}`} target="_blank" rel="noreferrer">
-              {summary.title}
-            </a>
-          </h3>
-          <div className={styles['job-summary-content']}>
-            <p>{summary.description}</p>
-            <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
+      <>
+        {summaries.jobs.map(summary => (
+          <div key={summary._id} className={styles['job-summary-item']}>
+            <h3>
+              <a href={`${summary.jobDetailsLink}`} target="_blank" rel="noreferrer">
+                {summary.title}
+              </a>
+            </h3>
+            <div className={styles['job-summary-content']}>
+              <p>{summary.description}</p>
+              <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
+            </div>
           </div>
+        ))}
+        {/* Total jobs count */}
+        <div className={styles['job-summary-total']}>
+          <h3>Total Jobs: {summaries.jobs.length}</h3>
         </div>
-      ))
+      </>
     ) : (
       <div className={styles['no-results']}>
         <h2>No summaries found.</h2>
