@@ -3,40 +3,20 @@ import { Link } from 'react-router-dom';
 import styles from './BiddingOverview.module.css';
 
 import logo from '../../../assets/images/logo2.png';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUnitDetails, submitBid } from '../../../actions/lbdashboard/bidOverviewActions';
 
-function BiddingOverview() {
+function BiddingOverview({ listingId }) {
   const [rentingFrom, setRentingFrom] = useState('');
   const [rentingTo, setRentingTo] = useState('');
   const [name, setName] = useState('');
   const [biddingPrice, setBiddingPrice] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const unitDetails = {
-    unitNumber: '405',
-    villageName: 'Earthbag Village',
-    description:
-      "If you wish to book it in advance bid your price and leave your details below and we'll get back to you if you are our highest bidder. Make sure your starting date is at least 2 weeks from now.",
-    currentBid: '40$',
-    unitAmenities: [
-      { id: 'ua1', text: 'Artistic Interiors' },
-      { id: 'ua2', text: 'Artistic Interiors' },
-      { id: 'ua3', text: 'Artistic Interiors' },
-    ],
-
-    villageAmenities: [
-      'Central Tropical',
-      'Eco-Conscious Water System',
-      'Solar Power Infrastructure',
-      'Passive Heating and Cooling',
-      'Community Gardens',
-      'Rainwater Harvesting Systems',
-      'Workshops and Demonstration Spaces',
-    ],
-    images: [
-      'https://www.chromethemer.com/backgrounds/google/images/beautiful-morning-4k-google-background.jpg',
-      'https://wallpaper.forfun.com/fetch/1d/1d033e2b725d21df94f9f6f8c289a2ba.jpeg',
-    ],
-  };
+  const dispatch = useDispatch();
+  const userId = useSelector(state => state.auth.userId);
+  const firstName = useSelector(state => state.auth.firstName);
+  const unitDetails = useSelector(state => state.bidOverview.unitDetails);
 
   const navigateImages = direction => {
     if (direction === 'next') {
@@ -56,23 +36,42 @@ function BiddingOverview() {
       setBiddingPrice(value);
     }
   };
-
+  // on page load display unit details
   useEffect(() => {
-    const fetchUnitDetails = async () => {
-      try {
-        // Placeholder for API call
-      } catch (error) {
-        // Handle error fetching unit details if needed (e.g., send to a logging service)
-      }
-    };
+    if (listingId) {
+      dispatch(fetchUnitDetails(listingId));
+    }
+  }, [dispatch, listingId]);
 
-    fetchUnitDetails();
-  }, []);
-
+  //handling bid submission
   const handleSubmit = e => {
     e.preventDefault();
-    // Handle form submission logic here
-    // Example: Send data to backend API
+
+    // Basic validation
+    if (!rentingFrom || !rentingTo || !name || !biddingPrice) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    // Prepare bid data
+    const bidData = {
+      userId,
+      propertyId: listingId,
+      bid_amount: parseInt(biddingPrice, 10),
+      start_date: rentingFrom,
+      end_date: rentingTo,
+    };
+
+    dispatch(submitBid(bidData));
+
+    console.log('Bid submitted:', bidData);
+    alert('Bid submitted successfully!');
+
+    // Reset form
+    setRentingFrom('');
+    setRentingTo('');
+    setName('');
+    setBiddingPrice('');
   };
 
   return (
@@ -101,7 +100,7 @@ function BiddingOverview() {
           </div>
 
           <div className={`${styles.headerRight}`}>
-            <span className={`${styles.welcomeText}`}>WELCOME USER_NAME</span>
+            <span className={`${styles.welcomeText}`}>WELCOME {firstName} </span>
             {/* Replace USER_NAME */}
             <div className={`${styles.iconContainer}`}>
               <div className={`${styles.iconBadge}`}>
@@ -286,5 +285,8 @@ function BiddingOverview() {
     </div>
   );
 }
-
+const mapStateToProps = state => ({
+  userId: state.auth.userId,
+  firstName: state.auth.firstName,
+});
 export default BiddingOverview;
