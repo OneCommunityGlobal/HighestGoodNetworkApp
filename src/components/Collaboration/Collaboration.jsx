@@ -217,7 +217,7 @@ function Collaboration() {
         </div>
       );
     return summaries && summaries.jobs && summaries.jobs.length > 0 ? (
-      <>
+      <div className={styles['jobs-summaries-list']}>
         {summaries.jobs.map(summary => (
           <div key={summary._id} className={styles['job-summary-item']}>
             <h3>
@@ -235,7 +235,7 @@ function Collaboration() {
         <div className={styles['job-summary-total']}>
           <h3>Total Jobs: {summaries.jobs.length}</h3>
         </div>
-      </>
+      </div>
     ) : (
       <div className={styles['no-results']}>
         <h2>No summaries found.</h2>

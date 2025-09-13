@@ -337,7 +337,9 @@ select {
 .job-headings {
   text-align: center;
 }
-
+.jobs-summaries-list {
+  padding-left: 28px;  
+}
 .user-collaboration-dark-mode .job-intro {
   color: #f1f1f1;
 }
@@ -348,7 +350,7 @@ select {
 
 .user-collaboration-dark-mode .job-summary-item {
   background: linear-gradient(135deg, #23272a, #181a1b);
-  padding: 1rem;
+  /* padding: 1rem; */
   border-radius: 0.5rem;
 }
 
