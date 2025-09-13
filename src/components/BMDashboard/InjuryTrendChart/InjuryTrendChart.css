@@ -1,0 +1,122 @@
+.injury-dark-body {
+  background-color: #1B2A41 !important;
+}
+
+.injury-trend-container {
+  width: 100%;
+  height: 100%;
+}
+
+.injury-trend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.injury-trend-title {
+  margin: 10px;
+  font-size: 20px;
+}
+
+.injury-trend-filters {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 12px;
+  align-items: end;
+}
+
+.injury-trend-filters .filter-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 0%;
+}
+
+/* Scoped input/select overrides ONLY for injury chart */
+.injury-trend-container .filter-item input,
+.injury-trend-container .filter-item select {
+  padding: 0 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.injury-trend-chart-wrapper {
+  width: 100%;
+  height: 400px;
+}
+
+/* (Reverted) legend chip styles removed */
+
+.injury-trend-container.darkMode .injury-select__control {
+  background-color: #222;
+  color: #ddd;
+  border-color: #2d3a4d;
+  min-height: 38px;
+}
+
+.injury-trend-container.darkMode .injury-select__single-value {
+  color: #ddd;
+}
+
+.injury-trend-container.darkMode .injury-select__menu {
+  background-color: #222;
+  color: #ddd;
+}
+
+/* dark page background for entire container */
+.injury-trend-container.darkMode {
+  background-color: #1B2A41;
+  color: #cfd7e3;
+}
+
+.injury-trend-container.darkMode .injury-trend-title { color: #cfd7e3; }
+
+/* Ensure project select and datepicker are equal width */
+.injury-select__control,
+.injury-datepicker {
+  width: 100%;
+  min-height: 38px;
+}
+
+/* Dark mode styling for the native datepicker input */
+.injury-trend-container.darkMode .injury-datepicker {
+  background-color: #222 !important;
+  color: #ddd !important;
+  border: 1px solid #2d3a4d !important;
+}
+
+.injury-trend-container.darkMode .injury-datepicker::placeholder {
+  color: #bbb !important;
+}
+
+/* Dark mode version of scoped input/select overrides */
+.injury-trend-container.darkMode .filter-item input,
+.injury-trend-container.darkMode .filter-item select {
+  background: #222;
+  color: #ddd;
+  border-color: #2d3a4d;
+}
+
+/* react-datepicker popup in dark mode */
+.injury-trend-container.darkMode .react-datepicker {
+  background-color: #222;
+  color: #ddd;
+  border: 1px solid #2d3a4d;
+}
+.injury-trend-container.darkMode .react-datepicker__header {
+  background-color: #2a3446;
+  border-bottom: 1px solid #2d3a4d;
+}
+.injury-trend-container.darkMode .react-datepicker__day-name,
+.injury-trend-container.darkMode .react-datepicker__day,
+.injury-trend-container.darkMode .react-datepicker__current-month {
+  color: #ddd;
+}
+
+
