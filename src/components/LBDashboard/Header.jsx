@@ -14,6 +14,7 @@ function LBDashboardHeader({ notifications }) {
   const firstName = useSelector(state => state.auth.user.name);
   const [selectedVillage, setSelectedVillage] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
+  const notificationCount = notifications && notifications.length ? notifications.length : 0;
 
   return (
     <>
@@ -47,9 +48,30 @@ function LBDashboardHeader({ notifications }) {
                     as="span"
                     className="item__nav-link"
                     onClick={() => setShowNotifications(true)}
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', position: 'relative' }}
                   >
                     <IoNotificationsOutline className="item__nav-icon" />
+                    {notificationCount > 0 && (
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: 2,
+                          right: 2,
+                          background: 'red',
+                          color: 'white',
+                          borderRadius: '50%',
+                          width: 18,
+                          height: 18,
+                          fontSize: 12,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 1,
+                        }}
+                      >
+                        {notificationCount}
+                      </span>
+                    )}
                   </Nav.Link>
                   <Nav.Link as={Link} to="/bidding" className="item__nav-link">
                     <FiUser className="item__nav-icon" />
