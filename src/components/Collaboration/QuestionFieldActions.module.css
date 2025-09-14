@@ -1,21 +1,21 @@
-.field-controls {
+.fieldControls {
   display: flex;
   align-items: center;
   gap: 10px;
   margin-bottom: 8px;
 }
 
-.visibility-checkbox {
+.visibilityCheckbox {
   transform: scale(1.2);
   cursor: pointer;
 }
 
-.field-actions {
+.fieldActions {
   display: flex;
   gap: 5px;
 }
 
-.clone-button, .move-button, .delete-button {
+.cloneButton, .moveButton, .deleteButton {
   padding: 3px 8px;
   border: none;
   border-radius: 3px;
@@ -24,17 +24,17 @@
   transition: opacity 0.2s;
 }
 
-.clone-button {
+.cloneButton {
   background-color: #9c27b0;
   color: white;
 }
 
-.move-button {
+.moveButton {
   background-color: #ff9800;
   color: white;
 }
 
-.delete-button {
+.deleteButton {
   background-color: #f44336;
   color: white;
 }
@@ -48,7 +48,7 @@ button:not(:disabled):hover {
   opacity: 0.8;
 } 
 
-.edit-button {
+.editButton {
   background-color: #2196f3;
   color: white;
   padding: 3px 8px;
@@ -59,7 +59,7 @@ button:not(:disabled):hover {
   transition: opacity 0.2s;
 }
 
-.edit-button:hover {
+.editButton:hover {
   opacity: 0.8;
 }
 
