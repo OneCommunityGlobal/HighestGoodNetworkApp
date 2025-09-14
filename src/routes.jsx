@@ -249,6 +249,17 @@ export default (
         </>
       )}
     />
+    <Route
+      exact
+      path="/lbdashboard/bidOverview/:listingId"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <LBBidOverview />
+        </>
+      )}
+    />
 
     <Route
       exact
