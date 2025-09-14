@@ -73,12 +73,6 @@ export const permissionLabels = [
         description: 'Gives access to the PR Team dashboard, including view and edit rights.',
       },
       {
-        label: 'Promote user to PR Team',
-        key: 'promoteToPRTeam',
-        description: 'Allows assigning a user to the PR Team role.',
-      },
-
-      {
         label: 'Edit Total Valid Weekly Summaries',
         key: 'totalValidWeeklySummaries',
         description: 'Gives permission to edit total valid weekly summaries count under reports',
