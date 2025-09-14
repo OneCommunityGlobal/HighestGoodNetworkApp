@@ -243,7 +243,7 @@ export default (
     />
     <Route
       exact
-      path="/lbdashboard/bidOverview"
+      path="/lbdashboard/bidOverview/:listingId"
       render={() => (
         <>
           <AutoUpdate />

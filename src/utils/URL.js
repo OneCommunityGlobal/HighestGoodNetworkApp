@@ -343,7 +343,7 @@ export const ENDPOINTS = {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
-  LB_BID_OVERVIEW_DATA: listingId =>`${APIEndpoint}/lb/bidoverview/${listingId}`,
+  LB_BID_OVERVIEW: listingId =>`${APIEndpoint}/lb/bidoverview/${listingId}`,
   LB_SUBMIT_BID: listingId => `${APIEndpoint}/lb/bidoverview/placeBid/${listingId}`,
 
   NOTIFICATIONS: `${APIEndpoint}/notification`,
