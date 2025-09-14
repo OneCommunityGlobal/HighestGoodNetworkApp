@@ -21,6 +21,11 @@ export default defineConfig(({ mode }) => {
         return prev;
       }, {}),
     },
+    server: {
+      proxy: {
+        '/api': 'http://localhost:4500',
+      },
+    },
     build: {
       outDir: 'build',
     },
