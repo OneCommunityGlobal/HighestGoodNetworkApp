@@ -155,7 +155,8 @@ const ReviewWordCloud = () => {
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Insights from Reviews</h2>
+      {/* Remove the title since we already have a section title in the dashboard */}
+      {/* <h2 className={styles.title}>Insights from Reviews</h2> */}
 
       <div className={styles.wordCloudsContainer}>
         {/* Left Word Cloud - Villages */}

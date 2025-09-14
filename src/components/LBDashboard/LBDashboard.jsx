@@ -12,6 +12,7 @@ import {
   Card,
   CardBody,
 } from 'reactstrap';
+import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
 import styles from './LBDashboard.module.css';
 
 const METRIC_OPTIONS = {
@@ -244,24 +245,7 @@ export function LBDashboard() {
         <details>
           <summary className={styles.sectionSummary}>Insights from Reviews</summary>
           <div className={styles.sectionBody}>
-            <Row xs="1" md="2" className="g-3">
-              <Col>
-                <Card className={styles.wordcloudCard}>
-                  <CardBody className={styles.wordcloudBody}>
-                    <div className={styles.wordcloudTitle}>Village Wordcloud</div>
-                    <div className={styles.wordcloudPlaceholder}>Wordcloud area</div>
-                  </CardBody>
-                </Card>
-              </Col>
-              <Col>
-                <Card className={styles.wordcloudCard}>
-                  <CardBody className={styles.wordcloudBody}>
-                    <div className={styles.wordcloudTitle}>Property Wordcloud</div>
-                    <div className={styles.wordcloudPlaceholder}>Wordcloud area</div>
-                  </CardBody>
-                </Card>
-              </Col>
-            </Row>
+            <ReviewWordCloud />
           </div>
         </details>
       </section>
