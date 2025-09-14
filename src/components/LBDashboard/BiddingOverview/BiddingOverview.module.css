@@ -12,6 +12,12 @@
   flex-direction: column;
   background-color: #e5e5e5;
 }
+.dark {
+  background: #181818 !important;
+  color: #f1f1f1 !important;
+  min-height: 100vh;
+  width: 100vw;
+}
 
 .boxContainer {
   max-width: 1200px;
@@ -326,26 +332,31 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 11.5rem;
+  gap: 1.5rem;
 }
 
 .formRowContainer {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
   flex: 1;
+  gap: 0.5rem;  
 }
 
 .fullWidth {
   width: 37%;
+  flex: 1 1 100%;
 }
 
 .formGroup label {
   margin-bottom: 0.25rem;
   font-size: 0.9rem;
+  margin-bottom: 0;
 }
 
 .inputWithIcon {
@@ -354,9 +365,10 @@
 
 .inputWithIcon input {
   width: 100%;
-  padding: 0.5rem;
+  padding: 0.6rem 0.75rem;
   border: 1px solid #ccc;
-  border-radius: 2px;
+  border-radius: 4px;
+  font-size: 0.9rem;
 }
 
 /* Style for date inputs */
@@ -427,3 +439,118 @@ input[type='date'] {
     flex-direction: column;
   }
 }
+
+
+/* Dark mode for overall page */
+.darkMode {
+  background-color: #1b2a41;
+  color: #f5f5f5; 
+}
+
+.darkMode .boxContainer {
+  background-color: #1e1e1e;
+}
+
+.darkMode .biddingHeader {
+  background-color: #1b2a41;
+  color: #f5f5f5;
+}
+
+.darkMode .villageSelect,
+.darkMode .goButton,
+.darkMode .inputWithIcon input,
+.darkMode .submitButton1,
+.darkMode .actionButton {
+  background-color: #1b2a41;
+  color: #f5f5f5;
+  border: 1px solid #555;
+}
+
+.darkMode .villageSelect,
+.darkMode .goButton,
+.darkMode .inputWithIcon input,
+.darkMode .submitButton1,
+.darkMode .actionButton:hover {
+  background-color: #2b3e59; 
+  border-color: #777;        
+  color: #f5f5f5;            
+}
+
+.darkMode .mapLink {
+  color: #4fc3f7;
+}
+
+.darkMode .imageDot {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.darkMode .imageDot.active {
+  background-color: #f5f5f5;
+}
+
+.darkMode .zoomButtons button {
+  background-color: #1b2a41;
+  color: #f5f5f5;
+  border: 1px solid #555;
+}
+.darkMode .biddingCard {
+  background-color: #2b3e59;
+  border: 3px solid #30b8f8; 
+}
+
+.darkMode .unitTitle,
+.darkMode .unitSubtitle,
+.darkMode .unitDescription,
+.darkMode .currentBid,
+.darkMode .formGroup label {
+  color: #ffffff;
+}
+
+.darkMode input[type='date'],
+.darkMode .biddingFormGroup input {
+  background-color: #253342;
+  color: #ffffff;
+  border: 1px solid #555;
+}
+
+.darkMode .actionButton,
+.darkMode .chatButton {
+  background-color: #2b3e59;
+  color: #ffffff;
+  border: 1px solid #555;  
+}
+
+.darkMode .actionButton:hover,
+.darkMode .chatButton:hover {
+  background-color: #3a4f6d; 
+  border-color: #777;        
+  color: #ffffff;            
+}
+
+.darkMode .saveButton {
+  background-color: #2b3e59;
+  color: #ffffff;
+  border: 1px solid #555;
+}
+.zoomWrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.zoomImage {
+  transition: transform 0.3s ease;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transform-origin: center center;
+}
+
+/* .darkMode.topLogoContainer {
+  background-color: #1b2a41;
+} */
