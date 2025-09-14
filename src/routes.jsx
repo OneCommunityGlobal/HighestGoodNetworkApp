@@ -1,6 +1,6 @@
 import FormEditor from '~/components/Forms/FormEditor';
 import FormViewer from '~/components/Forms/FormViewer';
-import ExperienceBreakdownChart from '~/components/ExperienceBreakdownChart';
+
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
@@ -681,8 +681,6 @@ export default (
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
-        <Route path="/experience-breakdown" exact component={ExperienceBreakdownChart} />
-
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         {/* ----- HGN Help Community Skills Dashboard Routes ----- */}
         <ProtectedRoute path="/hgnhelp" exact component={LandingPage} />
