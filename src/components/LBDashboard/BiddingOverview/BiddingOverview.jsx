@@ -20,7 +20,7 @@ function BiddingOverview() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [rentingFrom, setRentingFrom] = useState('');
   const [rentingTo, setRentingTo] = useState('');
-  const [name, setName] = useState(firstName || '');
+  const [name, setName] = useState('');
   const [biddingPrice, setBiddingPrice] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageScale, setImageScale] = useState(1);
