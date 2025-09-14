@@ -7,6 +7,8 @@ import 'react-datepicker/dist/react-datepicker.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import './ProjectStatus.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
@@ -68,7 +70,7 @@ function DonutChart() {
     if (startDate && endDate && endDate <= startDate) {
       setDateError(true);
       setTimeout(() => {
-        alert('End date must be later than start date');
+        toast.error('End date must be later than start date');
       }, 0);
       return false;
     }
@@ -152,7 +154,10 @@ function DonutChart() {
   };
 
   return (
-    <div className={` ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
+    <div
+      className={` ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
+      style={{ minHeight: '100vh' }}
+    >
       <div className={`container-fluid py-4 h-100 ${darkMode ? 'text-light' : ''}`}>
         <div className="row mb-4 align-items-center">
           <div className="col-md-6">
@@ -168,9 +173,9 @@ function DonutChart() {
                 selected={startDate}
                 onChange={setStartDate}
                 placeholderText="From Date"
-                className={`form-control ${darkMode ? 'bg-secondary text-light border-dark' : ''}`}
+                className={`form-control ${darkMode ? 'bg-secondary text-white border-dark' : ''}`}
                 popperPlacement="bottom-start"
-                wrapperClassName={darkMode ? 'dark-datepicker' : ''}
+                wrapperClassName={darkMode ? 'dark' : ''}
               />
               <DatePicker
                 selected={endDate}

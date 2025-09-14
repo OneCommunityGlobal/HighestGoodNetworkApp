@@ -1,107 +1,3 @@
-/* .donut-chart-container {
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .header h2 {
-    text-align: center;
-    flex: 1;
-    font-family: monospace;
-    font-weight: bolder;
-  }
-
-  .date-picker-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .date-picker {
-    font-size: 12px;
-    width: 100px;
-  }
-
-  .apply-button {
-    padding: 5px 10px;
-    font-size: 12px;
-    cursor: pointer;
-  }
-
-  .content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-  }
-
-  .donut-chart-section {
-    width: 60%;
-    position: relative;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .total-projects {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-
-  .total-projects p {
-    margin: 0;
-    font-size: 22px;
-    font-weight: bold;
-  }
-
-  .total-projects p:last-child {
-    font-size: 24px;
-    font-weight: bold;
-  }
-
-  .project-counts {
-    width: 50%;
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .project-details {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .project-item {
-    margin-bottom: 20px;
-  }
-
-  .project-label {
-    font-family: monospace;
-    font-size: 22px;
-    font-weight: bold;
-    margin: 0;
-    text-align: right;
-  }
-
-  .project-value {
-    font-family: monospace;
-    font-size: 20px;
-    font-weight: bold;
-    margin: 5px 0;
-    text-align: right;
-    color: indianred;
-  }
-
 .spinner {
   border: 4px solid #f3f3f3;
   border-top: 4px solid #3498db;
@@ -112,36 +8,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
-
-.date-picker-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.apply-button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-  }
-
-  .apply-button:hover {
-    background-color: #0056b3;
-  }
-
-  .header h2 {
-    margin-left: 250px;
-  }
-
-   */
 
 .dark-datepicker .react-datepicker {
   background-color: #343a40;
@@ -161,4 +34,22 @@
 }
 .dark-datepicker .react-datepicker__day--selected {
   background-color: #007bff;
+}
+
+/* Light mode (default) */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+}
+
+/* Dark mode */
+.dark {
+  --bg-color: #002147; /* Oxford Blue */
+  --text-color: #f8f9fa; /* text-light */
+}
+
+/* Apply variables */
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
