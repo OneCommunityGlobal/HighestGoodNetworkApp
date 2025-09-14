@@ -1,0 +1,87 @@
+.darkModeMap {
+  filter: brightness(0.8);
+}
+
+.darkModeTooltip {}
+.darkModePopup {}
+
+:global(.leaflet-popup-content-wrapper),
+:global(.leaflet-popup-content) {
+  background-color: white;
+  color: #222;
+  border-radius: 4px;
+}
+
+:global(.darkModePopup .leaflet-popup-content-wrapper),
+:global(.darkModePopup .leaflet-popup-content) {
+  background-color: #2d4059 !important;
+  color: white !important;
+}
+
+:global(.darkModePopup .leaflet-popup-tip) {
+  background-color: #2d4059;
+}
+
+:global(.darkModePopup .leaflet-popup-content-wrapper),
+:global(.darkModePopup .leaflet-popup-content),
+:global(.darkModePopup .leaflet-popup-content ) {
+  color: white !important;
+}
+
+:global(.leaflet-popup-content-wrapper),
+:global(.leaflet-popup-content),
+:global(.leaflet-popup-content) {
+  color: #222;
+}
+
+:global(.darkModePopup .leaflet-popup-content-wrapper) {
+  background-color: #2d4059 !important;
+}
+
+:global(.leaflet-popup-content-wrapper) {
+  background-color: white !important;
+}
+
+:global(.leaflet-tooltip) {
+  background-color: white;
+  color: #222;
+  border: 1px solid #ddd;
+}
+
+:global(.darkModeTooltip .leaflet-tooltip) {
+  background-color: #2d4059;
+  color: white !important;
+  border: 1px solid #555;
+}
+
+:global(.darkModeTooltip .leaflet-tooltip-top:before) {
+  border-top-color: #2d4059;
+}
+:global(.darkModeTooltip .leaflet-tooltip-bottom:before) {
+  border-bottom-color: #2d4059;
+}
+:global(.darkModeTooltip .leaflet-tooltip-left:before) {
+  border-left-color: #2d4059;
+}
+:global(.darkModeTooltip .leaflet-tooltip-right:before) {
+  border-right-color: #2d4059;
+}
+
+:global(.darkModeMap .leaflet-control-attribution) {
+  background-color: rgba(45, 64, 89, 0.8);
+  color: #ddd;
+}
+
+:global(.darkModeMap .leaflet-control-attribution a) {
+  color: #6ACFDE;
+}
+
+:global(.darkModeMap .leaflet-control-zoom a) {
+  background-color: #2d4059;
+  color: white;
+  border-color: #3a506b;
+}
+
+:global(.darkModeMap .leaflet-control-zoom a:hover) {
+  background-color: #3a506b;
+}
