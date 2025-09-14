@@ -756,10 +756,16 @@ export default (
         <ProtectedRoute path="/" exact component={Dashboard} />
 
         {/* ----- PR Dashboard  ----- */}
+
         <ProtectedRoute
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PromotionEligibility}
+        />
+        <ProtectedRoute
+          path="/pr-team-analytics/popular-prs"
+          exact
+          component={PRReviewTeamAnalytics}
         />
 
         <Route path="*" component={NotFoundPage} />
