@@ -138,19 +138,54 @@
   font-weight: bold;
 }
 
+/* Image container */
 .biddingImage {
   position: relative;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 4rem;
   align-self: center;
   width: 100%;
+  height: 320px;
+  overflow: hidden;
 }
 
 .biddingImage img {
-  display: block;
   width: 100%;
-  height: 300px;
-  object-fit: cover;
+  height: 100%;
+  object-fit: cover; 
+  transition: transform 0.2s;
+  display: block;
+}
+
+
+.imageZoomControls {
+  position: absolute;
+  bottom: 15px;
+  left: 35%;
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+  background: transparent; 
+  padding: 0;
+  border-radius: 8px;
+}
+
+.imageZoomControls button {
+  padding: 4px 12px;
+  font-size: 1rem;
+  border-radius: 4px;
+  border: none;
+  background: rgba(255,255,255,0.3);
+  cursor: pointer;
+  color: #333;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.imageZoomControls button:hover {
+  background: rgba(255,255,255,0.7); 
 }
 
 /* Ensure navigation buttons stay attached to the image */
@@ -348,6 +383,7 @@ input[type='date'] {
   white-space: nowrap;
   min-width: 300px;
   padding: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 /* Bidding Actions (Buttons) */
