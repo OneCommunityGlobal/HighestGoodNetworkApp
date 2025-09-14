@@ -12,3 +12,4 @@ function PRDashboard({ authUser }) {
     </div>
   );
 }
+export default PRDashboard;
