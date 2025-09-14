@@ -2,7 +2,7 @@ import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import ApplicantsChart from './components/ApplicantsChart';
 import AutoUpdate from './components/AutoUpdate';
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
