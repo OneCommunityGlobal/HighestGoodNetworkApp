@@ -1,364 +1,349 @@
-.job-analytics-container {
-  display: flex;
-  align-items: flex-start;
-  gap: 20px;
+/* ---------- Theme tokens ---------- */
+:root {
+  --bg: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --track: #eef2f7;
+  --bar: #3b82f6;
+  --bar-hover: #2563eb;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Apply dark theme variables to body when component is in dark mode */
+body:has(.ja.dark) {
+  background-color: #1b2a41;
+}
+
+.ja.dark {
+  --bg: #1b2a41;
+  --text: #e5e7eb;
+  --muted: #9aa4b2;
+  --card: #1e293b;
+  --border: #334155;
+  --track: #1e293b;
+  --bar: #3b82f6;
+  --bar-hover: #60a5fa;
+  --shadow: 0 1px 3px rgba(0,0,0,0.6);
+  background-color: var(--bg);
+}
+
+/* ---------- Layout ---------- */
+.ja {
+  color: var(--text);
+  padding: 16px;
+  background: var(--bg);
+  min-height: 100vh;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-}
-
-.chart-container {
-  flex: 1;
-  border: 2px solid #4285f4;
-  border-radius: 8px;
-  background-color: #ffffff;
-  padding: 20px;
-  min-width: 800px; 
-}
-
-.chart-title {
-  font-size: 24px;
-  font-weight: 400;
-  color: #5f6368;
-  margin: 0 0 30px 0;
-  text-align: center;
-}
-
-.chart-area {
-  min-height: 400px;
   position: relative;
-  padding-left: 170px;
-  padding-right: 40px; 
-  padding-top: 20px;
-  padding-bottom: 60px;
-  width: 100%; 
 }
 
-.grid-lines {
-  position: absolute;
-  left: 170px;
-  right: 40px; 
-  top: 20px;
-  bottom: 60px;
-  background-image: 
-    linear-gradient(to right, #e0e0e0 1px, transparent 1px),
-    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-  background-size: 10% 25%; 
-  opacity: 0.5;
-}
-
-.y-axis {
-  position: absolute;
+/* Ensure dark mode background covers any potential gaps */
+.ja.dark::before {
+  content: '';
+  position: fixed;
+  top: 0;
   left: 0;
-  top: 20px;
-  bottom: 60px;
-  width: 160px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  right: 0;
+  bottom: 0;
+  background: var(--bg);
+  z-index: -1;
 }
 
-.y-axis-label {
-  height: 80px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 10px;
-  font-size: 12px;
-  color: #5f6368;
-  border-right: 1px solid #9aa0a6;
-  white-space: nowrap;
-  overflow: hidden; 
-  text-overflow: ellipsis;
+.ja-main {
+  display: flex;               /* FLEX so left fills, right fixed */
+  align-items: flex-start;
+  gap: 24px;
+  width: 100%;
 }
 
-.x-axis {
-  position: absolute;
-  left: 170px;
-  right: 40px; 
-  bottom: 40px;
-  height: 20px;
-  border-top: 1px solid #9aa0a6;
+.ja-card {
+  flex: 1 1 auto;              /* take remaining space */
+  min-width: 0;                /* allow shrink without overflow */
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 20px;
 }
 
-.x-axis-tick {
-  position: absolute;
-  font-size: 12px;
-  color: #5f6368;
-  transform: translateX(-50%);
-  top: 5px;
+.ja-filters {
+  flex: 0 0 340px;             /* fixed width sidebar */
+  width: 340px;
 }
 
-.x-axis-label {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 12px;
-  color: #5f6368;
-  font-weight: 500;
+@media (max-width: 900px) {
+  .ja-main {
+    flex-direction: column;    /* stack on small screens */
+  }
+  .ja-filters {
+    width: 100%;
+    flex: 0 0 auto;
+  }
 }
 
-.bars-container {
-  position: absolute;
-  left: 170px;
-  right: 40px; 
-  top: 20px;
-  bottom: 60px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.bar-row {
-  height: 80px; 
-  display: flex;
-  align-items: center;
-  position: relative;
-  padding: 20px 0;
-}
-
-.bar {
-  height: 40px;
-  background-color: #4285f4;
-  border: 1px solid #1a73e8;
-  border-radius: 0 4px 4px 0;
-  position: relative;
-  min-width: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  transition: all 0.2s ease;
-}
-
-.bar:hover {
-  background-color: #1a73e8;
-  transform: scaleY(1.1);
-}
-
-.data-label {
-  position: absolute;
-  right: -25px;
-  font-size: 14px;
+/* ---------- Title & notices ---------- */
+.ja-title {
+  text-align: center;
+  margin: 4px 0 12px;
+  font-size: 22px;
   font-weight: 600;
-  color: #1a73e8;
-  white-space: nowrap;
 }
 
-.tooltip {
+/* Dark-mode title: light blue for visibility */
+.ja.dark .ja-title {
+  /* Tailwind-ish blue-300: bright on dark backgrounds */
+  color: #93c5fd !important;
+  opacity: 1 !important;       /* guard against lowered parent opacity */
+  mix-blend-mode: normal;      /* avoid blend issues from extensions */
+}
+.ja-warning {
+  background: rgba(255, 193, 7, 0.12);
+  color: #8a6d3b;
+  border: 1px solid rgba(255, 193, 7, 0.35);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.ja-no-data {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ---------- Bars ---------- */
+.ja-bars {
+  overflow: hidden;            /* prevent any spill */
+}
+
+/* Grid overlay to mimic chart vertical grid lines */
+.ja-chart {
+  position: relative;
+}
+
+.ja-grid {
   position: absolute;
-  left: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  margin-left: 10px;
-  background-color: #333;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  left: 220px; /* align to track start (matches .ja-row grid column) */
+  right: 20px;
+  top: 0;
+  bottom: 0;
+  /* slightly stronger faint grid so ticks/readers are easier to see */
+  background-image: linear-gradient(to right, rgba(0,0,0,0.06) 1px, transparent 1px);
+  background-size: 20% 100%;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.tooltip::before {
+.dark .ja-grid {
+  background-image: linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px);
+}
+
+/* vertical y-axis line (left boundary of chart area) */
+.ja-chart::before {
   content: '';
   position: absolute;
-  left: -5px;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 5px solid transparent;
-  border-right-color: #333;
+  left: 220px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+  opacity: 1;
+  pointer-events: none;
+  z-index: 3;
 }
 
-.no-data {
+.ja-row {
+  display: grid;
+  grid-template-columns: 220px 1fr; /* label | bar */
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px; /* increase vertical spacing between rows */
+}
+
+@media (max-width: 600px) {
+  .ja-row {
+    grid-template-columns: 140px 1fr;
+    margin-bottom: 16px;
+  }
+}
+
+.ja-label {
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  padding-right: 8px;
+}
+
+.ja-track {
+  position: relative;
+  /* remove the gray track so only the blue bar shows */
+  background: transparent;
+  border: none;
+  border-radius: 8px; /* slightly sharper */
+  height: 48px; /* taller bars to make the chart look vertical */
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 400px;
-  color: #5f6368;
-  font-size: 16px;
+  overflow: hidden;
 }
 
-.summary-info {
-  margin-top: 20px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-  font-size: 14px;
-  color: #5f6368;
+@media (max-width: 600px) {
+  .ja-track {
+    height: 40px; /* slightly smaller on narrow screens */
+  }
 }
 
-.summary-info div {
-  margin-bottom: 5px;
+.ja-bar {
+  height: 100%;
+  background: var(--bar);
+  border-radius: 6px; /* sharper corners */
+  max-width: 100%;
+  min-width: 18px;             /* tiny values remain visible */
+  position: relative;
+  transition: width 160ms ease, background 120ms ease;
 }
 
-.summary-info div:last-child {
-  margin-bottom: 0;
+.ja-bar:hover {
+  background: var(--bar-hover);
 }
 
-.filters-panel {
+.ja-value {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  line-height: 1;
+  user-select: none;
+}
+
+/* Simple x-axis */
+.ja-xaxis {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  min-width: 150px;
-  flex-shrink: 0; 
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 12px;
+  margin-left: 220px; /* align labels with grid start */
+  margin-right: 20px;
+}
+/* make the horizontal x-axis line clearer */
+.ja-chart::after {
+  /* horizontal x-axis line aligned to chart bottom so it meets the y-axis */
+  content: '';
+  position: absolute;
+  left: 220px;
+  right: 20px;
+  bottom: 0;
+  height: 1px;
+  background: var(--border);
+  z-index: 3;
 }
 
-.filter-group {
-  border: 1px solid #dadce0;
+/* ensure bars render above the grid but beneath axis lines if needed */
+.ja-bars {
+  position: relative;
+  z-index: 2;
+}
+
+.ja-xaxis-label {
+  text-align: center;
+  color: var(--muted);
+  margin-top: 8px;
+  font-size: 13px;
+  margin-left: 220px;
+  margin-right: 20px;
+}
+
+/* ---------- Footer ---------- */
+.ja-footer {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.ja-footer strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.dark .ja-footer strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ---------- Filters ---------- */
+.ja-filter {
+  margin-bottom: 16px;
+}
+
+.ja-filter-label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.ja-filter select,
+.ja-filter input[type="date"] {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
   border-radius: 4px;
   padding: 8px;
-  background-color: #ffffff;
-}
-
-.filter-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #3c4043;
-  margin-bottom: 4px;
-}
-
-.filter-select-job-analytics {
   width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #dadce0;
-  border-radius: 4px;
   font-size: 14px;
-  background-color: #ffffff;
-  color: #3c4043;
-  cursor: pointer;
-  height: 32px !important;
 }
 
-.filter-select-job-analytics:focus {
+.ja-filter select:focus,
+.ja-filter input[type="date"]:focus {
   outline: none;
-  border-color: #4285f4;
+  border-color: var(--bar);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
-.filter-select-job-analytics:hover {
-  border-color: #9aa0a6;
+.dark .ja-filter select,
+.dark .ja-filter input[type="date"] {
+  background: var(--card);
+  color: var(--text);
+  border-color: var(--border);
 }
 
-/* Dark Mode Support */
-[data-theme="dark"] .job-analytics-container,
-.dark .job-analytics-container {
-  background-color: #1a1a1a;
-  color: #ffffff;
+.dark .ja-filter select,
+.dark .ja-filter input[type="date"] {
+  background: var(--bg);
 }
 
-[data-theme="dark"] .chart-container,
-.dark .chart-container {
-  background-color: #2d2d2d;
-  border-color: #444;
+.ja-date-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-[data-theme="dark"] .y-axis-label,
-.dark .y-axis-label {
-  color: #e8eaed;
-  border-color: #5f6368;
+.ja-date-dash {
+  opacity: 0.6;
 }
 
-[data-theme="dark"] .x-axis-tick,
-.dark .x-axis-tick {
-  color: #e8eaed;
+.ja-clear {
+  margin-left: auto;
+  height: 32px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-[data-theme="dark"] .filters-panel select,
-.dark .filters-panel select {
-  background-color: #2d2d2d;
-  color: #ffffff;
-  border-color: #5f6368;
+.ja-clear:hover {
+  background: rgba(0,0,0,0.04);
 }
 
-[data-theme="dark"] .chart-title,
-.dark .chart-title {
-  color: #e8eaed;
-}
-
-[data-theme="dark"] .summary-info,
-.dark .summary-info {
-  background-color: #333;
-  color: #e8eaed;
-}
-
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .chart-container {
-    min-width: 700px;
-  }
-}
-
-@media (max-width: 768px) {
-  .job-analytics-container {
-    flex-direction: column;
-    padding: 10px;
-  }
-  
-  .filters-panel {
-    flex-direction: row;
-    min-width: auto;
-    width: 100%;
-  }
-  
-  .chart-container {
-    min-width: auto;
-    width: 100%;
-  }
-  
-  .chart-area {
-    padding-left: 120px;
-    padding-right: 20px;
-  }
-  
-  .y-axis {
-    width: 110px;
-  }
-  
-  .y-axis-label {
-    font-size: 11px;
-  }
-  
-  .bars-container {
-    left: 120px;
-    right: 20px;
-  }
-  
-  .grid-lines {
-    left: 120px;
-    right: 20px;
-  }
-  
-  .x-axis {
-    left: 120px;
-    right: 20px;
-  }
-}
-
-@media (max-width: 480px) {
-  .chart-area {
-    padding-left: 100px;
-    padding-right: 10px;
-  }
-  
-  .y-axis {
-    width: 90px;
-  }
-  
-  .bars-container {
-    left: 100px;
-    right: 10px;
-  }
-  
-  .grid-lines {
-    left: 100px;
-    right: 10px;
-  }
-  
-  .x-axis {
-    left: 100px;
-    right: 10px;
-  }
+.dark .ja-clear:hover {
+  background: rgba(255,255,255,0.04);
 }
