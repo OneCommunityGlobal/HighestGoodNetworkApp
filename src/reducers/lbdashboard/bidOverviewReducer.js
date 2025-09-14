@@ -31,8 +31,11 @@ const bidOverviewReducer = (state = initialState, action) => {
       return { ...state, loading: false, bidResponse: action.payload };
     case SUBMIT_BID_FAILURE:
       return { ...state, loading: false, error: action.payload };
-    case NOTIFICATION_SUCCESS:
-      return { ...state, notifications: [...state.notifications, action.payload] };
+    case 'NOTIFICATION_SUCCESS':
+      return {
+        ...state,
+        notifications: Array.isArray(action.payload) ? action.payload : [action.payload],
+      };
     case NOTIFICATION_FAILURE:
       return { ...state, error: action.payload };
     default:
