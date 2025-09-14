@@ -31,6 +31,7 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
       toast.success("Profile Image Updated")
     }    
      catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error)
         toast.error("Image Update Failed")
     }
@@ -42,6 +43,7 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
       <ModalBody>
         <div className="suggestedProfileLinks scrollable-container">
           {suggestedProfilePics.map((image, index) => (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
               key={index}
               className={`suggestedProfileTile ${selectedImage === image ? 'selected' : ''}`}
