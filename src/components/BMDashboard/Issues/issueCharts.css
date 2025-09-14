@@ -81,18 +81,6 @@
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
 }
 
-/* Labels */
-.issue-chart-label {
-  font-size: 16px;
-  color: #555;
-  margin-right: 10px;
-}
-
-/* Dark mode */
-.dark .issue-chart-label {
-  color: #aab1bf;
-}
-
 /* Select container */
 .select-container {
   display: flex;
@@ -129,92 +117,4 @@
 /* Dark mode focus */
 .dark .issue-chart-select:focus {
   border-color: #4caf50;
-}
-
-/* Chart container */
-.chart-container {
-  width: 100%;
-  height: 400px;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  color: #000;
-}
-
-/* Dark mode */
-.dark .chart-container {
-  background: #1e1e1e;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
-  color: #cfd7e3;
-}
-
-/* No data message */
-.no-data-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-  color: #666;
-}
-
-/* Dark mode */
-.dark .no-data-message {
-  background: #1e1e1e;
-  color: #999;
-}
-
-/* No data content */
-.no-data-content {
-  text-align: center;
-  padding: 40px 20px;
-  max-width: 400px;
-}
-
-.no-data-content h3 {
-  color: #666;
-  font-size: 20px;
-  margin-bottom: 16px;
-  font-weight: 500;
-}
-
-/* Dark mode */
-.dark .no-data-content h3 {
-  color: #ccc;
-}
-
-.no-data-content p {
-  color: #888;
-  font-size: 14px;
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-
-.no-data-content p:last-child {
-  margin-bottom: 0;
-}
-
-/* Dark mode */
-.dark .no-data-content p {
-  color: #aaa;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .chart-container {
-    height: 250px;
-    padding: 10px;
-  }
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .filters-container {
-    flex-direction: column;
-  }
-
-  .filter {
-    width: 100%;
-  }
 }

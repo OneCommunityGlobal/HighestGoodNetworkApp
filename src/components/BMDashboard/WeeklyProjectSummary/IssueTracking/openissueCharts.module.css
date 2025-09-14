@@ -1,0 +1,304 @@
+
+/* Heading color for dark mode */
+.issueChartHeadingDark {
+  color: #fff !important;
+}
+
+.issueChartContainer {
+    width: 85vw;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.issueChartContainerDark {
+    background: #253242;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.9);
+    color: #ccd1dc;
+}
+
+.filtersContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.filter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 200px;
+}
+
+/* Make inputs and selects expand to fill available width when space is limited */
+.filter input,
+.filter .filterSelect,
+.filter .react-datepicker-wrapper,
+.filter :global(.select__control) {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.issueChartLabel {
+  font-size: 16px;
+  color: #555;
+  margin-right: 10px;
+}
+
+.issueChartLabelDark {
+  color: #aab1bf;
+}
+
+
+.chartContainer {
+  width: 100%;
+  min-height: 500px;
+  height: 60vh;
+  max-height: 700px;
+  background: #fff;
+  padding: 32px 48px 32px 24px;  /* Increased right padding for labels */
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+  color: #000;
+  transition: height 0.3s, min-height 0.3s;
+}
+
+.chartContainerDark {
+  background: #1b2a41;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.30);
+  color: #cfd7e3;
+}
+
+.noDataMessage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  color: #666;
+}
+
+.noDataMessageDark {
+  background: #1e1e1e;
+  color: #999;
+}
+
+.noDataContent h3 {
+  color: #666;
+  font-size: 20px;
+  margin-bottom: 16px;
+  font-weight: 500;
+}
+
+.noDataContentDark h3 {
+  color: #ccc;
+}
+
+.noDataContent p {
+  color: #888;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.noDataContent p:last-child {
+  margin-bottom: 0;
+}
+
+.noDataContentDark p {
+  color: #aaa;
+}
+
+.dateRangePicker {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filterSelect {
+    padding: 2px 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: transparent;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    outline: none;
+}
+
+.filterSelectDark {
+    background-color: transparent;
+    border: 1px solid #3d444d;
+    color: #cfd7e3;
+}
+
+/* Targeted override for the generated react-select class provided by the user */
+:global(._filterSelectDark_6f0tj_126) {
+  background-color: #22272e !important;
+  border: 1px solid #3d444d !important;
+  color: #cfd7e3 !important;
+}
+:global(._filterSelectDark_6f0tj_126 .select__control),
+:global(._filterSelectDark_6f0tj_126 .select__value-container),
+:global(._filterSelectDark_6f0tj_126 .select__input) {
+  background-color: transparent !important;
+  color: inherit !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+:global(._filterSelectDark_6f0tj_126 .select__menu),
+:global(._filterSelectDark_6f0tj_126 .select__menu-list) {
+  background-color: #22272e !important;
+  color: #cfd7e3 !important;
+}
+:global(._filterSelectDark_6f0tj_126 .select__option) {
+  background-color: transparent !important;
+  color: #cfd7e3 !important;
+}
+:global(._filterSelectDark_6f0tj_126 .select__option--is-focused),
+:global(._filterSelectDark_6f0tj_126 .select__option--is-selected) {
+  background-color: #2c3440 !important;
+  color: #fff !important;
+}
+
+/* Portal menu classname for the specific instance */
+:global(._filterSelectDark_6f0tj_126_menu) {
+  background-color: #22272e !important;
+  color: #cfd7e3 !important;
+}
+:global(._filterSelectDark_6f0tj_126_menu .select__option) {
+  background-color: transparent !important;
+  color: #cfd7e3 !important;
+}
+:global(._filterSelectDark_6f0tj_126_menu .select__option--is-focused),
+:global(._filterSelectDark_6f0tj_126_menu .select__option--is-selected) {
+  background-color: #2c3440 !important;
+  color: #fff !important;
+}
+
+.rechartsLabel {
+    font-size: 12px;
+    fill: #333;
+}
+
+.rechartsLabelDark {
+    fill: #cfd7e3;
+}
+
+
+@media (max-width: 480px) {
+  .issueChartContainer {
+    padding: 10px;
+  }
+
+  .issueChartLabel {
+    font-size: 14px;
+  }
+
+  .filterSelect {
+    font-size: 14px;
+  }
+
+  /* Stack filter controls full width on very small screens */
+  .filtersContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .filter {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .dateRangePicker {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .chartContainer {
+    min-height: 300px;
+    height: 40vh;
+    max-height: 480px;
+    padding: 12px 32px 12px 12px;  /* Keep extra right padding even on small screens */
+  }
+}
+
+@media (max-width: 1024px) {
+  .chartContainer {
+    min-height: 350px;
+    height: 40vh;
+    max-height: 500px;
+    padding: 16px 6px;
+  }
+}
+
+/* Medium screens: ensure better use of space between small phones and tablets */
+@media (min-width: 401px) and (max-width: 768px) {
+  .issueChartContainer {
+    width: 98vw;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  .filtersContainer {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  /* Two-column layout for filters where possible */
+  .filter {
+    flex: 0 0 calc(50% - 8px);
+    min-width: 0;
+    width: calc(50% - 8px);
+  }
+
+  .dateRangePicker {
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+  }
+
+
+  .chartContainer {
+    min-height: 450px;
+    height: 55vh;
+    max-height: 650px;
+    padding: 20px 40px 20px 20px;  /* Maintain extra right padding for labels */
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .issueChartContainer {
+    width: 80vw;
+  }
+  .chartContainer {
+    min-height: 250px;
+    height: 30vh;
+    max-height: 350px;
+    padding: 10px;
+  }
+  .filtersContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter {
+    width: 100%;
+  }
+}
+
+
+

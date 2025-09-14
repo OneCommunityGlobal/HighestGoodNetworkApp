@@ -18,7 +18,7 @@ import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
-import IssueCharts from '../Issues/openIssueCharts';
+import IssueCharts from './IssueTracking/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
