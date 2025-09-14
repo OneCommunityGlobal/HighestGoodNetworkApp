@@ -95,10 +95,10 @@ function UserSkillsProfile() {
   }
 
   return (
-    <div className="user-profile-home">
-      <div className="dashboard-container">
+    <div className={styles.userProfileHome}>
+      <div className={styles.dashboardContainer}>
         <LeftSection />
-        <div className="vertical-separator" />
+        <div className={styles.verticalSeparator} />
         <RightSection />
       </div>
     </div>
