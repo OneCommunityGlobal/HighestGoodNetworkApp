@@ -11,11 +11,12 @@ import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
 function LBDashboardHeader({ notifications }) {
-  const firstName = useSelector(state => state.auth.user.name);
   const [selectedVillage, setSelectedVillage] = useState('');
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationCount = notifications && notifications.length ? notifications.length : 0;
+  const auth = useSelector(state => state.auth);
 
+  const firstName = auth.firstName || auth.user?.firstName || auth.user?.username || 'User';
   return (
     <>
       <Navbar expand="lg" className="item__navbar">
