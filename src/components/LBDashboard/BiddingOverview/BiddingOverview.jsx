@@ -22,7 +22,7 @@ function BiddingOverview() {
   const [name, setName] = useState(firstName || '');
   const [biddingPrice, setBiddingPrice] = useState('');
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
+  const [imageScale, setImageScale] = useState(1);
   useEffect(() => {
     if (listingId) {
       dispatch(fetchUnitDetails(listingId));
@@ -94,7 +94,25 @@ function BiddingOverview() {
                 <img
                   src={unitDetails.images[currentImageIndex]}
                   alt={`Unit ${unitDetails.unitNumber} ${unitDetails.villageName}`}
+                  style={{ transform: `scale(${imageScale})`, transition: 'transform 0.2s' }}
                 />
+                <div className={styles.imageZoomControls}>
+                  <button
+                    type="button"
+                    onClick={() => setImageScale(prev => Math.min(prev + 0.2, 3))}
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageScale(prev => Math.max(prev - 0.2, 0.5))}
+                  >
+                    -
+                  </button>
+                  <button type="button" onClick={() => setImageScale(1)}>
+                    Reset
+                  </button>
+                </div>
                 <button
                   type="button"
                   className={`${styles.imageNavButton} ${styles.leftNav}`}
