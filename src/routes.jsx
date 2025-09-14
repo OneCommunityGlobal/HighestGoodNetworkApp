@@ -154,6 +154,7 @@ import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashb
 import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTopReviewedPRs';
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
+import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
@@ -229,6 +230,14 @@ export default (
           <AutoUpdate />
           <ToastContainer />
           <LBRegister />
+        </>
+      )}
+    />
+    <Route
+      path="/lbdashboard"
+      render={() => (
+        <>
+          <LBDashboard />
         </>
       )}
     />
@@ -713,6 +722,7 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
+        <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
 
         <ProtectedRoute path="/" exact component={Dashboard} />
 
