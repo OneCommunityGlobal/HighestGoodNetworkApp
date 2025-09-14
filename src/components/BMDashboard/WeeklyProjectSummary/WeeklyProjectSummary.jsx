@@ -5,10 +5,13 @@ import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
+import CostPredictionChart from './CostPredictionChart';
 import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
+import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
 import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
@@ -16,6 +19,7 @@ import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
   {
@@ -167,7 +171,6 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -189,6 +192,12 @@ function WeeklyProjectSummary() {
 
   const sections = useMemo(
     () => [
+      {
+        title: 'Risk profile for projects',
+        key: 'Risk profile for projects',
+        className: 'full',
+        content: <ProjectRiskProfileOverview />,
+      },
       {
         title: 'Project Status',
         key: 'Project Status',
@@ -219,6 +228,17 @@ function WeeklyProjectSummary() {
                 </div>
               );
             })}
+          </div>
+        ),
+      },
+      // New Issues Breakdown card
+      {
+        title: 'Issues Breakdown',
+        key: 'Issues Breakdown',
+        className: 'large',
+        content: (
+          <div className="weekly-project-summary-card normal-card">
+            <IssuesBreakdownChart />
           </div>
         ),
       },
@@ -276,9 +296,7 @@ function WeeklyProjectSummary() {
         key: 'Lessons Learned',
         className: 'half',
         content: [
-          <div key="text-card" className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>,
+          <MostFrequentKeywords key="frequent-tags-card" />,
           <div key="injury-chart" className="weekly-project-summary-card normal-card">
             <InjuryCategoryBarChart />
           </div>,
@@ -346,8 +364,15 @@ function WeeklyProjectSummary() {
         content: [1, 2, 3, 4].map((_, index) => {
           const uniqueId = uuidv4();
           return (
-            <div key={uniqueId} className="weekly-project-summary-card normal-card">
-              {index === 3 ? <ActualVsPlannedCost /> : '📊 Card'}
+            <div
+              key={uniqueId}
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+            >
+              {(() => {
+                if (index === 2) return <CostPredictionChart projectId={1} />;
+                if (index === 3) return <ActualVsPlannedCost />;
+                return '📊 Card';
+              })()}
             </div>
           );
         }),

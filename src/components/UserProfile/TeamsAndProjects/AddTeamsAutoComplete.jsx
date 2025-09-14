@@ -4,6 +4,7 @@ import './TeamsAndProjects.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 
+// eslint-disable-next-line react/display-name
 const AddTeamsAutoComplete = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -19,6 +20,7 @@ const AddTeamsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={props.searchText}
+        // eslint-disable-next-line jsx-a11y/no-autofocus
         autoFocus={true}
         onChange={e => {
           props.setSearchText(e.target.value);
@@ -46,6 +48,7 @@ const AddTeamsAutoComplete = React.memo(props => {
                 })
                 .slice(0, 10)
                 .map(item => (
+                  // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                   <div
                     key={item._id}
                     className="team-auto-complete"
@@ -67,6 +70,7 @@ const AddTeamsAutoComplete = React.memo(props => {
             props.teamsData.allTeams.every(
               team => team.teamName.toLowerCase() !== props.searchText.toLowerCase(),
             ) && (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 className="team-auto-complete"
                 onClick={() => {

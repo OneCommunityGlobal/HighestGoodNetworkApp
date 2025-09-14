@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef , useMemo } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
@@ -7,14 +7,14 @@ import 'react-day-picker/dist/style.css';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { useMemo } from 'react';
+
 import { addNewTask } from '../../../../../actions/task';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
-import {
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   START_DATE_ERROR_MESSAGE,
   END_DATE_ERROR_MESSAGE,
-} from '../../../../../languages/en/messages.js';
+} from '../../../../../languages/en/messages';
+
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
@@ -102,13 +102,26 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
-
+   const activeMembers = useMemo(() => {
+        const members = Array.isArray(allMembers) ? allMembers : [];
+        const filtered = members.filter(u => {
+          if (!u) return false;
+          // Treat only explicit “inactive” as excluded; accept truthy/unknown as active
+          const isInactive =
+            u.status === 'Inactive' ||
+            u.isActive === false ||
+            String(u?.isActive).toLowerCase() === 'false';
+          return !isInactive;
+        });
+        return filtered.length ? filtered : members; // fallback so the list isn't empty
+      }, [allMembers]);
+      
   const defaultCategory = useMemo(() => {
-    if (props.taskId && Array.isArray(tasks)) {
+    if (props.taskId) {
       const task = tasks.find(({ _id }) => _id === props.taskId);
       return task?.category || 'Unspecified';
     }
-    if (props.projectId && Array.isArray(allProjects?.projects)) {
+    if (props.projectId) {
       const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
       return project?.category || 'Unspecified';
     }
@@ -169,6 +182,7 @@ function AddTaskModal(props) {
   const getNewNum = () => {
     if (!Array.isArray(props.tasks)) return '1';
     let newNum;
+    // eslint-disable-next-line no-console
     console.log(props)
     if (props.taskId) {
       const numOfLastInnerLevelTask = props.tasks.reduce((num, task) => {
@@ -377,6 +391,7 @@ function AddTaskModal(props) {
 
   useEffect(() => {
     if (error === 'outdated') {
+      // eslint-disable-next-line no-alert
       alert('Database changed since your page loaded , click OK to get the newest data!');
       props.load();
     } else {
@@ -394,11 +409,12 @@ function AddTaskModal(props) {
   }, [modal]);
 
   useEffect(() => {
-    if (modal && props.projectId) {
-      props.fetchAllMembers(props.projectId);
-    }
-  }, [modal, props.projectId]);
-
+        if (modal) {
+          // Fetch for this project whenever modal opens (or project changes)
+          props.fetchAllMembers(props.projectId ?? '');
+        }
+      }, [modal, props.projectId]);
+  
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -479,7 +495,7 @@ function AddTaskModal(props) {
                 <div className="add_new_task_form-input_area">
                   <TagsSearch
                     placeholder="Add resources"
-                    members={allMembers?.filter(user => user.isActive)}
+                    members={activeMembers}
                     addResources={addResources}
                     removeResource={removeResource}
                     resourceItems={resourceItems}
@@ -491,6 +507,7 @@ function AddTaskModal(props) {
               </div>
 
               <div className="add_new_task_form-group">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                 <label className={`add_new_task_form-label ${fontColor}`}>Assigned</label>
                 <div className="add_new_task_form-input_area">
                   <div className="flex-row d-inline align-items-center">
@@ -592,6 +609,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="add_new_task_form-group">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                 <label className={`add_new_task_form-label ${fontColor}`}>Hours</label>
                 <div className="add_new_task_form-input_area">
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
@@ -825,7 +843,9 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div className="d-flex border add-modal-dt">
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <span scope="col" className="border-left p-1">
                   <div>
                     <DateInput
@@ -844,10 +864,12 @@ function AddTaskModal(props) {
                 <label
                   htmlFor="end-date-input"
                   className={`form-date p-1 ${fontColor}`}
+                  // eslint-disable-next-line jsx-a11y/scope
                   scope="col"
                 >
                   End Date
                 </label>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <span scope="col" className="border-left p-1">
                   <DateInput
                     id="end-date-input"
@@ -895,12 +917,12 @@ function AddTaskModal(props) {
 }
 
 const mapStateToProps = state => ({
-  tasks: state.tasks.taskItems,
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
+  tasks: state.tasks.taskItems,
 });
 
 const mapDispatchToProps = {
