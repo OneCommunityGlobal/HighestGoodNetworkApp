@@ -6,6 +6,14 @@
   width: 100%;
 }
 
+.menuDropdownColor {
+  background-color: black !important;
+}
+
+.colorOptionsText:hover {
+  color: white !important;
+}
+
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
   background-color: #1c2541 !important;
   border-color: #2f4157 !important;
@@ -21,7 +29,9 @@
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-text),
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-label),
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-cartesian-axis-tick-value),
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  .componentContainer
+  :global(.recharts-cartesian-axis-tick-value),
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer text,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer tspan {
   fill: #fff !important;
@@ -30,7 +40,9 @@
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-text) tspan,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label) tspan,
-.containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-axis-tick-value) tspan,
+.containerTotalOrgWrapper:global(.bg-oxford-blue)
+  :global(.recharts-cartesian-axis-tick-value)
+  tspan,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) text tspan {
   fill: #fff !important;
 }
@@ -65,7 +77,7 @@
 }
 
 /* Header section styles */
-.totalOrgReportHeaderRow  {
+.totalOrgReportHeaderRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -229,5 +241,5 @@
   color: white;
 }
 .whiteSmoke {
-  background-color: #f5f5f5;   
+  background-color: #f5f5f5;
 }
