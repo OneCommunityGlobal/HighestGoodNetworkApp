@@ -835,7 +835,6 @@ const onAssignProject = assignedProject => {
     await loadUserProfile();
     await loadUserTasks();
     setSaved(false);
-    return result;
   } catch (err) {
     if (err?.response?.data?.error) {
       alert(err.response.data.error.join('\n'));
