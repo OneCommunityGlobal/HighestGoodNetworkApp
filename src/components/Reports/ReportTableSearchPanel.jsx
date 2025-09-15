@@ -10,7 +10,12 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const handleSearchClick = () => {
-    // Scroll to results when search button is clicked
+    // Call the parent's search click handler if provided
+    if (onSearchClick) {
+      onSearchClick();
+    }
+
+    // Scroll to results when search button is clicked, but ensure header remains visible
     setTimeout(() => {
       // Try to find the table data container (where results are shown)
       let resultsContainer = document.querySelector('.table-data-container');
@@ -21,29 +26,38 @@ function ReportTableSearchPanel({ onSearch, wildCardSearchText, onSearchClick })
       }
       
       if (resultsContainer) {
-        // Scroll to the top of the results table to show item 1
-        resultsContainer.scrollIntoView({ 
-          behavior: 'smooth', 
-          block: 'start',
-          inline: 'nearest'
+        // Get header height to offset the scroll position
+        const header = document.querySelector('.header-wrapper, .navbar, [data-testid="header"]');
+        const headerHeight = header ? header.offsetHeight : 80; // fallback to 80px
+        
+        // Add some extra padding to ensure header is clearly visible
+        const extraPadding = 30;
+        
+        // Scroll to results but leave space for the header
+        const elementTop = resultsContainer.offsetTop;
+        const offsetPosition = elementTop - headerHeight - extraPadding;
+        
+        window.scrollTo({
+          top: Math.max(0, offsetPosition), // Ensure we don't scroll to negative position
+          behavior: 'smooth'
         });
       } else {
-        // Fallback: scroll to the category container
+        // Fallback: scroll to the category container with header offset
         const categoryContainer = document.querySelector('.category-container');
         if (categoryContainer) {
-          categoryContainer.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'start',
-            inline: 'nearest'
+          const header = document.querySelector('.header-wrapper, .navbar, [data-testid="header"]');
+          const headerHeight = header ? header.offsetHeight : 80;
+          const extraPadding = 30;
+          const elementTop = categoryContainer.offsetTop;
+          const offsetPosition = elementTop - headerHeight - extraPadding;
+          
+          window.scrollTo({
+            top: Math.max(0, offsetPosition),
+            behavior: 'smooth'
           });
         }
       }
     }, 100);
-
-    // Call the parent's search click handler if provided
-    if (onSearchClick) {
-      onSearchClick();
-    }
   };
 
   return (

@@ -159,6 +159,7 @@ html, body {
   top: 0;
   -webkit-overflow-scrolling: touch;
   transition: all 0.3s ease;
+  z-index: 10; /* Ensure it stays below header */
 }
 
 .search-field-container {
