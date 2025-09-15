@@ -1,6 +1,5 @@
-/* InjuryChart.module.css */
 .injuryChartContainer {
-  max-width: 1200px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 1.5rem;
   background-color: var(--background-color);
@@ -18,7 +17,6 @@
 
 .injuryChartHeader h2 {
   margin: 0;
-  color: #333;
   font-size: 24px;
 }
 
@@ -32,4 +30,13 @@
 .injuryChartInfo svg {
   margin-right: 8px;
   color: #3498db;
+}
+
+.wrapperDark {
+  background-color: #1b2a41; 
+  color: #f5f7fa;            
+}
+
+.wrapperDark h2{
+  color: #f5f7fa;            
 }

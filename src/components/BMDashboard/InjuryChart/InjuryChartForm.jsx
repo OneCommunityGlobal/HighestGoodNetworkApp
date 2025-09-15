@@ -28,7 +28,6 @@ function InjuryChartForm({ dark }) {
   const [chartType, setChartType] = useState('line'); // 'bar' or 'line'
   const dispatch = useDispatch();
   const bmProjects = useSelector(state => state.bmProjects || []);
-
   // Form state
   const [projectId, setProjectId] = useState('all');
   const [startDate, setStartDate] = useState(
@@ -119,11 +118,17 @@ function InjuryChartForm({ dark }) {
   return (
     <div className={`${styles.injuryChartContainer} p-4`}>
       {/* Filter Form */}
-      <div className={`${styles.filterForm} mb-4 p-3 bg-white rounded shadow-sm`}>
+      <div
+        className={`${styles.filterForm} mb-4 p-3  ${
+          dark ? styles.wrapperDark : 'bg-white'
+        } rounded shadow-sm`}
+      >
         <div className="row g-3">
           <div className="col-md-4">
             <FormGroup>
-              <Label for="project">Project</Label>
+              <Label for="project" className={dark ? styles.wrapperDark : ''}>
+                Project
+              </Label>
               <Input id="project" type="select" value={projectId} onChange={handleProjectChange}>
                 <option value="all">All Projects</option>
                 {bmProjects.map(project => (
@@ -135,9 +140,9 @@ function InjuryChartForm({ dark }) {
             </FormGroup>
           </div>
 
-          <div className="col-md-4">
+          <div className="ol-md-4">
             <FormGroup>
-              <Label>Start Date</Label>
+              <Label className={dark ? styles.wrapperDark : ''}>Start Date</Label>
               <DatePicker
                 selected={startDate}
                 onChange={handleStartDateChange}
@@ -152,7 +157,7 @@ function InjuryChartForm({ dark }) {
 
           <div className="col-md-4">
             <FormGroup>
-              <Label>End Date</Label>
+              <Label className={dark ? styles.wrapperDark : ''}>End Date</Label>
               <DatePicker
                 selected={endDate}
                 onChange={handleEndDateChange}
@@ -177,11 +182,17 @@ function InjuryChartForm({ dark }) {
 
       {/* Chart Display with Toggle */}
       {!error && chartData && chartData.length > 0 && (
-        <div className={`${styles.chartContainer} bg-white p-4 rounded shadow-sm`}>
+        <div
+          className={`${styles.injuryChartContainer} ${
+            dark ? styles.wrapperDark : 'bg-white'
+          } p-4 rounded shadow-sm`}
+        >
           <div className="d-flex justify-content-end mb-2">
             <button
               className={`btn btn-sm ${
-                chartType === 'line' ? 'btn-primary' : 'btn-outline-primary'
+                chartType === 'line'
+                  ? `btn-primary ${styles.toggleBtnSpace}`
+                  : 'btn-outline-primary'
               }`}
               onClick={() => setChartType('line')}
               aria-pressed={chartType === 'line'}
@@ -190,78 +201,76 @@ function InjuryChartForm({ dark }) {
             </button>
             <button
               className={`btn btn-sm ${
-                chartType === 'bar' ? 'btn-primary' : 'btn-outline-primary'
-              } me-2`}
+                chartType === 'bar' ? `btn-primary ${styles.toggleBtnSpace}` : 'btn-outline-primary'
+              }`}
               onClick={() => setChartType('bar')}
               aria-pressed={chartType === 'bar'}
             >
               Bar Chart
             </button>
           </div>
-          {/* ============================================================ */}
-          <div>
-            <h3 className="text-center mb-4">Injury Trends Over Time</h3>
-            <ResponsiveContainer width="100%" height={400}>
-              {chartType === 'bar' ? (
-                <BarChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                  <XAxis
-                    dataKey="month"
-                    padding={{ left: 20, right: 20 }}
-                    label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
-                  />
-                  <YAxis
-                    allowDecimals={false}
-                    label={{ value: 'Number of Injuries', angle: -90, position: 'insideLeft' }}
-                  />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="Serious" fill="#dc3545" name="Serious" barSize={20} />
-                  <Bar dataKey="Medium" fill="#fd7e14" name="Medium" barSize={20} />
-                  <Bar dataKey="Low" fill="#198754" name="Low" barSize={20} />
-                </BarChart>
-              ) : (
-                <LineChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-                  <XAxis
-                    dataKey="month"
-                    padding={{ left: 20, right: 20 }}
-                    label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
-                  />
-                  <YAxis
-                    allowDecimals={false}
-                    label={{ value: 'Number of Injuries', angle: -90, position: 'insideLeft' }}
-                  />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="Serious"
-                    stroke="#dc3545"
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="Medium"
-                    stroke="#fd7e14"
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="Low"
-                    stroke="#198754"
-                    strokeWidth={2}
-                    dot={{ r: 4 }}
-                    activeDot={{ r: 6 }}
-                  />
-                </LineChart>
-              )}
-            </ResponsiveContainer>
-          </div>
+
+          <h3 className="text-center mb-4">Injury Trends Over Time</h3>
+          <ResponsiveContainer width="100%" height={400}>
+            {chartType === 'bar' ? (
+              <BarChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis
+                  dataKey="month"
+                  padding={{ left: 20, right: 20 }}
+                  label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  label={{ value: 'Number of Injuries', angle: -90, position: 'insideLeft' }}
+                />
+                <Tooltip />
+                <Legend verticalAlign="top" align="center" />
+                <Bar dataKey="Serious" fill="#dc3545" name="Serious" barSize={20} />
+                <Bar dataKey="Medium" fill="#fd7e14" name="Medium" barSize={20} />
+                <Bar dataKey="Low" fill="#198754" name="Low" barSize={20} />
+              </BarChart>
+            ) : (
+              <LineChart data={chartData} margin={{ top: 10, right: 30, left: 10, bottom: 30 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+                <XAxis
+                  dataKey="month"
+                  padding={{ left: 20, right: 20 }}
+                  label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
+                />
+                <YAxis
+                  allowDecimals={false}
+                  label={{ value: 'Number of Injuries', angle: -90, position: 'insideLeft' }}
+                />
+                <Tooltip />
+                <Legend verticalAlign="top" align="center" />
+                <Line
+                  type="monotone"
+                  dataKey="Serious"
+                  stroke="#dc3545"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Medium"
+                  stroke="#fd7e14"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Low"
+                  stroke="#198754"
+                  strokeWidth={2}
+                  dot={{ r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            )}
+          </ResponsiveContainer>
         </div>
       )}
 
