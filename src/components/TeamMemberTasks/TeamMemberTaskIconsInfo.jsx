@@ -7,6 +7,8 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import './style.css';
 import '../Header/DarkMode.css';
 import { useSelector } from 'react-redux';
+import './style.css';
+import '../Header/DarkMode.css';
 import infoTaskIconContent from './infoTaskIconContent';
 
 const TeamMemberTaskInfo = React.memo(() => {
@@ -54,7 +56,5 @@ const TeamMemberTaskInfo = React.memo(() => {
     </>
   );
 });
-
-TeamMemberTaskInfo.displayName = 'TeamMemberTaskInfo';
 
 export default TeamMemberTaskInfo;
