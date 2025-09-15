@@ -2,6 +2,9 @@
 .header-wrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
+  position: relative;
+  z-index: 1000;
+  background-color: inherit; /* Ensure proper background */
 }
 .close-button {
   position: absolute;
@@ -39,7 +42,7 @@
 }
 
 .navbar {
-  z-index: 100;
+  z-index: 1000;
   white-space: nowrap;
   display: flex;
   flex-wrap: nowrap;
@@ -47,6 +50,7 @@
   align-items: center;
   width: 100%;
   white-space: nowrap;
+  position: relative; /* Ensure proper stacking context */
 }
 
 .redBackGroupHeader {
