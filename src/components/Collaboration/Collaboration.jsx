@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
-
 function Collaboration() {
   const [searchTerm, setSearchTerm] = useState('');
   const [jobAdsQueryTerm, setJobAdsQueryTerm] = useState('');
@@ -75,16 +75,14 @@ function Collaboration() {
     }
   };
 
-  fetchCategories = async () => {
+  const fetchCategories = async () => {
     try {
       const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
       if (!response.ok) throw new Error(`Failed to fetch categories: ${response.statusText}`);
 
       const data = await response.json();
-      const sorted = Array.isArray(data?.categories)
-        ? [...data.categories].sort((a, b) => a.localeCompare(b))
-        : [];
-      this.setState({ categories: sorted });
+      const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
+      setCategories(sortedCategories);
     } catch (error) {
       toast.error('Error fetching categories');
     }
@@ -357,4 +355,4 @@ function Collaboration() {
   );
 }
 
-export default connect(mapStateToProps)(Collaboration);
+export default Collaboration;
