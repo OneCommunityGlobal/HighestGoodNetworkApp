@@ -1,8 +1,9 @@
-import React, { Fragment, useEffect, useState, useCallback } from 'react';
+import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from '~/actions/task';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { MultiSelect } from 'react-multi-select-component';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -498,7 +499,6 @@ const TeamMemberTasks = React.memo(props => {
   };
   return (
     <div
-      data-testid="team-member-tasks-container"
       className={`container team-member-tasks ${
         darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
       }`}
@@ -514,7 +514,6 @@ const TeamMemberTasks = React.memo(props => {
             <div className="hours-btn-div">
               <button
                 type="button"
-                data-testid="show-time-off-btn"
                 className={`m-1 show-time-off-btn${darkMode ? ' box-shadow-dark' : ''}`}
                 style={{
                   backgroundColor: showWhoHasTimeOff ? '#17a2b8' : 'white',
@@ -523,7 +522,6 @@ const TeamMemberTasks = React.memo(props => {
                 aria-label="Toggle time off view"
               >
                 <FaCalendarAlt
-                  data-testid="time-off-calendar-icon"
                   className="show-time-off-calender-svg"
                   fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
                   size="20px"
@@ -532,7 +530,6 @@ const TeamMemberTasks = React.memo(props => {
                   size="12px"
                   fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
                   className="show-time-off-icon"
-                  data-testid="show-time-off-icon"
                 />
               </button>
 
@@ -605,10 +602,7 @@ const TeamMemberTasks = React.memo(props => {
             </div>
           </section>
         ) : (
-          <SkeletonLoading
-            template="TimelogFilter"
-            data-testid="skeleton-loading-team-member-tasks-header"
-          />
+          <SkeletonLoading template="TimelogFilter" />
         )}
       </header>
       <TaskDifferenceModal
@@ -693,7 +687,6 @@ const TeamMemberTasks = React.memo(props => {
               >
                 <Table
                   borderless
-                  data-testid="team-member-tasks-subtable"
                   className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
                 >
                   <thead className={darkMode ? 'bg-space-cadet' : ''}>
@@ -758,10 +751,7 @@ const TeamMemberTasks = React.memo(props => {
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
             {teamList.length === 0 ? (
-              <SkeletonLoading
-                template="TeamMemberTasks"
-                data-testid="skeleton-loading-team-member-tasks-row"
-              />
+              <SkeletonLoading template="TeamMemberTasks" />
             ) : (
               teamList
                 .filter(user => filterByUserFeatures(user))
@@ -820,7 +810,7 @@ const TeamMemberTasks = React.memo(props => {
                         timeEntriesList
                           .filter(timeEntry => timeEntry.personId === user.personId)
                           .map(timeEntry => (
-                            <tr className="table-row" data-testid="table-row" key={timeEntry._id}>
+                            <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={6} style={{ padding: 0 }}>
                                 <TimeEntry
                                   from="TaskTab"
@@ -851,7 +841,5 @@ const mapStateToProps = state => ({
   usersWithTimeEntries: state.teamMemberTasks.usersWithTimeEntries,
   darkMode: state.theme.darkMode,
 });
-
-TeamMemberTasks.displayName = 'TeamMemberTasks';
 
 export default connect(mapStateToProps, null)(TeamMemberTasks);

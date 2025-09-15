@@ -33,7 +33,6 @@ describe('FoundUser Component', () => {
     uid: 'user123',
     firstName: 'John',
     lastName: 'Smith',
-    isActive: 'true',
     email: 'john.smith@example.com',
     assigned: false,
     projectId: 'project123',
@@ -117,7 +116,6 @@ describe('FoundUser Component', () => {
         'Assign',
         'John',
         'Smith',
-        'true',
       );
     });
   });

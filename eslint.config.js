@@ -34,7 +34,8 @@ module.exports = [
       // Ignore entire component folders
       'src/components/Badge/**',
       'src/components/SummaryManagement/**',
-      'src/components/UserProfile/**',
+      'src/components/TeamMemberTasks/**',
+      'src/components/Teams/TeamMembersPopup.jsx',
       'src/components/Announcements/index.jsx',
     ],
   },
