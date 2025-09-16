@@ -1,4 +1,4 @@
-import { fetchInvTypeByType } from 'actions/bmdashboard/invTypeActions';
+import { fetchInvTypeByType } from '~/actions/bmdashboard/invTypeActions';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardBody, Input, Label, Table, Col, FormGroup } from 'reactstrap';
@@ -148,7 +148,7 @@ function CheckTypes({ type }) {
                 ))}
               </tbody>
             </Table>
-            <style jsx>{`
+            <style>{`
               tbody tr:nth-child(odd) {
                 background-color: ${darkMode ? '#1C2541' : '#ffffff'};
                 color: ${darkMode ? '#ffffff' : '#000000'};

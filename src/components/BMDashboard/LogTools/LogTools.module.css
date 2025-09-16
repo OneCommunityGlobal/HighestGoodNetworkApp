@@ -1,0 +1,166 @@
+.page {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #e8f4f9;
+}
+
+.page .row {
+  flex-wrap: nowrap;
+}
+
+.logFormContainer {
+  background-color: #ffffff;
+  margin: 0 auto;
+  max-width: 100vw;
+  max-height: 100vh;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 50px;
+}
+
+.titleLabel {
+  font-size: large;
+  font-weight: bold;
+  margin-bottom: 2rem;
+}
+
+.subtitleRow {
+  background-color: #e8f4f9;
+  border-radius: 10px;
+  text-align: center;
+  /* border-bottom: 1px solid #707377; */
+  /* border-bottom: 1px solid #63676c; */
+  border-bottom: 1px solid #595d62;
+}
+
+.subtitleRow span {
+  display: inline-block;
+  width: 33.33%;
+}
+
+.logFormCancelButton {
+  padding: 0.5rem 1.8rem !important;
+  font-size: 20px;
+  background-color: #ffffff !important;
+  color: #2e5061 !important;
+  border-width: 2px !important;
+  border-radius: 0.6rem !important;
+  border-color: #2e5061 !important;
+}
+
+.logFormSubmitButton {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+  border-color: #2e5061 !important;
+  font-size: 20px;
+  padding: 0.5rem 1.8rem !important;
+  border-width: 2px !important;
+  border-radius: 0.6rem !important;
+}
+
+.inputGroupDiv {
+  border-radius: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  width: 80vw;
+  max-width: 300px;
+  transition: height 0.3s ease;
+  overflow: hidden;
+}
+
+.inputGroupDiv.expanded {
+  height: 200px;
+}
+
+.inputItemDiv {
+  position: relative;
+  display: inline-block;
+  height: auto;
+}
+
+.inputDropdownToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 2em;
+}
+
+.spanAndInputBox {
+  display: flex;
+  align-items: center;
+}
+
+.spanText {
+  margin-right: 8px;
+}
+
+.transparentDropdownCaret {
+  background-color: transparent !important;
+  border-color: transparent !important;
+  color: inherit !important;
+}
+
+.transparentDropdownToggle:focus {
+  outline: none;
+}
+
+.workingColumn {
+  width: 10px;
+}
+
+.selectors {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.selectorLabel {
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+.selectInput {
+  display: flex;
+  align-items: center;
+  column-gap: 1rem;
+  /* margin-top: 1rem; */
+}
+
+.tableSubtitle {
+  font-weight: 500;
+  /* color: #9fd0e5 */
+  /* color: #78bdda */
+  /* color: #3ea0cb */
+  color: #869aa3
+}
+
+.subtitleHighlight {
+  color: #168dc0
+}
+
+.actionButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.toolTypeHead {
+  color: #aaacaf;
+  border-bottom: 2px solid #aaacaf !important;
+}
+
+.toolTypeRow {
+  border: none !important;
+  color:#aaacaf;
+}

@@ -1,11 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { useHistory } from 'react-router-dom';
-import './Issue.css';
-import { useEffect } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
+import styles from './Issue.module.css';
 
 function Issue() {
   const ISSUE_FORM_HEADER = 'ISSUE LOG';
@@ -20,6 +19,7 @@ function Issue() {
   const defaultOption = 'Safety';
   const maxDescriptionCharacterLimit = 500;
   const history = useHistory();
+  const { projectId } = useParams();
 
   const dropdownOptions = ['Safety', 'METs quality / functionality', 'Labor', 'Weather', 'Other'];
   const userData = localStorage.getItem('token');
@@ -89,7 +89,7 @@ function Issue() {
 
   const handleCancel = e => {
     e.preventDefault();
-    history.push('/bmdashboard/');
+    history.goBack();
   };
 
   const validateData = currentFormData => {
@@ -155,8 +155,9 @@ function Issue() {
       issueType: formData.dropdown,
       issueConsequences,
       issueResolved: formData.resolved === 'Yes',
-      issueDescription: formData.description,
+      issueText: formData.description,
       createdBy: userId,
+      projectId,
     };
     if (!isDataValid) {
       return false;
@@ -165,6 +166,7 @@ function Issue() {
       .post(`${ENDPOINTS.BM_ISSUE_FORM}`, currentFormData)
       .then(() => {
         toast.success('Issue Form Submitted Successfully');
+        history.push(`/bmdashboard/projects/${projectId}`);
         return true;
       })
       .catch(() => {
@@ -220,20 +222,20 @@ function Issue() {
   }, []);
 
   return (
-    <div className="issue-form-container">
-      <h4 className="issue-title-text">{ISSUE_FORM_HEADER}</h4>
+    <div className={`${styles.issueFormContainer}`}>
+      <h4 className={`${styles.issueTitleText}`}>{ISSUE_FORM_HEADER}</h4>
       <Form>
         <FormGroup>
-          <Row className="issue-date">
+          <Row className={`${styles.issueDate}`}>
             <Col className="d-flex justify-content-center">
-              <Label className="sub-title-text">
-                <span className="red-asterisk">* </span>
+              <Label className={`${styles.subTitleText}`}>
+                <span className={`${styles.redAsterisk}`}>* </span>
                 {ISSUE_DATE}
               </Label>
             </Col>
             <Col>
               <Input
-                className="issue-form-override-css issue-date-input"
+                className={`${styles.issueFormOverrideCss} ${styles.issueDateInput}`}
                 type="date"
                 name="issueDate"
                 id="issueDate"
@@ -247,14 +249,14 @@ function Issue() {
         </FormGroup>
         <Row>
           <Col>
-            <Label className="red-text">{NOTE}</Label>
+            <Label className={`${styles.redText}`}>{NOTE}</Label>
           </Col>
         </Row>
         <FormGroup>
           <Row>
             <Col>
-              <Label className="sub-title-text">
-                <span className="red-asterisk">* </span>
+              <Label className={`${styles.subTitleText}`}>
+                <span className={`${styles.redAsterisk}`}>* </span>
                 {ISSUE_TYPE}
               </Label>
             </Col>
@@ -262,7 +264,7 @@ function Issue() {
           <Row>
             <Col>
               <Input
-                className="issue-form-override-css"
+                className={`${styles.issueFormOverrideCss}`}
                 type="select"
                 name="dropdown"
                 value={formData.dropdown}
@@ -281,14 +283,14 @@ function Issue() {
         <FormGroup>
           <Row>
             <Col>
-              <Label className="sub-title-text">
-                <span className="red-asterisk">* </span>
+              <Label className={`${styles.subTitleText}`}>
+                <span className={`${styles.redAsterisk}`}>* </span>
                 {CONSEQUENCES_TITLE}
               </Label>
             </Col>
           </Row>
           {checkboxOptions.map(pair => (
-            <Row key={pair} className="consequences-checkboxes">
+            <Row key={pair} className={`${styles.consequencesCheckboxes}`}>
               {pair.map(option => (
                 <Col key={option}>
                   <Label check>
@@ -302,7 +304,7 @@ function Issue() {
                   </Label>
                   {option === 'Other' && (
                     <Input
-                      className="issue-form-override-css"
+                      className={`${styles.issueFormOverrideCss}`}
                       type="textarea"
                       rows="1"
                       placeholder="If other is selected, please specify."
@@ -320,14 +322,14 @@ function Issue() {
         <FormGroup>
           <Row>
             <Col>
-              <Label className="sub-title-text">
-                <span className="red-asterisk">* </span>
+              <Label className={`${styles.subTitleText}`}>
+                <span className={`${styles.redAsterisk}`}>* </span>
                 {RESOLVED}
               </Label>
             </Col>
           </Row>
-          <Row className="issue-radio-buttons">
-            <Col className="issue-radio-buttons">
+          <Row className={`${styles.issueRadioButtons}`}>
+            <Col className={`${styles.issueRadioButtons}`}>
               <Label check>
                 <Input
                   type="radio"
@@ -338,7 +340,7 @@ function Issue() {
                 Yes
               </Label>
             </Col>
-            <Col className="issue-radio-buttons">
+            <Col className={`${styles.issueRadioButtons}`}>
               <Label check>
                 <Input
                   type="radio"
@@ -354,16 +356,16 @@ function Issue() {
         <FormGroup>
           <Row>
             <Col>
-              <Label for="description" className="sub-title-text">
-                <span className="red-asterisk">* </span>
+              <Label for="description" className={`${styles.subTitleText}`}>
+                <span className={`${styles.redAsterisk}`}>* </span>
                 {DESCRIPTION}
               </Label>
             </Col>
           </Row>
-          <Row className="position-relative">
+          <Row className={`${styles.positionRelative}`}>
             <Col>
               <Input
-                className="issue-form-override-css row-margin-bottom"
+                className={`${styles.issueFormOverrideCss} ${styles.rowMarginBottom}`}
                 type="textarea"
                 id="description"
                 placeholder={DESCRIPTION_PLACEHOLDER}
@@ -373,7 +375,7 @@ function Issue() {
                 required
               />
             </Col>
-            <div className="character-counter-text">
+            <div className={`${styles.characterCounterText}`}>
               {characterCount}/{maxDescriptionCharacterLimit}
             </div>
           </Row>
@@ -381,12 +383,12 @@ function Issue() {
         <FormGroup>
           <Row className="text-center">
             <Col>
-              <Button className="IssueFormButtonCancel" onClick={e => handleCancel(e)}>
+              <Button className={`${styles.issueFormButtonCancel}`} onClick={e => handleCancel(e)}>
                 Cancel
               </Button>
             </Col>
             <Col>
-              <Button className="IssueFormButtonSubmit" onClick={e => handleSubmit(e)}>
+              <Button className={`${styles.issueFormButtonSubmit}`} onClick={e => handleSubmit(e)}>
                 Submit
               </Button>
             </Col>

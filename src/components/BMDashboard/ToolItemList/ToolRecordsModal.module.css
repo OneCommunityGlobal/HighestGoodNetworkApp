@@ -1,0 +1,13 @@
+.recordsModalTableContainer {
+  overflow: scroll;
+  height: 75vh;
+  text-align: center;
+  font-size: small;
+  white-space: nowrap;
+}
+
+@media (min-width: 1200px) {
+  .recordsModalTableContainer {
+    font-size: medium;
+  }
+}

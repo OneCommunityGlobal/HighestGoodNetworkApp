@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import './Warnings.css';
 import WarningIcons from './WarningIcons';
 // import WarningsModal from './WarningsModal';
@@ -66,6 +66,7 @@ function WarningItem({
       )}
 
       <div className="warning-wrapper">
+        <p className="warning-text"> {warningText}</p>
         <WarningIcons
           warnings={warnings}
           warningText={warningText}
@@ -77,7 +78,6 @@ function WarningItem({
           canIssueBlueSquare={canIssueBlueSquare}
           canDeleteWarning={canDeleteWarning}
         />
-        <p className="warning-text"> {warningText}</p>
       </div>
     </div>
   );

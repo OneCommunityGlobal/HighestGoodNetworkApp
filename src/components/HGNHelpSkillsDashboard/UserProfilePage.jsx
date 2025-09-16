@@ -24,7 +24,8 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
+import styles from './style/UserCard.module.css';
 
 // Sample data for skills
 const mockSkillsData = {
@@ -416,7 +417,7 @@ function UserProfilePage() {
       </div>
 
       {/* Skills tabbed section */}
-      <div className="skills-section">
+      <div className={`${styles.skillsSection}`}>
         <SkillsTabbedSection skillsData={mockSkillsData} />
       </div>
     </div>

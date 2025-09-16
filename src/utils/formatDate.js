@@ -19,7 +19,16 @@ export const formatDate = date =>
     .tz(LA_TIME_ZONE)
     .startOf('day')
     .format('MMM-DD-YY');
-export const formatDateLocal = date => moment.utc(date).format('MMM-DD-YY');
+export const formatDateLocal = (val) => {
+  if (!val) return '';
+  // Strict ISO parse to avoid fallback warnings
+  return moment(val, moment.ISO_8601, true).local().format('MMM DD, YYYY');
+};
+export const formatDateUtcYYYYMMDD = (val) => {
+  if (!val) return '';
+  // Always return YYYY-MM-DD for <input type="date">
+  return moment(val, moment.ISO_8601, true).utc().format('YYYY-MM-DD');
+};
 
 /**
  *

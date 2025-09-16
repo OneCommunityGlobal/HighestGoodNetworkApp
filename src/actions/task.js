@@ -15,7 +15,7 @@ import {
 } from '../components/TeamMemberTasks/actions';
 import { createTaskEditSuggestionHTTP } from '../components/TaskEditSuggestions/service';
 import * as types from '../constants/task';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 import { fetchTaskEditSuggestions } from '../components/TaskEditSuggestions/thunks';
 
@@ -212,7 +212,7 @@ export const addNewTask = (newTask, wbsId, pageLoadTime) => async dispatch => {
 
     const userIds = task.resources.map(resource => resource.userID);
     await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
-    return task._id;
+    return task;
   } catch (error) {
     status = 400;
     toast.error('Failed to add new task');
