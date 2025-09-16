@@ -680,6 +680,7 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/experience-breakdown" exact component={ExperienceBreakdownChart} />
 
