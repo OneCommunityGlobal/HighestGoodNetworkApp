@@ -74,7 +74,8 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { copiedTask, allMembers, allProjects, error, darkMode, tasks } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode } = props;
+  const tasksList = Array.isArray(props.tasks) ? props.tasks : [];
 
   const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
@@ -115,19 +116,20 @@ function AddTaskModal(props) {
         });
         return filtered.length ? filtered : members; // fallback so the list isn't empty
       }, [allMembers]);
-      
-  const defaultCategory = useMemo(() => {
-    if (props.taskId) {
-      const task = tasks.find(({ _id }) => _id === props.taskId);
-      return task?.category || 'Unspecified';
-    }
-    if (props.projectId) {
-      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
-      return project?.category || 'Unspecified';
-    }
 
-    return 'Unspecified';
-  }, [props.taskId, props.projectId, tasks, allProjects.projects]);
+const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
+const defaultCategory = useMemo(() => {
+  if (props.taskId) {
+const task = tasksList.find(t => t?._id === props.taskId);
+return task?.category ?? 'Unspecified';
+}
+if (props.projectId) {
+const project = projectsList.find(p => p?._id === props.projectId);
+return project?.category ?? 'Unspecified';
+}
+return 'Unspecified';
+}, [props.taskId, props.projectId, tasksList.length, projectsList.length]);
+
 
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -180,12 +182,10 @@ function AddTaskModal(props) {
   };
 
   const getNewNum = () => {
-    if (!Array.isArray(props.tasks)) return '1';
+    if (!tasksList.length) return '1';
     let newNum;
-    // eslint-disable-next-line no-console
-    console.log(props)
     if (props.taskId) {
-      const numOfLastInnerLevelTask = props.tasks.reduce((num, task) => {
+      const numOfLastInnerLevelTask = tasksList.reduce((num, task) => {
         if (task.mother === props.taskId) {
           const numIndexArray = task.num.split('.');
           const numOfInnerLevel = numIndexArray[props.level];
@@ -197,7 +197,7 @@ function AddTaskModal(props) {
       currentLevelIndexes[props.level] = `${numOfLastInnerLevelTask + 1}`;
       newNum = currentLevelIndexes.join('.');
     } else {
-      const numOfLastLevelOneTask = props.tasks.reduce((num, task) => {
+      const numOfLastLevelOneTask = tasksList.reduce((num, task) => {
         if (task.level === 1) {
           const numIndexArray = task.num.split('.');
           const indexOfFirstNum = numIndexArray[0];
@@ -383,7 +383,7 @@ function AddTaskModal(props) {
       setNewTaskNum(getNewNum());
     }
     // setNewTaskNum(getNewNum());
-  }, [modal]);
+  }, [modal, tasksList.length, props.taskId, props.level, props.taskNum]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -392,12 +392,12 @@ function AddTaskModal(props) {
   useEffect(() => {
     if (error === 'outdated') {
       // eslint-disable-next-line no-alert
-      alert('Database changed since your page loaded , click OK to get the newest data!');
+      // alert('Database changed since your page loaded , click OK to get the newest data!');
       props.load();
     } else {
       clear();
     }
-  }, [error, tasks]);
+  }, [error, tasksList.length]);
 
   useEffect(() => {
     if (!modal) {
@@ -922,7 +922,7 @@ const mapStateToProps = state => ({
   allProjects: state.allProjects,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
 });
 
 const mapDispatchToProps = {
