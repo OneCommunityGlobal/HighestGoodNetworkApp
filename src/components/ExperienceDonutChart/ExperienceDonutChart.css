@@ -56,11 +56,12 @@
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;   /* center items in the row */
+  justify-content: center !important;   /* center items in the row */
   align-items: center;       /* equal vertical alignment */
   gap: 1rem;
   width: 100%;
   margin: 0 auto;
+  margin-bottom: 10px;
 }
 
 .filter-group,
@@ -156,8 +157,8 @@
 /* ===================== Chart Area ===================== */
 .chart-section {
   width: 100%;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
+  padding: 0 !important;
+
 }
 
 .chart-area {
@@ -168,6 +169,7 @@
   align-items: center;           /* center horizontally */
   justify-content: center;       /* center vertically within area */
   text-align: center;
+  padding-right: 100px !important;
 }
 
 .chart-canvas {
@@ -189,7 +191,7 @@
 .recharts-surface {
   display: block;
 }
-.chart-area, .chart-canvas, .recharts-wrapper { direction: ltr; }
+ .chart-canvas, .recharts-wrapper { direction: ltr; }
 
 /* ===================== Details (below donut) ===================== */
 .chart-details {
@@ -393,4 +395,160 @@
 /* Optional: smooth the state change */
 .chart-details .detail-item {
   transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
+}
+/* ===================== DARK MODE (scoped to wrapper) ===================== */
+
+/* Ensure every surface flips dark */
+.experience-donut-chart.experience-donut-chart-dark-mode,
+.experience-donut-chart-dark-mode,
+.experience-donut-chart-dark-mode .experience-chart-container,
+.experience-donut-chart-dark-mode .chart-section,
+.experience-donut-chart-dark-mode .chart-area {
+  background-color: #1c2441 !important;
+  color: #f1f5f9;
+}
+
+/* Top gradient bar */
+.experience-donut-chart-dark-mode .experience-chart-container::before {
+  background: linear-gradient(90deg, #60a5fa 0%, #34d399 25%, #fbbf24 50%, #22d3ee 75%, #f97316 100%);
+}
+
+/* Title & header */
+.experience-donut-chart-dark-mode .chart-title {
+  color: #ffffff !important; /* “Applicants by Experience” */
+}
+.experience-donut-chart-dark-mode .chart-header { color: #f1f5f9; }
+
+/* ===================== Filters ===================== */
+.experience-donut-chart-dark-mode .filter-section {
+  background: #232d53;
+  border-color: #3b4a75;
+}
+.experience-donut-chart-dark-mode .filter-label { color: #dbe3ff; }
+
+.experience-donut-chart-dark-mode .filter-input,
+.experience-donut-chart-dark-mode .filter-select,
+.experience-donut-chart-dark-mode .filter-group select {
+  background: #232d53;
+  color: #e5e7eb;
+  border-color: #3b4a75;
+}
+.experience-donut-chart-dark-mode .filter-input:hover,
+.experience-donut-chart-dark-mode .filter-select:hover {
+  border-color: #4c5a8a;
+}
+.experience-donut-chart-dark-mode .filter-input:focus,
+.experience-donut-chart-dark-mode .filter-select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96,165,250,.25);
+}
+
+/* Date input icons */
+.experience-donut-chart-dark-mode .filter-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(.9);
+}
+
+/* ===================== Buttons ===================== */
+.experience-donut-chart-dark-mode .btn { color: #e5e7eb; }
+.experience-donut-chart-dark-mode .btn.primary {
+  background-color: #3b4a75;
+  color: #f8fafc;
+}
+.experience-donut-chart-dark-mode .btn.primary:hover { filter: brightness(1.05); }
+.experience-donut-chart-dark-mode .btn.ghost {
+  background: #232d53;
+  border-color: #4c5a8a;
+  color: #e5e7eb;
+}
+.experience-donut-chart-dark-mode .btn.ghost:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+}
+
+/* ===================== Chart canvas & Recharts ===================== */
+.experience-donut-chart-dark-mode .chart-canvas { background: transparent; }
+
+/* Default Recharts labels/ticks/legend */
+.experience-donut-chart-dark-mode .recharts-text,
+.experience-donut-chart-dark-mode .recharts-label,
+.experience-donut-chart-dark-mode .recharts-legend-item-text {
+  fill: #e5e7eb !important;
+  color: #e5e7eb !important;
+}
+
+/* Grid lines if any */
+.experience-donut-chart-dark-mode .recharts-cartesian-grid-horizontal line,
+.experience-donut-chart-dark-mode .recharts-cartesian-grid-vertical line {
+  stroke: #3b4a75 !important;
+}
+
+/* Strong contrast on hover/active (details + svg labels) */
+.experience-donut-chart-dark-mode .chart-details .detail-item:hover span,
+.experience-donut-chart-dark-mode .chart-details .detail-item.active span {
+  color: #ffffff !important;
+}
+.experience-donut-chart-dark-mode .recharts-sector:hover text,
+.experience-donut-chart-dark-mode .recharts-pie-sector:hover text {
+  fill: #ffffff !important;
+}
+
+/* ===================== Details (cards under chart) ===================== */
+.experience-donut-chart-dark-mode .chart-details { color: #e5e7eb; }
+
+.experience-donut-chart-dark-mode .chart-details .detail-item {
+  background-color: #2a355f;
+  border: 1px solid #3b4a75;
+  color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+}
+.experience-donut-chart-dark-mode .detail-name,
+.experience-donut-chart-dark-mode .detail-count { color: #e5e7eb; }
+.experience-donut-chart-dark-mode .detail-pct { color: #93c5fd; }
+.experience-donut-chart-dark-mode .detail-dot { box-shadow: 0 0 0 2px rgba(28,36,65,0.7); }
+
+/* Hover/active state harmonized with palette */
+.experience-donut-chart-dark-mode .chart-details .detail-item:hover,
+.experience-donut-chart-dark-mode .chart-details .detail-item.active {
+  background-color: #232d53;
+  border-color: #1c2441;
+  box-shadow: 0 8px 18px rgba(0,0,0,.45);
+}
+
+/* ===================== States (loading, error, empty) ===================== */
+.experience-donut-chart-dark-mode .spinner {
+  border-color: #2a355f; 
+  border-top-color: #60a5fa;
+}
+.experience-donut-chart-dark-mode .spinner-container p { color: #dbe3ff; }
+
+.experience-donut-chart-dark-mode .error-message {
+  color: #ffd2d2;
+  background: #3b1f28;
+  border-color: #7f2a3a;
+}
+.experience-donut-chart-dark-mode .no-data-message { color: #dbe3ff; }
+.experience-donut-chart-dark-mode .no-data-subtitle { color: #b8c2ea; }
+
+/* ===================== Tooltip ===================== */
+.experience-donut-chart-dark-mode .custom-tooltip {
+  background-color: #2a355f;
+  color: #f1f5f9;
+  border: 1px solid #3b4a75;
+  border-radius: 6px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+.experience-donut-chart-dark-mode .tooltip-content { color: #f8fafc !important; }
+
+/* ===================== Print & prefers-color-scheme ===================== */
+@media print {
+  .experience-donut-chart-dark-mode .experience-chart-container {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: none;
+    border: 1px solid #cbd5e1;
+  }
+}
+/* Keep prefers-color-scheme consistent with your chosen dark */
+@media (prefers-color-scheme: dark) {
+  .experience-donut-chart-dark-mode .experience-chart-container { background: #1c2441; }
 }

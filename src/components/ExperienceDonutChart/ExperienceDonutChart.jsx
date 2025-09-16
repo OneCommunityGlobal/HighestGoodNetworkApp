@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import './ExperienceDonutChart.css';
@@ -29,7 +30,7 @@ export default function ExperienceDonutChart() {
   const [endDate, setEndDate] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-  // applied filters (source of truth for fetch)
+  // applied filters
   const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
 
   const [chartData, setChartData] = useState(null);
@@ -40,6 +41,8 @@ export default function ExperienceDonutChart() {
   // hover/active
   const [activeIndex, setActiveIndex] = useState(null);
   const pieRef = useRef(null);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const baseURL =
     import.meta?.env?.VITE_API_BASE_URL ||
@@ -124,7 +127,7 @@ export default function ExperienceDonutChart() {
     setAppliedFilters({ startDate: '', endDate: '', roles: [] });
   };
 
-  // Always-visible details (directly under the chart)
+  // Always-visible details
   const DetailsPanel = () => {
     if (!chartData || total === 0) return null;
     return (
@@ -153,7 +156,7 @@ export default function ExperienceDonutChart() {
     );
   };
 
-  // custom tooltip (optional; not required to see values)
+  // custom tooltip
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
     const d = payload[0]?.payload;
@@ -172,152 +175,157 @@ export default function ExperienceDonutChart() {
   };
 
   return (
-    <div className="experience-chart-container">
-      <div className="chart-header">
-        <h2 className="chart-title">Applicants by Experience</h2>
-      </div>
+    <div className={`experience-donut-chart ${darkMode ? 'experience-donut-chart-dark-mode' : ''}`}>
+      <div className="experience-chart-container">
+        <div className="chart-header">
+          <h2 className="chart-title">Applicants by Experience</h2>
+        </div>
 
-      <section className="filter-section" aria-label="Filters">
-        <div className="filter-row">
-          <div className="filter-group">
-            <label htmlFor="startDate" className="filter-label">
-              Start Date
-            </label>
-            <input
-              id="startDate"
-              type="date"
-              className="filter-input"
-              value={startDate}
-              onChange={e => setStartDate(e.target.value)}
-              max={endDate || undefined}
-            />
+        <section className="filter-section" aria-label="Filters">
+          <div className="filter-row">
+            <div className="filter-group">
+              <label htmlFor="startDate" className="filter-label">
+                Start Date
+              </label>
+              <input
+                id="startDate"
+                type="date"
+                className="filter-input"
+                value={startDate}
+                onChange={e => setStartDate(e.target.value)}
+                max={endDate || undefined}
+              />
+            </div>
+
+            <div className="filter-group">
+              <label htmlFor="endDate" className="filter-label">
+                End Date
+              </label>
+              <input
+                id="endDate"
+                type="date"
+                className="filter-input"
+                value={endDate}
+                onChange={e => setEndDate(e.target.value)}
+                min={startDate || undefined}
+              />
+            </div>
+
+            <div className="filter-group">
+              <label htmlFor="roles" className="filter-label">
+                Roles
+              </label>
+              <select
+                id="roles"
+                className="filter-select"
+                multiple
+                size={5}
+                aria-describedby="roles-hint"
+                value={selectedRoles}
+                onChange={onRolesChange}
+              >
+                <option value="Frontend Developer">Frontend Developer</option>
+                <option value="DevOps Engineer">DevOps Engineer</option>
+                <option value="Project Manager">Project Manager</option>
+                <option value="Junior Developer">Junior Developer</option>
+                <option value="Full Stack Developer">Full Stack Developer</option>
+              </select>
+              <small id="roles-hint" className="filter-hint">
+                Hold Ctrl/Cmd to select multiple
+              </small>
+            </div>
           </div>
 
-          <div className="filter-group">
-            <label htmlFor="endDate" className="filter-label">
-              End Date
-            </label>
-            <input
-              id="endDate"
-              type="date"
-              className="filter-input"
-              value={endDate}
-              onChange={e => setEndDate(e.target.value)}
-              min={startDate || undefined}
-            />
-          </div>
-
-          <div className="filter-group">
-            <label htmlFor="roles" className="filter-label">
-              Roles
-            </label>
-            <select
-              id="roles"
-              className="filter-select"
-              multiple
-              size={5}
-              aria-describedby="roles-hint"
-              value={selectedRoles}
-              onChange={onRolesChange}
+          <div className="filter-actions">
+            <button
+              type="button"
+              className="btn primary"
+              onClick={applyFilters}
+              aria-label="Apply filters"
             >
-              <option value="Frontend Developer">Frontend Developer</option>
-              <option value="DevOps Engineer">DevOps Engineer</option>
-              <option value="Project Manager">Project Manager</option>
-              <option value="Junior Developer">Junior Developer</option>
-              <option value="Full Stack Developer">Full Stack Developer</option>
-            </select>
-            <small id="roles-hint" className="filter-hint">
-              Hold Ctrl/Cmd to select multiple
-            </small>
+              Apply
+            </button>
+            <button
+              type="button"
+              className="btn ghost"
+              onClick={resetFilters}
+              aria-label="Reset filters"
+              disabled={!hasFilters && !startDate && !endDate && selectedRoles.length === 0}
+            >
+              Reset
+            </button>
           </div>
-        </div>
+        </section>
 
-        <div className="filter-actions">
-          <button
-            type="button"
-            className="btn primary"
-            onClick={applyFilters}
-            aria-label="Apply filters"
-          >
-            Apply
-          </button>
-          <button
-            type="button"
-            className="btn ghost"
-            onClick={resetFilters}
-            aria-label="Reset filters"
-            disabled={!hasFilters && !startDate && !endDate && selectedRoles.length === 0}
-          >
-            Reset
-          </button>
-        </div>
-      </section>
+        <section className="chart-section">
+          <div className="chart-area">
+            {loading && <Spinner />}
 
-      <section className="chart-section">
-        <div className="chart-area">
-          {loading && <Spinner />}
-
-          {!loading && error && (
-            <div className="error-container" role="alert">
-              <p className="error-message">{error}</p>
-            </div>
-          )}
-
-          {!loading && !error && (!chartData || total === 0) && (
-            <div className="no-data-container">
-              <p className="no-data-message">No Data Available</p>
-              <p className="no-data-subtitle">Try adjusting your filters and click Apply.</p>
-            </div>
-          )}
-
-          {!loading && !error && chartData && total > 0 && (
-            <>
-              <div className="chart-canvas">
-                <ResponsiveContainer width="100%" aspect={1} minWidth={240}>
-                  <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius="55%"
-                      outerRadius="82%"
-                      paddingAngle={1.5}
-                      stroke="#fff"
-                      strokeWidth={3}
-                      onMouseEnter={(_, idx) => setActiveIndex(idx)}
-                      onMouseLeave={() => setActiveIndex(null)}
-                      onClick={(_, idx) => setActiveIndex(activeIndex === idx ? null : idx)}
-                    >
-                      {chartData.map((d, i) => (
-                        <Cell
-                          key={d.name}
-                          className="pie-cell"
-                          fill={d.color}
-                          opacity={activeIndex == null || activeIndex === i ? 1 : 0.45}
-                        />
-                      ))}
-                      <text
-                        x="50%"
-                        y="50%"
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        style={{ fontWeight: 800, fontSize: '1rem', fill: '#0f172a' }}
-                      >
-                        {total.toLocaleString()}
-                      </text>
-                    </Pie>
-                    {/* <Tooltip content={<CustomTooltip />} /> */}
-                  </PieChart>
-                </ResponsiveContainer>
+            {!loading && error && (
+              <div className="error-container" role="alert">
+                <p className="error-message">{error}</p>
               </div>
-              {/* Details RIGHT BELOW the chart, inside the same card */}
-              <DetailsPanel />
-            </>
-          )}
-        </div>
-      </section>
+            )}
+
+            {!loading && !error && (!chartData || total === 0) && (
+              <div className="no-data-container">
+                <p className="no-data-message">No Data Available</p>
+                <p className="no-data-subtitle">Try adjusting your filters and click Apply.</p>
+              </div>
+            )}
+
+            {!loading && !error && chartData && total > 0 && (
+              <>
+                <div className="chart-canvas">
+                  <ResponsiveContainer width="100%" aspect={1} minWidth={240}>
+                    <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                      <Pie
+                        data={chartData}
+                        cx="50%"
+                        cy="50%"
+                        dataKey="value"
+                        nameKey="name"
+                        innerRadius="55%"
+                        outerRadius="82%"
+                        paddingAngle={1.5}
+                        stroke={darkMode ? '#1c2441' : '#fff'}
+                        strokeWidth={3}
+                        onMouseEnter={(_, idx) => setActiveIndex(idx)}
+                        onMouseLeave={() => setActiveIndex(null)}
+                        onClick={(_, idx) => setActiveIndex(activeIndex === idx ? null : idx)}
+                      >
+                        {chartData.map((d, i) => (
+                          <Cell
+                            key={d.name}
+                            className="pie-cell"
+                            fill={d.color}
+                            opacity={activeIndex == null || activeIndex === i ? 1 : 0.45}
+                          />
+                        ))}
+                        <text
+                          x="50%"
+                          y="50%"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          style={{
+                            fontWeight: 800,
+                            fontSize: '1rem',
+                            fill: darkMode ? '#f8fafc' : '#0f172a',
+                          }}
+                        >
+                          {total.toLocaleString()}
+                        </text>
+                      </Pie>
+                      <Tooltip content={<CustomTooltip />} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <DetailsPanel />
+              </>
+            )}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
