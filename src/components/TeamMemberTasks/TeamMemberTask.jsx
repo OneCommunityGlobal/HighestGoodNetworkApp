@@ -628,4 +628,6 @@ const TeamMemberTask = React.memo(
   },
 );
 
+TeamMemberTask.displayName = 'TeamMemberTask';
+
 export default TeamMemberTask;
