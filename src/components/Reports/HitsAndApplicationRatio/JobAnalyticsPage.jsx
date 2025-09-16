@@ -56,42 +56,31 @@ function JobAnalyticsPage() {
     fetchData();
   }, [dateRange]);
 
-  const textColor = isDark ? '#E5E7EB' : '#1F2937';
-  const bgColor = isDark ? '#111827' : '#FFFFFF';
-  const borderColor = isDark ? '#4B5563' : '#D1D5DB';
-
   return (
     <div
-      style={{
-        backgroundColor: bgColor,
-        color: textColor,
-        padding: '1.5rem',
-        borderRadius: '0.75rem',
-        transition: 'background-color 0.3s ease, color 0.3s ease',
-      }}
+      className={`p-6 rounded-xl transition-colors duration-300 ${
+        isDark
+          ? 'bg-oxford-blue text-light boxStyleDark'
+          : 'bg-white text-gray-900 boxStyle'
+      }`}
     >
       <div className="flex items-center gap-4 flex-wrap">
         <div className="flex items-center gap-2">
-          <span style={{ fontWeight: 600, color: textColor }}>Date Range:</span>
+          <span className={isDark ? 'text-azure font-semibold' : 'font-semibold'}>
+            Date Range:
+          </span>
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            style={{
-              backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
-              color: textColor,
-              border: `1px solid ${borderColor}`,
-              borderRadius: '0.25rem',
-              padding: '0.25rem 0.5rem',
-            }}
+            className={`rounded px-2 py-1 ${
+              isDark ? 'bg-space-cadet text-light border border-yinmn-blue' : 'bg-white text-gray-900 border border-gray-300'
+            }`}
           >
             {dateOptions.map((option) => (
               <option
                 key={option}
                 value={option}
-                style={{
-                  backgroundColor: isDark ? '#1F2937' : '#FFFFFF',
-                  color: textColor,
-                }}
+                className={isDark ? 'bg-space-cadet text-light' : 'bg-white text-gray-900'}
               >
                 {option}
               </option>
@@ -108,7 +97,7 @@ function JobAnalyticsPage() {
           />
           <label
             htmlFor="toggle-percentage"
-            style={{ color: textColor, cursor: 'pointer' }}
+            className={isDark ? 'text-light cursor-pointer' : 'text-gray-900 cursor-pointer'}
           >
             Show %
           </label>
@@ -116,7 +105,7 @@ function JobAnalyticsPage() {
       </div>
 
       {loading ? (
-        <p style={{ color: textColor }}>Loading analytics...</p>
+        <p className={isDark ? 'text-light' : 'text-gray-900'}>Loading analytics...</p>
       ) : (
         <>
           <ConvertedApplicationGraph

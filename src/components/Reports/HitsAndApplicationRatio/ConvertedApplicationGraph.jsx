@@ -13,35 +13,21 @@ import {
 const CustomTooltip = ({ active, payload, isDark, usePercentage }) => {
   if (active && payload && payload.length) {
     const job = payload[0].payload;
-    const textColor = isDark ? '#E5E7EB' : '#1F2937'; // gray-200 (dark) / gray-800 (light)
-    const bgColor = isDark ? '#1F2937' : '#FFFFFF';
-    const borderColor = isDark ? '#4B5563' : '#D1D5DB';
-
     return (
       <div
-        style={{
-          backgroundColor: bgColor,
-          border: `1px solid ${borderColor}`,
-          color: textColor,
-          padding: '0.5rem',
-          borderRadius: '0.25rem',
-          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-          fontSize: '0.875rem',
-        }}
+        className={`p-2 rounded shadow ${
+          isDark
+            ? 'bg-space-cadet border border-yinmn-blue text-light'
+            : 'bg-white border border-gray-300 text-gray-900'
+        }`}
+        style={{ fontSize: '0.875rem' }}
       >
-        <p style={{ color: textColor }}>
-          <span style={{ fontWeight: 600 }}>Role:</span> {job.title}
-        </p>
-        <p style={{ color: textColor }}>
-          <span style={{ fontWeight: 600 }}>Conversion Rate:</span>{' '}
+        <p><span className="font-semibold">Role:</span> {job.title}</p>
+        <p><span className="font-semibold">Conversion Rate:</span>{' '}
           {usePercentage ? `${job.conversionRate}%` : job.conversionRate}
         </p>
-        <p style={{ color: textColor }}>
-          <span style={{ fontWeight: 600 }}>Hits:</span> {job.hits}
-        </p>
-        <p style={{ color: textColor }}>
-          <span style={{ fontWeight: 600 }}>Applications:</span> {job.applications}
-        </p>
+        <p><span className="font-semibold">Hits:</span> {job.hits}</p>
+        <p><span className="font-semibold">Applications:</span> {job.applications}</p>
       </div>
     );
   }
@@ -60,11 +46,11 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
 
   return (
     <div
-      className={`rounded-xl p-4 shadow ${
-        isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900'
+      className={`rounded-xl p-4 mt-6 ${
+        isDark ? 'bg-space-cadet text-light boxStyleDark' : 'bg-white text-gray-900 boxStyle'
       }`}
     >
-      <h2 className="text-lg font-semibold mb-2">
+      <h2 className={`text-lg font-semibold mb-2 ${isDark ? 'text-azure' : ''}`}>
         Top 10 Job Postings by {usePercentage ? 'Conversion Rate' : 'Applications'}
       </h2>
       {sortedData.length === 0 ? (
@@ -80,7 +66,7 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
               type="number"
               domain={usePercentage ? [0, 100] : ['auto', 'auto']}
               unit={usePercentage ? '%' : ''}
-              stroke={isDark ? '#D1D5DB' : '#374151'}
+              stroke={isDark ? '#4682B4' : '#374151'} // Azure in dark mode
             >
               <Label
                 value={
@@ -90,14 +76,14 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
                 }
                 position="bottom"
                 offset={0}
-                fill={isDark ? '#D1D5DB' : '#374151'}
+                fill={isDark ? '#4682B4' : '#374151'}
               />
             </XAxis>
             <YAxis
               type="category"
               dataKey="title"
               width={140}
-              stroke={isDark ? '#D1D5DB' : '#374151'}
+              stroke={isDark ? '#4682B4' : '#374151'}
             >
               <Label
                 value="Job Role"
@@ -105,7 +91,7 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
                 position="left"
                 offset={-5}
                 style={{ textAnchor: 'middle' }}
-                fill={isDark ? '#D1D5DB' : '#374151'}
+                fill={isDark ? '#4682B4' : '#374151'}
               />
             </YAxis>
             <Tooltip
@@ -116,7 +102,7 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
                 dataKey={usePercentage ? 'conversionRate' : 'applications'}
                 position="right"
                 formatter={(value) => `${value}${usePercentage ? '%' : ''}`}
-                fill={isDark ? '#D1D5DB' : '#374151'}
+                fill={isDark ? '#4682B4' : '#374151'}
               />
             </Bar>
           </BarChart>
