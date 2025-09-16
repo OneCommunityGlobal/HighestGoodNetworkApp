@@ -42,6 +42,8 @@ function BadgeReport(props) {
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
   const darkMode = props.darkMode;
+  const canAssignBadges = props.hasPermission('assignBadges');
+  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
@@ -452,7 +454,7 @@ function BadgeReport(props) {
                       </>
                     </td>
                     <td>
-                      {canUpdateBadges ? (
+                      {canUpdateBadges || canModifyBadgeAmount ? (
                         <Input
                           type="number"
                           value={Math.round(value.count)}
@@ -492,6 +494,7 @@ function BadgeReport(props) {
                           onChange={e => {
                             featuredChange(value, index, e);
                           }}
+                          disabled={canModifyBadgeAmount && !(canUpdateBadges || canAssignBadges)}
                         />
                       </FormGroup>
                     </td>

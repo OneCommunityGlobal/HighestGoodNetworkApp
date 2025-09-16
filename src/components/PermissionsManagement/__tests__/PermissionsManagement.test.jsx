@@ -2,6 +2,7 @@
 // eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -123,7 +124,11 @@ describe('PermissionsManagement', () => {
   it('opens new role popup when "Add New Role" button is clicked', async () => {
     await renderComponent();
     const addRoleButton = screen.getByText('Add New Role');
-    fireEvent.click(addRoleButton);
+    await userEvent.click(addRoleButton);
+
+    // Wait for the modal to appear
+    await screen.findByRole('dialog');
+
     expect(screen.getByRole('dialog')).toBeInTheDocument();
   });
 
