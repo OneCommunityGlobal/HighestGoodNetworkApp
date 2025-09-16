@@ -118,6 +118,7 @@ const intialPermissionState = {
   canEditSummaryCount: false,
   codeEditPermission: false,
   canSeeBioHighlight: false,
+  canManageFilter: false,
 };
 
 /* eslint-disable react/function-component-definition */
@@ -308,6 +309,10 @@ const WeeklySummariesReport = props => {
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
         canSeeBioHighlight: hasPermission('highlightEligibleBios'),
+        canManageFilter:
+          hasPermission('manageSummariesFilters') ||
+          auth.user.role === 'Owner' ||
+          auth.user.role === 'Administrator',
       }));
 
       // Fetch data for the active tab only
@@ -1444,14 +1449,16 @@ const WeeklySummariesReport = props => {
             >
               Select Filter
             </Button>
-            <Button
-              color="primary"
-              className="ml-1"
-              style={darkMode ? boxStyleDark : boxStyle}
-              onClick={() => setCreateFilterModalOpen(true)}
-            >
-              Save Filter
-            </Button>
+            {permissionState.canManageFilter && (
+              <Button
+                color="primary"
+                className="ml-1"
+                style={darkMode ? boxStyleDark : boxStyle}
+                onClick={() => setCreateFilterModalOpen(true)}
+              >
+                Save Filter
+              </Button>
+            )}
 
             <SelectFilterModal
               isOpen={selectFilterModalOpen}
@@ -1460,30 +1467,33 @@ const WeeklySummariesReport = props => {
               applyFilter={applyFilter}
               memberDict={state.memberDict}
             />
-            <CreateFilterModal
-              isOpen={createFilterModalOpen}
-              toggle={toggleCreateFilterModal}
-              initialState={{
-                filterName: '',
-                teamCodes: state.teamCodes,
-                selectedCodes: state.selectedCodes,
-                teamCodeWarningUsers: state.teamCodeWarningUsers,
-                colorOptions: state.colorOptions,
-                selectedColors: state.selectedColors,
-                selectedExtraMembers: state.selectedExtraMembers,
-                tableData: state.tableData,
-                summaries: state.summaries,
-                selectedTrophies: state.selectedTrophies,
-                selectedSpecialColors: state.selectedSpecialColors,
-                selectedBioStatus: state.selectedBioStatus,
-                selectedOverTime: state.selectedOverTime,
-                membersFromUnselectedTeam: state.membersFromUnselectedTeam,
-              }}
-              darkMode={darkMode}
-              hasPermissionToFilter={hasPermissionToFilter}
-              filters={state.filterChoices}
-              refetchFilters={fetchFilters}
-            />
+            {permissionState.canManageFilter && (
+              <CreateFilterModal
+                isOpen={createFilterModalOpen}
+                toggle={toggleCreateFilterModal}
+                initialState={{
+                  filterName: '',
+                  teamCodes: state.teamCodes,
+                  selectedCodes: state.selectedCodes,
+                  teamCodeWarningUsers: state.teamCodeWarningUsers,
+                  colorOptions: state.colorOptions,
+                  selectedColors: state.selectedColors,
+                  selectedExtraMembers: state.selectedExtraMembers,
+                  tableData: state.tableData,
+                  summaries: state.summaries,
+                  selectedTrophies: state.selectedTrophies,
+                  selectedSpecialColors: state.selectedSpecialColors,
+                  selectedBioStatus: state.selectedBioStatus,
+                  selectedOverTime: state.selectedOverTime,
+                  membersFromUnselectedTeam: state.membersFromUnselectedTeam,
+                }}
+                darkMode={darkMode}
+                hasPermissionToFilter={hasPermissionToFilter}
+                canSeeBioHighlight={permissionState.canSeeBioHighlight}
+                filters={state.filterChoices}
+                refetchFilters={fetchFilters}
+              />
+            )}
           </div>
         </Col>
       </Row>

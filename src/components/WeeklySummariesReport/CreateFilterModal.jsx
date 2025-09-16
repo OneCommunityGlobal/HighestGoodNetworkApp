@@ -19,7 +19,6 @@ import { MultiSelect } from 'react-multi-select-component';
 import { ENDPOINTS } from 'utils/URL';
 import Select from 'react-select';
 import './CreateFilterModal.css';
-import hasPermission from '../../utils/permissions';
 
 const defaultState = {
   filterName: '',
@@ -47,6 +46,7 @@ function CreateFilterModal({
   initialState,
   darkMode,
   hasPermissionToFilter,
+  canSeeBioHighlight,
   filters,
   refetchFilters,
 }) {
@@ -242,7 +242,6 @@ function CreateFilterModal({
             <option value="create">Create New</option>
             <option value="update">Override Existing Filter</option>
           </Input>
-
           {mode === 'update' && (
             <FormGroup>
               <Label for="filterOverride">Choose a Filter to Override *</Label>
@@ -257,7 +256,6 @@ function CreateFilterModal({
               {!selectedFilter && <div className="error-text">Please select a filter</div>}
             </FormGroup>
           )}
-
           <FormGroup>
             <Label for="filterName">
               {mode === 'create' ? 'Filter Name *' : 'New Filter Name *'}
@@ -272,7 +270,6 @@ function CreateFilterModal({
             />
             {state.filterName === '' && <div className="error-text">Filter name is required</div>}
           </FormGroup>
-
           <Row className="pt-4">
             <Col md={6} sm={12}>
               <div>
@@ -414,7 +411,7 @@ function CreateFilterModal({
             )}
           </div>
           <div className="filter-container-start pt-4">
-            {(hasPermissionToFilter || hasPermission('highlightEligibleBios')) && (
+            {(hasPermissionToFilter || canSeeBioHighlight) && (
               <div className="filter-style margin-right">
                 <span>Filter by Bio Status</span>
                 <div className="switch-toggle-control">
