@@ -19,6 +19,7 @@ import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
+import { getProjectDetail } from '../../../../../actions/project';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /** small v8 DateInput: uses useInput + DayPicker under the hood **/
@@ -74,7 +75,7 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { copiedTask, allMembers, allProjects, error, darkMode } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode, projectById } = props;
   const tasksList = Array.isArray(props.tasks) ? props.tasks : [];
 
   const handleBestHoursChange = e => {
@@ -120,15 +121,20 @@ function AddTaskModal(props) {
 const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
 const defaultCategory = useMemo(() => {
   if (props.taskId) {
-const task = tasksList.find(t => t?._id === props.taskId);
-return task?.category ?? 'Unspecified';
-}
-if (props.projectId) {
-const project = projectsList.find(p => p?._id === props.projectId);
-return project?.category ?? 'Unspecified';
-}
-return 'Unspecified';
-}, [props.taskId, props.projectId, tasksList.length, projectsList.length]);
+    const task = tasksList.find(t => t?._id === props.taskId);
+    return task?.category ?? 'Unspecified';
+  }
+  if (props.projectId) {
+    // Prefer the category from projectById if available (covers page refresh case)
+    const categoryFromProjectById = projectById?.category;
+    if (typeof categoryFromProjectById === 'string' && categoryFromProjectById.length) {
+      return categoryFromProjectById;
+    }
+    const project = projectsList.find(p => p?._id === props.projectId);
+    return project?.category ?? 'Unspecified';
+  }
+  return 'Unspecified';
+}, [props.taskId, props.projectId, projectById?.category, tasksList.length, projectsList.length]);
 
 
   const [taskName, setTaskName] = useState('');
@@ -414,6 +420,23 @@ return 'Unspecified';
           props.fetchAllMembers(props.projectId ?? '');
         }
       }, [modal, props.projectId]);
+
+  useEffect(() => {
+    if (!modal || !props.projectId) return;
+
+    const categoryKnownFromProjectById =
+      Boolean(projectById && projectById._id === props.projectId && projectById.category);
+    const categoryKnownFromAllProjects =
+      Boolean(projectsList.find(p => p?._id === props.projectId)?.category);
+
+    if (!categoryKnownFromProjectById && !categoryKnownFromAllProjects) {
+      props.getProjectDetail(props.projectId);
+    }
+  }, [modal, props.projectId, projectById, projectsList]);
+
+  useEffect(() => {
+    setCategory(defaultCategory);
+  }, [defaultCategory]);
   
   const fontColor = darkMode ? 'text-light' : '';
 
@@ -920,6 +943,7 @@ const mapStateToProps = state => ({
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
+  projectById: state.projectById,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
   // tasks: state.tasks.taskItems,
@@ -928,6 +952,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   addNewTask,
   fetchAllMembers,
+  getProjectDetail,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);
