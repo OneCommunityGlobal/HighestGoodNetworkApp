@@ -175,7 +175,7 @@ function CreateFilterModal({
 
   const handleSubmit = async e => {
     e.preventDefault();
-    if (state.filterName !== '') {
+    if (state.filterName !== '' && state.filterName.length <= 7) {
       if (mode === 'create' || (mode === 'update' && state.selectedFilter !== null)) {
         // No errors -> submit form
         const data = {
@@ -258,7 +258,9 @@ function CreateFilterModal({
           )}
           <FormGroup>
             <Label for="filterName">
-              {mode === 'create' ? 'Filter Name *' : 'New Filter Name *'}
+              {mode === 'create'
+                ? 'Filter Name (up to 7 characters) *'
+                : 'New Filter Name (up to 7 characters) *'}
             </Label>
             <Input
               id="filterName"
@@ -267,6 +269,7 @@ function CreateFilterModal({
               placeholder="Enter filter name"
               required
               invalid={!state.filterName}
+              maxLength={7}
             />
             {state.filterName === '' && <div className="error-text">Filter name is required</div>}
           </FormGroup>
