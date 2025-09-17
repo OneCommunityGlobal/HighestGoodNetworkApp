@@ -42,8 +42,8 @@ const UserTableDataComponent = (props) => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDateLocal(props.user.startDate),
-    endDate: formatDateLocal(props.user.endDate),
+    startDate: formatDateUtcYYYYMMDD(props.user.startDate) || '',
+    endDate: formatDateUtcYYYYMMDD(props.user.endDate) || '',
   });
   const dispatch = useDispatch();
   const history = useHistory();
@@ -505,7 +505,7 @@ const UserTableDataComponent = (props) => {
       <td>
         {editUser?.startDate ? (
           <span>
-            { props.user.startDate ? formatDateLocal(formData.startDate) : 'N/A' }
+            { props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A' }
             {/* {formData.startDate},{props.user.startDate} */}
           </span>
         ) : (
@@ -523,7 +523,7 @@ const UserTableDataComponent = (props) => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A'}
+            {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}

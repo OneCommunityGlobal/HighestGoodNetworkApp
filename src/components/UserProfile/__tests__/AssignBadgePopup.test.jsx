@@ -76,6 +76,7 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
     expect(tables.length).toBe(1);
 
     // Find all table headers (th elements) within the table
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const tableHeaders = tables[0].querySelectorAll('th');
 
     // Ensure there are exactly three table headers in the table

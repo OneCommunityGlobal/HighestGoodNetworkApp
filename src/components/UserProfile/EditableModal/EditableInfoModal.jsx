@@ -154,6 +154,7 @@ export class EditableInfoModal extends Component {
     try {
       await this.props.getInfoCollections();
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error(error);
       // Handle error appropriately here
     }
@@ -234,6 +235,7 @@ export class EditableInfoModal extends Component {
                     onEditorChange={this.handleInputChange}
                     darkMode={darkMode}
                   />
+                  // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                   : <div
                     className={darkMode ? 'info-modal-content force-white-text' : ''}
                     style={{ paddingLeft: '20px' }}
