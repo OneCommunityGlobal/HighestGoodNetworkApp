@@ -107,10 +107,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
   const [viewingUserId, setViewingUserId] = useState(null);
-  const [hasAutoLoggedWeekEnd, setHasAutoLoggedWeekEnd] = useState(false);
-  const [hasAutoLoggedScheduled, setHasAutoLoggedScheduled] = useState(false);
-  const [autoLogModal, setAutoLogModal] = useState(false);
-  const [autoLogModalType, setAutoLogModalType] = useState(''); // 'weekend' or 'scheduled'
+  const [weekEndModal, setWeekEndModal] = useState(false);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
@@ -228,8 +225,12 @@ function Timer({ authUser, darkMode, isPopout }) {
     sendStartChime(!timeIsOverModalOpen);
   };
 
-  const toggleAutoLogModal = () => {
-    setAutoLogModal(!autoLogModal);
+  const toggleWeekEndModal = () => {
+    setWeekEndModal(!weekEndModal);
+    if (weekEndModal) {
+      // When closing the modal, stop chiming
+      sendStartChime(false);
+    }
   };
 
   const checkBtnAvail = useCallback(
@@ -313,112 +314,20 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   };
 
-  const autoLogWeekEndTime = async () => {
-    if (hasAutoLoggedWeekEnd || goal - remaining < 60000) {
-      return; // Don't log if already logged or less than 1 minute
+  const handleWeekEndPause = () => {
+    if (goal - remaining < 60000) {
+      return; // Don't show modal if less than 1 minute
     }
 
-    try {
-      const timeToLog = moment.duration(goal - remaining);
-      const logHours = timeToLog.hours();
-      const logMinutes = timeToLog.minutes();
-
-      // Ensure we have valid user ID
-      const userId = viewingUserId || authUser?.userid;
-      if (!userId) {
-        console.error('No user ID available for auto-logging', { viewingUserId, authUser });
-        toast.error('Cannot auto-log time: No user ID available');
-        return;
-      }
-
-      const timeEntry = {
-        personId: userId,
-        taskId: null,
-        wbsId: null,
-        projectId: null,
-        hours: logHours,
-        minutes: logMinutes,
-        dateOfWork: moment()
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
-        notes:
-          'This time was logged automatically due to week closing. This is a temporary time log. https://www.onecommunityglobal.org/team/',
-        isTangible: true,
-        entryType: 'person',
-      };
-
-      // Submit the time entry
-      const result = await dispatch(postTimeEntry(timeEntry));
-
-      if (result === 200 || result === 201) {
-        // Mark as auto-logged and stop timer
-        setHasAutoLoggedWeekEnd(true);
-        setAutoLogModalType('weekend');
-        setAutoLogModal(true);
-        sendStop(); // Stop and reset timer like normal time logging
-
-        toast.success(`Week ended! Time logged successfully.`);
-      } else {
-        throw new Error(`Unexpected response status: ${result}`);
-      }
-    } catch (error) {
-      console.error('Error auto-logging week-end time:', error);
-      toast.error('Failed to auto-log time for week end');
-    }
-  };
-
-  // Handle scheduled forced pause auto-log
-  const autoLogScheduledTime = async () => {
-    if (hasAutoLoggedScheduled || goal - remaining < 60000) {
+    // Prevent duplicate calls if modal is already open
+    if (weekEndModal) {
       return;
     }
 
-    try {
-      const timeToLogDur = moment.duration(goal - remaining);
-      const logH = timeToLogDur.hours();
-      const logM = timeToLogDur.minutes();
-
-      const userId = viewingUserId || authUser?.userid;
-      if (!userId) {
-        console.error('No user ID available for auto-logging (scheduled)', {
-          viewingUserId,
-          authUser,
-        });
-        toast.error('Cannot auto-log time: No user ID available');
-        return;
-      }
-
-      const timeEntry = {
-        personId: userId,
-        taskId: null,
-        wbsId: null,
-        projectId: null,
-        hours: logH,
-        minutes: logM,
-        dateOfWork: moment()
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
-        notes:
-          'This time was logged automatically due to a scheduled pause. This is a temporary time log. https://www.onecommunityglobal.org/team/',
-        isTangible: true,
-        entryType: 'person',
-      };
-
-      const result = await dispatch(postTimeEntry(timeEntry));
-
-      if (result === 200 || result === 201) {
-        setHasAutoLoggedScheduled(true);
-        setAutoLogModalType('scheduled');
-        setAutoLogModal(true);
-        sendStop(); // Stop and reset timer like normal time logging
-        toast.info('Timer paused by schedule. Please complete your time log description.');
-      } else {
-        throw new Error(`Unexpected response status: ${result}`);
-      }
-    } catch (error) {
-      console.error('Error auto-logging scheduled pause time:', error);
-      toast.error('Failed to auto-log time for scheduled pause');
-    }
+    setWeekEndModal(true);
+    sendPause(); // Pause timer
+    toast.info('The week is close to ending! Please log your time.');
+    sendStartChime(true); // Start chiming
   };
 
   /**
@@ -433,26 +342,10 @@ function Timer({ authUser, darkMode, isPopout }) {
       return;
     }
 
-    // Check if this is an auto-log action first
-    const isAutoLogAction =
-      lastJsonMessage &&
-      (lastJsonMessage.action === 'SCHEDULED_PAUSE' ||
-        lastJsonMessage.action === 'WEEK_CLOSE_PAUSE');
-
-    // Handle explicit scheduled pause action messages
-    if (lastJsonMessage && lastJsonMessage.action === 'SCHEDULED_PAUSE') {
-      // Auto-log scheduled time
-      if (!hasAutoLoggedScheduled && running) {
-        autoLogScheduledTime();
-      }
-      return; // Exit early to prevent other modal logic
-    }
-
     // Handle explicit week close pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
-      // Auto-log weekend time
-      if (!hasAutoLoggedWeekEnd && running) {
-        autoLogWeekEndTime();
+      if (running) {
+        handleWeekEndPause();
       }
       return; // Exit early to prevent other modal logic
     }
@@ -465,20 +358,14 @@ function Timer({ authUser, darkMode, isPopout }) {
       weekEndPause: weekEndPauseLJM,
     } = lastJsonMessage || defaultMessage;
 
-    const previousMessage = message;
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
 
-    // Only show inactivity or time-over modals if NOT an auto-log action
-    if (!isAutoLogAction) {
-      setInacModal(forcedPauseLJM);
-      setTimeIsOverModalIsOpen(chimingLJM);
-    } else {
-      // For auto-log actions, ensure these modals are closed
-      setInacModal(false);
-      setTimeIsOverModalIsOpen(false);
-    }
-  }, [lastJsonMessage, hasAutoLoggedWeekEnd, hasAutoLoggedScheduled, running, message]);
+    // Show inactivity or time-over modals based on message state
+    setInacModal(forcedPauseLJM);
+    // Only show time-over modal if it's not a weekend pause
+    setTimeIsOverModalIsOpen(chimingLJM && !weekEndModal);
+  }, [lastJsonMessage, running, message, weekEndModal]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -520,20 +407,6 @@ function Timer({ authUser, darkMode, isPopout }) {
     return () => clearInterval(interval);
   }, [running, message]);
 
-  // Reset auto-logged flag when timer starts fresh
-  useEffect(() => {
-    if (running && !message.weekEndPause) {
-      setHasAutoLoggedWeekEnd(false);
-    }
-  }, [running, message.weekEndPause]);
-
-  // Reset scheduled auto-logged flag when timer starts fresh
-  useEffect(() => {
-    if (running) {
-      setHasAutoLoggedScheduled(false);
-    }
-  }, [running]);
-
   useEffect(() => {
     checkRemainingTime();
     setLogTimer({ hours: logHours, minutes: logMinutes });
@@ -560,6 +433,17 @@ function Timer({ authUser, darkMode, isPopout }) {
       forcedPausedAudioRef.current.currentTime = 0;
     }
   }, [inacModal]);
+
+  useEffect(() => {
+    if (weekEndModal) {
+      window.focus();
+      timeIsOverAudioRef.current.play();
+    } else {
+      window.focus();
+      timeIsOverAudioRef.current.pause();
+      timeIsOverAudioRef.current.currentTime = 0;
+    }
+  }, [weekEndModal]);
 
   useEffect(() => {
     if (!isInitialJsonMessageReceived) return;
@@ -715,47 +599,6 @@ function Timer({ authUser, darkMode, isPopout }) {
             >
               Add More Time
             </Button>{' '}
-          </ModalFooter>
-        </Modal>
-        <Modal
-          className={cs(fontColor, darkMode ? 'dark-mode' : '')}
-          size="md"
-          isOpen={autoLogModal}
-          toggle={toggleAutoLogModal}
-          centered
-        >
-          <ModalHeader className={headerBg} toggle={toggleAutoLogModal}>
-            Time Auto-Logged
-          </ModalHeader>
-          <ModalBody className={bodyBg}>
-            {autoLogModalType === 'weekend' ? (
-              <>
-                Your time has been automatically logged due to week closing. Please edit your latest
-                time entry to reflect the correct task and project details.
-                <br />
-                <br />
-                You can find and edit your time entries in the Time Log section.
-              </>
-            ) : (
-              <>
-                Your time has been automatically logged due to a scheduled pause. Please edit your
-                latest time entry to reflect the correct task and project details.
-                <br />
-                <br />
-                You can find and edit your time entries in the Time Log section.
-              </>
-            )}
-          </ModalBody>
-          <ModalFooter className={bodyBg}>
-            <Button
-              color="primary"
-              onClick={() => {
-                toggleAutoLogModal();
-                sendStartChime(false);
-              }}
-            >
-              I understand
-            </Button>
           </ModalFooter>
         </Modal>
       </div>
@@ -1066,42 +909,30 @@ function Timer({ authUser, darkMode, isPopout }) {
       </Modal>
       <Modal
         className={cs(fontColor, darkMode ? 'dark-mode' : '')}
-        size="md"
-        isOpen={autoLogModal}
-        toggle={toggleAutoLogModal}
+        isOpen={weekEndModal}
+        toggle={toggleWeekEndModal}
         centered
+        size="md"
       >
-        <ModalHeader className={headerBg} toggle={toggleAutoLogModal}>
-          Time Auto-Logged
+        <ModalHeader className={headerBg} toggle={toggleWeekEndModal}>
+          Week Ended!
         </ModalHeader>
         <ModalBody className={bodyBg}>
-          {autoLogModalType === 'weekend' ? (
-            <>
-              Your time has been automatically logged due to week closing. Please edit your latest
-              time entry to reflect the correct task and project details.
-              <br />
-              <br />
-              You can find and edit your time entries in the Time Log section.
-            </>
-          ) : (
-            <>
-              Your time has been automatically logged due to a scheduled pause. Please edit your
-              latest time entry to reflect the correct task and project details.
-              <br />
-              <br />
-              You can find and edit your time entries in the Time Log section.
-            </>
-          )}
+          {`This is an automatic pause as the week is coming to an end. Make sure to log your time immediately so that you don't lose any time for this week.
+
+You have worked for ${logHours ? `${logHours} hours` : ''}${
+            logMinutes ? ` ${logMinutes} minutes` : ''
+          }. Please log your time.`}
         </ModalBody>
         <ModalFooter className={bodyBg}>
           <Button
             color="primary"
             onClick={() => {
-              toggleAutoLogModal();
-              sendStartChime(false);
+              toggleWeekEndModal();
+              toggleLogTimeModal();
             }}
           >
-            I understand
+            Log Time
           </Button>
         </ModalFooter>
       </Modal>
