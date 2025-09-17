@@ -42,6 +42,8 @@ import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 import Timelog from './components/Timelog';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+import PlannedCostDonutChart from './components/PlannedCostDonutChart';
+
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
 import Dashboard from './components/Dashboard';
@@ -722,7 +724,7 @@ export default (
           exact
           component={PromotionEligibility}
         />
-
+        <ProtectedRoute path="/planned-costs" exact component={PlannedCostDonutChart} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
