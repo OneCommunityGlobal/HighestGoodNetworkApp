@@ -158,7 +158,7 @@ describe('PermissionsManagement', () => {
   it('displays loading message while fetching data', async () => {
     axios.get.mockImplementation(() => new Promise(() => {}));
     await renderComponent();
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+    expect(screen.getByTestId('loading-message')).toBeInTheDocument();
   });
 
   describe('Permission-based Rendering', () => {
