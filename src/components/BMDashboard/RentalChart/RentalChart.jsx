@@ -4,7 +4,6 @@ import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
-import './RentalChart.css';
 import styles from './RentalChart.module.css';
 import { toast } from 'react-toastify';
 import {
@@ -249,14 +248,13 @@ export default function RentalChart() {
   }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData]);
 
   const options = useMemo(() => {
-    const textColor = darkMode ? '#e0e0e0' : '#333333';
+    const textColor = '#ffffff';
     const bgColor = darkMode ? '#1b2a41' : '#ffffff';
-    const tooltipBg = darkMode ? '#1b2a41' : 'rgba(255,255,255,0.8)';
-    const tooltipBorder = darkMode ? 'rgba(255,255,255,0.2)' : '#1b2a41';
-    const titleColor = darkMode ? '#ffffff' : '#1b2a41';
-    const gridXColor = textColor;
+    const tooltipBorder = '#ffffff';
+    const tooltipBg = darkMode ? '#343a40' : '#1b2a41';
+    const titleColor = '#ffffff';
+    const gridXColor = darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41';
     const gridYColor = darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41';
-    const legendColor = darkMode ? '#e0e0e0' : '#333333';
 
     return {
       responsive: true,
@@ -265,14 +263,12 @@ export default function RentalChart() {
       plugins: {
         legend: {
           position: 'top',
-          labels: {
-            color: legendColor,
-          },
+          labels: { color: textColor, font: { size: 16 } },
         },
         title: {
           display: true,
           text: generateChartTitle(),
-          font: { size: 18 },
+          font: { size: 25 },
           color: titleColor,
         },
         tooltip: {
@@ -289,12 +285,14 @@ export default function RentalChart() {
           titleColor,
           bodyColor: textColor,
           borderColor: tooltipBorder,
-          borderWidth: 1,
+          borderWidth: 2,
+          titleFont: { size: 18 },
+          bodyFont: { size: 16 },
         },
       },
       scales: {
         x: {
-          title: { display: true, text: 'Month/Year', color: textColor },
+          title: { display: true, text: 'Month/Year', color: textColor, font: { size: 18 } },
           ticks: { color: textColor },
           grid: { color: gridXColor },
         },
@@ -307,6 +305,7 @@ export default function RentalChart() {
                 ? 'Percentage of Total Materials Cost (%)'
                 : 'Total Rental Cost ($)',
             color: textColor,
+            font: { size: 18 },
           },
           ticks: {
             callback: value => (chartType === 'percentage' ? `${value}%` : `$${value}`),
