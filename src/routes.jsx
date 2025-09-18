@@ -44,6 +44,9 @@ import Timelog from './components/Timelog';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
+// Activity Feedback Modal
+import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
+
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
 import Login from './components/Login';
@@ -519,6 +522,34 @@ export default (
           component={JobCCDashboard}
           fallback
           allowedRoles={[UserRole.Owner]}
+        />
+
+        <ProtectedRoute
+          path="/communityportal/activity/\:activityid/feedback"
+          exact
+          component={FeedbackRatingEntry}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Owner,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Mentor,
+            UserRole.Volunteer,
+            UserRole.Learner,
+            UserRole.Guest,
+            UserRole.Staff,
+            UserRole.Participant,
+            UserRole.Reviewer,
+            UserRole.Contributor,
+            UserRole.Editor,
+            UserRole.Publisher,
+            UserRole.Subscriber,
+            UserRole.Author,
+            UserRole.Member,
+            UserRole.Organizer,
+            UserRole.Facilitator,
+          ]}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
