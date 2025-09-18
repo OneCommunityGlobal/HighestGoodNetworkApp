@@ -178,6 +178,11 @@
   z-index: 29 !important;
   position: relative !important;
 }
+
+.third-select {
+  z-index: 28 !important;
+  position: relative !important;
+}
 @media screen and (max-width: 544px) {
   .responsive-font-size {
     font-size: 0.75rem !important;

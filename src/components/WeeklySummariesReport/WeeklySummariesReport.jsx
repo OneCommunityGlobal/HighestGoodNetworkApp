@@ -23,6 +23,10 @@ import {
   Button,
   Input,
   Spinner,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
@@ -48,8 +52,9 @@ import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
 import CreateFilterModal from './CreateFilterModal';
-import './WeeklySummariesReport.css';
+import UpdateFilterModal from './UpdateFilterModal';
 import SelectFilterModal from './SelectFilterModal';
+import './WeeklySummariesReport.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -129,9 +134,13 @@ const WeeklySummariesReport = props => {
   const [permissionState, setPermissionState] = useState(intialPermissionState);
 
   const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
+  const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
   const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
+  const [saveFilterDropdownOpen, setSaveFilterDropdownOpen] = useState(false);
 
+  const toggleSaveFilterDropdown = () => setSaveFilterDropdownOpen(prev => !prev);
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
+  const toggleUpdateFilterModal = () => setUpdateFilterModalOpen(prev => !prev);
   const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
 
   // Misc functionalities
@@ -1450,14 +1459,32 @@ const WeeklySummariesReport = props => {
               Select Filter
             </Button>
             {permissionState.canManageFilter && (
-              <Button
-                color="primary"
+              <ButtonDropdown
                 className="ml-1"
                 style={darkMode ? boxStyleDark : boxStyle}
-                onClick={() => setCreateFilterModalOpen(true)}
+                isOpen={saveFilterDropdownOpen}
+                toggle={toggleSaveFilterDropdown}
               >
-                Save Filter
-              </Button>
+                <DropdownToggle caret color="primary">
+                  Manage Filters
+                </DropdownToggle>
+                <DropdownMenu right>
+                  <DropdownItem onClick={() => setCreateFilterModalOpen(true)}>
+                    Create New Filter
+                  </DropdownItem>
+                  <DropdownItem onClick={() => setUpdateFilterModalOpen(true)}>
+                    Update/Delete Filter
+                  </DropdownItem>
+                </DropdownMenu>
+              </ButtonDropdown>
+              // <Button
+              //   color="primary"
+              //   className="ml-1"
+              //   style={darkMode ? boxStyleDark : boxStyle}
+              //   onClick={() => setCreateFilterModalOpen(true)}
+              // >
+              //   Save Filter
+              // </Button>
             )}
 
             <SelectFilterModal
@@ -1467,6 +1494,22 @@ const WeeklySummariesReport = props => {
               applyFilter={applyFilter}
               memberDict={state.memberDict}
             />
+            {permissionState.canManageFilter && (
+              <UpdateFilterModal
+                isOpen={updateFilterModalOpen}
+                toggle={toggleUpdateFilterModal}
+                filters={state.filterChoices}
+                darkMode={darkMode}
+                hasPermissionToFilter={hasPermissionToFilter}
+                canSeeBioHighlight={permissionState.canSeeBioHighlight}
+                refetchFilters={fetchFilters}
+                teamCodes={state.teamCodes}
+                colorOptions={state.colorOptions}
+                tableData={state.tableData}
+                summaries={state.summaries}
+                teamCodeWarningUsers={state.teamCodeWarningUsers}
+              />
+            )}
             {permissionState.canManageFilter && (
               <CreateFilterModal
                 isOpen={createFilterModalOpen}

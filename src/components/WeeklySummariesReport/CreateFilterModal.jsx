@@ -213,14 +213,12 @@ function CreateFilterModal({
             } else {
               toast.success(`Successfully update filter ${selectedFilter.label}`);
             }
-            refetchFilters();
+            await refetchFilters();
           } catch (error) {
             toast.error(`Failed to save new filter. Error ${error}`);
           }
         }
 
-        // eslint-disable-next-line no-console
-        console.log('Form submitted:', data);
         toggle();
       }
     }
