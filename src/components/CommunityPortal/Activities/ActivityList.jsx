@@ -1,9 +1,10 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import './ActivityList.css';
-// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
+  const history = useHistory();
   const [activities, setActivities] = useState([]);
   const [filter, setFilter] = useState({
     type: '',
@@ -46,6 +47,10 @@ function ActivityList() {
     );
   });
 
+  const handleActivityClick = activityId => {
+    history.push(`/communityportal/activity/${activityId}/feedback`);
+  };
+
   return (
     <div>
       <h1>Activity List</h1>
@@ -83,8 +88,26 @@ function ActivityList() {
           <ul>
             {filteredActivities.map(activity => (
               <li key={activity.id}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-                {activity.location}
+                <button
+                  className="activity-item"
+                  onClick={() => handleActivityClick(activity.id)}
+                  style={{
+                    cursor: 'pointer',
+                    padding: '10px',
+                    border: '1px solid #ccc',
+                    margin: '5px 0',
+                    borderRadius: '5px',
+                    width: '100%',
+                    textAlign: 'left',
+                    backgroundColor: 'transparent',
+                  }}
+                >
+                  <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
+                  {activity.location}
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '5px' }}>
+                    Click to leave feedback
+                  </div>
+                </button>
               </li>
             ))}
           </ul>

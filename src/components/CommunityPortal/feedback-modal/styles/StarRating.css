@@ -1,0 +1,33 @@
+.star-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.star {
+  font-size: 44px;
+  /* Adjust the size of the stars */
+  color: transparent;
+  /* Make the stars transparent by default */
+  -webkit-text-stroke: 1.5px black;
+  /* Black outline around the star */
+  margin: 0 5px;
+  /* Space between stars */
+  transition: color 0.3s ease;
+  /* Smooth transition for color change */
+}
+
+.star.selected {
+  color: #b100cd;
+  -webkit-text-stroke: 0px;
+  transform: scale(1.1);
+  /* Purple color when selected */
+}
+
+.star:hover {
+  color: #b100cd;
+  -webkit-text-stroke: 0px;
+  transform: scale(1.1);
+  /* Hover effect to show purple when hovering over a star */
+}
