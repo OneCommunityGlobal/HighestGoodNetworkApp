@@ -28,8 +28,20 @@ import GoogleDocIcon from '../common/GoogleDocIcon';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
 import * as messages from '../../constants/followUpConstants';
+import UserStateManager from "~/components/UserState/UserStateManager";
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
+
+// const canEditUserState =
+//   ['Owner', 'Administrator'].includes(userRole) ||
+//   dispatch(hasPermission('manageUserStateIndicator')); 
+
+const initialCatalog = [
+  { key: "closing-out",     label: "❌ Closing Out",   color: "red" },
+  { key: "new-dev",         label: "🖥️ New Developer", color: "blue" },
+  { key: "pr-review-team",  label: "👾 PR Review Team", color: "purple" },
+  { key: "developer",       label: "🖥️✅ Developer",   color: "green" },
+];
 
 const TeamMemberTask = React.memo(
   ({
@@ -408,14 +420,12 @@ const TeamMemberTask = React.memo(
                             </font>{' '}
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                             <div style={{ marginTop: "6px" }}>
-                              <UserStatePills
-                                states={["closing-out", "developer"]}
-                                catalog={[
-                                  { key: "closing-out", label: "❌ Closing Out", color: "red" },
-                                  { key: "new-dev", label: "🖥️ New Developer", color: "blue" },
-                                  { key: "pr-review-team", label: "👾 PR Review Team", color: "purple" },
-                                  { key: "developer", label: "🖥️✅ Developer", color: "green" },
-                                ]}
+                              <UserStateManager
+                                initialCatalog={initialCatalog}
+                                initialSelected={user.stateIndicators || []}
+                                canEdit={true}
+                                onChange={(nextSelected, nextCatalog) => {
+                                }}
                               />
                             </div>
                           </td>
@@ -534,8 +544,8 @@ const TeamMemberTask = React.memo(
                                         <span
                                           data-testid={`times-${task.taskName}`}
                                           className={`${darkMode ? 'text-light ' : ''} ${canSeeFollowUpCheckButton
-                                              ? 'team-task-progress-time'
-                                              : 'team-task-progress-time-volunteers'
+                                            ? 'team-task-progress-time'
+                                            : 'team-task-progress-time-volunteers'
                                             }`}
                                         >
                                           {`${parseFloat(
