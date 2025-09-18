@@ -185,7 +185,7 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
       );
     }
     if (summary) {
-      // Display the summary with an "Edit" button
+      // Display the summary without edit button for users without edit permissions
       return (
         <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
@@ -193,22 +193,20 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
         </div>
       );
     }
-    // Display a message when there's no summary with an edit button
+    // Display a message when there's no summary with an edit button (always show edit button for missing summaries)
     return (
       <div>
         <h3>{title}</h3>
         <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           {userProfile.firstName} {userProfile.lastName} did not submit a summary.
         </p>
-        {(canEdit || currentUserID === loggedInUserId) && (
-          <button 
-            type="button" 
-            className="button edit-button" 
-            onClick={() => handleEditSummary(index)}
-          >
-            Edit
-          </button>
-        )}
+        <button 
+          type="button" 
+          className="button edit-button" 
+          onClick={() => handleEditSummary(index)}
+        >
+          Edit
+        </button>
       </div>
     );
   };
