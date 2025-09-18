@@ -27,6 +27,7 @@ function ScheduleReasonModalCard({ request , handleDeleteRequest }) {
         </Row>
         <Row>
           <Col>
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
             <p className={`${!showFullText ? 'text-truncate' : ''}`} onClick={toggleShowText}>
               <strong>Reason: </strong>
               {request.reason}

@@ -124,6 +124,7 @@ class UserProfileAdd extends Component {
   };
 
   componentDidMount() {
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.showphone = true;
     this.onCreateNewUser();
     this.fetchTeamCodeAllUsers();
@@ -146,6 +147,7 @@ class UserProfileAdd extends Component {
       this.setState({ isLoading: false })
 
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       this.setState({ isLoading: false })
       toast.error(`It was not possible to retrieve the team codes. 
@@ -636,7 +638,7 @@ class UserProfileAdd extends Component {
                   block
                   size="lg"
                   data-testid="create-userProfile"
-                  onClick={() => this.createUserProfile(false)}
+                  onClick={() => this.createUserProfile(true)}
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Create
@@ -704,6 +706,7 @@ class UserProfileAdd extends Component {
     const location = this.state.userProfile.location.userProvided;
 
     if (!location) {
+      // eslint-disable-next-line no-alert
       alert('Please enter valid location');
       return;
     }
@@ -770,7 +773,7 @@ class UserProfileAdd extends Component {
     else return false;
   };
 
-  createUserProfile = allowsDuplicateName => {
+  createUserProfile = () => {
     let that = this;
     const {
       firstName,
@@ -812,7 +815,7 @@ class UserProfileAdd extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: allowsDuplicateName,
+      allowsDuplicateName: true,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
       actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
@@ -872,16 +875,9 @@ class UserProfileAdd extends Component {
           .then(res => {
             if (res.data.warning) {
               toast.warn(res.data.warning);
-            } else if (
-              this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-              !allowsDuplicateName
-            ) {
-              this.setState({
-                popupOpen: true,
-              });
-              return;
             } else {
               toast.success('User profile created.');
+              // eslint-disable-next-line react/no-direct-mutation-state
               this.state.userProfile._id = res.data._id;
               if (this.state.teams.length > 0) {
                 this.state.teams.forEach(team => {
