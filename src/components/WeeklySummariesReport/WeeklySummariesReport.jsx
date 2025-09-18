@@ -1313,9 +1313,13 @@ const WeeklySummariesReport = props => {
     const selectedColorsChoice = state.colorOptions.filter(color =>
       filter.selectedColors.has(color.value),
     );
-    const selectedExtraMembersChoice = state.membersFromUnselectedTeam.filter(member =>
-      filter.selectedExtraMembers.has(member.value),
-    );
+    const selectedExtraMembersChoice = state.summaries
+      .filter(summary => filter.selectedExtraMembers.has(summary._id))
+      .map(summary => ({
+        label: `${summary.firstName} ${summary.lastName}`,
+        value: summary._id,
+        role: summary.role,
+      }));
 
     setState(prevState => ({
       ...prevState,

@@ -97,6 +97,9 @@
   padding-left: 2px;
   background-color: #2ba6ed;
 }
+.switch-toggle:disabled + .switch-toggle-label .switch-toggle-inner::before{
+  background-color: #bbb;
+}
 .switch-toggle-inner:after {
   content: "";
   padding-right: 2px;

@@ -57,7 +57,7 @@ export default function UpdateFilterModal({
   const [update, setUpdate] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const deleteToggle = () => setDeleteOpen(!deleteOpen);
 
@@ -185,9 +185,13 @@ export default function UpdateFilterModal({
     const selectedColorsChoice = colorOptions.filter(color =>
       filter.selectedColors.has(color.value),
     );
-    const selectedExtraMembersChoice = state.membersFromUnselectedTeam.filter(member =>
-      filter.selectedExtraMembers.has(member.value),
-    );
+    const selectedExtraMembersChoice = summaries
+      .filter(summary => filter.selectedExtraMembers.has(summary._id))
+      .map(summary => ({
+        label: `${summary.firstName} ${summary.lastName}`,
+        value: summary._id,
+        role: summary.role,
+      }));
 
     setState(prevState => ({
       ...prevState,
@@ -206,6 +210,7 @@ export default function UpdateFilterModal({
     e.preventDefault();
     if (state.filterName !== '' && state.filterName.length <= 7) {
       if (update && state.selectedFilter !== null) {
+        setIsProcessing(true);
         // No errors -> submit form
         const data = {
           filterName: state.filterName,
@@ -228,17 +233,18 @@ export default function UpdateFilterModal({
           } else {
             toast.success(`Successfully update filter ${selectedFilter.label}`);
           }
-          refetchFilters();
+          await refetchFilters();
         } catch (error) {
           toast.error(`Failed to save new filter. Error ${error}`);
         }
-        toggle();
+        setIsProcessing(false);
+        setUpdate(false);
       }
     }
   };
 
   const handleDelete = async () => {
-    setIsDeleting(true);
+    setIsProcessing(true);
     try {
       const res = await axios.delete(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(selectedFilter.value));
       if (res.status < 200 || res.status >= 300) {
@@ -251,14 +257,42 @@ export default function UpdateFilterModal({
       toast.error(`Failed to delete filter. Error ${error}`);
     }
     setSelectedFilter(null);
-    setIsDeleting(false);
+    setIsProcessing(false);
     deleteToggle();
+  };
+
+  const rollBackUpdate = () => {
+    setUpdate(false);
+    const filter = selectedFilter.filterData;
+    const selectedCodesChoice = teamCodes.filter(code => filter.selectedCodes.has(code.value));
+    const selectedColorsChoice = colorOptions.filter(color =>
+      filter.selectedColors.has(color.value),
+    );
+    const selectedExtraMembersChoice = summaries
+      .filter(summary => filter.selectedExtraMembers.has(summary._id))
+      .map(summary => ({
+        label: `${summary.firstName} ${summary.lastName}`,
+        value: summary._id,
+        role: summary.role,
+      }));
+
+    setState(prevState => ({
+      ...prevState,
+      filterName: selectedFilter.label,
+      selectedCodes: selectedCodesChoice,
+      selectedColors: selectedColorsChoice,
+      selectedExtraMembers: selectedExtraMembersChoice,
+      selectedTrophies: filter.selectedTrophies,
+      selectedSpecialColors: filter.selectedSpecialColors,
+      selectedBioStatus: filter.selectedBioStatus,
+      selectedOverTime: filter.selectedOverTime,
+    }));
   };
 
   return (
     <>
       <Modal size="lg" isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
-        <ModalHeader toggle={toggle}>Create A New Filter or Override Existing Filter</ModalHeader>
+        <ModalHeader toggle={toggle}>Update or Delete Filter</ModalHeader>
         <ModalBody>
           <Form>
             <Label for="filterOverride">Select a Filter</Label>
@@ -271,14 +305,34 @@ export default function UpdateFilterModal({
             />
             {selectedFilter && (
               <FormGroup>
-                <div className="my-3">
-                  <Button color="primary" className="mr-2">
-                    Edit
-                  </Button>
-                  <Button color="danger" onClick={deleteToggle}>
-                    Delete
-                  </Button>
-                </div>
+                {update ? (
+                  <div>
+                    {isProcessing ? (
+                      <div className="d-flex align-items-center">
+                        <Spinner size="sm" color="danger" className="mr-2" />
+                        Updating...
+                      </div>
+                    ) : (
+                      <div className="my-3 d-flex justify-content-end">
+                        <Button color="primary" className="mr-2" onClick={handleSubmit}>
+                          Save
+                        </Button>
+                        <Button color="secondary" onClick={rollBackUpdate}>
+                          Cancel
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="my-3 d-flex justify-content-end">
+                    <Button color="primary" className="mr-2" onClick={setUpdate}>
+                      Edit
+                    </Button>
+                    <Button color="danger" onClick={deleteToggle}>
+                      Delete
+                    </Button>
+                  </div>
+                )}
                 <Label for="filterName">Filter Name (up to 7 characters) *</Label>
                 <Input
                   id="filterName"
@@ -288,106 +342,119 @@ export default function UpdateFilterModal({
                   required
                   invalid={!state.filterName}
                   maxLength={7}
+                  disabled={!update}
                 />
                 {state.filterName === '' && (
                   <div className="error-text">Filter name is required</div>
                 )}
 
                 <Row className="pt-4">
-                  <Col md={6} sm={12}>
-                    <div>
-                      <b>Select Team Code</b>
-                    </div>
-                    <MultiSelect
-                      className={`report-multi-select-filter second-select text-dark ${
-                        darkMode ? 'dark-mode' : ''
-                      } ${teamCodeWarningUsers.length > 0 ? 'warning-border' : ''}`}
-                      options={teamCodes.map(item => {
-                        const [code, count] = item.label.split(' (');
-                        return {
-                          ...item,
-                          label: `${code.padEnd(10, ' ')} (${count}`,
-                        };
-                      })}
-                      value={state.selectedCodes}
-                      onChange={handleSelectCodesChange}
-                      labelledBy="Select"
-                    />
-                  </Col>
-                  <Col md={6} sm={12}>
+                  {update && (
+                    <Col md={6} sm={12}>
+                      <div>
+                        <b>Select Team Code</b>
+                      </div>
+                      <MultiSelect
+                        className={`report-multi-select-filter second-select text-dark ${
+                          darkMode ? 'dark-mode' : ''
+                        } ${teamCodeWarningUsers.length > 0 ? 'warning-border' : ''}`}
+                        options={teamCodes.map(item => {
+                          const [code, count] = item.label.split(' (');
+                          return {
+                            ...item,
+                            label: `${code.padEnd(10, ' ')} (${count}`,
+                          };
+                        })}
+                        value={state.selectedCodes}
+                        onChange={handleSelectCodesChange}
+                        labelledBy="Select"
+                      />
+                    </Col>
+                  )}
+                  <Col md={update ? 6 : 12} sm={12}>
                     <div>Selected Team Code</div>
                     <div className="sm-scrollable">
                       {state.selectedCodes.map(item => (
                         <div key={item.value} className="chip">
                           {item.label}
-                          <Button
-                            close
-                            onClick={() => removeSelectedCode(item)}
-                            className="min-sz-button px-2"
-                            aria-label={`Remove ${item.label}`}
-                          />
+                          {update && (
+                            <Button
+                              close
+                              onClick={() => removeSelectedCode(item)}
+                              className="min-sz-button px-2"
+                              aria-label={`Remove ${item.label}`}
+                            />
+                          )}
                         </div>
                       ))}
                     </div>
                   </Col>
                 </Row>
                 <Row className="pt-4">
-                  <Col md={6} sm={12}>
-                    <div>
-                      <b>Select Color</b>
-                    </div>
-                    <MultiSelect
-                      className={`report-multi-select-filter third-select text-dark ${
-                        darkMode ? 'dark-mode' : ''
-                      }`}
-                      options={colorOptions}
-                      value={state.selectedColors}
-                      onChange={handleSelectColorChange}
-                    />
-                  </Col>
-                  <Col md={6} sm={12}>
+                  {update && (
+                    <Col md={6} sm={12}>
+                      <div>
+                        <b>Select Color</b>
+                      </div>
+                      <MultiSelect
+                        className={`report-multi-select-filter third-select text-dark ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
+                        options={colorOptions}
+                        value={state.selectedColors}
+                        onChange={handleSelectColorChange}
+                      />
+                    </Col>
+                  )}
+                  <Col md={update ? 6 : 12} sm={12}>
                     <div>Selected Colors</div>
                     <div className="sm-scrollable">
                       {state.selectedColors.map(item => (
                         <div key={item.value} className="chip">
                           {item.label}
-                          <Button
-                            close
-                            onClick={() => removeSelectedColor(item)}
-                            className="min-sz-button px-2"
-                            aria-label={`Remove ${item.label}`}
-                          />
+                          {update && (
+                            <Button
+                              close
+                              onClick={() => removeSelectedColor(item)}
+                              className="min-sz-button px-2"
+                              aria-label={`Remove ${item.label}`}
+                            />
+                          )}
                         </div>
                       ))}
                     </div>
                   </Col>
                 </Row>
                 <Row className="pt-4">
-                  <Col md={6} sm={12}>
-                    <div>
-                      <b>Select Extra Members</b>
-                    </div>
-                    <MultiSelect
-                      className={`report-multi-select-filter text-dark ${
-                        darkMode ? 'dark-mode' : ''
-                      }`}
-                      options={state.membersFromUnselectedTeam}
-                      value={state.selectedExtraMembers}
-                      onChange={handleSelectExtraMembersChange}
-                    />
-                  </Col>
-                  <Col md={6} sm={12}>
+                  {update && (
+                    <Col md={6} sm={12}>
+                      <div>
+                        <b>Select Extra Members</b>
+                      </div>
+                      <MultiSelect
+                        className={`report-multi-select-filter text-dark ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
+                        options={state.membersFromUnselectedTeam}
+                        value={state.selectedExtraMembers}
+                        onChange={handleSelectExtraMembersChange}
+                      />
+                    </Col>
+                  )}
+                  <Col md={update ? 6 : 12} sm={12}>
                     <div>Selected Extra Members</div>
                     <div className="sm-scrollable">
                       {state.selectedExtraMembers.map(item => (
                         <div key={item.value} className="chip">
                           {item.label}
-                          <Button
-                            close
-                            onClick={() => removeSelectedExtraMember(item)}
-                            className="min-sz-button px-2"
-                            aria-label={`Remove ${item.label}`}
-                          />
+                          {update && (
+                            <Button
+                              close
+                              onClick={() => removeSelectedExtraMember(item)}
+                              className="min-sz-button px-2"
+                              aria-label={`Remove ${item.label}`}
+                            />
+                          )}
                         </div>
                       ))}
                     </div>
@@ -416,6 +483,7 @@ export default function UpdateFilterModal({
                                 className="switch-toggle"
                                 id={`filter-modal-${color}-toggle`}
                                 checked={state.selectedSpecialColors[color]}
+                                disabled={!update}
                                 onChange={e =>
                                   handleSpecialColorToggleChange(color, e.target.checked)
                                 }
@@ -455,6 +523,7 @@ export default function UpdateFilterModal({
                           className="switch-toggle"
                           id="filter-modal-bio-status-toggle"
                           checked={state.selectedBioStatus}
+                          disabled={!update}
                           onChange={handleBioStatusToggleChange}
                         />
                         <label
@@ -477,6 +546,7 @@ export default function UpdateFilterModal({
                           checked={state.selectedTrophies}
                           id="filter-modal-trophy-toggle"
                           onChange={handleTrophyToggleChange}
+                          disabled={!update}
                         />
                         <label className="switch-toggle-label" htmlFor="filter-modal-trophy-toggle">
                           <span className="switch-toggle-inner" />
@@ -495,6 +565,7 @@ export default function UpdateFilterModal({
                           checked={state.selectedOverTime}
                           id="filter-modal-over-hours-toggle"
                           onChange={handleOverHoursToggleChange}
+                          disabled={!update}
                         />
                         <label
                           className="switch-toggle-label"
@@ -512,11 +583,8 @@ export default function UpdateFilterModal({
           </Form>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={handleSubmit}>
-            Save
-          </Button>
           <Button color="secondary" onClick={toggle}>
-            Cancel
+            Close
           </Button>
         </ModalFooter>
       </Modal>
@@ -524,7 +592,7 @@ export default function UpdateFilterModal({
       <Modal isOpen={deleteOpen} toggle={deleteToggle}>
         <ModalHeader toggle={deleteToggle}>Confirm Delete</ModalHeader>
         <ModalBody>
-          {isDeleting ? (
+          {isProcessing ? (
             <div className="d-flex align-items-center">
               <Spinner size="sm" color="danger" className="mr-2" />
               Deleting...
@@ -534,7 +602,7 @@ export default function UpdateFilterModal({
           )}
         </ModalBody>
         <ModalFooter>
-          {!isDeleting && (
+          {!isProcessing && (
             <>
               <Button color="secondary" onClick={deleteToggle}>
                 Cancel
