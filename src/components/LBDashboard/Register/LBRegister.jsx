@@ -21,7 +21,7 @@ function LBRegister() {
     lastName: /^[A-Za-z]{2,}$/,
     email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     // eslint-disable-next-line
-    phone: /^(?:\+?\d{1,4})?[\s\-.\()]*\d{1,4}[\s\-.\()]*\d{1,4}[\s\-.\()]*\d{1,4}[\s\-.\()]*\d{1,4}$/,
+    phone: /^(?=(?:\D*\d){7,15}\D*$)(?:\+?\d{1,4})?[\s\-().]*\d{1,4}[\s\-().]*\d{1,4}[\s\-().]*\d{1,4}[\s\-().]*\d{1,4}$/,
     password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>]{8,}$/,
   };
 
@@ -59,7 +59,16 @@ function LBRegister() {
       await axios.post(ENDPOINTS.LB_REGISTER, formData);
       window.location.href = '/lbdashboard/login';
     } catch (error) {
-      toast.error('Error registering! Please try again.');
+      const status = error?.response?.status;
+      const msg = error?.response?.data?.message;
+
+      if (status === 409) {
+        toast.error(msg || 'Email already registered.');
+      } else if (status) {
+        toast.error(msg || 'Error registering! Please try again.');
+      } else {
+        toast.error('Network error. Check your connection and try again.');
+      }
     }
   };
 
