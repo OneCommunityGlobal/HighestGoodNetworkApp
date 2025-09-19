@@ -158,6 +158,7 @@ import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -599,7 +600,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/tools" exact component={Toolslist} />
         <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
-        <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={InteractiveMap} />
+        <BMProtectedRoute path="/bmdashboard/InteractiveMap" component={EmbedInteractiveMap} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
         <BMProtectedRoute
