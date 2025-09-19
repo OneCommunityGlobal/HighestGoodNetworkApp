@@ -13,6 +13,9 @@ export const CreateNewTeamPopup = React.memo(props => {
   const [isValidTeam, onValidation] = useState(true);
   const [teamExists, setTeamExists] = useState(false);
 
+  // prettier-ignore
+  setTimeout(() => props.isInputFilled && setNewName(props.nonexistentTeamName), 0);
+
   const closePopup = () => props.onClose();
 
   useEffect(() => {
