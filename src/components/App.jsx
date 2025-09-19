@@ -106,9 +106,13 @@ function UpdateDocumentTitle() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      initMessagingSocket(token);
+      try {
+        initMessagingSocket(token);
+      } catch (error) {
+        console.error('WebSocket initialization failed:', error);
+      }
     } else {
-      Error('❌ No auth token found for WebSocket connection.');
+      console.warn('No auth token found for WebSocket connection');
     }
   }, []);
 
