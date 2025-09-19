@@ -1,184 +1,270 @@
-import React, { useState } from 'react';
-import { Container } from 'reactstrap';
-import { Card, Button, Dropdown, Menu, Row, Col, Typography, Collapse } from 'antd';
-import { ArrowLeftOutlined, DownOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  ButtonGroup,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Card,
+  CardBody,
+} from 'reactstrap';
 import styles from './LBDashboard.module.css';
-import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 
-const { Title } = Typography;
-const { Panel } = Collapse;
+const METRIC_OPTIONS = {
+  DEMAND: [
+    { key: 'pageVisits', label: 'Page Visits' }, // default overall
+    { key: 'numBids', label: 'Number of Bids' },
+    { key: 'avgRating', label: 'Average Rating' },
+  ],
+  REVENUE: [
+    { key: 'avgBid', label: 'Average Bid' },
+    { key: 'finalPrice', label: 'Final Price / Income' }, // default for Revenue
+  ],
+  VACANCY: [
+    { key: 'occupancyRate', label: 'Occupancy Rate (% days not vacant)' }, // default for Vacancy
+    { key: 'avgStay', label: 'Average Duration of Stay' },
+  ],
+};
+
+const DEFAULTS = {
+  DEMAND: 'pageVisits',
+  REVENUE: 'finalPrice',
+  VACANCY: 'occupancyRate',
+};
+
+function GraphCard({ title, metricLabel }) {
+  return (
+    <Card className={styles.graphCard}>
+      <CardBody>
+        <div className={styles.graphTitle}>
+          <span>{title}</span>
+          <span className={styles.metricPill}>{metricLabel}</span>
+        </div>
+        <div className={styles.graphPlaceholder}>
+          <span className={styles.placeholderText}>Graph area</span>
+        </div>
+      </CardBody>
+    </Card>
+  );
+}
 
 export function LBDashboard() {
-  // Master filter states
-  const [masterMetricCategory, setMasterMetricCategory] = useState('demand');
-  const [masterMetric, setMasterMetric] = useState('pageVisits');
+  const [activeCategory, setActiveCategory] = useState('DEMAND');
+  const [selectedMetricKey, setSelectedMetricKey] = useState(DEFAULTS.DEMAND);
 
-  // Handle master metric category and metric change
-  const handleMetricChange = (category, metric) => {
-    setMasterMetricCategory(category);
-    setMasterMetric(metric);
+  const [openDD, setOpenDD] = useState({ DEMAND: false, REVENUE: false, VACANCY: false });
+
+  const metricLabel = (() => {
+    const all = Object.values(METRIC_OPTIONS).flat();
+    return (all.find(o => o.key === selectedMetricKey) || {}).label || '';
+  })();
+
+  const handleCategoryClick = category => {
+    setActiveCategory(category);
+    setSelectedMetricKey(DEFAULTS[category]);
   };
 
-  // Menu for demand metrics dropdown
-  const demandMenu = (
-    <Menu onClick={({ key }) => handleMetricChange('demand', key)}>
-      <Menu.Item key="pageVisits">Number of Views</Menu.Item>
-      <Menu.Item key="numberOfBids">Number of Bids</Menu.Item>
-      <Menu.Item key="averageRating">Average Rating</Menu.Item>
-    </Menu>
-  );
+  const handleMetricPick = (category, key) => {
+    setActiveCategory(category);
+    setSelectedMetricKey(key);
+  };
 
-  // Menu for revenue metrics dropdown
-  const revenueMenu = (
-    <Menu onClick={({ key }) => handleMetricChange('revenue', key)}>
-      <Menu.Item key="averageBid">Average Bid</Menu.Item>
-      <Menu.Item key="finalPrice">Final Price/Income</Menu.Item>
-    </Menu>
-  );
+  const toggleDD = category => setOpenDD(s => ({ ...s, [category]: !s[category] }));
 
-  // Menu for vacancy metrics dropdown
-  const vacancyMenu = (
-    <Menu onClick={({ key }) => handleMetricChange('vacancy', key)}>
-      <Menu.Item key="occupancyRate">Occupancy Rate</Menu.Item>
-      <Menu.Item key="averageDuration">Average Duration of Stay</Menu.Item>
-    </Menu>
-  );
-
-  // Get display name for the selected metric
-  const getMetricDisplayName = () => {
-    switch (masterMetric) {
-      case 'pageVisits':
-        return 'Number of Views';
-      case 'numberOfBids':
-        return 'Number of Bids';
-      case 'averageRating':
-        return 'Average Rating';
-      case 'averageBid':
-        return 'Average Bid';
-      case 'finalPrice':
-        return 'Final Price/Income';
-      case 'occupancyRate':
-        return 'Occupancy Rate';
-      case 'averageDuration':
-        return 'Average Duration of Stay';
-      default:
-        return 'Select Metric';
-    }
+  const goBack = () => {
+    window.history.back();
   };
 
   return (
     <Container fluid className={styles.dashboardContainer}>
       {/* Header */}
       <header className={styles.dashboardHeader}>
-        <Button
-          type="link"
-          icon={<ArrowLeftOutlined />}
-          className={styles.backButton}
-          onClick={() => window.history.back()}
-        >
-          Back to Listing and Bidding
+        <h1 className={styles.title}>Listing and Bidding Platform Dashboard</h1>
+        <Button size="sm" onClick={goBack} className={styles.backBtn}>
+          Back
         </Button>
-        <Title level={2}>Listing and Bidding Platform Dashboard</Title>
       </header>
 
-      {/* Updated Filter UI */}
-      <div className={styles.filterContainer}>
-        <span className={styles.filterLabel}>Choose Metric to view</span>
+      {/* Preset Overview Filter */}
+      <section className={styles.filterBar}>
+        <div className={styles.filterLabel}>Choose Metric to view</div>
 
-        <Dropdown overlay={demandMenu} trigger={['click']}>
+        <ButtonGroup className={styles.categoryGroup}>
+          {/* DEMAND */}
           <Button
-            className={`${styles.categoryButton} ${
-              masterMetricCategory === 'demand' ? styles.activeButton : styles.inactiveButton
-            }`}
+            className={`${styles.filterBtn} ${activeCategory === 'DEMAND' ? styles.active : ''}`}
+            onClick={() => handleCategoryClick('DEMAND')}
           >
-            Demand {masterMetricCategory === 'demand' && `(${getMetricDisplayName()})`}
-            <DownOutlined />
+            Demand
           </Button>
-        </Dropdown>
+          <ButtonDropdown
+            isOpen={openDD.DEMAND}
+            toggle={() => toggleDD('DEMAND')}
+            className={styles.dd}
+          >
+            <DropdownToggle
+              caret
+              className={`${styles.filterBtn} ${activeCategory === 'DEMAND' ? styles.active : ''}`}
+            />
+            <DropdownMenu className={styles.dropdownMenu}>
+              {METRIC_OPTIONS.DEMAND.map(m => (
+                <DropdownItem
+                  key={m.key}
+                  active={selectedMetricKey === m.key}
+                  onClick={() => handleMetricPick('DEMAND', m.key)}
+                  className={`${styles.dropdownItem} ${
+                    selectedMetricKey === m.key ? styles.dropdownActive : ''
+                  }`}
+                >
+                  {m.label}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </ButtonDropdown>
 
-        <Dropdown overlay={vacancyMenu} trigger={['click']}>
+          {/* VACANCY */}
           <Button
-            className={`${styles.categoryButton} ${
-              masterMetricCategory === 'vacancy' ? styles.activeButton : styles.inactiveButton
-            }`}
+            className={`${styles.filterBtn} ${activeCategory === 'VACANCY' ? styles.active : ''}`}
+            onClick={() => handleCategoryClick('VACANCY')}
           >
-            Vacancy {masterMetricCategory === 'vacancy' && `(${getMetricDisplayName()})`}
-            <DownOutlined />
+            Vacancy
           </Button>
-        </Dropdown>
+          <ButtonDropdown
+            isOpen={openDD.VACANCY}
+            toggle={() => toggleDD('VACANCY')}
+            className={styles.dd}
+          >
+            <DropdownToggle
+              caret
+              className={`${styles.filterBtn} ${activeCategory === 'VACANCY' ? styles.active : ''}`}
+            />
+            <DropdownMenu className={styles.dropdownMenu}>
+              {METRIC_OPTIONS.VACANCY.map(m => (
+                <DropdownItem
+                  key={m.key}
+                  active={selectedMetricKey === m.key}
+                  onClick={() => handleMetricPick('VACANCY', m.key)}
+                  className={`${styles.dropdownItem} ${
+                    selectedMetricKey === m.key ? styles.dropdownActive : ''
+                  }`}
+                >
+                  {m.label}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </ButtonDropdown>
 
-        <Dropdown overlay={revenueMenu} trigger={['click']}>
+          {/* REVENUE */}
           <Button
-            className={`${styles.categoryButton} ${
-              masterMetricCategory === 'revenue' ? styles.activeButton : styles.inactiveButton
-            }`}
+            className={`${styles.filterBtn} ${activeCategory === 'REVENUE' ? styles.active : ''}`}
+            onClick={() => handleCategoryClick('REVENUE')}
           >
-            Revenue {masterMetricCategory === 'revenue' && `(${getMetricDisplayName()})`}
-            <DownOutlined />
+            Revenue
           </Button>
-        </Dropdown>
-      </div>
+          <ButtonDropdown
+            isOpen={openDD.REVENUE}
+            toggle={() => toggleDD('REVENUE')}
+            className={styles.dd}
+          >
+            <DropdownToggle
+              caret
+              className={`${styles.filterBtn} ${activeCategory === 'REVENUE' ? styles.active : ''}`}
+            />
+            <DropdownMenu className={styles.dropdownMenu}>
+              {METRIC_OPTIONS.REVENUE.map(m => (
+                <DropdownItem
+                  key={m.key}
+                  active={selectedMetricKey === m.key}
+                  onClick={() => handleMetricPick('REVENUE', m.key)}
+                  className={`${styles.dropdownItem} ${
+                    selectedMetricKey === m.key ? styles.dropdownActive : ''
+                  }`}
+                >
+                  {m.label}
+                </DropdownItem>
+              ))}
+            </DropdownMenu>
+          </ButtonDropdown>
+        </ButtonGroup>
 
-      {/* Rest of the component remains the same */}
-      <Collapse defaultActiveKey={['1']} className={styles.collapseContainer}>
-        {/* By Village Section */}
-        <Panel
-          header={<Title level={3}>By Village</Title>}
-          key="1"
-          className={styles.collapsePanel}
-        >
-          <DemandOverTime
-            masterMetricCategory={masterMetricCategory}
-            masterMetric={masterMetric}
-            compareType="villages"
-          />
-          <div className={styles.placeholderCharts}>
-            {/* Placeholder for 2 more village charts */}
-            <Card className={styles.placeholderCard}>
-              <Title level={4}>Village Chart 2</Title>
-            </Card>
-            <Card className={styles.placeholderCard}>
-              <Title level={4}>Village Chart 3</Title>
-            </Card>
-          </div>
-        </Panel>
+        <div className={styles.currentMetric}>
+          Current metric:&nbsp;<strong>{metricLabel}</strong>
+        </div>
+      </section>
 
-        {/* By Property Section */}
-        <Panel
-          header={<Title level={3}>By Property</Title>}
-          key="2"
-          className={styles.collapsePanel}
-        >
-          <DemandOverTime
-            masterMetricCategory={masterMetricCategory}
-            masterMetric={masterMetric}
-            compareType="properties"
-          />
-          <div className={styles.placeholderCharts}>
-            {/* Placeholder for 1 more property chart */}
-            <Card className={styles.placeholderCard}>
-              <Title level={4}>Property Chart 2</Title>
-            </Card>
+      {/* By Village */}
+      <section className={styles.section}>
+        <details>
+          <summary className={styles.sectionSummary}>By Village</summary>
+          <div className={styles.sectionBody}>
+            <Row xs="1" md="3" className="g-3">
+              <Col>
+                <GraphCard
+                  title="Comparing Demand of Villages across Months"
+                  metricLabel={metricLabel}
+                />
+              </Col>
+              <Col>
+                <GraphCard title="Demand across Villages" metricLabel={metricLabel} />
+              </Col>
+              <Col>
+                <GraphCard title="Comparing Villages" metricLabel={metricLabel} />
+              </Col>
+            </Row>
           </div>
-        </Panel>
+        </details>
+      </section>
 
-        {/* Insights from Reviews Section */}
-        <Panel
-          header={<Title level={3}>Insights from Reviews</Title>}
-          key="3"
-          className={styles.collapsePanel}
-        >
-          <div className={styles.placeholderCharts}>
-            {/* Placeholders for 2 wordclouds */}
-            <Card className={styles.placeholderCard}>
-              <Title level={4}>Word Cloud 1</Title>
-            </Card>
-            <Card className={styles.placeholderCard}>
-              <Title level={4}>Word Cloud 2</Title>
-            </Card>
+      {/* By Property */}
+      <section className={styles.section}>
+        <details>
+          <summary className={styles.sectionSummary}>By Property</summary>
+          <div className={styles.sectionBody}>
+            <Row xs="1" md="2" className="g-3">
+              <Col>
+                <GraphCard
+                  title="Comparing Demand of Properties across Time"
+                  metricLabel={metricLabel}
+                />
+              </Col>
+              <Col>
+                <GraphCard title="Comparing Ratings of Properties" metricLabel={metricLabel} />
+              </Col>
+            </Row>
           </div>
-        </Panel>
-      </Collapse>
+        </details>
+      </section>
+
+      {/* Insights from Reviews */}
+      <section className={styles.section}>
+        <details>
+          <summary className={styles.sectionSummary}>Insights from Reviews</summary>
+          <div className={styles.sectionBody}>
+            <Row xs="1" md="2" className="g-3">
+              <Col>
+                <Card className={styles.wordcloudCard}>
+                  <CardBody className={styles.wordcloudBody}>
+                    <div className={styles.wordcloudTitle}>Village Wordcloud</div>
+                    <div className={styles.wordcloudPlaceholder}>Wordcloud area</div>
+                  </CardBody>
+                </Card>
+              </Col>
+              <Col>
+                <Card className={styles.wordcloudCard}>
+                  <CardBody className={styles.wordcloudBody}>
+                    <div className={styles.wordcloudTitle}>Property Wordcloud</div>
+                    <div className={styles.wordcloudPlaceholder}>Wordcloud area</div>
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+        </details>
+      </section>
     </Container>
   );
 }
