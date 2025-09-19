@@ -158,8 +158,11 @@
   padding: 6px 12px;
   background: #f3f3f3;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  font-size: 10px;
 }
 
 .primaryBtn {

@@ -6,9 +6,9 @@
 }
 
 .pill {
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: 18px;
-  font-size: 13px;
+  font-size: 8px;
   font-weight: 500;
   color: #fff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);

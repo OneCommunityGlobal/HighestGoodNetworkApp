@@ -215,7 +215,7 @@ const TeamMemberTask = React.memo(
 
     // user state
     const catalogFromStore = useSelector(selectUserStateCatalog);
-    const effectiveCatalog = catalogFromStore?.length ? catalogFromStore : initialCatalog;
+    // const effectiveCatalog = catalogFromStore?.length ? catalogFromStore : initialCatalog;
     const selectedFromSlice = useSelector(s => selectUserStateForUser(s, user.personId));
     const initialSelected = Array.isArray(selectedFromSlice) && selectedFromSlice.length
       ? selectedFromSlice
@@ -224,6 +224,25 @@ const TeamMemberTask = React.memo(
       ['Owner', 'Administrator'].includes(userRole) ||
       dispatch(hasPermission('manageUserStateIndicator'));
 
+      const [catalogFromApi, setCatalogFromApi] = useState(null);
+      React.useEffect(() => {
+  let cancelled = false;
+  (async () => {
+    try {
+      const res = await fetch('/api/user-state/catalog', { credentials: 'include' });
+      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+      const data = await res.json();              // <- { items: [...] }
+      if (!cancelled) setCatalogFromApi(data.items || []);
+    } catch (e) {
+      console.error('fetch catalog failed', e);
+    }
+  })();
+  return () => { cancelled = true; };
+}, []);
+ const effectiveCatalog =
+  (catalogFromApi && catalogFromApi.length && catalogFromApi) ||
+  (catalogFromStore && catalogFromStore.length && catalogFromStore) ||
+  initialCatalog;
 
     return (
       <tr ref={ref} className={`table-row ${darkMode ? 'bg-yinmn-blue' : ''}`} key={user.personId}>
@@ -432,7 +451,7 @@ const TeamMemberTask = React.memo(
                               {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
                             </font>{' '}
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
-                            <div style={{ marginTop: "6px" }}>
+                            <div style={{ marginTop: "29px", marginLeft: "-70px" }}>
                               <UserStateManager
                                 initialCatalog={effectiveCatalog}
                                 initialSelected={initialSelected}
