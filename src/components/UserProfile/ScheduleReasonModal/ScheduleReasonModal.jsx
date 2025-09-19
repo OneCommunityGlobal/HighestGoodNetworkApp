@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import ScheduleReasonModalCard from './ScheduleReasonModalCard';
 import {
   addTimeOffRequestThunk,
@@ -505,8 +505,9 @@ const ScheduleReasonModal = ({
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button variant="primary" onClick={()=>{
-                    handelConfirmReason()
                     handleStartWeekConfirmationModal()
+                    handelConfirmReason()
+                    handleClose()
                   }}>
                     Confirm
                   </Button>

@@ -1,10 +1,10 @@
 /* eslint-disable react/no-unused-class-component-methods */
 /* eslint-disable react/jsx-props-no-spreading */
 import { Component } from 'react';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { cloneDeep, isEqual, groupBy } from 'lodash';
 import { Link } from 'react-router-dom';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
 import Radio from '../Radio';
@@ -89,7 +89,7 @@ import CheckboxCollection from '../CheckboxCollection';
         obj[ref] = data[ref];
       });
     }
-    const { error } = Joi.validate(obj, schema);
+    const { error } = schema.validate(obj);
     if (!error) return null;
     return error.details[0].message;
   };
@@ -97,7 +97,7 @@ import CheckboxCollection from '../CheckboxCollection';
   const validateForm = () => {
     let errors = {};
     const options = { abortEarly: false };
-    const { error } = Joi.validate(data, schema, options);
+    const { error } = schema.validate(data, options);
     if (!error) return null;
     error.details.forEach((element) => {
       errors[element.path[0]] = element.message;
@@ -271,16 +271,21 @@ class Form extends Component {
       const file = e.target.files[0];
       const reader = new FileReader();
       const { name } = e.target;
-      if (file) {
-        switch (readAsType) {
-          case 'data':
-            reader.readAsDataURL(file);
-            break;
-          default:
-            break;
-        }
+
+      if (!file) return;
+
+      reader.onload = event => {
+        const result = event.target.result;
+        this.handleState(name, {
+          data: result,
+          name: file.name,
+          type: file.type,
+        });
+      };
+
+      if (readAsType === 'data') {
+        reader.readAsDataURL(file);
       }
-      reader.onload = () => this.handleState(name, reader.result);
     };
 
     this.handleState = (name, value) => {
@@ -310,6 +315,7 @@ class Form extends Component {
     this.isStateChanged = () => !isEqual(this.state.data, this.initialState.data);
 
     this.validateProperty = (name, value) => {
+      if (!this.schema[name]) return null;
       const obj = { [name]: value };
       const schema = { [name]: this.schema[name] };
       const refs = schema[name]._refs;
@@ -329,7 +335,7 @@ class Form extends Component {
     this.validateForm = () => {
       const errors = {};
       const options = { abortEarly: false };
-      const { error } = Joi.validate(this.state.data, this.schema, options);
+      const { error } = Joi.object(this.schema).validate(this.state.data, options);
 
       if (!error) return null;
       error.details.forEach(element => {
@@ -399,8 +405,9 @@ class Form extends Component {
     );
   }
 
-  renderInput({ name, label, type = 'text', ...rest }) {
+  renderInput({ name, label, type = 'text', darkMode, ...rest }) {
     const { data, errors } = { ...this.state };
+    // Filter out darkMode since Input component gets it from Redux
     return (
       <Input
         name={name}

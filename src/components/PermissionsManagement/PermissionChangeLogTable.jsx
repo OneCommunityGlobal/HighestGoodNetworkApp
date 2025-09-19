@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import './PermissionChangeLogTable.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { formatDate, formattedAmPmTime } from 'utils/formatDate';
+import { formatDate, formattedAmPmTime } from '~/utils/formatDate';
 import { permissionLabelKeyMappingObj } from './PermissionsConst';
 
 function PermissionChangeLogTable({ changeLogs, darkMode }) {

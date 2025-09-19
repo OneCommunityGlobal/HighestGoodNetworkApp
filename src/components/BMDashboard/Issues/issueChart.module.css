@@ -1,0 +1,67 @@
+/* issueChart.module.css */
+
+.issueChartEventContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.issueChartEventContainerDark {
+  background: #121212;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.9);
+  color: #ccd1dc;
+}
+
+.issueChartEventTitle {
+  text-align: center;
+  font-size: 24px;
+  color: #333;
+}
+
+.issueChartEventTitleDark {
+  color: #fff;
+}
+
+.chartWrapper {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chartWrapperDark {
+  background: #1e1e1e;
+  box-shadow: 0 0 15px rgba(0,0,0,0.9);
+  color: #ccd1dc;
+}
+
+.issueChartLabel {
+  font-size: 16px;
+  color: #555;
+}
+
+.issueChartLabelDark {
+  color: #fff;
+}
+
+.issueChartSelect {
+  padding: 2px 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+  outline: none;
+  margin-bottom: 20px;
+}
+
+.issueChartSelectDark {
+  border-color: #3d444d;
+  background-color: #22272e;
+  color: #cfd7e3;
+}
