@@ -306,23 +306,32 @@ describe('SameFolderTasks', () => {
 
     it('Before loading tasks, there is a Loading... span', () => {
       renderSameFolderTasks(props);
+      // eslint-disable-next-line testing-library/await-async-queries
       expect(screen.findByText('Loading...'));
     });
 
     it('After loading tasks, there is a table', async () => {
       renderSameFolderTasks(props);
+      // eslint-disable-next-line testing-library/await-async-queries
       await expect(screen.findByText('Loading...'));
+      // eslint-disable-next-line testing-library/await-async-queries
       await expect(screen.findByText('Task Name'));
     });
 
     it('After loading tasks, there are 5 sample tasks', async () => {
       await renderSameFolderTasks(props);
+      // eslint-disable-next-line testing-library/await-async-queries
       await expect(screen.findByText('Loading...'));
 
+      // eslint-disable-next-line testing-library/await-async-queries
       await expect(screen.findByText('Sample Task 1'));
+      // eslint-disable-next-line testing-library/await-async-queries
       await expect(screen.findByText('Sample Task 2'));
+      // eslint-disable-next-line testing-library/await-async-queries
       await expect(screen.findByText('Sample Task 3'));
+      // eslint-disable-next-line testing-library/await-async-queries
       await expect(screen.findByText('Sample Task 4'));
+      // eslint-disable-next-line testing-library/await-async-queries
       await expect(screen.findByText('Sample Task 5'));
     });
 
