@@ -29,18 +29,19 @@ import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
 import * as messages from '../../constants/followUpConstants';
 import UserStateManager from "~/components/UserState/UserStateManager";
+import { updateUserStateIndicators } from "../UserState/action";
+import {
+  selectUserStateCatalog,
+  selectUserStateForUser,
+} from "../UserState/reducer";
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
-// const canEditUserState =
-//   ['Owner', 'Administrator'].includes(userRole) ||
-//   dispatch(hasPermission('manageUserStateIndicator')); 
-
 const initialCatalog = [
-  { key: "closing-out",     label: "❌ Closing Out",   color: "red" },
-  { key: "new-dev",         label: "🖥️ New Developer", color: "blue" },
-  { key: "pr-review-team",  label: "👾 PR Review Team", color: "purple" },
-  { key: "developer",       label: "🖥️✅ Developer",   color: "green" },
+  { key: "closing-out", label: "❌ Closing Out", color: "red" },
+  { key: "new-dev", label: "🖥️ New Developer", color: "blue" },
+  { key: "pr-review-team", label: "👾 PR Review Team", color: "purple" },
+  { key: "developer", label: "🖥️✅ Developer", color: "green" },
 ];
 
 const TeamMemberTask = React.memo(
@@ -211,6 +212,18 @@ const TeamMemberTask = React.memo(
       }
       return messages.MOUSE_OVER_TEXT_OVER_90;
     };
+
+    // user state
+    const catalogFromStore = useSelector(selectUserStateCatalog);
+    const effectiveCatalog = catalogFromStore?.length ? catalogFromStore : initialCatalog;
+    const selectedFromSlice = useSelector(s => selectUserStateForUser(s, user.personId));
+    const initialSelected = Array.isArray(selectedFromSlice) && selectedFromSlice.length
+      ? selectedFromSlice
+      : (user.stateIndicators || []);
+    const canEdit =
+      ['Owner', 'Administrator'].includes(userRole) ||
+      dispatch(hasPermission('manageUserStateIndicator'));
+
 
     return (
       <tr ref={ref} className={`table-row ${darkMode ? 'bg-yinmn-blue' : ''}`} key={user.personId}>
@@ -421,10 +434,12 @@ const TeamMemberTask = React.memo(
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                             <div style={{ marginTop: "6px" }}>
                               <UserStateManager
-                                initialCatalog={initialCatalog}
-                                initialSelected={user.stateIndicators || []}
-                                canEdit={true}
-                                onChange={(nextSelected, nextCatalog) => {
+                                initialCatalog={effectiveCatalog}
+                                initialSelected={initialSelected}
+                                userId={user.personId}
+                                canEdit={canEdit}
+                                onChange={(nextSelected /*, nextCatalog */) => {
+                                  dispatch(updateUserStateIndicators(user.personId, nextSelected));
                                 }}
                               />
                             </div>
