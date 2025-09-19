@@ -21,6 +21,15 @@ body, .bidding-bg {
   display: block;
 }
 
+.bidding-homepage-container .row {
+  width: 100%;
+  margin-right: 0px !important;
+  margin-left: 0px !important;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 /* Override reactstrap container-fluid default padding */
 .container-fluid {
   padding-left: 0 !important;
@@ -277,6 +286,7 @@ body, .bidding-bg {
 /* Property listings */
 .property-listings {
   padding: 20px 20px 0 20px;
+  gap: 16px;
 }
 
 .property-card-col {
@@ -526,8 +536,7 @@ body, .bidding-bg {
     min-width: 100%;
   }
   .property-card-gray {
-    min-width: 90%;
-    max-width: 95%;
+    width: 100%;
   }
   
   /* Mobile responsive adjustments for village filter */
@@ -560,8 +569,6 @@ body, .bidding-bg {
     line-height: 1.4 !important;
   }
 } 
-
-/* ==================== DARK MODE VARIABLES ==================== */
 
 /* Light mode variables (default) */
 :root {

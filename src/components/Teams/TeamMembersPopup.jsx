@@ -9,8 +9,8 @@ import {
   Alert,
   Spinner,
 } from 'reactstrap';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -123,10 +123,10 @@ export const TeamMembersPopup = React.memo(props => {
       sortedList = Object.keys(groupByPermissionList)
         .sort(sortByPermission)
         .map(key => groupByPermissionList[key])
-        .map(list => list.toSorted(sortByAlpha))
+        .map(list => [...list].sort(sortByAlpha))
         .flat();
     } else {
-      const sortByDateList = validation.toSorted((a, b) => {
+      const sortByDateList = [...validation].sort((a, b) => {
         return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
       });
 
@@ -141,7 +141,7 @@ export const TeamMembersPopup = React.memo(props => {
       );
 
       dataList.forEach(item => {
-        sortedList.push(...item.toSorted(sortByAlpha));
+        sortedList.push(...[...item].sort(sortByAlpha));
       });
     }
     setMemberList(sortedList);
@@ -215,6 +215,7 @@ export const TeamMembersPopup = React.memo(props => {
       <Modal
         isOpen={props.open}
         toggle={closePopup}
+        /* eslint-disable-next-line jsx-a11y/no-autofocus */
         autoFocus={false}
         size="lg"
         className={`${darkMode ? 'dark-mode text-light' : ''} ${
@@ -299,8 +300,8 @@ export const TeamMembersPopup = React.memo(props => {
                     {checkedStatus}
                   </button>
                 </th>
-                <th class="def-width">#</th>
-                <th class="def-width">User Name</th>
+                <th className="def-width">#</th>
+                <th className="def-width">User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
                   Date Added{' '}
                   <FontAwesomeIcon
@@ -352,7 +353,7 @@ export const TeamMembersPopup = React.memo(props => {
                       !props.members.fetching &&
                       props.members.teamMembers) ||
                     (Array.isArray(props.members) && props.members.length > 0)) &&
-                  memberList.toSorted().map((user, index) => {
+                  [...memberList].sort().map((user, index) => {
                     return (
                       <tr key={`${props.selectedTeamName}-${user._id}`}>
                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
@@ -453,5 +454,7 @@ export const TeamMembersPopup = React.memo(props => {
     </Container>
   );
 });
+
+TeamMembersPopup.displayName = 'TeamMembersPopup';
 
 export default connect(null, { hasPermission })(TeamMembersPopup);

@@ -6,20 +6,20 @@ import PhoneInput from 'react-phone-input-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 // import 'react-phone-input-2/lib/style.css';
-import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
+import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { connect } from 'react-redux';
-import hasPermission from 'utils/permissions';
-import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
+import { connect , useDispatch } from 'react-redux';
+import hasPermission from '~/utils/permissions';
+import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
 import './BasicInformationTab.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDateLocal } from 'utils/formatDate';
-import { ENDPOINTS } from 'utils/URL';
+import { boxStyle, boxStyleDark } from '~/styles';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { formatDateLocal } from '~/utils/formatDate';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+
 
 const Name = props => {
   const {
@@ -37,7 +37,7 @@ const Name = props => {
   if (canEdit) {
     return (
       <>
-        <Col md={desktopDisplay ? '3' : ''}>
+        <Col md={desktopDisplay ? '3' : ''} style={{paddingRight: 0}}>
           <FormGroup>
             <div style={{position: 'relative'}}>
             <Input
@@ -487,6 +487,7 @@ const BasicInformationTab = props => {
   };
   const onClickGetTimeZone = () => {
     if (!userProfile.location.userProvided) {
+      // eslint-disable-next-line no-alert
       alert('Please enter valid location');
       return;
     }
@@ -746,16 +747,16 @@ const BasicInformationTab = props => {
             <Label className={darkMode ? 'text-light' : ''}>Location</Label>
           </Col>
           {desktopDisplay ? (
-            <Col md="6">
+            <Col md="6" style={{paddingRight: 0}}>
               <Row className="ml-0">
-                <Col className="p-0" style={{ marginRight: '10px' }}>
+                <Col className="p-0">
                   <Input
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
                     className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
                   />
                 </Col>
-                <Col>
+                <Col style={{paddingRight: 0}}>
                   <Button
                     color="secondary"
                     block
@@ -813,6 +814,7 @@ const BasicInformationTab = props => {
   const timeZoneDifferenceComponent = (
     <>
       <Col md={desktopDisplay ? '5' : ''}>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className={darkMode ? 'text-light' : ''}>
           Difference in this Time Zone from Your Local
         </label>
