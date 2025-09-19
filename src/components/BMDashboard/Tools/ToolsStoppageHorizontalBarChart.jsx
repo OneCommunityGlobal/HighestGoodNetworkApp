@@ -13,7 +13,6 @@ import {
   Tooltip as ChartTooltip,
   Legend as ChartLegend,
 } from 'chart.js';
-import { Chart } from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar } from 'react-chartjs-2';
 import axios from 'axios';
@@ -21,8 +20,15 @@ import { ENDPOINTS } from '../../../utils/URL';
 import styles from './ToolsStoppageHorizontalBarChart.module.css';
 
 // Register Chart.js components
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, ChartTooltip, ChartLegend);
-Chart.register(ChartDataLabels);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  ChartTooltip,
+  ChartLegend,
+  ChartDataLabels,
+);
 
 export default function ToolsStoppageHorizontalBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
