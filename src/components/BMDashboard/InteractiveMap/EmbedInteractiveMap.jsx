@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap, Tooltip } from 'react-leaflet';
 import axios from 'axios';
 import L from 'leaflet';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '../../../utils/URL';
 
 // legend added
 function Legend() {
