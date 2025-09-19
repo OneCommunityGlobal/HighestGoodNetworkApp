@@ -31,7 +31,21 @@ textarea {
 }
 
 .input-file-upload {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   margin-top: 5px;
+}
+
+.video-preview-container {
+  margin-top: 80px;
+  padding: 10px;
+  display: inline;
+  gap: 10px;
+  flex-wrap: wrap;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 button.send-button {
@@ -59,6 +73,45 @@ button.send-button:hover {
   justify-content: space-between;
   align-items: flex-start;
   box-sizing: border-box; /* Ensures padding is included in width */
+}
+
+.social-media-container {
+  padding: 70px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  justify-content: flex-start;
+}
+
+.social-media {
+  flex: 1;
+
+  margin-right: 20px;
+}
+
+.social-buttons-container {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.social-buttons-container button:hover {
+  background-color: #35508f;
+}
+
+.select-youtube-account {
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 18px;
+  background-color: #fff;
+  box-shadow: 0 2px 6px rgba(60, 60, 60, 0.08);
+  margin-top: 20px;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
 }
 
 .editor {
@@ -117,6 +170,7 @@ button.send-button:hover {
     /* Reduce margin top on smaller screens */
   }
 }
+
 /* Responsive design: Adjust the layout for smaller screens */
 @media (max-width: 800px) {
   .email-update-container {
@@ -148,6 +202,14 @@ button.send-button:hover {
     padding: 12px; /* Ensures padding is consistent */
     box-sizing: border-box; /* Ensures padding is included in width */
   }
+}
+
+.small-button {
+  padding: 6px 18px;
+  font-size: 15px;
+  width: auto;
+  min-width: 80px;
+  margin-top: 8px;
 }
 
 summary {
