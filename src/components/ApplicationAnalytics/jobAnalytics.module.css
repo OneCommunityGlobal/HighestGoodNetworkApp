@@ -16,13 +16,55 @@
 
 .jobAnalyticsContainer {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 40px;
+  gap: 20px;
   width: 100%;
   max-width: fit-content;
   margin: 0 auto;
   padding: 40px;
   font-family: Arial, sans-serif;
+}
+
+.tabNavigation {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e2e8f0;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.tabButton {
+  padding: 12px 24px;
+  border: none;
+  background-color: transparent;
+  color: #718096;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  color: #2d3748;
+  background-color: #f7fafc;
+}
+
+.tabButton.activeTab {
+  color: #3182ce;
+  border-bottom-color: #3182ce;
+  background-color: #ebf8ff;
+}
+
+.jobAnalyticsContainerDarkMode .tabButton:hover {
+  color: #ffffff;
+  background-color: #2d3748;
+}
+
+.jobAnalyticsContainerDarkMode .tabButton.activeTab {
+  color: #63b3ed;
+  background-color: #2a4365;
 }
 
 .chartContainer {
