@@ -248,13 +248,13 @@ export default function RentalChart() {
   }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData]);
 
   const options = useMemo(() => {
-    const textColor = '#ffffff';
+    const textColor = darkMode ? '#ffffff' : '#000000';
     const bgColor = darkMode ? '#1b2a41' : '#ffffff';
-    const tooltipBorder = '#ffffff';
-    const tooltipBg = darkMode ? '#343a40' : '#1b2a41';
-    const titleColor = '#ffffff';
-    const gridXColor = darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41';
-    const gridYColor = darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41';
+    const tooltipBorder = darkMode ? '#ffffff' : '#000000';
+    const tooltipBg = darkMode ? '#343a40' : '#f8f9fa';
+    const titleColor = darkMode ? '#ffffff' : '#000000';
+    const gridXColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+    const gridYColor = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
 
     return {
       responsive: true,
@@ -416,6 +416,9 @@ export default function RentalChart() {
                 showYearDropdown
                 showMonthDropdown
                 dropdownMode="select"
+                className={`${styles.DatePickerInput}`}
+                popperClassName={`#{styles.DatePickerPopper}`}
+                calendarClassName={`${styles.DatePickerCalendar}`}
               />
             </div>
 
@@ -433,6 +436,8 @@ export default function RentalChart() {
                 showMonthDropdown
                 dropdownMode="select"
                 className={`${styles.DatePicker}`}
+                popperClassName={`#{styles.DatePickerPopper}`}
+                calendarClassName={`${styles.DatePickerCalendar}`}
               />
             </div>
           </div>
