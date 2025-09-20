@@ -10,7 +10,7 @@ import {
   CartesianGrid,
 } from 'recharts';
 import DurationFilter from './DurationFilter';
-import './PRReviewTeamAnalytics.css';
+import styles from './PRReviewTeamAnalytics.module.css';
 import PRData from './PRData';
 import { useTheme, ThemeProvider } from './ThemeContext';
 
@@ -42,14 +42,17 @@ function CustomTooltip({ active, payload, tooltipBg, tooltipText }) {
     const tooltipData = payload[0].payload;
     const tooltipLabel = tooltipText; // Use tooltipText for the label color
     return (
-      <div className="custom-tooltip" style={{ background: tooltipBg, color: tooltipText }}>
-        <div className="tooltip-header">
+      <div
+        className={styles['custom-tooltip']}
+        style={{ background: tooltipBg, color: tooltipText }}
+      >
+        <div className={styles['tooltip-header']}>
           <h4 style={{ color: tooltipText }}>{tooltipData.prNumber}</h4>
         </div>
-        <p className="tooltip-title" style={{ color: tooltipText }}>
+        <p className={styles['tooltip-title']} style={{ color: tooltipText }}>
           {tooltipData.title}
         </p>
-        <div className="tooltip-details">
+        <div className={styles['tooltip-details']}>
           <p style={{ color: tooltipText }}>
             <strong style={{ color: tooltipLabel, fontSize: '0.9em' }}>Reviews:</strong>{' '}
             {tooltipData.reviewCount}
@@ -101,11 +104,11 @@ function PRReviewTeamAnalytics() {
   if (loading) {
     content = (
       <div
-        className="pr-review-analytics-loading"
+        className={styles['pr-review-analytics-loading']}
         style={{ color: isDarkMode ? textDark : undefined }}
       >
         <div
-          className="loading-spinner"
+          className={styles['loading-spinner']}
           style={isDarkMode ? { borderTop: '4px solid #f8fafc' } : {}}
         />
         <p style={{ color: isDarkMode ? textDark : undefined }}>Loading PR Analytics...</p>
@@ -114,14 +117,14 @@ function PRReviewTeamAnalytics() {
   } else if (error) {
     content = (
       <div
-        className="pr-review-analytics-error"
+        className={styles['pr-review-analytics-error']}
         style={{ color: isDarkMode ? textDark : undefined }}
       >
-        <div className="error-icon">⚠️</div>
+        <div className={styles['error-icon']}>⚠️</div>
         <p style={{ color: isDarkMode ? textDark : undefined }}>{error}</p>
         <button
           type="button"
-          className="retry-button"
+          className={styles['retry-button']}
           style={{ color: isDarkMode ? textDark : undefined }}
           onClick={() => window.location.reload()}
         >
@@ -132,23 +135,26 @@ function PRReviewTeamAnalytics() {
   } else if (data.length === 0) {
     content = (
       <div
-        className="pr-review-analytics-empty"
+        className={styles['pr-review-analytics-empty']}
         style={{ color: isDarkMode ? textDark : undefined }}
       >
-        <div className="empty-icon">📊</div>
+        <div className={styles['empty-icon']}>📊</div>
         <p style={{ color: isDarkMode ? textDark : undefined }}>No PR data available</p>
       </div>
     );
   } else {
     content = (
-      <div className="pr-review-analytics-fixed-labels-layout">
+      <div className={styles['pr-review-analytics-fixed-labels-layout']}>
         <div
-          className="pr-review-analytics-yaxis-fixed-label"
+          className={styles['pr-review-analytics-yaxis-fixed-label']}
           style={{ color: labelColor, background: isDarkMode ? chartDarkBg : '#e0e3ea' }}
         >
           <span style={{ color: labelColor }}>Top 20 Most Popular PRs</span>
         </div>
-        <div className="pr-review-analytics-bars-scrollable-area" style={{ background: chartBg }}>
+        <div
+          className={styles['pr-review-analytics-bars-scrollable-area']}
+          style={{ background: chartBg }}
+        >
           <ResponsiveContainer width="100%" height={Math.max(400, data.length * 28)}>
             <BarChart
               layout="vertical"
@@ -197,7 +203,7 @@ function PRReviewTeamAnalytics() {
           </ResponsiveContainer>
         </div>
         <div
-          className="pr-review-analytics-xaxis-fixed-label"
+          className={styles['pr-review-analytics-xaxis-fixed-label']}
           style={{ color: labelColor, background: isDarkMode ? chartDarkBg : '#e0e3ea' }}
         >
           <span style={{ color: labelColor }}>No of Reviews</span>
@@ -208,31 +214,40 @@ function PRReviewTeamAnalytics() {
 
   return (
     <div
-      className="pr-review-analytics-container pr-review-analytics-bg"
+      className={`${styles['pr-review-analytics-container']} ${styles['pr-review-analytics-bg']}`}
       style={{ background: isDarkMode ? '#1b2a42' : '#e0e3ea', color: labelColor }}
     >
       <div
-        className="pr-review-analytics-header"
+        className={styles['pr-review-analytics-header']}
         style={{
           justifyContent: 'space-between',
           alignItems: 'flex-start',
           color: labelColor,
         }}
       >
-        <h2 className="pr-review-analytics-title" style={{ color: labelColor }}>
+        <h2 className={styles['pr-review-analytics-title']} style={{ color: labelColor }}>
           Top 20 Most Popular PRs
         </h2>
-        <div className="pr-review-analytics-dropdown-wrapper" style={{ color: labelColor }}>
-          <span className="pr-review-analytics-dropdown-label" style={{ color: labelColor }}>
+        <div
+          className={styles['pr-review-analytics-dropdown-wrapper']}
+          style={{ color: labelColor }}
+        >
+          <span
+            className={styles['pr-review-analytics-dropdown-label']}
+            style={{ color: labelColor }}
+          >
             Duration
           </span>
-          <div className="pr-review-analytics-dropdown-value" style={{ color: labelColor }}>
+          <div
+            className={styles['pr-review-analytics-dropdown-value']}
+            style={{ color: labelColor }}
+          >
             {selectedDurationLabel}
           </div>
           <DurationFilter options={DURATION_OPTIONS} value={duration} onChange={setDuration} />
         </div>
       </div>
-      <div className="pr-review-analytics-chart-wrapper">{content}</div>
+      <div className={styles['pr-review-analytics-chart-wrapper']}>{content}</div>
     </div>
   );
 }
