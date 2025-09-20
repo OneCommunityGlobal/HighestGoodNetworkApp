@@ -76,7 +76,7 @@ import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
 
-function UserProfile(props) { 
+function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
   const initialFormValid = {
@@ -185,7 +185,7 @@ function UserProfile(props) {
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
-  const [calculatedStartDate, setCalculatedStartDate] = useState(''); 
+  const [calculatedStartDate, setCalculatedStartDate] = useState('');
 
   const [inputAutoComplete, setInputAutoComplete] = useState([]);
   const [inputAutoStatus, setInputAutoStatus] = useState();
@@ -196,7 +196,7 @@ function UserProfile(props) {
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false);
 
- 
+
   const updateProjectTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -547,19 +547,19 @@ function UserProfile(props) {
 const onAssignProject = assignedProject => {
   // eslint-disable-next-line no-console
   console.log("Adding project to state:", assignedProject);
-  
+
   // Always create a new array to trigger React re-render
-  setProjects(prevProjects => 
+  setProjects(prevProjects =>
     {
     // Ensure prevProjects is an array
     const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
-    
+
     if (currentProjects.some(proj => proj._id === assignedProject._id)) {
       // eslint-disable-next-line no-console
       console.log("Project already exists, not adding duplicate");
-      return currentProjects; 
+      return currentProjects;
     }
-    
+
     // Add project and log the new state
     // eslint-disable-next-line no-console
     console.log("Adding new project:", assignedProject.projectName);
@@ -597,11 +597,11 @@ const onAssignProject = assignedProject => {
     if (evt) evt.preventDefault();
     const file = evt.target.files?.[0];
     if (!file) return;
-  
+
     const filesizeKB = file.size / 1024;
     const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
     const allowedTypesString = `File type not permitted. Allowed types are ${allowedTypes.join(', ')}`;
-  
+
     // type check
     if (!allowedTypes.includes(file.type)) {
       setType('image');
@@ -620,17 +620,17 @@ const onAssignProject = assignedProject => {
       );
       return;
     }
-  
+
     const fileReader = new FileReader();
-  
+
     fileReader.onloadend = async () => {
       const base64 = fileReader.result;
-  
+
       // optimistic preview
       const prevProfile = userProfileRef.current;
       const nextProfile = { ...prevProfile, profilePic: base64 };
       setUserProfile(nextProfile);
-  
+
       // persist immediately
       setIsSavingImage(true);
       try {
@@ -646,10 +646,10 @@ const onAssignProject = assignedProject => {
         setIsSavingImage(false);
       }
     };
-  
+
     fileReader.readAsDataURL(file);
   };
-  
+
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
     if (targetIsDevAdminUneditable) {
@@ -681,9 +681,11 @@ const onAssignProject = assignedProject => {
    * @param {String} id Id of the blue square
    * @param {String} dateStamp
    * @param {String} summary
+   * @param {String} firstName first name of the blue square author
+   * @param {String} lastName last name of the blue square author
    * @param {String} operation 'add' | 'update' | 'delete'
    */
-  const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
+  const modifyBlueSquares = async (id, dateStamp, summary, first, last, operation) => {
     setShowModal(false);
     if (operation === 'add') {
       /* peizhou: check that the date of the blue square is not future or empty. */
@@ -709,6 +711,8 @@ const onAssignProject = assignedProject => {
           //   .toISOString()
           //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          authorFirstName: first,
+          authorLastName: last
         };
         setModalTitle('Blue Square');
         axios
@@ -1073,7 +1077,7 @@ const onAssignProject = assignedProject => {
   };
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
-    return ( 
+    return (
       <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
@@ -1102,7 +1106,7 @@ const onAssignProject = assignedProject => {
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -1168,6 +1172,7 @@ const onAssignProject = assignedProject => {
           id={id}
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
+          auth={props.auth}
         />
       )}
       <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
@@ -1344,7 +1349,7 @@ const onAssignProject = assignedProject => {
                   if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
                     return; // Let browser handle it — new tab, etc.
                   }
-            
+
                   e.preventDefault(); // SPA navigation
                   props.history.push(`/timelog/${targetUserId}#currentWeek`);
                   setActiveInactivePopupOpen(true);
