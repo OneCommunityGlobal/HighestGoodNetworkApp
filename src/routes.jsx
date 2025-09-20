@@ -251,18 +251,20 @@ export default (
         </>
       )}
     />
-
     <Route
       exact
-      path="/lbdashboard/wishlists"
+      path="/lbdashboard/home"
       render={() => (
         <>
           <AutoUpdate />
           <ToastContainer />
-          <WishList />
+          <LBHome />
         </>
       )}
     />
+    {/* Alisha : to be removed */}
+    <Route exact path="/lbdashboard/villageFilter" component={VillageDropdownFilter} />
+    <Route exact path="/lbdashboard/:villageName" component={VillageDetails} />
     <Route
       exact
       path="/lbdashboard/wishlist/:id"

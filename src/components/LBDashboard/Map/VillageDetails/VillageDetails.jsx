@@ -5,16 +5,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getVillageDetailsData } from '~/actions/villageDetailsAction';
 
 export default function VillageDetails() {
-  const { id } = useParams();
+  const { villageName } = useParams();
   const dispatch = useDispatch();
 
-  const village = useSelector(state => state.villageMap.selectedVillage);
+  const villages = useSelector(state => state.villageMap.villages || []);
+  const village = villages.find(v => v.name === villageName || v._id === villageName);
 
   useEffect(() => {
-    if (!village || village._id !== id) {
-      dispatch(getVillageDetailsData(id));
+    if (village || village._id) {
+      dispatch(getVillageDetailsData(village._id));
     }
-  }, [dispatch, id, village]);
+  }, [dispatch, village]);
 
   if (!village) {
     return <h2 style={{ textAlign: 'center' }}>Village not found</h2>;
