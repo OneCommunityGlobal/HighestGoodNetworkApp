@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ClipLoader } from 'react-spinners';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import styles from '../styles/UserSkillsProfile.module.css';
@@ -16,6 +16,7 @@ function UserSkillsProfile() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const history = useHistory();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch data from backend on component mount
   useEffect(() => {
@@ -95,10 +96,10 @@ function UserSkillsProfile() {
   }
 
   return (
-    <div className="user-profile-home">
-      <div className="dashboard-container">
+    <div className={styles.userProfileHome + (darkMode ? ' bg-oxford-blue' : '')}>
+      <div className={styles.dashboardContainer + (darkMode ? ' bg-space-cadet' : '')}>
         <LeftSection />
-        <div className="vertical-separator" />
+        <div className={styles.verticalSeparator} />
         <RightSection />
       </div>
     </div>

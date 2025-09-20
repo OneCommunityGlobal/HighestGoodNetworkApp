@@ -9,6 +9,7 @@ import { setformData } from '~/actions/hgnFormAction';
 import { Spinner } from 'reactstrap';
 import styles from '../styles/FollowupQuestions.module.css';
 import getWordCount from '../../../utils/getWordCount';
+import { getBoxStyling, getFontColor } from '../../../styles';
 
 function FollowupQuestions() {
   const navigate = useHistory();
@@ -23,6 +24,7 @@ function FollowupQuestions() {
   const location = useLocation();
   const { isOwner } = location.state;
   const textareaRef = useRef(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
   // Fetch data from database
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -255,7 +257,10 @@ function FollowupQuestions() {
   }
 
   return (
-    <div className={`${styles.followupQuestions}`}>
+    <div
+      className={`${styles.followupQuestions} ${darkMode ? 'bg-space-cadet' : ''}`}
+      style={getBoxStyling(darkMode)}
+    >
       <h3 className={`${styles.blueStrip}`}>Follow-up Questions</h3>
       <form onSubmit={handleFormSubmission}>
         {questions.map((question, index) => {
@@ -281,14 +286,18 @@ function FollowupQuestions() {
             <div className={`${styles.followUp}`} key={question._id || index}>
               <div className={`${styles.questionContainer}`}>
                 {editingIndex === index && isOwner ? (
-                  <div className={`${styles.editQuestionContainer}`}>
-                    <p className={`${styles.editTitle}`}>Edit Question</p>
+                  <div
+                    className={`${styles.editQuestionContainer} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+                  >
+                    <p className={`${styles.editTitle} ${getFontColor(darkMode)}`}>Edit Question</p>
                     <div className={`${styles.editQuestion}`}>
                       <input
                         type="text"
                         value={editedText}
                         onChange={e => setEditedText(e.target.value)}
-                        className={`${styles.editInput}`}
+                        className={`${styles.editInput} ${getFontColor(darkMode)} ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
                       />
                       <FaRegSave
                         title="Save"
@@ -298,7 +307,7 @@ function FollowupQuestions() {
                     </div>
                   </div>
                 ) : (
-                  <p className={`${styles.question}`}>
+                  <p className={`${styles.question} ${getFontColor(darkMode)}`}>
                     {searchQuestion(5, index + 1)}
                     {isOwner && (
                       <FaEdit
@@ -317,7 +326,11 @@ function FollowupQuestions() {
                   onChange={handleTextareaChange}
                   ref={textareaRef}
                   required
-                  className={`${styles.textarea}`}
+                  className={`${styles.textarea} ${darkMode ? 'bg-yinmn-blue' : ''} ${getFontColor(
+                    darkMode,
+                  )}`}
+                  rows={6}
+                  placeholder="Your answer (minimum 20 words)"
                 />
               ) : (
                 <input
@@ -326,6 +339,7 @@ function FollowupQuestions() {
                   value={newVolunteer[fieldName] || ''}
                   onChange={handleTextChange}
                   required={index === 0} // Only the first field is required
+                  className={`${darkMode ? 'bg-yinmn-blue' : ''} ${getFontColor(darkMode)}`}
                 />
               )}
             </div>

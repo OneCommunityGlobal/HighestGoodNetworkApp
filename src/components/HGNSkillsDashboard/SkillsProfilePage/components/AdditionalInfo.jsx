@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
-import '../styles/AdditionalInfo.css';
+import styles from '../styles/AdditionalInfo.module.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { ENDPOINTS } from '../../../../utils/URL';
 import { toast } from 'react-toastify';
 import getWordCount from '../../../../utils/getWordCount';
 import { updateFollowUpFields } from '../../../../actions/userSkillsActions';
+import { getFontColor } from '../../../../styles';
 
 function checkIfupdateUserSkillsProfileFollowUp(permissions, role, requestorId, userid) {
   if (role === 'Administrator' || role === 'Owner' || requestorId === userid) return true;
@@ -32,6 +33,8 @@ function AdditionalInfo() {
   const permissions = useSelector(state => state.auth.user.permissions);
 
   const requestorId = useSelector(state => state.auth.user.userid);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch data from database
   useEffect(() => {
@@ -115,8 +118,8 @@ function AdditionalInfo() {
 
   if (loading) return <div>Loading...</div>;
   return (
-    <div className="AdditionalInfoBox">
-      <div className="workExpInfoBox">
+    <div className={styles.additionalInfoBox}>
+      <div className={styles.workExpInfoBox}>
         <h3> Work Experience and Additional Info: </h3>
         <button type="button" className="edit-button" onClick={handleEditSave}>
           {isEditing ? 'Save' : 'Edit'}
@@ -130,9 +133,9 @@ function AdditionalInfo() {
           .map((question, index) => {
             const field = fields[index];
             return (
-              <div className="question-and-response-box" key={field.key}>
-                <div className="question-box">
-                  <p>{question.text}</p>
+              <div className={styles.questionAndResponseBox} key={field.key}>
+                <div className={styles.questionBox}>
+                  <p className={getFontColor(darkMode)}>{question.text}</p>
                 </div>
                 {field.type === 'textarea' ? (
                   <textarea
@@ -143,6 +146,7 @@ function AdditionalInfo() {
                     readOnly={!isEditing}
                     ref={textareaRef}
                     required
+                    className={`${getFontColor(darkMode)} ${darkMode ? 'bg-yinmn-blue' : ''}`}
                   />
                 ) : (
                   <input
@@ -152,6 +156,7 @@ function AdditionalInfo() {
                     onChange={handleChange(field.key)}
                     required
                     readOnly={!isEditing}
+                    className={`${getFontColor(darkMode)} ${darkMode ? 'bg-yinmn-blue' : ''}`}
                   />
                 )}
               </div>

@@ -1,4 +1,6 @@
 import styles from '../styles/SkillsSection.module.css';
+import { useSelector } from 'react-redux';
+import { getFontColor } from '../../../../styles';
 
 function SoftwarePractices({ profileData }) {
   const safeProfileData = profileData || {};
@@ -6,6 +8,7 @@ function SoftwarePractices({ profileData }) {
   const backend = skillInfo.backend || {};
   const general = skillInfo.general || {};
   const frontend = skillInfo.frontend || {};
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const skills = [
     { value: backend.CodeReview, label: 'Code Review Skills' },
@@ -30,7 +33,7 @@ function SoftwarePractices({ profileData }) {
         {skills.map(skill => (
           <div key={skill.label} className={`${styles.skillItem}`}>
             <span className={getColorClass(skill.value)}>{skill.value || 0}</span>
-            <span className={`${styles.skillLabel}`}>{skill.label}</span>
+            <span className={`${styles.skillLabel} ${getFontColor(darkMode)}`}>{skill.label}</span>
           </div>
         ))}
       </div>

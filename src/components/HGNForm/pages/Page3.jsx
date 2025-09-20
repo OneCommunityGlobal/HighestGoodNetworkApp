@@ -3,18 +3,20 @@ import Banner from '../questionpages/Banner';
 import QuestionnaireHeader from '../questionpages/QuestionnaireHeader';
 import FrontendQuestions from '../questionpages/FrontendQuestions';
 import Progress from '../questionpages/Progress';
+import { useSelector } from 'react-redux';
+import styles from '../styles/hgnform.module.css';
+import { getBoxStyling, getFontColor } from '../../../styles';
 
 function Page3() {
   const headerRef = useRef(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    if (headerRef.current) {
-      headerRef.current.scrollIntoView({ behavior: 'auto', block: 'start' });
-    }
+    window.scrollTo(0, 0);
   }, []);
 
   return (
-    <div className="hgnform">
+    <div className={`${styles.hgnform} ${darkMode ? 'bg-oxford-blue' : ''}`}>
       <Banner />
       <QuestionnaireHeader ref={headerRef} />
       <FrontendQuestions />
