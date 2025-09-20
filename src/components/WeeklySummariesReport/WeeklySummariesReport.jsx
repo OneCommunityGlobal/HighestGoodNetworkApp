@@ -1678,24 +1678,30 @@ const WeeklySummariesReport = props => {
               </div>
             )}
             {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
+              <div
+                className={`${styles.filterStyle} ${styles.marginRight}`}
+                style={{ minWidth: 'max-content' }}
+              >
                 <span>Filter by Bio Status</span>
-                <div className={`${styles.switchToggleControl}`}>
+                <div className={styles.switchToggleControl}>
                   <input
                     type="checkbox"
-                    className={`${styles.switchToggle}`}
+                    className={styles.switchToggle}
                     id="bio-status-toggle"
                     onChange={handleBioStatusToggleChange}
                   />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="bio-status-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
+                  <label className={styles.switchToggleLabel} htmlFor="bio-status-toggle">
+                    <span className={styles.switchToggleInner} />
+                    <span className={styles.switchToggleSwitch} />
                   </label>
                 </div>
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
+              <div
+                className={`${styles.filterStyle} ${styles.marginRight}`}
+                style={{ minWidth: 'max-content' }}
+              >
                 <span>Filter by Trophies</span>
                 <div className={`${styles.switchToggleControl}`}>
                   <input
@@ -1712,7 +1718,7 @@ const WeeklySummariesReport = props => {
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle}`}>
+              <div className={`${styles.filterStyle}`} style={{ minWidth: 'max-content' }}>
                 <span>Filter by Over Hours</span>
                 <div className={`${styles.switchToggleControl}`}>
                   <input
