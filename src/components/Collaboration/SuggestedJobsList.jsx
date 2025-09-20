@@ -4,7 +4,6 @@ import { ApiEndpoint } from '../../utils/URL';
 import { toast } from 'react-toastify';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import './SuggestedJobsList.css';
-import { Link } from 'react-router-dom';
 
 function SuggestedJobsList() {
   const [categories, setCategories] = useState([]);
@@ -218,20 +217,15 @@ function SuggestedJobsList() {
                 </div>
               )}
 
-              <Link
-                to={{
-                  pathname: `/collaboration/job-application/${ad._id}/apply`,
-                  search: `?token=dev`,
-                  state: {
-                    jobTitle: ad.title,
-                    jobDescription: ad.description,
-                    requirements: ad.requirements || [],
-                  },
-                }}
-                className="btn btn-primary apply-now-btn"
+              <a
+                href={`https://www.onecommunityglobal.org/collaboration/job-application/${ad._id}`}
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                Apply Now
-              </Link>
+                <button type="submit" className="btn btn-primary apply-now-btn">
+                  Apply Now
+                </button>
+              </a>
             </div>
           ))}
 
