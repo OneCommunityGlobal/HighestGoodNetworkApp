@@ -304,6 +304,7 @@ function EditTaskModal(props) {
       // Handle date string in FORMAT format
       return date;
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };
@@ -320,6 +321,7 @@ function EditTaskModal(props) {
         setThisTask(res?.data || {});
         setOldTask(res?.data || {});
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error);
       }
     };
@@ -400,14 +402,17 @@ function EditTaskModal(props) {
           >
             <tbody>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" data-tip="task ID">
                   Task #
                 </td>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   {thisTask?.num}
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Task Name<span className="red-asterisk">* </span>
                 </td>
@@ -429,6 +434,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Priority
                 </td>
@@ -450,9 +456,11 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Resources
                 </td>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   <div>
                     <TagsSearch
@@ -468,6 +476,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Assigned
                 </td>
@@ -505,6 +514,7 @@ function EditTaskModal(props) {
                           onChange={e => setAssigned(false)}
                           checked={!assigned}
                         />
+                        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                         <label
                           className={`form-check-label ${darkMode ? 'text-light' : ''}`}
                           htmlFor="false"
@@ -519,6 +529,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Status
                 </td>
@@ -618,9 +629,11 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Hours
                 </td>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" className="w-100">
                   <div className="py-2 flex-responsive">
                     <label
@@ -739,9 +752,11 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Links
                 </td>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   {ReadOnlySectionWrapper(
                     <div>
@@ -801,6 +816,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Category
                 </td>
@@ -824,6 +840,7 @@ function EditTaskModal(props) {
               </tr>
 
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper(
@@ -844,6 +861,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Design Intent:</div>
                   {ReadOnlySectionWrapper(
@@ -864,6 +882,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col" colSpan="2">
                   <div>Endstate:</div>
                   {ReadOnlySectionWrapper(
@@ -884,6 +903,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Start Date
                 </td>
@@ -908,6 +928,7 @@ function EditTaskModal(props) {
                 </td>
               </tr>
               <tr>
+                {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   End Date
                 </td>
