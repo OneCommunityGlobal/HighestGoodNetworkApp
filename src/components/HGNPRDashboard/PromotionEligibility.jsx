@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { FaCheck } from 'react-icons/fa';
 import { getPromotionEligibility, postPromotionEligibility } from '../../actions/promotionActions';
-import './PromotionEligibility.css';
+import './PromotionEligibility.module.css';
 import { useSelector } from 'react-redux';
 
 function PromotionEligibility({ currentUser }) {
@@ -125,7 +125,9 @@ function PromotionEligibility({ currentUser }) {
               toggleSelectPromotion(id);
             }
           }}
-          className={`custom-circular-checkbox-wrapper ${processing ? 'disabled' : ''}`}
+          className={`${styles['custom-circular-checkbox-wrapper']} ${
+            processing ? styles['disabled'] : ''
+          }`}
           style={{
             cursor: !processing ? 'pointer' : 'not-allowed',
           }}
