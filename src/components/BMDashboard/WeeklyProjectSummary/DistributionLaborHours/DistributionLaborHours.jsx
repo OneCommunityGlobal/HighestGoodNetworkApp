@@ -45,9 +45,8 @@ export default function DistributionLaborHours() {
   }, []);
 
   useEffect(() => {
-    const sorted = [...originalData].sort((a, b) => b.value - a.value);
-    const top5 = sorted.slice(0, 5);
-    const othersTotal = sorted.slice(5).reduce((sum, item) => sum + item.value, 0);
+    const top5 = originalData.slice(0, 5);
+    const othersTotal = originalData.slice(5).reduce((sum, item) => sum + item.value, 0);
     if (othersTotal > 0) {
       top5.push({ name: 'Others', value: othersTotal });
     }
@@ -93,7 +92,9 @@ export default function DistributionLaborHours() {
             <option value="Member 2">Member 2</option>
           </select>
         </label>
-        <button onClick={() => window.location.reload()}>Submit</button>
+        <button className={styles.button} onClick={() => window.location.reload()}>
+          Submit
+        </button>
       </div>
 
       <div className={styles.chartWrapper}>
@@ -119,7 +120,6 @@ export default function DistributionLaborHours() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                label={({ name, value }) => `${name}: ${((value / totalHours) * 100).toFixed(1)}%`}
                 onClick={data => alert(`Drilldown for: ${data.name}`)}
               >
                 {filteredData.map((entry, index) => (
