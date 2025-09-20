@@ -159,10 +159,6 @@ import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 // Social Architecture
-// job Application form
-import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
-import JobApplicationPage from './components/Collaboration/JobApplicationPage';
-
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
@@ -675,14 +671,9 @@ export default (
         {/* ----- END BM Dashboard Routing ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
-
         <Route path="/subscribe" component={SubscribePage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
-
-        <Route path="/collaboration/suggested-jobs" component={SuggestedJobsList} />
-        <Route path="/collaboration/job-application/:jobId/apply" component={JobApplicationPage} />
-        <Route exact path="/collaboration" component={Collaboration} />
-
+        <Route path="/collaboration" component={Collaboration} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
