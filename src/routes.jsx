@@ -234,6 +234,7 @@ export default (
       )}
     />
     <Route
+      exact
       path="/lbdashboard"
       render={() => (
         <>
@@ -264,7 +265,7 @@ export default (
     />
     {/* Alisha : to be removed */}
     <Route exact path="/lbdashboard/villageFilter" component={VillageDropdownFilter} />
-    <Route exact path="/lbdashboard/:villageName" component={VillageDetails} />
+    <Route exact path="/lbdashboard/villageDetails/:villageName" component={VillageDetails} />
     <Route
       exact
       path="/lbdashboard/wishlist/:id"

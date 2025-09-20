@@ -20,7 +20,7 @@ export default function VillageDropdownFilter() {
     setSelectedVillage(value);
 
     if (value !== 'all') {
-      history.push(`/lbdashboard/${value}`);
+      history.push(`/lbdashboard/villageDetails/${value}`);
     }
   };
 
