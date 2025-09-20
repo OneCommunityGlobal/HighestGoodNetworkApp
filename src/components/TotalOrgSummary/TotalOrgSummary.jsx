@@ -1,25 +1,35 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable new-cap */
+/* eslint-disable testing-library/no-node-access */
 import { connect } from 'react-redux';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
-import { Alert, Col, Container, Row, Button } from 'reactstrap';
+import { useEffect, useState, useRef } from 'react';
+import {
+  Alert,
+  Col,
+  Container,
+  Row,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import 'moment-timezone';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 
 // actions
-import { getAllUserProfile } from 'actions/userManagement';
-import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
-import { getTimeEntryForOverDate } from 'actions/index';
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
 import '../Header/DarkMode.css';
-import './TotalOrgSummary.css';
-
-// components
+import styles from './TotalOrgSummary.module.css';
+import { clsx } from 'clsx';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
@@ -28,7 +38,6 @@ import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
 import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
 import TeamStats from './TeamStats/TeamStats';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
-import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
@@ -37,7 +46,8 @@ import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrends
 import GlobalVolunteerMap from './GlobalVolunteerMap/GlobalVolunteerMap';
 import TaskCompletedBarChart from './TaskCompleted/TaskCompletedBarChart';
 
-function calculateFromDate() {
+function calculateStartDate() {
+  // returns a string date in YYYY-MM-DD format of the start of the previous week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -46,7 +56,8 @@ function calculateFromDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-function calculateToDate() {
+function calculateEndDate() {
+  // returns a string date in YYYY-MM-DD format of the end of the previous week
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
@@ -55,82 +66,91 @@ function calculateToDate() {
   return currentDate.toISOString().split('T')[0];
 }
 
-function calculateFromOverDate() {
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = currentDate.getDay();
-  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
-  currentDate.setDate(currentDate.getDate() - daysToSubtract - 14);
-  return currentDate.toISOString().split('T')[0];
-}
+function calculateComparisonDates(comparisonType, fromDate, toDate) {
+  const start = new Date(fromDate);
+  const end = new Date(toDate);
+  const diffTime = Math.abs(end - start);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-function calculateToOverDate() {
-  const currentDate = new Date();
-  currentDate.setHours(0, 0, 0, 0);
-  const dayOfWeek = currentDate.getDay();
-  const daysToAdd = dayOfWeek === 6 ? 0 : -8 - dayOfWeek;
-  currentDate.setDate(currentDate.getDate() + daysToAdd);
-  return currentDate.toISOString().split('T')[0];
-}
-
-const fromDate = calculateFromDate();
-const toDate = calculateToDate();
-const fromOverDate = calculateFromOverDate();
-const toOverDate = calculateToOverDate();
-
-const aggregateTimeEntries = userTimeEntries => {
-  const aggregatedEntries = {};
-
-  userTimeEntries.forEach(entry => {
-    const { personId, hours, minutes } = entry;
-    if (!aggregatedEntries[personId]) {
-      aggregatedEntries[personId] = {
-        hours: parseInt(hours, 10),
-        minutes: parseInt(minutes, 10),
+  switch (comparisonType) {
+    case 'Week Over Week':
+      return {
+        comparisonStartDate: new Date(start.setDate(start.getDate() - diffDays))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setDate(end.getDate() - diffDays))
+          .toISOString()
+          .split('T')[0],
       };
-    } else {
-      aggregatedEntries[personId].hours += parseInt(hours, 10);
-      aggregatedEntries[personId].minutes += parseInt(minutes, 10);
-    }
-  });
+    case 'Month Over Month':
+      return {
+        comparisonStartDate: new Date(start.setMonth(start.getMonth() - 1))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setMonth(end.getMonth() - 1)).toISOString().split('T')[0],
+      };
+    case 'Year Over Year':
+      return {
+        comparisonStartDate: new Date(start.setFullYear(start.getFullYear() - 1))
+          .toISOString()
+          .split('T')[0],
+        comparisonEndDate: new Date(end.setFullYear(end.getFullYear() - 1))
+          .toISOString()
+          .split('T')[0],
+      };
+    default:
+      return {
+        comparisonStartDate: null,
+        comparisonEndDate: null,
+      };
+  }
+}
 
-  Object.keys(aggregatedEntries).forEach(personId => {
-    const totalMinutes = aggregatedEntries[personId].minutes;
-    const additionalHours = Math.floor(totalMinutes / 60);
-    aggregatedEntries[personId].hours += additionalHours;
-    aggregatedEntries[personId].minutes = totalMinutes % 60;
-  });
-
-  const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
-    personId,
-    hours,
-    minutes,
-  }));
-
-  return result;
-};
+const fromDate = calculateStartDate();
+const toDate = calculateEndDate();
 
 function TotalOrgSummary(props) {
-  const { darkMode, error, allUserProfiles } = props;
-  const [usersId, setUsersId] = useState([]);
-  const [usersTimeEntries, setUsersTimeEntries] = useState([]);
-  const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
+  const { darkMode, error } = props;
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const comparisonStartDate = '2025-01-16';
-  const comparisonEndDate = '2025-01-26';
   const [isLoading, setIsLoading] = useState(true);
-  const [taskProjectHours, setTaskProjectHours] = useState({
-    taskHours: 0,
-    projectHours: 0,
-    lastTaskHours: 0,
-    lastProjectHours: 0,
-  });
+  const [dateRangeDropdownOpen, setDateRangeDropdownOpen] = useState(false);
+  const [comparisonDropdownOpen, setComparisonDropdownOpen] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState('Current Week');
+  const [selectedComparison, setSelectedComparison] = useState('No Comparison');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [currentFromDate, setCurrentFromDate] = useState(fromDate);
+  const [currentToDate, setCurrentToDate] = useState(toDate);
+  const rootRef = useRef(null);
 
-  const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchVolunteerStats = async () => {
+      try {
+        const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
+          selectedComparison,
+          currentFromDate,
+          currentToDate,
+        );
 
-  const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+        const volunteerStatsResponse = await props.getTotalOrgSummary(
+          currentFromDate,
+          currentToDate,
+          comparisonStartDate,
+          comparisonEndDate,
+        );
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+        setIsLoading(false);
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
+
+    fetchVolunteerStats();
+  }, [currentFromDate, currentToDate, selectedComparison]);
 
   const handleSaveAsPDF = async () => {
     if (isGeneratingPDF) return;
@@ -205,20 +225,18 @@ function TotalOrgSummary(props) {
       pdfContainer.style.margin = '0';
 
       // Clone the main content area
-      const originalContent = document.querySelector('.container-total-org-wrapper');
+      const originalContent = rootRef.current;
       const clonedContent = originalContent.cloneNode(true);
 
       // Remove interactive or unwanted elements from the clone
       clonedContent
-        .querySelectorAll('button, .share-pdf-btn, .controls, .no-print')
+        .querySelectorAll('[data-pdf-hide], .controls, .no-print')
         .forEach(el => el.remove());
 
       // Adjust title row styling for a clean layout
-      const titleRow = clonedContent.querySelector(
-        '.row.d-flex.justify-content-between.align-items-center',
-      );
+      const titleRow = clonedContent.querySelector('[data-pdf-title-row]');
       if (titleRow) {
-        const titleCol = titleRow.querySelector('.col');
+        const titleCol = titleRow.querySelector('[data-pdf-title-col]');
         if (titleCol) {
           titleCol.style.width = '100%';
         }
@@ -235,7 +253,7 @@ function TotalOrgSummary(props) {
       // Create a style element for the PDF container
       const styleElem = document.createElement('style');
       styleElem.textContent = `
-        .container-total-org-wrapper {
+        [data-pdf-root] {
           padding: 20px !important;
           margin: 0 !important;
           box-shadow: none !important;
@@ -243,7 +261,8 @@ function TotalOrgSummary(props) {
           width: 100% !important;
           min-height: 100% !important;
         }
-        .row.d-flex.justify-content-between.align-items-center {
+
+        [data-pdf-title-row] {
           display: flex !important;
           justify-content: space-between !important;
           align-items: center !important;
@@ -251,45 +270,48 @@ function TotalOrgSummary(props) {
           width: 100% !important;
           padding: 0 !important;
         }
-        .component-container {
+
+        /* Merges old .component-container + .component-border rules */
+        [data-pdf-block] {
           page-break-inside: avoid;
           break-inside: avoid;
           margin: 15px 0 !important;
           padding: 20px !important;
-          border: 1px solid #eee !important;
-          border-radius: 8px !important;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-        }
-        .component-border {
           background-color: #fff !important;
           border: 1px solid #e0e0e0 !important;
           border-radius: 10px !important;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08) !important;
           overflow: hidden !important;
         }
+
         img, svg {
           max-width: 100% !important;
           height: auto !important;
           page-break-inside: avoid !important;
         }
+
         .recharts-wrapper {
           width: 100% !important;
           height: auto !important;
         }
+
         table {
           page-break-inside: avoid !important;
         }
+
         .Collapsible__trigger {
           background-color: ${darkMode ? '#1C2541' : '#fff'} !important;
           color: ${darkMode ? '#fff' : '#000'} !important;
         }
-        .volunteer-status-grid {
+
+        .volunteerStatusGrid {
           display: grid !important;
           grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
           gap: 1.5rem !important;
           width: 100% !important;
           margin-top: 15px !important;
         }
+
         .component-pie-chart-label {
           font-size: 12px !important;
           font-weight: 600 !important;
@@ -297,7 +319,8 @@ function TotalOrgSummary(props) {
           overflow: hidden !important;
           text-overflow: ellipsis !important;
         }
-        .chart-title p {
+
+        [data-pdf-title] p {
           font-size: 1.5em !important;
           font-weight: bold !important;
           text-align: center !important;
@@ -367,102 +390,47 @@ function TotalOrgSummary(props) {
     }
   };
 
-  useEffect(() => {
-    dispatch(getAllUserProfile());
-  }, [dispatch]);
+  const handleDateRangeSelect = option => {
+    if (option === 'Select Date Range') {
+      setShowDatePicker(true);
+    } else {
+      setSelectedDateRange(option);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
 
-  useEffect(() => {
-    if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
-      const idsList = allUserProfiles.userProfiles.reduce((acc, user) => {
-        if (user.isActive) acc.push(user._id);
-        return acc;
-      }, []);
-      setUsersId(idsList);
-    }
-  }, [allUserProfiles]);
-
-  useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0 && fromDate && toDate) {
-      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
-    }
-  }, [usersId, fromDate, toDate, dispatch]);
-
-  useEffect(() => {
-    if (
-      !Array.isArray(allUsersTimeEntries.usersTimeEntries) ||
-      allUsersTimeEntries.usersTimeEntries.length === 0
-    ) {
-      return;
-    }
-    const aggregatedEntries = aggregateTimeEntries(allUsersTimeEntries.usersTimeEntries);
-    setUsersTimeEntries(aggregatedEntries);
-  }, [allUsersTimeEntries]);
-
-  useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0) {
-      getTimeEntryForOverDate(usersId, fromOverDate, toOverDate)
-        .then(response => {
-          if (response && Array.isArray(response)) {
-            setUsersOverTimeEntries(response);
-          } else {
-            // eslint-disable-next-line no-console
-            console.log('error on fetching data');
-          }
-        })
-        .catch(() => {
-          // eslint-disable-next-line no-console
-          console.log('error on fetching data');
-        });
-    }
-  }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
-  useEffect(() => {
-    async function fetchData() {
-      const {
-        taskHours: { count: taskHours },
-        projectHours: { count: projectHours },
-      } = await props.getTaskAndProjectStats(fromDate, toDate);
-      const {
-        taskHours: { count: lastTaskHours },
-        projectHours: { count: lastProjectHours },
-      } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
-
-      if (taskHours && projectHours) {
-        setTaskProjectHours({
-          taskHours,
-          projectHours,
-          lastTaskHours,
-          lastProjectHours,
-        });
+      if (option === 'Current Week') {
+        setCurrentFromDate(fromDate);
+        setCurrentToDate(toDate);
+      } else if (option === 'Previous Week') {
+        const prevWeekStart = new Date(fromDate);
+        const prevWeekEnd = new Date(toDate);
+        prevWeekStart.setDate(prevWeekStart.getDate() - 7);
+        prevWeekEnd.setDate(prevWeekEnd.getDate() - 7);
+        setCurrentFromDate(prevWeekStart.toISOString().split('T')[0]);
+        setCurrentToDate(prevWeekEnd.toISOString().split('T')[0]);
       }
     }
-    fetchData();
-  }, [fromDate, toDate, fromOverDate, toOverDate, props]);
+  };
 
-  useEffect(() => {
-    const fetchVolunteerStats = async () => {
-      try {
-        const volunteerStatsResponse = await props.getTotalOrgSummary(
-          fromDate,
-          toDate,
-          comparisonStartDate,
-          comparisonEndDate,
-        );
-        setVolunteerStats(volunteerStatsResponse.data);
-        await props.hasPermission('');
-        setIsLoading(false);
-      } catch (catchFetchError) {
-        setIsVolunteerFetchingError(true);
-      }
-    };
+  const handleDatePickerSubmit = () => {
+    if (startDate && endDate) {
+      setSelectedDateRange(`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`);
+      setShowDatePicker(false);
+      setSelectedComparison('No Comparison');
 
-    fetchVolunteerStats();
-  }, [fromDate, toDate, props]);
-
-  const { taskHours, projectHours, lastTaskHours, lastProjectHours } = taskProjectHours;
+      setCurrentFromDate(startDate.toISOString().split('T')[0]);
+      setCurrentToDate(endDate.toISOString().split('T')[0]);
+    }
+  };
 
   if (error || isVolunteerFetchingError) {
     return (
-      <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+      <Container
+        className={clsx(
+          styles.containerTotalOrgWrapper,
+          darkMode && 'bg-oxford-blue', // keep global theme utility if needed
+        )}
+      >
         <Row
           className="align-self-center pt-2"
           data-testid="error"
@@ -479,204 +447,418 @@ function TotalOrgSummary(props) {
   return (
     <Container
       fluid
-      className={`container-total-org-wrapper py-3 mb-5 ${
-        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
-      }`}
+      className={clsx(
+        styles.containerTotalOrgWrapper,
+        'py-3 mb-5',
+        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke', // or add .whiteSmoke
+      )}
     >
-      <Row className="report-header-row">
-        <Col lg={{ size: 6 }} className="report-header-title">
-          <h3 className="my-0">Total Org Summary</h3>
-        </Col>
-        <Col lg={{ size: 6 }} className="report-header-actions">
-          <Button className="share-pdf-btn" onClick={handleSaveAsPDF} disabled={isGeneratingPDF}>
-            {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
-          </Button>
-        </Col>
-      </Row>
-      <hr />
-      <AccordianWrapper title="Volunteer Status">
-        <Row>
-          <Col lg={{ size: 12 }}>
-            <VolunteerStatus
-              isLoading={isLoading}
-              volunteerNumberStats={volunteerStats?.volunteerNumberStats}
-              totalHoursWorked={volunteerStats?.totalHoursWorked}
-            />
-          </Col>
+      <div ref={rootRef} data-pdf-root>
+        <Row className={styles.totalOrgReportHeaderRow} data-pdf-title-row>
+          <div className={styles.reportHeaderTitle} data-pdf-title-col>
+            <h3 className="my-0">Total Org Summary</h3>
+          </div>
+          <div className={styles.reportHeaderActions}>
+            <Dropdown
+              isOpen={dateRangeDropdownOpen}
+              toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
+            >
+              <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
+                  Current Week
+                </DropdownItem>
+                <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
+                  Previous Week
+                </DropdownItem>
+                <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
+                  Select Date Range
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <Dropdown
+              isOpen={comparisonDropdownOpen}
+              toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
+            >
+              <DropdownToggle caret>{selectedComparison}</DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
+                  No Comparison
+                </DropdownItem>
+                <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
+                  Week Over Week
+                </DropdownItem>
+                <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
+                  Month Over Month
+                </DropdownItem>
+                <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
+                  Year Over Year
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+            <Button
+              className={styles.sharePdfBtn}
+              data-pdf-hide
+              onClick={handleSaveAsPDF}
+              disabled={isGeneratingPDF}
+            >
+              {isGeneratingPDF ? 'Generating PDF...' : 'Save as PDF'}
+            </Button>
+          </div>
         </Row>
-      </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Activities">
-        <Row>
-          <Col lg={{ size: 12 }}>
-            <VolunteerActivities
-              isLoading={isLoading}
-              totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
-              completedAssignedHours={volunteerStats?.completedAssignedHours}
-              totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
-              tasksStats={volunteerStats?.tasksStats}
-              totalActiveTeams={volunteerStats?.totalActiveTeams}
-            />
-          </Col>
-        </Row>
-      </AccordianWrapper>
-      <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
-        <Row>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Global Volunteer Network: Uniting Communities Worldwide</p>
+
+        <Modal isOpen={showDatePicker} toggle={() => setShowDatePicker(!showDatePicker)}>
+          <ModalHeader toggle={() => setShowDatePicker(!showDatePicker)}>
+            Select Date Range
+          </ModalHeader>
+          <ModalBody>
+            <div className="d-flex flex-column gap-4">
+              <div>
+                <label htmlFor="start-date" style={{ display: 'block', marginBottom: '1rem' }}>
+                  Start Date
+                </label>
+                <div style={{ padding: '0.5rem 0' }}>
+                  <DatePicker
+                    id="start-date"
+                    selected={startDate}
+                    onChange={date => setStartDate(date)}
+                    className="form-control"
+                    dateFormat="MM/dd/yyyy"
+                    placeholderText="Select start date"
+                  />
+                </div>
               </div>
-              <GlobalVolunteerMap isLoading={isLoading} locations={volunteerStats?.userLocations} />
-            </div>
-          </Col>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Volunteer Status</p>
-              </div>
-              <VolunteerStatusChart
-                isLoading={isLoading}
-                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
-              />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
-        <Row>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Volunteer Hours Distribution</p>
-              </div>
-              <div className="d-flex flex-row justify-content-center flex-wrap my-4">
-                <VolunteerHoursDistribution
-                  isLoading={isLoading}
-                  darkMode={darkMode}
-                  usersTimeEntries={usersTimeEntries}
-                  usersOverTimeEntries={usersOverTimeEntries}
-                  hoursData={volunteerStats?.volunteerHoursStats}
-                  totalHoursData={volunteerStats?.totalHoursWorked}
-                />
-                <div className="d-flex flex-column align-items-center justify-content-center">
-                  <HoursWorkList />
-                  <NumbersVolunteerWorked
-                    isLoading={isLoading}
-                    data={volunteerStats?.volunteersOverAssignedTime}
-                    darkMode={darkMode}
+
+              <div>
+                <label htmlFor="end-date" style={{ display: 'block', marginBottom: '1rem' }}>
+                  End Date
+                </label>
+                <div style={{ padding: '0.5rem 0' }}>
+                  <DatePicker
+                    id="end-date"
+                    selected={endDate}
+                    onChange={date => setEndDate(date)}
+                    className="form-control"
+                    dateFormat="MM/dd/yyyy"
+                    placeholderText="Select end date"
+                    minDate={startDate}
                   />
                 </div>
               </div>
             </div>
-          </Col>
-          <Col lg={{ size: 3 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Task Completed</p>
-              </div>
-              <div className="mt-4">
-                <TaskCompletedBarChart
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={() => setShowDatePicker(false)}>
+              Cancel
+            </Button>
+            <Button
+              color="primary"
+              onClick={handleDatePickerSubmit}
+              disabled={!startDate || !endDate}
+            >
+              Apply
+            </Button>
+          </ModalFooter>
+        </Modal>
+
+        <hr />
+        <AccordianWrapper title="Volunteer Status">
+          <Row>
+            <Col lg={{ size: 12 }}>
+              <VolunteerStatus
+                isLoading={isLoading}
+                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                totalHoursWorked={volunteerStats?.totalHoursWorked}
+                comparisonType={selectedComparison}
+              />
+            </Col>
+          </Row>
+        </AccordianWrapper>
+        <AccordianWrapper title="Volunteer Activities">
+          <Row>
+            <Col lg={{ size: 12 }}>
+              <VolunteerActivities
+                isLoading={isLoading}
+                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                completedAssignedHours={volunteerStats?.completedAssignedHours}
+                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                tasksStats={volunteerStats?.tasksStats}
+                totalActiveTeams={volunteerStats?.totalActiveTeams}
+                comparisonType={selectedComparison}
+              />
+            </Col>
+          </Row>
+        </AccordianWrapper>
+        <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
+          <Row>
+            <Col lg={{ size: 6 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Global Volunteer Network: Uniting Communities Worldwide</p>
+                </div>
+                <GlobalVolunteerMap
                   isLoading={isLoading}
-                  data={volunteerStats?.tasksStats}
-                  darkMode={darkMode}
+                  locations={volunteerStats?.userLocations}
                 />
               </div>
-            </div>
-          </Col>
-          <Col lg={{ size: 3 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Hours Completed</p>
-              </div>
-              <div className="mt-4">
-                <HoursCompletedBarChart
+            </Col>
+            <Col lg={{ size: 6 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Volunteer Status</p>
+                </div>
+                <VolunteerStatusChart
                   isLoading={isLoading}
-                  data={volunteerStats?.taskAndProjectStats}
-                  darkMode={darkMode}
+                  volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                  comparisonType={selectedComparison}
                 />
               </div>
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Engagement Trends and Milestones">
-        <Row>
-          <Col lg={{ size: 7 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Volunteer Trends by Time</p>
+            </Col>
+          </Row>
+        </AccordianWrapper>
+        <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
+          <Row>
+            <Col lg={{ size: 6 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Volunteer Hours Distribution</p>
+                </div>
+                <div
+                  className="d-flex flex-column justify-content-center mt-4 gap-3"
+                  style={{ gap: '20px' }}
+                >
+                  <VolunteerHoursDistribution
+                    isLoading={isLoading}
+                    darkMode={darkMode}
+                    hoursData={volunteerStats?.volunteerHoursStats}
+                    totalHoursData={volunteerStats?.totalHoursWorked}
+                    comparisonType={selectedComparison}
+                  />
+                  <div className="d-flex flex-column align-items-center justify-content-center">
+                    <NumbersVolunteerWorked
+                      isLoading={isLoading}
+                      data={volunteerStats?.volunteersOverAssignedTime}
+                      darkMode={darkMode}
+                    />
+                  </div>
+                </div>
               </div>
-              <VolunteerTrendsLineChart darkMode={darkMode} />
-            </div>
-          </Col>
-          <Col lg={{ size: 5 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Anniversary Celebrated</p>
+            </Col>
+            <Col lg={{ size: 3 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Task Completed</p>
+                </div>
+                <div className="mt-4">
+                  <TaskCompletedBarChart
+                    isLoading={isLoading}
+                    data={volunteerStats?.tasksStats}
+                    darkMode={darkMode}
+                  />
+                </div>
               </div>
-              <AnniversaryCelebrated
-                isLoading={isLoading}
-                data={volunteerStats?.anniversaryStats}
-                darkMode={darkMode}
-              />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
-        <Row>
-          <Col lg={{ size: 7 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Work Distribution</p>
+            </Col>
+            <Col lg={{ size: 3 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Hours Completed</p>
+                </div>
+                <div className="mt-4">
+                  <HoursCompletedBarChart
+                    isLoading={isLoading}
+                    data={volunteerStats?.taskAndProjectStats}
+                    darkMode={darkMode}
+                    comparisonType={selectedComparison}
+                  />
+                </div>
               </div>
-              <WorkDistributionBarChart
-                isLoading={isLoading}
-                workDistributionStats={volunteerStats?.workDistributionStats}
-              />
-            </div>
-          </Col>
-          <Col lg={{ size: 5 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Role Distribution</p>
+            </Col>
+          </Row>
+        </AccordianWrapper>
+        <AccordianWrapper title="Volunteer Engagement Trends and Milestones">
+          <Row>
+            <Col lg={{ size: 7 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Volunteer Trends by Time</p>
+                </div>
+                <VolunteerTrendsLineChart darkMode={darkMode} />
               </div>
-              <RoleDistributionPieChart
-                isLoading={isLoading}
-                roleDistributionStats={volunteerStats?.roleDistributionStats}
-                darkMode={darkMode}
-              />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
-        <Row>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Team Stats</p>
+            </Col>
+            <Col lg={{ size: 5 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Anniversary Celebrated</p>
+                </div>
+                <AnniversaryCelebrated
+                  isLoading={isLoading}
+                  data={volunteerStats?.anniversaryStats}
+                  darkMode={darkMode}
+                  comparisonType={selectedComparison}
+                />
               </div>
-              <TeamStats
-                isLoading={isLoading}
-                usersInTeamStats={volunteerStats?.usersInTeamStats}
-                endDate={toDate}
-              />
-            </div>
-          </Col>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <div className={`chart-title ${darkMode ? 'dark-mode' : ''}`}>
-                <p>Blue Square Stats</p>
+            </Col>
+          </Row>
+        </AccordianWrapper>
+        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+          <Row>
+            <Col lg={{ size: 7 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Work Distribution</p>
+                </div>
+                <WorkDistributionBarChart
+                  isLoading={isLoading}
+                  workDistributionStats={volunteerStats?.workDistributionStats}
+                  comparisonType={selectedComparison}
+                />
               </div>
-              <BlueSquareStats
-                isLoading={isLoading}
-                blueSquareStats={volunteerStats?.blueSquareStats}
-              />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
+            </Col>
+            <Col lg={{ size: 5 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Role Distribution</p>
+                </div>
+                <RoleDistributionPieChart
+                  isLoading={isLoading}
+                  roleDistributionStats={volunteerStats?.roleDistributionStats}
+                  darkMode={darkMode}
+                  comparisonType={selectedComparison}
+                />
+              </div>
+            </Col>
+          </Row>
+        </AccordianWrapper>
+        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+          <Row>
+            <Col lg={{ size: 6 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Team Stats</p>
+                </div>
+                <TeamStats
+                  isLoading={isLoading}
+                  usersInTeamStats={volunteerStats?.usersInTeamStats}
+                  endDate={currentToDate}
+                  comparisonType={selectedComparison}
+                />
+              </div>
+            </Col>
+            <Col lg={{ size: 6 }}>
+              <div
+                className={clsx(styles.componentContainer, styles.componentBorder)}
+                data-pdf-block
+              >
+                <div
+                  className={clsx(
+                    styles.totalOrgChartTitle,
+                    darkMode && styles.totalOrgChartTitleDark,
+                  )}
+                  data-pdf-title
+                >
+                  <p>Blue Square Stats</p>
+                </div>
+                <BlueSquareStats
+                  isLoading={isLoading}
+                  blueSquareStats={volunteerStats?.blueSquareStats}
+                  comparisonType={selectedComparison}
+                />
+              </div>
+            </Col>
+          </Row>
+        </AccordianWrapper>
+      </div>
+      {/* ← closes ref wrapper */}
     </Container>
   );
 }
@@ -687,14 +869,12 @@ const mapStateToProps = state => ({
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
-  allUserProfiles: state.allUserProfiles,
 });
 
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
-  getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);

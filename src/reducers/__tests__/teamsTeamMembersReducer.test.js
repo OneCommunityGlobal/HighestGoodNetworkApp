@@ -6,13 +6,6 @@ import {
 } from '../../constants/allTeamsConstants';
 import { teamUsersReducer, updateObject } from '../teamsTeamMembersReducer';
 
-// const teamUsersInitial = {
-//  fetching: false,
-//  fetched: false,
-//  teamMembers: [],
-//  status: 404
-// };
-
 const teamMembers = {
   teamMembers: [
     {

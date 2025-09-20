@@ -1,0 +1,174 @@
+  .addTeamForm Label{
+  font-size: .8em;
+  }
+
+  .addTeamButtons {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem auto 2rem;
+  }
+  
+  .addTeamButtons button {
+    flex: 1; /* Ensure buttons share equal width */
+  }
+  
+  @media screen and (max-width: 800px) {
+    .addTeamButtons {
+      gap: 0.5rem; /* Reduce gap for smaller screens */
+    }
+  }
+
+  .addTeamButtons button#submit-button {
+    background-color: #4CAF50; 
+    border-color: #4CAF50;
+    color: white;
+  }
+  
+  .addTeamButtons button#submit-button:hover {
+    background-color: #45a049;
+    border-color: #45a049;
+  }
+  
+  .addTeamButtons button:hover {
+    background-color: #e7e7e7;
+  }
+  
+  .addTeamButtons Button:active {
+    background-color: #e7e7e7;
+  }
+  
+  .addTeamButtons Button.outline {
+    background-color: transparent;
+    border-color: #ccc; 
+    color: #333; 
+  }
+  
+  .addTeamButtons Button.outline:hover {
+    background-color: #f1f1f1; 
+    border-color: #bbb;
+  }
+  
+  .addTeamButtons button#cancel-button {
+    background-color: #f44336; 
+    border-color: #f44336; 
+    color: white; 
+  }
+  
+  .addTeamButtons button#cancel-button:hover {
+    background-color: #e53935; 
+    border-color: #e53935;
+  }
+  
+  .teamFormError {
+    font-weight: 500;
+    font-size: 11px !important;
+    color: red;
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  .fieldRequired{
+    color: red;
+  }
+  
+  .addTeamContainer{
+    width: 100%;
+    max-width: 800px;
+    margin: 1rem auto;
+    padding: 1rem 2rem;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+  }
+  
+  .addTeamHeader h2{
+   font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+   margin-left: 1rem;
+   color:#f49441;
+   text-align: center;
+  }
+
+  .selectContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  @media screen and (max-width: 800px) {
+    .selectContainer {
+      flex-direction: column; /* Stack items vertically on small screens */
+      align-items: stretch; /* Make items take full width */
+    }
+  
+    .selectContainer .memberDropdown,
+    .selectContainer Button {
+      width: 100%; /* Full width for dropdown and button */
+    }
+
+    .selectContainer Button {
+      max-width: 300px; /* Prevent it from growing too large */
+      min-width: 150px; /* Prevent it from shrinking too small */
+    }
+  }
+  
+  .addTeamContainer Button{
+    flex-shrink: 0;
+    padding: 8px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: white;
+    background-color: #f49441;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 10px; 
+    padding: 0.5rem; 
+    border: 1px solid #ccc;
+    width: 15%;
+  }
+  
+  .addTeamContainer Button:hover {
+    background-color: #d97a32;
+    transform: scale(1.05);
+  }
+  
+  .addTeamContainer Button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
+
+  .addTeamForm input,
+  .addTeamForm select,
+  .addTeamForm textarea,
+  .addTeamForm button {
+    border-radius: 10px; 
+    padding: 0.5rem; 
+    border: 1px solid #ccc; 
+  }
+
+  @media screen and (max-width: 800px) {
+    .addTeamContainer {
+      width: 95%;
+    }
+  }
+
+  .badgeContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 0;
+  }
+  
+  .badgeContainer .badge {
+    background-color: #f9d29c; 
+    color: black; 
+    border-radius: 6px; 
+    padding: 0.5rem 1rem; 
+    line-height: 1.5rem;
+  }
+
+  .badgeContainer span {
+    cursor: pointer;
+    padding-left: 5px;
+  }
+
