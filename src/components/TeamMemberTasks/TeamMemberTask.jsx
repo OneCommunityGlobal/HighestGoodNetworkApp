@@ -540,6 +540,14 @@ const TeamMemberTask = React.memo(
                                           title="Click to view task change history"
                                           data-testid={`deadline-${task.taskName}`}
                                           onClick={() => handleOpenTaskChangeLog(task)}
+                                          onKeyDown={e => {
+                                            if (e.key === 'Enter' || e.key === ' ') {
+                                              e.preventDefault();
+                                              handleOpenTaskChangeLog(task);
+                                            }
+                                          }}
+                                          role="button"
+                                          tabIndex={0}
                                           style={{ cursor: 'pointer' }}
                                         >
                                           {taskCounts[task._id] ?? task.deadlineCount ?? 0}
