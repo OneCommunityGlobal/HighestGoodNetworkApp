@@ -59,3 +59,29 @@
     height: 300px;
   }
 }
+
+.darkContainer {
+  color: #e1e1e1;
+}
+
+.darkFilterCard {
+  background: #1f1f1f;
+  border-color: #333;
+}
+
+.darkText {
+  color: #e1e1e1 !important;
+}
+
+.darkMetricCategory {
+  color: #69b1ff !important;
+}
+
+.darkChartCard {
+  background: #1f1f1f;
+  border-color: #333;
+}
+
+.darkChartTitle {
+  color: #e1e1e1 !important;
+}

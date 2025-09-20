@@ -215,3 +215,76 @@ body {
   place-items: center;
   color: #999;
 }
+
+/* Existing styles... */
+
+/* Dark Mode Styles */
+.darkMode {
+  background: #121212;
+  color: #e1e1e1;
+}
+
+.darkHeader {
+  color: #e1e1e1;
+}
+
+.darkBackBtn {
+  background: #6a4ff7;
+  color: #fff;
+}
+
+.darkFilterBar {
+  background: #1f1f1f;
+  border-color: #333;
+  color: #e1e1e1;
+}
+
+.darkFilterBtn {
+  background: #6a4ff7 !important;
+  border-color: #593dd8 !important;
+}
+
+.darkDropdown {
+  background: #2d2d2d;
+  border-color: #333;
+}
+
+.darkDropdownItem {
+  color: #e1e1e1;
+}
+
+.darkDropdownItem:hover {
+  background: #3a3a3a;
+  color: #69b1ff;
+}
+
+.darkText {
+  color: #e1e1e1 !important;
+}
+
+.darkSection {
+  color: #e1e1e1;
+}
+
+.darkSectionSummary {
+  color: #e1e1e1;
+}
+
+.darkSectionBody {
+  background: #1f1f1f;
+  border-color: #333;
+}
+
+.darkCard {
+  background: #1f1f1f;
+  border-color: #333;
+}
+
+.darkCardBody {
+  color: #e1e1e1;
+}
+
+.darkPlaceholder {
+  border-color: #444;
+  color: #888;
+}
