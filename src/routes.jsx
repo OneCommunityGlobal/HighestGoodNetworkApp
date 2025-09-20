@@ -111,6 +111,7 @@ import Issue from './components/BMDashboard/Issue/Issue';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
+import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 
 // Community Portal
@@ -570,6 +571,7 @@ export default (
         />
 
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
+        <BMProtectedRoute path="/bmdashboard/returned-late-chart" component={ReturnedLateChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
