@@ -12,6 +12,7 @@ const BlueSquare = (props) => {
     darkMode
   } = props;
 
+  const canDeleteBuleSquare = props.hasPermission('deleteInfringements');
   const canAddInfringements = hasPermission('addInfringements');
   const canEditInfringements = hasPermission('editInfringements');
   const canDeleteInfringements = hasPermission('deleteInfringements');
