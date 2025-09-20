@@ -35,7 +35,7 @@ import UserSearchPanel from './UserSearchPanel';
 import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
-import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
+import hasPermission, {cantDeactivateOwner, cantUpdateDevAdminDetails } from '../../utils/permissions';
 // Commented out because it's not used
 // import { searchWithAccent } from '../../utils/search';
 import SetupHistoryPopup from './SetupHistoryPopup';
@@ -44,7 +44,6 @@ import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 class UserManagement extends React.PureComponent {

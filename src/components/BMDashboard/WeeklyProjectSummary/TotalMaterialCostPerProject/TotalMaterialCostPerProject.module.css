@@ -1,0 +1,63 @@
+.totalMaterialCostPerProjectChartTitle {
+  font-size: medium;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.totalMaterialCostPerProjectChartTitleDark {
+  color: #ffffff; /* White for dark mode */
+}
+
+.selectValueContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  position: relative;
+}
+
+
+.selectValueContainerDark {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+/* react-select multi value chip */
+.selectMultiValue {
+  max-width: none;
+  flex-shrink: 0;
+}
+
+.selectMultiValueDark {
+  background-color: #375071;
+}
+
+/* react-select multi value label */
+.selectMultiValueLabel {
+  font-size: 12px;
+}
+
+.selectMultiValueLabelDark {
+  color: white;
+}
+
+/* react-select dropdown menu */
+.selectMenu {
+  font-size: 12px;
+}
+
+.selectMenuDark {
+  background-color: var(--section-bg);
+}
+
+/* Optional hover/focus state for dark dropdown items */
+.selectOptionHoverDark {
+  background-color: #0d55b3;
+}
+
+

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import ProfileDetails from './ProfileDetails';
 import Skills from './Skills';
 import RadarChart from './RadarChart';
@@ -6,9 +7,13 @@ import FrontendSkills from './FrontendSkills';
 import BackendSkills from './BackendSkills';
 import DeploymentSkills from './DeploymentSkills';
 import SoftwarePractices from './SoftwarePractices';
+import AdditionalInfo from './AdditionalInfo';
 import styles from '../styles/RightSection.module.css';
 
-function RightSection({ profileData }) {
+/* function RightSection({ profileData }) { */
+function RightSection() {
+  const profileData = useSelector(state => state.userSkills.profileData);
+
   const [selectedSkill, setSelectedSkill] = useState('Dashboard');
 
   const handleSkillClick = skill => {
@@ -39,6 +44,9 @@ function RightSection({ profileData }) {
       <div className={`${styles.skillsAndChart}`}>
         <Skills selectedSkill={selectedSkill} onSkillClick={handleSkillClick} />
         {renderContent()}
+      </div>
+      <div className="workExperience-and-additionalInfo">
+        <AdditionalInfo profileData={profileData} />
       </div>
     </div>
   );

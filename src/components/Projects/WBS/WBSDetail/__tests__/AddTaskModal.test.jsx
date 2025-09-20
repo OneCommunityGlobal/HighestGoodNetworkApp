@@ -20,6 +20,21 @@ vi.mock('@tinymce/tinymce-react', () => ({
   ),
 }));
 
+// Mock Redux actions
+vi.mock('../../../../../actions/task', () => ({
+  addNewTask: vi.fn(),
+}));
+
+vi.mock('../../../../../actions/projectMembers', () => ({
+  // Return a plain action so redux-mock-store accepts it
+  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
+}));
+
+vi.mock('../../../../../actions/projectMembers', () => ({
+  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
+  findProjectMembers: vi.fn(() => ({ type: 'FIND_PROJECT_MEMBERS_TEST_DUMMY' })),
+}));
+
 const mockStore = configureStore();
 const initialState = {
   tasks: {
