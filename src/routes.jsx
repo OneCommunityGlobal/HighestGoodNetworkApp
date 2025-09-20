@@ -158,6 +158,10 @@ import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+
+//project status
+const ProjectStatus = lazy(() => import('./components/ProjectStatus/ProjectStatus'));
+
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -314,6 +318,8 @@ export default (
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+
+        <ProtectedRoute path="/projectstatus" exact component={ProjectStatus} fallback />
 
         <ProtectedRoute
           path="/inventory/:projectId"
