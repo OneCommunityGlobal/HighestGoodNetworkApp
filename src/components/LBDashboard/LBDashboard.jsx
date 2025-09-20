@@ -13,6 +13,7 @@ import {
   CardBody,
 } from 'reactstrap';
 import styles from './LBDashboard.module.css';
+import DemandOverTime from './LbAnalytics/DemandOverTime/DemandOverTime';
 
 const METRIC_OPTIONS = {
   DEMAND: [
@@ -28,6 +29,17 @@ const METRIC_OPTIONS = {
     { key: 'occupancyRate', label: 'Occupancy Rate (% days not vacant)' }, // default for Vacancy
     { key: 'avgStay', label: 'Average Duration of Stay' },
   ],
+};
+
+// Mapping from LBDashboard metrics to DemandOverTime metrics
+const METRIC_MAPPING = {
+  pageVisits: 'pageVisits',
+  numBids: 'numberOfBids',
+  avgRating: 'averageRating',
+  avgBid: 'averageBid',
+  finalPrice: 'finalPrice',
+  occupancyRate: 'occupancyRate',
+  avgStay: 'averageDuration',
 };
 
 const DEFAULTS = {
@@ -203,16 +215,28 @@ export function LBDashboard() {
           <div className={styles.sectionBody}>
             <Row xs="1" md="3" className="g-3">
               <Col>
-                <GraphCard
-                  title="Comparing Demand of Villages across Months"
-                  metricLabel={metricLabel}
+                <DemandOverTime
+                  masterMetricCategory={activeCategory}
+                  masterMetric={METRIC_MAPPING[selectedMetricKey]}
+                  compareType="villages"
+                  chartLabel="Comparing Demand of Villages across Months"
                 />
               </Col>
               <Col>
-                <GraphCard title="Demand across Villages" metricLabel={metricLabel} />
+                <DemandOverTime
+                  masterMetricCategory={activeCategory}
+                  masterMetric={METRIC_MAPPING[selectedMetricKey]}
+                  compareType="villages"
+                  chartLabel="Demand across Villages"
+                />
               </Col>
               <Col>
-                <GraphCard title="Comparing Villages" metricLabel={metricLabel} />
+                <DemandOverTime
+                  masterMetricCategory={activeCategory}
+                  masterMetric={METRIC_MAPPING[selectedMetricKey]}
+                  compareType="villages"
+                  chartLabel="Comparing Villages"
+                />
               </Col>
             </Row>
           </div>
@@ -226,13 +250,20 @@ export function LBDashboard() {
           <div className={styles.sectionBody}>
             <Row xs="1" md="2" className="g-3">
               <Col>
-                <GraphCard
-                  title="Comparing Demand of Properties across Time"
-                  metricLabel={metricLabel}
+                <DemandOverTime
+                  masterMetricCategory={activeCategory}
+                  masterMetric={METRIC_MAPPING[selectedMetricKey]}
+                  compareType="properties"
+                  chartLabel="Comparing Demand of Properties across Time"
                 />
               </Col>
               <Col>
-                <GraphCard title="Comparing Ratings of Properties" metricLabel={metricLabel} />
+                <DemandOverTime
+                  masterMetricCategory={activeCategory}
+                  masterMetric={METRIC_MAPPING[selectedMetricKey]}
+                  compareType="properties"
+                  chartLabel="Comparing Ratings of Properties"
+                />
               </Col>
             </Row>
           </div>
