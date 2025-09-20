@@ -20,7 +20,7 @@ import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMate
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
-
+import CostDonutChartComponent from './Financials/CostBreakDown/CostBreakDown';
 const projectStatusButtons = [
   {
     title: 'Total Projects',
@@ -314,7 +314,10 @@ function WeeklyProjectSummary() {
             </div>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
+            <div className="weekly-project-summary-card financial-big">
+              {' '}
+              <CostDonutChartComponent />{' '}
+            </div>
           </div>
         ),
       },
