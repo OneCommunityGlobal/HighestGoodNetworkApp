@@ -1,0 +1,402 @@
+.jobAnalytics {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  min-width: 100vw;
+}
+
+.jobAnalyticsDarkMode {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+.jobAnalyticsDarkMode .jobAnalytics {
+  background-color: #1b2a41; /* match dark mode */
+}
+
+.jobAnalyticsContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+  max-width: fit-content;
+  margin: 0 auto;
+  padding: 40px;
+  font-family: Arial, sans-serif;
+}
+
+.chartContainer {
+  flex: 1;
+  border: 2px solid #4285f4;
+  border-radius: 8px;
+  background-color: #ffffff;
+  padding: 20px;
+  min-width: 800px;
+}
+
+.chartTitle {
+  font-size: 24px;
+  font-weight: 400;
+  color: #5f6368;
+  margin: 0 0 30px 0;
+  text-align: center;
+}
+
+.chartArea {
+  min-height: 400px;
+  position: relative;
+  padding-left: 170px;
+  padding-right: 40px;
+  padding-top: 20px;
+  padding-bottom: 60px;
+  width: 100%;
+}
+
+.gridLines {
+  position: absolute;
+  left: 170px;
+  right: 40px;
+  top: 20px;
+  bottom: 60px;
+  background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
+  background-size: 10% 25%;
+  opacity: 0.5;
+}
+
+.yAxis {
+  position: absolute;
+  left: 0;
+  top: 20px;
+  bottom: 60px;
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.yAxisLabel {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+  font-size: 12px;
+  color: #5f6368;
+  border-right: 1px solid #9aa0a6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.xAxis {
+  position: absolute;
+  left: 170px;
+  right: 40px;
+  bottom: 40px;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-top: 1px solid #9aa0a6;
+  padding-top: 5px;
+}
+
+.xAxisTick {
+  font-size: 12px;
+  color: #5f6368;
+  position: relative;
+  text-align: center;
+  min-width: 20px;
+}
+
+.xAxisLabel {
+  position: relative;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) translateY(100%);
+  font-size: 12px;
+  color: #5f6368;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  padding-top: 7px;
+  justify-content: center;
+}
+
+.barsContainer {
+  position: absolute;
+  left: 170px;
+  right: 40px;
+  top: 20px;
+  bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.barRow {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 20px 0;
+}
+
+.bar {
+  height: 40px;
+  background-color: #4285f4;
+  border: 1px solid #1a73e8;
+  border-radius: 0 4px 4px 0;
+  position: relative;
+  min-width: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transition: all 0.2s ease;
+}
+
+.bar:hover {
+  background-color: #1a73e8;
+  transform: scaleY(1.1);
+}
+
+.dataLabel {
+  position: absolute;
+  right: -25px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a73e8;
+  white-space: nowrap;
+}
+
+.tooltip {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 10px;
+  background-color: #f8f9fa;
+  color: #4285f4;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid #1a73e8;
+}
+
+.tooltip strong {
+  font-weight: 600;
+}
+
+.tooltip::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #333;
+}
+
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #5f6368;
+  font-size: 16px;
+}
+
+.summaryInfo {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #5f6368;
+}
+
+.summaryInfo div {
+  margin-bottom: 5px;
+}
+
+.summaryInfo div:last-child {
+  margin-bottom: 0;
+}
+
+.summaryInfo strong {
+  color: #4285f4;
+}
+
+.filtersPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 150px;
+  flex-shrink: 0;
+}
+
+.filterGroup {
+  border: 2px solid #4285f4;
+  border-radius: 4px;
+  padding: 8px;
+  background-color: #f8f9fa;
+}
+
+.filterLabel {
+  font-size: 14px;
+  font-weight: bolder;
+  color: #4285f4;
+  margin-bottom: 4px;
+}
+
+.filterSelectJobAnalytics {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: #ffffff;
+  color: #3c4043;
+  cursor: pointer;
+  height: 32px !important;
+}
+
+.filterSelectJobAnalytics:focus {
+  outline: none;
+  border-color: #4285f4;
+}
+
+.filterSelectJobAnalytics:hover {
+  border-color: #9aa0a6;
+}
+
+/* Dark Mode Support */
+.jobAnalyticsContainerDarkMode .jobAnalyticsContainer {
+  color: #ffffff;
+}
+
+.jobAnalyticsContainerDarkMode .chartContainer {
+  background-color: #2d2d2d;
+}
+
+.jobAnalyticsContainerDarkMode .yAxisLabel {
+  color: #e8eaed;
+  border-color: #5f6368;
+}
+
+.jobAnalyticsContainerDarkMode .xAxisTick {
+  color: #e8eaed;
+}
+.jobAnalyticsContainerDarkMode .xAxisLabel {
+  color: #e8eaed;
+}
+
+.jobAnalyticsContainerDarkMode .filtersPanel select {
+  background-color: #2d2d2d;
+  color: #ffffff;
+  border-color: #5f6368;
+}
+.jobAnalyticsContainerDarkMode .filterGroup {
+  background-color: #333;
+}
+.jobAnalyticsContainerDarkMode .chartTitle {
+  color: #e8eaed;
+}
+
+.jobAnalyticsContainerDarkMode .summaryInfo {
+  background-color: #333;
+  color: #e8eaed;
+}
+
+.jobAnalyticsContainerDarkMode .gridLines {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  opacity: 0.3; /* softer look */
+}
+
+.jobAnalyticsContainerDarkMode .tooltip {
+  background-color: #333;
+}
+.jobAnalyticsContainerDarkMode .tooltip strong {
+  color: #ffffff;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .chartContainer {
+    min-width: 700px;
+  }
+}
+
+@media (max-width: 768px) {
+  .jobAnalyticsContainer {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .filtersPanel {
+    flex-direction: row;
+    min-width: auto;
+    width: 100%;
+  }
+
+  .chartContainer {
+    min-width: auto;
+    width: 100%;
+  }
+
+  .chartArea {
+    padding-left: 120px;
+    padding-right: 20px;
+  }
+
+  .yAxis {
+    width: 110px;
+  }
+
+  .barsContainer {
+    left: 120px;
+    right: 20px;
+  }
+
+  .gridLines {
+    left: 120px;
+    right: 20px;
+  }
+
+  .xAxis {
+    left: 120px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chartArea {
+    padding-left: 100px;
+    padding-right: 10px;
+  }
+
+  .yAxis {
+    width: 90px;
+  }
+
+  .barsContainer {
+    left: 100px;
+    right: 10px;
+  }
+
+  .gridLines {
+    left: 100px;
+    right: 10px;
+  }
+
+  .xAxis {
+    left: 100px;
+    right: 10px;
+  }
+}
