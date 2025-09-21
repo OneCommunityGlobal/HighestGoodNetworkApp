@@ -196,7 +196,6 @@ function UserProfile(props) {
   const canEditTeamCode = props.hasPermission('editTeamCode');
   const [titleOnSet, setTitleOnSet] = useState(false);
 
- 
   const updateProjectTouserProfile = () => {
     return new Promise(resolve => {
       checkIsProjectsEqual();
@@ -681,9 +680,11 @@ const onAssignProject = assignedProject => {
    * @param {String} id Id of the blue square
    * @param {String} dateStamp
    * @param {String} summary
+   * @param {String} firstName first name of the blue square author
+   * @param {String} lastName last name of the blue square author
    * @param {String} operation 'add' | 'update' | 'delete'
    */
-  const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
+  const modifyBlueSquares = async (id, dateStamp, summary, first, last, operation) => {
     setShowModal(false);
     if (operation === 'add') {
       /* peizhou: check that the date of the blue square is not future or empty. */
@@ -709,6 +710,8 @@ const onAssignProject = assignedProject => {
           //   .toISOString()
           //   .split('T')[0],
           createdDate: moment().format('YYYY-MM-DD'),
+          authorFirstName: first,
+          authorLastName: last
         };
         setModalTitle('Blue Square');
         axios
@@ -1102,7 +1105,7 @@ const onAssignProject = assignedProject => {
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -1168,6 +1171,7 @@ const onAssignProject = assignedProject => {
           id={id}
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
+          auth={props.auth}
         />
       )}
       <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
