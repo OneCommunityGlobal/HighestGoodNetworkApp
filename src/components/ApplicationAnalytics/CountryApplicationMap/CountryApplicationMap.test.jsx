@@ -5,7 +5,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import CountryApplicationMap from './CountryApplicationMap';
 
 // Mock react-simple-maps
-jest.mock('react-simple-maps', () => ({
+vi.mock('react-simple-maps', () => ({
   ComposableMap: ({ children }) => <div data-testid="composable-map">{children}</div>,
   Geographies: ({ children }) => <div data-testid="geographies">{children}</div>,
   Geography: ({ children, ...props }) => (

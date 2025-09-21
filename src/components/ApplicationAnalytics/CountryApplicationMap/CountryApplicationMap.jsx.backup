@@ -248,9 +248,9 @@ function CountryApplicationMap() {
         ) : (
           <ComposableMap
             projection="geoMercator"
-            width={1200}
-            height={600}
-            style={{ width: '100%', height: 'auto', maxWidth: '100%' }}
+            width={800}
+            height={400}
+            style={{ width: '100%', height: 'auto' }}
           >
             <Geographies
               geography={geoUrl}
