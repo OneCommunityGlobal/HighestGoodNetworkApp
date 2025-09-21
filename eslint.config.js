@@ -35,7 +35,6 @@ module.exports = [
       'src/components/Badge/**',
       'src/components/SummaryManagement/**',
       'src/components/UserProfile/**',
-      'src/components/Announcements/index.jsx',
     ],
   },
 
