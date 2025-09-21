@@ -3,7 +3,7 @@ import { TagCloud } from 'react-tagcloud';
 import Select from 'react-select';
 import styles from './ReviewWordCloud.module.css';
 
-const ReviewWordCloud = () => {
+const ReviewWordCloud = ({ darkMode }) => {
   // Sample reviews data
   const reviewsData = [
     'The Mountain View property in Eco Village has excellent solar panels and a beautiful community garden. Sustainable living at its best with amazing views!',
@@ -68,6 +68,47 @@ const ReviewWordCloud = () => {
   // State for word clouds
   const [villageWordCloud, setVillageWordCloud] = useState([]);
   const [propertyWordCloud, setPropertyWordCloud] = useState([]);
+
+  // Select styles for dark mode
+  const customSelectStyles = {
+    control: provided => ({
+      ...provided,
+      backgroundColor: darkMode ? '#1C2541' : '#fff',
+      borderColor: darkMode ? '#225163' : '#ccc',
+      color: darkMode ? '#fff' : '#333',
+    }),
+    menu: provided => ({
+      ...provided,
+      backgroundColor: darkMode ? '#1C2541' : '#fff',
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused
+        ? darkMode
+          ? '#3A506B'
+          : '#f0f0f0'
+        : darkMode
+        ? '#1C2541'
+        : '#fff',
+      color: darkMode ? '#fff' : '#333',
+    }),
+    multiValue: provided => ({
+      ...provided,
+      backgroundColor: darkMode ? '#3A506B' : '#e2e3fc',
+    }),
+    multiValueLabel: provided => ({
+      ...provided,
+      color: darkMode ? '#fff' : '#333',
+    }),
+    singleValue: provided => ({
+      ...provided,
+      color: darkMode ? '#fff' : '#333',
+    }),
+    input: provided => ({
+      ...provided,
+      color: darkMode ? '#fff' : '#333',
+    }),
+  };
 
   // Process text to generate word cloud data
   const processText = text => {
@@ -147,22 +188,26 @@ const ReviewWordCloud = () => {
 
   // Cloud rendering options
   const cloudOptions = {
-    luminosity: 'dark',
-    hue: 'blue',
+    luminosity: darkMode ? 'light' : 'dark',
+    hue: darkMode ? 'blue' : 'blue',
     minSize: 20,
     maxSize: 40,
   };
 
   return (
     <div className={styles.container}>
-      {/* Remove the title since we already have a section title in the dashboard */}
-      {/* <h2 className={styles.title}>Insights from Reviews</h2> */}
-
-      <div className={styles.wordCloudsContainer}>
+      <div
+        className={`${styles.wordCloudsContainer} ${
+          darkMode ? styles.darkWordCloudsContainer : ''
+        }`}
+      >
         {/* Left Word Cloud - Villages */}
-        <div className={styles.wordCloudBox}>
+        <div className={`${styles.wordCloudBox} ${darkMode ? styles.darkWordCloudBox : ''}`}>
           <div className={styles.filterBox}>
-            <label htmlFor="villageFilter" className={styles.filterLabel}>
+            <label
+              htmlFor="villageFilter"
+              className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}
+            >
               Filter by Villages:
             </label>
             <Select
@@ -175,10 +220,11 @@ const ReviewWordCloud = () => {
               placeholder="Select Villages"
               defaultValue={villageOptions}
               aria-labelledby="villageFilter"
+              styles={customSelectStyles}
             />
           </div>
 
-          <div className={styles.cloudContainer}>
+          <div className={`${styles.cloudContainer} ${darkMode ? styles.darkCloudContainer : ''}`}>
             {villageWordCloud.length > 0 ? (
               <TagCloud
                 minSize={20}
@@ -188,15 +234,20 @@ const ReviewWordCloud = () => {
                 colorOptions={cloudOptions}
               />
             ) : (
-              <div className={styles.noData}>No data available</div>
+              <div className={`${styles.noData} ${darkMode ? styles.darkNoData : ''}`}>
+                No data available
+              </div>
             )}
           </div>
         </div>
 
         {/* Right Word Cloud - Properties */}
-        <div className={styles.wordCloudBox}>
+        <div className={`${styles.wordCloudBox} ${darkMode ? styles.darkWordCloudBox : ''}`}>
           <div className={styles.filterBox}>
-            <label htmlFor="propertyFilter" className={styles.filterLabel}>
+            <label
+              htmlFor="propertyFilter"
+              className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}
+            >
               Filter by Properties:
             </label>
             <Select
@@ -209,10 +260,11 @@ const ReviewWordCloud = () => {
               placeholder="Select Properties"
               defaultValue={[]}
               aria-labelledby="propertyFilter"
+              styles={customSelectStyles}
             />
           </div>
 
-          <div className={styles.cloudContainer}>
+          <div className={`${styles.cloudContainer} ${darkMode ? styles.darkCloudContainer : ''}`}>
             {propertyWordCloud.length > 0 ? (
               <TagCloud
                 minSize={20}
@@ -222,7 +274,9 @@ const ReviewWordCloud = () => {
                 colorOptions={cloudOptions}
               />
             ) : (
-              <div className={styles.noData}>No data available</div>
+              <div className={`${styles.noData} ${darkMode ? styles.darkNoData : ''}`}>
+                No data available
+              </div>
             )}
           </div>
         </div>

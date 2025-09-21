@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   Container,
   Row,
@@ -37,16 +38,20 @@ const DEFAULTS = {
   VACANCY: 'occupancyRate',
 };
 
-function GraphCard({ title, metricLabel }) {
+function GraphCard({ title, metricLabel, darkMode }) {
   return (
-    <Card className={styles.graphCard}>
+    <Card className={`${styles.graphCard} ${darkMode ? styles.darkCard : ''}`}>
       <CardBody>
         <div className={styles.graphTitle}>
-          <span>{title}</span>
-          <span className={styles.metricPill}>{metricLabel}</span>
+          <span className={darkMode ? styles.darkText : ''}>{title}</span>
+          <span className={`${styles.metricPill} ${darkMode ? styles.darkMetricPill : ''}`}>
+            {metricLabel}
+          </span>
         </div>
-        <div className={styles.graphPlaceholder}>
-          <span className={styles.placeholderText}>Graph area</span>
+        <div className={`${styles.graphPlaceholder} ${darkMode ? styles.darkPlaceholder : ''}`}>
+          <span className={`${styles.placeholderText} ${darkMode ? styles.darkText : ''}`}>
+            Graph area
+          </span>
         </div>
       </CardBody>
     </Card>
@@ -54,9 +59,9 @@ function GraphCard({ title, metricLabel }) {
 }
 
 export function LBDashboard() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [activeCategory, setActiveCategory] = useState('DEMAND');
   const [selectedMetricKey, setSelectedMetricKey] = useState(DEFAULTS.DEMAND);
-
   const [openDD, setOpenDD] = useState({ DEMAND: false, REVENUE: false, VACANCY: false });
 
   const metricLabel = (() => {
@@ -81,23 +86,36 @@ export function LBDashboard() {
   };
 
   return (
-    <Container fluid className={styles.dashboardContainer}>
+    <Container
+      fluid
+      className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}
+    >
       {/* Header */}
       <header className={styles.dashboardHeader}>
-        <h1 className={styles.title}>Listing and Bidding Platform Dashboard</h1>
-        <Button size="sm" onClick={goBack} className={styles.backBtn}>
+        <h1 className={`${styles.title} ${darkMode ? styles.darkText : ''}`}>
+          Listing and Bidding Platform Dashboard
+        </h1>
+        <Button
+          size="sm"
+          onClick={goBack}
+          className={`${styles.backBtn} ${darkMode ? styles.darkBackBtn : ''}`}
+        >
           Back
         </Button>
       </header>
 
       {/* Preset Overview Filter */}
-      <section className={styles.filterBar}>
-        <div className={styles.filterLabel}>Choose Metric to view</div>
+      <section className={`${styles.filterBar} ${darkMode ? styles.darkFilterBar : ''}`}>
+        <div className={`${styles.filterLabel} ${darkMode ? styles.darkFilterLabel : ''}`}>
+          Choose Metric to view
+        </div>
 
         <ButtonGroup className={styles.categoryGroup}>
           {/* DEMAND */}
           <Button
-            className={`${styles.filterBtn} ${activeCategory === 'DEMAND' ? styles.active : ''}`}
+            className={`${styles.filterBtn} ${activeCategory === 'DEMAND' ? styles.active : ''} ${
+              darkMode ? styles.darkFilterBtn : ''
+            }`}
             onClick={() => handleCategoryClick('DEMAND')}
           >
             Demand
@@ -109,9 +127,13 @@ export function LBDashboard() {
           >
             <DropdownToggle
               caret
-              className={`${styles.filterBtn} ${activeCategory === 'DEMAND' ? styles.active : ''}`}
+              className={`${styles.filterBtn} ${activeCategory === 'DEMAND' ? styles.active : ''} ${
+                darkMode ? styles.darkFilterBtn : ''
+              }`}
             />
-            <DropdownMenu className={styles.dropdownMenu}>
+            <DropdownMenu
+              className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
+            >
               {METRIC_OPTIONS.DEMAND.map(m => (
                 <DropdownItem
                   key={m.key}
@@ -119,7 +141,7 @@ export function LBDashboard() {
                   onClick={() => handleMetricPick('DEMAND', m.key)}
                   className={`${styles.dropdownItem} ${
                     selectedMetricKey === m.key ? styles.dropdownActive : ''
-                  }`}
+                  } ${darkMode ? styles.darkDropdownItem : ''}`}
                 >
                   {m.label}
                 </DropdownItem>
@@ -129,7 +151,9 @@ export function LBDashboard() {
 
           {/* VACANCY */}
           <Button
-            className={`${styles.filterBtn} ${activeCategory === 'VACANCY' ? styles.active : ''}`}
+            className={`${styles.filterBtn} ${activeCategory === 'VACANCY' ? styles.active : ''} ${
+              darkMode ? styles.darkFilterBtn : ''
+            }`}
             onClick={() => handleCategoryClick('VACANCY')}
           >
             Vacancy
@@ -141,9 +165,13 @@ export function LBDashboard() {
           >
             <DropdownToggle
               caret
-              className={`${styles.filterBtn} ${activeCategory === 'VACANCY' ? styles.active : ''}`}
+              className={`${styles.filterBtn} ${
+                activeCategory === 'VACANCY' ? styles.active : ''
+              } ${darkMode ? styles.darkFilterBtn : ''}`}
             />
-            <DropdownMenu className={styles.dropdownMenu}>
+            <DropdownMenu
+              className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
+            >
               {METRIC_OPTIONS.VACANCY.map(m => (
                 <DropdownItem
                   key={m.key}
@@ -151,7 +179,7 @@ export function LBDashboard() {
                   onClick={() => handleMetricPick('VACANCY', m.key)}
                   className={`${styles.dropdownItem} ${
                     selectedMetricKey === m.key ? styles.dropdownActive : ''
-                  }`}
+                  } ${darkMode ? styles.darkDropdownItem : ''}`}
                 >
                   {m.label}
                 </DropdownItem>
@@ -161,7 +189,9 @@ export function LBDashboard() {
 
           {/* REVENUE */}
           <Button
-            className={`${styles.filterBtn} ${activeCategory === 'REVENUE' ? styles.active : ''}`}
+            className={`${styles.filterBtn} ${activeCategory === 'REVENUE' ? styles.active : ''} ${
+              darkMode ? styles.darkFilterBtn : ''
+            }`}
             onClick={() => handleCategoryClick('REVENUE')}
           >
             Revenue
@@ -173,9 +203,13 @@ export function LBDashboard() {
           >
             <DropdownToggle
               caret
-              className={`${styles.filterBtn} ${activeCategory === 'REVENUE' ? styles.active : ''}`}
+              className={`${styles.filterBtn} ${
+                activeCategory === 'REVENUE' ? styles.active : ''
+              } ${darkMode ? styles.darkFilterBtn : ''}`}
             />
-            <DropdownMenu className={styles.dropdownMenu}>
+            <DropdownMenu
+              className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
+            >
               {METRIC_OPTIONS.REVENUE.map(m => (
                 <DropdownItem
                   key={m.key}
@@ -183,7 +217,7 @@ export function LBDashboard() {
                   onClick={() => handleMetricPick('REVENUE', m.key)}
                   className={`${styles.dropdownItem} ${
                     selectedMetricKey === m.key ? styles.dropdownActive : ''
-                  }`}
+                  } ${darkMode ? styles.darkDropdownItem : ''}`}
                 >
                   {m.label}
                 </DropdownItem>
@@ -192,7 +226,7 @@ export function LBDashboard() {
           </ButtonDropdown>
         </ButtonGroup>
 
-        <div className={styles.currentMetric}>
+        <div className={`${styles.currentMetric} ${darkMode ? styles.darkText : ''}`}>
           Current metric:&nbsp;<strong>{metricLabel}</strong>
         </div>
       </section>
@@ -200,20 +234,33 @@ export function LBDashboard() {
       {/* By Village */}
       <section className={styles.section}>
         <details>
-          <summary className={styles.sectionSummary}>By Village</summary>
-          <div className={styles.sectionBody}>
+          <summary
+            className={`${styles.sectionSummary} ${darkMode ? styles.darkSectionSummary : ''}`}
+          >
+            By Village
+          </summary>
+          <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
             <Row xs="1" md="3" className="g-3">
               <Col>
                 <GraphCard
                   title="Comparing Demand of Villages across Months"
                   metricLabel={metricLabel}
+                  darkMode={darkMode}
                 />
               </Col>
               <Col>
-                <GraphCard title="Demand across Villages" metricLabel={metricLabel} />
+                <GraphCard
+                  title="Demand across Villages"
+                  metricLabel={metricLabel}
+                  darkMode={darkMode}
+                />
               </Col>
               <Col>
-                <GraphCard title="Comparing Villages" metricLabel={metricLabel} />
+                <GraphCard
+                  title="Comparing Villages"
+                  metricLabel={metricLabel}
+                  darkMode={darkMode}
+                />
               </Col>
             </Row>
           </div>
@@ -223,17 +270,26 @@ export function LBDashboard() {
       {/* By Property */}
       <section className={styles.section}>
         <details>
-          <summary className={styles.sectionSummary}>By Property</summary>
-          <div className={styles.sectionBody}>
+          <summary
+            className={`${styles.sectionSummary} ${darkMode ? styles.darkSectionSummary : ''}`}
+          >
+            By Property
+          </summary>
+          <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
             <Row xs="1" md="2" className="g-3">
               <Col>
                 <GraphCard
                   title="Comparing Demand of Properties across Time"
                   metricLabel={metricLabel}
+                  darkMode={darkMode}
                 />
               </Col>
               <Col>
-                <GraphCard title="Comparing Ratings of Properties" metricLabel={metricLabel} />
+                <GraphCard
+                  title="Comparing Ratings of Properties"
+                  metricLabel={metricLabel}
+                  darkMode={darkMode}
+                />
               </Col>
             </Row>
           </div>
@@ -243,9 +299,13 @@ export function LBDashboard() {
       {/* Insights from Reviews */}
       <section className={styles.section}>
         <details>
-          <summary className={styles.sectionSummary}>Insights from Reviews</summary>
-          <div className={styles.sectionBody}>
-            <ReviewWordCloud />
+          <summary
+            className={`${styles.sectionSummary} ${darkMode ? styles.darkSectionSummary : ''}`}
+          >
+            Insights from Reviews
+          </summary>
+          <div className={`${styles.sectionBody} ${darkMode ? styles.darkSectionBody : ''}`}>
+            <ReviewWordCloud darkMode={darkMode} />
           </div>
         </details>
       </section>

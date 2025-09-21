@@ -5,11 +5,14 @@ body {
   padding: 0;
 }
 
-
-
 .dashboardContainer {
   padding: 16px 20px 48px;
   background: #faf9fb;
+}
+
+.darkContainer {
+  background: #1C1C1C;
+  color: #fff;
 }
 
 .dashboardHeader {
@@ -25,12 +28,21 @@ body {
   margin: 0;
 }
 
+.darkText {
+  color: #fff;
+}
+
 .backBtn {
   background: #000;
   color: #fff;
   border: none;
   border-radius: 8px;
   padding: 6px 12px;
+}
+
+.darkBackBtn {
+  background: #3A506B;
+  color: #fff;
 }
 
 .filterBar {
@@ -45,9 +57,18 @@ body {
   align-items: center;
 }
 
+.darkFilterBar {
+  background: #1C2541;
+  border-color: #225163;
+}
+
 .filterLabel {
   font-size: 12px;
   color: #666;
+}
+
+.darkFilterLabel {
+  color: #6C757D;
 }
 
 .categoryGroup {
@@ -68,8 +89,12 @@ body {
   font-weight: 500;
 }
 
-.filterBtn:hover {
+.darkFilterBtn {
+  background: #225163 !important;
+  border-color: #225163 !important;
+}
 
+.filterBtn:hover {
   color: #fff !important;
 }
 
@@ -100,19 +125,29 @@ body {
   color: #fff !important;
 }
 
-
-
-
-
 /* Dropdown menu + items */
 .dropdownMenu {
   border-radius: 10px;
   padding: 4px 0;
 }
 
+.darkDropdownMenu {
+  background: #1C2541;
+  border-color: #225163;
+}
+
 .dropdownItem {
   font-size: 14px;
   padding: 6px 14px;
+}
+
+.darkDropdownItem {
+  color: #fff;
+}
+
+.darkDropdownItem:hover {
+  background: #3A506B;
+  color: #fff;
 }
 
 .dropdownItem:hover {
@@ -142,6 +177,10 @@ body {
   padding: 10px 6px;
 }
 
+.darkSectionSummary {
+  color: #fff;
+}
+
 /* caret */
 .sectionSummary::before {
   content: '▾';
@@ -156,10 +195,20 @@ body {
   padding: 14px;
 }
 
+.darkSectionBody {
+  background: #1C2541;
+  border-color: #225163;
+}
+
 .graphCard {
   border: 1px solid #eee;
   border-radius: 12px;
   min-height: 220px;
+}
+
+.darkCard {
+  background: #1C2541;
+  border-color: #225163;
 }
 
 .graphTitle {
@@ -178,12 +227,22 @@ body {
   background: #f6f6f8;
 }
 
+.darkMetricPill {
+  background: #3A506B;
+  border-color: #225163;
+  color: #fff;
+}
+
 .graphPlaceholder {
   height: 160px;
   border: 1px dashed #c9c9d4;
   border-radius: 10px;
   display: grid;
   place-items: center;
+}
+
+.darkPlaceholder {
+  border-color: #3A506B;
 }
 
 .placeholderText {
