@@ -275,6 +275,12 @@ export const permissionLabels = [
           'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
       },
       {
+        label: 'Modify Badge Amount',
+        key: 'modifyBadgeAmount',
+        description:
+          'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
+      },
+      {
         label: 'Assign Badges',
         key: 'assignBadges',
         description:
@@ -345,21 +351,8 @@ export const permissionLabels = [
               {
                 label: 'Edit Task',
                 key: 'updateTask',
-                subperms: [
-                  {
-                    label: 'Edit Task',
-                    key: 'updateTask',
-                    description:
-                      'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
-                  },
-                  {
-                    // task extension count viewing permission
-                    label: 'See # of Times Time Added to Task',
-                    key: 'viewTaskDeadlineCount',
-                    description:
-                      'Gives the user permission to view the task extension count. "Other Links" -> "Permissions Management" -> "Manage User Permissions" -> "Choose any user" -> "Add button to view task deadline count" ',
-                  },
-                ],
+                description:
+                  'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
               },
               {
                 label: 'Delete Task',
