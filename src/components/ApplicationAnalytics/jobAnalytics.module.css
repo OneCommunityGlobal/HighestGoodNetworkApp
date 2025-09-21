@@ -1,24 +1,40 @@
-.job-analytics-container {
+.jobAnalytics {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  min-width: 100vw;
+}
+
+.jobAnalyticsDarkMode {
+  background-color: #1b2a41;
+  color: #ffffff;
+}
+
+.jobAnalyticsDarkMode .jobAnalytics {
+  background-color: #1b2a41; /* match dark mode */
+}
+
+.jobAnalyticsContainer {
   display: flex;
   align-items: flex-start;
-  gap: 20px;
+  gap: 40px;
   width: 100%;
-  max-width: 1400px;
+  max-width: fit-content;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px;
   font-family: Arial, sans-serif;
 }
 
-.chart-container {
+.chartContainer {
   flex: 1;
   border: 2px solid #4285f4;
   border-radius: 8px;
   background-color: #ffffff;
   padding: 20px;
-  min-width: 800px; 
+  min-width: 800px;
 }
 
-.chart-title {
+.chartTitle {
   font-size: 24px;
   font-weight: 400;
   color: #5f6368;
@@ -26,30 +42,29 @@
   text-align: center;
 }
 
-.chart-area {
+.chartArea {
   min-height: 400px;
   position: relative;
   padding-left: 170px;
-  padding-right: 40px; 
+  padding-right: 40px;
   padding-top: 20px;
   padding-bottom: 60px;
-  width: 100%; 
+  width: 100%;
 }
 
-.grid-lines {
+.gridLines {
   position: absolute;
   left: 170px;
-  right: 40px; 
+  right: 40px;
   top: 20px;
   bottom: 60px;
-  background-image: 
-    linear-gradient(to right, #e0e0e0 1px, transparent 1px),
+  background-image: linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
-  background-size: 10% 25%; 
+  background-size: 10% 25%;
   opacity: 0.5;
 }
 
-.y-axis {
+.yAxis {
   position: absolute;
   left: 0;
   top: 20px;
@@ -60,7 +75,7 @@
   justify-content: space-between;
 }
 
-.y-axis-label {
+.yAxisLabel {
   height: 80px;
   display: flex;
   align-items: center;
@@ -70,41 +85,49 @@
   color: #5f6368;
   border-right: 1px solid #9aa0a6;
   white-space: nowrap;
-  overflow: hidden; 
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.x-axis {
+.xAxis {
   position: absolute;
   left: 170px;
-  right: 40px; 
+  right: 40px;
   bottom: 40px;
-  height: 20px;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   border-top: 1px solid #9aa0a6;
+  padding-top: 5px;
 }
 
-.x-axis-tick {
-  position: absolute;
+.xAxisTick {
   font-size: 12px;
   color: #5f6368;
-  transform: translateX(-50%);
-  top: 5px;
+  position: relative;
+  text-align: center;
+  min-width: 20px;
 }
 
-.x-axis-label {
-  position: absolute;
-  bottom: 10px;
+.xAxisLabel {
+  position: relative;
+  bottom: 0;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(100%);
   font-size: 12px;
   color: #5f6368;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  padding-top: 7px;
+  justify-content: center;
 }
 
-.bars-container {
+.barsContainer {
   position: absolute;
   left: 170px;
-  right: 40px; 
+  right: 40px;
   top: 20px;
   bottom: 60px;
   display: flex;
@@ -112,8 +135,8 @@
   justify-content: space-between;
 }
 
-.bar-row {
-  height: 80px; 
+.barRow {
+  height: 80px;
   display: flex;
   align-items: center;
   position: relative;
@@ -138,7 +161,7 @@
   transform: scaleY(1.1);
 }
 
-.data-label {
+.dataLabel {
   position: absolute;
   right: -25px;
   font-size: 14px;
@@ -153,14 +176,20 @@
   top: 50%;
   transform: translateY(-50%);
   margin-left: 10px;
-  background-color: #333;
-  color: white;
+  background-color: #f8f9fa;
+  color: #4285f4;
   padding: 8px 12px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: bold;
   white-space: nowrap;
   z-index: 1000;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  border: 2px solid #1a73e8;
+}
+
+.tooltip strong {
+  font-weight: 600;
 }
 
 .tooltip::before {
@@ -173,7 +202,7 @@
   border-right-color: #333;
 }
 
-.no-data {
+.noData {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -182,7 +211,7 @@
   font-size: 16px;
 }
 
-.summary-info {
+.summaryInfo {
   margin-top: 20px;
   padding: 15px;
   background-color: #f8f9fa;
@@ -191,37 +220,41 @@
   color: #5f6368;
 }
 
-.summary-info div {
+.summaryInfo div {
   margin-bottom: 5px;
 }
 
-.summary-info div:last-child {
+.summaryInfo div:last-child {
   margin-bottom: 0;
 }
 
-.filters-panel {
+.summaryInfo strong {
+  color: #4285f4;
+}
+
+.filtersPanel {
   display: flex;
   flex-direction: column;
   gap: 20px;
   min-width: 150px;
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
-.filter-group {
-  border: 1px solid #dadce0;
+.filterGroup {
+  border: 2px solid #4285f4;
   border-radius: 4px;
   padding: 8px;
-  background-color: #ffffff;
+  background-color: #f8f9fa;
 }
 
-.filter-label {
+.filterLabel {
   font-size: 14px;
-  font-weight: 500;
-  color: #3c4043;
+  font-weight: bolder;
+  color: #4285f4;
   margin-bottom: 4px;
 }
 
-.filter-select-job-analytics {
+.filterSelectJobAnalytics {
   width: 100%;
   padding: 6px 8px;
   border: 1px solid #dadce0;
@@ -233,131 +266,136 @@
   height: 32px !important;
 }
 
-.filter-select-job-analytics:focus {
+.filterSelectJobAnalytics:focus {
   outline: none;
   border-color: #4285f4;
 }
 
-.filter-select-job-analytics:hover {
+.filterSelectJobAnalytics:hover {
   border-color: #9aa0a6;
 }
 
 /* Dark Mode Support */
-[data-theme="dark"] .job-analytics-container,
-.dark .job-analytics-container {
-  background-color: #1a1a1a;
+.jobAnalyticsContainerDarkMode .jobAnalyticsContainer {
   color: #ffffff;
 }
 
-[data-theme="dark"] .chart-container,
-.dark .chart-container {
+.jobAnalyticsContainerDarkMode .chartContainer {
   background-color: #2d2d2d;
-  border-color: #444;
 }
 
-[data-theme="dark"] .y-axis-label,
-.dark .y-axis-label {
+.jobAnalyticsContainerDarkMode .yAxisLabel {
   color: #e8eaed;
   border-color: #5f6368;
 }
 
-[data-theme="dark"] .x-axis-tick,
-.dark .x-axis-tick {
+.jobAnalyticsContainerDarkMode .xAxisTick {
+  color: #e8eaed;
+}
+.jobAnalyticsContainerDarkMode .xAxisLabel {
   color: #e8eaed;
 }
 
-[data-theme="dark"] .filters-panel select,
-.dark .filters-panel select {
+.jobAnalyticsContainerDarkMode .filtersPanel select {
   background-color: #2d2d2d;
   color: #ffffff;
   border-color: #5f6368;
 }
-
-[data-theme="dark"] .chart-title,
-.dark .chart-title {
+.jobAnalyticsContainerDarkMode .filterGroup {
+  background-color: #333;
+}
+.jobAnalyticsContainerDarkMode .chartTitle {
   color: #e8eaed;
 }
 
-[data-theme="dark"] .summary-info,
-.dark .summary-info {
+.jobAnalyticsContainerDarkMode .summaryInfo {
   background-color: #333;
   color: #e8eaed;
 }
 
+.jobAnalyticsContainerDarkMode .gridLines {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  opacity: 0.3; /* softer look */
+}
+
+.jobAnalyticsContainerDarkMode .tooltip {
+  background-color: #333;
+}
+.jobAnalyticsContainerDarkMode .tooltip strong {
+  color: #ffffff;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .chart-container {
+  .chartContainer {
     min-width: 700px;
   }
 }
 
 @media (max-width: 768px) {
-  .job-analytics-container {
+  .jobAnalyticsContainer {
     flex-direction: column;
     padding: 10px;
   }
-  
-  .filters-panel {
+
+  .filtersPanel {
     flex-direction: row;
     min-width: auto;
     width: 100%;
   }
-  
-  .chart-container {
+
+  .chartContainer {
     min-width: auto;
     width: 100%;
   }
-  
-  .chart-area {
+
+  .chartArea {
     padding-left: 120px;
     padding-right: 20px;
   }
-  
-  .y-axis {
+
+  .yAxis {
     width: 110px;
   }
-  
-  .y-axis-label {
-    font-size: 11px;
-  }
-  
-  .bars-container {
+
+  .barsContainer {
     left: 120px;
     right: 20px;
   }
-  
-  .grid-lines {
+
+  .gridLines {
     left: 120px;
     right: 20px;
   }
-  
-  .x-axis {
+
+  .xAxis {
     left: 120px;
     right: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .chart-area {
+  .chartArea {
     padding-left: 100px;
     padding-right: 10px;
   }
-  
-  .y-axis {
+
+  .yAxis {
     width: 90px;
   }
-  
-  .bars-container {
+
+  .barsContainer {
     left: 100px;
     right: 10px;
   }
-  
-  .grid-lines {
+
+  .gridLines {
     left: 100px;
     right: 10px;
   }
-  
-  .x-axis {
+
+  .xAxis {
     left: 100px;
     right: 10px;
   }
