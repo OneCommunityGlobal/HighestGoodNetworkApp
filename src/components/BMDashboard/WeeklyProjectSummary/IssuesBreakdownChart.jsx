@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
@@ -22,6 +23,12 @@ export default function IssuesBreakdownChart() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  const rootStyles = getComputedStyle(document.body);
+  const textColor = rootStyles.getPropertyValue('--text-color') || '#666';
+  const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');
+  const tooltipBg = rootStyles.getPropertyValue('--section-bg') || '#fff';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,17 +48,9 @@ export default function IssuesBreakdownChart() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!data || data.length === 0) {
-    return <div>No data available</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!data || data.length === 0) return <div>No data available</div>;
 
   return (
     <div className={styles.container}>
@@ -59,6 +58,7 @@ export default function IssuesBreakdownChart() {
         <div className={styles.headerRow}>
           <h2 className={styles.heading}>Issues breakdown by Type</h2>
         </div>
+
         <div className={styles.legend}>
           <span className={styles.legendItem}>
             <span
@@ -77,21 +77,29 @@ export default function IssuesBreakdownChart() {
           </span>
         </div>
       </div>
+
       <div className={styles.chartContainer}>
         <ResponsiveContainer>
           <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="projectName" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+            <XAxis dataKey="projectName" tick={{ fill: textColor }} />
+            <YAxis allowDecimals={false} tick={{ fill: textColor }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: tooltipBg,
+                border: 'none',
+                borderRadius: '8px',
+                color: textColor,
+              }}
+            />
             <Bar dataKey="equipmentIssues" name="Equipment Issues" fill={COLORS.equipmentIssues}>
-              <LabelList dataKey="equipmentIssues" position="top" />
+              <LabelList dataKey="equipmentIssues" position="top" fill={textColor} />
             </Bar>
             <Bar dataKey="laborIssues" name="Labor Issues" fill={COLORS.laborIssues}>
-              <LabelList dataKey="laborIssues" position="top" />
+              <LabelList dataKey="laborIssues" position="top" fill={textColor} />
             </Bar>
             <Bar dataKey="materialIssues" name="Materials Issues" fill={COLORS.materialIssues}>
-              <LabelList dataKey="materialIssues" position="top" />
+              <LabelList dataKey="materialIssues" position="top" fill={textColor} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
