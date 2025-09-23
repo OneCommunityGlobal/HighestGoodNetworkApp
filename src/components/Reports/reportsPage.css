@@ -3,6 +3,14 @@
   margin: 0;
 }
 
+.spinner-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .red-asterisk {
   color: #e00000;
 }
@@ -37,7 +45,7 @@
   .category-data-container {
     grid-template-columns: 1fr;
   }
-  
+
   .table-data-container {
     max-width: 720px;
     margin: 0 auto;
@@ -77,6 +85,7 @@
   margin: 8px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   transform-origin: center center;
+  height: 15rem;
 }
 
 .report-container-data {
@@ -356,7 +365,9 @@
   color: #fff !important;
 }
 
-.force-white-text, .bg-yinmn-blue .force-white-text, .bg-yinmn-blue .info-modal-content.force-white-text {
+.force-white-text,
+.bg-yinmn-blue .force-white-text,
+.bg-yinmn-blue .info-modal-content.force-white-text {
   color: #fff !important;
 }
 
