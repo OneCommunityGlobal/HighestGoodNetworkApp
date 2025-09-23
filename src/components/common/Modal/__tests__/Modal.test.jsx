@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
 import '@testing-library/jest-dom';
 import ModalExample from '../Modal';
-import { vi } from 'vitest'
+import { vi } from 'vitest';
 const mockStore = configureStore([]);
 const initialState = {
   theme: { darkMode: false },
@@ -107,7 +107,7 @@ describe('ModalExample Component', () => {
         hasInactiveBtn={true} // This is crucial!
         setInactiveButton="Yes, hide it all"
         modalTitle="Test Modal"
-      />
+      />,
     );
 
     fireEvent.click(screen.getByText(/yes, hide it all/i));

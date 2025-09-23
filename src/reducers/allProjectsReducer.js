@@ -57,7 +57,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         ];
         return updateState({ projects: updatedProjects, status });
       } else {
-        return updateState({ status:404, error: "Project not found." });
+        return updateState({ status: 404, error: 'Project not found.' });
       }
 
       return updateState({ status: 404, error: 'Project not found.' });

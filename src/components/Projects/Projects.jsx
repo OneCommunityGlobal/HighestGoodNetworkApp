@@ -9,13 +9,13 @@ import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers.js';
 // import { getProjectsByUsersName } from '../../actions/userProfile';
 // import { useState, useCallback, useEffect } from 'react';
 // import { connect } from 'react-redux';
-import { fetchAllArchivedProjects } from '../../actions/projects';
+// import { fetchAllArchivedProjects } from '../../actions/projects';
 import {
   fetchAllProjects,
   postNewProject,
   modifyProject,
   clearError,
-  // fetchAllArchivedProjects
+  fetchAllArchivedProjects
 } from '../../actions/projects';
 import {getProjectsByUsersName, getUserByAutocomplete } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
@@ -302,6 +302,7 @@ const Projects = function(props) {
       await props.fetchAllProjects();
       // The effect watching allReduxProjects will call generateProjectList again when redux lands
     } catch (error) {
+      // eslint-disable-next-line no-console
         console.error('Update project error:', error);
         // Optionally: refetch full list to recover
         await props.fetchAllProjects();
@@ -514,7 +515,6 @@ const Projects = function(props) {
   //   props.clearError();
   // };
   
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleProjectArchived = () => {
     if(showArchived){
         props.fetchAllArchivedProjects();
@@ -541,6 +541,7 @@ const Projects = function(props) {
       }
     }
     catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching user suggestions:", error);
       setSuggestions([]); // Clearing suggestions on error
     }
@@ -631,6 +632,7 @@ const Projects = function(props) {
         // );
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error fetching projects for selected user:", error);
       setProjectList(allProjects); // Showing all projects on error
       // setProjectList(
@@ -914,6 +916,7 @@ const Projects = function(props) {
       // Build JSX and set list
       setProjectList(generateJSXList(filtered));
     } catch (error) {
+      // eslint-disable-next-line no-console
         console.error('generateProjectList error:', error);
     }
   };

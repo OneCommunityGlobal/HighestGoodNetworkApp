@@ -149,57 +149,57 @@ const ModalExample = props => {
         )}
           */}
         {/* Close button */}
-      {confirmModal && (
-        <Button color="secondary" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
-          Close
-        </Button>
-      )}
+        {confirmModal && (
+          <Button color="secondary" onClick={closeModal} style={darkMode ? boxStyleDark : boxStyle}>
+            Close
+          </Button>
+        )}
 
-      {/* Green Confirm button */}
-      {confirmModal && (
-        <Button
-          color="success" // <-- green
-          onClick={confirmModal}
-          disabled={isConfirmDisabled}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          {confirmButtonText || 'Confirm'}
-        </Button>
-      )}
+        {/* Green Confirm button */}
+        {confirmModal && (
+          <Button
+            color="success" // <-- green
+            onClick={confirmModal}
+            disabled={isConfirmDisabled}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {confirmButtonText || 'Confirm'}
+          </Button>
+        )}
 
-      {/* Only show inactive/active buttons if explicitly passed */}
-      {hasInactiveBtn && setInactiveModal && (
-        <Button
-          color="success"
-          disabled={isSetInactiveDisabled}
-          onClick={setInactiveModal}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          {setInactiveButton}
-        </Button>
-      )}
+        {/* Only show inactive/active buttons if explicitly passed */}
+        {hasInactiveBtn && setInactiveModal && (
+          <Button
+            color="success"
+            disabled={isSetInactiveDisabled}
+            onClick={setInactiveModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {setInactiveButton}
+          </Button>
+        )}
 
-      {hasActiveBtn && setActiveModal && (
-        <Button
-          color="success"
-          disabled={isSetActiveDisabled}
-          onClick={setActiveModal}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          {setActiveButton}
-        </Button>
-      )}
+        {hasActiveBtn && setActiveModal && (
+          <Button
+            color="success"
+            disabled={isSetActiveDisabled}
+            onClick={setActiveModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {setActiveButton}
+          </Button>
+        )}
 
-      {type === 'input' && (
-        <Button
-          color="danger"
-          onClick={() => confirmModal(linkName, linkURL, linkType)}
-          disabled={!(linkName && linkURL)}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Add
-        </Button>
-      )}  
+        {type === 'input' && (
+          <Button
+            color="danger"
+            onClick={() => confirmModal(linkName, linkURL, linkType)}
+            disabled={!(linkName && linkURL)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Add
+          </Button>
+        )}
       </ModalFooter>
     </Modal>
   );
