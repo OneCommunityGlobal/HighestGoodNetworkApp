@@ -136,6 +136,7 @@ import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+import MostWastedMaterialsDashboard from './components/MostWastedMaterials/MostWastedMaterials';
 
 import HelpPage from './components/LandingPage/HelpPage';
 
@@ -280,7 +281,7 @@ export default (
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
 
     <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
-
+    <Route path="/mostwastedmaterials" component={MostWastedMaterialsDashboard} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
 
     <Route path="/logattendance" component={AttendanceNoShow} />
