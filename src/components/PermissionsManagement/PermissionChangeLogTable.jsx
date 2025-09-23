@@ -2,7 +2,8 @@
 import { useState } from 'react';
 import './PermissionChangeLogTable.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { formatDate, formattedAmPmTime } from 'utils/formatDate';
+import { formatDate, formattedAmPmTime } from '~/utils/formatDate';
+import { permissionLabelKeyMappingObj } from './PermissionsConst';
 
 function PermissionChangeLogTable({ changeLogs, darkMode }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,11 +16,17 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
   const fontColor = darkMode ? 'text-light' : '';
   const bgYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
   const addDark = darkMode ? '-dark' : '';
-
   const paginate = pageNumber => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
+  };
+
+  const formatName = name => {
+    if (name.startsWith('INDIVIDUAL:')) {
+      return name.replace('INDIVIDUAL:', '').trim();
+    }
+    return name;
   };
 
   const renderPageNumbers = () => {
@@ -67,7 +74,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
 
   const renderPermissions = (permissions, rowId) => {
     // Filter out empty or falsy values before joining the permissions
-    const filteredPermissions = permissions.filter(permission => permission);
+    const filteredPermissions = permissions
+      .map(permission => permissionLabelKeyMappingObj?.[permission])
+      .filter(e => e);
 
     return (
       <div className="permissions-cell">
@@ -95,7 +104,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
               <th className={`permission-change-log-table--header${addDark}`}>
                 Log Date and Time (PST)
               </th>
-              <th className={`permission-change-log-table--header${addDark}`}>Role Name</th>
+              <th className={`permission-change-log-table--header${addDark}`}>Name</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions Added</th>
               <th className={`permission-change-log-table--header${addDark}`}>
@@ -111,8 +120,14 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(
                   log.logDateTime,
                 )} ${formattedAmPmTime(log.logDateTime)}`}</td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.roleName}
+                <td
+                  className={`permission-change-log-table--cell ${bgYinmnBlue}`}
+                  style={{
+                    // Uncommented lines below and in formatName, using individualName for users, and roleName for role changes
+                    fontWeight: log?.individualName ? 'bold' : 'normal',
+                  }}
+                >
+                  {log?.individualName ? formatName(log.individualName) : log.roleName}
                 </td>
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissions, log._id)}

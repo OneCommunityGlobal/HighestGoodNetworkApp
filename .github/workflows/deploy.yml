@@ -1,0 +1,65 @@
+name: Build and Deploy
+on:
+  push:
+    branches:
+      - main
+      - development
+concurrency:
+  group: Build and Deploy / ${{ github.ref_name == 'main' && 'Production' || 'Development' }}
+  cancel-in-progress: true
+jobs:
+  # Build
+  build:
+    name: Build
+    strategy:
+      matrix:
+        environment: ${{ github.ref_name == 'main' && fromJson('["Production", "Beta"]') || fromJson('["Development"]') }}
+    environment: ${{ matrix.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+      # We don't run tests here since we assume it's already done during PR process.
+      # - name: Update Browser List
+      #   run: npx browserslist@latest --update-db
+      - name: Build React App
+        run: yarn run build && cp build/index.html build/200.html 
+        env:
+          NODE_ENV: ${{ github.ref_name == 'main' && 'production' || 'development' }}
+          REACT_APP_APIENDPOINT: ${{ vars.REACT_APP_API_ENDPOINT }}
+          GENERATE_SOURCEMAP: ${{ github.ref_name != 'main' }}
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.environment }} Build
+          path: ./build
+  # Deployment
+  deployment-surge:
+    name: Deploy to Surge
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: ${{ github.ref_name == 'main' && fromJson('["Production", "Beta"]') || fromJson('["Development"]') }}
+    environment: ${{ matrix.environment }}
+    if: ${{ success() }}
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.environment }} Build
+          path: ./build
+      - name: Deploy to Surge
+        uses: dswistowski/surge-sh-action@v1
+        with:
+          domain: ${{ vars.SURGE_DOMAIN }}
+          project: './build'
+          login: ${{ secrets.SURGE_LOGIN }}
+          token: ${{ secrets.SURGE_TOKEN }}

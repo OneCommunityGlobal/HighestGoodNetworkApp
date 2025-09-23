@@ -3,9 +3,11 @@
  * Stores all variables that display texts on the UI
  ******************************************************************************* */
 export const ACTIVE = 'Active';
+export const TITLE = 'Title'
 export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
 export const BM_DASHBOARD = 'BM Dashboard';
+export const CP_DASHBOARD = 'CP Dashboard';
 export const BM_PROJECT = 'Project';
 export const ADD_MATERIAL = 'Add Material';
 export const LOG_MATERIAL = 'Log Material';
@@ -31,6 +33,7 @@ export const REPORTS = 'Reports';
 export const WEEKLY_SUMMARIES_REPORT = 'Weekly Summaries Report';
 export const TOTAL_ORG_SUMMARY = 'Total Org Summary';
 export const TEAM_LOCATIONS = 'Team Locations';
+export const TOTAL_CONSTRUCTION_SUMMARY = 'Total Construction Summary';
 export const TEAMS = 'Teams';
 export const PERMISSIONS_MANAGEMENT = 'Permissions Management';
 export const TIMELOG = 'Timelog';
@@ -46,7 +49,7 @@ export const LAST_NAME = 'Last Name';
 export const ROLE = 'Role';
 export const EMAIL = 'Email';
 export const JOB_TITLE = 'Job Title';
-export const WKLY_COMMITTED_HRS = 'Wkly Committed Hrs';
+export const WKLY_COMMITTED_HRS = 'Cmtd. Hrs';
 export const USER_RESUME_DATE = 'Paused Until';
 export const CREATE_NEW_USER = 'Create New User';
 export const CREATE_NEW_TEAM = 'Create New Team';
@@ -54,6 +57,7 @@ export const SEARCH = 'Search';
 export const SHOW = 'Show';
 export const PAUSE = 'Pause';
 export const RESUME = 'Resume';
+export const PROCESSING = 'Processing...';
 export const CLOSE = 'Close';
 export const ID = 'Id';
 export const TEAM_NAME = 'Team Names';
@@ -75,6 +79,14 @@ export const LOG_MET = 'Log MET';
 export const LOG_TIME = 'Log Time';
 export const LOG_ISSUE = 'Log Issue';
 export const ADD_MEMBER = 'Add Member';
-export const REQUESTED_TIME_OFF = 'Requested Time Off';
+export const ACTIVITY = 'Activity';
+export const ACTIVITIES = 'Activities';
+export const RESOURCE_USAGE = "Resource Usage";
+export const PARTICIPATION = "Participation";
+export const CALENDAR = "Calendar";
+export const EVENT_PERSONALIZATION = "Event Personalization";
+export const REGISTRATION = "Registration";
+export const PR_PROMOTIONS = 'PR Promotions';
+
 
 export const SEND_EMAILS = 'Send Emails';

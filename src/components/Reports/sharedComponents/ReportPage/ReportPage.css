@@ -6,8 +6,8 @@
   min-height: 100vh;
   background-color: #faf7fd;
   padding: 40px 0 0 24px;
-  align-items: start;
-  padding: 2vh 7vw;
+  align-items: stretch;
+
 }
 
 .report-page-content {
@@ -19,13 +19,16 @@
   /* padding-bottom: 24px; */
 }
 
-
 .report-page-profile {
-  padding-right: 24px;
-  /* background-color: #f1ebf7; */
   border-top-left-radius: 25px;
   border-radius: 25px;
-  margin-bottom: 24px;
+  width: 100%;
+}
+
+.report-page-profile-dark {
+  border-top-left-radius: 25px;
+  border-radius: 25px;
+  width: 100%;
 }
 
 @media (max-width: 1300px) {
@@ -67,17 +70,12 @@
   }
 }
 
-.project-header{
+.project-header {
   font-size: 32px;
-  padding: 10px 10px;
+  padding: 5px 5px;
   text-align: center;
-  background-color:white;
+  background-color: white;
   border-radius: 20px;
   box-shadow: 0 0 12px #eae1f6;
-}
-
-@media (max-width: 450px){
-  .project-header{
-    margin-top: 1rem;
-  }
+  width: 100%;
 }

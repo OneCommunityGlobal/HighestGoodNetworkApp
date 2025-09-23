@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 export default function SearchProjectByPerson({
   onSearch,
@@ -9,6 +10,7 @@ export default function SearchProjectByPerson({
 }) {
   const [inputValue, setInputValue] = useState(''); // Keep track of input value
   const [showSuggestions, setShowSuggestions] = useState(false); // Control whether suggestions are shown
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Handle when the user types in the input field
   const handleInputChange = ({ target: { value } }) => {
@@ -34,11 +36,15 @@ export default function SearchProjectByPerson({
     <div className="search-project-person">
       <form className="input-group mb-2" onSubmit={e => e.preventDefault()}>
         <div className="input-group-prepend">
-          <span className="input-group-text search-field-container">Search</span>
+          <span
+            className={`input-group-text search-field-container ${darkMode ? 'bg-light-grey' : ''}`}
+          >
+            Search
+          </span>
         </div>
         <input
           type="text"
-          className="form-control"
+          className={`form-control ${darkMode ? 'bg-white' : ''}`}
           placeholder="Person's Name"
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
@@ -50,7 +56,7 @@ export default function SearchProjectByPerson({
         </div>
       </form>
 
-      {showSuggestions && suggestions.length > 0 && (
+      {showSuggestions && suggestions?.length > 0 && (
         <ul className="suggestions-list">
           {suggestions.map(suggestion => (
             <li key={suggestion._id} className="suggestion-item">
