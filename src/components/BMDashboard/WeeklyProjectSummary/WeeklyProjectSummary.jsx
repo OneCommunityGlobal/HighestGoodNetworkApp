@@ -171,7 +171,6 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -236,9 +235,9 @@ function WeeklyProjectSummary() {
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
-        className: 'large',
+        className: 'full',
         content: (
-          <div className="weekly-project-summary-card normal-card">
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
             <IssuesBreakdownChart />
           </div>
         ),
