@@ -27,7 +27,7 @@ const BlueSquareEmailCCPopup = React.memo(props => {
   const [searchWord, setSearchWord] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [addUser, setAddUser] = useState({});
-  const allUsers = useSelector(state => state.allUserProfiles.userProfiles) || [];
+  const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
   const activeUsers = allUsers.filter(user => user.isActive === true);
   const ccList = props.ccList || [];
 
