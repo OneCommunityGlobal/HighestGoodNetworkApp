@@ -129,6 +129,8 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
+// Community Calendar
+import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
@@ -218,39 +220,27 @@ const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuil
 
 export default (
   <Switch>
-    {/* ----- LB Dashboard Routing ----- */}
+    {/* ----- LB Dashboard Routing Starts----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
-    <Route path="/EventPopularity" component={EventPopularity} />
-    <Route
-      path="/lbdashboard/register"
+    <Route path="/lbdashboard/login" component={LBLogin} />
+    <Route path="/lbdashboard/register" component={LBRegister} />
+    {/* Protected Routes for lbdashboard */}
+    <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+    <LBProtectedRoute
+      path="/lbdashboard/listingshome"
       render={() => (
         <>
           <AutoUpdate />
-          <ToastContainer />
-          <LBRegister />
+          <LBHome />
         </>
       )}
     />
-    <Route
-      path="/lbdashboard"
-      render={() => (
-        <>
-          <LBDashboard />
-        </>
-      )}
-    />
-    <Route
-      path="/lbdashboard/login"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <LBLogin />
-        </>
-      )}
-    />
-
-    <Route
+    <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+    <LBProtectedRoute path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+    <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
+    <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+    <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
+    <LBProtectedRoute
       exact
       path="/lbdashboard/wishlists"
       render={() => (
@@ -261,7 +251,7 @@ export default (
         </>
       )}
     />
-    <Route
+    <LBProtectedRoute
       exact
       path="/lbdashboard/wishlist/:id"
       render={() => (
@@ -272,15 +262,15 @@ export default (
         </>
       )}
     />
+    {/* ----- LB Dashboard Routing Ends----- */}
+
+    <Route path="/EventPopularity" component={EventPopularity} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-
     <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
-
     <Route path="/TestEventReg" component={TestEventRegistration} />
-
     <Route path="/logattendance" component={AttendanceNoShow} />
 
     <>
@@ -644,7 +634,10 @@ export default (
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
-        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+
+        {/* ----- Community Calendar Routing ----- */}
+        <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
+        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
           component={Feedbackform}
