@@ -437,3 +437,106 @@
 .lb-msg-icon {
   cursor: pointer;
 }
+
+.lb-global-notify {
+  padding: 12px;
+  margin: 8px 8px 12px;
+  border: 1px solid #e6e6e6;
+  border-radius: 10px;
+  background: #fff;
+}
+.lb-global-notify__header {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.lb-sms-phone-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+.lb-sms-phone-help {
+  color: #666;
+  font-size: 12px;
+}
+.lb-sms-hint {
+  font-size: 12px;
+  color: #666;
+  margin: 8px 0 12px;
+}
+
+.content-container {
+
+  height: calc(100vh - 160px);   
+  min-height: 0;              
+}
+
+.container-main-msg {
+  flex: 1 1 auto;               
+  min-height: 0;                 
+}
+
+
+.lb-messaging-contacts {
+  min-height: 0;                 
+
+}
+
+
+.lb-messaging-contacts-body {
+
+  height: auto;
+  max-height: none;
+
+  flex: 1 1 auto;
+  min-height: 0;               
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: block;           
+}
+
+
+.lb-messaging-contacts-body:not(.active) { display: none; }
+
+
+.lb-messaging-message-window {
+  min-height: 0;              
+}
+
+.lb-messaging-message-window-body {
+  min-height: 0;                  
+  overflow-y: auto;
+}
+
+.lb-unread-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 0 6px;
+  height: 18px;
+  line-height: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: #e33;
+  border-radius: 9px;
+  vertical-align: middle;
+}
+
+/* Right-aligned unread circle badge */
+.lb-messaging-contact { position: relative; }
+.lb-unread-dot-right {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e33;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 20px;
+  text-align: center;
+}

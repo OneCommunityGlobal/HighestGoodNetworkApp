@@ -343,6 +343,11 @@ export const ENDPOINTS = {
   LB_GET_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
+  LB_PREFERENCES_BASE: `${APIEndpoint}/lb/preferences`,
+  LB_USER_SMS_SETTINGS: (userId) => `/api/user/${userId}/sms-settings`,
+  LB_DEV_PHONE_OTP_SEND: (userId) => `/api/dev/phone/otp/send/${userId}`,
+  LB_DEV_PHONE_OTP_VERIFY: (userId) => `/api/dev/phone/otp/verify/${userId}`,
+  
 
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
