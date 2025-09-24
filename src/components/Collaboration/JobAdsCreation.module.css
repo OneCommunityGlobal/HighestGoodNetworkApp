@@ -1,0 +1,63 @@
+.jobAds-header {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+.jobAds-creation .header img {
+  height: auto;
+  margin: 0 auto;
+  flex-direction: column;
+} 
+.jobAds-creation .h3 {
+  justify-content: center;
+} 
+.title-header {
+  display: flex;
+  justify-content: center;
+}
+.input-item{  
+  display:flex;
+  flex-direction: row;
+align-items: flex-start;
+justify-content: flex-start;
+margin-bottom: 1rem;  
+}
+.input-label  {
+  width:120px;
+  text-align: left;  
+  }
+.jobAds-input{
+align-items: flex-start;
+flex:1
+}
+.jobAds-creation-button-group {
+  margin-top:20px;
+  display: flex;
+  width:100%;
+  justify-content: space-around;
+  background-color: aliceblue;
+  gap:20px;
+}
+.user-collaboration-container {
+  width: 90%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+
+.user-collaboration-dark-mode {
+  background-color: #1B2A41;
+  color: #f1f1f1;
+}
+.user-collaboration-dark-mode .user-collaboration-container {
+  background-color: #1B2A41;
+}
+
+.user-collaboration-dark-mode .user-collaboration-container .input-label{
+  background-color: #ffffff;
+
+}
