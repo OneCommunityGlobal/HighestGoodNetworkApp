@@ -34,8 +34,10 @@ function AgeChart({ data, compareLabel, darkMode }) {
   return (
     <div
       style={{
-        width: '800px',
-        height: 500,
+        width: '100%',
+        maxWidth: '1000px',
+        height: '60vh',
+        minHeight: '350px',
         margin: '0 auto',
         padding: '20px',
         background: chartBg,
@@ -60,24 +62,33 @@ function AgeChart({ data, compareLabel, darkMode }) {
           }
         `}</style>
       )}
-      <h2 style={{ color: chartText }}>Applicants grouped by Age</h2>
+      <h2 style={{ color: chartText, textAlign: 'center' }}>Applicants Grouped by Age</h2>
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barSize={80}>
+        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 40 }} barSize={70}>
           <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#ccc'} />
-          <XAxis dataKey="ageGroup" stroke={chartText} tick={{ fill: chartText }}>
-            <Label value="Age Groups" offset={0} position="bottom" style={{ fill: chartText }} />
-          </XAxis>
-          <YAxis stroke={chartText} tick={{ fill: chartText }}>
-            <Label
-              value="Number of Applicants"
-              angle={-90}
-              position="insideLeft"
-              style={{ fill: chartText }}
-            />
-          </YAxis>
+          <XAxis
+            dataKey="ageGroup"
+            tick={{ fill: chartText }}
+            label={{
+              value: 'Age Groups',
+              position: 'insideBottom',
+              offset: -5,
+              fill: chartText,
+            }}
+          />
+          <YAxis
+            tick={{ fill: chartText }}
+            label={{
+              value: 'Number of Applicants',
+              angle: -90,
+              position: 'insideLeft',
+              fill: chartText,
+              offset: -5,
+            }}
+          />
           <Tooltip formatter={formatTooltip} />
           <Bar dataKey="applicants" fill={barColor}>
-            <LabelList dataKey="applicants" position="top" />
+            <LabelList dataKey="applicants" position="top" fill={chartText} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
