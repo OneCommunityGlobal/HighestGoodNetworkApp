@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import './PRGradingScreen.css';
+import styles from './PRGradingScreen.module.css';
 
 const PRGradingScreen = ({ teamData, reviewers }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -164,38 +164,52 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
     };
     // onSave(formattedData);
     // TODO: Replace with actual API call when backend is implemented
-    // fetch('/api/weekly-grading/save', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(formattedData),
-    // });
   };
 
   return (
-    <Container fluid className={`pr-grading-screen-container ${darkMode ? 'dark-mode' : ''}`}>
+    <Container
+      fluid
+      className={`${styles['pr-grading-screen-container']} ${darkMode ? styles['dark-mode'] : ''}`}
+    >
       <Row className="justify-content-center">
         <Col md={12}>
-          <Card className={`pr-grading-screen-card ${darkMode ? 'dark-mode' : ''}`}>
-            <Card.Header className={`pr-grading-screen-header ${darkMode ? 'dark-mode' : ''}`}>
-              <div className="pr-grading-screen-header-content">
-                <div className="pr-grading-screen-header-left">
-                  <h1 className={`pr-grading-screen-title ${darkMode ? 'dark-mode' : ''}`}>
+          <Card
+            className={`${styles['pr-grading-screen-card']} ${darkMode ? styles['dark-mode'] : ''}`}
+          >
+            <Card.Header
+              className={`${styles['pr-grading-screen-header']} ${
+                darkMode ? styles['dark-mode'] : ''
+              }`}
+            >
+              <div className={styles['pr-grading-screen-header-content']}>
+                <div className={styles['pr-grading-screen-header-left']}>
+                  <h1
+                    className={`${styles['pr-grading-screen-title']} ${
+                      darkMode ? styles['dark-mode'] : ''
+                    }`}
+                  >
                     Weekly PR grading screen
                   </h1>
                   <div
-                    className={`pr-grading-screen-team-info-badge ${darkMode ? 'dark-mode' : ''}`}
+                    className={`${styles['pr-grading-screen-team-info-badge']} ${
+                      darkMode ? styles['dark-mode'] : ''
+                    }`}
                   >
-                    <h2 className={`pr-grading-screen-team-info ${darkMode ? 'dark-mode' : ''}`}>
+                    <h2
+                      className={`${styles['pr-grading-screen-team-info']} ${
+                        darkMode ? styles['dark-mode'] : ''
+                      }`}
+                    >
                       {teamData.teamName} - {teamData.dateRange.start} to {teamData.dateRange.end}
                     </h2>
                   </div>
                 </div>
-                <div className="pr-grading-screen-header-right">
+                <div className={styles['pr-grading-screen-header-right']}>
                   <Button
                     variant="outline-dark"
-                    className={`pr-grading-screen-done-button ${darkMode ? 'dark-mode' : ''}`}
+                    className={`${styles['pr-grading-screen-done-button']} ${
+                      darkMode ? styles['dark-mode'] : ''
+                    }`}
                     onClick={handleDoneClick}
                   >
                     Done
@@ -203,45 +217,57 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                 </div>
               </div>
             </Card.Header>
-            <Card.Body className={darkMode ? 'dark-mode' : ''}>
-              <div className="pr-grading-screen-active-members-section">
+            <Card.Body className={darkMode ? styles['dark-mode'] : ''}>
+              <div className={styles['pr-grading-screen-active-members-section']}>
                 <h3
-                  className={`pr-grading-screen-active-members-title ${
-                    darkMode ? 'dark-mode' : ''
+                  className={`${styles['pr-grading-screen-active-members-title']} ${
+                    darkMode ? styles['dark-mode'] : ''
                   }`}
                 >
                   Active Members
                 </h3>
               </div>
 
-              <div className={`pr-grading-screen-table-container ${darkMode ? 'dark-mode' : ''}`}>
-                <table className={`pr-grading-screen-table ${darkMode ? 'dark-mode' : ''}`}>
+              <div
+                className={`${styles['pr-grading-screen-table-container']} ${
+                  darkMode ? styles['dark-mode'] : ''
+                }`}
+              >
+                <table
+                  className={`${styles['pr-grading-screen-table']} ${
+                    darkMode ? styles['dark-mode'] : ''
+                  }`}
+                >
                   <thead>
                     <tr>
-                      <th className="pr-grading-screen-th-name">Reviewer Name</th>
-                      <th className="pr-grading-screen-th-reviewed">PR reviewed</th>
-                      <th className="pr-grading-screen-th-needed">PRs Needed</th>
-                      <th className="pr-grading-screen-th-numbers">PR Numbers</th>
+                      <th className={styles['pr-grading-screen-th-name']}>Reviewer Name</th>
+                      <th className={styles['pr-grading-screen-th-reviewed']}>PR reviewed</th>
+                      <th className={styles['pr-grading-screen-th-needed']}>PRs Needed</th>
+                      <th className={styles['pr-grading-screen-th-numbers']}>PR Numbers</th>
                     </tr>
                   </thead>
                   <tbody>
                     {reviewerData.map(reviewer => (
                       <tr
                         key={reviewer.id}
-                        className={`pr-grading-screen-table-row ${darkMode ? 'dark-mode' : ''}`}
+                        className={`${styles['pr-grading-screen-table-row']} ${
+                          darkMode ? styles['dark-mode'] : ''
+                        }`}
                       >
-                        <td className="pr-grading-screen-td-name">
-                          <div className="pr-grading-screen-reviewer-info">
-                            <div className="pr-grading-screen-reviewer-name">
+                        <td className={styles['pr-grading-screen-td-name']}>
+                          <div className={styles['pr-grading-screen-reviewer-info']}>
+                            <div className={styles['pr-grading-screen-reviewer-name']}>
                               {reviewer.reviewer}
                             </div>
                             {reviewer.role && (
-                              <div className="pr-grading-screen-reviewer-role">{reviewer.role}</div>
+                              <div className={styles['pr-grading-screen-reviewer-role']}>
+                                {reviewer.role}
+                              </div>
                             )}
                           </div>
                         </td>
 
-                        <td className="pr-grading-screen-td-reviewed">
+                        <td className={styles['pr-grading-screen-td-reviewed']}>
                           <input
                             type="number"
                             min="0"
@@ -263,22 +289,28 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                 e.preventDefault();
                               }
                             }}
-                            className={`pr-grading-screen-pr-input ${darkMode ? 'dark-mode' : ''}`}
+                            className={`${styles['pr-grading-screen-pr-input']} ${
+                              darkMode ? styles['dark-mode'] : ''
+                            }`}
                           />
                         </td>
 
-                        <td className="pr-grading-screen-td-needed">{reviewer.prsNeeded}</td>
+                        <td className={styles['pr-grading-screen-td-needed']}>
+                          {reviewer.prsNeeded}
+                        </td>
 
-                        <td className="pr-grading-screen-td-numbers">
-                          <div className="pr-grading-screen-pr-list">
+                        <td className={styles['pr-grading-screen-td-numbers']}>
+                          <div className={styles['pr-grading-screen-pr-list']}>
                             {reviewer.gradedPrs.map(pr => {
-                              const isBackendFrontendPair = pr.prNumbers.includes('+');
+                              const isBackendFrontendPairValue = pr.prNumbers.includes('+');
                               return (
-                                <div key={pr.id} className="pr-grading-screen-pr-item">
+                                <div key={pr.id} className={styles['pr-grading-screen-pr-item']}>
                                   <span
-                                    className={`pr-grading-screen-pr-number ${
-                                      isBackendFrontendPair ? 'pr-grading-screen-pair' : ''
-                                    } pr-grading-screen-pr-clickable`}
+                                    className={`${styles['pr-grading-screen-pr-number']} ${
+                                      isBackendFrontendPairValue
+                                        ? styles['pr-grading-screen-pair']
+                                        : ''
+                                    } ${styles['pr-grading-screen-pr-clickable']}`}
                                     onClick={() => handlePRNumberClick(reviewer.id)}
                                     onKeyDown={e => {
                                       if (e.key === 'Enter' || e.key === ' ') {
@@ -299,7 +331,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                               <Button
                                 variant="success"
                                 size="sm"
-                                className="pr-grading-screen-add-btn"
+                                className={styles['pr-grading-screen-add-btn']}
                                 onClick={() => handleAddNewClick(reviewer.id)}
                               >
                                 + Add new
@@ -309,11 +341,11 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                             {/* PR Number Input */}
                             {activeInput === reviewer.id && (
                               <div
-                                className={`pr-grading-screen-input-container ${
-                                  darkMode ? 'dark-mode' : ''
+                                className={`${styles['pr-grading-screen-input-container']} ${
+                                  darkMode ? styles['dark-mode'] : ''
                                 }`}
                               >
-                                <div className="pr-grading-screen-input-wrapper">
+                                <div className={styles['pr-grading-screen-input-wrapper']}>
                                   <input
                                     type="text"
                                     value={inputValue}
@@ -327,21 +359,21 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                       }
                                     }}
                                     placeholder="1070 or 1070 + 1256"
-                                    className={`pr-grading-screen-pr-number-input ${
+                                    className={`${styles['pr-grading-screen-pr-number-input']} ${
                                       isBackendFrontendPair(inputValue)
-                                        ? 'pr-grading-screen-pair-input'
+                                        ? styles['pr-grading-screen-pair-input']
                                         : ''
-                                    } ${inputError ? 'pr-grading-screen-input-error' : ''} ${
-                                      darkMode ? 'dark-mode' : ''
-                                    }`}
+                                    } ${
+                                      inputError ? styles['pr-grading-screen-input-error'] : ''
+                                    } ${darkMode ? styles['dark-mode'] : ''}`}
                                   />
-                                  <div className="pr-grading-screen-input-buttons">
+                                  <div className={styles['pr-grading-screen-input-buttons']}>
                                     <Button
                                       variant="primary"
                                       size="sm"
                                       onClick={handleInputSubmit}
                                       disabled={!inputValue.trim()}
-                                      className={darkMode ? 'dark-mode' : ''}
+                                      className={darkMode ? styles['dark-mode'] : ''}
                                     >
                                       Add
                                     </Button>
@@ -349,7 +381,7 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                       variant="secondary"
                                       size="sm"
                                       onClick={handleCancel}
-                                      className={darkMode ? 'dark-mode' : ''}
+                                      className={darkMode ? styles['dark-mode'] : ''}
                                     >
                                       Cancel
                                     </Button>
@@ -357,8 +389,8 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                 </div>
                                 {inputError && (
                                   <div
-                                    className={`pr-grading-screen-error-message ${
-                                      darkMode ? 'dark-mode' : ''
+                                    className={`${styles['pr-grading-screen-error-message']} ${
+                                      darkMode ? styles['dark-mode'] : ''
                                     }`}
                                   >
                                     {inputError}
@@ -366,8 +398,8 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                 )}
                                 {isBackendFrontendPair(inputValue) && !inputError && (
                                   <div
-                                    className={`pr-grading-screen-pair-message ${
-                                      darkMode ? 'dark-mode' : ''
+                                    className={`${styles['pr-grading-screen-pair-message']} ${
+                                      darkMode ? styles['dark-mode'] : ''
                                     }`}
                                   >
                                     Frontend-Backend Pair Detected
@@ -386,30 +418,44 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
               {/* Grading Modal */}
               {showGradingModal && (
                 <div
-                  className={`pr-grading-screen-modal-overlay ${darkMode ? 'dark-mode' : ''}`}
+                  className={`${styles['pr-grading-screen-modal-overlay']} ${
+                    darkMode ? styles['dark-mode'] : ''
+                  }`}
                   role="presentation"
                 >
                   <div
-                    className={`pr-grading-screen-modal ${darkMode ? 'dark-mode' : ''}`}
+                    className={`${styles['pr-grading-screen-modal']} ${
+                      darkMode ? styles['dark-mode'] : ''
+                    }`}
                     role="dialog"
                     aria-modal="true"
                     tabIndex={-1}
                   >
                     <div
-                      className={`pr-grading-screen-modal-header ${darkMode ? 'dark-mode' : ''}`}
+                      className={`${styles['pr-grading-screen-modal-header']} ${
+                        darkMode ? styles['dark-mode'] : ''
+                      }`}
                     >
                       <h4>Grade PR</h4>
                       <button
-                        className={`pr-grading-screen-modal-close ${darkMode ? 'dark-mode' : ''}`}
+                        className={`${styles['pr-grading-screen-modal-close']} ${
+                          darkMode ? styles['dark-mode'] : ''
+                        }`}
                         onClick={handleCloseGradingModal}
                         aria-label="Close modal"
                       >
                         ×
                       </button>
                     </div>
-                    <div className={`pr-grading-screen-modal-body ${darkMode ? 'dark-mode' : ''}`}>
+                    <div
+                      className={`${styles['pr-grading-screen-modal-body']} ${
+                        darkMode ? styles['dark-mode'] : ''
+                      }`}
+                    >
                       <table
-                        className={`pr-grading-screen-grading-table ${darkMode ? 'dark-mode' : ''}`}
+                        className={`${styles['pr-grading-screen-grading-table']} ${
+                          darkMode ? styles['dark-mode'] : ''
+                        }`}
                       >
                         <thead>
                           <tr>
@@ -425,46 +471,48 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                             .find(r => r.id === showGradingModal)
                             ?.gradedPrs.map(pr => (
                               <tr key={pr.id}>
-                                <td className="pr-grading-screen-modal-pr-number">
+                                <td className={styles['pr-grading-screen-modal-pr-number']}>
                                   <span
-                                    className={`pr-grading-screen-pr-number ${
-                                      pr.prNumbers.includes('+') ? 'pr-grading-screen-pair' : ''
+                                    className={`${styles['pr-grading-screen-pr-number']} ${
+                                      pr.prNumbers.includes('+')
+                                        ? styles['pr-grading-screen-pair']
+                                        : ''
                                     }`}
                                   >
                                     {pr.prNumbers}
                                   </span>
                                 </td>
-                                <td className="pr-grading-screen-checkbox-cell">
+                                <td className={styles['pr-grading-screen-checkbox-cell']}>
                                   <input
                                     type="checkbox"
                                     checked={pr.grade === 'Exceptional'}
                                     onChange={() =>
                                       handleGradeChange(showGradingModal, pr.id, 'Exceptional')
                                     }
-                                    className="pr-grading-screen-grade-checkbox"
+                                    className={styles['pr-grading-screen-grade-checkbox']}
                                   />
                                 </td>
-                                <td className="pr-grading-screen-checkbox-cell">
+                                <td className={styles['pr-grading-screen-checkbox-cell']}>
                                   <input
                                     type="checkbox"
                                     checked={pr.grade === 'Okay'}
                                     onChange={() =>
                                       handleGradeChange(showGradingModal, pr.id, 'Okay')
                                     }
-                                    className="pr-grading-screen-grade-checkbox"
+                                    className={styles['pr-grading-screen-grade-checkbox']}
                                   />
                                 </td>
-                                <td className="pr-grading-screen-checkbox-cell">
+                                <td className={styles['pr-grading-screen-checkbox-cell']}>
                                   <input
                                     type="checkbox"
                                     checked={pr.grade === 'Unsatisfactory'}
                                     onChange={() =>
                                       handleGradeChange(showGradingModal, pr.id, 'Unsatisfactory')
                                     }
-                                    className="pr-grading-screen-grade-checkbox"
+                                    className={styles['pr-grading-screen-grade-checkbox']}
                                   />
                                 </td>
-                                <td className="pr-grading-screen-checkbox-cell">
+                                <td className={styles['pr-grading-screen-checkbox-cell']}>
                                   <input
                                     type="checkbox"
                                     checked={pr.grade === 'Cannot find image'}
@@ -475,18 +523,20 @@ const PRGradingScreen = ({ teamData, reviewers }) => {
                                         'Cannot find image',
                                       )
                                     }
-                                    className="pr-grading-screen-grade-checkbox"
+                                    className={styles['pr-grading-screen-grade-checkbox']}
                                   />
                                 </td>
                               </tr>
                             ))}
                         </tbody>
                       </table>
-                      <div className="pr-grading-screen-modal-footer">
+                      <div className={styles['pr-grading-screen-modal-footer']}>
                         <Button
                           variant="primary"
                           onClick={handleCloseGradingModal}
-                          className={`pr-grading-screen-done-btn ${darkMode ? 'dark-mode' : ''}`}
+                          className={`${styles['pr-grading-screen-done-btn']} ${
+                            darkMode ? styles['dark-mode'] : ''
+                          }`}
                         >
                           Done
                         </Button>
