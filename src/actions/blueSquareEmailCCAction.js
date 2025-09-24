@@ -2,17 +2,24 @@
 
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import * as types from '../constants/BlueSquareEmailCCConstants'; // <-- You'll need to create this constants file
+import * as types from '../constants/BlueSquareEmailCCConstants';
 import { ENDPOINTS } from '~/utils/URL';
 
-const addBlueSquareEmailCC = ccList => ({
+// ========== ACTION CREATORS ==========
+const addBlueSquareEmailCC = data => ({
   type: types.ADD_BLUE_SQUARE_EMAIL_CC,
-  payload: ccList,
+  payload: {
+    list: data.infringementCCList || [],
+    message: data.message,
+  },
 });
 
-const removeBlueSquareEmailCC = ccList => ({
+const removeBlueSquareEmailCC = data => ({
   type: types.REMOVE_BLUE_SQUARE_EMAIL_CC,
-  payload: ccList,
+  payload: {
+    list: data.infringementCCList || [],
+    message: data.message,
+  },
 });
 
 const blueSquareEmailCCError = error => ({
@@ -32,20 +39,23 @@ export const addCCEmail = (userId, payload) => {
       const response = await axios.post(ENDPOINTS.ADD_BLUE_SQUARE_EMAIL_CC(userId), payload);
 
       if (response.status === 200) {
+        const infringementCCList = response.data.infringementCCList || [];
         console.log('Add CC success:', response.data);
 
-        // Update the store with the latest list
-        dispatch(addBlueSquareEmailCC(response.data.infringementCCList));
+        dispatch(addBlueSquareEmailCC(response.data));
+        toast.success(response.data.message || 'CC email added successfully!');
 
-        toast.success('CC email added successfully!');
+        return {ccList: infringementCCList, ccCount: infringementCCList.length};
       } else {
         dispatch(blueSquareEmailCCError(response.data));
         toast.error('Failed to add CC email.');
+        return null;
       }
     } catch (err) {
       console.error('Add CC error:', err);
       dispatch(blueSquareEmailCCError(err));
       toast.error(err?.response?.data?.error || 'Failed to add CC email.');
+      throw err;
     }
   };
 };
@@ -61,20 +71,23 @@ export const deleteCCEmail = (userId, email) => {
       const response = await axios.delete(url);
 
       if (response.status === 200) {
+        const infringementCCList = response.data.infringementCCList || [];
         console.log('Delete CC success:', response.data);
 
-        // Update the store with the latest list
-        dispatch(removeBlueSquareEmailCC(response.data.infringementCCList));
+        dispatch(removeBlueSquareEmailCC(response.data));
 
-        toast.info('CC email removed successfully!');
+        toast.info(response.data.message || 'CC email removed successfully!');
+        return {ccList: infringementCCList, ccCount: infringementCCList.length};
       } else {
         dispatch(blueSquareEmailCCError(response.data));
         toast.error('Failed to remove CC email.');
+        return null;
       }
     } catch (err) {
       console.error('Delete CC error:', err);
       dispatch(blueSquareEmailCCError(err));
       toast.error(err?.response?.data?.error || 'Failed to remove CC email.');
+      throw err;
     }
   };
 };

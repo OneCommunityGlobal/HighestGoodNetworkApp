@@ -171,17 +171,14 @@ const UserProfileModal = props => {
   
   //Email CC for Blue Square Email
   const [ccModalOpen, setCcModalOpen] = useState(false);
-  const [ccList, setCcList] = useState(() => userProfile?.infringementCCList ?? []);
-  const ccCount = ccList.length;
+  const [ccCount, setCcCount] = useState(userProfile?.infringementCCList?.length || 0);
+
+const handleCcListUpdate = (newCount) => {
+  setCcCount(newCount);
+};
   
   const openCc  = () => setCcModalOpen(true);
   const closeCc = () => setCcModalOpen(false);
-  
-  const handleCcSave = (newList) => {
-    console.log('Received CC list from modal:', newList);
-    // setCcList(newList);
-    closeCc();
-  };
 
   return (
     <>
@@ -518,14 +515,13 @@ const UserProfileModal = props => {
       </ModalFooter>
     </Modal>
     <BlueSquareEmailCCPopup
-        isOpen={ccModalOpen}
-        onClose={closeCc}
-        darkMode={darkMode}
-        userId={userProfile._id}
-        ccList={ccList}
-        onSave={(newList) => { setCcList(newList); closeCc(); }}
-      />
-      </>
+    isOpen={ccModalOpen}
+    onClose={closeCc}
+    darkMode={darkMode}
+    userId={userProfile._id}
+    onCcListUpdate={handleCcListUpdate}
+    />
+  </>
   );
 };
 

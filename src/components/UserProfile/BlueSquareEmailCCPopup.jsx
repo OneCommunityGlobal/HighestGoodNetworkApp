@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addCCEmail, deleteCCEmail } from '~/actions/blueSquareEmailCCAction';
 import {
@@ -20,63 +20,44 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { getAllUserProfile } from '~/actions/userManagement';
 
-// eslint-disable-next-line react/display-name
 const BlueSquareEmailCCPopup = React.memo(props => {
+  const { isOpen, onClose, userId, onCcListUpdate, darkMode: propDarkMode } = props;
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
+
   const [searchWord, setSearchWord] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [addUser, setAddUser] = useState({});
   const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
   const activeUsers = allUsers.filter(user => user.isActive === true);
-  const ccList = props.ccList || [];
-
-  const closePopup = () => {
-    props.onClose();
-  };
-
-  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
-
+  const userProfile = allUsers.find(u => u._id === userId) || {};
+  const ccList = userProfile?.infringementCCList || [];
+  const ccCount = ccList.length;
+  
   const filteredUsers = activeUsers.filter(user => {
     if (searchWord.includes(' ')) {
-      const splitWords = searchWord.split(' ');
-      const searchWordFirst = splitWords[0];
-      const searchWordLast = splitWords[1];
+      const [first, last] = searchWord.split(' ');
       return (
-        user.firstName.toLowerCase().includes(searchWordFirst.toLowerCase()) &&
-        user.lastName.toLowerCase().includes(searchWordLast.toLowerCase()) &&
-        user.email.toLowerCase().includes(searchWord.toLowerCase())
-      );
-    } else {
-      return (
-        user.firstName.toLowerCase().includes(searchWord.toLowerCase()) ||
-        user.lastName.toLowerCase().includes(searchWord.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchWord.toLowerCase())
+        user.firstName.toLowerCase().includes(first.toLowerCase()) &&
+        user.lastName.toLowerCase().includes(last.toLowerCase())
       );
     }
+    return (
+      user.firstName.toLowerCase().includes(searchWord.toLowerCase()) ||
+      user.lastName.toLowerCase().includes(searchWord.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchWord.toLowerCase())
+    );
   });
 
-  const ccListForUser = ccList.map(u => ({
-  _id: u._id || u.id || u.email,
-  email: u.email,
-  assignedTo: {
-    firstName: u.firstName || u.assignedTo?.firstName || '',
-    lastName:  u.lastName  || u.assignedTo?.lastName  || '',
-    role:      u.role      || u.assignedTo?.role      || '',
-    isActive:  u.isActive ?? true,
-  },
-  role: u.role || u.assignedTo?.role || '',
-}));
-
-
-  const handleAddCC = (e) => {
+  const handleAddCC = async (e) => {
   e?.preventDefault?.();
 
   if (!addUser?.email || !addUser?.firstName) {
     alert('Pick a user from the list first.');
     return;
   }
-  if (!props.userId) {
+
+  if (!userId) {
     alert('Missing target userId.');
     return;
   }
@@ -88,17 +69,36 @@ const BlueSquareEmailCCPopup = React.memo(props => {
     role: addUser.role || '',
   };
 
-  console.log('Dispatching addCCEmail...', payload);
-  dispatch(addCCEmail(props.userId, payload));
+  try {
+    console.log("Adding CC email:", payload);
 
-  // reset state after dispatch
-  setSearchWord('');
-  setAddUser({});
-  setDropdownOpen(false);
+    // ✅ Get updated list directly from dispatch return
+    const result = await dispatch(addCCEmail(userId, payload));
+
+    if (result) {
+      console.log('Updated CC count after addition:', result.ccCount);
+
+      // ✅ Notify parent immediately with latest count
+      onCcListUpdate?.(result.ccCount);
+
+      // Optional: refresh profiles for global state consistency
+      await dispatch(getAllUserProfile());
+    }
+
+    // Reset state and close modal
+    setSearchWord('');
+    setAddUser({});
+    setDropdownOpen(false);
+    onClose?.();
+
+  } catch (err) {
+    console.error('Error adding CC email:', err);
+    alert(err?.response?.data?.error || 'Failed to add CC email.');
+  }
 };
 
 const handleRemoveCC = async (email) => {
-  if (!props.userId) {
+  if (!userId) {
     alert('Missing target userId.');
     return;
   }
@@ -108,116 +108,128 @@ const handleRemoveCC = async (email) => {
     return;
   }
 
-  console.log('Dispatching deleteCCEmail...', email);
-  dispatch(deleteCCEmail(props.userId, email));
+  try {
+    console.log('Removing CC email:', email);
+
+    // ✅ Get updated list directly from dispatch return
+    const result = await dispatch(deleteCCEmail(userId, email));
+
+    if (result) {
+      console.log('Updated CC count after deletion:', result.ccCount);
+
+      // ✅ Notify parent immediately
+      onCcListUpdate?.(result.ccCount);
+
+      // Optional: refresh profiles for global state
+      await dispatch(getAllUserProfile());
+    }
+
+    // Close popup
+    onClose?.();
+
+  } catch (err) {
+    console.error('Error deleting CC email:', err);
+    alert(err?.response?.data?.error || 'Failed to delete CC email.');
+  }
 };
 
-  useEffect(() => {
-  console.log('ccList data:', ccList);
-}, [ccList]);
 
   useEffect(() => {
     dispatch(getAllUserProfile());
-  }, []);
+  }, [dispatch]);
 
   return (
-    <Modal isOpen={props.isOpen} toggle={closePopup} size='lg' className={darkMode ? 'dark-mode text-light' : ''}>
-      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Set blue square email recipients</ModalHeader>
+    <Modal isOpen={isOpen} toggle={onClose} size='lg' className={darkMode ? 'dark-mode text-light' : ''}>
+      <ModalHeader toggle={onClose} className={darkMode ? 'bg-space-cadet' : ''}>
+        Set blue square email recipients
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Container>
-        <InputGroup>
-          <Input
-            type="text"
-            placeholder="Type to filter..."
-            value={searchWord}
-            onChange={e => {
-              setSearchWord(e.target.value);
-              setDropdownOpen(true);
-            }}
-          />
-          <Button color="primary" type="button" onClick={handleAddCC}>
-            Add
-          </Button>
-        </InputGroup>
-        {dropdownOpen && (
-          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-            <DropdownToggle tag="div" data-toggle="dropdown" aria-expanded={dropdownOpen} />
-            <DropdownMenu
-              style={{
-                position: 'absolute',
-                zIndex: 1000,
-                width: '100%',
-                maxHeight: '300px',
-                overflow: 'auto',
+          <InputGroup>
+            <Input
+              type="text"
+              placeholder="Type to filter..."
+              value={searchWord}
+              onChange={e => {
+                setSearchWord(e.target.value);
+                setDropdownOpen(true);
               }}
-            >
-              {filteredUsers.map((user, index) => (
-                <DropdownItem
-                  key={index}
-                  onClick={() => {
-                    setAddUser(user);
-                    setSearchWord(`${user.firstName} ${user.lastName}`);
-                  }}
-                >
-                  {user.firstName} {user.lastName}
-                </DropdownItem>
+            />
+            <Button color="primary" type="button" onClick={handleAddCC}>
+              Add
+            </Button>
+          </InputGroup>
+
+          {dropdownOpen && (
+            <Dropdown isOpen={dropdownOpen} toggle={() => setDropdownOpen(!dropdownOpen)}>
+              <DropdownToggle tag="div" data-toggle="dropdown" aria-expanded={dropdownOpen} />
+              <DropdownMenu
+                style={{
+                  position: 'absolute',
+                  zIndex: 1000,
+                  width: '100%',
+                  maxHeight: '300px',
+                  overflow: 'auto',
+                }}
+              >
+                {filteredUsers.map((user, index) => (
+                  <DropdownItem
+                    key={index}
+                    onClick={() => {
+                      setAddUser(user);
+                      setSearchWord(`${user.firstName} ${user.lastName}`);
+                    }}
+                  >
+                    {user.firstName} {user.lastName}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+          )}
+
+          <table className={`table table-bordered table-responsive-lg mt-3 ${darkMode ? 'text-light' : ''}`}>
+            <thead>
+              <tr>
+                <th>Status</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {ccList.map(assignment => (
+                <tr key={assignment._id || assignment.email}>
+                  <td>
+                    <span className={assignment.isActive ? "isActive" : "isNotActive"}>
+                      <i className="fa fa-circle" aria-hidden="true" />
+                    </span>
+                  </td>
+                  <td>
+                    {assignment.firstName} {assignment.lastName} ({assignment.role})
+                  </td>
+                  <td>{assignment.email}</td>
+                  <td className='d-flex justify-content-center align-items-center'>
+                    <Button
+                      color="danger"
+                      onClick={() => handleRemoveCC(assignment.email)}
+                      style={darkMode ? boxStyleDark : boxStyle}
+                    >
+                      <FontAwesomeIcon icon={faTrashAlt} />
+                    </Button>
+                  </td>
+                </tr>
               ))}
-            </DropdownMenu>
-          </Dropdown>
-        )}
-        
-        <table className={`table table-bordered table-responsive-lg mt-3 ${darkMode ? 'text-light' : ''}`}>
-          <thead>
-            <tr>
-              <th>Status</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {ccListForUser.length > 0 &&
-              ccListForUser.map((assignment, index) => {
-                return (
-                  <tr key={assignment._id}>
-                    <td>
-                      <span className={assignment.assignedTo?.isActive ? "isActive" : "isNotActive"}>
-                        <i className="fa fa-circle" aria-hidden="true" />
-                      </span>
-                    </td>
-                    <td>
-                        {assignment.assignedTo?.firstName} {assignment.assignedTo?.lastName} ({assignment.role})
-                    </td>
-                    <td style={{overflow:'auto'}}>
-                        {assignment.email}
-                    </td>
-                    <td className='d-flex justify-content-center align-items-center'>
-                      <Button
-                        color="danger"
-                        disabled={assignment.locked}
-                        onClick={()=>handleRemoveCC(assignment.email)}
-                        style={props.darkMode ? boxStyleDark : boxStyle}
-                      >
-                        <FontAwesomeIcon icon={faTrashAlt} />
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
         </Container>
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button
-          color="secondary"
-          onClick={closePopup}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
+        <Button color="secondary" onClick={onClose} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>
     </Modal>
   );
 });
+
 export default BlueSquareEmailCCPopup;
