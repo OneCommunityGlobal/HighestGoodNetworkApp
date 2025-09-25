@@ -20,10 +20,12 @@ function Popup({ onClose }) {
         <div className="popup-content">
           <strong>Event Name</strong>
           <p className="event-details">(Click for more details)</p>
+          <p className="user-full-name">User&apos;s Full Name</p>
 
           <div className="event-info">
             <span>📅 Tuesday, January 7th, 2025</span>
-            <span>📍 7:00 PM CST</span>
+            <span>⏰ 7:00 PM CST</span>
+            <span>📍 Location</span>
           </div>
 
           <button type="button" className="calendar-btn">
