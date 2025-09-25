@@ -1,45 +1,45 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
-import './Leaderboard.css';
-import { isEqual, debounce } from 'lodash';
+import { debounce, isEqual } from 'lodash';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import ReactTooltip from 'react-tooltip';
 import {
-  Table,
-  Progress,
+  Button,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Input,
   Modal,
   ModalBody,
   ModalFooter,
   ModalHeader,
-  Button,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
+  Progress,
   Spinner,
-  Input,
+  Table,
   Tooltip,
+  UncontrolledDropdown,
 } from 'reactstrap';
-import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
+import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import {
-  hasLeaderboardPermissions,
   assignStarDotColors,
+  hasLeaderboardPermissions,
   showStar,
   viewZeroHouraMembers,
 } from '~/utils/leaderboardPermissions';
-import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
 import hasPermission from '~/utils/permissions';
+import './Leaderboard.css';
 // import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
-import { toast } from 'react-toastify';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import moment from 'moment-timezone';
-import { boxStyle } from '~/styles';
 import axios from 'axios';
+import moment from 'moment-timezone';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
 import { getUserProfile } from '~/actions/userProfile';
-import { useDispatch, useSelector } from 'react-redux';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle } from '~/styles';
+import { ENDPOINTS } from '~/utils/URL';
 import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
-import { ENDPOINTS } from '~/utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -300,7 +300,6 @@ function LeaderBoard({
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
-      await dispatch(getAllTimeOffRequests());
       await getLeaderboardData(userId);
       setTeamsUsers(leaderBoardData);
     } else {

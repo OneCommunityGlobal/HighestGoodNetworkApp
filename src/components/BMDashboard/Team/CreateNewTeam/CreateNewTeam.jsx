@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Form, FormGroup, Label, Input, Button, Badge } from 'reactstrap';
-import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi-browser';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Badge, Button, Form, FormGroup, Input, Label } from 'reactstrap';
+import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
-import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
 
 const initialFormState = {
   teamName: '',
@@ -342,10 +342,13 @@ export default function CreateNewTeam() {
                   <span
                     role="button"
                     tabIndex={0}
+                    /* eslint-disable-next-line */
                     onClick={() => handleRemoveMember(member)}
                     onKeyDown={e =>
+                      /* eslint-disable-next-line */
                       (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(member)
                     }
+                    /* eslint-disable-next-line */
                     aria-label={`Remove member ${member}`}
                   >
                     X

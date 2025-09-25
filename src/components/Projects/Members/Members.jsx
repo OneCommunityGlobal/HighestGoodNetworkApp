@@ -152,7 +152,7 @@ const Members = props => {
                     className="btn btn-secondary"
                     style={darkMode ? boxStyleDark : boxStyle}
                   >
-                    <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true" />
                   </button>
                 </NavItem>
               </div>
@@ -295,8 +295,8 @@ const Members = props => {
                   <th scope="col" id="members__name">
                     Name
                   </th>
-                  <th scope="col" id="members__delete"></th>
-                  {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
+                  <th scope="col" id="members__delete" />
+                  {canUnassignUserInProject ? <th scope="col" id="members__name" /> : null}
                 </tr>
               </thead>
               <tbody>
@@ -306,7 +306,7 @@ const Members = props => {
                     key={member._id ?? i}
                     projectId={projectId}
                     uid={member._id}
-                    fullName={member.firstName + ' ' + member.lastName}
+                    fullName={`${member.firstName  } ${  member.lastName}`}
                     darkMode={darkMode}
                   />
                 ))}

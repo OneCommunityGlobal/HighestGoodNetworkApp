@@ -59,7 +59,7 @@ const WBS = props => {
               <div style={{ position: 'absolute', left: '1rem' }}>
                 <NavItem tag={Link} to={`/projects/`}>
                   <button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
-                    <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true" />
                   </button>
                   <span style={{ marginLeft: '8px' }}>Return to Project List</span>
                 </NavItem>
@@ -97,10 +97,10 @@ const WBS = props => {
                       <i
                         className={`fa ${sortOrder === 'recent' ? 'fa-sort' : sortOrder === 'asc' ? 'fa-sort-up' : 'fa-sort-down'}`}
                         onClick={() => handleSortChange(sortOrder === 'asc' ? 'desc' : sortOrder === 'desc' ? 'recent' : 'asc')}
-                      ></i>
+                       />
                     </span>
                   </th>
-                  <th scope="col" style={{ width: '50px' }}></th>
+                  <th scope="col" style={{ width: '50px' }} />
                 </tr>
               </thead>
               <tbody>

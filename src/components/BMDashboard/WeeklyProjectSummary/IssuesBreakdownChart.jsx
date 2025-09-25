@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
-  BarChart,
   Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LabelList,
 } from 'recharts';
 import httpService from '../../../services/httpService';
 import styles from './IssueBreakdownChart.module.css';
@@ -25,6 +25,7 @@ export default function IssuesBreakdownChart() {
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  /* eslint-disable */
   const rootStyles = getComputedStyle(document.body);
   const textColor = rootStyles.getPropertyValue('--text-color') || '#666';
   const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');

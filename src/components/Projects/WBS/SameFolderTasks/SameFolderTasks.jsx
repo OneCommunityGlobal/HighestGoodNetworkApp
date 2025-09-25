@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { ENDPOINTS } from '~/utils/URL';
 import { Table } from 'reactstrap';
-import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
+import { ENDPOINTS } from '~/utils/URL';
 import { getPopupById } from '../../../../actions/popupEditorAction';
-import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
+import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 
 function SameFolderTasks(props) {
   const { taskId } = props.match.params;
@@ -201,7 +200,9 @@ function SameFolderTasks(props) {
                               <span className="dot">{element.name.substring(0, 2)}</span>
                             </a>
                           );
-                        } catch (error) { }
+                        } catch (error) { 
+                          return null;
+                        }
                       })}
                   </td>
                   <td>

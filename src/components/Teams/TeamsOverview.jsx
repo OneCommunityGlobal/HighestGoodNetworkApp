@@ -30,7 +30,7 @@ const TeamsOverview = ({
       >
         <div className="card-body">
           <h6 className="card-text">
-            <i className="fa fa-users" aria-hidden="true"></i> {TOTAL_TEAMS}: {numberOfTeams}
+            <i className="fa fa-users" aria-hidden="true" /> {TOTAL_TEAMS}: {numberOfTeams}
           </h6>
         </div>
       </div>
@@ -47,7 +47,7 @@ const TeamsOverview = ({
       >
         <div className="card-body">
           <h6 className="card-text">
-            <i className="fa fa-circle fa-circle-isActive" aria-hidden="true"></i> {ACTIVE_TEAMS}:{' '}
+            <i className="fa fa-circle fa-circle-isActive" aria-hidden="true" /> {ACTIVE_TEAMS}:{' '}
             {numberOfActiveTeams}
           </h6>
         </div>
@@ -65,8 +65,8 @@ const TeamsOverview = ({
       >
         <div className="card-body">
           <h6 className="card-text">
-            <i className="fa fa-circle fa-circle-isInActive" aria-hidden="true"></i>{' '}
-            {IN_ACTIVE_TEAMS}: {numberOfInActiveTeams}
+            <i className="fa fa-circle fa-circle-isInActive" aria-hidden="true" /> {IN_ACTIVE_TEAMS}
+            : {numberOfInActiveTeams}
           </h6>
         </div>
       </div>

@@ -49,7 +49,7 @@ const AddWBS = (props) => {
                 onClick={handleSubmit}
                 data-testid="add-wbs-button"
               >
-                <i className="fa fa-plus" aria-hidden="true"></i>
+                <i className="fa fa-plus" aria-hidden="true" />
               </button>
             ) : null}
             {/* <button className="btn btn-primary" type="button" onClick={props.onSortAscending}>

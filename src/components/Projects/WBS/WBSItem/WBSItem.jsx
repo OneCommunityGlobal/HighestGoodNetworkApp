@@ -50,7 +50,7 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
               onClick={handleOpenDeleteModal}
               style={darkMode ? {} : boxStyle}
             >
-              <i className="fa fa-minus" aria-hidden="true"></i>
+              <i className="fa fa-minus" aria-hidden="true" />
             </button>
           ) : null}
         </td>

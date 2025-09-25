@@ -14,7 +14,7 @@ export default function ReadOnlySectionWrapper(WrappedComponent, editable, value
     if (html === null || html === undefined) {
       return ''
     }
-    let doc = new DOMParser().parseFromString(html, 'text/html');
+    const doc = new DOMParser().parseFromString(html, 'text/html');
     return doc.body.textContent || "";
   }
 
@@ -22,7 +22,7 @@ export default function ReadOnlySectionWrapper(WrappedComponent, editable, value
     return WrappedComponent
   } 
 
-  let displayValue = stripHtml(value)
+  const displayValue = stripHtml(value)
 
   if(option){
     if (option.componentOnly){

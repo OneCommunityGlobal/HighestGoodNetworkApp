@@ -68,7 +68,7 @@ const ImportTask = props => {
           }
         }
       });
-      setInstruction(parse(rows[0][0] + '<br/> Rows: ' + rows.length))
+      setInstruction(parse(`${rows[0][0]  }<br/> Rows: ${  rows.length}`))
       setImportStatus('imported');
       setTaskList(tmpList);
     } catch (error) {
@@ -88,10 +88,10 @@ const ImportTask = props => {
       if (nameCache.includes(name)) throw new Error(`Error: There are more than one [${name}] in resources on line ${i + 1}`);
       nameCache.push(name);
       
-      return name + '|' + member._id + '|' + (member.profilePic || '/defaultprofilepic.png');
+      return `${name  }|${  member._id  }|${  member.profilePic || '/defaultprofilepic.png'}`;
     }) || [];  // if cell under resources column is empty (rowArr[9] is undefined), then assign resources with []
 
-    let newTask = {
+    const newTask = {
       taskName: taskName,
       wbsId: String(props.wbsId),
       num: String(num),

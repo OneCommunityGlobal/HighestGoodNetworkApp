@@ -2,6 +2,7 @@ import React from 'react';
 import { vi } from 'vitest'; // 1) import vi first
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+
 vi.mock('../ReportCharts', () => ({
   __esModule: true, // mark it as an ES module
   default: (
