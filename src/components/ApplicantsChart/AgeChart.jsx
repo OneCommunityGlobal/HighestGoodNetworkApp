@@ -28,12 +28,17 @@ function AgeChart({ data, compareLabel, darkMode }) {
 
   return (
     <div
-      className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
+      className={`${
+        darkMode
+          ? 'bg-oxford-blue text-light box-shadow-dark'
+          : 'bg-white text-black box-shadow-light'
+      }`}
       style={{
         width: '100%', // take full available width
         maxWidth: '1000px', // optional: cap at some max width
         margin: '0 auto',
         padding: '20px',
+        borderRadius: '12px',
       }}
     >
       <h2 style={{ color: darkMode ? '#fff' : '#000', textAlign: 'center' }}>
