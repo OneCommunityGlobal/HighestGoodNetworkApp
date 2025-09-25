@@ -1,10 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Form } from 'reactstrap';
 import Select from 'react-select';
 import styles from './SelectFilterModal.module.scss';
 
 export default function SelectFilterModal({ isOpen, toggle, filters, applyFilter, memberDict }) {
   const [selectedFilter, setSelectedFilter] = useState(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedFilter(null);
+    }
+  }, [isOpen]);
 
   const handleSelectedFilter = () => {
     applyFilter(selectedFilter);

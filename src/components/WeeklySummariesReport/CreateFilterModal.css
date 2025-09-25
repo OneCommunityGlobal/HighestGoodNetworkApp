@@ -23,6 +23,15 @@
   height: fit-content;
 }
 
+.invalid-chip {
+  display: flex;
+  align-items: center;
+  background: #ffd6d6;
+  border-radius: 20px;
+  padding: 4px 10px;
+  height: fit-content;
+}
+
 .filter-container-start {
   display: flex;
   justify-content: flex-start;

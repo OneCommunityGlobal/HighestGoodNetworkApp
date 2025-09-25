@@ -249,10 +249,10 @@ const WeeklySummariesReport = props => {
     } catch (e) {
       toast.error(`API request to get filter list failed with error ${e}`);
     }
-    const filterChoices = [];
+    const updatedFilterChoices = [];
 
     filterList.forEach(filter => {
-      filterChoices.push({
+      updatedFilterChoices.push({
         label: filter.filterName,
         value: filter._id,
         filterData: {
@@ -267,9 +267,10 @@ const WeeklySummariesReport = props => {
         },
       });
     });
+
     setState(prevState => ({
       ...prevState,
-      filterChoices,
+      filterChoices: [...updatedFilterChoices],
     }));
   };
 
@@ -1163,33 +1164,29 @@ const WeeklySummariesReport = props => {
         });
 
         // Update filters
-        // TODO: To improve speed, maybe I should do all of this in the backend, and make sure to handle extra members too
-        await Promise.all(
-          filterChoices.map(async filterChoice => {
-            const oldSelectedCodeLength = filterChoice.filterData.selectedCodes.size;
-            oldTeamCodes.forEach(code => filterChoice.filterData.selectedCodes.delete(code));
-            if (oldSelectedCodeLength !== filterChoice.filterData.selectedCodes.size) {
-              filterChoice.filterData.selectedCodes.add(replaceCode);
-              try {
-                const res = await axios.patch(
-                  ENDPOINTS.WEEKLY_SUMMARIES_FILTER_BY_ID(filterChoice.value),
-                  {
-                    selectedCodes: [...filterChoice.filterData.selectedCodes],
-                  },
-                );
-                if (res.status < 200 || res.status >= 300) {
-                  toast.error(
-                    `Failed to update new team code for filter ${filterChoice.label}. Status ${res.status}`,
-                  );
-                }
-              } catch (err) {
-                toast.error(
-                  `Failed to update new team code for filter ${filterChoice.label}. Error ${err.message}`,
-                );
-              }
-            }
-          }),
-        );
+        const filtersToUpdate = [];
+        filterChoices.map(filterChoice => {
+          const hasCode = oldTeamCodes.filter(code =>
+            filterChoice.filterData.selectedCodes.has(code),
+          );
+
+          if (hasCode.length > 0) {
+            filtersToUpdate.push(filterChoice.value);
+          }
+          return filterChoice;
+        });
+
+        const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_CODES, {
+          oldTeamCodes,
+          newTeamCode: replaceCode,
+          filtersToUpdate,
+        });
+        if (res.status < 200 || res.status >= 300) {
+          toast.error(`Failed to replace codes in filters. Status ${res.status}`);
+        } else {
+          toast.success(`Successfully replace codes in all filters`);
+        }
+        await fetchFilters();
 
         setState(prev => ({
           ...prev,
@@ -1200,7 +1197,7 @@ const WeeklySummariesReport = props => {
           replaceCodeError: null,
           teamCodeWarningUsers: updatedWarningUsers,
           tableData: updatedTableData,
-          filterChoices,
+          // filterChoices,
         }));
 
         filterWeeklySummaries();

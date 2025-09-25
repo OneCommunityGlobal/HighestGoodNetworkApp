@@ -37,6 +37,7 @@ const defaultState = {
   selectedBioStatus: false,
   selectedOverTime: false,
   membersFromUnselectedTeam: [],
+  selectedCodesInvalid: [],
 };
 
 export default function UpdateFilterModal({
@@ -56,10 +57,16 @@ export default function UpdateFilterModal({
   const [state, setState] = useState(defaultState);
   const [update, setUpdate] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const deleteToggle = () => setDeleteOpen(!deleteOpen);
+  const deleteModalToggle = () => setDeleteModalOpen(!deleteModalOpen);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedFilter(null); // reset state whenever modal opens
+    }
+  }, [isOpen]);
 
   // Update members of membersFromUnselectedTeam dropdown
   useEffect(() => {
@@ -115,6 +122,13 @@ export default function UpdateFilterModal({
     setState(prev => ({
       ...prev,
       selectedCodes: prev.selectedCodes.filter(item => item !== removeCode),
+    }));
+  };
+
+  const removeInvalidSelectedCode = removeCode => {
+    setState(prev => ({
+      ...prev,
+      selectedCodesInvalid: prev.selectedCodesInvalid.filter(item => item !== removeCode),
     }));
   };
 
@@ -181,7 +195,26 @@ export default function UpdateFilterModal({
     setSelectedFilter(filterChoice);
     setUpdate(false);
     const filter = filterChoice.filterData;
-    const selectedCodesChoice = teamCodes.filter(code => filter.selectedCodes.has(code.value));
+    const selectedCodesChoice = teamCodes
+      .filter(code => filter.selectedCodes.has(code.value))
+      .map(item => {
+        const [code, count] = item.label.split(' (');
+        return {
+          ...item,
+          label: `${code.padEnd(10, ' ')} (${count}`,
+        };
+      });
+    const selectedCodesSet = new Set(selectedCodesChoice.map(item => item.value));
+
+    const selectedCodesInvalidChoice = [...filter.selectedCodes]
+      .filter(item => !selectedCodesSet.has(item))
+      .map(item => {
+        return {
+          label: `${item.padEnd(10, ' ')} (0)`,
+          value: item,
+          _ids: [],
+        };
+      });
     const selectedColorsChoice = colorOptions.filter(color =>
       filter.selectedColors.has(color.value),
     );
@@ -203,6 +236,7 @@ export default function UpdateFilterModal({
       selectedSpecialColors: filter.selectedSpecialColors,
       selectedBioStatus: filter.selectedBioStatus,
       selectedOverTime: filter.selectedOverTime,
+      selectedCodesInvalid: selectedCodesInvalidChoice,
     }));
   };
 
@@ -214,7 +248,9 @@ export default function UpdateFilterModal({
         // No errors -> submit form
         const data = {
           filterName: state.filterName,
-          selectedCodes: state.selectedCodes.map(code => code.value),
+          selectedCodes: [...state.selectedCodes, ...state.selectedCodesInvalid].map(
+            code => code.value,
+          ),
           selectedColors: state.selectedColors.map(color => color.value),
           selectedExtraMembers: state.selectedExtraMembers.map(member => member.value),
           selectedTrophies: state.selectedTrophies,
@@ -237,9 +273,17 @@ export default function UpdateFilterModal({
         } catch (error) {
           toast.error(`Failed to save new filter. Error ${error}`);
         }
+        setSelectedFilter(prev => ({
+          ...prev,
+          label: state.filterName,
+        }));
         setIsProcessing(false);
         setUpdate(false);
+      } else {
+        toast.error('Please select a filter!');
       }
+    } else {
+      toast.error(`Invalid filter name! Filter name must be from 1-7 characters.`);
     }
   };
 
@@ -258,13 +302,33 @@ export default function UpdateFilterModal({
     }
     setSelectedFilter(null);
     setIsProcessing(false);
-    deleteToggle();
+    deleteModalToggle();
   };
 
   const rollBackUpdate = () => {
     setUpdate(false);
     const filter = selectedFilter.filterData;
-    const selectedCodesChoice = teamCodes.filter(code => filter.selectedCodes.has(code.value));
+    const selectedCodesChoice = teamCodes
+      .filter(code => filter.selectedCodes.has(code.value))
+      .map(item => {
+        const [code, count] = item.label.split(' (');
+        return {
+          ...item,
+          label: `${code.padEnd(10, ' ')} (${count}`,
+        };
+      });
+
+    const selectedCodesSet = new Set(selectedCodesChoice.map(item => item.value));
+
+    const selectedCodesInvalidChoice = [...filter.selectedCodes]
+      .filter(item => !selectedCodesSet.has(item))
+      .map(item => {
+        return {
+          label: `${item.padEnd(10, ' ')} (0)`,
+          value: item,
+          _ids: [],
+        };
+      });
     const selectedColorsChoice = colorOptions.filter(color =>
       filter.selectedColors.has(color.value),
     );
@@ -286,6 +350,7 @@ export default function UpdateFilterModal({
       selectedSpecialColors: filter.selectedSpecialColors,
       selectedBioStatus: filter.selectedBioStatus,
       selectedOverTime: filter.selectedOverTime,
+      selectedCodesInvalid: selectedCodesInvalidChoice,
     }));
   };
 
@@ -328,7 +393,7 @@ export default function UpdateFilterModal({
                     <Button color="primary" className="mr-2" onClick={setUpdate}>
                       Edit
                     </Button>
-                    <Button color="danger" onClick={deleteToggle}>
+                    <Button color="danger" onClick={deleteModalToggle}>
                       Delete
                     </Button>
                   </div>
@@ -387,7 +452,25 @@ export default function UpdateFilterModal({
                           )}
                         </div>
                       ))}
+                      {state.selectedCodesInvalid.map(item => (
+                        <div key={item.value} className="invalid-chip">
+                          {item.label}
+                          {update && (
+                            <Button
+                              close
+                              onClick={() => removeInvalidSelectedCode(item)}
+                              className="min-sz-button px-2"
+                              aria-label={`Remove ${item.label}`}
+                            />
+                          )}
+                        </div>
+                      ))}
                     </div>
+                    {state.selectedCodesInvalid.length > 0 && (
+                      <div className="error-text">
+                        ** The team code in pink is the team code that no longer have any members
+                      </div>
+                    )}
                   </Col>
                 </Row>
                 <Row className="pt-4">
@@ -589,8 +672,8 @@ export default function UpdateFilterModal({
         </ModalFooter>
       </Modal>
 
-      <Modal isOpen={deleteOpen} toggle={deleteToggle}>
-        <ModalHeader toggle={deleteToggle}>Confirm Delete</ModalHeader>
+      <Modal isOpen={deleteModalOpen} toggle={deleteModalToggle}>
+        <ModalHeader toggle={deleteModalToggle}>Confirm Delete</ModalHeader>
         <ModalBody>
           {isProcessing ? (
             <div className="d-flex align-items-center">
@@ -604,7 +687,7 @@ export default function UpdateFilterModal({
         <ModalFooter>
           {!isProcessing && (
             <>
-              <Button color="secondary" onClick={deleteToggle}>
+              <Button color="secondary" onClick={deleteModalToggle}>
                 Cancel
               </Button>
               <Button color="danger" onClick={handleDelete}>

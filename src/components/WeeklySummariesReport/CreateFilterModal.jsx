@@ -189,8 +189,6 @@ function CreateFilterModal({
           selectedOverTime: state.selectedOverTime,
         };
         if (mode === 'create') {
-          // eslint-disable-next-line no-console
-          console.log(data);
           try {
             const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTERS, data);
             if (res.status < 200 || res.status >= 300) {

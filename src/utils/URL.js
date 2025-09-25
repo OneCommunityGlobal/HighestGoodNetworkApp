@@ -94,6 +94,7 @@ export const ENDPOINTS = {
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
   WEEKLY_SUMMARIES_FILTERS:`${APIEndpoint}/weekly-summaries-filters`,
   WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weekly-summaries-filters/${filterId}`,
+  WEEKLY_SUMMARIES_FILTER_REPLACE_CODES: `${APIEndpoint}/weekly-summaries-filters/replace-teamcode`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
