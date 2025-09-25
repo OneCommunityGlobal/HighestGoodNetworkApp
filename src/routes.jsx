@@ -114,6 +114,7 @@ import Issue from './components/BMDashboard/Issue/Issue';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
+import InjuryTrendChart from './components/BMDashboard/InjuryTrendChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
 
 // Community Portal
@@ -645,6 +646,7 @@ export default (
 
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        <BMProtectedRoute path="/bmdashboard/injurychart" component={InjuryTrendChart} />
 
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
