@@ -26,7 +26,7 @@ function AgeChart({ data, compareLabel, darkMode }) {
     return [`${value}`, 'Applicants'];
   };
 
-  // Theme variables
+  // Theme vars
   const chartBg = darkMode ? '#222e3c' : '#fff';
   const chartText = darkMode ? '#fff' : '#000';
   const barColor = darkMode ? '#60a5fa' : '#3b82f6';
@@ -48,7 +48,7 @@ function AgeChart({ data, compareLabel, darkMode }) {
         transition: 'background 0.3s, color 0.3s',
       }}
     >
-      {/* Dark mode tooltip styling */}
+      {/* Dark mode tooltip override */}
       {darkMode && (
         <style>{`
           .default-tooltip {
@@ -66,7 +66,11 @@ function AgeChart({ data, compareLabel, darkMode }) {
       <h2 style={{ color: chartText, textAlign: 'center' }}>Applicants Grouped by Age</h2>
 
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 40 }} barSize={70}>
+        <BarChart
+          data={data}
+          margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+          barSize={65} // compromise between 60 and 70
+        >
           <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#ccc'} />
           <XAxis
             dataKey="ageGroup"
