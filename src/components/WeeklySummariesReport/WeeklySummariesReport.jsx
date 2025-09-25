@@ -1074,7 +1074,6 @@ const WeeklySummariesReport = props => {
         teamCodes,
         teamCodeWarningUsers,
         tableData,
-        filterChoices,
       } = state;
 
       setState(prev => ({
@@ -1119,7 +1118,9 @@ const WeeklySummariesReport = props => {
         });
 
         const updatedTeamCodes = teamCodes
-          .filter(teamCode => !oldTeamCodes.includes(teamCode.value))
+          .filter(
+            teamCode => !oldTeamCodes.includes(teamCode.value) && teamCode.value !== replaceCode,
+          )
           .concat({
             value: replaceCode,
             label: `${replaceCode} (${
@@ -1129,7 +1130,7 @@ const WeeklySummariesReport = props => {
           });
 
         const updatedSelectedCodes = selectedCodes
-          .filter(code => !oldTeamCodes.includes(code.value))
+          .filter(code => !oldTeamCodes.includes(code.value) && code.value !== replaceCode)
           .concat({
             value: replaceCode,
             label: `${replaceCode} (${
@@ -1164,22 +1165,24 @@ const WeeklySummariesReport = props => {
         });
 
         // Update filters
-        const filtersToUpdate = [];
-        filterChoices.map(filterChoice => {
-          const hasCode = oldTeamCodes.filter(code =>
-            filterChoice.filterData.selectedCodes.has(code),
-          );
+        // const filtersToUpdate = [];
+        // const oldAndReplaceCodes = [...oldTeamCodes, replaceCode];
+        // Get all filters that has oldTeamCodes and replace Code, flagged them as need update
+        // filterChoices.map(filterChoice => {
+        //   const hasCode = oldAndReplaceCodes.filter(code =>
+        //     filterChoice.filterData.selectedCodes.has(code),
+        //   );
 
-          if (hasCode.length > 0) {
-            filtersToUpdate.push(filterChoice.value);
-          }
-          return filterChoice;
-        });
+        //   if (hasCode.length > 0) {
+        //     filtersToUpdate.push(filterChoice.value);
+        //   }
+        //   return filterChoice;
+        // });
 
         const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_CODES, {
           oldTeamCodes,
           newTeamCode: replaceCode,
-          filtersToUpdate,
+          // filtersToUpdate,
         });
         if (res.status < 200 || res.status >= 300) {
           toast.error(`Failed to replace codes in filters. Status ${res.status}`);
@@ -1197,7 +1200,6 @@ const WeeklySummariesReport = props => {
           replaceCodeError: null,
           teamCodeWarningUsers: updatedWarningUsers,
           tableData: updatedTableData,
-          // filterChoices,
         }));
 
         filterWeeklySummaries();
