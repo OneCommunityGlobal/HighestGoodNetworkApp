@@ -21,17 +21,24 @@ function JobAdsCreation() {
     //givenSearchTerm, givenCategory, givenPosition
     {
       setLoading(true);
+      console.log('formData inside submitJobAds:');
       console.log(formData);
       try {
         const response = await axios.post(`${ApiEndpoint}/jobs`, formData);
-
+        console.log('response inside submitJobAds:');
         console.log(response);
         if (!response.ok) {
           throw new Error(`Failed to submit jobs: ${response.statusText}`);
         }
 
         const data = await response.json();
+        console.log('data inside submitJobAds:');
         console.log(data);
+
+        toast.success('Jobs submitted successfully');
+        setLoading(false);
+        setFormData({ ...initalState });
+        // You might want to do something with the response data here
       } catch (error) {
         console.log(error);
         toast.error('Failed to submit jobs');
@@ -96,7 +103,8 @@ function JobAdsCreation() {
     //    fetchJobAds(searchTerm, category, selectedValue);
   };
 
-  const handleDescriptionChange = event => {
+  // const handleDescriptionChange = event => {
+  const handleChange = event => {
     const { name, value } = event.target;
 
     // setCategory(selectedValue);
@@ -166,13 +174,57 @@ function JobAdsCreation() {
             className={styles['jobAds-input']}
             value={formData.description}
             placeholder="Enter the description"
-            onChange={handleDescriptionChange}
+            onChange={handleChange}
             name="description"
           />
         </label>
+        <label className={styles['input-item']}>
+          <span className={styles['input-label']}>ImageURL</span>
+          <input
+            className={styles['jobAds-input']}
+            value={formData.imageUrl}
+            placeholder="Enter the image URL"
+            onChange={handleChange}
+            name="imageUrl"
+          />
+        </label>
+        <label className={styles['input-item']}>
+          <span className={styles['input-label']}>Location</span>
+          <input
+            className={styles['jobAds-input']}
+            value={formData.location}
+            placeholder="Enter the location"
+            onChange={handleChange}
+            name="location"
+          />
+        </label>
+
+        <label className={styles['input-item']}>
+          <span className={styles['input-label']}>Apply Link</span>
+          <input
+            className={styles['jobAds-input']}
+            value={formData.applyLink}
+            placeholder="Enter the apply link"
+            onChange={handleChange}
+            name="applyLink"
+          />
+        </label>
+        <div className={styles['input-item']}>
+          <label className={styles['input-label']} htmlFor="jobDetailsLink">
+            Job Details Link
+          </label>
+          <input
+            className={styles['jobAds-input']}
+            id="jobDetailsLink"
+            value={formData.jobDetailsLink}
+            placeholder="Enter the job details link"
+            onChange={handleChange}
+            name="jobDetailsLink"
+          />
+        </div>
         <div className={styles['jobAds-creation-button-group']}>
           <button type="submit" className={styles['submit-button']}>
-            Submit Collab Ads
+            Submit
           </button>
           <button type="button" className={styles['cancel-button']} onClick={handleCancel}>
             Cancel
