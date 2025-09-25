@@ -28,13 +28,12 @@ function AgeChart({ data, compareLabel, darkMode }) {
 
   return (
     <div
-      className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
       style={{
-        width: '100%', // take full available width
-        maxWidth: '1000px', // optional: cap at some max width
+        width: '100%',
+        maxWidth: '1000px',
         margin: '0 auto',
         padding: '20px',
-        backgroundColor: darkMode ? '#4a5568' : '#f8f9fa',
+        backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
         borderRadius: '12px',
         boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
       }}
