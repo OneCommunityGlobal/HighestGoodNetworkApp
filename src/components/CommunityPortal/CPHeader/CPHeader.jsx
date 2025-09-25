@@ -50,7 +50,7 @@ import Logout from '../../Logout/Logout';
 import './CPHeader.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
-export function Header(props) {
+export function CPHeader(props) {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user } = props.auth;
@@ -369,4 +369,4 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
-})(Header);
+})(CPHeader);
