@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal } from 'react-bootstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import TimeOffRequestsTable from './TimeOffRequestsTable/TimeOffRequestsTable';

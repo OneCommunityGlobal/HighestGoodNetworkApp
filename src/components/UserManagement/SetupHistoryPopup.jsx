@@ -7,7 +7,7 @@ import { formatDate } from '../../utils/formatDate';
 import UserTableFooter from './UserTableFooter';
 import '../Header/DarkMode.css';
 import { boxStyle, boxStyleDark } from '../../styles';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import httpService from '../../services/httpService';
 
 const baseUrl = window.location.origin;

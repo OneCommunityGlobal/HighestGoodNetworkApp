@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
-import { ENDPOINTS } from 'utils/URL';
+import { useState, useEffect, useMemo, React } from 'react';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -23,8 +22,8 @@ import {
   Button,
   Card,
 } from 'reactstrap';
-import PopUpBar from 'components/PopUpBar';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import PopUpBar from '~/components/PopUpBar';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
@@ -49,6 +48,7 @@ import {
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
+  PR_PROMOTIONS,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -62,6 +62,8 @@ import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
+import PermissionWatcher from '../Auth/PermissionWatcher';
+import DisplayBox from '../PRPromotions/DisplayBox';
 
 export function Header(props) {
   const location = useLocation();
@@ -72,79 +74,76 @@ export function Header(props) {
   const [firstName, setFirstName] = useState(props.auth.firstName);
   const [profilePic, setProfilePic] = useState(props.auth.profilePic);
   const [displayUserId, setDisplayUserId] = useState(user.userid);
-  const [displayUserRole, setDisplayUserRole] = useState(props.auth.user.role);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const [isAckLoading, setIsAckLoading] = useState(false);
+  const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
 
-  // Create a memoized function to calculate permissions based on current viewing context
-  const calculatePermissions = useMemo(() => {
-    return isAuthUserView => {
-      const ALLOWED_ROLES_TO_INTERACT = ['Owner', 'Administrator'];
-      const canInteractWithViewingUser = ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role);
+  const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
+  const canInteractWithViewingUser = useMemo(
+    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
+    [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
+  );
 
-      // Base permission checks on whether we're viewing auth user or another user
-      const permissionContext = !isAuthUserView && canInteractWithViewingUser;
+  // Reports
+  const canGetReports = props.hasPermission(
+    'getReports',
+    !isAuthUser && canInteractWithViewingUser,
+  );
+  const canGetWeeklySummaries = props.hasPermission(
+    'getWeeklySummaries',
+    !isAuthUser && canInteractWithViewingUser,
+  );
+  const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
 
-      return {
-        // Reports
-        canGetReports:
-          canInteractWithViewingUser && props.hasPermission('getReports', permissionContext),
-        canGetWeeklySummaries:
-          canInteractWithViewingUser &&
-          props.hasPermission('getWeeklySummaries', permissionContext),
-        canGetWeeklyVolunteerSummary:
-          canInteractWithViewingUser && props.hasPermission('getWeeklySummaries'),
+  // Users
+  const canAccessUserManagement =
+    props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
 
-        // Users
-        canAccessUserManagement:
-          props.hasPermission('postUserProfile', permissionContext) ||
-          props.hasPermission('deleteUserProfile', permissionContext) ||
-          props.hasPermission('changeUserStatus', permissionContext) ||
-          props.hasPermission('getUserProfiles', permissionContext),
-
-        // Badges
-        canAccessBadgeManagement:
-          props.hasPermission('seeBadges', permissionContext) ||
-          props.hasPermission('createBadges', permissionContext) ||
-          props.hasPermission('updateBadges', permissionContext) ||
-          props.hasPermission('deleteBadges', permissionContext),
-
-        // Projects
-        canAccessProjects:
-          props.hasPermission('postProject', permissionContext) ||
-          props.hasPermission('deleteProject', permissionContext) ||
-          props.hasPermission('putProject', permissionContext) ||
-          props.hasPermission('getProjectMembers', permissionContext) ||
-          props.hasPermission('assignProjectToUsers', permissionContext) ||
-          props.hasPermission('postWbs', permissionContext) ||
-          props.hasPermission('deleteWbs', permissionContext) ||
-          props.hasPermission('postTask', permissionContext) ||
-          props.hasPermission('updateTask', permissionContext) ||
-          props.hasPermission('deleteTask', permissionContext),
-
-        // Tasks
-        canUpdateTask: props.hasPermission('updateTask', permissionContext),
-        // Teams
-        canAccessTeams:
-          props.hasPermission('postTeam', permissionContext) ||
-          props.hasPermission('putTeam', permissionContext) ||
-          props.hasPermission('deleteTeam', permissionContext) ||
-          props.hasPermission('assignTeamToUsers', permissionContext),
-        // Popups
-        canAccessPopups:
-          props.hasPermission('createPopup', permissionContext) ||
-          props.hasPermission('updatePopup', permissionContext),
-        // SendEmails
-        canAccessSendEmails: props.hasPermission('sendEmails', !isAuthUser),
-        // Permissions
-        canAccessPermissionsManagement:
-          props.hasPermission('postRole', permissionContext) ||
-          props.hasPermission('putRole', permissionContext) ||
-          props.hasPermission('deleteRole', permissionContext) ||
-          props.hasPermission('putUserProfilePermissions', permissionContext),
-      };
-    };
-  }, [props.hasPermission, props.auth.user.role]);
+  // Badges
+  const canAccessBadgeManagement =
+    props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
+  // Projects
+  const canAccessProjects =
+    props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+  // Tasks
+  const canUpdateTask = props.hasPermission(
+    'updateTask',
+    !isAuthUser && canInteractWithViewingUser,
+  );
+  // Teams
+  const canAccessTeams =
+    props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
+  // Popups
+  const canAccessPopups =
+    props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+  // SendEmails
+  const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
+  // Permissions
+  const canAccessPermissionsManagement =
+    props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -156,21 +155,8 @@ export function Header(props) {
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
-  // State to hold current permissions
-  const [currentPermissions, setCurrentPermissions] = useState({});
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
-  const [isAckLoading, setIsAckLoading] = useState(false);
-
-  // Update permissions whenever viewing context changes
-  useEffect(() => {
-    const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
-    const newPermissions = calculatePermissions(
-      !sessionStorageData,
-      sessionStorageData ? sessionStorageData.role : props.auth.user.role,
-    );
-    setCurrentPermissions(newPermissions);
-  }, [calculatePermissions, isAuthUser, displayUserRole]);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -180,19 +166,11 @@ export function Header(props) {
         setFirstName(sessionStorageData.firstName);
         setProfilePic(sessionStorageData.profilePic);
         setIsAuthUser(false);
-        setDisplayUserRole(sessionStorageData.role);
-        // Recalculate permissions for viewing user
-        const newPermissions = calculatePermissions(false, sessionStorageData.role);
-        setCurrentPermissions(newPermissions);
       } else {
         setDisplayUserId(user.userid);
         setFirstName(props.auth.firstName);
         setProfilePic(props.auth.profilePic);
         setIsAuthUser(true);
-        setDisplayUserRole(props.auth.user.role);
-        // Recalculate permissions for auth user
-        const newPermissions = calculatePermissions(true, props.auth.user.role);
-        setCurrentPermissions(newPermissions);
       }
     };
 
@@ -206,22 +184,8 @@ export function Header(props) {
     return () => {
       window.removeEventListener('storage', handleStorageEvent);
     };
-  }, [user.userid, props.auth.firstName, calculatePermissions]);
+  }, [user.userid, props.auth.firstName]);
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     console.log('Window size: ', window.innerWidth);
-  //   };
-  
-  //   // Add event listener
-  //   window.addEventListener('resize', handleResize);
-  //   handleResize();
-  
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // }, []); // Empty dependency array means this effect will only run once, similar to componentDidMount
-  
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -312,7 +276,7 @@ export function Header(props) {
     if (!userId || hasProfileLoaded) return;
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response.data;
+      const newUserProfile = response?.data;
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
@@ -370,9 +334,11 @@ export function Header(props) {
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className="header-wrapper">
+    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
+        {showPromotionsPopup && 
+        (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
         <div
           className="timer-message-section"
           style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
@@ -392,7 +358,7 @@ export function Header(props) {
                 className="d-flex justify-content-center align-items-center"
                 style={{ width: '100%' }}
               >
-                {currentPermissions.canUpdateTask && (
+                {canUpdateTask && (
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
                       <div className="redBackGroupHeader">
@@ -407,7 +373,7 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/timelog">
+                  <NavLink tag={Link} to="/timelog#currentWeek">
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
@@ -466,23 +432,23 @@ export function Header(props) {
                 )}
               </div>
               <div className="d-flex align-items-center justify-content-center">
-                {displayUserRole === 'Administrator' || displayUserRole === 'Owner' ? (
+                {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {currentPermissions.canGetReports && (
+                      {canGetReports && (
                         <DropdownItem tag={Link} to="/reports" className={`${fontColor}`}>
                           {REPORTS}
                         </DropdownItem>
                       )}
-                      {currentPermissions.canGetWeeklySummaries && (
+                      {canGetWeeklySummaries && (
                         <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}>
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
                       )}
-                      {currentPermissions.canGetWeeklyVolunteerSummary && (
+                      {canGetWeeklyVolunteerSummary && (
                         <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
@@ -497,6 +463,9 @@ export function Header(props) {
                       >
                         {TOTAL_CONSTRUCTION_SUMMARY}
                       </DropdownItem>
+                      <DropdownItem onClick={() => setShowPromotionsPopup(true)} className={fontColor}>
+                        {PR_PROMOTIONS}
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
@@ -509,44 +478,44 @@ export function Header(props) {
                 <NavItem className="responsive-spacing">
                   <BellNotification userId={displayUserId} />
                 </NavItem>
-                {(currentPermissions.canAccessUserManagement ||
-                  currentPermissions.canAccessBadgeManagement ||
-                  currentPermissions.canAccessProjects ||
-                  currentPermissions.canAccessTeams ||
-                  currentPermissions.canAccessPopups ||
-                  currentPermissions.canAccessSendEmails ||
-                  currentPermissions.canAccessPermissionsManagement) && (
+                {(canAccessUserManagement ||
+                  canAccessBadgeManagement ||
+                  canAccessProjects ||
+                  canAccessTeams ||
+                  canAccessPopups ||
+                  canAccessSendEmails ||
+                  canAccessPermissionsManagement) && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {currentPermissions.canAccessUserManagement && (
+                      {canAccessUserManagement && (
                         <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       )}
-                      {currentPermissions.canAccessBadgeManagement && (
+                      {canAccessBadgeManagement && (
                         <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       )}
-                      {currentPermissions.canAccessProjects && (
+                      {canAccessProjects && (
                         <DropdownItem tag={Link} to="/projects" className={fontColor}>
                           {PROJECTS}
                         </DropdownItem>
                       )}
-                      {currentPermissions.canAccessTeams && (
+                      {canAccessTeams && (
                         <DropdownItem tag={Link} to="/teams" className={fontColor}>
                           {TEAMS}
                         </DropdownItem>
                       )}
-                      {currentPermissions.canAccessSendEmails && (
+                      {canAccessSendEmails && (
                         <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                           {SEND_EMAILS}
                         </DropdownItem>
                       )}
-                      {currentPermissions.canAccessPermissionsManagement && (
+                      {canAccessPermissionsManagement && (
                         <>
                           <DropdownItem divider />
                           <DropdownItem
@@ -558,6 +527,10 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
+                      <DropdownItem divider />
+                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
+                        PR Team Analytics
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
@@ -572,7 +545,7 @@ export function Header(props) {
                         backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
                       }}
                       className="dashboardimg"
                     />
@@ -624,12 +597,17 @@ export function Header(props) {
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
+          firstName={viewingUser.firstName}
+          lastName={viewingUser.lastName}
           message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
         />
       )}
+      <PermissionWatcher props={props} />
       {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
+          firstName={viewingUser?.firstName || firstName}
+          lastName={viewingUser?.lastName}
           message="Heads Up, there were permission changes made to this account"
           onClickClose={handlePermissionChangeAck}
           textColor="black_text"

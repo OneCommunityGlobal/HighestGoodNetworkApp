@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import hasPermission from '../../../utils/permissions';
-import { deleteTitleById } from 'actions/title';
+import { deleteTitleById } from '~/actions/title';
 import { useSelector } from 'react-redux';
 import '../../Header/DarkMode.css';
 import { toast } from "react-toastify";
@@ -37,7 +37,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
 
     if (validation.volunteerAgree && googleDoc.length !== 0) {
       const originalTeamId = userProfile.teams.map(team => team._id);
-      const originalProjectId = userProfile.projects.map(project => project._id);
+      const originalProjectId = userProfile.projects.map(project => project.projectId);
       // If the title has team assigned, add the team to the user profile. Remove duplicate teams
       const teamsAssigned = title.teamAssiged
         ? originalTeamId.includes(title?.teamAssiged._id)
@@ -46,7 +46,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         : userProfile.teams;
       // If the title has project assigned, add the project to the user profile. Remove duplicate projects
       const projectAssigned = title.projectAssigned
-        ? originalProjectId.includes(title?.projectAssigned._id)
+        ? originalProjectId.includes(title?.projectAssigned.projectId)
           ? userProfile.projects
           : [...userProfile.projects, title.projectAssigned]
         : userProfile.projects;
@@ -107,6 +107,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         setIsOpen(false);
       })
       .catch(e => {
+        // eslint-disable-next-line no-console
         console.log(e);
       });
   };

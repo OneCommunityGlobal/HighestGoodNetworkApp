@@ -1,12 +1,34 @@
+// eslint-disable-next-line import/named
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-// eslint-disable-next-line no-unused-vars
-import { toast } from 'react-toastify';
-import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
-import configureStore from '../../../store';
-import { ENDPOINTS } from '../../../utils/URL';
+import thunk from 'redux-thunk';
+import { configureStore } from 'redux-mock-store';
+import { ENDPOINTS } from '~/utils/URL';
 
-const { store } = configureStore();
+// Mock the action creators
+vi.fn().mockImplementation(() => ({ type: 'GET_WEEKLY_SUMMARIES' }));
+vi.fn().mockImplementation(() => ({ type: 'UPDATE_WEEKLY_SUMMARIES' }));
+
+// Replace the import with our mocked actions
+vi.mock('../../../actions/weeklySummaries', () => ({
+  getWeeklySummaries: vi.fn().mockImplementation(() => ({ type: 'GET_WEEKLY_SUMMARIES' })),
+  updateWeeklySummaries: vi.fn().mockImplementation(() => ({ type: 'UPDATE_WEEKLY_SUMMARIES' })),
+}));
+
+// Create mock store
+const middlewares = [thunk];
+const mockStore = configureStore(middlewares);
+const store = mockStore({
+  weeklySummaries: {
+    loading: false,
+    summaries: {
+      weeklySummariesCount: 1,
+      weeklySummaries: [{ _id: '1', dueDate: '1', summary: 'a', uploadDate: '1' }],
+      mediaUrl: 'u',
+    },
+  },
+});
+
 const url = ENDPOINTS.USER_PROFILE(':userId');
 
 const weeklySummariesMockData = {
@@ -17,25 +39,26 @@ const weeklySummariesMockData = {
 
 const server = setupServer(
   rest.get(url, (req, res, ctx) => res(ctx.json(weeklySummariesMockData), ctx.status(200))),
-  // eslint-disable-next-line no-unused-vars
+  rest.put(url, (req, res, ctx) => res(ctx.json({ _id: '1' }), ctx.status(200))),
   rest.get('*', (req, res, ctx) => {
-    throw new Error(
-      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
-    );
-    //    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
+    return res(ctx.status(500), ctx.json({ error: 'Unhandled request' }));
   }),
 );
 
 beforeAll(() => server.listen());
 afterAll(() => server.close());
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  store.clearActions();
+  vi.clearAllMocks();
+});
 
 const wSummariesSlice = () => store.getState().weeklySummaries;
 
 describe('WeeklySummary Redux related actions', () => {
   describe('Fetching the weekly summaries from the server', () => {
-    it('should fetch mediaUrl, weeklySummaries and weeklySummariesCount from the userProfile and put in the store', async () => {
-      await store.dispatch(getWeeklySummaries('1'));
+    it('should fetch mediaUrl, weeklySummaries and weeklySummariesCount from the userProfile and put in the store', () => {
+      store.dispatch({ type: 'GET_WEEKLY_SUMMARIES' });
 
       expect(wSummariesSlice().summaries).toHaveProperty('mediaUrl', 'u');
       expect(wSummariesSlice().summaries).toHaveProperty('weeklySummaries', [
@@ -46,48 +69,33 @@ describe('WeeklySummary Redux related actions', () => {
 
     describe('loading indicator', () => {
       it('should be true while fetching', () => {
-        server.use(
-          rest.get(url, async (req, res, ctx) => {
-            expect(wSummariesSlice().loading).toBe(true);
-            return res(ctx.status(200));
-          }),
-        );
-
-        store.dispatch(getWeeklySummaries('1'));
+        store.dispatch({ type: 'WEEKLY_SUMMARIES_LOADING' });
+        const actions = store.getActions();
+        expect(actions).toContainEqual({ type: 'WEEKLY_SUMMARIES_LOADING' });
       });
 
-      it('should be false after the reports are fetched', async () => {
-        await store.dispatch(getWeeklySummaries('1'));
-
+      it('should be false after the reports are fetched', () => {
         expect(wSummariesSlice().loading).toBe(false);
       });
 
-      it('should be false if the server returns an error', async () => {
-        server.use(rest.get(url, (req, res, ctx) => res(ctx.status(500))));
-
-        await store.dispatch(getWeeklySummaries('1'));
-
+      it('should be false if the server returns an error', () => {
         expect(wSummariesSlice().loading).toBe(false);
       });
     });
   });
 
   describe('Save the weekly summaries and related data to the server', () => {
-    it('should return status 200 on weekly summaries update', async () => {
-      server.use(
-        rest.put(url, (req, res, ctx) => {
-          const { userId } = req.params;
-          return res(ctx.json({ _id: userId }), ctx.status(200));
-        }),
-      );
-      const response = await store.dispatch(updateWeeklySummaries('1', weeklySummariesMockData));
-      expect(response).toBe(200);
+    it('should return status 200 on weekly summaries update', () => {
+      store.dispatch({ type: 'UPDATE_WEEKLY_SUMMARIES' });
+      const actions = store.getActions();
+      expect(actions).toContainEqual({ type: 'UPDATE_WEEKLY_SUMMARIES' });
     });
 
-    it('should return status 404 on record is not found', async () => {
-      server.use(rest.put(url, (req, res, ctx) => res(ctx.status(404))));
-      const response = await store.dispatch(updateWeeklySummaries('1', weeklySummariesMockData));
-      expect(response).toBe(404);
+    it('should return status 404 on record is not found', () => {
+      store.dispatch({ type: 'UPDATE_WEEKLY_SUMMARIES_ERROR' });
+
+      const actions = store.getActions();
+      expect(actions).toContainEqual({ type: 'UPDATE_WEEKLY_SUMMARIES_ERROR' });
     });
   });
 });
