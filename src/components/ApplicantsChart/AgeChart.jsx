@@ -26,21 +26,15 @@ function AgeChart({ data, compareLabel, darkMode }) {
     return [`${value}`, 'Applicants'];
   };
 
-  // Enhanced styling to avoid merge conflicts
-  const chartContainerStyle = {
-    width: '100%',
-    maxWidth: '1000px',
-    margin: '0 auto',
-    padding: '20px',
-    backgroundColor: darkMode ? '#2d3748' : '#f8f9fa',
-    borderRadius: '12px',
-    boxShadow: darkMode ? '0 4px 12px rgba(0,0,0,0.3)' : '0 2px 8px rgba(0,0,0,0.1)',
-  };
-
   return (
     <div
       className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
-      style={chartContainerStyle}
+      style={{
+        width: '100%',
+        maxWidth: '1000px',
+        margin: '0 auto',
+        padding: '20px',
+      }}
     >
       <h2 style={{ color: darkMode ? '#fff' : '#000', textAlign: 'center' }}>
         Applicants Grouped by Age
