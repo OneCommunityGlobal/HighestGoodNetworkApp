@@ -25,12 +25,9 @@ function AgeChart({ data, compareLabel, darkMode }) {
     }
     return [`${value}`, 'Applicants'];
   };
-
-  // Theme vars
   const chartBg = darkMode ? '#222e3c' : '#fff';
   const chartText = darkMode ? '#fff' : '#000';
   const barColor = darkMode ? '#60a5fa' : '#3b82f6';
-
   return (
     <div
       style={{
@@ -101,5 +98,4 @@ function AgeChart({ data, compareLabel, darkMode }) {
     </div>
   );
 }
-
 export default AgeChart;
