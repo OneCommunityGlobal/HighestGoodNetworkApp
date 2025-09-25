@@ -13,9 +13,6 @@ const TeamsOverview = ({
   const getCardClass = filterType =>
     selectedFilter === filterType ? 'card selected-filter' : 'card';
 
-  // Deliberate lint error: unused variable
-  const unusedLintError = 42;
-
   return (
     <div className="teams__overview--top">
       <div
