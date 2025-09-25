@@ -87,17 +87,17 @@ export default function ToolStatusDonutChart() {
   let outerRadius;
   let chartHeight;
   if (isXS) {
+    innerRadius = 25;
+    outerRadius = 40;
+    chartHeight = 180;
+  } else if (windowWidth <= 768) {
+    innerRadius = 30;
+    outerRadius = 50;
+    chartHeight = 200;
+  } else {
     innerRadius = 35;
     outerRadius = 60;
-    chartHeight = 240;
-  } else if (windowWidth <= 768) {
-    innerRadius = 45;
-    outerRadius = 75;
-    chartHeight = 260;
-  } else {
-    innerRadius = 70;
-    outerRadius = 100;
-    chartHeight = 320;
+    chartHeight = 220;
   }
 
   return (
@@ -138,42 +138,44 @@ export default function ToolStatusDonutChart() {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={chartHeight}>
-        <PieChart margin={{ top: 30, bottom: 30, left: isXS ? 30 : 40, right: isXS ? 30 : 40 }}>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            innerRadius={innerRadius}
-            outerRadius={outerRadius}
-            labelLine={false}
-            label={props => renderCustomizedLabel({ ...props, width: windowWidth })}
-            dataKey="count"
-            isAnimationActive={false}
-          >
-            {chartData.map(entry => (
-              <Cell key={entry.status} fill={COLORS[entry.status.toUpperCase()]} />
-            ))}
-          </Pie>
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <ResponsiveContainer width="100%" height={chartHeight}>
+          <PieChart margin={{ top: 30, bottom: 30, left: isXS ? 30 : 40, right: isXS ? 30 : 40 }}>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              innerRadius={innerRadius}
+              outerRadius={outerRadius}
+              labelLine={false}
+              label={props => renderCustomizedLabel({ ...props, width: windowWidth })}
+              dataKey="count"
+              isAnimationActive={false}
+            >
+              {chartData.map(entry => (
+                <Cell key={entry.status} fill={COLORS[entry.status.toUpperCase()]} />
+              ))}
+            </Pie>
 
-          <text
-            x="50%"
-            y="50%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill="var(--donut-text-color)"
-            fontSize={14}
-            fontWeight="bold"
-          >
-            TOTAL: {total}
-          </text>
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="var(--donut-text-color)"
+              fontSize={14}
+              fontWeight="bold"
+            >
+              TOTAL: {total}
+            </text>
 
-          <Tooltip
-            formatter={value => `${((value / total) * 100).toFixed(1)}%`}
-            contentStyle={{ fontSize: '14px' }}
-          />
-        </PieChart>
-      </ResponsiveContainer>
+            <Tooltip
+              formatter={value => `${((value / total) * 100).toFixed(1)}%`}
+              contentStyle={{ fontSize: '14px' }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
 
       <div className="tool-donut-legend">
         {chartData.map(entry => (
