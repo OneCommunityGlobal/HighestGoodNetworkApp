@@ -132,12 +132,17 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
                 <DropdownItem
                   key={index}
                   onClick={() => {
-                    setAddUser(user);
-                    setSearchWord(`${user.firstName} ${user.lastName}`);
+                   setAddUser(user);
+                   setSearchWord(`${user.firstName} ${user.lastName} (${user.email})`);
                   }}
                 >
-                  {user.firstName} {user.lastName}
-                </DropdownItem>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span>
+                      {user.firstName} {user.lastName}
+                      </span>
+                      <small className="text-muted">{user.email}</small>
+                      </div>
+                  </DropdownItem>
               ))}
             </DropdownMenu>
           </Dropdown>

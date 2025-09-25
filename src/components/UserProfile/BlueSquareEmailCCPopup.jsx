@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { addCCEmail, deleteCCEmail } from '~/actions/blueSquareEmailCCAction';
 import {
@@ -48,6 +48,19 @@ const BlueSquareEmailCCPopup = React.memo(props => {
       user.email.toLowerCase().includes(searchWord.toLowerCase())
     );
   });
+
+  const assignmentsWithStatus = useMemo(() => {
+  return ccList.map(a => {
+    const matchedUser = allUsers.find(user => user.email === a.email);
+    return {
+      ...a,
+      assignedTo: {
+        ...a.assignedTo,
+        isActive: matchedUser?.isActive || false,
+      },
+    };
+  });
+}, [ccList, allUsers]);
 
   const handleAddCC = async (e) => {
   e?.preventDefault?.();
@@ -177,10 +190,15 @@ const handleRemoveCC = async (email) => {
                     key={index}
                     onClick={() => {
                       setAddUser(user);
-                      setSearchWord(`${user.firstName} ${user.lastName}`);
+                      setSearchWord(`${user.firstName} ${user.lastName} (${user.email})`);
                     }}
                   >
-                    {user.firstName} {user.lastName}
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span>
+                        {user.firstName} {user.lastName}
+                      </span>
+                      <small className="text-muted">{user.email}</small>
+                      </div>
                   </DropdownItem>
                 ))}
               </DropdownMenu>
@@ -197,10 +215,10 @@ const handleRemoveCC = async (email) => {
               </tr>
             </thead>
             <tbody>
-              {ccList.map(assignment => (
+              {assignmentsWithStatus.map(assignment => (
                 <tr key={assignment._id || assignment.email}>
                   <td>
-                    <span className={assignment.isActive ? "isActive" : "isNotActive"}>
+                    <span className={assignment.assignedTo?.isActive ? "isActive" : "isNotActive"}>
                       <i className="fa fa-circle" aria-hidden="true" />
                     </span>
                   </td>
