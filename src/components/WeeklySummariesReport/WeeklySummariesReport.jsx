@@ -1165,19 +1165,6 @@ const WeeklySummariesReport = props => {
         });
 
         // Update filters
-        // const filtersToUpdate = [];
-        // const oldAndReplaceCodes = [...oldTeamCodes, replaceCode];
-        // Get all filters that has oldTeamCodes and replace Code, flagged them as need update
-        // filterChoices.map(filterChoice => {
-        //   const hasCode = oldAndReplaceCodes.filter(code =>
-        //     filterChoice.filterData.selectedCodes.has(code),
-        //   );
-
-        //   if (hasCode.length > 0) {
-        //     filtersToUpdate.push(filterChoice.value);
-        //   }
-        //   return filterChoice;
-        // });
 
         const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_CODES, {
           oldTeamCodes,
