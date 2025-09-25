@@ -1,5 +1,4 @@
-import React from 'react';
-import { TOTAL_TEAMS, ACTIVE_TEAMS, IN_ACTIVE_TEAMS } from '../../languages/en/ui';
+import { ACTIVE_TEAMS, IN_ACTIVE_TEAMS, TOTAL_TEAMS } from '../../languages/en/ui';
 import './TeamsOverview.css';
 
 const TeamsOverview = ({
@@ -13,6 +12,9 @@ const TeamsOverview = ({
 }) => {
   const getCardClass = filterType =>
     selectedFilter === filterType ? 'card selected-filter' : 'card';
+
+  // Deliberate lint error: unused variable
+  const unusedLintError = 42;
 
   return (
     <div className="teams__overview--top">
