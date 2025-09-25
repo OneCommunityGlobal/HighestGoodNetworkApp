@@ -186,6 +186,7 @@ const UserProfileModal = props => {
   const handleSubmitWarning = () => {
     setShowWarningSpinner(true);
     handleLogWarning(warningSelections);
+    modifyBlueSquares(id, dateStamp, summary, 'delete');
     // setShowWarningSpinner(false);
   };
   const handleToggleLogWarning = warningData => {
@@ -194,7 +195,7 @@ const UserProfileModal = props => {
       setWarningType({
         specialWarnings,
         username: `${userProfile.firstName} ${userProfile.lastName}`,
-        warningText: `${specialWarnings[0].title} and ${specialWarnings[0].warnings.length + 1}x ${specialWarnings[1].title}`,
+        warningText: `${specialWarnings[0].title} and ${specialWarnings[0].warnings.length}x ${specialWarnings[1].title}`,
       });
       return;
     }
