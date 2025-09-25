@@ -1,6 +1,6 @@
 import FormEditor from '~/components/Forms/FormEditor';
 import FormViewer from '~/components/Forms/FormViewer';
-
+import register from './components/LBDashboard/Register/LBRegister.jsx';
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from '~/components/SetupProfile/SetupProfile';
@@ -664,6 +664,7 @@ export default (
 
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
+        <Route path="/ldashboard/register" component={register} />
         <Route path="/communityportal/login" component={CPLogin} />
 
         {/* ----- Community Calendar Routing ----- */}
