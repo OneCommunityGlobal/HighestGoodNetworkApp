@@ -1,33 +1,85 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import styles from "./UserStateEdit.module.css";
+
+const slugify = (s) =>
+  s.toLowerCase().replace(/[^a-z0-9\s]+/g, "").trim().replace(/\s+/g, "-");
 
 export default function UserStateEdit({
   open,
   onClose,
-  catalog,
+  catalog,            // parent may pass initial list; we fetch only if this is empty
   selectedKeys,
   onSave,
   canEditCatalog = true,
+  apiBase = process.env.REACT_APP_APIENDPOINT,
+  useToken = true,     // set false if your endpoint is public
 }) {
-  const [localCatalog, setLocalCatalog] = useState(catalog);
-  const [localSelected, setLocalSelected] = useState(new Set(selectedKeys));
+  const [localCatalog, setLocalCatalog] = useState(catalog || []);
+  const [localSelected, setLocalSelected] = useState(new Set(selectedKeys || []));
   const [newLabel, setNewLabel] = useState("");
   const [editingKey, setEditingKey] = useState(null);
   const [editLabel, setEditLabel] = useState("");
 
-  React.useEffect(() => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Reset state whenever the dialog opens
+  useEffect(() => {
     if (open) {
-      setLocalCatalog(catalog);
-      setLocalSelected(new Set(selectedKeys));
+      setLocalCatalog(catalog || []);
+      setLocalSelected(new Set(selectedKeys || []));
       setNewLabel("");
       setEditingKey(null);
       setEditLabel("");
+      setError("");
     }
   }, [open, catalog, selectedKeys]);
 
+useEffect(() => {
+  let cancelled = false;
+  if (!open) return;
+  setLocalCatalog(catalog || []);
+  setLocalSelected(new Set(selectedKeys || []));
+  setError("");
+  (async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const { data } = await axios.get(`${apiBase}/user-states/catalog`, {
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const items = Array.isArray(data?.items) ? data.items : [];
+      if (cancelled) return;
+
+      // overwrite local catalog with API data
+      setLocalCatalog(items);
+
+      // reconcile selection against the new catalog
+      const validKeys = new Set(items.map(i => i.key));
+      setLocalSelected(prev => {
+        const next = new Set();
+        for (const k of prev) if (validKeys.has(k)) next.add(k);
+        return next;
+      });
+    } catch (e) {
+      if (!cancelled) setError("Could not load options");
+      console.error("user-states/catalog failed", e?.response?.status, e?.message);
+    } finally {
+      if (!cancelled) setLoading(false);
+    }
+  })();
+
+  return () => { cancelled = true; };
+}, [open, apiBase, useToken, catalog, selectedKeys]);
+
+
   const byKey = useMemo(() => {
     const map = new Map();
-    localCatalog.forEach(o => map.set(o.key, o));
+    (localCatalog || []).forEach(o => map.set(o.key, o));
     return map;
   }, [localCatalog]);
 
@@ -35,8 +87,7 @@ export default function UserStateEdit({
 
   const toggleKey = (key) => {
     const next = new Set(localSelected);
-    if (next.has(key)) next.delete(key);
-    else next.add(key);
+    next.has(key) ? next.delete(key) : next.add(key);
     setLocalSelected(next);
   };
 
@@ -49,24 +100,45 @@ export default function UserStateEdit({
     setLocalCatalog(next);
   };
 
-  const handleAdd = () => {
-    const label = newLabel.trim();
-    if (!label) return;
-    if (label.length > 30) return;
-    const exists = localCatalog.some(o => o.label.toLowerCase() === label.toLowerCase());
-    if (exists) return;
-    const key = label
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]+/g, "")
-      .trim()
-      .replace(/\s+/g, "-");
+  const labelExists = (label, exceptKey = null) =>
+    localCatalog.some(o =>
+      o.label.trim().toLowerCase() === label.trim().toLowerCase() &&
+      (exceptKey ? o.key !== exceptKey : true)
+    );
 
-    const colorPool = ["red", "blue", "purple", "green", "orange"];
-    const color = colorPool[(localCatalog.length) % colorPool.length];
+ const handleAdd = async () => {
+  const label = newLabel.trim();
+  if (!label) return;
+  if (label.length > 30) return;
+  if (labelExists(label)) return;
 
-    setLocalCatalog([...localCatalog, { key, label, color }]);
-    setNewLabel("");
-  };
+  try {
+    setLoading(true);
+    setError("");
+
+    const token = localStorage.getItem("token");
+    const { data } = await axios.post(
+      `${apiBase}/user-states/catalog`,
+      { label }, 
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }
+    );
+    if (data?.item) {
+      setLocalCatalog([...localCatalog, data.item]);
+      setNewLabel("");
+    }
+  } catch (err) {
+    console.error("Add catalog item failed:", err);
+    setError(err?.response?.data?.error || "Could not add item");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const startEdit = (key) => {
     setEditingKey(key);
@@ -74,8 +146,13 @@ export default function UserStateEdit({
   };
 
   const saveEdit = () => {
+    const label = editLabel.trim();
+    if (!label) return;
+    if (label.length > 30) return;
+    if (labelExists(label, editingKey)) return;
+
     const next = localCatalog.map(o =>
-      o.key === editingKey ? { ...o, label: editLabel } : o
+      o.key === editingKey ? { ...o, label } : o
     );
     setLocalCatalog(next);
     setEditingKey(null);
@@ -88,7 +165,10 @@ export default function UserStateEdit({
   };
 
   const handleSaveAll = () => {
-    onSave(Array.from(localSelected), localCatalog);
+    // Only keep selections that still exist
+    const keys = new Set(localCatalog.map(c => c.key));
+    const normalizedSelected = Array.from(localSelected).filter(k => keys.has(k));
+    onSave(normalizedSelected, localCatalog);
     onClose();
   };
 
@@ -102,7 +182,11 @@ export default function UserStateEdit({
 
         <div className={styles.body}>
           <div className={styles.left}>
-            <div className={styles.sectionTitle}>Select states</div>
+            <div className={styles.sectionTitle}>
+              Select states {loading && <span style={{ marginLeft: 8, opacity: 0.7 }}>(loading…)</span>}
+              {error && <span style={{ marginLeft: 8, color: "red" }}>— {error}</span>}
+            </div>
+
             <ul className={styles.list}>
               {localCatalog.map((opt, idx) => (
                 <li key={opt.key} className={styles.item}>

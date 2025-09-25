@@ -34,6 +34,7 @@ import {
   selectUserStateCatalog,
   selectUserStateForUser,
 } from "../UserState/reducer";
+import axios from 'axios';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -72,7 +73,7 @@ const TeamMemberTask = React.memo(
     const manager = 'Manager';
     const adm = 'Administrator';
     const owner = 'Owner';
-
+    const API_BASE = process.env.REACT_APP_APIENDPOINT;
     const handleDashboardAccess = () => {
       // null checks
       if (!user || !userRole || !user.role) {
@@ -224,25 +225,31 @@ const TeamMemberTask = React.memo(
       ['Owner', 'Administrator'].includes(userRole) ||
       dispatch(hasPermission('manageUserStateIndicator'));
 
-      const [catalogFromApi, setCatalogFromApi] = useState(null);
-      React.useEffect(() => {
-  let cancelled = false;
-  (async () => {
-    try {
-      const res = await fetch('/api/user-state/catalog', { credentials: 'include' });
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      const data = await res.json();              // <- { items: [...] }
-      if (!cancelled) setCatalogFromApi(data.items || []);
-    } catch (e) {
-      console.error('fetch catalog failed', e);
-    }
-  })();
-  return () => { cancelled = true; };
-}, []);
- const effectiveCatalog =
-  (catalogFromApi && catalogFromApi.length && catalogFromApi) ||
-  (catalogFromStore && catalogFromStore.length && catalogFromStore) ||
-  initialCatalog;
+    const [catalogFromApi, setCatalog] = useState(null);
+  //   React.useEffect(() => {
+  //   let cancelled = false;
+  //   (async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       const { data } = await axios.get(`${API_BASE}/user-states/catalog`, {
+  //         headers: {
+  //           Accept: "application/json",
+  //           // ...(token ? { Authorization: token } : {}),
+  //         },
+  //       });
+  //       if (!cancelled) setCatalog(Array.isArray(data?.items) ? data.items : []);
+  //     } catch (e) {
+  //       console.error("catalog fetch failed", e?.response?.status, e?.message);
+  //       if (!cancelled) setCatalog([]); // fall back
+  //     }
+  //   })();
+  //   return () => { cancelled = true; };
+  // }, []);
+    const effectiveCatalog =
+      (catalogFromApi && catalogFromApi.length && catalogFromApi)
+       ||
+      (catalogFromStore && catalogFromStore.length && catalogFromStore) ||
+      initialCatalog;
 
     return (
       <tr ref={ref} className={`table-row ${darkMode ? 'bg-yinmn-blue' : ''}`} key={user.personId}>
