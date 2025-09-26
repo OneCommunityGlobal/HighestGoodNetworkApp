@@ -42,6 +42,7 @@ import WeeklySummaryEmailAssignment from './WeeklySummaryEmailAssignment';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
+// eslint-disable-next-line import/no-named-as-default
 import savedFilterReducer from './savedFilterReducer';
 
 // bm dashboard
@@ -68,6 +69,7 @@ import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
+// eslint-disable-next-line import/no-named-as-default
 import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portal
@@ -141,7 +143,6 @@ const localReducers = {
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
   bmInjury: bmInjuryReducer,
-  weeklyProjectSummary: weeklyProjectSummaryReducer,
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,

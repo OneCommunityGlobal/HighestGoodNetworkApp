@@ -126,12 +126,14 @@ describe('UserProfileModal component', () => {
     expect(screen.getAllByText('Link URL')[0]).toBeInTheDocument()
     expect(screen.getAllByText('+ ADD LINK:')[0]).toBeInTheDocument()
 
+    // eslint-disable-next-line testing-library/no-node-access
     const linkName=document.body.querySelector('[id="linkName"]')
     
 
     fireEvent.change(linkName,{target:{value:"link 1"}})
     expect(linkName.value).toBe("link 1")
 
+    // eslint-disable-next-line testing-library/no-node-access
     const linkURL=document.body.querySelector('[id="linkURL"')
     fireEvent.change(linkURL,{target:{value:"http://link1.com"}})
     expect(linkURL.value).toBe("http://link1.com")
@@ -153,12 +155,14 @@ describe('UserProfileModal component', () => {
     
     renderComponent(store,'addBlueSquare',true)
 
+    // eslint-disable-next-line testing-library/no-node-access
     const dateElement=document.body.querySelector('[id="date"]')
     fireEvent.change(dateElement,{target:{value:"2024-03-15"}})
 
     expect(screen.getByText("Date")).toBeInTheDocument()
     expect(screen.getByText("Summary")).toBeInTheDocument()
 
+    // eslint-disable-next-line testing-library/no-node-access
     const summaryElement=document.body.querySelector('[id="summary"]')
     fireEvent.change(summaryElement,{target:{value:"This is a test summary"}})
     expect(summaryElement.value).toBe("This is a test summary")
@@ -170,6 +174,7 @@ describe('UserProfileModal component', () => {
   })
   it('check if modify blue square works a s expected when type is set to modBlueSquare',()=>{
     renderComponent(store,'modBlueSquare',true)
+    // eslint-disable-next-line testing-library/no-node-access
     const summaryElement=document.body.querySelector('[id="summary"]')
     fireEvent.change(summaryElement,{target:{value:"This is a second test blue square summary"}})
     expect(summaryElement.value).toBe("This is a second test blue square summary")
@@ -214,6 +219,7 @@ describe('UserProfileModal component', () => {
   })
   it("check if add blue square do not get displayed type is not set to addBlueSquare",()=>{
     renderComponent(store,"image",true)
+    // eslint-disable-next-line testing-library/no-node-access
     expect(document.body.querySelector("[id='addBlueSquare']")).not.toBeInTheDocument()
   })
   it("check if modify blue square do not get displayed type is not set to modBlueSquare",()=>{
