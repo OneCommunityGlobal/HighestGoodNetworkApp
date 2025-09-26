@@ -6,44 +6,42 @@ import axios from 'axios';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 function JobAdsCreation() {
-  const [category, setCategory] = useState('');
-  const [title, setTitle] = useState('');
+  // const [category, setCategory] = useState('');
+  // const [title, setTitle] = useState('');
   //const [description, setDescription] = useState('');
   const [loading, setLoading] = useState('');
-  const initalState = { title: title, category: category, description: '' };
+  const initalState = { title: '', category: '', description: '' };
   const [formData, setFormData] = useState({ ...initalState });
   const [categories, setCategories] = useState([]);
   const [positions, setPositions] = useState([]);
   const [errors, setErrors] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const submitJobAds = async () =>
-    //givenSearchTerm, givenCategory, givenPosition
-    {
-      setLoading(true);
-      console.log('formData inside submitJobAds:');
-      console.log(formData);
-      try {
-        const response = await axios.post(`${ApiEndpoint}/jobs`, formData);
-        console.log('response inside submitJobAds:');
-        console.log(response);
-        if (!response.ok) {
-          throw new Error(`Failed to submit jobs: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        console.log('data inside submitJobAds:');
-        console.log(data);
-
-        toast.success('Jobs submitted successfully');
-        setLoading(false);
-        setFormData({ ...initalState });
-        // You might want to do something with the response data here
-      } catch (error) {
-        console.log(error);
-        toast.error('Failed to submit jobs');
+  const submitJobAds = async () => {
+    setLoading(true);
+    console.log('formData inside submitJobAds:');
+    console.log(formData);
+    try {
+      const response = await axios.post(`${ApiEndpoint}/jobs`, formData);
+      console.log('response inside submitJobAds:');
+      console.log(response);
+      if (!response.status === 201) {
+        throw new Error(`Failed to submit jobs: ${response.statusText}`);
       }
-    };
+
+      const data = await response.data;
+      console.log('data inside submitJobAds:');
+      console.log(data);
+
+      toast.success('Jobs submitted successfully');
+      setLoading(false);
+      setFormData({ ...initalState });
+      // You might want to do something with the response data here
+    } catch (error) {
+      console.log(error);
+      toast.error('Failed to submit jobs');
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -76,6 +74,49 @@ function JobAdsCreation() {
   const handleSubmit = event => {
     event.preventDefault();
     alert('handleSubmit');
+    if (!formData.title) {
+      setErrors({ title: 'Title is required' });
+      toast.error('Title is required');
+      return;
+    }
+    if (!formData.category) {
+      setErrors({ category: 'Category is required' });
+      toast.error('Category is required');
+      return;
+    }
+    if (!formData.description) {
+      setErrors({ description: 'Description is required' });
+      toast.error('Description is required');
+      return;
+    }
+    if (!formData.description || formData.description.length < 30) {
+      setErrors({ description: 'Description must be at least 30 characters long' });
+      toast.error('Description must be at least 30 characters long');
+      return;
+    }
+    if (!formData.imageUrl) {
+      setErrors({ imageUrl: 'ImageURL is required' });
+      toast.error('ImageURL is required');
+      return;
+    }
+    if (!formData.location) {
+      setErrors({ location: 'Location is required' });
+      toast.error('Location is required');
+      return;
+    }
+    if (!formData.applyLink) {
+      setErrors({ applyLink: 'Apply Link is required' });
+      toast.error('Apply Link is required');
+      return;
+    }
+    if (!formData.jobDetailsLink) {
+      setErrors({ jobDetailsLink: 'Job Details Link is required' });
+      toast.error('Job Details Link is required');
+      return;
+    }
+
+    const emptyMsg = '';
+    setErrors(emptyMsg);
     submitJobAds();
   };
 
