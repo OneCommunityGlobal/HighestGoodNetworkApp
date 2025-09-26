@@ -84,6 +84,7 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
 // lbdashboard
 import wishListReducer from './listBidDashboard/wishListItemReducer';
+import villageDetailsReducer from './lbdashboard/villageDetailsReducer';
 
 // listing and biddding dashboard
 
@@ -158,10 +159,6 @@ const localReducers = {
   dashboard: dashboardReducer,
   injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
-
-  // lbdashboard
-  wishlistItem: wishListReducer,
-
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
@@ -169,9 +166,12 @@ const localReducers = {
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
   bmInjury: bmInjuryReducer,
+
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  wishlistItem: wishListReducer,
+  villageDetails: villageDetailsReducer,
 
   WishListItem: wishListReducer,
 
