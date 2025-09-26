@@ -337,19 +337,17 @@ export function Header(props) {
     <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        {showPromotionsPopup && 
-        (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
-        <div
-          className="timer-message-section"
-          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
-            <div className="owner-message">
-              <OwnerMessage />
-            </div>
-          )}
-        </div>
+        { false && <DisplayBox onClose={() => setShowPromotionsPopup(false)} />}
+    {/* Left Section - Timer */}
+    <div className="header-left">
+      {isAuthenticated && <Timer darkMode={darkMode} />}
+    </div>
+    {/* Center Section - Owner Message */}
+    {/* Right Section - Logo / Navigation */}
+    {/* Center Section - Logo */}
+<div className="header-center">
+  <img src="/logo192.png" alt="Logo" className="header-logo" />
+</div>
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
