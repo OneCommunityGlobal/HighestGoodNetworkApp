@@ -1,9 +1,12 @@
+// src/pages/Collaboration/Collaboration.jsx
 import { useEffect, useState } from 'react';
 import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import { useSelector } from 'react-redux';
 import OneCommunityImage from '../../assets/images/logo2.png';
+
+const ADS_PER_PAGE = 18; // 3 rows × 6 cols
 
 function Collaboration() {
   const [query, setQuery] = useState('');
@@ -12,7 +15,7 @@ function Collaboration() {
   const [category, setCategory] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [jobAds, setJobAds] = useState([]);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
   const [categories, setCategories] = useState([]);
   const [summaries, setSummaries] = useState(null);
   const [showSearchResults, setShowSearchResults] = useState(true);
@@ -20,6 +23,14 @@ function Collaboration() {
   const [tooltipPosition, setTooltipPosition] = useState(null);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // slugify category for external URL like seeking-mechanical-engineer
+  const slugify = (s = '') =>
+    s
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
 
   useEffect(() => {
     const tooltipDismissed = localStorage.getItem('tooltipDismissed');
@@ -29,25 +40,33 @@ function Collaboration() {
     }
   }, []);
 
-  const fetchJobAds = async (givenQuery, givenCategory) => {
-    const adsPerPage = 18;
-
+  const fetchJobAds = async (givenQuery, givenCategory, page = currentPage) => {
     try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${givenQuery}&category=${givenCategory}`,
-        {
-          method: 'GET',
-        },
-      );
+      const url =
+        `${ApiEndpoint}/jobs` +
+        `?page=${page}&limit=${ADS_PER_PAGE}` +
+        `&search=${encodeURIComponent(givenQuery || '')}` +
+        `&category=${encodeURIComponent(givenCategory || '')}`;
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch jobs: ${response.statusText}`);
-      }
+      const response = await fetch(url, { method: 'GET' });
+      if (!response.ok) throw new Error(`Failed to fetch jobs: ${response.statusText}`);
 
       const data = await response.json();
-      setJobAds(data.jobs);
-      setTotalPages(data.pagination.totalPages);
-    } catch (error) {
+      setJobAds(data.jobs || []);
+
+      // Robust totalPages calculation with safe fallback (at least 1)
+      const p = data?.pagination || {};
+      const fromTotalPages = typeof p.totalPages === 'number' ? p.totalPages : undefined;
+      const fromTotalCount =
+        typeof p.total === 'number'
+          ? Math.ceil(p.total / ADS_PER_PAGE)
+          : typeof data.total === 'number'
+          ? Math.ceil(data.total / ADS_PER_PAGE)
+          : undefined;
+
+      const pages = fromTotalPages ?? fromTotalCount ?? 1;
+      setTotalPages(Math.max(1, pages));
+    } catch (err) {
       toast.error('Error fetching jobs');
     }
   };
@@ -55,39 +74,36 @@ function Collaboration() {
   const fetchCategories = async () => {
     try {
       const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch categories: ${response.statusText}`);
-      }
-
+      if (!response.ok) throw new Error(`Failed to fetch categories: ${response.statusText}`);
       const data = await response.json();
-      const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
-      setCategories(sortedCategories);
-    } catch (error) {
+      const sorted = (data.categories || []).sort((a, b) => a.localeCompare(b));
+      setCategories(sorted);
+    } catch {
       toast.error('Error fetching categories');
     }
   };
 
-  const handleSearch = event => {
-    setQuery(event.target.value);
+  const handleSearch = e => {
+    setQuery(e.target.value);
     if (!selectedCategory && !localStorage.getItem('tooltipDismissed')) {
       setTooltipPosition('category');
       setShowTooltip(true);
     }
   };
 
-  const handleSubmit = event => {
-    event.preventDefault();
+  const handleSubmit = e => {
+    e.preventDefault();
     setSearchTerm(query);
     setSelectedCategory(category);
     setShowSearchResults(true);
     setSummaries(null);
     setCurrentPage(1);
-    fetchJobAds(query, category);
+    fetchJobAds(query, category, 1);
   };
 
-  const handleCategoryChange = event => {
-    const selectedValue = event.target.value;
-    setCategory(selectedValue);
+  const handleCategoryChange = e => {
+    const value = e.target.value;
+    setCategory(value);
     if (!searchTerm && !localStorage.getItem('tooltipDismissed')) {
       setTooltipPosition('search');
       setShowTooltip(true);
@@ -97,31 +113,28 @@ function Collaboration() {
   const handleRemoveQuery = () => {
     setQuery('');
     setSearchTerm('');
-    fetchJobAds('', category);
+    setCurrentPage(1);
+    fetchJobAds('', selectedCategory, 1); // keep category, clear search
   };
 
   const handleRemoveCategory = () => {
     setCategory('');
     setSelectedCategory('');
-    fetchJobAds(query, '');
+    setCurrentPage(1);
+    fetchJobAds(searchTerm, '', 1); // keep search, clear category
   };
 
   const handleShowSummaries = async () => {
     try {
-      const response = await fetch(
-        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
-        {
-          method: 'GET',
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch summaries: ${response.statusText}`);
-      }
-
+      const url =
+        `${ApiEndpoint}/jobs/summaries` +
+        `?search=${encodeURIComponent(searchTerm || '')}` +
+        `&category=${encodeURIComponent(selectedCategory || '')}`;
+      const response = await fetch(url, { method: 'GET' });
+      if (!response.ok) throw new Error(`Failed to fetch summaries: ${response.statusText}`);
       const data = await response.json();
       setSummaries(data);
-    } catch (error) {
+    } catch {
       toast.error('Error fetching summaries');
     }
   };
@@ -131,20 +144,23 @@ function Collaboration() {
     localStorage.setItem('tooltipDismissed', 'true');
   };
 
-  const dismissSearchTooltip = () => {
-    setTooltipPosition('category');
-  };
+  const dismissSearchTooltip = () => setTooltipPosition('category');
 
+  // Keep filters during paging (use submitted filters, not live inputs)
   useEffect(() => {
-    fetchJobAds(query, category);
+    fetchJobAds(searchTerm, selectedCategory, currentPage);
     fetchCategories();
-  }, [currentPage]); // Re-fetch job ads when page or category changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, searchTerm, selectedCategory]);
 
+  // Initial load
   useEffect(() => {
-    fetchJobAds('', ''); // Fetch all jobs initially
+    fetchJobAds('', '', 1);
     fetchCategories();
-  }, []); // Empty dependency array means this runs once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
+  // ————— Summaries view —————
   if (summaries) {
     return (
       <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
@@ -157,17 +173,19 @@ function Collaboration() {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
+
         <div className="user-collaboration-container">
+          {/* NAVBAR (search bars) */}
           <nav className="job-navbar">
             <div className="job-navbar-left">
-              <form className="search-form">
+              <form className="search-form" onSubmit={handleSubmit}>
                 <input
                   type="text"
                   placeholder="Search by title..."
                   value={query}
                   onChange={handleSearch}
                 />
-                <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
+                <button className="btn btn-secondary" type="submit">
                   Go
                 </button>
               </form>
@@ -188,9 +206,9 @@ function Collaboration() {
             <div className="job-navbar-right">
               <select className="job-select" value={category} onChange={handleCategoryChange}>
                 <option value="">Select from Categories</option>
-                {categories.map(specificCategory => (
-                  <option key={specificCategory} value={specificCategory}>
-                    {specificCategory}
+                {categories.map(c => (
+                  <option key={c} value={c}>
+                    {c}
                   </option>
                 ))}
               </select>
@@ -208,20 +226,34 @@ function Collaboration() {
               )}
             </div>
           </nav>
+
+          {/* HEADING directly AFTER search bars */}
+          <div className="headings">
+            <h1 className="job-head">LIKE TO WORK WITH US? APPLY NOW!</h1>
+            <p>
+              <a
+                className="btn"
+                href="https://www.onecommunityglobal.org/collaboration/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                ← Return to One Community Collaboration Page
+              </a>
+            </p>
+          </div>
+
           <div className="job-queries">
-            {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
+            {searchTerm || selectedCategory ? (
               <p className="job-query">
                 Listing results for
-                {searchTerm && !selectedCategory && <strong> &apos;{searchTerm}&apos;</strong>}
-                {selectedCategory && !searchTerm && (
-                  <strong> &apos;{selectedCategory}&apos;</strong>
-                )}
+                {searchTerm && !selectedCategory && <strong> ‘{searchTerm}’</strong>}
+                {selectedCategory && !searchTerm && <strong> ‘{selectedCategory}’</strong>}
                 {searchTerm && selectedCategory && (
                   <strong>
                     {' '}
-                    &apos;{searchTerm} + {selectedCategory}&apos;
+                    ‘{searchTerm} + {selectedCategory}’
                   </strong>
-                )}
+                )}{' '}
                 .
               </p>
             ) : (
@@ -237,35 +269,10 @@ function Collaboration() {
             >
               Show Summaries
             </button>
-            {searchTerm && (
-              <div className="query-option btn btn-secondary " type="button">
-                <span>{searchTerm}</span>
-                <button className="cross-button" type="button" onClick={handleRemoveQuery}>
-                  <img
-                    width="30"
-                    height="30"
-                    src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                    alt="delete-sign"
-                  />
-                </button>
-              </div>
-            )}
-            {selectedCategory && (
-              <div className="btn btn-secondary query-option" type="button">
-                {selectedCategory}
-                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
-                  <img
-                    width="30"
-                    height="30"
-                    src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                    alt="delete-sign"
-                  />
-                </button>
-              </div>
-            )}
           </div>
+
           <div className="jobs-summaries-list">
-            {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
+            {summaries?.jobs?.length ? (
               summaries.jobs.map(summary => (
                 <div key={summary._id} className="job-summary-item">
                   <h3>
@@ -286,6 +293,7 @@ function Collaboration() {
     );
   }
 
+  // ————— Standard landing view —————
   return (
     <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
       <div className="job-header">
@@ -297,17 +305,19 @@ function Collaboration() {
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
+
       <div className="user-collaboration-container">
+        {/* NAVBAR (search bars) */}
         <nav className="job-navbar">
           <div className="job-navbar-left">
-            <form className="search-form">
+            <form className="search-form" onSubmit={handleSubmit}>
               <input
                 type="text"
                 placeholder="Search by title..."
                 value={query}
                 onChange={handleSearch}
               />
-              <button className="btn btn-secondary" type="submit" onClick={handleSubmit}>
+              <button className="btn btn-secondary" type="submit">
                 Go
               </button>
             </form>
@@ -349,94 +359,73 @@ function Collaboration() {
           </div>
         </nav>
 
+        {/* HEADING directly AFTER search bars */}
+        <div className="headings">
+          <h1 className="job-head">LIKE TO WORK WITH US? APPLY NOW!</h1>
+          <p>
+            <a
+              className="btn"
+              href="https://www.onecommunityglobal.org/collaboration/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              ← Return to One Community Collaboration Page
+            </a>
+          </p>
+        </div>
+
         {showSearchResults ? (
           <div>
             <div className="job-queries">
-              {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
+              {searchTerm || selectedCategory ? (
                 <p className="job-query">
                   Listing results for
-                  {searchTerm && !selectedCategory && <strong> &apos;{searchTerm}&apos;</strong>}
-                  {selectedCategory && !searchTerm && (
-                    <strong> &apos;{selectedCategory}&apos;</strong>
-                  )}
+                  {searchTerm && !selectedCategory && <strong> ‘{searchTerm}’</strong>}
+                  {selectedCategory && !searchTerm && <strong> ‘{selectedCategory}’</strong>}
                   {searchTerm && selectedCategory && (
                     <strong>
                       {' '}
-                      &apos;{searchTerm} + {selectedCategory}&apos;
+                      ‘{searchTerm} + {selectedCategory}’
                     </strong>
-                  )}
+                  )}{' '}
                   .
                 </p>
               ) : (
                 <p className="job-query">Listing all job ads.</p>
               )}
+
               <button className="btn btn-secondary" type="button" onClick={handleShowSummaries}>
                 Show Summaries
               </button>
-              {searchTerm && (
-                <div className="query-option btn btn-secondary " type="button">
-                  <span>{searchTerm}</span>
-                  <button className="cross-button" type="button" onClick={handleRemoveQuery}>
-                    <img
-                      width="30"
-                      height="30"
-                      src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                      alt="delete-sign"
-                    />
-                  </button>
-                </div>
-              )}
-              {selectedCategory && (
-                <div className="btn btn-secondary query-option" type="button">
-                  {selectedCategory}
-                  <button className="cross-button" type="button" onClick={handleRemoveCategory}>
-                    <img
-                      width="30"
-                      height="30"
-                      src="https://img.icons8.com/ios-glyphs/30/delete-sign.png"
-                      alt="delete-sign"
-                    />
-                  </button>
-                </div>
-              )}
             </div>
 
-            {jobAds.length !== 0 ? (
+            {jobAds.length ? (
               <div className="job-list">
                 {jobAds.map(ad => (
                   <div key={ad._id} className="job-ad">
                     <img
-                      src={`/api/placeholder/640/480?text=${encodeURIComponent(
-                        ad.category || 'Job Opening',
-                      )}`}
+                      src={
+                        ad.imageUrl ||
+                        `/api/placeholder/640/480?text=${encodeURIComponent(
+                          ad.category || 'Job Opening',
+                        )}`
+                      }
                       onError={e => {
-                        e.target.onerror = null;
-                        if (ad.category === 'Engineering') {
-                          e.target.src =
-                            'https://img.icons8.com/external-prettycons-flat-prettycons/47/external-job-social-media-prettycons-flat-prettycons.png';
-                        } else if (ad.category === 'Marketing') {
-                          e.target.src =
-                            'https://img.icons8.com/external-justicon-lineal-color-justicon/64/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
-                        } else if (ad.category === 'Design') {
-                          e.target.src = 'https://img.icons8.com/arcade/64/design.png';
-                        } else if (ad.category === 'Finance') {
-                          e.target.src =
-                            'https://img.icons8.com/cotton/64/merchant-account--v2.png';
-                        } else {
-                          e.target.src =
-                            'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
-                        }
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src =
+                          'https://img.icons8.com/cotton/64/working-with-a-laptop--v1.png';
                       }}
-                      alt={ad.title || 'Job Position'}
+                      alt={`${ad.title || 'Job'} — ${ad.category || ''}`}
                       loading="lazy"
                     />
-
                     <a
-                      href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
+                      href={`https://www.onecommunityglobal.org/collaboration/seeking-${slugify(
+                        ad.category || 'general',
+                      )}`}
+                      target="_blank"
+                      rel="noreferrer"
                     >
-                      <h3>
-                        {ad.title} - {ad.category}
-                      </h3>
+                      <h3>{ad.title || ''}</h3>
                     </a>
                   </div>
                 ))}
@@ -447,18 +436,67 @@ function Collaboration() {
               </div>
             )}
 
-            <div className="pagination">
-              {Array.from({ length: totalPages }, (_, i) => (
+            {/* Pagination: always visible (at least “1”) */}
+            {totalPages >= 1 && (
+              <div className="pagination">
                 <button
                   type="button"
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  disabled={currentPage === i + 1}
+                  className="page-btn nav"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  aria-label="First page"
                 >
-                  {i + 1}
+                  «
                 </button>
-              ))}
-            </div>
+
+                <button
+                  type="button"
+                  className="page-btn nav"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  aria-label="Previous page"
+                >
+                  ‹
+                </button>
+
+                {Array.from({ length: totalPages }, (_, i) => {
+                  const pageNum = i + 1;
+                  const active = currentPage === pageNum;
+                  return (
+                    <button
+                      type="button"
+                      key={pageNum}
+                      className={`page-btn ${active ? 'is-active' : ''}`}
+                      onClick={() => setCurrentPage(pageNum)}
+                      disabled={active}
+                      aria-current={active ? 'page' : undefined}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  className="page-btn nav"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  aria-label="Next page"
+                >
+                  ›
+                </button>
+
+                <button
+                  type="button"
+                  className="page-btn nav"
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  aria-label="Last page"
+                >
+                  »
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <div className={`job-headings ${darkMode ? ' user-collaboration-dark-mode' : ''}`}>

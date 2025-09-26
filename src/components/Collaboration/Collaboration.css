@@ -17,17 +17,46 @@
   border: 1px solid #ddd;
   border-radius: 10px;
 }
-.job-landing .header img {
-  height: auto;
-  margin: 0 auto;
-  flex-direction: column;
+/* --- Header image: centered + bigger --- */
+.job-landing .job-header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0 16px;
 }
+
+.job-landing .job-header a{
+  display: inline-flex;
+}
+
+/* Header image: ~half size */
+.job-landing .job-header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 0 12px;
+}
+
+.job-landing .job-header a{
+  display: inline-flex;
+}
+
+.job-landing .job-header img{
+  width: clamp(160px, 30vw, 600px) !important; /* was 60vw; now ~half */
+  max-width: 600px !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 auto !important;
+}
+
+
+
 .navbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* margin-bottom: 20px; */
+  
   background-color: #9c0;
   padding: 10px;
   flex-flow: row nowrap;
@@ -296,4 +325,120 @@ select {
 .user-collaboration-dark-mode .job-select:focus,
 .user-collaboration-dark-mode .job-select:active {
   background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+}
+
+/* --- keep your original image behavior (no crop, same ratio) --- */
+.job-ad img{
+  width: 100% !important;
+  height: auto !important;
+  object-fit: initial !important;   /* don't crop */
+  background: transparent !important;
+}
+
+/* --- green bar (color + subtle polish, no size changes) --- */
+.job-navbar,
+.navbar{
+  background-color: #9c0 !important;      /* same mockup green */
+  box-shadow: 0 1px 0 rgba(0,0,0,.08);
+}
+
+/* inputs + 'Go' button style only (no layout/size change) */
+.search-form input{
+  border: 1px solid #b3b3b3 !important;
+  border-radius: 8px !important;
+}
+.search-form button,
+.btn{
+  border: 1px solid #b3b3b3 !important;
+  background: #d8d8d8 !important;        /* muted grey like mockup */
+  color: #333 !important;
+  font-weight: 600 !important;
+}
+
+/* dropdown polish (no size change) */
+.job-select,
+select{
+  border: 1px solid #b3b3b3 !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+}
+
+/* --- main heading color only (no size change) --- */
+.job-head{
+  color: #1f3c8d !important;              /* deep blue mockup tone */
+  text-transform: uppercase;
+  font-weight: 800;
+  letter-spacing: .4px;
+}
+
+/* optional: make card titles blue + » like mockup (no size change) */
+.job-ad h3{
+  color: #183a9b !important;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+.job-ad h3::after{ content: " \00BB"; }   /* » */
+/* === Green bar layout like your screenshot === */
+.navbar,
+.job-navbar{
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between !important;  /* left group vs right group */
+  gap: 16px;
+  padding: 12px 18px;                          /* comfy inner spacing */
+  background-color: #9c0 !important;           /* keep mockup green */
+  box-shadow: 0 1px 0 rgba(0,0,0,.08);
+}
+
+/* Left group: input + Go (inline) */
+.search-form{
+  display: flex !important;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.search-form input{
+  width: clamp(260px, 32vw, 380px);
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid #b3b3b3 !important;
+  border-radius: 8px !important;
+  background: #fff;
+}
+
+/* “Go” button style from the screenshot */
+.search-form button,
+.btn{
+  height: 38px;
+  min-width: 44px;
+  padding: 0 12px;
+  border: 1px solid #b3b3b3 !important;
+  border-radius: 8px !important;
+  background: #d8d8d8 !important;   /* grey */
+  color: #333 !important;
+  font-weight: 600 !important;
+}
+
+/* Pagination visibility + emphasis */
+.pagination{
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0 24px;
+}
+
+.pagination button{
+  background: transparent;
+  border: 0;
+  font-weight: 700;
+  color: #2b2b2b;
+  cursor: pointer;
+}
+
+.pagination button.is-active,
+.pagination button[disabled]{
+  color: #000;
+  text-decoration: underline;
+  cursor: default;
 }
