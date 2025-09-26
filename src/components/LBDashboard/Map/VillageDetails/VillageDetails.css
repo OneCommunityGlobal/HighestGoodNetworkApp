@@ -1,0 +1,202 @@
+/* Main container */
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e0e0e0;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  overflow-x: hidden;
+}
+
+/* Logo at top */
+.logoContainer {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logoContainer img {
+  max-width: 30%;
+  min-width: 250px;
+  height: auto;
+}
+
+/* Content area */
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 85%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  height: max-content;
+}
+
+/* Top green bar */
+.containerTop {
+  height: 60px;
+  background-color: #9dd425;
+  width: 100%;
+}
+
+/* Main content inside container */
+.containerMain {
+  display: flex;
+  flex-direction: column;
+  margin: 20px 40px 30px 40px;
+  padding: 20px 20px 50px 20px;
+  background-color: #e0e0e0;
+  width: auto;
+  min-height: 560px;
+}
+
+/* Header bar for village name */
+.header-bar {
+  background: #9dd425;
+  padding: 1rem;
+  color: white;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+/* Grey details container */
+.details-container {
+  display: flex;
+  width: 100%;
+  background: #f8f8f8;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-direction: row;
+  min-height: 400px;
+}
+
+/* Map section */
+.map-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #fff;
+  overflow: hidden;
+  padding: 10px;
+}
+
+.village-map {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 4px;
+}
+
+/* Info section */
+.info-section {
+  flex: 1;
+  padding: 20px;
+  background: #f0f0f0;
+  overflow-y: auto;
+}
+
+.info-section h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #232321;
+}
+
+.info-section h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  color: #131312;
+}
+
+.info-section p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.info-section ul {
+  padding-left: 1.5rem;
+  list-style-type: decimal;
+}
+
+.info-section ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* Properties grid */
+.properties-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.property-card {
+  padding: 10px;
+  background: #fff;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+/* Masterplan link */
+.masterplan-link {
+  display: block;
+  text-align: center;
+  margin: 2rem auto 0;
+  text-decoration: underline;
+  color: blue;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 990px) {
+  .containerMain {
+    margin: 10px;
+    padding: 10px;
+  }
+
+  .details-container {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .map-section {
+    height: 250px;
+  }
+}
+
+@media (max-width: 580px) {
+  .mainContainer {
+    padding: 10px;
+  }
+
+  .logoContainer img {
+    max-width: 50%;
+  }
+
+  .info-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .info-section h3 {
+    font-size: 1rem;
+  }
+
+  .properties-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+  }
+}

@@ -87,6 +87,7 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
 // lbdashboard
 import wishListReducer from './listBidDashboard/wishListItemReducer';
+import villageDetailsReducer from './lbdashboard/villageDetailsReducer';
 
 import { optStatusBreakdownReducer } from './optStatusBreakdownReducer';
 
@@ -183,9 +184,12 @@ const localReducers = {
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
   bmInjury: bmInjuryReducer,
+
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  wishlistItem: wishListReducer,
+  villageDetails: villageDetailsReducer,
 
   optStatusBreakdown: optStatusBreakdownReducer,
 
