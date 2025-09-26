@@ -28,7 +28,7 @@ import {
 } from 'react-icons/fa';
 import './BiddingHomepage.css';
 import logo from '../../Collaboration/One-Community-Horizontal-Homepage-Header-980x140px-2.png';
-
+import Header from '../Header';
 const propertyListings = [
   {
     id: 405,
@@ -350,58 +350,7 @@ function BiddingHomepage() {
         <img src={logo} alt="One Community - For The Highest Good Of All" className="main-logo" />
       </div>
       <Container fluid className={`bidding-homepage-container ${darkMode ? 'dark-mode' : ''}`}>
-        <div className={`bidding-header ${darkMode ? 'dark-mode' : ''}`}>
-          <Row className="align-items-center w-100">
-            <Col md={6} className="d-flex align-items-center gap-2">
-              <Dropdown isOpen={dropdownOpen} toggle={toggle} className="village-filter">
-                <DropdownToggle caret>{selectedFilter}</DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem onClick={() => setSelectedFilter('Filter by Village')}>
-                    All Villages
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Earthbag Village')}>
-                    Earthbag Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Straw Bale Village')}>
-                    Straw Bale Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Recycle Materials Village')}>
-                    Recycle Materials Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Cob Village')}>
-                    Cob Village
-                  </DropdownItem>
-                  <DropdownItem onClick={() => setSelectedFilter('Tree House Village')}>
-                    Tree House Village
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-              <InputGroup className="search-bar">
-                <Input
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                />
-                <Button className="go-button">Go</Button>
-              </InputGroup>
-            </Col>
-            <Col md={6} className="text-right d-flex align-items-center justify-content-end gap-3">
-              <span className="user-welcome">WELCOME USER_NAME</span>
-              <div className="user-controls">
-                <div className="messages">
-                  <FaComment />
-                </div>
-                <div className="notifications">
-                  <FaBell />
-                  <span className="notification-badge">1</span>
-                </div>
-                <div className="user-profile">
-                  <FaUser />
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </div>
+        <Header />
         <div className={`navigation-tabs ${darkMode ? 'dark-mode' : ''}`}>
           <div className="filter-by-date d-flex align-items-center gap-3">
             <Dropdown

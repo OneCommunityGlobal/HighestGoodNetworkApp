@@ -78,6 +78,7 @@ import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
+import villageDetailsReducer from './lbdashboard/villageDetailsReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -132,10 +133,6 @@ const localReducers = {
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
-
-  // lbdashboard
-  wishlistItem: wishListReducer,
-
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
@@ -143,9 +140,12 @@ const localReducers = {
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
   bmInjury: bmInjuryReducer,
+
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  wishlistItem: wishListReducer,
+  villageDetails: villageDetailsReducer,
 };
 
 const sessionReducers = {
