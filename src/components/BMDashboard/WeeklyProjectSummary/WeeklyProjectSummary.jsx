@@ -19,6 +19,7 @@ import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
   {
@@ -170,7 +171,6 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -235,9 +235,9 @@ function WeeklyProjectSummary() {
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
-        className: 'large',
+        className: 'full',
         content: (
-          <div className="weekly-project-summary-card normal-card">
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
             <IssuesBreakdownChart />
           </div>
         ),
@@ -296,9 +296,7 @@ function WeeklyProjectSummary() {
         key: 'Lessons Learned',
         className: 'half',
         content: [
-          <div key="text-card" className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>,
+          <MostFrequentKeywords key="frequent-tags-card" />,
           <div key="injury-chart" className="weekly-project-summary-card normal-card">
             <InjuryCategoryBarChart />
           </div>,
