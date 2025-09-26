@@ -305,6 +305,9 @@ export const ENDPOINTS = {
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 
+  ADD_BLUE_SQUARE_EMAIL_CC: userId => `${APIEndpoint}/assignCCEmail/${userId}`,
+  DELETE_BLUE_SQUARE_EMAIL_CC: (userId, email) => `${APIEndpoint}/removeCCEmail/${userId}/${email}`,
+
   WEEKLY_SUMMARY_EMAIL_BCC: () => `${APIEndpoint}/AssignWeeklySummaryEmail`,
   DELETE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
   UPDATE_WEEKLY_SUMMARY_EMAIL_BCC: id => `${APIEndpoint}/AssignWeeklySummaryEmail/${id}`,
