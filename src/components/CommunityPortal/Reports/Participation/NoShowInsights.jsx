@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import mockEvents from './mockData'; // Import mock data
+import mockEvents from './mockData';
 import './Participation.css';
 
 function NoShowInsights() {
-  // State for the selected date filter and tab
   const [dateFilter, setDateFilter] = useState('All');
   const [activeTab, setActiveTab] = useState('Event type');
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  // Function to filter events based on the date filter
   const filterByDate = events => {
     const today = new Date();
     return events.filter(event => {
-      const eventDate = new Date(event.eventTime.split(' pm ')[1]);
+      const eventDate = new Date(event.eventDate);
       switch (dateFilter) {
         case 'Today':
           return eventDate.toDateString() === today.toDateString();
@@ -29,27 +28,19 @@ function NoShowInsights() {
             eventDate.getFullYear() === today.getFullYear()
           );
         default:
-          return true; // All Time
+          return true;
       }
     });
   };
 
-  // Function to aggregate stats based on the active tab
   const calculateStats = filteredEvents => {
     const statsMap = new Map();
 
     filteredEvents.forEach(event => {
-      let key; // Initialize the key variable
-
-      // Determine the key based on activeTab
-      if (activeTab === 'Event type') {
-        key = event.eventType;
-      } else if (activeTab === 'Time') {
-        const [timeRange] = event.eventTime.split(' ');
-        key = activeTab === 'Time' ? timeRange : event.location;
-      } else if (activeTab === 'Location') {
-        key = event.location;
-      }
+      let key;
+      if (activeTab === 'Event type') key = event.eventType;
+      else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
+      else if (activeTab === 'Location') key = event.location;
 
       const percentage = parseInt(event.noShowRate, 10);
 
@@ -64,15 +55,12 @@ function NoShowInsights() {
       }
     });
 
-    // Transform the map into an array of stats
     return Array.from(statsMap.entries()).map(([key, value]) => ({
       label: key,
       percentage: Math.round(value.totalPercentage / value.count),
     }));
   };
 
-  const darkMode = useSelector(state => state.theme.darkMode);
-  // Function to render stats dynamically for the active tab
   const renderStats = () => {
     const filteredEvents = filterByDate(mockEvents);
     const stats = calculateStats(filteredEvents);
@@ -109,8 +97,8 @@ function NoShowInsights() {
       <div className="insights-tabs">
         {['Event type', 'Time', 'Location'].map(tab => (
           <button
-            type="button"
             key={tab}
+            type="button"
             className={`insights-tab ${activeTab === tab ? 'active-tab' : ''}`}
             onClick={() => setActiveTab(tab)}
           >

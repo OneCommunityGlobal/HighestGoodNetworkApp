@@ -14,7 +14,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.my-cases-page-dark{
+.my-cases-page-dark {
   padding: 20px;
   background-color: #1C2541;
   border: 1px solid #ddd;
@@ -105,7 +105,6 @@ body {
 .content {
   margin-top: 10px;
 }
-
 
 /* Card View Styles */
 .case-cards {
@@ -295,3 +294,28 @@ body {
   color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
+/* More button */
+.more-btn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.more-btn:hover {
+  background-color: #0056b3;
+}
+
+/* Expanded scroll area */
+.case-cards.expanded,
+.case-list.expanded {
+  max-height: 500px; /* enough space to show ~30 events */
+  overflow-y: auto;
+  padding-right: 8px;
+}
+

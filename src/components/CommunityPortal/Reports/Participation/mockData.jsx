@@ -1,74 +1,59 @@
-const mockEvents = [
-  {
-    id: 1,
-    eventType: 'Yoga Class',
-    eventTime: '7:30-8:20 pm Jan 17, 2025',
-    eventName: 'Event 1',
-    attendees: 30,
-    noShowRate: '12%',
-    dropOffRate: '54%',
-    location: 'New York',
-  },
-  {
-    id: 2,
-    eventType: 'Cooking Workshop',
-    eventTime: '5:00-6:30 pm Jan 20, 2025',
-    eventName: 'Event 2',
-    attendees: 25,
-    noShowRate: '10%',
-    dropOffRate: '50%',
-    location: 'San Francisco',
-  },
-  {
-    id: 3,
-    eventType: 'Dance Class',
-    eventTime: '6:00-7:00 pm Feb 12, 2025',
-    eventName: 'Event 3',
-    attendees: 40,
-    noShowRate: '15%',
-    dropOffRate: '60%',
-    location: 'Los Angeles',
-  },
-  {
-    id: 4,
-    eventType: 'Fitness Bootcamp',
-    eventTime: '8:00-9:00 am Feb 04, 2025',
-    eventName: 'Event 4',
-    attendees: 20,
-    noShowRate: '8%',
-    dropOffRate: '45%',
-    location: 'Chicago',
-  },
-  {
-    id: 5,
-    eventType: 'Fitness Bootcamp',
-    eventTime: '8:00-9:00 am Feb 01, 2025',
-    eventName: 'Event 5',
-    attendees: 55,
-    noShowRate: '36%',
-    dropOffRate: '19%',
-    location: 'Chicago',
-  },
-  {
-    id: 6,
-    eventType: 'Fitness Bootcamp',
-    eventTime: '8:00-9:00 am Jan 30, 2025',
-    eventName: 'Event 6',
-    attendees: 41,
-    noShowRate: '85%',
-    dropOffRate: '25%',
-    location: 'Chicago',
-  },
-  {
-    id: 7,
-    eventType: 'Fitness Bootcamp',
-    eventTime: '8:00-9:00 am Jan 21, 2025',
-    eventName: 'Event 7',
-    attendees: 50,
-    noShowRate: '18%',
-    dropOffRate: '40%',
-    location: 'Chicago',
-  },
-];
+const eventTypes = ['Yoga Class', 'Cooking Workshop', 'Dance Class', 'Fitness Bootcamp'];
+const locations = ['New York', 'San Francisco', 'Los Angeles', 'Chicago', 'Austin'];
+
+// Helper to format display string
+const formatDisplayTime = date =>
+  date.toLocaleString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+
+// Generate ~200 events (4 per week * 52 weeks)
+const mockEvents = [];
+let id = 1;
+
+// Loop over each week of 2025
+for (let month = 0; month < 12; month++) {
+  for (let week = 0; week < 4; week++) {
+    for (let t = 0; t < eventTypes.length; t++) {
+      const eventDate = new Date(2025, month, 1 + week * 7 + t); // stagger days
+
+      mockEvents.push({
+        id: id++,
+        eventType: eventTypes[t],
+        eventDate: eventDate.toISOString(),
+        eventTime: formatDisplayTime(eventDate),
+        eventName: `Event ${id}`,
+        attendees: Math.floor(Math.random() * 80) + 20,
+        noShowRate: `${Math.floor(Math.random() * 90) + 5}%`,
+        dropOffRate: `${Math.floor(Math.random() * 70) + 10}%`,
+        location: locations[(id + t) % locations.length],
+      });
+    }
+  }
+}
+
+// Ensure "today" always has 2–3 events
+const today = new Date();
+for (let t = 0; t < 3; t++) {
+  const eventDate = new Date(today);
+  eventDate.setHours(10 + t * 2, 0, 0, 0);
+
+  mockEvents.push({
+    id: id++,
+    eventType: eventTypes[t % eventTypes.length],
+    eventDate: eventDate.toISOString(),
+    eventTime: formatDisplayTime(eventDate),
+    eventName: `Today’s Event ${id}`,
+    attendees: Math.floor(Math.random() * 80) + 20,
+    noShowRate: `${Math.floor(Math.random() * 90) + 5}%`,
+    dropOffRate: `${Math.floor(Math.random() * 70) + 10}%`,
+    location: locations[id % locations.length],
+  });
+}
 
 export default mockEvents;

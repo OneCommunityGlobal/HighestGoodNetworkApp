@@ -11,29 +11,94 @@ body {
   margin: 0 auto;
 }
 
-.participation-landing-page-dark{
-  min-width:  100%;
+.participation-landing-page-dark {
+  min-width: 100%;
   margin: 0 auto;
   background-color: #1B2A41;
   color: #ffffff;
 }
 
-header h1 {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-header {
+/* ---------- Page Header ---------- */
+.landing-page-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 30px;
+  padding: 12px 0;
+  border-bottom: 2px solid #e0e0e0;
 }
 
-.landing-page-header-dark{
+.landing-page-header {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #111;
+  letter-spacing: 0.5px;
+}
+
+.landing-page-header-dark {
+  font-size: 2.2rem;
+  font-weight: 700;
   color: #ffffff;
+  letter-spacing: 0.5px;
 }
 
-/* My Cases Section */
+/* Save as PDF button */
+.save-pdf-btn {
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.save-pdf-btn-light {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+}
+
+.save-pdf-btn-light:hover {
+  background: #e8e8e8;
+  transform: translateY(-1px);
+}
+
+.save-pdf-btn-dark {
+  background: #333;
+  color: #f5f5f5;
+  border: 1px solid #666;
+}
+
+.save-pdf-btn-dark:hover {
+  background: #444;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .landing-page-header-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+}
+
+/* ---------- Section Headers ---------- */
+.my-cases-header h2,
+.tracking-header h3,
+.insights-header h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.tracking-header-dark h3,
+.insights-header-dark h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* ---------- My Cases Section ---------- */
 .my-cases {
   margin-bottom: 40px;
 }
@@ -76,7 +141,7 @@ header {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Analytics Section */
+/* ---------- Analytics Section ---------- */
 .analytics-section {
   display: flex;
   flex-wrap: nowrap;
@@ -85,8 +150,6 @@ header {
   align-items: flex-start;
   padding-top: 20px;
 }
-
-
 
 .tracking-container,
 .insights {
@@ -110,7 +173,6 @@ header {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   box-sizing: border-box;
-
 }
 
 @media (max-width: 768px) {
@@ -124,7 +186,7 @@ header {
   }
 }
 
-/* Tracking Section */
+/* ---------- Tracking Section ---------- */
 .tracking-header {
   display: flex;
   justify-content: space-between;
@@ -132,7 +194,7 @@ header {
   margin-bottom: 20px;
 }
 
-tracking-header-dark {
+.tracking-header-dark {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -166,8 +228,6 @@ tracking-header-dark {
   margin-bottom: 20px;
 }
 
-
-
 .tracking-rate {
   background: #f8f9fa;
   border-radius: 10px;
@@ -182,11 +242,13 @@ tracking-header-dark {
   padding: 10px;
   color: #ffffff;
 }
+
 .tracking-rate-dark .span-dark {
   color: #ffffff;
   display: inline-block;
   padding-left: 5px;
 }
+
 .tracking-rate-value {
   font-size: 0.9rem;
   color: #f44336;
@@ -199,8 +261,6 @@ tracking-header-dark {
   display: inline-block;
 }
 
-
-
 .tracking-list-container {
   max-height: 600px;
   overflow-y: auto;
@@ -209,6 +269,7 @@ tracking-header-dark {
   padding: 10px;
   background: #fff;
 }
+
 .tracking-list-container-dark {
   max-height: 600px;
   overflow-y: auto;
@@ -222,15 +283,17 @@ tracking-header-dark {
 .tracking-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+  word-wrap: break-word;
 }
-
 
 .tracking-table thead th {
   text-align: left;
   padding: 10px;
   background: #f4f4f4;
 }
-.tracking-table-dark thead th{
+
+.tracking-table-dark thead th {
   background: #1C2541;
   color: #ffffff;
 }
@@ -249,7 +312,7 @@ tracking-header-dark {
   color: red;
 }
 
-/* Insights Section */
+/* ---------- Insights Section ---------- */
 .insights-header {
   font-weight: bold;
   color: #444;
@@ -257,6 +320,7 @@ tracking-header-dark {
   display: flex;
   justify-content: space-between;
 }
+
 .insights-header-dark {
   color: #ffffff;
   font-weight: bold;
@@ -270,6 +334,7 @@ tracking-header-dark {
   color: #333;
   margin: 0;
 }
+
 .insights-header-dark h3 {
   color: #ffffff;
   font-size: 1.3rem;
@@ -332,18 +397,22 @@ tracking-header-dark {
   justify-content: space-between;
 }
 
-.insight-label {
+.insight-label,
+.insights-label {
   flex: 1;
   font-size: 0.9rem;
   color: #555;
   margin-right: 10px;
 }
-.insight-label-dark {
+
+.insight-label-dark,
+.insights-label-dark {
   color: #ffffff;
   font-size: 0.9rem;
   flex: 1;
   margin-right: 10px;
 }
+
 .insight-bar {
   flex: 2;
   height: 8px;
@@ -362,8 +431,89 @@ tracking-header-dark {
   transition: width 0.3s ease-in-out;
 }
 
-.insight-percentage {
+.insight-percentage,
+.insights-percentage {
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
+}
+
+/* --- PDF/Print helpers --- */
+.page-break-before { break-before: page; page-break-before: always; }
+.page-break-after  { break-after: page;  page-break-after: always; }
+.avoid-break       { break-inside: avoid; page-break-inside: avoid; }
+
+/* Expand long sections during export */
+html[data-exporting="true"] .case-cards.expanded,
+html[data-exporting="true"] .case-list.expanded,
+html[data-exporting="true"] .tracking-list-container {
+  max-height: none !important;
+  overflow: visible !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+
+/* Freeze transitions/animations for clean output */
+html[data-exporting="true"] * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* Ensure dark background renders */
+html[data-exporting="true"] .participation-landing-page-dark {
+  background-color: #1B2A41 !important;
+}
+
+/* =========================
+   PRINT: isolate & beautify
+   ========================= */
+.print-only { display: none; }
+
+@media print {
+  /* Show only the Participation page (works under #root) */
+  body > *:not(#root) { display: none !important; }
+  #root > *:not(.participation-landing-page) { display: none !important; }
+
+  /* Use full page width in print */
+  .participation-landing-page {
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Force letter size and margins */
+  @page { size: Letter; margin: 0.5in; }
+
+  /* Keep colors */
+  @supports (-webkit-print-color-adjust: exact) {
+    * { -webkit-print-color-adjust: exact; }
+  }
+  @supports (print-color-adjust: exact) {
+    * { -webkit-print-color-adjust: exact; }
+  }
+
+  /* Tidy 2-col grid for cards to avoid random blank pages */
+  .case-cards {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  .case-card,
+  .case-list-item,
+  .tracking-table tr,
+  .insight-item { break-inside: avoid; page-break-inside: avoid; }
+
+  /* Hide interactive UI in print */
+  .view-switcher,
+  .filter-wrapper,
+  .create-new,
+  .more-btn,
+  .no-print { display: none !important; }
+
+  .no-print-gap { margin-bottom: 8px; }
+
+  .tracking-table thead th { background: #eee; }
+
+  .print-only { display: block !important; }
+
+  body { background: #ffffff !important; }
 }

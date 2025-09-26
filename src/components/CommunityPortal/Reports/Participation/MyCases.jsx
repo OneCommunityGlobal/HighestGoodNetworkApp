@@ -6,6 +6,12 @@ import mockEvents from './mockData';
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('all');
+  const [expanded, setExpanded] = useState(false);
+
+  // Detect print/export mode from <html data-exporting="true">
+  const isExporting =
+    typeof document !== 'undefined' &&
+    document.documentElement.getAttribute('data-exporting') === 'true';
 
   const filterEvents = events => {
     const now = new Date();
@@ -40,14 +46,26 @@ function MyCases() {
   };
 
   const darkMode = useSelector(state => state.theme.darkMode);
-
   const filteredEvents = filterEvents(mockEvents);
 
+  // During export, show a lot more items to avoid truncation
+  const maxDuringExport = 200;
+  const visibleEvents = isExporting
+    ? filteredEvents.slice(0, maxDuringExport)
+    : expanded
+    ? filteredEvents.slice(0, 40)
+    : filteredEvents.slice(0, 10);
+
+  // 1x1 transparent data URI to avoid network/CORS for avatars (no console html2canvas errors)
+  const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
   const renderCardView = () => (
-    <div className="case-cards">
-      {filteredEvents.map(event => (
+    <div className={`case-cards ${expanded || isExporting ? 'expanded' : ''}`}>
+      {visibleEvents.map(event => (
         <div className={`case-card ${darkMode ? 'case-card-dark' : ''}`} key={event.id}>
-          <span className="event-badge">{event.eventType}</span>
+          <span className="event-badge" data-type={event.eventType}>
+            {event.eventType}
+          </span>
           <span className={`event-time ${darkMode ? 'event-time-dark' : ''}`}>
             {event.eventTime}
           </span>
@@ -56,7 +74,14 @@ function MyCases() {
           </span>
           <div className={`attendees-info ${darkMode ? 'attendees-info-dark' : ''}`}>
             <div className="avatars">
-              <img alt="profile img" />
+              <img
+                alt="profile img"
+                src={placeholderAvatar}
+                width="24"
+                height="24"
+                crossOrigin="anonymous"
+                loading="lazy"
+              />
             </div>
             <span
               className={`attendees-count ${darkMode ? 'attendees-count-dark' : ''}`}
@@ -68,8 +93,8 @@ function MyCases() {
   );
 
   const renderListView = () => (
-    <ul className="case-list">
-      {filteredEvents.map(event => (
+    <ul className={`case-list ${expanded || isExporting ? 'expanded' : ''}`}>
+      {visibleEvents.map(event => (
         <li className={`case-list-item ${darkMode ? 'case-list-item-dark' : ''}`} key={event.id}>
           <span className="event-type">{event.eventType}</span>
           <span className="event-time">{event.eventTime}</span>
@@ -89,7 +114,7 @@ function MyCases() {
   return (
     <div className={`my-cases-page ${darkMode ? 'my-cases-page-dark' : ''}`}>
       <header className="header">
-        <h2 className={`section-title ${darkMode ? 'section-title-dark' : ''}`}>My Cases</h2>
+        <h2 className={`section-title ${darkMode ? 'section-title-dark' : ''}`}>Upcoming Events</h2>
         <div className="header-actions">
           <div className="view-switcher">
             <button
@@ -129,6 +154,11 @@ function MyCases() {
           <button type="button" className="create-new">
             + Create New
           </button>
+          {filteredEvents.length > 10 && (
+            <button type="button" className="more-btn" onClick={() => setExpanded(!expanded)}>
+              {expanded ? 'Show Less' : 'More'}
+            </button>
+          )}
         </div>
       </header>
       <main className="content">
