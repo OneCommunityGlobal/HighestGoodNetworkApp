@@ -17,6 +17,7 @@ import '../../Header/DarkMode.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import DOMPurify from 'dompurify';
+import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
 
 const UserProfileModal = props => {
   const {

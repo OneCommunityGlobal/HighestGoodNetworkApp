@@ -53,10 +53,23 @@ function ReviewButton({ user, task, updateTask }) {
   // XSS Protection sanitizer
   const sanitizer = dompurify.sanitize;
 
-  // Utility function to sanitize URLs
-  const sanitizeUrl = url => {
-    if (!url) return '';
-    return sanitizer(url.trim(), { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
+  // Enhanced URL sanitization with protocol validation, structure validation, and whitespace detection
+  const sanitizeUrl = raw => {
+    if (!raw) return '';
+    const input = raw.trim();
+    if (/\s/.test(input)) return ''; // Reject URLs with whitespace
+    try {
+      // Only validate URLs that already have a protocol - no auto-prefixing
+      if (!input.startsWith('http://') && !input.startsWith('https://')) {
+        return ''; // Return empty if no valid protocol prefix
+      }
+      const url = new URL(input);
+      // Only allow http/https protocols
+      if (!['http:', 'https:'].includes(url.protocol)) return '';
+      return url.href;
+    } catch (e) {
+      return ''; // Return empty string for invalid URLs to maintain compatibility
+    }
   };
 
   // Utility function to sanitize text content
@@ -168,7 +181,7 @@ function ReviewButton({ user, task, updateTask }) {
   };
 
   const handleLink = e => {
-    const url = sanitizeUrl(e.target.value);
+    const url = e.target.value; // Don't sanitize during typing - allow raw input
     setLink(url);
     if (!url) {
       setEditLinkState(prev => ({ ...prev, error: 'A valid URL is required for review' }));
@@ -289,7 +302,8 @@ function ReviewButton({ user, task, updateTask }) {
     if (!validURL(sanitizedLink)) {
       setEditLinkState(prev => ({
         ...prev,
-        error: 'Please enter a valid URL of at least 20 characters',
+        error:
+          'Hold up! We need a proper URL (starting with https://) to submit your work for review.',
       }));
       return;
     }
@@ -333,7 +347,8 @@ function ReviewButton({ user, task, updateTask }) {
     if (!validURL(sanitizedLink)) {
       setEditLinkState(prev => ({
         ...prev,
-        error: 'Please enter a valid URL of at least 20 characters',
+        error:
+          'Oops! That link needs some TLC - make sure it starts with https:// to update successfully!',
       }));
       return;
     }
@@ -408,11 +423,9 @@ function ReviewButton({ user, task, updateTask }) {
   };
 
   const handleEditLinkChange = e => {
-    // Safely extract and sanitize the value first
+    // Allow raw input during typing - don't sanitize until validation
     const rawValue = e && e.target && e.target.value !== undefined ? e.target.value : '';
-    const sanitizedValue = sanitizeUrl(rawValue);
-    // Then use the sanitized value in the state update
-    setEditLinkState(prev => ({ ...prev, link: sanitizedValue }));
+    setEditLinkState(prev => ({ ...prev, link: rawValue }));
   };
 
   const buttonFormat = () => {
