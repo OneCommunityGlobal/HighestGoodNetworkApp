@@ -226,28 +226,28 @@ const TeamMemberTask = React.memo(
       dispatch(hasPermission('manageUserStateIndicator'));
 
     const [catalogFromApi, setCatalog] = useState(null);
-  //   React.useEffect(() => {
-  //   let cancelled = false;
-  //   (async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       const { data } = await axios.get(`${API_BASE}/user-states/catalog`, {
-  //         headers: {
-  //           Accept: "application/json",
-  //           // ...(token ? { Authorization: token } : {}),
-  //         },
-  //       });
-  //       if (!cancelled) setCatalog(Array.isArray(data?.items) ? data.items : []);
-  //     } catch (e) {
-  //       console.error("catalog fetch failed", e?.response?.status, e?.message);
-  //       if (!cancelled) setCatalog([]); // fall back
-  //     }
-  //   })();
-  //   return () => { cancelled = true; };
-  // }, []);
+    //   React.useEffect(() => {
+    //   let cancelled = false;
+    //   (async () => {
+    //     try {
+    //       const token = localStorage.getItem("token");
+    //       const { data } = await axios.get(`${API_BASE}/user-states/catalog`, {
+    //         headers: {
+    //           Accept: "application/json",
+    //           // ...(token ? { Authorization: token } : {}),
+    //         },
+    //       });
+    //       if (!cancelled) setCatalog(Array.isArray(data?.items) ? data.items : []);
+    //     } catch (e) {
+    //       console.error("catalog fetch failed", e?.response?.status, e?.message);
+    //       if (!cancelled) setCatalog([]); // fall back
+    //     }
+    //   })();
+    //   return () => { cancelled = true; };
+    // }, []);
     const effectiveCatalog =
       (catalogFromApi && catalogFromApi.length && catalogFromApi)
-       ||
+      ||
       (catalogFromStore && catalogFromStore.length && catalogFromStore) ||
       initialCatalog;
 
@@ -460,13 +460,8 @@ const TeamMemberTask = React.memo(
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                             <div style={{ marginTop: "29px", marginLeft: "-70px" }}>
                               <UserStateManager
-                                initialCatalog={effectiveCatalog}
-                                initialSelected={initialSelected}
                                 userId={user.personId}
                                 canEdit={canEdit}
-                                onChange={(nextSelected /*, nextCatalog */) => {
-                                  dispatch(updateUserStateIndicators(user.personId, nextSelected));
-                                }}
                               />
                             </div>
                           </td>

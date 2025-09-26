@@ -1,23 +1,39 @@
 import React from "react";
-import styles from "./UserState.module.css";
 
-const UserState = ({ states = [], catalog = [] }) => {
-  if (!states || states.length === 0) return null;
+export default function UserState({ selections = [], catalog = [] }) {
+  const byKey = React.useMemo(() => {
+    const map = new Map();
+    catalog.forEach(c => map.set(c.key, c));
+    return map;
+  }, [catalog]);
 
-  const selected = catalog.filter((opt) => states.includes(opt.key));
+  if (!selections.length) return <span style={{opacity:.7}}>No tags</span>;
 
   return (
-    <div
-      className={styles.container}
-      title="This is the user’s state. Ask an Admin to change it for you if you feel it is not accurate."
-    >
-      {selected.map((opt) => (
-        <span key={opt.key} className={`${styles.pill} ${styles[opt.color] || ""}`}>
-          {opt.label}
-        </span>
-      ))}
+    <div style={{display:"flex", flexWrap:"wrap", gap:8}}>
+      {selections.map(({ key, assignedAt }) => {
+        const item = byKey.get(key);
+        const label = item?.label || key;
+        const dt = assignedAt ? new Date(assignedAt) : null;
+        const title = dt ? `Assigned: ${dt.toLocaleString()}` : "Assigned date unknown";
+        return (
+          <span
+            key={key}
+            title={title}
+            style={{
+              display:"inline-flex",
+              alignItems:"center",
+              padding:"2px 8px",
+              borderRadius:999,
+              border:"1px solid #ddd",
+              fontSize:12,
+              background:"#f7f7f7",
+            }}
+          >
+            {label}
+          </span>
+        );
+      })}
     </div>
   );
-};
-
-export default UserState;
+}

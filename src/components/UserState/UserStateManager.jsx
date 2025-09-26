@@ -1,53 +1,85 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
+import api from "~/api/client";
 import UserState from "./UserState";
 import UserStateEdit from "./UserStateEdit";
 import styles from "./UserStateEdit.module.css";
 
 export default function UserStateManager({
-  initialCatalog,
-  initialSelected,
+  userId,
   canEdit,
-  onChange,
 }) {
-  const [open, setOpen] = useState(false);
-  const [catalog, setCatalog] = useState(initialCatalog);
-  const [selected, setSelected] = useState(initialSelected || []);
+  const [open, setOpen] = React.useState(false);
 
-  const selectedSafe = useMemo(() => {
-    // filter keys that still exist in catalog
-    const keys = new Set(catalog.map(c => c.key));
-    return (selected || []).filter(k => keys.has(k));
-  }, [catalog, selected]);
+  const [catalog, setCatalog]       = React.useState([]);
+  const [selections, setSelections] = React.useState([]); // [{ key, assignedAt }]
+  const [loading, setLoading]       = React.useState(true);
+  const [error, setError]           = React.useState("");
 
-  const handleSave = (nextSelectedKeys, nextCatalog) => {
-    setSelected(nextSelectedKeys);
-    setCatalog(nextCatalog);
-    onChange && onChange(nextSelectedKeys, nextCatalog);
-  };
+  // initial load (catalog + selections)
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const [cataRes, selRes] = await Promise.all([
+          api.get(`/catalog`),
+          api.get(`/users/${userId}/state-indicators`)
+        ]);
+
+        const items = Array.isArray(cataRes?.data?.items) ? cataRes.data.items : [];
+        const sels  = Array.isArray(selRes?.data?.selections) ? selRes.data.selections : [];
+
+        if (!cancelled) {
+          setCatalog(items);
+          setSelections(sels);
+        }
+      } catch (e) {
+        if (!cancelled) setError("Could not load user state");
+        console.error("initial load failed", e?.response?.status, e?.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [userId]);
 
   return (
     <div>
-      <UserState states={selectedSafe} catalog={catalog} />
-      {canEdit && (
-        <div style={{ marginTop: 6 }}>
-          <button
-            type="button"
-            className={styles.secondaryBtn}
-            onClick={() => setOpen(true)}
-            title="Add user state"
-          >
-            Add
-          </button>
-        </div>
+      {loading ? (
+        <span style={{opacity:.7}}>Loading…</span>
+      ) : error ? (
+        <span style={{color:"red"}}>{error}</span>
+      ) : (
+        <>
+          <UserState selections={selections} catalog={catalog} />
+          {canEdit && (
+            <div style={{ marginTop: 6 }}>
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={() => setOpen(true)}
+                title="Add user state"
+              >
+                Add
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       <UserStateEdit
         open={open}
         onClose={() => setOpen(false)}
+        userId={userId}
         catalog={catalog}
-        selectedKeys={selectedSafe}
-        onSave={handleSave}
-        canEditCatalog={true}
+        selections={selections}
+        canEditCatalog={canEdit}
+        onSaved={(nextSelections, nextCatalog) => {
+          setSelections(nextSelections);
+          setCatalog(nextCatalog);
+        }}
       />
     </div>
   );
