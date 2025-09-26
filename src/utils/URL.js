@@ -178,6 +178,8 @@ export const ENDPOINTS = {
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
+  POST_PINTEREST: `${APIEndpoint}/social/pinterest/createPin`,
+  SCHEDULE_PINTEREST: `${APIEndpoint}/social/pinterest/schedule`,
 
   // reasons endpoints
   CREATEREASON: () => {

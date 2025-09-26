@@ -1,4 +1,107 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../utils/URL';
+
+async function convertImageToBase64(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
+}
+
+// Immediate Post
+export async function handleImmediatePost({
+  platform,
+  title,
+  description,
+  imageUrl,
+  imageFile,
+  imgType,
+}) {
+  let postValue;
+
+  if (imgType === 'URL') {
+    postValue = {
+      title,
+      description,
+      imgType,
+      mediaItems: { url: imageUrl },
+    };
+  } else {
+    const base64Image = await convertImageToBase64(imageFile);
+    postValue = {
+      title,
+      description,
+      imgType,
+      mediaItems: base64Image,
+    };
+  }
+
+  try {
+    await axios.post(ENDPOINTS[`POST_${platform.toUpperCase()}`], postValue);
+    toast.success(`Post to ${platform} successful!`);
+  } catch (err) {
+    toast.error(err.response?.data?.error || `Failed to post to ${platform}!`, {
+      autoClose: false,
+    });
+  }
+}
+
+//  Schedule Post
+export async function handleSchedulePost({
+  platform,
+  title,
+  description,
+  imageUrl,
+  imageFile,
+  imgType,
+  scheduledTime,
+}) {
+  let postValue;
+
+  if (imgType === 'URL') {
+    postValue = {
+      title,
+      description,
+      imgType,
+      mediaItems: { url: imageUrl },
+    };
+  } else {
+    const base64Image = await convertImageToBase64(imageFile);
+    postValue = {
+      title,
+      description,
+      imgType,
+      mediaItems: base64Image,
+    };
+  }
+
+  try {
+    await axios.post(ENDPOINTS[`SCHEDULE_${platform.toUpperCase()}`], {
+      ...postValue,
+      scheduledTime,
+    });
+    toast.success(`Schedule for ${platform} successful!`);
+  } catch (err) {
+    toast.error(err.response?.data?.error || `Failed to schedule post on ${platform}!`, {
+      autoClose: false,
+    });
+  }
+}
+
+//  Delete Scheduled
+export async function handleDeleteScheduled({ platform, id }) {
+  try {
+    await axios.delete(`${ENDPOINTS[`SCHEDULE_${platform.toUpperCase()}`]}/${id}`);
+    toast.success('Scheduled post deleted successfully!');
+  } catch (err) {
+    toast.error(err.response?.data?.error || `Failed to delete scheduled post on ${platform}!`, {
+      autoClose: false,
+    });
+  }
+}
 
 export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
@@ -72,6 +175,16 @@ export default function SocialMediaComposer({ platform }) {
                 borderRadius: '6px',
                 border: 'none',
               }}
+              onClick={() =>
+                handleImmediatePost({
+                  platform,
+                  title: 'Sample Title',
+                  description: postContent,
+                  imageUrl: 'https://example.com/test.png',
+                  imageFile: null,
+                  imgType: 'URL',
+                })
+              }
             >
               Post to {platform}
             </button>
