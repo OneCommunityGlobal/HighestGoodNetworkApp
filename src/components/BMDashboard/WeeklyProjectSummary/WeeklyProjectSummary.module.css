@@ -168,6 +168,12 @@
 
 }
 
+.fullCard {
+  width: 100%;
+  min-height: 250px;
+  grid-column: span 4;
+}
+
 .wideCard {
   width: 100%;
   min-height: 250px;
