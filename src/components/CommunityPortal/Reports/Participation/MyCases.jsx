@@ -8,7 +8,6 @@ function MyCases() {
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(false);
 
-  // Detect print/export mode from <html data-exporting="true">
   const isExporting =
     typeof document !== 'undefined' &&
     document.documentElement.getAttribute('data-exporting') === 'true';
@@ -48,7 +47,6 @@ function MyCases() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const filteredEvents = filterEvents(mockEvents);
 
-  // During export, show a lot more items to avoid truncation
   const maxDuringExport = 200;
   const visibleEvents = isExporting
     ? filteredEvents.slice(0, maxDuringExport)
@@ -56,7 +54,6 @@ function MyCases() {
     ? filteredEvents.slice(0, 40)
     : filteredEvents.slice(0, 10);
 
-  // 1x1 transparent data URI to avoid network/CORS for avatars (no console html2canvas errors)
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 
   const renderCardView = () => (

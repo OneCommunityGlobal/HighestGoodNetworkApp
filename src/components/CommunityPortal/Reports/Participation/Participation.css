@@ -463,23 +463,19 @@ html[data-exporting="true"] .participation-landing-page-dark {
   background-color: #1B2A41 !important;
 }
 
-/* =========================
-   PRINT: isolate & beautify
-   ========================= */
 .print-only { display: none; }
 
 @media print {
-  /* Show only the Participation page (works under #root) */
+  /* Showing only the Participation page */
   body > *:not(#root) { display: none !important; }
   #root > *:not(.participation-landing-page) { display: none !important; }
 
-  /* Use full page width in print */
+  /* Using full page width in print */
   .participation-landing-page {
     max-width: 100% !important;
     margin: 0 !important;
   }
 
-  /* Force letter size and margins */
   @page { size: Letter; margin: 0.5in; }
 
   /* Keep colors */
@@ -490,7 +486,6 @@ html[data-exporting="true"] .participation-landing-page-dark {
     * { -webkit-print-color-adjust: exact; }
   }
 
-  /* Tidy 2-col grid for cards to avoid random blank pages */
   .case-cards {
     display: grid !important;
     grid-template-columns: repeat(2, 1fr) !important;
@@ -502,7 +497,7 @@ html[data-exporting="true"] .participation-landing-page-dark {
   .tracking-table tr,
   .insight-item { break-inside: avoid; page-break-inside: avoid; }
 
-  /* Hide interactive UI in print */
+  /* Hiding interactive UI in print */
   .view-switcher,
   .filter-wrapper,
   .create-new,

@@ -15,7 +15,6 @@ function EventParticipation() {
     if (exporting) return;
     setExporting(true);
 
-    // Scope the page for clean print
     document.documentElement.setAttribute('data-exporting', 'true');
 
     // Expand “More” so all visible items are included
