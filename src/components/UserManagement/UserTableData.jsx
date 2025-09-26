@@ -64,8 +64,8 @@ const UserTableDataComponent = (props) => {
     );
   };
   const canDeleteUsers = props.hasPermission('deleteUserProfile');
-  const resetPasswordStatus = props.hasPermission('resetPassword');
-  const updatePasswordStatus = props.hasPermission('updatePassword');
+  const resetPasswordStatus = props.hasPermission('updatePassword');
+  //const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canSeeReports = props.hasPermission('getReports');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
@@ -592,7 +592,7 @@ const UserTableDataComponent = (props) => {
               user={props.user}
               darkMode={darkMode}
               isSmallButton
-              canUpdatePassword={resetPasswordStatus || updatePasswordStatus}
+              canUpdatePassword={resetPasswordStatus}
             />
           </span>
         </td>
