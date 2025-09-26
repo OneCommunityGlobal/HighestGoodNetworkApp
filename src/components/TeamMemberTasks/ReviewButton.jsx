@@ -158,10 +158,27 @@ function ReviewButton({ user, task, updateTask }) {
 
   const validURL = url => {
     try {
-      if (url === '') return false;
+      if (!url || url.trim() === '') return false;
 
-      const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
-      return pattern.test(url);
+      // Check minimum length requirement
+      if (url.length < 20) return false;
+
+      // More comprehensive URL validation pattern
+      const pattern = /^https?:\/\/(?:[-\w.])+(?:\.[a-zA-Z]{2,})+(?:[\/\w\-._~:/?#[\]@!$&'()*+,;=%]*)?$/;
+
+      // If URL doesn't start with http/https, add https:// for validation
+      const urlToTest = url.startsWith('http') ? url : `https://${url}`;
+
+      // Test the pattern
+      if (!pattern.test(urlToTest)) return false;
+
+      // Additional validation using URL constructor
+      try {
+        new URL(urlToTest);
+        return true;
+      } catch (e) {
+        return false;
+      }
     } catch (err) {
       return false;
     }
@@ -289,7 +306,8 @@ function ReviewButton({ user, task, updateTask }) {
     if (!validURL(sanitizedLink)) {
       setEditLinkState(prev => ({
         ...prev,
-        error: 'Please enter a valid URL of at least 20 characters',
+        error:
+          'Please enter a valid URL (must start with http:// or https:// and be at least 20 characters)',
       }));
       return;
     }
@@ -333,7 +351,8 @@ function ReviewButton({ user, task, updateTask }) {
     if (!validURL(sanitizedLink)) {
       setEditLinkState(prev => ({
         ...prev,
-        error: 'Please enter a valid URL of at least 20 characters',
+        error:
+          'Please enter a valid URL (must start with http:// or https:// and be at least 20 characters)',
       }));
       return;
     }
