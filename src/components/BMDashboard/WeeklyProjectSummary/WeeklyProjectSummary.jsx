@@ -237,9 +237,9 @@ function WeeklyProjectSummary() {
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
-        className: 'large',
+        className: 'full',
         content: (
-          <div className="weekly-project-summary-card normal-card">
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
             <IssuesBreakdownChart />
           </div>
         ),
