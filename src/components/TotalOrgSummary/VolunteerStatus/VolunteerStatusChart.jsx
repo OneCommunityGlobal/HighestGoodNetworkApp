@@ -1,9 +1,16 @@
 import { useMemo } from 'react';
 import Loading from '~/components/common/Loading';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
+import MentorStatusPieChart from './MentorStatusPieChart';
+import styles from './VolunteerStatusChart.module.css';
 
-function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType }) {
-  const chartData = useMemo(() => {
+function VolunteerStatusChart({
+  isLoading,
+  volunteerNumberStats,
+  mentorNumberStats,
+  comparisonType,
+}) {
+  const volunteerChartData = useMemo(() => {
     if (!volunteerNumberStats) {
       return null;
     }
@@ -26,8 +33,26 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType 
     };
   }, [volunteerNumberStats]);
 
+  const mentorChartData = useMemo(() => {
+    if (!mentorNumberStats) {
+      return null;
+    }
+
+    const { activeMentors, deactivatedMentors, newMentors, totalMentors } = mentorNumberStats;
+
+    return {
+      totalMentors: totalMentors.count,
+      percentageChange: Number(totalMentors.comparisonPercentage) || 0,
+      data: [
+        { label: 'Active', value: activeMentors.count },
+        { label: 'New', value: newMentors.count },
+        { label: 'Deactivated This Week', value: deactivatedMentors.count },
+      ],
+    };
+  }, [mentorNumberStats]);
+
   return (
-    <section className="mt-4">
+    <section className={styles.chartRoot}>
       {isLoading ? (
         <div className="d-flex justify-content-center align-items-center">
           <div className="w-100vh">
@@ -35,7 +60,29 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType 
           </div>
         </div>
       ) : (
-        <VolunteerStatusPieChart data={chartData} comparisonType={comparisonType} />
+        <>
+          <div className={styles.volunteerMentorChartsWrapper}>
+            <div className={styles.volunteerChartSection}>
+              {volunteerChartData && (
+                <VolunteerStatusPieChart
+                  data={volunteerChartData}
+                  comparisonType={comparisonType}
+                />
+              )}
+            </div>
+            {mentorChartData && (
+              <div className={styles.mentorChartSection}>
+                <MentorStatusPieChart data={mentorChartData} comparisonType={comparisonType} />
+              </div>
+            )}
+          </div>
+          {(volunteerChartData || mentorChartData) && (
+            <p className={styles.volunteerMentorFootnote}>
+              *Does not include these “Mentor” members volunteering without weekly-hours
+              contribution requirements.
+            </p>
+          )}
+        </>
       )}
     </section>
   );

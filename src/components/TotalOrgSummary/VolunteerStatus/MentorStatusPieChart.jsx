@@ -1,21 +1,21 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement } from 'chart.js';
-import './VolunteerStatusPieChart.css';
+import './MentorStatusPieChart.css';
 import externalLabelGuidesPlugin from './externalLabelGuidesPlugin';
 
 Chart.register(ArcElement);
 
-function VolunteerStatusPieChart({
-  data: { totalVolunteers, percentageChange, data: volunteerData },
+function MentorStatusPieChart({
+  data: { totalMentors, percentageChange, data: mentorData },
   comparisonType,
 }) {
   const chartData = {
-    labels: volunteerData.map(item => item.label),
+    labels: mentorData.map(item => item.label),
     datasets: [
       {
-        data: volunteerData.map(item => item.value),
-        backgroundColor: ['#4C4AF5', '#2CCCF8', '#FF00C3'],
+        data: mentorData.map(item => item.value),
+        backgroundColor: ['#287D5A', '#2D9DA6', '#F26B38'],
         borderWidth: 1,
       },
     ],
@@ -33,32 +33,32 @@ function VolunteerStatusPieChart({
         enabled: false,
       },
       externalLabelGuides: {
-        offset: 28,
-        total: totalVolunteers,
+        offset: 26,
+        total: totalMentors,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
     },
     maintainAspectRatio: false,
-    cutout: '55%',
+    cutout: '60%',
     layout: {
-      padding: 24,
+      padding: 20,
     },
   };
 
   const percentageChangeColor = percentageChange >= 0 ? 'green' : 'red';
 
   return (
-    <section className="volunteer-status-container" aria-label="Volunteer Status Overview">
-      <div className="volunteer-status-chart" role="img" aria-label="Volunteer Status Pie Chart">
+    <section className="mentor-status-container" aria-label="Mentor Status Overview">
+      <div className="mentor-status-chart" role="img" aria-label="Mentor Status Pie Chart">
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
-        <div className="volunteer-status-center">
-          <h2 className="volunteer-status-heading">TOTAL VOLUNTEERS*</h2>
-          <p className="volunteer-count">{totalVolunteers}</p>
+        <div className="mentor-status-center">
+          <h2 className="mentor-status-heading">TOTAL MENTORS</h2>
+          <p className="mentor-count">{totalMentors}</p>
           {comparisonType !== 'No Comparison' && (
             <p
-              className="percentage-change"
+              className="mentor-percentage-change"
               style={{ color: percentageChangeColor }}
-              aria-label={`Percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
+              aria-label={`Mentor percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
             >
               {percentageChange >= 0
                 ? `+${percentageChange}% ${comparisonType.toUpperCase()}`
@@ -67,11 +67,11 @@ function VolunteerStatusPieChart({
           )}
         </div>
       </div>
-      <div className="volunteer-status-labels">
-        {volunteerData.map((item, index) => (
-          <div key={item.label} className="volunteer-status-label">
+      <div className="mentor-status-labels">
+        {mentorData.map((item, index) => (
+          <div key={item.label} className="mentor-status-label">
             <span
-              className="volunteer-status-color"
+              className="mentor-status-color"
               style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
               aria-hidden="true"
             />
@@ -83,9 +83,9 @@ function VolunteerStatusPieChart({
   );
 }
 
-VolunteerStatusPieChart.propTypes = {
+MentorStatusPieChart.propTypes = {
   data: PropTypes.shape({
-    totalVolunteers: PropTypes.number.isRequired,
+    totalMentors: PropTypes.number.isRequired,
     percentageChange: PropTypes.number.isRequired,
     data: PropTypes.arrayOf(
       PropTypes.shape({
@@ -97,4 +97,4 @@ VolunteerStatusPieChart.propTypes = {
   comparisonType: PropTypes.string.isRequired,
 };
 
-export default VolunteerStatusPieChart;
+export default MentorStatusPieChart;

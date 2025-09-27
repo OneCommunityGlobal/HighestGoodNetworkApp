@@ -191,7 +191,9 @@ function TotalOrgSummary(props) {
       });
 
       // 3. Replace Chart.js canvas elements with images in the live DOM.
-      const chartCanvases = document.querySelectorAll('.volunteer-status-chart canvas');
+      const chartCanvases = document.querySelectorAll(
+        '.volunteer-status-chart canvas, .mentor-status-chart canvas',
+      );
       const originalCanvases = [];
       chartCanvases.forEach(canvasElem => {
         try {
@@ -627,6 +629,7 @@ function TotalOrgSummary(props) {
                 <VolunteerStatusChart
                   isLoading={isLoading}
                   volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                  mentorNumberStats={volunteerStats?.mentorNumberStats}
                   comparisonType={selectedComparison}
                 />
               </div>
