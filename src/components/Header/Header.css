@@ -27,8 +27,9 @@
 }
 
 .header-logo {
-  max-width: 120px;
-  height: auto;
+  max-height: 150px; /* adjust if needed */
+  width: auto;
+  display: block;
 }
 
 .close-button {

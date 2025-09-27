@@ -343,10 +343,14 @@ export function Header(props) {
       {isAuthenticated && <Timer darkMode={darkMode} />}
     </div>
     {/* Center Section - Owner Message */}
+    {/* Center Section - Owner Message */}
+<div className="header-center">
+  <OwnerMessage />
+</div>
     {/* Right Section - Logo / Navigation */}
     {/* Center Section - Logo */}
 <div className="header-center">
-  <img src="/logo192.png" alt="Logo" className="header-logo" />
+  <img src="/OneCommunityLogo.png" alt="One Community Logo" className="header-logo" />
 </div>
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
