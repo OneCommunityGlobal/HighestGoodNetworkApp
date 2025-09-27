@@ -183,10 +183,14 @@ export const updateTeam = (teamName, teamId, isActive, teamCode) => {
   return async dispatch => {
     try {
       const updateTeamResponse = await axios.put(url, requestData);
-      dispatch(updateTeamAction(teamId, isActive, teamName, teamCode));
+      if (updateTeamResponse.status === 200) {
+        // Use the actual response data from the backend
+        const updatedTeam = updateTeamResponse.data;
+        dispatch(updateTeamAction(teamId, updatedTeam.isActive, updatedTeam.teamName, updatedTeam.teamCode));
+      }
       return updateTeamResponse;
     } catch (error) {
-      return error.response.data.error;
+      return error.response?.data?.error || error.message;
     }
   };
 };
