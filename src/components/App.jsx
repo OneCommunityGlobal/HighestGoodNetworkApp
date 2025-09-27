@@ -1,44 +1,20 @@
+/* eslint-disable no-undef */
 import { Component, useEffect } from 'react';
-import jwtDecode from 'jwt-decode';
 import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
-import { ModalProvider } from 'context/ModalContext';
+import { ModalProvider } from '../context/ModalContext';
+import { persistor, store } from '../store';
+import initAuth from '../utils/authInit';
 import routes from '../routes';
 import logger from '../services/logService';
-
-import httpService from '../services/httpService';
-import { setCurrentUser, logoutUser } from '../actions/authActions';
-
-import { persistor, store } from '../store';
 import Loading from './common/Loading';
-
-import config from '../config.json';
 import '../App.css';
 import { initMessagingSocket } from '../utils/messagingSocket';
 
-const { tokenKey } = config;
-// Require re-login 2 days before the token expires on server side
-// Avoid failure due to token expiration when user is working
-const TOKEN_LIFETIME_BUFFER = 86400 * 2;
-
 // Check for token
-if (localStorage.getItem(tokenKey)) {
-  // Decode token and get user info and exp
-  const decoded = jwtDecode(localStorage.getItem(tokenKey));
-  // Check for expired token
-  const currentTime = Date.now() / 1000;
-  const expiryTime = new Date(decoded.expiryTimestamp).getTime() / 1000;
-  // console.log(currentTime, expiryTime);
-  if (expiryTime - TOKEN_LIFETIME_BUFFER < currentTime) {
-    // Logout user
-    store.dispatch(logoutUser());
-  } else {
-    // Set auth token header auth
-    httpService.setjwt(localStorage.getItem(tokenKey));
-    // Set user and isAuthenticated
-    store.dispatch(setCurrentUser(decoded));
-  }
+if (process.env.NODE_ENV !== 'test') {
+  initAuth();
 }
 
 function UpdateDocumentTitle() {
@@ -119,6 +95,10 @@ function UpdateDocumentTitle() {
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
     { pattern: /.*/, title: 'HGN APP' }, // Default case
+    {
+      pattern: /^\/communityportal\/activity\/activityid\/feedback$/,
+      title: 'Activity Feedback',
+    },
   ];
 
   useEffect(() => {
@@ -130,9 +110,13 @@ function UpdateDocumentTitle() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      initMessagingSocket(token);
+      try {
+        initMessagingSocket(token);
+      } catch (error) {
+        console.error('WebSocket initialization failed:', error);
+      }
     } else {
-      Error('❌ No auth token found for WebSocket connection.');
+      console.warn('No auth token found for WebSocket connection');
     }
   }, []);
 

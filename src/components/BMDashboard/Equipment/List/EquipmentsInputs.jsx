@@ -2,7 +2,7 @@ import { Label, Form, Row, Col } from 'reactstrap';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
 import styles from './Equipments.module.css';
 
 function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {

@@ -52,6 +52,7 @@ const exportToCSV = students => {
   link.setAttribute('href', encodedUri);
   link.setAttribute('download', 'student_data.csv');
   document.body.appendChild(link);
+  // eslint-disable-next-line testing-library/no-node-access
   link.click();
   document.body.removeChild(link);
 };

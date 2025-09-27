@@ -16,7 +16,7 @@ module.exports = {
 
   // Bundle mapper for d3 import and other custom mocks
   moduleNameMapper: {
-    d3: '<rootDir>/node_modules/d3/dist/d3.min.js',
+    '^d3$': '<rootDir>/src/__mocks__/d3.js',
     'react-leaflet': '<rootDir>/src/_tests_/__mocks__/react-leaflet.js',
     'marker-cluster-group': '<rootDir>/src/_tests_/__mocks__/react-leaflet-cluster.js',
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy', // <-- Added to mock CSS/SCSS files
@@ -38,10 +38,12 @@ module.exports = {
   testURL: 'http://localhost',
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: ['/node_modules/(?!d3|d3-array|internmap|delaunator|robust-predicates)'],
-
-  // Include snapshot serializers
-  snapshotSerializers: ['enzyme-to-json/serializer'],
+  transformIgnorePatterns: [
+    '/node_modules/(?!d3|d3-[^/]+|internmap|delaunator|robust-predicates)/',
+  ],
+  transform: {
+    '^.+\\.[jt]sx?$': 'babel-jest',
+  },
 
   // Indicates whether each individual test should be reported during the run
   verbose: false,

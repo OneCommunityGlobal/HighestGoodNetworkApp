@@ -1,10 +1,12 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/forbid-prop-types */
 /* eslint-disable no-param-reassign */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect , useDispatch } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -24,16 +26,15 @@ import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
-import { useDispatch } from 'react-redux';
-import { boxStyle, boxStyleDark } from '../../../styles';
-import hasPermission from '../../../utils/permissions';
-import { getUserProfile } from '../../../actions/userProfile';
+import { getUserProfile } from '~/actions/userProfile';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
-import { ENDPOINTS } from '../../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import '../../Header/DarkMode.css';
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
@@ -66,7 +67,7 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile } = props;
+ const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile, userProjects } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
@@ -95,7 +96,7 @@ function TimeEntryForm(props) {
     license_key: 'gpl',
     menubar: false,
     placeholder: 'Description (10-word minimum) and reference link',
-    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
     toolbar:
       // eslint-disable-next-line no-multi-str
       'bold italic underline link removeformat | bullist numlist outdent indent |\
@@ -141,10 +142,10 @@ function TimeEntryForm(props) {
 
   const [formValues, setFormValues] = useState(initialFormValues);
   const [timeEntryFormUserProfile, setTimeEntryFormUserProfile] = useState(null);
-  const [timeEntryFormUserProjects, setTimeEntryFormUserProjects] = useState([]);
+  const [timeEntryFormUserProjects, setTimeEntryFormUserProjects] = useState(userProjects || []);
   const [timeEntryFormUserTasks, setTimeEntryFormUserTasks] = useState([]);
   const [projectOrTaskId, setProjectOrTaskId] = useState(timeEntryInitialProjectOrTaskId);
-  const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(false);
+ const [isAsyncDataLoaded, setIsAsyncDataLoaded] = useState(Boolean(userProjects && userProjects.length));
   const [errors, setErrors] = useState({});
   const [reminder, setReminder] = useState(initialReminder);
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibility] = useState(false);
@@ -434,11 +435,7 @@ function TimeEntryForm(props) {
     const projectsObject = {};
 
     // Initialize default option
-    const options = [
-      <option value="defaultProject" key="defaultProject" disabled>
-        Select Project/Task
-      </option>,
-    ];
+    const options = [];
 
     // Build projectsObject with WBS and tasks
     const buildProjectsObject = () => {
@@ -558,11 +555,11 @@ function TimeEntryForm(props) {
 
   /* ---------------- useEffects -------------- */
   useEffect(() => {
-    if (isAsyncDataLoaded) {
-      const options = buildOptions();
+      if (isAsyncDataLoaded) {
+        const options = buildOptions();
       setProjectsAndTasksOptions(options);
-    }
-  }, [isAsyncDataLoaded]);
+      }
+    }, [isAsyncDataLoaded, timeEntryFormUserProjects, timeEntryFormUserTasks]);
 
   // grab form data before editing
   useEffect(() => {
@@ -579,19 +576,17 @@ function TimeEntryForm(props) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (actualDate) {
-      setFormValues({
-        ...formValues,
-        dateOfWork: moment(actualDate)
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
-      });
-    }
-  }, [actualDate]);
+      if (actualDate && !edit) {
+      setFormValues(prev => ({
+          ...prev,
+          dateOfWork: moment(actualDate).tz('America/Los_Angeles').format('YYYY-MM-DD'),
+        }));
+      }
+    }, [actualDate, edit]);
 
   useEffect(() => {
-    setFormValues({ ...formValues, ...data });
-  }, [data]);
+      setFormValues(prev => ({ ...prev, ...data }));
+    }, [data]);
 
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
@@ -695,17 +690,22 @@ function TimeEntryForm(props) {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="project" className={fontColor}>
+              <Label for="projectOrTask" className={fontColor}>
                 Project/Task
               </Label>
               <Input
                 type="select"
                 name="projectOrTask"
                 id="projectOrTask"
-                value={projectOrTaskId || 'title'}
+                value={projectOrTaskId || 'defaultProject'}
                 onChange={handleProjectOrTaskChange}
                 className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               >
+                {/* static placeholder always in the DOM */}
+                <option value="defaultProject" disabled>
+                  Select Project/Task
+                </option>
+                {/* then any loaded project/task options */}
                 {projectsAndTasksOptions}
               </Input>
               {'projectId' in errors && (
@@ -726,7 +726,9 @@ function TimeEntryForm(props) {
                 className="form-control"
                 value={formValues.notes}
                 onEditorChange={handleEditorChange}
-                disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
+                disabled={
+                  !((isSameDayAuthUserEdit || canEditTimeEntryDescription) && !!formValues.projectId)
+                }
               />
 
               {'notes' in errors && (
@@ -823,6 +825,7 @@ TimeEntryForm.propTypes = {
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   darkMode: state.theme.darkMode,
+  userProjects: state.userProjects.projects,
 });
 
 export default connect(mapStateToProps, {

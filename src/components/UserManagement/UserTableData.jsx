@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Tooltip } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { Tooltip, UncontrolledTooltip } from 'reactstrap';
+import { connect, useSelector, useDispatch} from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 // import { Link, useHistory } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
-import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar } from '@fortawesome/free-solid-svg-icons';
-import { UncontrolledTooltip } from 'reactstrap';
+import { useHistory, Link } from 'react-router-dom';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
@@ -18,16 +15,14 @@ import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
-import hasPermission from '../../utils/permissions';
 import { boxStyle } from '../../styles';
-import { formatDateLocal } from '../../utils/formatDate';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
 /**
  * The body row of the user table
  */
-const UserTableData = React.memo(props => {
+const UserTableDataComponent = (props) => {
   const { darkMode } = props;
   const editUser = useSelector(state => state.userProfileEdit?.editable);
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
@@ -47,8 +42,8 @@ const UserTableData = React.memo(props => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDateLocal(props.user.startDate),
-    endDate: formatDateLocal(props.user.endDate),
+    startDate: formatDateUtcYYYYMMDD(props.user.startDate) || '',
+    endDate: formatDateUtcYYYYMMDD(props.user.endDate) || '',
   });
   const dispatch = useDispatch();
   const history = useHistory();
@@ -181,42 +176,50 @@ const UserTableData = React.memo(props => {
           ''
         )}
         <span style={{ position: 'absolute', top: 0, right: 0 }}>
-          <button
-            type="button"
-            className="team-member-tasks-user-report-link"
+          <Link
+          to={`/peoplereport/${props.user._id}`}
+          onClick={(event) => {
+            if (!canSeeReports) {
+              event.preventDefault();
+              return;
+            }
+
+            if (
+              event.metaKey || event.ctrlKey ||
+              event.shiftKey || event.altKey ||
+              event.button !== 0
+            ) {
+              return;
+            }
+
+            event.preventDefault(); 
+            history.push(`/peoplereport/${props.user._id}`);
+          }}
+          style={{
+            textDecoration: 'none',
+            opacity: canSeeReports ? 1 : 0.7,
+            cursor: canSeeReports ? 'pointer' : 'not-allowed',
+            display: 'inline-block',               
+            lineHeight: 0,                        
+            padding: 0,                           
+          }}
+          title="Click to view user report"
+        >
+          <img
+            src="/report_icon.png"
+            alt="reportsicon"
+            className="team-member-tasks-user-report-link-image"
+            id={`report-icon-${props.user._id}`}
             style={{
-              fontSize: 18,
-              opacity: canSeeReports ? 1 : 0.7,
-              background: 'none',
-              border: 'none',
-              padding: 0,
+              width: 16,   
+              height: 16,
+              verticalAlign: 'middle',
             }}
-            onClick={(event) => {
-              if (!canSeeReports) {
-                event.preventDefault();
-                return;
-              }
+          />
+        </Link>
 
-              if (event.metaKey || event.ctrlKey || event.button === 1) {
-                window.open(`/peoplereport/${props.user._id}`, '_blank');
-                return;
-              }
+      </span>
 
-              event.preventDefault(); // prevent full reload
-              history.push(`/peoplereport/${props.user._id}`);
-            }}
-          >
-            <img
-              src="/report_icon.png"
-              alt="reportsicon"
-              className="team-member-tasks-user-report-link-image"
-              id={`report-icon-${props.user._id}`}
-              style={{
-                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
-              }}
-            />
-          </button>
-        </span>
 
         <span style={{ position: 'absolute', bottom: 0, right: 0 }}>
           <i
@@ -510,7 +513,7 @@ const UserTableData = React.memo(props => {
       <td>
         {editUser?.startDate ? (
           <span>
-            { props.user.startDate ? formatDateLocal(formData.startDate) : 'N/A' }
+            { props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A' }
             {/* {formData.startDate},{props.user.startDate} */}
           </span>
         ) : (
@@ -528,7 +531,7 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A'}
+            {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
@@ -596,7 +599,10 @@ const UserTableData = React.memo(props => {
       )}
     </tr>
   );
-});
+};
+
+const UserTableData = React.memo(UserTableDataComponent);
+UserTableData.displayName = 'UserTableData';
 
 const mapStateToProps = state => ({
   auth: state.auth,

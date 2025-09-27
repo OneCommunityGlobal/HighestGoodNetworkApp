@@ -214,8 +214,11 @@ function ReviewersStackedBarChart() {
 
       <div className="reviewers-filters-bar">
         <div>
-          <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Team:</label>
+          <label htmlFor="team-select" className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>
+            Team:
+          </label>
           <Select
+            inputId="team-select"
             options={teams.map(team => ({ label: team, value: team }))}
             value={{ label: teamFilter, value: teamFilter }}
             onChange={selected => setTeamFilter(selected.value)}
@@ -223,9 +226,13 @@ function ReviewersStackedBarChart() {
             classNamePrefix="reviewers-select"
           />
         </div>
+
         <div>
-          <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Sort:</label>
+          <label htmlFor="sort-select" className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>
+            Sort:
+          </label>
           <Select
+            inputId="sort-select"
             options={[
               { label: 'Ascending', value: 'Ascending' },
               { label: 'Descending', value: 'Descending' },
@@ -236,9 +243,16 @@ function ReviewersStackedBarChart() {
             classNamePrefix="reviewers-select"
           />
         </div>
+
         <div>
-          <label className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}>Duration:</label>
+          <label
+            htmlFor="duration-select"
+            className={`reviewers-label ${darkMode ? 'dark-mode' : ''}`}
+          >
+            Duration:
+          </label>
           <Select
+            inputId="duration-select"
             options={[
               { label: 'Last Week', value: 'Last Week' },
               { label: 'Last 2 weeks', value: 'Last 2 weeks' },
@@ -310,7 +324,7 @@ function ReviewersStackedBarChart() {
                   value="Top Reviewers"
                   angle={-90}
                   position="insideLeft"
-                  style={{ textAnchor: 'middle' }}
+                  style={{ textAnchor: 'middle', fill: darkMode ? 'white' : 'black' }}
                 />
               </YAxis>
               <Tooltip

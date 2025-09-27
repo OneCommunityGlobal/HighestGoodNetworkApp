@@ -65,6 +65,7 @@ const AddProject = (props) => {
       setWbsList([...wbsList, wbsName]);
       setWbsName('');
     } else if (wbsList.includes(wbsName)) {
+      // eslint-disable-next-line no-console
       console.log('This WBS already exists');
     }
   };
@@ -85,6 +86,7 @@ const AddProject = (props) => {
     if (!isDuplicate) {
       setMembersList([...membersList, newMember]);
     } else {
+      // eslint-disable-next-line no-console
       console.log('This member is already in the list');
     }
     setMemberName('');
@@ -135,6 +137,7 @@ const AddProject = (props) => {
         
         closeModalAndShowNotification('Project added successfully!');
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error adding project:", error);
         setLoading(false);
         closeModalAndShowNotification('Error adding project. Please try again.');
@@ -276,7 +279,7 @@ const AddProject = (props) => {
                   {props.state.projectMembers.foundUsers.map((member) => (
                     <li key={member._id} className="list-group-item d-flex justify-content-between align-items-center" style={{color: darkMode ? '#fff' : '#403e3e'}}>
                       {props.hasPermission('getProjectMembers') ? (
-                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target='_blank'>
+                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target='_blank' rel="noreferrer">
                           {member.firstName} {member.lastName}
                         </a>
                       ) : (
@@ -295,7 +298,7 @@ const AddProject = (props) => {
                   {membersList.map((member, index) => (
                     <li key={index} className="list-group-item d-flex justify-content-between align-items-center" style={{color: darkMode ? '#fff' : '#403e3e'}}>
                       {props.hasPermission('getProjectMembers') ? (
-                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target="_blank">
+                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target="_blank" rel="noreferrer">
                           {member.firstName} {member.lastName}
                         </a>
                       ) : (

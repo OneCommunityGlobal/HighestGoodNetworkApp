@@ -3,20 +3,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
   faCircle,
-  faCheck,
-  faTimes,
+  faCheckCircle,
+  faTimesCircle,
   faExpandArrowsAlt,
   faCompressArrowsAlt,
 } from '@fortawesome/free-solid-svg-icons';
-import moment from 'moment-timezone';
-import { useDispatch, useSelector } from 'react-redux';
-import { Table, Progress } from 'reactstrap';
+import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
+import { Table, Progress, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
-import hasPermission from '../../utils/permissions';
-import CopyToClipboard from '../common/Clipboard/CopyToClipboard';
+import hasPermission from '~/utils/permissions';
 import './style.css';
-import Warning from '../Warnings/Warnings';
+import { getUserProfile } from '~/actions/userProfile.js';
+import { toast } from 'react-toastify';
+import Warning from '~/components/Warnings/Warnings';
+import { useDispatch, useSelector } from 'react-redux';
+import moment from 'moment-timezone';
 
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
@@ -51,6 +53,58 @@ const TeamMemberTask = React.memo(
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
+
+    const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
+    const dashboardToggle = item => setIsDashboardOpen(item.personId);
+    const manager = 'Manager';
+    const adm = 'Administrator';
+    const owner = 'Owner';
+
+    const handleDashboardAccess = () => {
+      // null checks
+      if (!user || !userRole || !user.role) {
+        toast.error('User information not available to determine dashboard access.');
+        return;
+      }
+
+      if (userRole === manager && [adm, owner].includes(user.role)) {
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else if (userRole === adm && [owner].includes(user.role)) {
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else if (
+        ![manager, adm, owner].includes(userRole) &&
+        [manager, adm, owner].includes(user.role)
+      ) {
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else {
+        openDashboardModal();
+      }
+    };
+
+    const openDashboardModal = () => {
+      setIsDashboardModalOpen(true);
+    };
+
+    const closeDashboardModal = () => {
+      setIsDashboardModalOpen(false);
+    };
+
+    const showDashboard = () => {
+      dispatch(getUserProfile(user.personId)).then(user => {
+        const { _id, role, firstName, lastName, profilePic, email } = user;
+        const viewingUser = {
+          userId: _id,
+          role,
+          firstName,
+          lastName,
+          email,
+          profilePic: profilePic || '/pfp-default-header.png',
+        };
+        sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
+        window.dispatchEvent(new Event('storage'));
+        closeDashboardModal();
+      });
+    };
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       const userHours = task.hoursLogged || 0;
@@ -118,16 +172,7 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    /** 
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    };
-    */
+    /**    const handleReportClick = (event, to) => {      if (event.metaKey || event.ctrlKey || event.button === 1) {        return;      }      event.preventDefault(); // prevent full reload    };    */
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -201,18 +246,31 @@ const TeamMemberTask = React.memo(
                       <div className="member-links-wrapper">
                         <div className="committed-hours-circle">
                           <div className="icon-row">
-                            <FontAwesomeIcon
-                              style={{
-                                color:
-                                  user.totaltangibletime_hrs >= user.weeklycommittedHours
-                                    ? 'green'
-                                    : 'red',
+                            <div
+                              role="button"
+                              tabIndex={0}
+                              onClick={handleDashboardAccess}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') handleDashboardAccess();
                               }}
-                              icon={faCircle}
-                              data-testid="icon"
-                            />
+                            >
+                              <FontAwesomeIcon
+                                style={{
+                                  color:
+                                    user.totaltangibletime_hrs >= user.weeklycommittedHours
+                                      ? 'green'
+                                      : 'red',
+                                }}
+                                icon={faCircle}
+                                title="Click to jump to dashboard"
+                                data-testid="icon"
+                              />
+                            </div>
 
-                            <Link to={`/timelog/${user.personId}`} className="timelog-info">
+                            <Link
+                              to={`/timelog/${user.personId}#currentWeek`}
+                              className="timelog-info"
+                            >
                               <i
                                 className="fa fa-clock-o"
                                 aria-hidden="true"
@@ -415,7 +473,7 @@ const TeamMemberTask = React.memo(
                                       {isAllowedToResolveTasks && (
                                         <FontAwesomeIcon
                                           className="team-member-tasks-done"
-                                          icon={faCheck}
+                                          icon={faCheckCircle}
                                           title="Mark as Done"
                                           onClick={() => {
                                             handleMarkAsDoneModal(user.personId, task);
@@ -427,7 +485,7 @@ const TeamMemberTask = React.memo(
                                       {(canUpdateTask || canDeleteTask) && (
                                         <FontAwesomeIcon
                                           className="team-member-task-remove"
-                                          icon={faTimes}
+                                          icon={faTimesCircle}
                                           title="Remove User from Task"
                                           onClick={() => {
                                             handleRemoveFromTaskModal(user.personId, task);
@@ -438,7 +496,7 @@ const TeamMemberTask = React.memo(
                                       )}
                                       <TeamMemberTaskIconsInfo />
                                     </div>
-                                    <div>
+                                    <div className="team-member-task-review-button">
                                       <ReviewButton
                                         user={user}
                                         userId={userId}
@@ -521,6 +579,31 @@ const TeamMemberTask = React.memo(
                           )}
                         </tbody>
                       </Table>
+                      <Modal
+                        isOpen={isDashboardModalOpen}
+                        toggle={closeDashboardModal}
+                        className={darkMode ? 'text-light dark-mode' : ''}
+                      >
+                        <ModalHeader
+                          toggle={closeDashboardModal}
+                          className={darkMode ? 'bg-space-cadet' : ''}
+                        >
+                          Jump to personal Dashboard
+                        </ModalHeader>
+                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                          <p className="title-dashboard">
+                            Are you sure you wish to view the dashboard for {user.name}?
+                          </p>
+                        </ModalBody>
+                        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                          <button className="btn btn-primary" onClick={showDashboard}>
+                            Ok
+                          </button>
+                          <button className="btn btn-danger" onClick={closeDashboardModal}>
+                            Cancel
+                          </button>
+                        </ModalFooter>
+                      </Modal>
                       {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
                         <button
                           type="button"
@@ -544,5 +627,7 @@ const TeamMemberTask = React.memo(
     );
   },
 );
+
+TeamMemberTask.displayName = 'TeamMemberTask';
 
 export default TeamMemberTask;
