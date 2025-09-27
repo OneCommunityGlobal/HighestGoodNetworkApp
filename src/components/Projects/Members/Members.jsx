@@ -9,6 +9,7 @@ import { NavItem } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import {
   fetchAllMembers,
+  fetchMembersSummary,
   findProjectMembers,
   getAllUserProfiles,
   assignProject,
@@ -44,7 +45,8 @@ const Members = props => {
     const fetchMembers = async () => {
       setIsLoading(true);
       setMembersList([]);
-      await props.fetchAllMembers(projectId);
+      // Use lightweight summary API for better performance (no profile pics)
+      await props.fetchMembersSummary(projectId);
       props.getProjectDetail(projectId);
       setIsLoading(false);
     };
@@ -61,6 +63,7 @@ const Members = props => {
       ),
     );
 
+    // Use regular API for assignment operations (may need profile pics for other components)
     props.fetchAllMembers(projectId);
   };
 
@@ -89,7 +92,8 @@ const Members = props => {
 
   const handleToggle = async () => {
     setShowActiveMembersOnly(prevState => !prevState);
-    await props.fetchAllMembers(projectId);
+    // Use lightweight summary API for toggle operations (better performance)
+    await props.fetchMembersSummary(projectId);
     setMembersList(props.state.projectMembers.members);
   };
 
@@ -325,6 +329,7 @@ const mapStateToProps = state => {
 };
 export default connect(mapStateToProps, {
   fetchAllMembers,
+  fetchMembersSummary,
   findProjectMembers,
   getAllUserProfiles,
   assignProject,
