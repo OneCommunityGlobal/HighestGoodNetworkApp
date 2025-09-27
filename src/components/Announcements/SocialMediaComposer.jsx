@@ -192,8 +192,13 @@ export default function SocialMediaComposer({ platform }) {
     }
     const schedules = [];
     const [hours, minutes] = timeContent.split(':').map(Number);
-    const baseLocalDate = new Date(dateContent);
-    baseLocalDate.setHours(hours, minutes, 0, 0);
+    // const baseLocalDate = new Date(dateContent);
+    // baseLocalDate.setHours(hours, minutes, 0, 0);
+    // ⬇️ build the local date correctly from parts
+    const [year, month, day] = dateContent.split('-').map(Number);
+
+    // month is 0-based
+    const baseLocalDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
 
     if (repeatAnnually) {
       for (let i = 0; i < numYears; i++) {
@@ -459,13 +464,17 @@ export default function SocialMediaComposer({ platform }) {
             </button>
           ) : (
             <div style={{ marginTop: '15px' }}>
-              <label className="d-block">
-                <h3>Schedule Post for Social Media</h3>
+              {/* <label className="d-block">
+                <h3 className="d-block">Schedule Post for Social Media</h3>
               </label>
 
               <label className="d-block">
                 <strong>Select Multiple Platform(s):</strong>
-              </label>
+              </label> */}
+
+              <h3 className="d-block">Schedule Post for Social Media</h3>
+
+              <strong className="d-block">Select Multiple Platform(s):</strong>
 
               <div>
                 {/* Loop through platforms */}
@@ -493,7 +502,7 @@ export default function SocialMediaComposer({ platform }) {
               </div>
 
               {/* Date and Time */}
-              <div inline="true" className="mb-2">
+              <div className="mb-2">
                 <Label for="dateOfWork">Date</Label>
                 <Input
                   className="responsive-font-size"
@@ -510,7 +519,7 @@ export default function SocialMediaComposer({ platform }) {
                 )}
               </div>
 
-              <div inline="true" className="mb-2">
+              <div  className="mb-2">
                 <Label for="timeOfWork">Time</Label>
                 <Input
                   className="responsive-font-size"
