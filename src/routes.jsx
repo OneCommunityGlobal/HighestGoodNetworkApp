@@ -219,6 +219,11 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
+
+const JobAnalyticsPage = lazy(() =>
+  import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
+);
+
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
 export default (
   <Switch>
@@ -355,6 +360,7 @@ export default (
           routePermissions={RoutePermissions.reports}
         />
         <ProtectedRoute path="/teamlocations" exact component={TeamLocations} />
+        <ProtectedRoute path="/job-analytics" component={JobAnalyticsPage} fallback />
         <ProtectedRoute
           path="/projects"
           exact
