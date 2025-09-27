@@ -1,0 +1,458 @@
+/* ============================================================================
+   TEACHER FEEDBACK COMPONENT STYLES - Premium UI Design
+   ============================================================================ */
+
+.feedbackCard {
+  border: none;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-elegant);
+  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.feedbackCard:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-floating);
+}
+
+/* Header Styles */
+.feedbackHeader {
+  background: var(--primary-gradient);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+}
+
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.teacherIcon {
+  font-size: 2.5rem;
+  color: var(--accent-light);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem;
+  border-radius: var(--border-radius-full);
+  backdrop-filter: blur(10px);
+}
+
+.teacherInfo h4.teacherName {
+  color: var(--text-light);
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.teacherInfo p.teacherTitle {
+  color: var(--accent-light);
+  margin: 0.25rem 0 0 0;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.headerRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.stars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.stars .starFilled {
+  color: #fbbf24;
+  font-size: 1.1rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.stars .starHalf {
+  color: #fbbf24;
+  font-size: 1.1rem;
+  opacity: 0.7;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+
+.stars .starEmpty {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 1.1rem;
+}
+
+.ratingBadge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--border-radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dateContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--accent-light);
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.dateIcon {
+  font-size: 0.9rem;
+}
+
+/* Body Styles */
+.feedbackBody {
+  padding: 2rem;
+  background: var(--surface-light);
+}
+
+.feedbackSection {
+  margin-bottom: 2rem;
+}
+
+.feedbackSection:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--accent-light);
+  padding-bottom: 0.5rem;
+}
+
+.countBadge {
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius-full);
+  font-weight: 600;
+}
+
+.overallFeedback {
+  background: linear-gradient(135deg, #f8faff 0%, #e8f2ff 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.overallFeedback::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--primary-gradient);
+}
+
+.feedbackText {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin: 0;
+  font-size: 1rem;
+  font-style: italic;
+}
+
+/* Strengths Styles */
+.strengthsTitle {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.strengthsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.strengthItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  border-radius: var(--border-radius-md);
+  transition: all 0.2s ease;
+}
+
+.strengthItem:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.15);
+}
+
+.strengthBullet {
+  width: 8px;
+  height: 8px;
+  background: var(--success-color);
+  border-radius: var(--border-radius-full);
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.strengthText {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Recommendations Styles */
+.recommendationsTitle {
+  color: var(--warning-color);
+  font-weight: 600;
+}
+
+.recommendationsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.recommendationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: var(--border-radius-md);
+  transition: all 0.2s ease;
+}
+
+.recommendationItem:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
+.recommendationBullet {
+  width: 8px;
+  height: 8px;
+  background: var(--warning-color);
+  border-radius: var(--border-radius-full);
+  margin-top: 0.5rem;
+  flex-shrink: 0;
+}
+
+.recommendationText {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Next Steps Styles */
+.nextStepsTitle {
+  color: var(--info-color);
+  font-weight: 600;
+}
+
+.nextStepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.nextStepItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: var(--border-radius-md);
+  transition: all 0.2s ease;
+}
+
+.nextStepItem:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+}
+
+.nextStepNumber {
+  background: var(--info-color);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--border-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.nextStepText {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Loading States */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--accent-light);
+  border-top: 3px solid var(--primary-color);
+  border-radius: var(--border-radius-full);
+  animation: spin 1s linear infinite;
+}
+
+.loadingText {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* No Feedback State */
+.noFeedbackContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+
+.noFeedbackIcon {
+  font-size: 3rem;
+  color: var(--accent-light);
+  opacity: 0.6;
+}
+
+.noFeedbackText {
+  color: var(--text-muted);
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .headerRight {
+    align-self: stretch;
+    align-items: flex-start;
+  }
+
+  .ratingContainer {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .feedbackBody {
+    padding: 1.5rem;
+  }
+
+  .strengthItem,
+  .recommendationItem,
+  .nextStepItem {
+    padding: 1rem;
+  }
+
+  .teacherIcon {
+    font-size: 2rem;
+    padding: 0.6rem;
+  }
+
+  .teacherInfo h4.teacherName {
+    font-size: 1.2rem;
+  }
+
+  .teacherInfo p.teacherTitle {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .feedbackHeader {
+    padding: 1rem;
+  }
+
+  .feedbackBody {
+    padding: 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.1rem;
+  }
+
+  .overallFeedback {
+    padding: 1rem;
+  }
+}
+
+/* Animations */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .feedbackCard,
+  .strengthItem,
+  .recommendationItem,
+  .nextStepItem {
+    transition: none;
+  }
+
+  .loadingSpinner {
+    animation: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .feedbackCard {
+    border: 2px solid var(--text-primary);
+  }
+
+  .strengthItem,
+  .recommendationItem,
+  .nextStepItem {
+    border-width: 2px;
+  }
+}
