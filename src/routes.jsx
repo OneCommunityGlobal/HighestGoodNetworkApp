@@ -297,7 +297,7 @@ export default (
       <Switch>
         {/* 测试用，后续要删除 */}
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
-        <ProtectedRoute path="/hgnhelp" component={HelpPage} />
+        {/* <ProtectedRoute path="/hgnhelp" component={HelpPage} /> */}
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
