@@ -133,7 +133,9 @@
     "start:local": "vite",
     "lint": "eslint \"**/*.{js,jsx}\"",
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test:coverage:watch": "react-scripts test --coverage",
+    "test:ci": "cross-env CI=true vitest --coverage"
   },
   "browserslist": [
     ">0.2%",
@@ -159,6 +161,7 @@
     "@types/pdfmake": "^0.2.11",
     "@types/react-router-dom": "^5.3.3",
     "@vitejs/plugin-react": "^4.5.0",
+    "@vitest/coverage-v8": "^3.2.4",
     "@vitest/ui": "3.2.2",
     "babel-jest": "^29.7.0",
     "cross-env": "^5.2.1",

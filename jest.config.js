@@ -11,6 +11,16 @@ module.exports = {
   // The directory where Jest should output its coverage files
   coverageDirectory: 'coverage',
 
+  
+    coverageThreshold: {
+      "global": {
+        "branches": 60,
+        "functions": 60,
+        "lines": 60,
+        "statements": 60
+      }
+    },
+
   // An array of file extensions your modules use
   moduleFileExtensions: ['js', 'json', 'jsx'],
 

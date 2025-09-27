@@ -30,3 +30,54 @@ jobs:
         with:
           name: test-results
           path: test-results # Adjust the path to your test results if necessary
+
+      - name: Frontend Tests with 60% Coverage
+        runs-on: ubuntu-latest
+        needs: lint  # Only run if lint passes
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+      - name: Set up Node.js & cache Yarn
+        uses: actions/setup-node@v4
+        with:
+        node-version: 20
+        cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests with coverage enforcement
+        run: yarn test:ci
+        env:
+        CI: true
+
+      - name: Print Coverage Summary
+        if: always()
+        run: |
+          echo "📊 Frontend Coverage Report (60% Required):"
+          if [ -f coverage/coverage-summary.json ]; then
+            node -e "
+              const coverage = require('./coverage/coverage-summary.json');
+              const { lines, statements, functions, branches } = coverage.total;
+              
+              console.log('📈 CURRENT COVERAGE:');
+              console.log(\`📄 Lines: \${lines.pct}% \${lines.pct >= 60 ? '✅ PASS' : '❌ FAIL'}\`);
+              console.log(\`📝 Statements: \${statements.pct}% \${statements.pct >= 60 ? '✅ PASS' : '❌ FAIL'}\`);
+              console.log(\`🔧 Functions: \${functions.pct}% \${functions.pct >= 60 ? '✅ PASS' : '❌ FAIL'}\`);
+              console.log(\`🌿 Branches: \${branches.pct}% \${branches.pct >= 60 ? '✅ PASS' : '❌ FAIL'}\`);
+              
+              const allPass = [lines, statements, functions, branches].every(metric => metric.pct >= 60);
+              console.log('================================');
+              console.log(\`🎯 RESULT: \${allPass ? '✅ ALL REQUIREMENTS MET' : '❌ COVERAGE REQUIREMENTS FAILED'}\`);
+              console.log('================================');
+              
+              if (!allPass) {
+                console.log('\\n❌ COVERAGE TOO LOW - PR CANNOT BE MERGED');
+                process.exit(1);
+              }
+            "
+          else
+            echo "❌ No coverage report found"
+            exit 1
+          fi
