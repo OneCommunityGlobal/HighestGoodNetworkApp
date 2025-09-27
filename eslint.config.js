@@ -29,7 +29,7 @@ module.exports = [
       'public/**',
       'build/**',
       // Ignore test files inside /src/components
-      'src/components/BMDashboard/_tests_/BMDashboard.test.jsx',
+      // 'src/components/BMDashboard/_tests_/BMDashboard.test.jsx',
       'src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx',
       // Ignore entire component folders
       'src/components/Badge/**',

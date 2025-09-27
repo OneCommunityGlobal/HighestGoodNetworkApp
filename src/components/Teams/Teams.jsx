@@ -161,7 +161,7 @@ class Teams extends React.PureComponent {
                         darkMode={darkMode}
                       />
                     </thead>
-                    {console.log('sortedTeams:', this.state.sortedTeams)}
+                    {/* {console.log('sortedTeams:', this.state.sortedTeams)} */}
                     <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.sortedTeams}</tbody>
                   </table>
                 </div>
