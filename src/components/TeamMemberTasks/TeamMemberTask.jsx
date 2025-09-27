@@ -462,6 +462,7 @@ const TeamMemberTask = React.memo(
                               <UserStateManager
                                 userId={user.personId}
                                 canEdit={canEdit}
+                                user={user}
                               />
                             </div>
                           </td>
