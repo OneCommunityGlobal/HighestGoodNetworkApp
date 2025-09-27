@@ -1,31 +1,79 @@
-import FormEditor from '~/components/Forms/FormEditor';
-import FormViewer from '~/components/Forms/FormViewer';
-
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import SetupProfile from '~/components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
-import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
-import AutoUpdate from '~/components/AutoUpdate';
-import TaskEditSuggestions from '~/components/TaskEditSuggestions/TaskEditSuggestions';
-import RoutePermissions from '~/utils/routePermissions';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import RoleInfoCollections from '~/components/UserProfile/EditableModal/RoleInfoModal';
-import LessonList from '~/components/BMDashboard/LessonList/LessonListForm';
-import ResourceUsage from '~/components/CommunityPortal/ResourceUsage/ResourceUsage';
-import AddEquipmentType from '~/components/BMDashboard/Equipment/Add/AddEquipmentType';
-import EDailyActivityLog from '~/components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
-import Announcements from '~/components/Announcements';
-import JobCCDashboard from '~/components/JobCCDashboard/JobCCDashboard';
-import WeeklyProjectSummary from '~/components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
-import FaqSearch from '~/components/Faq/FaqSearch';
-import FaqManagement from '~/components/Faq/FaqManagement';
-import FaqHistory from '~/components/Faq/FaqHistory';
-import UnansweredFaqs from '~/components/Faq/UnansweredFaqs';
-import HeaderRenderer from '~/components/Header/HeaderRenderer';
-import IssueDashboard from '~/components/BMDashboard/Issues/IssueDashboard';
-import { ExperienceDonutChart } from '~/components/ExperienceDonutChart';
-import LessonForm from '~/components/BMDashboard/Lesson/LessonForm';
+import 'react-toastify/dist/ReactToastify.css';
+import ApplicantsChart from './components/ApplicantsChart';
+import AutoUpdate from './components/AutoUpdate';
+import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
+import RoutePermissions from './utils/routePermissions';
+import hasPermission from './utils/permissions';
+
+import Dashboard from './components/Dashboard';
+import Login from './components/Login';
+import Logout from './components/Logout/Logout';
+import ForgotPassword from './components/Login/ForgotPassword';
+import ForcePasswordUpdate from './components/ForcePasswordUpdate';
+import UpdatePassword from './components/UpdatePassword';
+import NotFoundPage from './components/NotFound/NotFoundPage';
+
+import SetupProfile from './components/SetupProfile/SetupProfile';
+import Timelog from './components/Timelog';
+import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+import EditableInfoModal from './components/UserProfile/EditableModal/EditableInfoModal';
+import RoleInfoCollections from './components/UserProfile/EditableModal/RoleInfoModal';
+import PRDashboard from './components/PRDashboard';
+import ApplicantsAgeChart from './components/ApplicantsChart';
+import ApplicationTimeChartPage from './components/ApplicationTimeChart';
+import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
+import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
+
+import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage';
+import EmailSubscribeForm from './components/EmailSubscribeForm';
+import SubscribePage from './components/EmailSubscribeForm/SubscribePage';
+import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
+import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+import EmailSender from './components/common/EmailSender/EmailSender';
+
+import FormEditor from './components/Forms/FormEditor';
+import FormViewer from './components/Forms/FormViewer';
+
+import HeaderRenderer from './components/Header/HeaderRenderer';
+import Announcements from './components/Announcements';
+import JobCCDashboard from './components/JobCCDashboard/JobCCDashboard';
+
+import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import LessonForm from './components/BMDashboard/Lesson/LessonForm';
+import LessonList from './components/BMDashboard/LessonList/LessonListForm';
+import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
+import EquipmentList from './components/BMDashboard/Equipment/List';
+import EquipmentDetail from './components/BMDashboard/Equipment/Detail/EquipmentDetail';
+import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
+import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
+import LogTools from './components/BMDashboard/LogTools/LogTools';
+import Toolslist from './components/BMDashboard/Tools/ToolsList';
+import AddTool from './components/BMDashboard/Tools/AddTool';
+import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
+import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+import Issue from './components/BMDashboard/Issue/Issue';
+import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+import IssueChart from './components/BMDashboard/Issues/issueCharts';
+import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
+import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
+import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+import BMDashboard from './components/BMDashboard';
+import BMLogin from './components/BMDashboard/Login';
+import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
+
+import FaqSearch from './components/Faq/FaqSearch';
+import FaqManagement from './components/Faq/FaqManagement';
+import FaqHistory from './components/Faq/FaqHistory';
+import UnansweredFaqs from './components/Faq/UnansweredFaqs';
+import { ExperienceDonutChart } from './components/ExperienceDonutChart';
+
+import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
+
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -40,41 +88,45 @@ import TSAFormPage5 from './components/TSAForm/pages/TSAFormPage5';
 import TSAFormPage6 from './components/TSAForm/pages/TSAFormPage6';
 import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
-import Timelog from './components/Timelog';
-import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+
+import HelpPage from './components/LandingPage/HelpPage';
+
+import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
+import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
+import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
+import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
+import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
+
+import CPLogin from './components/CommunityPortal/Login';
+import CPDashboard from './components/CommunityPortal';
+import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
+import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import Activity from './components/CommunityPortal/Activities/activityId/Activity';
+import ActivityAttendance from './components/CommunityPortal/Activities/ActivityAttendance';
+import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
+import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
+import Register from './components/CommunityPortal/Activities/Register/Register';
+import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
+import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
+import Resources from './components/CommunityPortal/Activities/activityId/Resources';
+import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
-import Dashboard from './components/Dashboard';
-import Logout from './components/Logout/Logout';
-import Login from './components/Login';
-import ForcePasswordUpdate from './components/ForcePasswordUpdate';
-import ProtectedRoute from './components/common/ProtectedRoute';
-import UpdatePassword from './components/UpdatePassword';
+// Activity Feedback Modal
+import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
+
 import TeamLocations from './components/TeamLocations';
-import 'react-toastify/dist/ReactToastify.css';
-import { UserRole } from './utils/enums';
-import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
-import EmailSubscribeForm from './components/EmailSubscribeForm';
-import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
-import SubscribePage from './components/EmailSubscribeForm/SubscribePage';
-import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
-import NotFoundPage from './components/NotFound/NotFoundPage';
-import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
+import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
 
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
-import ApplicantsChart from './components/ApplicantsChart';
-import ApplicationTimeChartPage from './components/ApplicationTimeChart';
-import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
-import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
-
-import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage'; // 测试用 后续要删除
-
-// LB Dashboard
+import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
 import LBHome from './components/LBDashboard/Home/Home';
 import LBDashboard from './components/LBDashboard';
@@ -98,55 +150,17 @@ import EquipmentDetail from './components/BMDashboard/Equipment/Detail/Equipment
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
-import Toolslist from './components/BMDashboard/Tools/ToolsList';
-import AddTool from './components/BMDashboard/Tools/AddTool';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
-import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
-
-// eslint-disable-next-line import/order
-import IssueChart from './components/BMDashboard/Issues/issueCharts';
-import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
-import Issue from './components/BMDashboard/Issue/Issue';
-
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 
-import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
-import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-
-// Community Portal
-import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
-import CPLogin from './components/CommunityPortal/Login';
-import CPDashboard from './components/CommunityPortal';
-import ActivityList from './components/CommunityPortal/Activities/ActivityList';
-import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
-import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-import Register from './components/CommunityPortal/Activities/Register/Register';
-import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
-import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-
-import Resources from './components/CommunityPortal/Activities/activityId/Resources';
-import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
-
+// Community Calendar
+import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
 
-import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-
-import HelpPage from './components/LandingPage/HelpPage';
-
-import LandingPage from './components/HGNHelpSkillsDashboard/LandingPage';
-import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOverviewPage';
-import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
-import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
-import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
-// HGN PR Dashboard
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
@@ -155,10 +169,9 @@ import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 
-// eslint-disable-next-line import/order, import/no-unresolved
-import LogTools from './components/BMDashboard/LogTools/LogTools';
-// import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
-import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+import ProtectedRoute from './components/common/ProtectedRoute';
+import { UserRole } from './utils/enums';
+
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -216,42 +229,30 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
-
+const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
 export default (
   <Switch>
-    {/* ----- LB Dashboard Routing ----- */}
+    {/* ----- LB Dashboard Routing Starts----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
-    <Route path="/EventPopularity" component={EventPopularity} />
-    <Route
-      path="/lbdashboard/register"
+    <Route path="/lbdashboard/login" component={LBLogin} />
+    <Route path="/lbdashboard/register" component={LBRegister} />
+    {/* Protected Routes for lbdashboard */}
+    <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+    <LBProtectedRoute
+      path="/lbdashboard/listingshome"
       render={() => (
         <>
           <AutoUpdate />
-          <ToastContainer />
-          <LBRegister />
+          <LBHome />
         </>
       )}
     />
-    <Route
-      path="/lbdashboard"
-      render={() => (
-        <>
-          <LBDashboard />
-        </>
-      )}
-    />
-    <Route
-      path="/lbdashboard/login"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <LBLogin />
-        </>
-      )}
-    />
-
-    <Route
+    <LBProtectedRoute path="/lbdashboard/listOverview" exact component={ListOveriew} />
+    <LBProtectedRoute path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+    <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
+    <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+    <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
+    <LBProtectedRoute
       exact
       path="/lbdashboard/wishlists"
       render={() => (
@@ -262,7 +263,7 @@ export default (
         </>
       )}
     />
-    <Route
+    <LBProtectedRoute
       exact
       path="/lbdashboard/wishlist/:id"
       render={() => (
@@ -275,15 +276,15 @@ export default (
     />
 
     <LBProtectedRoute path="/lbdashboard" component={LBDashboard} />
+    {/* ----- LB Dashboard Routing Ends----- */}
+
+    <Route path="/EventPopularity" component={EventPopularity} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-
     <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
-
     <Route path="/TestEventReg" component={TestEventRegistration} />
-
     <Route path="/logattendance" component={AttendanceNoShow} />
 
     <>
@@ -298,7 +299,6 @@ export default (
       <AutoUpdate />
       <ToastContainer />
       <Switch>
-        {/* 测试用，后续要删除 */}
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
         <ProtectedRoute path="/hgnhelp" component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
@@ -343,6 +343,22 @@ export default (
           ]}
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
+        <ProtectedRoute
+          path="/pr-dashboard"
+          exact
+          component={PRDashboard}
+          fallback
+          routePermissions={RoutePermissions.prDashboard}
+        />
+
+        <ProtectedRoute
+          path="/pr-dashboard"
+          exact
+          component={PRDashboard}
+          fallback
+          routePermissions={RoutePermissions.prDashboard}
+        />
+
         <ProtectedRoute
           path="/reports"
           exact
@@ -533,6 +549,34 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
 
+        <ProtectedRoute
+          path="/communityportal/activity/\:activityid/feedback"
+          exact
+          component={FeedbackRatingEntry}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Owner,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Mentor,
+            UserRole.Volunteer,
+            UserRole.Learner,
+            UserRole.Guest,
+            UserRole.Staff,
+            UserRole.Participant,
+            UserRole.Reviewer,
+            UserRole.Contributor,
+            UserRole.Editor,
+            UserRole.Publisher,
+            UserRole.Subscriber,
+            UserRole.Author,
+            UserRole.Member,
+            UserRole.Organizer,
+            UserRole.Facilitator,
+          ]}
+        />
+
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
         <Route path="/bmdashboard/login" component={BMLogin} />
@@ -647,7 +691,10 @@ export default (
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
-        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+
+        {/* ----- Community Calendar Routing ----- */}
+        <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
+        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
           component={Feedbackform}
@@ -666,6 +713,11 @@ export default (
           exact
           component={EventStats}
         />
+        <CPProtectedRoute
+          path="/communityportal/reports/resourceusage"
+          exact
+          component={ResourceUsage}
+        />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 
@@ -677,6 +729,8 @@ export default (
         <Route path="/subscribe" component={SubscribePage} />
         <Route path="/unsubscribe" component={UnsubscribePage} />
         <Route path="/collaboration" component={Collaboration} />
+        <Route path="/suggestedjobslist" component={SuggestedJobsList} />
+
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
@@ -698,6 +752,7 @@ export default (
         <ProtectedRoute path="/hgnform/page4" exact component={Page4} />
         <ProtectedRoute path="/hgnform/page5" exact component={Page5} />
         <ProtectedRoute path="/hgnform/page6" exact component={Page6} />
+        <ProtectedRoute path="/hgn/profile/skills" exact component={UserSkillsProfile} />
         <ProtectedRoute
           path="/hgn/profile/skills/:userId?"
           exact
