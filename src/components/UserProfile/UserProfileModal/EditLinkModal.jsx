@@ -140,6 +140,7 @@ const EditLinkModal = props => {
       const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
       return pattern.test(url);
     } catch (err) {
+      // eslint-disable-next-line no-console  
       console.log(err);
       return false;
     }
