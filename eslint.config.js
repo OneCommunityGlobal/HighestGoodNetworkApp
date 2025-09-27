@@ -33,9 +33,7 @@ module.exports = [
       'src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx',
       // Ignore entire component folders
       'src/components/Badge/**',
-      'src/components/SummaryManagement/**',
       'src/components/UserProfile/**',
-      'src/components/Announcements/index.jsx',
     ],
   },
 

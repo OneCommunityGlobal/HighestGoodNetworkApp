@@ -231,7 +231,7 @@ export default function IssuesList() {
               </td>
               <td>{issue.openSince}</td>
               <td>{issue.cost}</td>
-              <td>{`${issue.person.name} - ${issue.person.role}`}</td>
+              <td>{`${issue.person?.name} - ${issue.person?.role}`}</td>
               <td>
                 <Dropdown
                   show={dropdownOpenId === issue.id}
