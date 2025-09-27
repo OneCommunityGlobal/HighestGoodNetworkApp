@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
-import { Label, Input, Button } from 'reactstrap';
+import { Label, Input, Button, Nav, NavItem, NavLink } from 'reactstrap';
 import { zonedTimeToUtc } from 'date-fns-tz';
 import { Link } from 'react-router-dom';
-import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import {
   sendTweet,
@@ -18,7 +16,6 @@ import {
   sendFbPost,
   ssendFbPost,
 } from '../../actions/sendSocialMediaPosts';
-
 
 export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
@@ -49,7 +46,6 @@ export default function SocialMediaComposer({ platform }) {
     { id: 'scheduled', label: '⏰ Scheduled Post' },
     { id: 'history', label: '📜 Post History' },
     { id: 'details', label: '🧩 Details' },
-
   ];
   const cancelSchedule = async () => {
     setShowDropdown(false);
@@ -93,8 +89,8 @@ export default function SocialMediaComposer({ platform }) {
   }, []);
 
   useEffect(() => {
-  setPostContent('');
-}, [activeSubTab]);
+    setPostContent('');
+  }, [activeSubTab]);
 
   const handleChange = async e => {
     const value = e.target.value;
@@ -285,7 +281,6 @@ export default function SocialMediaComposer({ platform }) {
     }
   };
 
-
   const timeConvert = scheduledTime => {
     const [hours, minutes] = scheduledTime.split(':');
     let hour = parseInt(hours, 10);
@@ -294,7 +289,6 @@ export default function SocialMediaComposer({ platform }) {
     const formattedTime = `${hour}:${minutes} ${ampm} PST`;
     return formattedTime;
   };
-
 
   const handleEditorChange = (content, editor) => {
     setEmailContent(content);
@@ -357,7 +351,7 @@ export default function SocialMediaComposer({ platform }) {
               plugins: [
                 'advlist autolink lists link image charmap print preview anchor',
                 'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount'
+                'insertdatetime media table paste code help wordcount',
               ],
               toolbar:
                 'undo redo | formatselect | bold italic backcolor | \
@@ -371,10 +365,10 @@ export default function SocialMediaComposer({ platform }) {
                   const input = document.createElement('input');
                   input.setAttribute('type', 'file');
                   input.setAttribute('accept', 'image/*');
-                  input.onchange = function () {
+                  input.onchange = function() {
                     const file = this.files[0];
                     const reader = new FileReader();
-                    reader.onload = function () {
+                    reader.onload = function() {
                       const base64 = reader.result; // Base64 string
                       cb(base64, { title: file.name });
                     };
@@ -382,13 +376,12 @@ export default function SocialMediaComposer({ platform }) {
                   };
                   input.click();
                 }
-              }
+              },
             }}
-            onEditorChange={(content) => setPostContent(content)}
+            onEditorChange={content => setPostContent(content)}
           />
 
-
-          <div style={{marginTop: '1.5rem',  display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <button
               onClick={handlePostNow}
               style={{
@@ -449,190 +442,188 @@ export default function SocialMediaComposer({ platform }) {
           </div>
         </div>
       )}
-     {activeSubTab === 'scheduled' && (
-      <div>
-        <p>
-          <strong>Scheduled Posts for {platform}</strong>
-        </p>
+      {activeSubTab === 'scheduled' && (
+        <div>
+          <p>
+            <strong>Scheduled Posts for {platform}</strong>
+          </p>
 
-        {/* Schedule Post Dropdown / Form */}
-        {!showDropdown ? (
-          <button
-            className="send-button mr-1 ml-1"
-            onClick={handleScheduleClick}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Schedule Post
-          </button>
-        ) : (
-          <div style={{ marginTop: '15px' }}>
-            <label className="d-block">
-              <h3>Schedule Post for Social Media</h3>
-            </label>
-
-            <label className="d-block">
-              <strong>Select Multiple Platform(s):</strong>
-            </label>
-
-            <div>
-              {/* Loop through platforms */}
-              {platforms.map(({ label, value }) => (
-                <div key={value} style={{ margin: '5px 0' }}>
-                  <input
-                    type="checkbox"
-                    id={`platform-${value}`}
-                    value={value}
-                    checked={scheduleSelectedPlatforms.includes(value)}
-                    onChange={e => {
-                      const { value, checked } = e.target;
-                      if (checked) {
-                        setscheduleSelectedPlatforms(prev => [...prev, value]);
-                      } else {
-                        setscheduleSelectedPlatforms(prev =>
-                          prev.filter(p => p !== value)
-                        );
-                      }
-                    }}
-                  />
-                  <label htmlFor={`platform-${value}`} style={{ marginLeft: '8px' }}>
-                    {label}
-                  </label>
-                </div>
-              ))}
-            </div>
-
-            {/* Date and Time */}
-            <div inline="true" className="mb-2">
-              <Label for="dateOfWork">Date</Label>
-              <Input
-                className="responsive-font-size"
-                type="date"
-                name="dateOfWork"
-                id="dateOfWork"
-                value={dateContent}
-                onChange={handleDateContentChange}
-              />
-              {'dateOfWork' in errors && (
-                <div className="text-danger">
-                  <small>{errors.dateOfWork}</small>
-                </div>
-              )}
-            </div>
-
-            <div inline="true" className="mb-2">
-              <Label for="timeOfWork">Time</Label>
-              <Input
-                className="responsive-font-size"
-                type="time"
-                name="timeOfWork"
-                id="timeOfWork"
-                value={timeContent}
-                onChange={e => setTimeContent(e.target.value)}
-              />
-              {'timeOfWork' in errors && (
-                <div className="text-danger">
-                  <small>{errors.timeOfWork}</small>
-                </div>
-              )}
-            </div>
-
-            {/* Repeat Annually */}
-            <div style={{ marginTop: '15px' }}>
-              <input
-                type="checkbox"
-                id="repeat-annually"
-                checked={repeatAnnually}
-                onChange={() => setRepeatAnnually(!repeatAnnually)}
-              />
-              <label htmlFor="repeat-annually" style={{ marginLeft: '8px' }}>
-                Repeat Annually
-              </label>
-            </div>
-
-            {repeatAnnually && (
-              <div style={{ marginTop: '10px' }}>
-                <Label for="numYears">Number of Years</Label>
-                <Input
-                  type="number"
-                  id="numYears"
-                  value={numYears}
-                  min={1}
-                  max={15}
-                  onChange={e => setNumYears(parseInt(e.target.value))}
-                />
-              </div>
-            )}
-          <div style={{ marginBottom: '1.5rem' }}>
-          <Editor
-            tinymceScriptSrc="/tinymce/tinymce.min.js"
-            value={postContent}
-            init={{
-              height: 300,
-              menubar: true,
-              plugins: [
-                'advlist autolink lists link image charmap print preview anchor',
-                'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount'
-              ],
-              toolbar:
-                'undo redo | formatselect | bold italic backcolor | \
-                alignleft aligncenter alignright alignjustify | \
-                bullist numlist outdent indent | removeformat | help | image',
-              image_title: true,
-              automatic_uploads: true,
-              file_picker_types: 'image',
-              file_picker_callback: (cb, value, meta) => {
-                if (meta.filetype === 'image') {
-                  const input = document.createElement('input');
-                  input.setAttribute('type', 'file');
-                  input.setAttribute('accept', 'image/*');
-                  input.onchange = function () {
-                    const file = this.files[0];
-                    const reader = new FileReader();
-                    reader.onload = function () {
-                      const base64 = reader.result; // Base64 string
-                      cb(base64, { title: file.name });
-                    };
-                    reader.readAsDataURL(file);
-                  };
-                  input.click();
-                }
-              }
-            }}
-            onEditorChange={(content) => setPostContent(content)}
-          /> </div>
-
-
-          <button
+          {/* Schedule Post Dropdown / Form */}
+          {!showDropdown ? (
+            <button
               className="send-button mr-1 ml-1"
-              onClick={handleSubmit}
+              onClick={handleScheduleClick}
               style={darkMode ? boxStyleDark : boxStyle}
             >
-              Confirm Schedule
-          </button>
+              Schedule Post
+            </button>
+          ) : (
             <div style={{ marginTop: '15px' }}>
-              <button
-                className="cancel-button"
-                onClick={cancelSchedule}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#f0f0f0',
-                  color: '#333',
-                  border: '1px solid #ccc',
-                  borderRadius: '6px',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  fontWeight: 'bold',
-                  marginRight: '8px',
-                }}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
+              <label className="d-block">
+                <h3>Schedule Post for Social Media</h3>
+              </label>
 
-         <div className="container mx-auto p-4">
+              <label className="d-block">
+                <strong>Select Multiple Platform(s):</strong>
+              </label>
+
+              <div>
+                {/* Loop through platforms */}
+                {platforms.map(({ label, value }) => (
+                  <div key={value} style={{ margin: '5px 0' }}>
+                    <input
+                      type="checkbox"
+                      id={`platform-${value}`}
+                      value={value}
+                      checked={scheduleSelectedPlatforms.includes(value)}
+                      onChange={e => {
+                        const { value, checked } = e.target;
+                        if (checked) {
+                          setscheduleSelectedPlatforms(prev => [...prev, value]);
+                        } else {
+                          setscheduleSelectedPlatforms(prev => prev.filter(p => p !== value));
+                        }
+                      }}
+                    />
+                    <label htmlFor={`platform-${value}`} style={{ marginLeft: '8px' }}>
+                      {label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+
+              {/* Date and Time */}
+              <div inline="true" className="mb-2">
+                <Label for="dateOfWork">Date</Label>
+                <Input
+                  className="responsive-font-size"
+                  type="date"
+                  name="dateOfWork"
+                  id="dateOfWork"
+                  value={dateContent}
+                  onChange={handleDateContentChange}
+                />
+                {'dateOfWork' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.dateOfWork}</small>
+                  </div>
+                )}
+              </div>
+
+              <div inline="true" className="mb-2">
+                <Label for="timeOfWork">Time</Label>
+                <Input
+                  className="responsive-font-size"
+                  type="time"
+                  name="timeOfWork"
+                  id="timeOfWork"
+                  value={timeContent}
+                  onChange={e => setTimeContent(e.target.value)}
+                />
+                {'timeOfWork' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.timeOfWork}</small>
+                  </div>
+                )}
+              </div>
+
+              {/* Repeat Annually */}
+              <div style={{ marginTop: '15px' }}>
+                <input
+                  type="checkbox"
+                  id="repeat-annually"
+                  checked={repeatAnnually}
+                  onChange={() => setRepeatAnnually(!repeatAnnually)}
+                />
+                <label htmlFor="repeat-annually" style={{ marginLeft: '8px' }}>
+                  Repeat Annually
+                </label>
+              </div>
+
+              {repeatAnnually && (
+                <div style={{ marginTop: '10px' }}>
+                  <Label for="numYears">Number of Years</Label>
+                  <Input
+                    type="number"
+                    id="numYears"
+                    value={numYears}
+                    min={1}
+                    max={15}
+                    onChange={e => setNumYears(parseInt(e.target.value))}
+                  />
+                </div>
+              )}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <Editor
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  value={postContent}
+                  init={{
+                    height: 300,
+                    menubar: true,
+                    plugins: [
+                      'advlist autolink lists link image charmap print preview anchor',
+                      'searchreplace visualblocks code fullscreen',
+                      'insertdatetime media table paste code help wordcount',
+                    ],
+                    toolbar:
+                      'undo redo | formatselect | bold italic backcolor | \
+                alignleft aligncenter alignright alignjustify | \
+                bullist numlist outdent indent | removeformat | help | image',
+                    image_title: true,
+                    automatic_uploads: true,
+                    file_picker_types: 'image',
+                    file_picker_callback: (cb, value, meta) => {
+                      if (meta.filetype === 'image') {
+                        const input = document.createElement('input');
+                        input.setAttribute('type', 'file');
+                        input.setAttribute('accept', 'image/*');
+                        input.onchange = function() {
+                          const file = this.files[0];
+                          const reader = new FileReader();
+                          reader.onload = function() {
+                            const base64 = reader.result; // Base64 string
+                            cb(base64, { title: file.name });
+                          };
+                          reader.readAsDataURL(file);
+                        };
+                        input.click();
+                      }
+                    },
+                  }}
+                  onEditorChange={content => setPostContent(content)}
+                />{' '}
+              </div>
+
+              <button
+                className="send-button mr-1 ml-1"
+                onClick={handleSubmit}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Confirm Schedule
+              </button>
+              <div style={{ marginTop: '15px' }}>
+                <button
+                  className="cancel-button"
+                  onClick={cancelSchedule}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#f0f0f0',
+                    color: '#333',
+                    border: '1px solid #ccc',
+                    borderRadius: '6px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    fontWeight: 'bold',
+                    marginRight: '8px',
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="container mx-auto p-4">
             {/* Title */}
             <h1 className="text-2xl font-bold text-center mb-6">Scheduled Social Media Posts</h1>
 
@@ -720,14 +711,13 @@ export default function SocialMediaComposer({ platform }) {
             </ul>
           </div>
 
-        {/* Example Scheduled Posts List */}
-        <ul style={{ marginTop: '1rem' }}>
-          <li>Aug 5 at 3:00 PM — “New product alert!”</li>
-          <li>Aug 12 at 12:00 PM — “Weekly roundup”</li>
-        </ul>
-      </div>
-    )}
-
+          {/* Example Scheduled Posts List */}
+          <ul style={{ marginTop: '1rem' }}>
+            <li>Aug 5 at 3:00 PM — “New product alert!”</li>
+            <li>Aug 12 at 12:00 PM — “Weekly roundup”</li>
+          </ul>
+        </div>
+      )}
 
       {activeSubTab === 'history' && (
         <div>
