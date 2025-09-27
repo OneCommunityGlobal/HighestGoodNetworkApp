@@ -6,7 +6,7 @@ import hasPermission from '../../../utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
 import Switch from './Switch';
-import './TeamsAndProjects.css';
+
 import './UserTeamsTable.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
@@ -137,6 +137,7 @@ const UserTeamsTable = props => {
 
       isUpdate ? toast.info('Team updated successfully') : setIsOpenModalTeamMember(true);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };

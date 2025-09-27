@@ -20,7 +20,7 @@ import {
   Spinner,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
-import { MultiSelect } from 'react-multi-select-component';
+import Select, { components } from 'react-select';
 import moment from 'moment';
 import { boxStyle, boxStyleDark } from '~/styles';
 import 'moment-timezone';
@@ -61,7 +61,7 @@ import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
 import SaveFilterModal from './SaveFilterModal';
 import styles from './WeeklySummariesReport.module.css';
-import Select, { components } from 'react-select';
+// import Select, { components } from 'react-select';
 import { SlideToggle } from './components';
 import cn from 'classnames';
 
@@ -180,6 +180,57 @@ const intialPermissionState = {
   codeEditPermission: false,
   canSeeBioHighlight: false,
 };
+
+const CheckboxOption = props => {
+  return (
+    <components.Option {...props}>
+      <input
+        type="checkbox"
+        checked={props.isSelected}
+        onChange={() => null} // react-select handles selection internally
+        style={{ marginRight: 8 }}
+      />
+      <label style={{ fontWeight: 'bold' }}>{props.label}</label>
+    </components.Option>
+  );
+};
+
+// Custom MenuList with "Select All / Deselect All" header
+const CustomMenuList = props => {
+  const { children, selectProps } = props;
+  const allSelected = (selectProps.value?.length || 0) === (selectProps.options?.length || 0);
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      selectProps.onChange([]);
+    } else {
+      selectProps.onChange(selectProps.options);
+    }
+  };
+
+  return (
+    <components.MenuList {...props}>
+      <div
+        style={{
+          padding: '6px 10px',
+          borderBottom: '1px solid #ccc',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={allSelected}
+          onChange={toggleSelectAll}
+          style={{ marginRight: 8 }}
+        />
+        <label style={{ fontWeight: 'bold' }}>{allSelected ? 'Deselect All' : 'Select All'}</label>
+      </div>
+      {children}
+    </components.MenuList>
+  );
+};
+
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
   const { loading, infoCollections, getInfoCollections } = props;
@@ -2106,10 +2157,12 @@ const WeeklySummariesReport = props => {
 
           {/* MultiSelect with Save/Delete Buttons */}
           <div style={{ position: 'relative' }}>
-            <MultiSelect
-              className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
-                state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-              }`}
+            <Select
+              isMulti
+              isSearchable
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              blurInputOnSelect={false}
               options={state.teamCodes.map(item => {
                 const [code, count] = item.label.split(' (');
                 return {
@@ -2119,7 +2172,27 @@ const WeeklySummariesReport = props => {
               })}
               value={state.selectedCodes}
               onChange={handleSelectCodeChange}
-              labelledBy="Select"
+              components={{
+                Option: CheckboxOption,
+                MenuList: CustomMenuList,
+              }}
+              placeholder="Search and select team codes..."
+              classNamePrefix="custom-select"
+              className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
+                state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+              }`}
+              styles={{
+                menuList: base => ({
+                  ...base,
+                  maxHeight: '700px',
+                  overflowY: 'auto',
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  fontSize: '13px',
+                  backgroundColor: state.isFocused ? '#eee' : 'white',
+                }),
+              }}
             />
 
             {/* Save/Delete Buttons - only visible when codes are selected */}
@@ -2149,11 +2222,34 @@ const WeeklySummariesReport = props => {
         </Col>
 
         <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
-          <MultiSelect
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+          <Select
+            isMulti
+            isSearchable
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
             options={state.colorOptions}
             value={state.selectedColors}
             onChange={handleSelectColorChange}
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
+            placeholder="Select color filters..."
+            classNamePrefix="custom-select"
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              menuList: base => ({
+                ...base,
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }),
+              option: (base, state) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: state.isFocused ? '#eee' : 'white',
+              }),
+            }}
           />
         </Col>
       </Row>
@@ -2243,24 +2339,30 @@ const WeeklySummariesReport = props => {
               </>
             )}
             {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
+              <div
+                className={`${styles.filterStyle} ${styles.marginRight}`}
+                style={{ minWidth: 'max-content' }}
+              >
                 <span>Filter by Bio Status</span>
-                <div className={`${styles.switchToggleControl}`}>
+                <div className={styles.switchToggleControl}>
                   <input
                     type="checkbox"
-                    className={`${styles.switchToggle}`}
+                    className={styles.switchToggle}
                     id="bio-status-toggle"
                     onChange={handleBioStatusToggleChange}
                   />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="bio-status-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
+                  <label className={styles.switchToggleLabel} htmlFor="bio-status-toggle">
+                    <span className={styles.switchToggleInner} />
+                    <span className={styles.switchToggleSwitch} />
                   </label>
                 </div>
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
+              <div
+                className={`${styles.filterStyle} ${styles.marginRight}`}
+                style={{ minWidth: 'max-content' }}
+              >
                 <span>Filter by Trophies</span>
                 <div className={`${styles.switchToggleControl}`}>
                   <input
@@ -2277,7 +2379,7 @@ const WeeklySummariesReport = props => {
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle}`}>
+              <div className={`${styles.filterStyle}`} style={{ minWidth: 'max-content' }}>
                 <span>Filter by Over Hours</span>
                 <div className={`${styles.switchToggleControl}`}>
                   <input

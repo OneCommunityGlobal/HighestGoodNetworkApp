@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -16,6 +17,7 @@ function MostFrequentKeywords() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const fetchProjects = async () => {
     try {
@@ -201,7 +203,7 @@ function MostFrequentKeywords() {
   }, [tags]);
 
   return (
-    <div className={styles.mfkContainer}>
+    <div className={`${styles.mfkContainer} ${darkMode ? 'darkMode' : ''}`}>
       <h3 className={styles.mfkTitle}>📊 Most Frequent Keywords</h3>
       <div className={styles.mfkControls}>
         <div>
@@ -211,6 +213,7 @@ function MostFrequentKeywords() {
           <Select
             inputId="project-select"
             className={styles.mfkSelect}
+            classNamePrefix="project-select"
             options={projects.map(p => ({
               label: p.projectName,
               value: p._id,
