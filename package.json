@@ -126,7 +126,7 @@
     "postinstall": "node ./postinstall.js",
     "start": "vite",
     "build": "vite build",
-    "test": "cross-env CI=true vitest",
+    "test": "cross-env CI=true vitest --coverage --config vitest.config.js",
     "test:watch": "vitest --reporter=verbose",
     "test:coverage": "cross-env CI=true vitest --coverage --reporter=verbose",
     "test:changed": "vitest --changed origin/development --reporter=verbose",
@@ -135,7 +135,7 @@
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
     "prepare": "husky install",
     "test:coverage:watch": "react-scripts test --coverage",
-    "test:ci": "cross-env CI=true vitest --coverage"
+    "test:ci": "cross-env CI=true vitest --coverage --config vitest.config.js"
   },
   "browserslist": [
     ">0.2%",

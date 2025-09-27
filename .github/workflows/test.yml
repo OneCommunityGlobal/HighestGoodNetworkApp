@@ -52,32 +52,4 @@ jobs:
         env:
         CI: true
 
-      - name: Print Coverage Summary
-        if: always()
-        run: |
-          echo "📊 Frontend Coverage Report (60% Required):"
-          if [ -f coverage/coverage-summary.json ]; then
-            node -e "
-              const coverage = require('./coverage/coverage-summary.json');
-              const { lines, statements, functions, branches } = coverage.total;
-              
-              console.log('📈 CURRENT COVERAGE:');
-              console.log(\`📄 Lines: \${lines.pct}% \${lines.pct >= 60 ? '✅ PASS' : '❌ FAIL'}\`);
-              console.log(\`📝 Statements: \${statements.pct}% \${statements.pct >= 60 ? '✅ PASS' : '❌ FAIL'}\`);
-              console.log(\`🔧 Functions: \${functions.pct}% \${functions.pct >= 60 ? '✅ PASS' : '❌ FAIL'}\`);
-              console.log(\`🌿 Branches: \${branches.pct}% \${branches.pct >= 60 ? '✅ PASS' : '❌ FAIL'}\`);
-              
-              const allPass = [lines, statements, functions, branches].every(metric => metric.pct >= 60);
-              console.log('================================');
-              console.log(\`🎯 RESULT: \${allPass ? '✅ ALL REQUIREMENTS MET' : '❌ COVERAGE REQUIREMENTS FAILED'}\`);
-              console.log('================================');
-              
-              if (!allPass) {
-                console.log('\\n❌ COVERAGE TOO LOW - PR CANNOT BE MERGED');
-                process.exit(1);
-              }
-            "
-          else
-            echo "❌ No coverage report found"
-            exit 1
-          fi
+      
