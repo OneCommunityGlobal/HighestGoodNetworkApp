@@ -45,7 +45,7 @@ const Member = props => {
             }
             style={darkMode ? {} : boxStyle}
           >
-            <i className="fa fa-minus" aria-hidden="true"></i>
+            <i className="fa fa-minus" aria-hidden="true" />
           </button>
         </td>
       </tr>

@@ -3,6 +3,7 @@ import { normalizeVolunteerStats } from '~/utils/totalOrgSummary';
 import Loading from '~/components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
 import styles from '../TotalOrgSummary.module.css';
+
 function VolunteerStatus({ isLoading, volunteerNumberStats, totalHoursWorked, comparisonType }) {
   const statsTabs = useMemo(() => normalizeVolunteerStats(volunteerNumberStats, totalHoursWorked), [
     volunteerNumberStats,

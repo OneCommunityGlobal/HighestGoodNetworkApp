@@ -1,5 +1,3 @@
-import { fetchTeamMembersTask } from '~/actions/task';
-import { fetchTeamMembersTaskSuccess } from '~/components/TeamMemberTasks/actions';
 import axios from 'axios';
 import { ApiEndpoint } from '~/utils/URL';
 
@@ -33,12 +31,12 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
       });
       return { ...state, usersWithTimeEntries: updatedTimeEntries };
     }
-    case 'UPDATE_TEAM_MEMBERS_TASK_TIME':
+    case 'UPDATE_TEAM_MEMBERS_TASK_TIME': {
       const { usersWithTasks } = state;
       const { newTime, taskId, personId } = action.payload;
       const updatedusersWithTasks = usersWithTasks.map((user, index) => {
         if (user.personId === personId) {
-          let newTotalTime = Number(newTime.hours) + Number(newTime.minutes) / 60;
+          const newTotalTime = Number(newTime.hours) + Number(newTime.minutes) / 60;
           user.totaltangibletime_hrs += newTotalTime;
           user.totaltime_hrs += newTotalTime;
           if (taskId) {
@@ -53,7 +51,9 @@ export const teamMemberTasksReducer = (state = initialState, action) => {
         }
         return user;
       });
+
       return { ...state, usersWithTasks: updatedusersWithTasks };
+    }
     case 'DELETE_TASK_NOTIFICATION_SUCCESS':
       return {
         ...state,

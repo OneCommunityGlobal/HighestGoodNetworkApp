@@ -1,5 +1,6 @@
 import { vi } from 'vitest';
 import React from 'react';
+
 vi.mock('react-leaflet', () => ({
   __esModule: true,
   MapContainer: () => null,

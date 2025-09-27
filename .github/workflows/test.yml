@@ -30,3 +30,26 @@ jobs:
         with:
           name: test-results
           path: test-results # Adjust the path to your test results if necessary
+
+      - name: Frontend Tests with 60% Coverage
+        runs-on: ubuntu-latest
+        needs: lint  # Only run if lint passes
+        steps:
+          - name: Checkout repository
+            uses: actions/checkout@v4
+
+      - name: Set up Node.js & cache Yarn
+        uses: actions/setup-node@v4
+        with:
+        node-version: 20
+        cache: yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests with coverage enforcement
+        run: yarn test:ci
+        env:
+        CI: true
+
+      

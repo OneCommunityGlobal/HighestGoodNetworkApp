@@ -82,7 +82,7 @@ export function Dashboard(props) {
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
       <Row className="w-100 ml-1">
-        <Col lg={7}></Col>
+        <Col lg={7} />
         <Col lg={5}>
           <div className="row justify-content-center">
             <div

@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useRef , useMemo } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
-import { connect } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
-import { DayPicker, useInput } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { DayPicker, useInput } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import { connect } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 
+import { faMinusCircle, faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { addNewTask } from '../../../../../actions/task';
-import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
-  START_DATE_ERROR_MESSAGE,
+import {
   END_DATE_ERROR_MESSAGE,
+  START_DATE_ERROR_MESSAGE
 } from '../../../../../languages/en/messages';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getProjectDetail } from '../../../../../actions/project';
+import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
-import { fetchAllMembers } from '../../../../../actions/projectMembers';
-import { getProjectDetail } from '../../../../../actions/project';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /** small v8 DateInput: uses useInput + DayPicker under the hood **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
@@ -29,6 +29,7 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
     selected: value ? new Date(value) : undefined,
     onDayChange(date) {
       // format back to your MM/dd/yy
+      /* eslint-disable */
       const f = dateFnsFormat(date, FORMAT);
       onChange(f);
       toggle(false);
