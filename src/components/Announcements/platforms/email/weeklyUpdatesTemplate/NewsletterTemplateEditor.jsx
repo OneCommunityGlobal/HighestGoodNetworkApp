@@ -74,7 +74,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
       videoUrl: url,
       videoThumbnailUrl: videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '',
       videoLinkText: url
-        ? `<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Click here for the video on this topic: <a href="${url}" style="color: #0066cc; text-decoration: underline;">${url}</a></p>`
+        ? `<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Click here for the video on this topic: <a href="${url}" target="_blank" rel="noopener noreferrer" style="color: #0066cc; text-decoration: underline;">${url}</a></p>`
         : '',
     }));
   };
@@ -280,6 +280,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     setIsSending(true);
     const htmlContent = generatePreviewHtml();
     await onSendEmails(emailList, {
+      subject: templateData.subject,
       htmlContent: htmlContent,
     });
     setIsSending(false);
@@ -294,6 +295,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     setIsBroadcasting(true);
     const htmlContent = generatePreviewHtml();
     await onBroadcastEmails({
+      subject: templateData.subject,
       htmlContent: htmlContent,
     });
     setIsBroadcasting(false);
@@ -316,7 +318,8 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     branding: false,
     content_style: `body, p, div, span, * { 
       cursor: text !important; 
-      color: ${darkMode ? '#ffffff' : '#000000'}; 
+      color: ${darkMode ? '#ffffff' : '#000000'} !important; 
+      background-color: ${darkMode ? '#2d2d2d' : '#ffffff'} !important;
       font-family: Arial, Helvetica, sans-serif !important; 
       font-size: 12pt !important; 
       line-height: 1.5 !important; 
@@ -328,6 +331,8 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
       editor.on('init', function() {
         editor.getBody().style.fontSize = '12pt';
         editor.getBody().style.fontFamily = 'Arial, Helvetica, sans-serif';
+        editor.getBody().style.color = darkMode ? '#ffffff' : '#000000';
+        editor.getBody().style.backgroundColor = darkMode ? '#2d2d2d' : '#ffffff';
       });
     },
     skin: darkMode ? 'oxide-dark' : 'oxide',
@@ -555,6 +560,16 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
                   className={`update-number-input ${
                     validationErrors.updateNumber ? 'is-invalid' : ''
                   }`}
+                />
+              </FormGroup>
+
+              <FormGroup>
+                <Label>Email Subject *</Label>
+                <Input
+                  type="text"
+                  value={templateData.subject}
+                  onChange={e => handleFieldChange('subject', e.target.value)}
+                  placeholder="Enter email subject"
                 />
               </FormGroup>
 

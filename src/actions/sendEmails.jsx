@@ -14,7 +14,7 @@ export const sendEmail = (
 ) => {
   const url = ENDPOINTS.POST_EMAILS;
 
-  return async () => {
+  return async dispatch => {
     try {
       const response = await axios.post(url, { to, subject, html, fromName, fromEmail });
 
@@ -24,8 +24,6 @@ export const sendEmail = (
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     } catch (error) {
-      toast.error('Error sending email:', error);
-
       // Display an error toast
       toast.error('Error sending email', {
         position: 'top-right', // You can adjust the position as needed
@@ -43,21 +41,19 @@ export const broadcastEmailsToAll = (
 ) => {
   const url = ENDPOINTS.BROADCAST_EMAILS;
 
-  return async () => {
+  return async dispatch => {
     try {
       const response = await axios.post(url, { subject, html, fromName, fromEmail });
 
       // Display a success toast
       toast.success('Email successfully sent', {
-        position: 'top-center', // You can adjust the position as needed
+        position: 'top-right', // You can adjust the position as needed
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     } catch (error) {
-      toast.error('Error sending email:', error);
-
       // Display an error toast
       toast.error('Error sending email', {
-        position: 'top-center', // You can adjust the position as needed
+        position: 'top-right', // You can adjust the position as needed
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     }

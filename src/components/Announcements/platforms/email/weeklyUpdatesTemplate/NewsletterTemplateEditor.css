@@ -1294,6 +1294,25 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   min-height: 100%;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+}
+
+.email-preview * {
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+.email-preview p {
+  font-size: 12pt !important;
+  line-height: 1.5 !important;
+  margin: 0 0 16px 0 !important;
+}
+
+.email-preview h1, .email-preview h2, .email-preview h3 {
+  font-size: 14pt !important;
+  line-height: 1.4 !important;
+  margin: 0 0 12px 0 !important;
 }
 
 .email-composer.dark-mode .email-preview {

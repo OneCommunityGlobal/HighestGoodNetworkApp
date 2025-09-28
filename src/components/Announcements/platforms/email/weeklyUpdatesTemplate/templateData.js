@@ -12,6 +12,7 @@ const getBaseUrl = () => {
 
 export const defaultTemplateData = {
   updateNumber: '',
+  subject: 'One Community Weekly Progress Update',
   headerImageUrl:
     'https://mcusercontent.com/1b1ba36facf96dc45b6697f82/images/931ce505-118d-19f7-c9ea-81d8e5e59613.png',
   thankYouMessage:
@@ -25,11 +26,9 @@ export const defaultTemplateData = {
   donationMessage:
     '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Love what we\'re doing and want to help? Click <a href="https://onecommunityglobal.org/contribute-join-partner/" target="_blank" rel="noopener noreferrer" style="color: #0066cc; text-decoration: underline;">here</a> to learn what we\'re currently raising money for and to donate. Even $5 dollars helps!</p>',
   footerContent:
-    '<p style="text-align: center;"><em>In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.<br /><br />~ Buckminster Fuller ~</em></p><p style="text-align: center;"><strong style="color: inherit;">Our Mailing Address is:</strong><br />One Community Inc.<br />8954 Camino Real<br />San Gabriel, CA 91775-1932</p><p style="text-align: center;">Want to change how you receive these emails?<br />You can <a href="' +
+    '<p style="text-align: center;"><em>In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.<br /><br />~ Buckminster Fuller ~</em></p><p style="text-align: center;"><strong style="color: inherit;">Our Mailing Address is:</strong><br />One Community Inc.<br />8954 Camino Real<br />San Gabriel, CA 91775-1932</p><p style="text-align: center;">Want to stop receiving these emails?<br /><a href="' +
     getBaseUrl() +
-    '/subscribe" style="color: #0066cc; text-decoration: underline;">subscribe</a> or <a href="' +
-    getBaseUrl() +
-    '/unsubscribe" style="color: #0066cc; text-decoration: underline;">unsubscribe</a> from this list.</p>',
+    '/unsubscribe" target="_blank" rel="noopener noreferrer" style="color: #0066cc; text-decoration: underline;">Unsubscribe</a> from this list.</p>',
   socialLinks: [
     {
       name: 'Website',
@@ -84,19 +83,18 @@ export const defaultTemplateData = {
 
 // Default reset values for various sections
 export const defaultResetValues = {
+  subject: 'One Community Weekly Progress Update',
   thankYouMessage:
-    '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Thank you for following One Community\'s progress, here is the link to our weekly progress report with our update video and recent progress related imagery, links, and other details: <a href="https://onecommunityglobal.org/open-source-utopia-models" style="color: #0066cc; text-decoration: underline;">https://onecommunityglobal.org/open-source-utopia-models</a></p>',
+    '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Thank you for following One Community\'s progress, here is the link to our weekly progress report with our update video and recent progress related imagery, links, and other details: <a href="https://onecommunityglobal.org/open-source-utopia-models" target="_blank" rel="noopener noreferrer" style="color: #0066cc; text-decoration: underline;">https://onecommunityglobal.org/open-source-utopia-models</a></p>',
   missionMessage:
     '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;"></p>',
   videoLinkText: '',
   donationMessage:
     '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Love what we\'re doing and want to help? Click <a href="https://onecommunityglobal.org/contribute-join-partner/" target="_blank" rel="noopener noreferrer" style="color: #0066cc; text-decoration: underline;">here</a> to learn what we\'re currently raising money for and to donate. Even $5 dollars helps!</p>',
   footerContent:
-    '<p style="text-align: center;"><em>In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.<br /><br />~ Buckminster Fuller ~</em></p><p style="text-align: center;"><strong style="color: inherit;">Our Mailing Address is:</strong><br />One Community Inc.<br />8954 Camino Real<br />San Gabriel, CA 91775-1932</p><p style="text-align: center;">Want to change how you receive these emails?<br />You can <a href="' +
+    '<p style="text-align: center;"><em>In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.<br /><br />~ Buckminster Fuller ~</em></p><p style="text-align: center;"><strong style="color: inherit;">Our Mailing Address is:</strong><br />One Community Inc.<br />8954 Camino Real<br />San Gabriel, CA 91775-1932</p><p style="text-align: center;">Want to stop receiving these emails?<br /><a href="' +
     getBaseUrl() +
-    '/subscribe" style="color: #0066cc; text-decoration: underline;">subscribe</a> or <a href="' +
-    getBaseUrl() +
-    '/unsubscribe" style="color: #0066cc; text-decoration: underline;">unsubscribe</a> from this list.</p>',
+    '/unsubscribe" target="_blank" rel="noopener noreferrer" style="color: #0066cc; text-decoration: underline;">Unsubscribe</a> from this list.</p>',
   socialLinks: [
     {
       name: 'Website',
@@ -154,7 +152,7 @@ export const getTemplateDataWithDefaults = templateData => {
   return {
     ...defaultTemplateData,
     ...templateData,
-    updateNumber: templateData.updateNumber || '651',
+    updateNumber: templateData.updateNumber || '',
     newsletterTitle: `One Community Weekly Progress Update #${templateData.updateNumber || ''}`,
   };
 };
