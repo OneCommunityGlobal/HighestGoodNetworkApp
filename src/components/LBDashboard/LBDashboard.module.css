@@ -5,11 +5,9 @@ body {
   padding: 0;
 }
 
-
-
 .dashboardContainer {
-  padding: 16px 20px 48px;
   background: #faf9fb;
+  margin: 0;
 }
 
 .dashboardHeader {
@@ -19,10 +17,29 @@ body {
   margin-bottom: 10px;
 }
 
+.chartRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.chartCol {
+  flex: 1 1 350px;
+  min-width: 350px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .title {
   font-size: 26px;
   font-weight: 700;
   margin: 0;
+  color: #000;
+}
+
+.darkMode .title {
+  color: #e1e1e1;
 }
 
 .backBtn {
@@ -57,7 +74,6 @@ body {
   gap: 8px;
 }
 
-/* Purple buttons */
 .filterBtn {
   background: #6a4ff7 !important;
   border-color: #6a4ff7 !important;
@@ -78,14 +94,12 @@ body {
   box-shadow: none !important;
 }
 
-/* Active = black pill */
 .active {
   background: #000 !important;
   border-color: #000 !important;
   color: #fff !important;
 }
 
-/* Dropdown caret button same purple/black treatment */
 .dd :global(.dropdown-toggle) {
   background: #6a4ff7 !important;
   border-color: #6a4ff7 !important;
@@ -101,10 +115,6 @@ body {
 }
 
 
-
-
-
-/* Dropdown menu + items */
 .dropdownMenu {
   border-radius: 10px;
   padding: 4px 0;
@@ -142,7 +152,6 @@ body {
   padding: 10px 6px;
 }
 
-/* caret */
 .sectionSummary::before {
   content: '▾';
   font-size: 18px;
@@ -216,11 +225,8 @@ body {
   color: #999;
 }
 
-/* Existing styles... */
-
-/* Dark Mode Styles */
 .darkMode {
-  background: #121212;
+  background: #1B2A41;
   color: #e1e1e1;
 }
 
@@ -229,33 +235,42 @@ body {
 }
 
 .darkBackBtn {
-  background: #6a4ff7;
+  background: #225163;
   color: #fff;
+  box-shadow: 0 2px 8px #1C2541;
 }
 
 .darkFilterBar {
-  background: #1f1f1f;
-  border-color: #333;
+  background: #1C2541;
+  border-color: #3A506B;
   color: #e1e1e1;
+  box-shadow: 0 2px 8px #1C1C1C;
 }
 
 .darkFilterBtn {
-  background: #6a4ff7 !important;
-  border-color: #593dd8 !important;
+  background: #3A506B !important;
+  border-color: #3A506B !important;
+  color: #fff !important;
+}
+
+.active.darkFilterBtn {
+  background: #225163 !important;
+  border-color: #225163 !important;
 }
 
 .darkDropdown {
-  background: #2d2d2d;
-  border-color: #333;
+  background: #1C2541;
+  border-color: #3A506B;
+  color: #e1e1e1;
 }
 
 .darkDropdownItem {
   color: #e1e1e1;
+  background: #1C2541;
 }
 
 .darkDropdownItem:hover {
-  background: #3a3a3a;
-  color: #69b1ff;
+  background: #3A506B;
 }
 
 .darkText {
@@ -266,18 +281,17 @@ body {
   color: #e1e1e1;
 }
 
-.darkSectionSummary {
-  color: #e1e1e1;
-}
 
 .darkSectionBody {
-  background: #1f1f1f;
-  border-color: #333;
+  background: #1C2541;
+  border-color: #3A506B;
+  box-shadow: 0 2px 8px #1C1C1C;
 }
 
 .darkCard {
-  background: #1f1f1f;
-  border-color: #333;
+  background: #1C2541;
+  border-color: #3A506B;
+  box-shadow: 0 4px 16px #1C1C1C;
 }
 
 .darkCardBody {
@@ -285,6 +299,21 @@ body {
 }
 
 .darkPlaceholder {
-  border-color: #444;
-  color: #888;
+  border-color: #6C757D;
+  color: #6C757D;
+  background: #1C1C1C;
+}
+
+.darkChartCard {
+  background: #1C2541;
+  border-color: #3A506B;
+  box-shadow: 0 4px 16px #1C1C1C;
+}
+
+.darkChartTitle {
+  color: #FFD93D !important;
+}
+
+.chartCard, .darkChartCard {
+  box-shadow: 0 4px 16px rgba(28, 37, 65, 0.25);
 }

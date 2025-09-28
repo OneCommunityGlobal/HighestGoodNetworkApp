@@ -1,9 +1,28 @@
 import React from 'react';
-import { Line } from '@ant-design/charts';
-import { Card, Typography } from 'antd';
+import { Line } from 'react-chartjs-2';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from './DemandOverTime.module.css';
+import {
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Legend,
+  Tooltip,
+  Title as ChartTitle,
+} from 'chart.js';
 
-const { Title } = Typography;
+ChartJS.register(
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  Legend,
+  Tooltip,
+  ChartTitle,
+  ChartDataLabels,
+);
 
 const metricLabels = {
   pageVisits: 'Page Visits',
@@ -25,76 +44,116 @@ const metricCategories = {
   averageDuration: 'Vacancy',
 };
 
-const PropertyDemandChart = ({ data, metric, dateRange, chartLabel }) => {
-  // Process data for the chart
-  const processedData = [];
-
-  data.forEach(property => {
-    property.data.forEach(point => {
-      processedData.push({
-        date: point.date,
-        value: point.value,
-        property: property.name,
-      });
-    });
+function getPropertyColors(properties) {
+  const colors = [
+    '#FF6B6B',
+    '#4ECDC4',
+    '#FFD93D',
+    '#1A535C',
+    '#FF9F1C',
+    '#2EC4B6',
+    '#E71D36',
+    '#3A86FF',
+  ];
+  const colorMap = {};
+  let idx = 0;
+  properties.forEach(p => {
+    if (!colorMap[p]) {
+      colorMap[p] = colors[idx % colors.length];
+      idx++;
+    }
   });
+  return colorMap;
+}
 
-  const config = {
-    data: processedData,
-    xField: 'date',
-    yField: 'value',
-    seriesField: 'property',
-    smooth: true,
-    animation: {
-      appear: {
-        animation: 'path-in',
-        duration: 1000,
+const PropertyDemandChart = ({ data, metric, chartLabel, darkMode }) => {
+  const months = data.length > 0 ? data[0].data.map(d => d.month) : [];
+
+  const propertyNames = data.map(p => p.name);
+  const propertyColors = getPropertyColors(propertyNames);
+
+  const datasets = data.map(property => ({
+    label: property.name,
+    data: property.data.map(point => point.value),
+    borderColor: propertyColors[property.name],
+    backgroundColor: propertyColors[property.name],
+    fill: false,
+    tension: 0.4,
+    pointRadius: 5,
+    pointHoverRadius: 7,
+  }));
+
+  const chartData = {
+    labels: months,
+    datasets,
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { font: { size: 13 }, color: darkMode ? '#fff' : '#222' },
+      },
+      title: { display: false },
+      datalabels: {
+        color: darkMode ? '#fff' : '#333',
+        font: { weight: 'bold', size: 11 },
+        align: 'top',
+        anchor: 'end',
+        offset: 4,
+        clip: false,
+        display: 'auto',
+        formatter: value => value,
+      },
+      tooltip: {
+        enabled: true,
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: ${context.parsed.y}`;
+          },
+        },
       },
     },
-    point: {
-      size: 5,
-      shape: 'circle',
-      style: {
-        fill: 'white',
-        stroke: '#5B8FF9',
-        lineWidth: 2,
-      },
+    layout: {
+      padding: 20,
     },
-    label: {
-      style: {
-        fill: '#aaa',
+    scales: {
+      x: {
+        title: { display: true, text: 'Month', color: darkMode ? '#fff' : '#222' },
+        offset: true,
+        ticks: {
+          autoSkip: false,
+          maxRotation: 45,
+          minRotation: 30,
+          font: { size: 12 },
+          color: darkMode ? '#fff' : '#222',
+        },
       },
-      formatter: datum => {
-        return datum.value;
-      },
-    },
-    legend: {
-      position: 'top',
-    },
-    xAxis: {
-      title: {
-        text: 'Date',
-      },
-    },
-    yAxis: {
-      title: {
-        text: metricLabels[metric] || metric,
+      y: {
+        title: {
+          display: true,
+          text: metricLabels[metric] || metric,
+          color: darkMode ? '#fff' : '#222',
+        },
+        beginAtZero: true,
+        ticks: { font: { size: 12 }, color: darkMode ? '#fff' : '#222' },
       },
     },
   };
 
-  // Use the provided chart label or generate a default one
-  const chartTitle =
+  const chartTitleText =
     chartLabel ||
     `${metricCategories[metric] || 'Metric'}: ${metricLabels[metric] || metric} by Property`;
 
   return (
-    <Card className={styles.chartCard}>
-      <Title level={3}>{chartTitle}</Title>
-      <div className={styles.chart}>
-        <Line {...config} />
+    <div className={`${styles.chartCard} ${darkMode ? styles.darkChartCard : ''}`}>
+      <div className={darkMode ? styles.darkChartTitle : styles.chartTitle}>{chartTitleText}</div>
+      <div className={styles.chart} style={{ height: 350 }}>
+        <Line data={chartData} options={options} plugins={[ChartDataLabels]} />
       </div>
-    </Card>
+    </div>
   );
 };
 
