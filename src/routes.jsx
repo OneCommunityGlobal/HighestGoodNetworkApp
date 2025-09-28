@@ -110,6 +110,7 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import EventManagementTabs from './components/CommunityPortal/EventManagement/EventManagementTabs';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
@@ -712,6 +713,43 @@ export default (
           exact
           component={ResourceUsage}
         />
+
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/description"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/analysis"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/resources"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/engagement/comments"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid/engagement/feedback"
+          exact
+          component={EventManagementTabs}
+          fallback
+          routePermissions={RoutePermissions.userManagement}
+        />
+
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 

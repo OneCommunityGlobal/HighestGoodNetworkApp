@@ -1,0 +1,152 @@
+.feedback-container {
+  width: 50%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.feedback-container-dark {
+  /* padding: 20px; */
+  width: 50%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  background-color: #1B2A41;
+  color: white;
+}
+
+.feedback-title {
+  font-size: 20px;
+  color: black;
+  font-weight: bold;
+  text-align: left;
+}
+
+.feedback-title-dark {
+  padding-left: 20px;
+  padding-top: 20px;
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+  text-align: left;
+}
+
+.feedback-count {
+  font-size: 14px;
+  color: gray;
+}
+.feedback-count-dark {
+  font-size: 14px;
+  color: white;
+}
+
+.feedback-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  padding-left: 30px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='16' height='16' fill='gray'%3E%3Cpath d='M21 21l-4.35-4.35' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='10' cy='10' r='7' stroke='gray' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat 8px center;
+  background-size: 16px;
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sort-options {
+  margin-left: auto;
+}
+
+.filter-btn,
+.sort-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: gray;
+}
+
+.filet-dark {
+  color: white;
+}
+
+.time-schedule-btn {
+  background: #f8f1e8;
+  color: #c89f74;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.feedback-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  /* padding: 15px 0; */
+  border-bottom: 1px solid #eee;
+}
+.feedback-card-dark {
+  /* display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 15px 0;
+  background: #3A506B;
+  border-bottom: 1px solid #444; */
+  display: flex;
+  align-items: flex-start;
+  background: #3A506B;
+  /* padding: 10px; */
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.feedback-content {
+  flex: 1;
+}
+.feedback-text-dark {
+  color: white;
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.feedback-name {
+  font-weight: bold;
+}
+
+.feedback-date {
+  color: gray;
+  font-size: 12px;
+}
+
+.feedback-rating {
+  color: gold;
+  font-size: 16px;
+}
+
+.feedback-comment {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+}
