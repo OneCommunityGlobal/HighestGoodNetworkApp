@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import EmailPanel from './platforms/email';
+import EmailPanel from './platforms/email'; // ← new
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -47,10 +47,18 @@ function Announcements({ title, email: initialEmail }) {
     { id: 'medium', icon: faMedium, label: 'Medium' },
     { id: 'plurk', label: 'Plurk', customIconSrc: 'social-media-logos/plurk_icon.png' },
     { id: 'bitily', label: 'Bitily', customIconSrc: 'social-media-logos/bitily_icon.png' },
-    { id: 'livejournal', label: 'LiveJournal', customIconSrc: 'social-media-logos/liveJournal_icon.png' },
+    {
+      id: 'livejournal',
+      label: 'LiveJournal',
+      customIconSrc: 'social-media-logos/liveJournal_icon.png',
+    },
     { id: 'slashdot', label: 'Slashdot', customIconSrc: 'social-media-logos/slashdot_icon.png' },
     { id: 'blogger', label: 'Blogger', customIconSrc: 'social-media-logos/blogger_icon.png' },
-    { id: 'truthsocial', label: 'Truth Social', customIconSrc: 'social-media-logos/truthsocial_icon.png' },
+    {
+      id: 'truthsocial',
+      label: 'Truth Social',
+      customIconSrc: 'social-media-logos/truthsocial_icon.png',
+    },
   ];
 
   const columns = Math.ceil(tabs.length / 2);
