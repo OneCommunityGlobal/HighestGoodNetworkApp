@@ -15,6 +15,19 @@ const drawRoundedRect = (ctx, x, y, width, height, radius) => {
 
 const defaultFormatter = ({ value, percentage }) => [String(value), `(${percentage}%)`];
 
+const getMappedOption = (map, index, fallback) => {
+  if (map == null) {
+    return fallback;
+  }
+  if (Array.isArray(map)) {
+    return map[index] ?? fallback;
+  }
+  if (typeof map === 'object') {
+    return map[index] ?? fallback;
+  }
+  return fallback;
+};
+
 const externalLabelGuidesPlugin = {
   id: 'externalLabelGuides',
   afterDatasetsDraw(chart, args, pluginOpts = {}) {
@@ -43,6 +56,10 @@ const externalLabelGuidesPlugin = {
       lineHeight: 17,
       padding: { x: 10, y: 6 },
       guideBendRatio: 0.55,
+      horizontalSpread: 32,
+      sideMap: undefined,
+      horizontalSpreadMap: undefined,
+      verticalOffsetMap: undefined,
       total:
         pluginOpts.total ??
         dataset.data.reduce((acc, val) => acc + (typeof val === 'number' ? val : 0), 0),
@@ -80,7 +97,9 @@ const externalLabelGuidesPlugin = {
       const angle = (arc.startAngle + arc.endAngle) / 2;
       const { x, y, outerRadius } = arc;
 
-      const direction = Math.cos(angle) >= 0 ? 1 : -1;
+      let direction = getMappedOption(options.sideMap, index, Math.cos(angle) >= 0 ? 1 : -1);
+      direction = Math.sign(direction) || 1;
+      direction = Math.cos(angle) >= 0 ? Math.abs(direction) : -Math.abs(direction);
       const baseX = x + Math.cos(angle) * outerRadius;
       const baseY = y + Math.sin(angle) * outerRadius;
       const midX = x + Math.cos(angle) * (outerRadius + options.offset * options.guideBendRatio);
@@ -97,11 +116,18 @@ const externalLabelGuidesPlugin = {
       const boxWidth = textWidth + padding.x * 2;
       const boxHeight = textHeight + padding.y * 2;
 
-      let boxX = elbowX + direction * (padding.x + 4);
+      const horizontalSpread = getMappedOption(
+        options.horizontalSpreadMap,
+        index,
+        options.horizontalSpread,
+      );
+
+      let boxX = elbowX + direction * (padding.x + horizontalSpread);
       if (direction < 0) {
         boxX -= boxWidth;
       }
-      let boxY = elbowY - boxHeight / 2;
+      let boxY =
+        elbowY - boxHeight / 2 + (getMappedOption(options.verticalOffsetMap, index, 0) || 0);
 
       // Ensure box stays within chart area vertically
       const chartArea = chart.chartArea;

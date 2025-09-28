@@ -33,7 +33,11 @@ function VolunteerStatusPieChart({
         enabled: false,
       },
       externalLabelGuides: {
-        offset: 28,
+        offset: 20,
+        horizontalSpread: 34,
+        horizontalSpreadMap: { 0: 34, 1: 48, 2: 5 },
+        verticalOffsetMap: { 0: 38, 1: -22, 2: -50 },
+        sideMap: { 0: 1, 1: -1, 2: 1 },
         total: totalVolunteers,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },

@@ -33,7 +33,11 @@ function MentorStatusPieChart({
         enabled: false,
       },
       externalLabelGuides: {
-        offset: 26,
+        offset: 20,
+        horizontalSpread: 32,
+        horizontalSpreadMap: { 0: 32, 1: 46, 2: 5 },
+        verticalOffsetMap: { 0: 34, 1: -20, 2: -46 },
+        sideMap: { 0: 1, 1: -1, 2: 1 },
         total: totalMentors,
         formatter: ({ value, percentage }) => [`${value}`, `(${percentage}%)`],
       },
