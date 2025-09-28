@@ -1,101 +1,103 @@
-// EPLogin.jsx
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi-browser';
 
 import { loginBMUser } from '~/actions/authActions';
 
 function EPLogin(props) {
-  const { dispatch, auth, history } = props;
-
-  // local state
+  const { dispatch, auth, history, location } = props;
+  // state
   const [enteredEmail, setEnteredEmail] = useState('');
-  const [enteredPassword, setEnteredPassword] = useState('');
+  const [enterPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
+  const [hasAccess, setHasAccess] = useState(false);
 
-  // if user already has access, push to dashboard (test expects this exact path)
+  // get the previous location from the state if available
+  // If access login page from URL directly, redirect to GE Dashboard
+  const prevLocation = location.state?.from || { pathname: '/educationportal' };
+
+  // push to dashboard if user is authenticated
   useEffect(() => {
-    if (auth?.user?.access?.canAccessGEPortal) {
-      history.push('/educationportal');
+    if (auth.user.access && auth.user.access.canAccessGEPortal) {
+      history.push(prevLocation.pathname);
     }
-  }, [auth?.user?.access?.canAccessGEPortal, history]);
+  }, []);
+  useEffect(() => {
+    if (hasAccess) {
+      history.push(prevLocation.pathname);
+    }
+  }, [hasAccess, history, prevLocation.pathname]);
 
-  // Joi schema
+  // Note: email input type="text" to validate with Joi
   const schema = Joi.object({
     email: Joi.string()
       .email()
       .required(),
-    password: Joi.string()
-      .min(8)
-      .required(),
+    password: Joi.string().min(8),
   });
 
   const handleChange = ({ target }) => {
-    // clear field-specific error if user edits that field
+    // clears validationError only if error input is being edited
     if (validationError && target.name === validationError.label) {
       setValidationError(null);
     }
     if (target.name === 'email') {
       setEnteredEmail(target.value);
-    } else if (target.name === 'password') {
+    } else {
       setEnteredPassword(target.value);
     }
   };
 
+  // submit login
   const handleSubmit = async e => {
     e.preventDefault();
-
-    // client-side validation
-    const { error } = schema.validate(
-      { email: enteredEmail, password: enteredPassword },
-      { abortEarly: false },
-    );
-    if (error) {
-      const first = error.details[0];
+    // client side error validation
+    // Note: Joi by default stops validation on first error
+    const validate = schema.validate({ email: enteredEmail, password: enterPassword });
+    if (validate.error) {
       return setValidationError({
-        label: first?.context?.key || '',
-        message: first?.message || 'Invalid input',
+        label: validate.error.details[0].context.label,
+        message: validate.error.details[0].message,
       });
     }
-
-    // attempt login
-    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enteredPassword }));
-
-    // server-side validation / error
-    const ok = res?.status === 200 || res?.statusText === 'OK';
-    if (!ok) {
-      if (res?.status === 422) {
+    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
+    // server side error validation
+    if (res.statusText !== 'OK') {
+      if (res.status === 422) {
         return setValidationError({
-          label: res.data?.label || '',
-          message: res.data?.message || 'Invalid credentials',
+          label: res.data.label,
+          message: res.data.message,
         });
       }
-      return setValidationError({ label: '', message: 'Login failed' });
+      // TODO: add additional error handling
+      return setValidationError({
+        label: '',
+        message: '',
+      });
     }
-
-    // success -> navigate now (test spies on history.push)
-    if (res?.data?.token) {
-      history.push('/educationportal');
-    }
+    // initiate push to BM Dashboard if validated (ie received token)
+    return setHasAccess(!!res.data.token);
   };
+
+  // push Dashboard if not authenticated
+  if (!auth.isAuthenticated) {
+    return <Redirect to={{ pathname: '/login', state: { from: location } }} />;
+  }
 
   return (
     <div className="container mt-5">
       <h2>Log In To Good Education Portal</h2>
-      <Form onSubmit={handleSubmit} noValidate>
+      <Form onSubmit={handleSubmit}>
         <FormText>Enter your current user credentials to access the Good Education Portal</FormText>
         <p>Note: You must use your Production/Main credentials for this login.</p>
-
         <FormGroup>
-          <Label htmlFor="email">Email</Label>
+          <Label for="email">Email</Label>
           <Input
             id="email"
             name="email"
-            type="email"
-            autoComplete="email"
-            className="form-control"
+            type="text"
             invalid={validationError && validationError.label === 'email'}
             onChange={handleChange}
           />
@@ -103,15 +105,12 @@ function EPLogin(props) {
             <FormFeedback>{validationError.message}</FormFeedback>
           )}
         </FormGroup>
-
         <FormGroup>
-          <Label htmlFor="password">Password</Label>
+          <Label for="password">Password</Label>
           <Input
             id="password"
             name="password"
             type="password"
-            autoComplete="current-password"
-            className="form-control"
             invalid={validationError && validationError.label === 'password'}
             onChange={handleChange}
           />
@@ -119,14 +118,7 @@ function EPLogin(props) {
             <FormFeedback>{validationError.message}</FormFeedback>
           )}
         </FormGroup>
-
-        <Button
-          type="submit"
-          className="btn btn-secondary"
-          disabled={!enteredEmail || !enteredPassword}
-        >
-          Submit
-        </Button>
+        <Button disabled={!enteredEmail || !enterPassword}>Submit</Button>
       </Form>
     </div>
   );
@@ -136,5 +128,4 @@ const mapStateToProps = state => ({
   auth: state.auth,
 });
 
-// Important: wrap connected component so history/location props are injected
-export default withRouter(connect(mapStateToProps)(EPLogin));
+export default connect(mapStateToProps)(EPLogin);
