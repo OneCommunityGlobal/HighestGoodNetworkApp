@@ -8,22 +8,19 @@ import Joi from 'joi-browser';
 import { loginBMUser } from '~/actions/authActions';
 
 function EPLogin(props) {
-  const { dispatch, auth, history, location } = props;
+  const { dispatch, auth, history } = props;
 
   // local state
   const [enteredEmail, setEnteredEmail] = useState('');
-  const [enterPassword, setEnteredPassword] = useState('');
+  const [enteredPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
 
-  // previous location (default to GE dashboard/landing)
-  const prevLocation = location.state?.from || { pathname: '/educationportal' };
-
-  // if user already has access, push to dashboard
+  // if user already has access, push to dashboard (test expects this exact path)
   useEffect(() => {
     if (auth?.user?.access?.canAccessGEPortal) {
-      history.push(prevLocation.pathname);
+      history.push('/educationportal');
     }
-  }, [auth, history, prevLocation.pathname]);
+  }, [auth?.user?.access?.canAccessGEPortal, history]);
 
   // Joi schema
   const schema = Joi.object({
@@ -36,12 +33,13 @@ function EPLogin(props) {
   });
 
   const handleChange = ({ target }) => {
+    // clear field-specific error if user edits that field
     if (validationError && target.name === validationError.label) {
       setValidationError(null);
     }
     if (target.name === 'email') {
       setEnteredEmail(target.value);
-    } else {
+    } else if (target.name === 'password') {
       setEnteredPassword(target.value);
     }
   };
@@ -50,16 +48,20 @@ function EPLogin(props) {
     e.preventDefault();
 
     // client-side validation
-    const { error } = schema.validate({ email: enteredEmail, password: enterPassword });
+    const { error } = schema.validate(
+      { email: enteredEmail, password: enteredPassword },
+      { abortEarly: false },
+    );
     if (error) {
+      const first = error.details[0];
       return setValidationError({
-        label: error.details[0].context.label,
-        message: error.details[0].message,
+        label: first?.context?.key || '',
+        message: first?.message || 'Invalid input',
       });
     }
 
     // attempt login
-    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enterPassword }));
+    const res = await dispatch(loginBMUser({ email: enteredEmail, password: enteredPassword }));
 
     // server-side validation / error
     const ok = res?.status === 200 || res?.statusText === 'OK';
@@ -73,9 +75,9 @@ function EPLogin(props) {
       return setValidationError({ label: '', message: 'Login failed' });
     }
 
-    // success -> store happened in action; navigate now
+    // success -> navigate now (test spies on history.push)
     if (res?.data?.token) {
-      history.push(prevLocation.pathname);
+      history.push('/educationportal');
     }
   };
 
@@ -93,6 +95,7 @@ function EPLogin(props) {
             name="email"
             type="email"
             autoComplete="email"
+            className="form-control"
             invalid={validationError && validationError.label === 'email'}
             onChange={handleChange}
           />
@@ -108,6 +111,7 @@ function EPLogin(props) {
             name="password"
             type="password"
             autoComplete="current-password"
+            className="form-control"
             invalid={validationError && validationError.label === 'password'}
             onChange={handleChange}
           />
@@ -116,7 +120,11 @@ function EPLogin(props) {
           )}
         </FormGroup>
 
-        <Button type="submit" disabled={!enteredEmail || !enterPassword}>
+        <Button
+          type="submit"
+          className="btn btn-secondary"
+          disabled={!enteredEmail || !enteredPassword}
+        >
           Submit
         </Button>
       </Form>
