@@ -85,7 +85,8 @@ describe('permissions management page structure', () => {
         await userEvent.click(addNewRoleButton);
 
         // Wait for the modal to appear
-        await screen.findByRole('dialog');
+        const modal = await screen.findByRole('dialog', { timeout: 10000 });
+        expect(modal).toBeInTheDocument();
 
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
