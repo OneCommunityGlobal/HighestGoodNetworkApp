@@ -27,12 +27,13 @@
 
 .volunteer-status-center .volunteer-status-heading {
   color: #828282;
-  font-size: 0.8rem;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
 .volunteer-status-center .volunteer-count {
   color: #6c6c6c;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: bolder;
 }
 
@@ -49,7 +50,7 @@
   justify-content: center;
   align-items: center;
   gap: 16px;
-  margin-top: 20px;
+  margin-top: 45px;
   flex-wrap: nowrap;
 }
 

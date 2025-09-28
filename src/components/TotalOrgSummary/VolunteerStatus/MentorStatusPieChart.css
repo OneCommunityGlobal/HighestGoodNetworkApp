@@ -1,4 +1,5 @@
 .mentor-status-container {
+  margin-top: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -31,7 +32,7 @@
 
 .mentor-status-heading {
   color: #828282;
-  font-size: 1.0rem;
+  font-size: 1.2rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
   transform: translateY(6px);
@@ -41,9 +42,10 @@
 
 .mentor-status-center .mentor-count {
   color: #6c6c6c;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 800;
   line-height: 1.18;
+  margin-top: -10px;
 }
 
 .mentor-status-center .mentor-percentage-change {

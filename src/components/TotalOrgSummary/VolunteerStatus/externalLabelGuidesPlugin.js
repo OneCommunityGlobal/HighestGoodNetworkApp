@@ -51,7 +51,7 @@ const externalLabelGuidesPlugin = {
       borderWidth: 1,
       borderRadius: 6,
       fontFamily: '"Inter", "Helvetica Neue", Helvetica, Arial, sans-serif',
-      fontSize: 13,
+      fontSize: 15,
       fontWeight: '600',
       lineHeight: 17,
       padding: { x: 10, y: 6 },

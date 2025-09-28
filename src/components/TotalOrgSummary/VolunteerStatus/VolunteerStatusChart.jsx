@@ -78,8 +78,7 @@ function VolunteerStatusChart({
           </div>
           {(volunteerChartData || mentorChartData) && (
             <p className={styles.volunteerMentorFootnote}>
-              *Does not include these “Mentor” members volunteering without weekly-hours
-              contribution requirements.
+              *Does not include the “Mentor” members shown in the graph to the right.
             </p>
           )}
         </>
