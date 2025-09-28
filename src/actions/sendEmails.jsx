@@ -14,9 +14,24 @@ export const sendEmail = (
 ) => {
   const url = ENDPOINTS.POST_EMAILS;
 
-  return async dispatch => {
+  return async (dispatch, getState) => {
     try {
-      const response = await axios.post(url, { to, subject, html, fromName, fromEmail });
+      // Get current user from Redux state
+      const currentUser = getState().auth.user;
+      const requestor = {
+        requestorId: currentUser?.userid, // Backend expects requestorId, not userid
+        email: currentUser?.email || fromEmail,
+        role: currentUser?.role,
+      };
+
+      const response = await axios.post(url, {
+        to,
+        subject,
+        html,
+        fromName,
+        fromEmail,
+        requestor, // Add proper requestor for permission checking
+      });
 
       // Display a success toast
       toast.success('Email successfully sent', {
@@ -25,10 +40,13 @@ export const sendEmail = (
       });
     } catch (error) {
       // Display an error toast
-      toast.error('Error sending email', {
+      const errorMessage = error.response?.data?.message || error.message || 'Error sending email';
+      toast.error(errorMessage, {
         position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        autoClose: 5000, // Close the toast after 5 seconds for error messages
       });
+      // eslint-disable-next-line no-console
+      console.error('Email sending error:', error);
     }
   };
 };
@@ -41,9 +59,23 @@ export const broadcastEmailsToAll = (
 ) => {
   const url = ENDPOINTS.BROADCAST_EMAILS;
 
-  return async dispatch => {
+  return async (dispatch, getState) => {
     try {
-      const response = await axios.post(url, { subject, html, fromName, fromEmail });
+      // Get current user from Redux state
+      const currentUser = getState().auth.user;
+      const requestor = {
+        requestorId: currentUser?.userid, // Backend expects requestorId, not userid
+        email: currentUser?.email || fromEmail,
+        role: currentUser?.role,
+      };
+
+      const response = await axios.post(url, {
+        subject,
+        html,
+        fromName,
+        fromEmail,
+        requestor, // Add proper requestor for permission checking
+      });
 
       // Display a success toast
       toast.success('Email successfully sent', {
@@ -52,10 +84,13 @@ export const broadcastEmailsToAll = (
       });
     } catch (error) {
       // Display an error toast
-      toast.error('Error sending email', {
+      const errorMessage = error.response?.data?.message || error.message || 'Error sending email';
+      toast.error(errorMessage, {
         position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+        autoClose: 5000, // Close the toast after 5 seconds for error messages
       });
+      // eslint-disable-next-line no-console
+      console.error('Email sending error:', error);
     }
   };
 };

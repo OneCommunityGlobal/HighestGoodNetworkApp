@@ -278,12 +278,19 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     }
 
     setIsSending(true);
-    const htmlContent = generatePreviewHtml();
-    await onSendEmails(emailList, {
-      subject: templateData.subject,
-      htmlContent: htmlContent,
-    });
-    setIsSending(false);
+    try {
+      const htmlContent = generatePreviewHtml();
+      await onSendEmails(emailList, {
+        subject: templateData.subject,
+        htmlContent: htmlContent,
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error sending emails:', error);
+      toast.error('Failed to send emails. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const handleBroadcast = async () => {
@@ -293,12 +300,19 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     }
 
     setIsBroadcasting(true);
-    const htmlContent = generatePreviewHtml();
-    await onBroadcastEmails({
-      subject: templateData.subject,
-      htmlContent: htmlContent,
-    });
-    setIsBroadcasting(false);
+    try {
+      const htmlContent = generatePreviewHtml();
+      await onBroadcastEmails({
+        subject: templateData.subject,
+        htmlContent: htmlContent,
+      });
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error broadcasting emails:', error);
+      toast.error('Failed to broadcast emails. Please try again.');
+    } finally {
+      setIsBroadcasting(false);
+    }
   };
 
   // Fullscreen toggle function
@@ -320,19 +334,23 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
       cursor: text !important; 
       color: ${darkMode ? '#ffffff' : '#000000'} !important; 
       background-color: ${darkMode ? '#2d2d2d' : '#ffffff'} !important;
-      font-family: Arial, Helvetica, sans-serif !important; 
-      font-size: 12pt !important; 
-      line-height: 1.5 !important; 
+      font-family: Arial, Helvetica, sans-serif; 
+      font-size: 12pt; 
+      line-height: 1.5; 
     }`,
     // Set default font size
     font_size: '12pt',
     // Setup function to ensure default font size
     setup: function(editor) {
       editor.on('init', function() {
-        editor.getBody().style.fontSize = '12pt';
+        // Set default styles but allow user to override them
         editor.getBody().style.fontFamily = 'Arial, Helvetica, sans-serif';
         editor.getBody().style.color = darkMode ? '#ffffff' : '#000000';
         editor.getBody().style.backgroundColor = darkMode ? '#2d2d2d' : '#ffffff';
+        // Don't force font size - let users change it via toolbar
+        if (!editor.getBody().style.fontSize) {
+          editor.getBody().style.fontSize = '12pt';
+        }
       });
     },
     skin: darkMode ? 'oxide-dark' : 'oxide',
@@ -876,8 +894,9 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
                     className="readonly-message"
                     dangerouslySetInnerHTML={{
                       __html: templateData.footerContent.replace(
-                        /style="text-align: center;"/g,
-                        `style="text-align: center; color: ${darkMode ? '#ffffff' : '#000000'};"`,
+                        /style="text-align: center;[^"]*"/g,
+                        match =>
+                          match.replace(';', `; color: ${darkMode ? '#ffffff' : '#000000'};`),
                       ),
                     }}
                   />
