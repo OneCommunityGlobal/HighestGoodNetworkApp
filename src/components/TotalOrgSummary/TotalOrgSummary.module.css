@@ -1,3 +1,22 @@
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper text,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper tspan {
+  fill: #000 !important;
+  color: #000 !important;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.25), 0 0 2px #fff;
+}
+/* Chart title stays white, but chart numbers/labels inside the donut graph are black for better contrast */
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper text,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper tspan {
+  fill: #000 !important;
+  color: #000 !important;
+}
+/* Chart and graph titles/text should be white in dark mode for visibility */
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer h3,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer p,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .totalOrgChartTitle,
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .volunteerStatusGrid h3 {
+  color: #fff !important;
+}
 .containerTotalOrgWrapper {
   min-height: 100%;
   background-color: #fff;
@@ -93,19 +112,12 @@
   color: #fff;
 }
 
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer h3,
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .statistics-title,
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .volunteerStatusGrid h3,
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer :global(.recharts-text),
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .statistics-value {
-  color: #000 !important;
-  fill: #000 !important;
-}
+
 
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-text),
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-label),
 .containerTotalOrgWrapper:global(.bg-oxford-blue) :global(.recharts-cartesian-axis-tick-value) {
-  fill: #000 !important;
+  fill: #fff !important;
 }
 
 .containerTotalOrgWrapper.bg-oxford-blue h3 {
@@ -292,16 +304,21 @@
   padding: 20px;
   background-color: #fff;
   border-radius: 10px;
-  border: none;
-  box-shadow: none;
+  border: 1.5px solid #e0e0e0;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
 }
 
 .componentBorder {
-  border: none;
+  border: 1.5px solid #e0e0e0;
   border-radius: 10px;
-  box-shadow: none;
+  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
   background-color: #fff;
   overflow: hidden;
+}
+.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
+  background-color: #1c2541 !important;
+  border: 1.5px solid #2f4157 !important;
+  box-shadow: 0 4px 24px rgba(255,255,255,0.13), 0 1.5px 4px rgba(255,255,255,0.10) !important;
 }
 
 /* Grid layouts */
