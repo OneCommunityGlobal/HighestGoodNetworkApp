@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
-import EmailPanel from './platforms/email'; // ← new
+import EmailPanel from './platforms/email/index.jsx';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -24,7 +24,7 @@ function Announcements({ title, email: initialEmail }) {
       case 'medium':
         return '#00ab6c';
       default:
-        return null;
+        return undefined;
     }
   };
 
@@ -71,7 +71,7 @@ function Announcements({ title, email: initialEmail }) {
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <Nav
-        className={classnames('tab-grid', { 'two-rows': columns === 2, dark: darkMode })}
+        className={classnames('tab-grid', { 'two-rows': columns, dark: darkMode })}
         style={gridStyle}
       >
         {tabs.map(({ id, icon, label, customIconSrc }) => (

@@ -5,13 +5,18 @@ import { toast } from 'react-toastify'; // Import the toast library
 import { ENDPOINTS } from '~/utils/URL';
 import styles from './ToastStyles.module.css'; // Import the CSS module
 
-export const sendEmail = (to, subject, html) => {
+export const sendEmail = (
+  to,
+  subject,
+  html,
+  fromName = 'One Community',
+  fromEmail = 'updates@onecommunityglobal.org',
+) => {
   const url = ENDPOINTS.POST_EMAILS;
 
   return async () => {
     try {
-      const response = await axios.post(url, { to, subject, html });
-      toast.info('Email sent successfully:', response);
+      const response = await axios.post(url, { to, subject, html, fromName, fromEmail });
 
       // Display a success toast
       toast.success('Email successfully sent', {
@@ -30,13 +35,17 @@ export const sendEmail = (to, subject, html) => {
   };
 };
 
-export const broadcastEmailsToAll = (subject, html) => {
+export const broadcastEmailsToAll = (
+  subject,
+  html,
+  fromName = 'One Community',
+  fromEmail = 'updates@onecommunityglobal.org',
+) => {
   const url = ENDPOINTS.BROADCAST_EMAILS;
 
   return async () => {
     try {
-      const response = await axios.post(url, { subject, html });
-      toast.info('Email sent successfully:', response);
+      const response = await axios.post(url, { subject, html, fromName, fromEmail });
 
       // Display a success toast
       toast.success('Email successfully sent', {
@@ -61,7 +70,6 @@ export const updateEmailSubscription = (subscription = true) => {
   return async () => {
     try {
       const response = await axios.post(url, { subscription });
-      toast.info('Email sent successfully:', response);
 
       // Display a success toast
       toast.success('Successfully changed email subcription', {
@@ -107,22 +115,20 @@ export const addNonHgnUserEmailSubscription = (email, triggerConfetti) => {
         </div>,
         {
           position: 'top-center',
-          autoClose: false, 
-          closeOnClick: false, 
-          closeButton: false, 
-        }
+          autoClose: false,
+          closeOnClick: false,
+          closeButton: false,
+        },
       );
     } catch (error) {
       toast.error(
         <div>
-          <p>
-            Email already exists or is invalid. Please try again.
-          </p>
+          <p>Email already exists or is invalid. Please try again.</p>
         </div>,
         {
           position: 'top-center',
           autoClose: 3000, // Auto-close after 3 seconds
-        }
+        },
       );
     }
   };
