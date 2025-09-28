@@ -1013,6 +1013,310 @@
   color: #d1d5db;
 }
 
+/* Enhanced TinyMCE Styling */
+.tox-tinymce {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  overflow: hidden;
+}
+
+.email-composer.dark-mode .tox-tinymce {
+  border-color: #4b5563;
+}
+
+.tox-tinymce .tox-toolbar__group {
+  border-right: 1px solid #e5e5e5;
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-toolbar__group {
+  border-right-color: #3a4a60;
+}
+
+/* Toolbar button styling */
+.tox-tinymce .tox-tbtn {
+  border-radius: 4px;
+  margin: 1px;
+  transition: all 0.2s ease;
+}
+
+.tox-tinymce .tox-tbtn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tox-tinymce .tox-tbtn--enabled {
+  background-color: #007bff;
+  color: white;
+}
+
+.tox-tinymce .tox-tbtn--enabled:hover {
+  background-color: #0056b3;
+}
+
+/* Link button styling */
+.tox-tinymce .tox-tbtn[aria-label*="link"] {
+  color: #007bff;
+}
+
+.tox-tinymce .tox-tbtn[aria-label*="link"]:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn[aria-label*="link"] {
+  color: #4a9eff;
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn[aria-label*="link"]:hover {
+  background-color: rgba(74, 158, 255, 0.1);
+}
+
+/* Table button styling */
+.tox-tinymce .tox-tbtn[aria-label*="table"] {
+  color: #28a745;
+}
+
+.tox-tinymce .tox-tbtn[aria-label*="table"]:hover {
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn[aria-label*="table"] {
+  color: #52c41a;
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn[aria-label*="table"]:hover {
+  background-color: rgba(82, 196, 26, 0.1);
+}
+
+/* Character map button styling */
+.tox-tinymce .tox-tbtn[aria-label*="charmap"] {
+  color: #6f42c1;
+}
+
+.tox-tinymce .tox-tbtn[aria-label*="charmap"]:hover {
+  background-color: rgba(111, 66, 193, 0.1);
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn[aria-label*="charmap"] {
+  color: #8b5cf6;
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn[aria-label*="charmap"]:hover {
+  background-color: rgba(139, 92, 246, 0.1);
+}
+
+/* Color picker styling */
+.tox-tinymce .tox-tbtn[aria-label*="color"] {
+  color: #fd7e14;
+}
+
+.tox-tinymce .tox-tbtn[aria-label*="color"]:hover {
+  background-color: rgba(253, 126, 20, 0.1);
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn[aria-label*="color"] {
+  color: #ff922b;
+}
+
+.email-composer.dark-mode .tox-tinymce .tox-tbtn[aria-label*="color"]:hover {
+  background-color: rgba(255, 146, 43, 0.1);
+}
+
+/* Editor content area */
+.tox-edit-area {
+  border-radius: 0 0 8px 8px;
+}
+
+.tox-edit-area iframe {
+  border-radius: 0 0 8px 8px;
+}
+
+/* Link dialog styling */
+.tox-dialog {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.email-composer.dark-mode .tox-dialog {
+  background-color: #2d2d2d;
+  border: 1px solid #404040;
+}
+
+.tox-dialog__header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e5e5e5;
+  border-radius: 8px 8px 0 0;
+}
+
+.email-composer.dark-mode .tox-dialog__header {
+  background-color: #374151;
+  border-bottom-color: #404040;
+}
+
+.tox-dialog__title {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.email-composer.dark-mode .tox-dialog__title {
+  color: #f9fafb;
+}
+
+.tox-dialog__body {
+  padding: 20px;
+}
+
+.tox-dialog__body .tox-form__group {
+  margin-bottom: 16px;
+}
+
+.tox-dialog__body .tox-label {
+  color: #374151;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.email-composer.dark-mode .tox-dialog__body .tox-label {
+  color: #d1d5db;
+}
+
+.tox-dialog__body .tox-textfield {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  width: 100%;
+  background-color: white;
+  color: #1f2937;
+}
+
+.email-composer.dark-mode .tox-dialog__body .tox-textfield {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.tox-dialog__body .tox-textfield:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Table dialog styling */
+.tox-dialog__body .tox-selectfield select {
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: white;
+  color: #1f2937;
+}
+
+.email-composer.dark-mode .tox-dialog__body .tox-selectfield select {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+/* Dialog buttons */
+.tox-dialog__footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e5e5;
+  background-color: #f8f9fa;
+  border-radius: 0 0 8px 8px;
+}
+
+.email-composer.dark-mode .tox-dialog__footer {
+  background-color: #374151;
+  border-top-color: #404040;
+}
+
+.tox-dialog__footer .tox-button {
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tox-dialog__footer .tox-button--primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.tox-dialog__footer .tox-button--primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.tox-dialog__footer .tox-button--secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.tox-dialog__footer .tox-button--secondary:hover {
+  background-color: #5a6268;
+  border-color: #5a6268;
+}
+
+/* Character map dialog */
+.tox-collection {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.tox-collection .tox-collection__item {
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.tox-collection .tox-collection__item:hover {
+  background-color: #f8f9fa;
+}
+
+.email-composer.dark-mode .tox-collection .tox-collection__item:hover {
+  background-color: #374151;
+}
+
+/* Color picker dialog */
+.tox-swatch {
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  margin: 2px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.tox-swatch:hover {
+  transform: scale(1.1);
+}
+
+.email-composer.dark-mode .tox-swatch {
+  border-color: #4b5563;
+}
+
+/* Tooltip styling */
+.tox-tooltip {
+  background-color: #1f2937;
+  color: white;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.email-composer.dark-mode .tox-tooltip {
+  background-color: #374151;
+  color: #f9fafb;
+}
+
 /* Right Panel - Preview */
 .preview-panel {
   width: 50%;

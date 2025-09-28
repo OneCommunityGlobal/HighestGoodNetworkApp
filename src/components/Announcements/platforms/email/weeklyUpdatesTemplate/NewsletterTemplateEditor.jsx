@@ -17,86 +17,19 @@ import {
   FormGroup,
 } from 'reactstrap';
 import OneCommunityNewsletterTemplate from './OneCommunityNewsletterTemplate';
+import {
+  defaultTemplateData,
+  defaultResetValues,
+  getTemplateDataWithDefaults,
+} from './templateData';
 import './NewsletterTemplateEditor.css';
 
 function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEmails }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const editorRef = useRef(null);
 
-  // Template data with defaults
-  const [templateData, setTemplateData] = useState({
-    updateNumber: '',
-    headerImageUrl:
-      'https://mcusercontent.com/1b1ba36facf96dc45b6697f82/images/931ce505-118d-19f7-c9ea-81d8e5e59613.png',
-    thankYouMessage:
-      'Thank you for following One Community&apos;s progress, here is the link to our weekly progress report with our update video and recent progress related imagery, links, and other details: https://onecommunityglobal.org/open-source-utopia-models',
-    videoTopicTitle: '',
-    videoUrl: '',
-    videoThumbnailUrl: '',
-    missionMessage: '',
-    videoLinkText: '',
-    donationMessage:
-      'Love what we&apos;re doing and want to help? Click <a href="https://onecommunityglobal.org/contribute-join-partner/" target="_blank" rel="noopener noreferrer">here</a> to learn what we&apos;re currently raising money for and to donate. Even $5 dollars helps!',
-    subject: 'One Community Weekly Update',
-    fromName: 'One Community',
-    fromEmail: 'updates@onecommunityglobal.org',
-    footerQuote:
-      'In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.',
-    footerAuthor: 'Buckminster Fuller',
-    mailingAddress: 'One Community Inc.\n8954 Camino Real\nSan Gabriel, CA 91775-1932',
-    updatePreferencesText:
-      'Want to change how you receive these emails?\nYou can update your preferences or unsubscribe from this list.',
-    socialLinks: [
-      {
-        name: 'Website',
-        url: 'https://www.onecommunityglobal.org/overview/',
-        icon:
-          'https://www.dropbox.com/scl/fi/d8qldlgs3m0fmhwynzguh/link.png?rlkey=apqucrte9pwplhvjakyfbiw1j&st=dis5ps7b&raw=1',
-      },
-      {
-        name: 'Facebook',
-        url: 'https://www.facebook.com/onecommunityfans',
-        icon:
-          'https://www.dropbox.com/scl/fi/kigo13prmkypd9rsttvan/facebook.png?rlkey=q4r4uz6hn6bp75u48db7gju49&st=zzebhh1k&raw=1',
-      },
-      {
-        name: 'X (Twitter)',
-        url: 'https://x.com/onecommunityorg',
-        icon:
-          'https://www.dropbox.com/scl/fi/l2wbgkc6u0taaeguvsu5c/x.png?rlkey=btzsctxjlarmfsjakk5pfhvqu&st=0rfg3xcd&raw=1',
-      },
-      {
-        name: 'LinkedIn',
-        url: 'https://www.linkedin.com/company/one-community-global/posts/?feedView=all',
-        icon:
-          'https://www.dropbox.com/scl/fi/u17ghmc38dcln4avgcvuc/linkedin.png?rlkey=v8qimmq5h648fbsnhay8kan9t&st=fm0uvrhw&raw=1',
-      },
-      {
-        name: 'YouTube',
-        url: 'https://www.youtube.com/user/onecommunityorg',
-        icon:
-          'https://www.dropbox.com/scl/fi/88byqgoytpez4k937syou/youtube.png?rlkey=yhwkwmrpsn0eaz5yuu9h5ysce&st=jq80ocek&raw=1',
-      },
-      {
-        name: 'Instagram',
-        url: 'https://www.instagram.com/onecommunityglobal/',
-        icon:
-          'https://www.dropbox.com/scl/fi/wvsr28y19ro0icv4tr5mc/ins.png?rlkey=v4fbrmoniil8jcwtiv8ew7o7s&st=04vwah63&raw=1',
-      },
-      {
-        name: 'Pinterest',
-        url: 'https://www.pinterest.com/onecommunityorg/one-community/',
-        icon:
-          'https://www.dropbox.com/scl/fi/88byqgoytpez4k937syou/youtube.png?rlkey=yhwkwmrpsn0eaz5yuu9h5ysce&st=jq80ocek&raw=1',
-      },
-      {
-        name: 'Email',
-        url: 'mailto:onecommunitupdates@gmail.com',
-        icon:
-          'https://www.dropbox.com/scl/fi/7bahc1w6h6cyez8610nwi/guirong.wu.10-gmail.com.png?rlkey=1tokcqsp6dix4xjr44zytmlbl&st=qa5hly4e&raw=1',
-      },
-    ],
-  });
+  // Template data with defaults from separated data file
+  const [templateData, setTemplateData] = useState(defaultTemplateData);
 
   // Email recipients
   const [emailTo, setEmailTo] = useState('');
@@ -119,9 +52,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
   const [isThankYouEditable, setIsThankYouEditable] = useState(false);
   const [isDonationEditable, setIsDonationEditable] = useState(false);
   const [videoThumbnailFile, setVideoThumbnailFile] = useState(null);
-  const [isFooterQuoteEditable, setIsFooterQuoteEditable] = useState(false);
-  const [isMailingAddressEditable, setIsMailingAddressEditable] = useState(false);
-  const [isUpdatePreferencesEditable, setIsUpdatePreferencesEditable] = useState(false);
+  const [isFooterContentEditable, setIsFooterContentEditable] = useState(false);
   const [isSocialLinksEditable, setIsSocialLinksEditable] = useState(false);
   const [isSendControlsCollapsed, setIsSendControlsCollapsed] = useState(false);
 
@@ -139,7 +70,9 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
       ...prev,
       videoUrl: url,
       videoThumbnailUrl: videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : '',
-      videoLinkText: url ? `Click here for the video on this topic: ${url}` : '',
+      videoLinkText: url
+        ? `<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Click here for the video on this topic: <a href="${url}" style="color: #0066cc; text-decoration: underline;">${url}</a></p>`
+        : '',
     }));
   };
 
@@ -147,8 +80,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     setHeaderImageFile(null);
     setTemplateData(prev => ({
       ...prev,
-      headerImageUrl:
-        'https://mcusercontent.com/1b1ba36facf96dc45b6697f82/images/931ce505-118d-19f7-c9ea-81d8e5e59613.png',
+      headerImageUrl: defaultTemplateData.headerImageUrl,
     }));
   };
 
@@ -166,40 +98,21 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
   const handleResetThankYouMessage = () => {
     setTemplateData(prev => ({
       ...prev,
-      thankYouMessage:
-        'Thank you for following One Community&apos;s progress, here is the link to our weekly progress report with our update video and recent progress related imagery, links, and other details: https://onecommunityglobal.org/open-source-utopia-models',
+      thankYouMessage: defaultResetValues.thankYouMessage,
     }));
   };
 
   const handleResetDonationMessage = () => {
     setTemplateData(prev => ({
       ...prev,
-      donationMessage:
-        'Love what we&apos;re doing and want to help? Click <a href="https://onecommunityglobal.org/contribute-join-partner/" target="_blank" rel="noopener noreferrer">here</a> to learn what we&apos;re currently raising money for and to donate. Even $5 dollars helps!',
+      donationMessage: defaultResetValues.donationMessage,
     }));
   };
 
-  const handleResetFooterQuote = () => {
+  const handleResetFooterContent = () => {
     setTemplateData(prev => ({
       ...prev,
-      footerQuote:
-        'In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.',
-      footerAuthor: 'Buckminster Fuller',
-    }));
-  };
-
-  const handleResetMailingAddress = () => {
-    setTemplateData(prev => ({
-      ...prev,
-      mailingAddress: 'One Community Inc.\n8954 Camino Real\nSan Gabriel, CA 91775-1932',
-    }));
-  };
-
-  const handleResetUpdatePreferences = () => {
-    setTemplateData(prev => ({
-      ...prev,
-      updatePreferencesText:
-        'Want to change how you receive these emails?\nYou can update your preferences or unsubscribe from this list.',
+      footerContent: defaultResetValues.footerContent,
     }));
   };
 
@@ -218,7 +131,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
       socialLinks: [
         ...prev.socialLinks,
         {
-          name: 'New Platform',
+          name: '',
           url: '',
           icon: '',
         },
@@ -236,56 +149,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
   const handleResetSocialLinks = () => {
     setTemplateData(prev => ({
       ...prev,
-      socialLinks: [
-        {
-          name: 'Website',
-          url: 'https://www.onecommunityglobal.org/overview/',
-          icon:
-            'https://www.dropbox.com/scl/fi/d8qldlgs3m0fmhwynzguh/link.png?rlkey=apqucrte9pwplhvjakyfbiw1j&st=dis5ps7b&raw=1',
-        },
-        {
-          name: 'Facebook',
-          url: 'https://www.facebook.com/onecommunityfans',
-          icon:
-            'https://www.dropbox.com/scl/fi/kigo13prmkypd9rsttvan/facebook.png?rlkey=q4r4uz6hn6bp75u48db7gju49&st=zzebhh1k&raw=1',
-        },
-        {
-          name: 'X (Twitter)',
-          url: 'https://x.com/onecommunityorg',
-          icon:
-            'https://www.dropbox.com/scl/fi/l2wbgkc6u0taaeguvsu5c/x.png?rlkey=btzsctxjlarmfsjakk5pfhvqu&st=0rfg3xcd&raw=1',
-        },
-        {
-          name: 'LinkedIn',
-          url: 'https://www.linkedin.com/company/one-community-global/posts/?feedView=all',
-          icon:
-            'https://www.dropbox.com/scl/fi/u17ghmc38dcln4avgcvuc/linkedin.png?rlkey=v8qimmq5h648fbsnhay8kan9t&st=fm0uvrhw&raw=1',
-        },
-        {
-          name: 'YouTube',
-          url: 'https://www.youtube.com/user/onecommunityorg',
-          icon:
-            'https://www.dropbox.com/scl/fi/88byqgoytpez4k937syou/youtube.png?rlkey=yhwkwmrpsn0eaz5yuu9h5ysce&st=jq80ocek&raw=1',
-        },
-        {
-          name: 'Instagram',
-          url: 'https://www.instagram.com/onecommunityglobal/',
-          icon:
-            'https://www.dropbox.com/scl/fi/wvsr28y19ro0icv4tr5mc/ins.png?rlkey=v4fbrmoniil8jcwtiv8ew7o7s&st=04vwah63&raw=1',
-        },
-        {
-          name: 'Pinterest',
-          url: 'https://www.pinterest.com/onecommunityorg/one-community/',
-          icon:
-            'https://www.dropbox.com/scl/fi/88byqgoytpez4k937syou/youtube.png?rlkey=yhwkwmrpsn0eaz5yuu9h5ysce&st=jq80ocek&raw=1',
-        },
-        {
-          name: 'Email',
-          url: 'mailto:onecommunitupdates@gmail.com',
-          icon:
-            'https://www.dropbox.com/scl/fi/7bahc1w6h6cyez8610nwi/guirong.wu.10-gmail.com.png?rlkey=1tokcqsp6dix4xjr44zytmlbl&st=qa5hly4e&raw=1',
-        },
-      ],
+      socialLinks: defaultResetValues.socialLinks,
     }));
   };
 
@@ -365,9 +229,6 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     if (!templateData.videoUrl.trim() || !isValidUrl(templateData.videoUrl)) {
       errors.videoUrl = 'Valid video URL is required';
     }
-    if (!templateData.subject.trim()) {
-      errors.subject = 'Email subject is required';
-    }
 
     setValidationErrors(errors);
     const valid = Object.keys(errors).length === 0;
@@ -386,12 +247,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
 
   // Generate preview HTML whenever template data changes
   const generatePreviewHtml = () => {
-    const templateDataWithDefaults = {
-      ...templateData,
-      updateNumber: templateData.updateNumber || '651',
-      newsletterTitle: `One Community Weekly Progress Update #${templateData.updateNumber ||
-        '651'}`,
-    };
+    const templateDataWithDefaults = getTemplateDataWithDefaults(templateData);
 
     const view = ReactDOMServer.renderToStaticMarkup(
       <OneCommunityNewsletterTemplate
@@ -424,9 +280,6 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     setIsSending(true);
     const htmlContent = generatePreviewHtml();
     await onSendEmails(emailList, {
-      subject: templateData.subject,
-      fromName: templateData.fromName,
-      fromEmail: templateData.fromEmail,
       htmlContent: htmlContent,
     });
     setIsSending(false);
@@ -441,26 +294,56 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     setIsBroadcasting(true);
     const htmlContent = generatePreviewHtml();
     await onBroadcastEmails({
-      subject: templateData.subject,
-      fromName: templateData.fromName,
-      fromEmail: templateData.fromEmail,
       htmlContent: htmlContent,
     });
     setIsBroadcasting(false);
   };
 
-  // TinyMCE configuration - EXACT copy from your working EmailPanel
+  // TinyMCE configuration - Enhanced version from time log popup
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     height: 200,
-    plugins: [
-      'advlist autolink lists link image',
-      'charmap print preview anchor help',
-      'searchreplace visualblocks code',
-      'insertdatetime media table wordcount',
-    ],
     menubar: false,
+    placeholder: 'Enter your content here...',
+    plugins:
+      'advlist autolink autoresize lists link charmap table help wordcount formatpainter fontsize lineheight',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | fontsize lineheight styleselect | alignleft aligncenter alignright alignjustify |\
+                      bullist numlist outdent indent | table | strikethrough forecolor backcolor |\
+                      subscript superscript charmap | help',
     branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: `body, p, div, span, * { 
+      cursor: text !important; 
+      color: ${darkMode ? '#ffffff' : '#000000'}; 
+      font-family: Arial, Helvetica, sans-serif !important; 
+      font-size: 12pt !important; 
+      line-height: 1.5 !important; 
+    }`,
+    // Set default font size
+    font_size: '12pt',
+    // Setup function to ensure default font size
+    setup: function(editor) {
+      editor.on('init', function() {
+        editor.getBody().style.fontSize = '12pt';
+        editor.getBody().style.fontFamily = 'Arial, Helvetica, sans-serif';
+      });
+    },
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+    // Block formats for headings
+    block_formats:
+      'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Preformatted=pre',
+    // Font size options
+    fontsize_formats:
+      '8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 28pt 30pt 32pt 34pt 36pt 48pt 60pt 72pt 96pt',
+    // Line height options
+    lineheight_formats: '1 1.2 1.4 1.6 1.8 2 2.2 2.4 2.6 2.8 3',
+    // Enhanced features
     image_title: true,
     automatic_uploads: true,
     file_picker_callback(cb) {
@@ -484,10 +367,71 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
       input.click();
     },
     a11y_advanced_options: true,
-    toolbar:
-      'undo redo | bold italic | blocks fontfamily fontsize | image alignleft aligncenter alignright | bullist numlist outdent indent | removeformat | help',
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
+    // Additional advanced features
+    paste_data_images: true,
+    paste_as_text: false,
+    paste_auto_cleanup_on_paste: true,
+    paste_remove_styles_if_webkit: false,
+    paste_merge_formats: true,
+    paste_convert_word_fake_lists: true,
+    paste_enable_default_filters: true,
+    // Link handling
+    link_context_toolbar: true,
+    link_assume_external_targets: true,
+    link_default_protocol: 'https',
+    // Table features
+    table_default_attributes: {
+      border: '1',
+    },
+    table_default_styles: {
+      'border-collapse': 'collapse',
+      width: '100%',
+    },
+    table_cell_advtab: true,
+    table_row_advtab: true,
+    table_advtab: true,
+    // Character map
+    charmap_append: [
+      ['©', 'Copyright'],
+      ['®', 'Registered'],
+      ['™', 'Trademark'],
+      ['€', 'Euro'],
+      ['£', 'Pound'],
+      ['¥', 'Yen'],
+      ['¢', 'Cent'],
+      ['°', 'Degree'],
+      ['±', 'Plus/Minus'],
+      ['×', 'Multiplication'],
+      ['÷', 'Division'],
+      ['∞', 'Infinity'],
+      ['≠', 'Not Equal'],
+      ['≤', 'Less or Equal'],
+      ['≥', 'Greater or Equal'],
+      ['≈', 'Approximately'],
+      ['∑', 'Sum'],
+      ['∏', 'Product'],
+      ['√', 'Square Root'],
+      ['∫', 'Integral'],
+      ['∆', 'Delta'],
+      ['α', 'Alpha'],
+      ['β', 'Beta'],
+      ['γ', 'Gamma'],
+      ['δ', 'Delta'],
+      ['ε', 'Epsilon'],
+      ['ζ', 'Zeta'],
+      ['η', 'Eta'],
+      ['θ', 'Theta'],
+      ['λ', 'Lambda'],
+      ['μ', 'Mu'],
+      ['π', 'Pi'],
+      ['ρ', 'Rho'],
+      ['σ', 'Sigma'],
+      ['τ', 'Tau'],
+      ['φ', 'Phi'],
+      ['χ', 'Chi'],
+      ['ψ', 'Psi'],
+      ['ω', 'Omega'],
+    ],
   };
 
   return (
@@ -522,16 +466,6 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
         {!isSendControlsCollapsed && (
           <div className="send-controls-content">
             <div className="send-controls-left">
-              <div className="subject-field">
-                <Label className="control-label">Subject *</Label>
-                <Input
-                  type="text"
-                  value={templateData.subject}
-                  onChange={e => handleFieldChange('subject', e.target.value)}
-                  placeholder="Email subject line"
-                  className={`subject-input ${validationErrors.subject ? 'is-invalid' : ''}`}
-                />
-              </div>
               <div className="test-recipients-section">
                 <Label className="control-label">Test Recipients</Label>
                 <Input
@@ -593,7 +527,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
             <div className="fields-section">
               {/* Header Section */}
               <div className="section-header">
-                <h3>1. Header</h3>
+                <h3>Header</h3>
               </div>
               <FormGroup>
                 <div className="field-header">
@@ -641,7 +575,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
 
               {/* Title Section */}
               <div className="section-header">
-                <h3>2. Title</h3>
+                <h3>Title</h3>
               </div>
               <FormGroup>
                 <Label>Weekly Update Number *</Label>
@@ -665,7 +599,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
 
               {/* Thank You Message Section */}
               <div className="section-header">
-                <h3>3. Thank You Message</h3>
+                <h3>Thank You Message</h3>
               </div>
               <FormGroup>
                 <div className="field-header">
@@ -700,11 +634,10 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
                   <div
                     className="readonly-message"
                     dangerouslySetInnerHTML={{
-                      __html: templateData.thankYouMessage
-                        .replace(/<p[^>]*>/g, '')
-                        .replace(/<\/p>/g, ' ')
-                        .replace(/<br\s*\/?>/g, ' ')
-                        .trim(),
+                      __html: templateData.thankYouMessage.replace(
+                        /color: #333333/g,
+                        `color: ${darkMode ? '#ffffff' : '#333333'}`,
+                      ),
                     }}
                   />
                 )}
@@ -712,7 +645,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
 
               {/* This Week's Video Topic Section */}
               <div className="section-header">
-                <h3>4. This Week&apos;s Video Topic</h3>
+                <h3>This Week&apos;s Video Topic</h3>
               </div>
               <FormGroup>
                 <Label>YouTube Link *</Label>
@@ -780,16 +713,9 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
                 />
               </FormGroup>
 
-              <FormGroup>
-                <Label>Watch Link</Label>
-                <div className="readonly-message">
-                  {templateData.videoLinkText || 'Enter a YouTube URL above to auto-generate'}
-                </div>
-              </FormGroup>
-
               {/* Donation Section */}
               <div className="section-header">
-                <h3>5. Donation</h3>
+                <h3>Donation</h3>
               </div>
               <FormGroup>
                 <div className="field-header">
@@ -824,11 +750,10 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
                   <div
                     className="readonly-message"
                     dangerouslySetInnerHTML={{
-                      __html: templateData.donationMessage
-                        .replace(/<p[^>]*>/g, '')
-                        .replace(/<\/p>/g, ' ')
-                        .replace(/<br\s*\/?>/g, ' ')
-                        .trim(),
+                      __html: templateData.donationMessage.replace(
+                        /color: #333333/g,
+                        `color: ${darkMode ? '#ffffff' : '#333333'}`,
+                      ),
                     }}
                   />
                 )}
@@ -836,148 +761,10 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
 
               {/* Footer Section */}
               <div className="section-header">
-                <h3>6. Footer</h3>
+                <h3>Footer</h3>
               </div>
-              <FormGroup>
-                <div className="field-header">
-                  <Label>Inspirational Quote</Label>
-                  <div className="field-actions">
-                    <Button
-                      color={isFooterQuoteEditable ? 'warning' : 'info'}
-                      size="sm"
-                      onClick={() => setIsFooterQuoteEditable(!isFooterQuoteEditable)}
-                      className="edit-toggle-button"
-                    >
-                      {isFooterQuoteEditable ? 'Cancel' : 'Edit'}
-                    </Button>
-                    <Button
-                      color="secondary"
-                      size="sm"
-                      onClick={handleResetFooterQuote}
-                      className="reset-button"
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                </div>
-                {isFooterQuoteEditable ? (
-                  <div>
-                    <Editor
-                      tinymceScriptSrc="/tinymce/tinymce.min.js"
-                      init={TINY_MCE_INIT_OPTIONS}
-                      value={templateData.footerQuote}
-                      onEditorChange={content => handleFieldChange('footerQuote', content)}
-                    />
-                    <div style={{ marginTop: '10px' }}>
-                      <Label>Author</Label>
-                      <Input
-                        type="text"
-                        value={templateData.footerAuthor}
-                        onChange={e => handleFieldChange('footerAuthor', e.target.value)}
-                        placeholder="Quote author"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    className="readonly-message"
-                    dangerouslySetInnerHTML={{
-                      __html: `"${templateData.footerQuote
-                        .replace(/<p[^>]*>/g, '')
-                        .replace(/<\/p>/g, ' ')
-                        .replace(/<br\s*\/?>/g, ' ')
-                        .trim()}"<br />~ ${templateData.footerAuthor} ~`,
-                    }}
-                  />
-                )}
-              </FormGroup>
 
-              <FormGroup>
-                <div className="field-header">
-                  <Label>Mailing Address</Label>
-                  <div className="field-actions">
-                    <Button
-                      color={isMailingAddressEditable ? 'warning' : 'info'}
-                      size="sm"
-                      onClick={() => setIsMailingAddressEditable(!isMailingAddressEditable)}
-                      className="edit-toggle-button"
-                    >
-                      {isMailingAddressEditable ? 'Cancel' : 'Edit'}
-                    </Button>
-                    <Button
-                      color="secondary"
-                      size="sm"
-                      onClick={handleResetMailingAddress}
-                      className="reset-button"
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                </div>
-                {isMailingAddressEditable ? (
-                  <Input
-                    type="textarea"
-                    value={templateData.mailingAddress}
-                    onChange={e => handleFieldChange('mailingAddress', e.target.value)}
-                    placeholder="Enter mailing address (use line breaks for formatting)"
-                    rows={4}
-                  />
-                ) : (
-                  <div className="readonly-message">
-                    {templateData.mailingAddress.split('\n').map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        {index < templateData.mailingAddress.split('\n').length - 1 && <br />}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </FormGroup>
-
-              <FormGroup>
-                <div className="field-header">
-                  <Label>Update Preferences Text</Label>
-                  <div className="field-actions">
-                    <Button
-                      color={isUpdatePreferencesEditable ? 'warning' : 'info'}
-                      size="sm"
-                      onClick={() => setIsUpdatePreferencesEditable(!isUpdatePreferencesEditable)}
-                      className="edit-toggle-button"
-                    >
-                      {isUpdatePreferencesEditable ? 'Cancel' : 'Edit'}
-                    </Button>
-                    <Button
-                      color="secondary"
-                      size="sm"
-                      onClick={handleResetUpdatePreferences}
-                      className="reset-button"
-                    >
-                      Reset
-                    </Button>
-                  </div>
-                </div>
-                {isUpdatePreferencesEditable ? (
-                  <Input
-                    type="textarea"
-                    value={templateData.updatePreferencesText}
-                    onChange={e => handleFieldChange('updatePreferencesText', e.target.value)}
-                    placeholder="Enter update preferences text"
-                    rows={3}
-                  />
-                ) : (
-                  <div className="readonly-message">
-                    {templateData.updatePreferencesText.split('\n').map((line, index) => (
-                      <span key={index}>
-                        {line}
-                        {index < templateData.updatePreferencesText.split('\n').length - 1 && (
-                          <br />
-                        )}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </FormGroup>
-
+              {/* Social Media Links - Moved to top */}
               <FormGroup>
                 <div className="field-header">
                   <Label>Social Media Links</Label>
@@ -1069,6 +856,48 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
                       ))}
                     </div>
                   </div>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <div className="field-header">
+                  <Label>Footer Content (Quote, Address & Preferences)</Label>
+                  <div className="field-actions">
+                    <Button
+                      color={isFooterContentEditable ? 'warning' : 'info'}
+                      size="sm"
+                      onClick={() => setIsFooterContentEditable(!isFooterContentEditable)}
+                      className="edit-toggle-button"
+                    >
+                      {isFooterContentEditable ? 'Cancel' : 'Edit'}
+                    </Button>
+                    <Button
+                      color="secondary"
+                      size="sm"
+                      onClick={handleResetFooterContent}
+                      className="reset-button"
+                    >
+                      Reset
+                    </Button>
+                  </div>
+                </div>
+                {isFooterContentEditable ? (
+                  <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    init={TINY_MCE_INIT_OPTIONS}
+                    value={templateData.footerContent}
+                    onEditorChange={content => handleFieldChange('footerContent', content)}
+                  />
+                ) : (
+                  <div
+                    className="readonly-message"
+                    dangerouslySetInnerHTML={{
+                      __html: templateData.footerContent.replace(
+                        /style="text-align: center;"/g,
+                        `style="text-align: center; color: ${darkMode ? '#ffffff' : '#000000'};"`,
+                      ),
+                    }}
+                  />
                 )}
               </FormGroup>
             </div>

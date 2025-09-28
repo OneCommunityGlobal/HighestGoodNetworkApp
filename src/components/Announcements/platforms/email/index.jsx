@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../../../actions/sendEmails.jsx';
-import NewsletterTemplateEditor from '../../NewsletterTemplateEditor.jsx';
+import NewsletterTemplateEditor from './weeklyUpdatesTemplate/NewsletterTemplateEditor.jsx';
 
-export default function EmailPanel({ title, initialEmail }) {
+export default function EmailPanel({ title, initialEmail, templateData = {} }) {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -20,7 +20,8 @@ export default function EmailPanel({ title, initialEmail }) {
       return;
     }
 
-    const subject = emailMetadata.subject || (title ? 'Anniversary congrats' : 'Weekly Update');
+    // Use default email metadata
+    const subject = emailMetadata.subject || 'One Community Update';
     const fromName = emailMetadata.fromName || 'One Community';
     const fromEmail = emailMetadata.fromEmail || 'updates@onecommunityglobal.org';
     const htmlContent = emailMetadata.htmlContent || emailContent;
@@ -34,7 +35,8 @@ export default function EmailPanel({ title, initialEmail }) {
       return;
     }
 
-    const subject = emailMetadata.subject || 'Weekly Update';
+    // Use default email metadata
+    const subject = emailMetadata.subject || 'One Community Update';
     const fromName = emailMetadata.fromName || 'One Community';
     const fromEmail = emailMetadata.fromEmail || 'updates@onecommunityglobal.org';
     const htmlContent = emailMetadata.htmlContent || emailContent;
