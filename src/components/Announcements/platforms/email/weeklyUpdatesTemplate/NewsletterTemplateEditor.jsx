@@ -10,11 +10,13 @@ import {
   Row,
   Col,
   Spinner,
-  ButtonGroup,
   Card,
   CardBody,
-  Form,
   FormGroup,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from 'reactstrap';
 import OneCommunityNewsletterTemplate from './OneCommunityNewsletterTemplate';
 import {
@@ -40,6 +42,8 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
   const [previewHtml, setPreviewHtml] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isBroadcasting, setIsBroadcasting] = useState(false);
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   // Form validation
   const [validationErrors, setValidationErrors] = useState({});
@@ -54,7 +58,6 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
   const [videoThumbnailFile, setVideoThumbnailFile] = useState(null);
   const [isFooterContentEditable, setIsFooterContentEditable] = useState(false);
   const [isSocialLinksEditable, setIsSocialLinksEditable] = useState(false);
-  const [isSendControlsCollapsed, setIsSendControlsCollapsed] = useState(false);
 
   // Extract YouTube video ID and generate thumbnail
   const extractYouTubeVideoId = url => {
@@ -250,10 +253,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     const templateDataWithDefaults = getTemplateDataWithDefaults(templateData);
 
     const view = ReactDOMServer.renderToStaticMarkup(
-      <OneCommunityNewsletterTemplate
-        templateData={templateDataWithDefaults}
-        darkMode={darkMode}
-      />,
+      <OneCommunityNewsletterTemplate templateData={templateDataWithDefaults} darkMode={false} />,
     );
     return view;
   };
@@ -299,24 +299,21 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     setIsBroadcasting(false);
   };
 
+  // Fullscreen toggle function
+  const toggleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
+  };
+
   // TinyMCE configuration - Enhanced version from time log popup
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     height: 200,
     menubar: false,
     placeholder: 'Enter your content here...',
-    plugins:
-      'advlist autolink autoresize lists link charmap table help wordcount formatpainter fontsize lineheight',
+    plugins: 'lists link autoresize fontsize lineheight',
     toolbar:
-      // eslint-disable-next-line no-multi-str
-      'bold italic underline link removeformat | fontsize lineheight styleselect | alignleft aligncenter alignright alignjustify |\
-                      bullist numlist outdent indent | table | strikethrough forecolor backcolor |\
-                      subscript superscript charmap | help',
+      'bold italic underline | fontsize lineheight | alignleft aligncenter alignright | bullist numlist | link',
     branding: false,
-    toolbar_mode: 'sliding',
-    min_height: 180,
-    max_height: 300,
-    autoresize_bottom_margin: 1,
     content_style: `body, p, div, span, * { 
       cursor: text !important; 
       color: ${darkMode ? '#ffffff' : '#000000'}; 
@@ -335,107 +332,17 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
     },
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
-    // Block formats for headings
-    block_formats:
-      'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Preformatted=pre',
-    // Font size options
-    fontsize_formats:
-      '8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 28pt 30pt 32pt 34pt 36pt 48pt 60pt 72pt 96pt',
-    // Line height options
-    lineheight_formats: '1 1.2 1.4 1.6 1.8 2 2.2 2.4 2.6 2.8 3',
-    // Enhanced features
-    image_title: true,
-    automatic_uploads: true,
-    file_picker_callback(cb) {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.onchange = () => {
-        const file = input.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-          const id = `blobid${Date.now()}`;
-          const { blobCache } = window.tinymce.activeEditor.editorUpload;
-          const base64 = reader.result.split(',')[1];
-          const blobInfo = blobCache.create(id, file, base64);
-          blobCache.add(blobInfo);
-          cb(blobInfo.blobUri(), { title: file.name });
-        };
-        reader.readAsDataURL(file);
-      };
-      // eslint-disable-next-line testing-library/no-node-access
-      input.click();
-    },
-    a11y_advanced_options: true,
-    // Additional advanced features
-    paste_data_images: true,
-    paste_as_text: false,
-    paste_auto_cleanup_on_paste: true,
-    paste_remove_styles_if_webkit: false,
-    paste_merge_formats: true,
-    paste_convert_word_fake_lists: true,
-    paste_enable_default_filters: true,
-    // Link handling
-    link_context_toolbar: true,
-    link_assume_external_targets: true,
-    link_default_protocol: 'https',
-    // Table features
-    table_default_attributes: {
-      border: '1',
-    },
-    table_default_styles: {
-      'border-collapse': 'collapse',
-      width: '100%',
-    },
-    table_cell_advtab: true,
-    table_row_advtab: true,
-    table_advtab: true,
-    // Character map
-    charmap_append: [
-      ['©', 'Copyright'],
-      ['®', 'Registered'],
-      ['™', 'Trademark'],
-      ['€', 'Euro'],
-      ['£', 'Pound'],
-      ['¥', 'Yen'],
-      ['¢', 'Cent'],
-      ['°', 'Degree'],
-      ['±', 'Plus/Minus'],
-      ['×', 'Multiplication'],
-      ['÷', 'Division'],
-      ['∞', 'Infinity'],
-      ['≠', 'Not Equal'],
-      ['≤', 'Less or Equal'],
-      ['≥', 'Greater or Equal'],
-      ['≈', 'Approximately'],
-      ['∑', 'Sum'],
-      ['∏', 'Product'],
-      ['√', 'Square Root'],
-      ['∫', 'Integral'],
-      ['∆', 'Delta'],
-      ['α', 'Alpha'],
-      ['β', 'Beta'],
-      ['γ', 'Gamma'],
-      ['δ', 'Delta'],
-      ['ε', 'Epsilon'],
-      ['ζ', 'Zeta'],
-      ['η', 'Eta'],
-      ['θ', 'Theta'],
-      ['λ', 'Lambda'],
-      ['μ', 'Mu'],
-      ['π', 'Pi'],
-      ['ρ', 'Rho'],
-      ['σ', 'Sigma'],
-      ['τ', 'Tau'],
-      ['φ', 'Phi'],
-      ['χ', 'Chi'],
-      ['ψ', 'Psi'],
-      ['ω', 'Omega'],
-    ],
+    block_formats: 'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3',
+    fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt',
+    lineheight_formats: '1 1.2 1.4 1.6 1.8 2',
   };
 
   return (
-    <div className={`email-composer ${darkMode ? 'dark-mode' : ''}`}>
+    <div
+      className={`email-composer ${darkMode ? 'dark-mode' : ''} ${
+        isFullscreen ? 'fullscreen' : ''
+      }`}
+    >
       {/* Top Action Bar */}
       <div className="composer-toolbar">
         <div className="toolbar-left">
@@ -448,71 +355,132 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
             )}
           </div>
         </div>
+        <div className="toolbar-right">
+          <Button color="secondary" size="md" onClick={toggleFullscreen} className="fullscreen-btn">
+            {isFullscreen ? '⤓ Exit Fullscreen' : '⤢ Fullscreen'}
+          </Button>
+          <Button
+            color="primary"
+            size="md"
+            onClick={() => {
+              if (isFullscreen) {
+                setIsFullscreen(false);
+              }
+              setIsEmailModalOpen(true);
+            }}
+            disabled={!isFormValid}
+            className="email-settings-btn"
+          >
+            📧 Email Settings & Send
+          </Button>
+        </div>
       </div>
 
-      {/* Gmail/Outlook Style Send Controls */}
-      <div className="send-controls">
-        <div className="send-controls-header">
-          <h3>Email Settings & Send</h3>
-          <button
-            type="button"
-            className="dropdown-toggle"
-            onClick={() => setIsSendControlsCollapsed(!isSendControlsCollapsed)}
-          >
-            {isSendControlsCollapsed ? '▼' : '▲'}
-          </button>
-        </div>
+      {/* Email Settings Modal */}
+      <Modal
+        isOpen={isEmailModalOpen}
+        toggle={() => {
+          setIsEmailModalOpen(false);
+          if (isFullscreen) {
+            setIsFullscreen(false);
+          }
+        }}
+        size="lg"
+        className={`email-send-modal ${darkMode ? 'dark-mode' : ''}`}
+      >
+        <ModalHeader
+          toggle={() => {
+            setIsEmailModalOpen(false);
+            if (isFullscreen) {
+              setIsFullscreen(false);
+            }
+          }}
+          className="email-modal-header"
+        >
+          📧 Email Settings & Send
+        </ModalHeader>
+        <ModalBody className="email-modal-body">
+          <div className="email-modal-content">
+            <div className="test-recipients-section">
+              <Label className="control-label">Send to Specific People (Optional)</Label>
+              <Input
+                type="textarea"
+                value={emailTo}
+                onChange={handleEmailListChange}
+                placeholder="Enter email addresses (one per line or comma-separated)"
+                className="test-email-input"
+                rows={3}
+              />
 
-        {!isSendControlsCollapsed && (
-          <div className="send-controls-content">
-            <div className="send-controls-left">
-              <div className="test-recipients-section">
-                <Label className="control-label">Test Recipients</Label>
-                <Input
-                  type="textarea"
-                  value={emailTo}
-                  onChange={handleEmailListChange}
-                  placeholder="Enter email addresses (one per line or comma-separated)"
-                  className="test-email-input"
-                  rows={3}
-                />
-                {emailList.length > 0 && (
-                  <div className="recipient-count">
-                    {emailList.length} recipient{emailList.length !== 1 ? 's' : ''} ready
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="send-controls-right">
-              <div className="send-buttons">
-                {emailList.length > 0 && (
-                  <Button
-                    color="primary"
-                    size="md"
-                    onClick={handleSendToSpecific}
-                    disabled={isSending || !isFormValid || emailValidationErrors.length > 0}
-                    className="test-send-btn"
-                  >
-                    {isSending ? <Spinner size="sm" className="me-2" /> : null}
-                    Send Test ({emailList.length})
-                  </Button>
-                )}
-                <Button
-                  color="success"
-                  size="md"
-                  onClick={handleBroadcast}
-                  disabled={isBroadcasting || !isFormValid}
-                  className="broadcast-btn"
-                >
-                  {isBroadcasting ? <Spinner size="sm" className="me-2" /> : null}
-                  Send to All Subscribers
-                </Button>
-              </div>
+              {/* Simple Status Display */}
+              {emailList.length > 0 && (
+                <div className="email-status">
+                  {emailValidationErrors.length === 0 ? (
+                    <div className="status-valid">
+                      <span className="status-icon">✅</span>
+                      <span className="status-text">
+                        Ready to send to {emailList.length} recipient
+                        {emailList.length !== 1 ? 's' : ''}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="status-invalid">
+                      <span className="status-icon">❌</span>
+                      <span className="status-text">
+                        {emailValidationErrors.length} invalid email
+                        {emailValidationErrors.length !== 1 ? 's' : ''} found
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
+        </ModalBody>
+        <ModalFooter className="email-modal-footer">
+          <div className="modal-actions">
+            {emailList.length > 0 && emailValidationErrors.length === 0 && (
+              <Button
+                color="primary"
+                size="md"
+                onClick={async () => {
+                  await handleSendToSpecific();
+                  setIsEmailModalOpen(false);
+                }}
+                disabled={isSending || !isFormValid}
+                className="test-send-btn"
+              >
+                {isSending ? <Spinner size="sm" className="me-2" /> : null}
+                Send to Specific ({emailList.length})
+              </Button>
+            )}
+            <Button
+              color="success"
+              size="md"
+              onClick={async () => {
+                await handleBroadcast();
+                setIsEmailModalOpen(false);
+              }}
+              disabled={isBroadcasting || !isFormValid}
+              className="broadcast-btn"
+            >
+              {isBroadcasting ? <Spinner size="sm" className="me-2" /> : null}
+              Send to All Subscribers
+            </Button>
+            <Button
+              color="secondary"
+              onClick={() => {
+                setIsEmailModalOpen(false);
+                if (isFullscreen) {
+                  setIsFullscreen(false);
+                }
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </ModalFooter>
+      </Modal>
 
       {/* Error Display */}
       {emailValidationErrors.length > 0 && (
@@ -906,10 +874,6 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
 
         {/* Right Panel - Live Preview */}
         <div className="preview-panel">
-          <div className="preview-header">
-            <h3>Live Preview</h3>
-          </div>
-
           <div className="preview-content">
             <div className="email-preview" dangerouslySetInnerHTML={{ __html: previewHtml }} />
           </div>

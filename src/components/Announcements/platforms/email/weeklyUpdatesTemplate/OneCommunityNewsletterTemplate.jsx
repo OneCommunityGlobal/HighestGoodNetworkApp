@@ -16,7 +16,6 @@ function OneCommunityNewsletterTemplate({ templateData = {}, darkMode = false })
   } = templateData;
   const mainTableStyle = {
     width: '100%',
-    borderCollapse: 'collapse',
     fontFamily: 'Arial, Helvetica, sans-serif',
     fontSize: '14px',
     backgroundColor: darkMode ? '#1a2233' : '#ffffff',
@@ -56,39 +55,15 @@ function OneCommunityNewsletterTemplate({ templateData = {}, darkMode = false })
 
   const videoSectionStyle = {
     marginTop: '20px',
-    marginBottom: '20px',
-  };
-
-  const videoTitleStyle = {
-    fontSize: '16px',
-    fontWeight: 'normal',
-    color: darkMode ? '#ffffff' : '#333333',
-    marginBottom: '15px',
+    marginBottom: '30px',
   };
 
   const videoImageStyle = {
     width: '100%',
     height: 'auto',
     display: 'block',
-    margin: '0 auto 15px auto',
-    textAlign: 'center',
-  };
-
-  const linkStyle = {
-    color: '#0066cc',
-    textDecoration: 'underline',
-  };
-
-  const socialLinksStyle = {
-    textAlign: 'center',
-    padding: '10px 0',
-    marginTop: '5px',
-  };
-
-  const socialLinkStyle = {
-    display: 'inline-block',
-    margin: '0 10px',
-    textDecoration: 'none',
+    margin: '0 auto 25px auto',
+    borderRadius: '8px',
   };
 
   const footerStyle = {
@@ -101,144 +76,140 @@ function OneCommunityNewsletterTemplate({ templateData = {}, darkMode = false })
     borderTop: '1px solid #e0e0e0',
   };
 
+  const socialLinksStyle = {
+    textAlign: 'center',
+    padding: '10px 0',
+    marginTop: '5px',
+  };
+
   return (
-    <table style={mainTableStyle}>
-      <tbody>
-        <tr>
-          <td>
-            <div style={containerStyle}>
-              {/* Header Image */}
-              {headerImageUrl && headerImageUrl.trim() !== '' && (
-                <img src={headerImageUrl} alt="One Community Header" style={headerImageStyle} />
-              )}
+    <div style={mainTableStyle}>
+      <div style={containerStyle}>
+        {/* Header Image */}
+        {headerImageUrl && headerImageUrl.trim() !== '' && (
+          <img src={headerImageUrl} alt="One Community Header" style={headerImageStyle} />
+        )}
 
-              {/* Title */}
-              <h1 style={titleStyle}>{newsletterTitle}</h1>
+        {/* Title */}
+        <h1 style={titleStyle}>{newsletterTitle}</h1>
 
-              {/* Thank You Message */}
+        {/* Thank You Message */}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: thankYouMessage.replace(
+              /color: #333333/g,
+              `color: ${darkMode ? '#ffffff' : '#333333'}`,
+            ),
+          }}
+        />
+
+        {/* This Week's Video Topic Section */}
+        <div style={videoSectionStyle}>
+          <p style={descriptionStyle}>This Week&apos;s Video Topic:</p>
+          <div>
+            {videoThumbnailUrl && videoThumbnailUrl.trim() !== '' && (
+              <img src={videoThumbnailUrl} alt="Video Topic Thumbnail" style={videoImageStyle} />
+            )}
+
+            {/* Mission Message */}
+            {missionMessage && (
               <div
                 dangerouslySetInnerHTML={{
-                  __html: thankYouMessage.replace(
+                  __html: missionMessage.replace(
                     /color: #333333/g,
                     `color: ${darkMode ? '#ffffff' : '#333333'}`,
                   ),
                 }}
               />
+            )}
 
-              {/* Video Section */}
-              <div style={videoSectionStyle}>
-                <p style={videoTitleStyle}>This Week&apos;s Video Topic:</p>
+            {/* Video Link */}
+            <div
+              dangerouslySetInnerHTML={{
+                __html: videoLinkText.replace(
+                  /color: #333333/g,
+                  `color: ${darkMode ? '#ffffff' : '#333333'}`,
+                ),
+              }}
+            />
+          </div>
+        </div>
 
-                {/* Video Thumbnail/Link */}
-                {videoThumbnailUrl &&
-                  videoThumbnailUrl.trim() !== '' &&
-                  videoUrl &&
-                  videoUrl.trim() !== '' && (
-                    <a href={videoUrl} target="_blank" rel="noopener noreferrer">
-                      <img
-                        src={videoThumbnailUrl}
-                        alt="Video Topic Thumbnail"
-                        style={videoImageStyle}
-                      />
-                    </a>
-                  )}
+        {/* Donation Message */}
+        <div
+          dangerouslySetInnerHTML={{
+            __html: donationMessage.replace(
+              /color: #333333/g,
+              `color: ${darkMode ? '#ffffff' : '#333333'}`,
+            ),
+          }}
+        />
 
-                {/* Mission Message */}
-                {missionMessage && (
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: missionMessage.replace(
-                        /color: #333333/g,
-                        `color: ${darkMode ? '#ffffff' : '#333333'}`,
-                      ),
-                    }}
-                  />
-                )}
-
-                {/* Video Link */}
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: videoLinkText.replace(
-                      /color: #333333/g,
-                      `color: ${darkMode ? '#ffffff' : '#333333'}`,
-                    ),
-                  }}
-                />
-              </div>
-
-              {/* Donation Message */}
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: donationMessage.replace(
-                    /color: #333333/g,
-                    `color: ${darkMode ? '#ffffff' : '#333333'}`,
-                  ),
-                }}
-              />
-
-              {/* Footer Section with Light Grey Background */}
-              <div
-                style={{
-                  backgroundColor: darkMode ? '#2a2a2a' : '#f5f5f5',
-                  padding: '20px 0',
-                  marginTop: '30px',
-                  marginLeft: '-20px',
-                  marginRight: '-20px',
-                  paddingLeft: '20px',
-                  paddingRight: '20px',
-                }}
-              >
-                {/* Social Media Links */}
-                <div style={socialLinksStyle}>
-                  {socialLinks.map((social, index) => (
-                    <a
-                      key={index}
-                      href={social.url}
-                      style={socialLinkStyle}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src={social.icon}
-                        alt={social.name}
-                        style={{
-                          width: '24px',
-                          height: '24px',
-                          margin: '0 6px',
-                          verticalAlign: 'middle',
-                        }}
-                      />
-                    </a>
-                  ))}
-                </div>
-
-                {/* Horizontal Line */}
-                <hr
+        {/* Footer Section */}
+        <div
+          style={{
+            backgroundColor: darkMode ? '#2a2a2a' : '#f5f5f5',
+            padding: '20px 0',
+            marginTop: '30px',
+            marginLeft: '-20px',
+            marginRight: '-20px',
+            paddingLeft: '20px',
+            paddingRight: '20px',
+          }}
+        >
+          {/* Social Links */}
+          <div style={socialLinksStyle}>
+            {socialLinks &&
+              socialLinks.map((social, index) => (
+                <a
+                  key={index}
+                  href={social.url}
                   style={{
-                    border: 'none',
-                    borderTop: `1px solid ${darkMode ? '#444444' : '#cccccc'}`,
-                    margin: '15px 0 30px 0',
-                    width: '100%',
+                    display: 'inline-block',
+                    margin: '0 10px',
+                    textDecoration: 'none',
                   }}
-                />
-
-                {/* Footer Content */}
-                <div>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: footerContent.replace(
-                        /style="text-align: center;"/g,
-                        `style="text-align: center; color: ${darkMode ? '#ffffff' : '#000000'};"`,
-                      ),
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={social.icon}
+                    alt={social.name}
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      margin: '0 6px',
+                      verticalAlign: 'middle',
                     }}
                   />
-                </div>
-              </div>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+                </a>
+              ))}
+          </div>
+
+          {/* Horizontal Line */}
+          <hr
+            style={{
+              border: 'none',
+              borderTop: `1px solid ${darkMode ? '#444444' : '#cccccc'}`,
+              margin: '15px 0 30px 0',
+              width: '100%',
+            }}
+          />
+
+          {/* Footer Content */}
+          <div>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: footerContent.replace(
+                  /style="text-align: center;"/g,
+                  `style="text-align: center; color: ${darkMode ? '#ffffff' : '#000000'};"`,
+                ),
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 

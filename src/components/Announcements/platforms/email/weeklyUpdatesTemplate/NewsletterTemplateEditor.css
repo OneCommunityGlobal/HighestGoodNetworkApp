@@ -1,6 +1,6 @@
 /* Email Composer - Full Screen Side-by-Side Layout */
 
-* {
+.email-composer * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -39,76 +39,11 @@
   border-bottom-color: #404040;
 }
 
-/* Gmail/Outlook Style Send Controls */
-.send-controls {
-  background: #f8f9fa;
-  border-bottom: 1px solid #e5e5e5;
-}
 
-.send-controls-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 24px;
-  background: #ffffff;
-  border-bottom: 1px solid #e5e5e5;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
 
-.send-controls-header:hover {
-  background: #f8f9fa;
-}
-
-.send-controls-header h3 {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.dropdown-toggle {
-  background: none;
-  border: none;
-  font-size: 16px;
-  color: #666;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-}
-
-.dropdown-toggle:hover {
-  background: #e9ecef;
-  color: #333;
-}
-
-.send-controls-content {
-  display: flex;
-  flex-direction: column;
-  padding: 16px 24px;
-  gap: 16px;
-}
-
-.send-controls-left {
-  width: 100%;
-}
-
-.subject-field {
-  margin-bottom: 16px;
-}
 
 .test-recipients-section {
   width: 100%;
-}
-
-.send-controls-right {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.test-recipients-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -141,16 +76,7 @@
   background-color: #f8f9ff;
 }
 
-.recipient-list {
-  margin-top: 8px;
-}
 
-.recipient-count {
-  font-size: 13px;
-  color: #28a745;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
 
 .email-tags {
   display: flex;
@@ -1363,7 +1289,7 @@
 }
 
 .email-preview {
-  background: white;
+  background: white !important;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -1371,8 +1297,12 @@
 }
 
 .email-composer.dark-mode .email-preview {
-  background: #2d2d2d;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  background: white !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.email-preview:hover {
+  background: white !important;
 }
 
 /* Responsive Design */
@@ -1578,4 +1508,322 @@
 .col-7, .col-8, .col-9, .col-10, .col-11, .col-12,
 .col-sm, .col-md, .col-lg, .col-xl {
   padding: 0 !important;
+}
+
+/* Email Settings Modal Styles */
+.email-settings-btn {
+  background: #007bff;
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.email-settings-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+  background: #0056b3;
+}
+
+.email-settings-btn:disabled {
+  background: #ccc;
+  box-shadow: none;
+  transform: none;
+  cursor: not-allowed;
+}
+
+.email-modal-content {
+  padding: 20px 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.modal-actions .btn {
+  min-width: 140px;
+}
+
+.email-list-preview {
+  margin-top: 15px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.email-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.email-tag {
+  background: #007bff;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.email-validation-errors {
+  margin-top: 10px;
+}
+
+.email-validation-errors .error-message {
+  color: #dc3545;
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+/* Fullscreen Styles */
+.email-composer.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  background: #ffffff;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.email-composer.dark-mode.fullscreen {
+  background: #1a2233;
+}
+
+
+.fullscreen-btn {
+  background: #6c757d;
+  border: none;
+  color: white;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  margin-right: 12px;
+}
+
+.fullscreen-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+  background: #5a6268;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Ensure header styles are not affected by email composer */
+.header .dropdown-item-hover:hover,
+.navbar .dropdown-item-hover:hover,
+.nav-links .dropdown-item-hover:hover {
+  background-color: #2f4157 !important;
+}
+
+/* Email Send Modal Styles */
+.email-send-modal {
+  z-index: 1050;
+}
+
+.email-send-modal .modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.email-send-modal.dark-mode .modal-content {
+  background-color: #2d3748;
+  color: #f0f2f5;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.email-modal-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  border-radius: 12px 12px 0 0;
+  padding: 20px 25px;
+}
+
+.email-send-modal.dark-mode .email-modal-header {
+  background-color: #3a445c;
+  border-bottom-color: #4a5568;
+}
+
+.email-modal-header .modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+}
+
+.email-send-modal.dark-mode .email-modal-header .modal-title {
+  color: #f0f2f5;
+}
+
+.email-modal-header .btn-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #6c757d;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.email-send-modal.dark-mode .email-modal-header .btn-close {
+  color: #a0aec0;
+}
+
+.email-modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+.email-modal-body {
+  padding: 25px;
+  background-color: #ffffff;
+}
+
+.email-send-modal.dark-mode .email-modal-body {
+  background-color: #2d3748;
+}
+
+.email-modal-footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  border-radius: 0 0 12px 12px;
+  padding: 20px 25px;
+}
+
+.email-send-modal.dark-mode .email-modal-footer {
+  background-color: #3a445c;
+  border-top-color: #4a5568;
+}
+
+/* Email Status Display */
+.email-status {
+  margin-top: 15px;
+}
+
+.status-valid,
+.status-invalid {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-valid {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.email-send-modal.dark-mode .status-valid {
+  background-color: #1e3a2d;
+  color: #28a745;
+  border-color: #28a745;
+}
+
+.status-invalid {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.email-send-modal.dark-mode .status-invalid {
+  background-color: #3a1e1e;
+  color: #dc3545;
+  border-color: #dc3545;
+}
+
+.status-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.status-text {
+  flex: 1;
+}
+
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.modal-actions .btn {
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.modal-actions .btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.email-send-modal.dark-mode .modal-actions .btn:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Test Email Input */
+.test-email-input {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.email-send-modal.dark-mode .test-email-input {
+  background-color: #3a445c;
+  border-color: #4a5568;
+  color: #f0f2f5;
+}
+
+.test-email-input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.email-send-modal.dark-mode .test-email-input:focus {
+  border-color: #66aaff;
+  box-shadow: 0 0 0 0.2rem rgba(102, 170, 255, 0.25);
+}
+
+/* Control Label */
+.control-label {
+  font-weight: 600;
+  margin-bottom: 8px;
+  display: block;
+  color: #333333;
+  font-size: 14px;
+}
+
+.email-send-modal.dark-mode .control-label {
+  color: #f0f2f5;
 }

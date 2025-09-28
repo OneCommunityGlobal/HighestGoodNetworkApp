@@ -1,6 +1,15 @@
 // Default template data for One Community Newsletter Template
 // This file contains all the default values and configuration for the email template
 
+// Helper function to get the base URL for subscription links
+const getBaseUrl = () => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  // Fallback for server-side rendering or when window is not available
+  return 'https://highestgoodnetwork.org';
+};
+
 export const defaultTemplateData = {
   updateNumber: '',
   headerImageUrl:
@@ -12,12 +21,15 @@ export const defaultTemplateData = {
   videoThumbnailUrl: '',
   missionMessage:
     '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;"></p>',
-  videoLinkText:
-    '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Click here for the video on this topic: <a href="#" style="color: #0066cc; text-decoration: underline;">#</a></p>',
+  videoLinkText: '',
   donationMessage:
     '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Love what we\'re doing and want to help? Click <a href="https://onecommunityglobal.org/contribute-join-partner/" target="_blank" rel="noopener noreferrer" style="color: #0066cc; text-decoration: underline;">here</a> to learn what we\'re currently raising money for and to donate. Even $5 dollars helps!</p>',
   footerContent:
-    '<p style="text-align: center;"><em>In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.<br /><br />~ Buckminster Fuller ~</em></p><p style="text-align: center;"><strong style="color: inherit;">Our Mailing Address is:</strong><br />One Community Inc.<br />8954 Camino Real<br />San Gabriel, CA 91775-1932</p><p style="text-align: center;">Want to change how you receive these emails?<br />You can update your <a href="https://www.onecommunityglobal.org/">preferences</a> or <a href="https://www.onecommunityglobal.org/">unsubscribe</a> from this list.</p>',
+    '<p style="text-align: center;"><em>In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.<br /><br />~ Buckminster Fuller ~</em></p><p style="text-align: center;"><strong style="color: inherit;">Our Mailing Address is:</strong><br />One Community Inc.<br />8954 Camino Real<br />San Gabriel, CA 91775-1932</p><p style="text-align: center;">Want to change how you receive these emails?<br />You can <a href="' +
+    getBaseUrl() +
+    '/subscribe" style="color: #0066cc; text-decoration: underline;">subscribe</a> or <a href="' +
+    getBaseUrl() +
+    '/unsubscribe" style="color: #0066cc; text-decoration: underline;">unsubscribe</a> from this list.</p>',
   socialLinks: [
     {
       name: 'Website',
@@ -76,12 +88,15 @@ export const defaultResetValues = {
     '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Thank you for following One Community\'s progress, here is the link to our weekly progress report with our update video and recent progress related imagery, links, and other details: <a href="https://onecommunityglobal.org/open-source-utopia-models" style="color: #0066cc; text-decoration: underline;">https://onecommunityglobal.org/open-source-utopia-models</a></p>',
   missionMessage:
     '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;"></p>',
-  videoLinkText:
-    '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Click here for the video on this topic: <a href="#" style="color: #0066cc; text-decoration: underline;">#</a></p>',
+  videoLinkText: '',
   donationMessage:
     '<p style="font-family: Arial, Helvetica, sans-serif; font-size: 12pt; line-height: 1.5; margin: 0 0 16px 0; color: #333333;">Love what we\'re doing and want to help? Click <a href="https://onecommunityglobal.org/contribute-join-partner/" target="_blank" rel="noopener noreferrer" style="color: #0066cc; text-decoration: underline;">here</a> to learn what we\'re currently raising money for and to donate. Even $5 dollars helps!</p>',
   footerContent:
-    '<p style="text-align: center;"><em>In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.<br /><br />~ Buckminster Fuller ~</em></p><p style="text-align: center;"><strong style="color: inherit;">Our Mailing Address is:</strong><br />One Community Inc.<br />8954 Camino Real<br />San Gabriel, CA 91775-1932</p><p style="text-align: center;">Want to change how you receive these emails?<br />You can update your <a href="https://www.onecommunityglobal.org/">preferences</a> or <a href="https://www.onecommunityglobal.org/">unsubscribe</a> from this list.</p>',
+    '<p style="text-align: center;"><em>In order to change an existing paradigm you do not struggle to try and change the problematic model. You create a new model and make the old one obsolete. That, in essence, is the higher service to which we are all being called.<br /><br />~ Buckminster Fuller ~</em></p><p style="text-align: center;"><strong style="color: inherit;">Our Mailing Address is:</strong><br />One Community Inc.<br />8954 Camino Real<br />San Gabriel, CA 91775-1932</p><p style="text-align: center;">Want to change how you receive these emails?<br />You can <a href="' +
+    getBaseUrl() +
+    '/subscribe" style="color: #0066cc; text-decoration: underline;">subscribe</a> or <a href="' +
+    getBaseUrl() +
+    '/unsubscribe" style="color: #0066cc; text-decoration: underline;">unsubscribe</a> from this list.</p>',
   socialLinks: [
     {
       name: 'Website',
