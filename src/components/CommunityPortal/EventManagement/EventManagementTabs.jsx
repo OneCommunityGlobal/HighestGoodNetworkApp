@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
-import './EventManagementTabs.css';
+import styles from './EventManagementTabs.module.css';
 import CommentsComponent from './Engagement/Comments';
 import FeedbackComponent from './Engagement/Feedback';
 
@@ -49,36 +49,34 @@ function EventManagementTabs() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const renderContent = () => {
-    if (!event) return <div className="content-box">Event not found</div>;
+    if (!event) return <div className={styles.contentBox}>Event not found</div>;
 
     if (activeTab === 'engagement') {
       return (
         <div>
-          <div className={`engagement-sections ${darkMode ? 'engagement-sections-dark' : ''}`}>
+          <div
+            className={`${styles.engagementSections} ${
+              darkMode ? styles.engagementSectionsDark : ''
+            }`}
+          >
             {engagementSections.map(sec => (
               <button
                 type="button"
                 key={sec}
                 onClick={() => handleEngagementSectionClick(sec)}
-                className={`section-btn 
-                  ${activeSection === sec ? 'section-btn-active' : ''} 
-                  ${darkMode ? 'section-btn-dark' : ''} 
-                  ${darkMode && activeSection === sec ? 'section-btn-dark-active' : ''}`}
+                className={`
+                  ${styles.sectionBtn}
+                  ${activeSection === sec ? styles.sectionBtnActive : ''}
+                  ${darkMode ? styles.sectionBtnDark : ''}
+                  ${darkMode && activeSection === sec ? styles.sectionBtnDarkActive : ''}
+                `}
               >
                 {sec}
               </button>
             ))}
           </div>
-          <div className={`content-box ${darkMode ? 'content-box-dark' : ''}`}>
-            {activeSection === 'Feedback' ? (
-              <div>
-                <FeedbackComponent />
-              </div>
-            ) : (
-              <div>
-                <CommentsComponent />
-              </div>
-            )}
+          <div className={`${styles.contentBox} ${darkMode ? styles.contentBoxDark : ''}`}>
+            {activeSection === 'Feedback' ? <FeedbackComponent /> : <CommentsComponent />}
           </div>
         </div>
       );
@@ -87,20 +85,20 @@ function EventManagementTabs() {
     switch (activeTab) {
       case 'analysis':
         return (
-          <div className={`content-box ${darkMode ? 'content-box-dark' : ''}`}>
+          <div className={`${styles.contentBox} ${darkMode ? styles.contentBoxDark : ''}`}>
             Analysis for {event.name}
           </div>
         );
       case 'resources':
         return (
-          <div className={`content-box ${darkMode ? 'content-box-dark' : ''}`}>
+          <div className={`${styles.contentBox} ${darkMode ? styles.contentBoxDark : ''}`}>
             Resources for {event.name}
           </div>
         );
       case 'description':
       default:
         return (
-          <div className={`content-box ${darkMode ? 'content-box-dark' : ''}`}>
+          <div className={`${styles.contentBox} ${darkMode ? styles.contentBoxDark : ''}`}>
             This is a detailed description of the event.
           </div>
         );
@@ -108,26 +106,28 @@ function EventManagementTabs() {
   };
 
   return (
-    <div className={`event-tabs ${darkMode ? 'event-tabs-dark' : ''}`}>
-      <div className={`tab-buttons ${darkMode ? 'tab-buttons-dark' : ''}`}>
+    <div className={`${styles.eventTabs} ${darkMode ? styles.eventTabsDark : ''}`}>
+      <div className={`${styles.tabButtons} ${darkMode ? styles.tabButtonsDark : ''}`}>
         {tabs.map(({ key, label }) => (
           <button
             type="button"
             key={key}
             onClick={() => handleTabClick(key)}
-            // className={`tab-btn ${activeTab === key ? 'active' : ''}`}
-            // className={`tab-btn ${activeTab === key ? 'active' : ''} ${darkMode ? 'tab-btn-dark' : ''}`}
-            className={`tab-btn 
-              ${activeTab === key ? 'active' : ''} 
-              ${darkMode ? 'tab-btn-dark' : ''} 
-              ${darkMode && activeTab === key ? 'active-dark' : ''}`}
+            className={`
+              ${styles.tabBtn}
+              ${activeTab === key ? styles.active : ''}
+              ${darkMode ? styles.tabBtnDark : ''}
+              ${darkMode && activeTab === key ? styles.activeDark : ''}
+            `}
           >
             {label}
           </button>
         ))}
       </div>
 
-      <div className={`main-content ${darkMode ? 'main-content-dark' : ''}`}>{renderContent()}</div>
+      <div className={`${styles.mainContent} ${darkMode ? styles.mainContentDark : ''}`}>
+        {renderContent()}
+      </div>
     </div>
   );
 }

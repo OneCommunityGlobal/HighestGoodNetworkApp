@@ -1,75 +1,74 @@
-.comments-section {
+.commentsSection {
   width: 50%;
   margin: 20px auto;
   font-family: Arial, sans-serif;
 }
-.comments-section-dark{
+.commentsSectionDark {
   width: 50%;
   margin: 20px auto;
   font-family: Arial, sans-serif;
   background-color: #1B2A41;
   color: white;
-  
 }
 
 /* Header Section */
-.comments-header {
+.commentsHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
 }
 
-.comments-title {
+.commentsTitle {
   font-size: 20px;
   font-weight: bold;
   color: black;
   margin: 0;
 }
-.comments-title-dark{
+.commentsTitleDark {
   font-size: 20px;
   font-weight: bold;
   color: white;
   margin: 0;
 }
 
-.comments-title .comments-count {
+.commentsCount {
   font-size: 14px;
   color: gray;
 }
-.comments-title-dark .comments-count{
+.commentsCountDark {
   font-size: 14px;
   color: white;
 }
 
 /* Sorting Options */
-.sort-options {
+.sortOptions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.sort-options-dark{
+.sortOptionsDark {
   display: flex;
   align-items: center;
   gap: 10px;
   color: white;
 }
 
-.filter-dark{
+.filterDark {
   color: white;
 }
 
-.sort-btn-dark{
+.sortBtnDark {
   color: white;
 }
 
-.comment-list {
+.commentList {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.comment-item {
+.commentItem {
   display: flex;
   align-items: flex-start;
   background: #fff;
@@ -78,7 +77,7 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.comment-item-dark{
+.commentItemDark {
   display: flex;
   align-items: flex-start;
   background: #3A506B;
@@ -86,23 +85,35 @@
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
-.comment-content-header {
+
+.commentContentHeader {
   padding-bottom: 10px;
+  justify-content: space-evenly;
 }
 
-.comment-user {
-  padding-left: 15px;
+.commentUser, .replyUser {
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-.comment-content {
-  flex: 1;
-}
-
-.comment-text-dark{
+.replyUserDark, .commentUserDark {
   color: white;
 }
 
-.comment-actions {
+.commentTime, .replyTime {
+  color: rgb(3, 3, 3);
+  font-size: 12px;
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentTextDark, .replyTextDark {
+  color: white;
+}
+
+.commentActions {
   display: flex;
   align-items: center;
   font-size: 12px;
@@ -110,13 +121,13 @@
   gap: 10px;
 }
 
-.comment-votes {
+.commentVotes {
   display: flex;
   gap: 5px;
 }
 
-.like-button,
-.dislike-button {
+.likeButton,
+.dislikeButton {
   background: none;
   border: none;
   cursor: pointer;
@@ -126,7 +137,7 @@
   gap: 5px;
 }
 
-.reply-button {
+.replyButton {
   margin-left: auto;
   color: #007bff;
 }
@@ -138,23 +149,20 @@
   color: #555;
 }
 
-.reply-time {
-  font-size: 12px;
-  color: gray;
-}
-.comment-input-actions {
+.commentInputActions {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
 }
-.post-button {
+.postButton {
   background-color: white;
   color: black;
   padding: 5px;
   border-radius: 3px;
   font-weight: bold;
+  border: 1px solid gray;
 }
-.reply-btn {
+.replyBtn {
   background-color: rgb(241, 146, 91);
   color: rgb(2, 2, 2);
   padding: 4px;
@@ -162,6 +170,16 @@
   border: 1px solid black;
   font-size: small;
 }
-.reply-btn:hover {
+.replyBtn:hover {
   background-color: rgb(245, 124, 11);
+}
+.loadMoreBtn {
+  color: rgb(8, 8, 8);
+  background-color: none;
+  color: rgb(70, 70, 248);
+}
+.loadMoreBtn:hover,
+.replyButton:hover {
+  background: none;
+  background-color: transparent;
 }

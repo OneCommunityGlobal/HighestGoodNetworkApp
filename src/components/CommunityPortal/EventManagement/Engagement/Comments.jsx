@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import './Comments.css';
+import styles from './Comments.module.css';
 import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
 import { FaThumbsUp, FaThumbsDown, FaReply } from 'react-icons/fa';
 
@@ -52,13 +52,9 @@ function Comments() {
 
   const formatTimestamp = date => {
     const diffMinutes = Math.floor((Date.now() - date.getTime()) / 60000);
-    if (diffMinutes < 60) {
-      return `${diffMinutes} min ago`;
-    }
+    if (diffMinutes < 60) return `${diffMinutes} min ago`;
     const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) {
-      return `${diffHours} hr ago`;
-    }
+    if (diffHours < 24) return `${diffHours} hr ago`;
     return `${Math.floor(diffHours / 24)} day${Math.floor(diffHours / 24) > 1 ? 's' : ''} ago`;
   };
 
@@ -78,17 +74,12 @@ function Comments() {
     );
   };
 
-  const handleSortChange = () => {
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
-  };
+  const handleSortChange = () => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
 
   const sortedComments = [...comments].sort((a, b) => {
-    if (filterBy === 'likes') {
-      return sortOrder === 'asc' ? a.likes - b.likes : b.likes - a.likes;
-    }
-    if (filterBy === 'dislikes') {
+    if (filterBy === 'likes') return sortOrder === 'asc' ? a.likes - b.likes : b.likes - a.likes;
+    if (filterBy === 'dislikes')
       return sortOrder === 'asc' ? a.dislikes - b.dislikes : b.dislikes - a.dislikes;
-    }
     return sortOrder === 'asc' ? a.timestamp - b.timestamp : b.timestamp - a.timestamp;
   });
 
@@ -112,6 +103,7 @@ function Comments() {
   const handleReply = parentId => {
     if (!replyText.trim()) return;
     const reply = {
+      user: 'You',
       text: replyText,
       timestamp: new Date(),
     };
@@ -125,40 +117,41 @@ function Comments() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={`comments-section ${darkMode ? 'comments-section-dark' : ''}`}>
+    <div className={`${styles.commentsSection} ${darkMode ? styles.commentsSectionDark : ''}`}>
       {/* Comment Input Box */}
-      <div className="comment-input-box">
+      <div className={styles.commentInputBox}>
         <textarea
           placeholder="Write a comment..."
           value={newComment}
           onChange={e => setNewComment(e.target.value)}
-          className={`comment-input ${darkMode ? 'comment-input-dark' : ''}`}
+          className={`${styles.commentInput} ${darkMode ? styles.commentInputDark : ''}`}
         />
-        <div className="comment-input-actions">
+        <div className={styles.commentInputActions}>
           <select
             value={visibility}
             onChange={e => setVisibility(e.target.value)}
-            className="visibility-select"
+            className={styles.visibilitySelect}
           >
             <option value="public">Public</option>
             <option value="private">Private</option>
           </select>
-          <button type="button" className="post-button" onClick={handlePostComment}>
+          <button type="button" className={styles.postButton} onClick={handlePostComment}>
             Post
           </button>
         </div>
       </div>
+      <br />
 
       {/* Header */}
-      <div className="comments-header">
-        <h2 className={`comments-title ${darkMode ? 'comments-title-dark' : ''}`}>
+      <div className={styles.commentsHeader}>
+        <h2 className={`${styles.commentsTitle} ${darkMode ? styles.commentsTitleDark : ''}`}>
           Comments{' '}
-          <span className={`comments-count ${darkMode ? 'comments-count-dark' : ''}`}>
+          <span className={`${styles.commentsCount} ${darkMode ? styles.commentsCountDark : ''}`}>
             {sortedComments.length}
           </span>
         </h2>
-        <div className={`sort-options ${darkMode ? 'sort-options-dark' : ''}`}>
-          <label className={`filter ${darkMode ? 'filter-dark' : ''}`}>
+        <div className={`${styles.sortOptions} ${darkMode ? styles.sortOptionsDark : ''}`}>
+          <label className={`${styles.filter} ${darkMode ? styles.filterDark : ''}`}>
             Filter by:
             <select value={filterBy} onChange={e => setFilterBy(e.target.value)}>
               <option value="likes">Likes</option>
@@ -169,7 +162,7 @@ function Comments() {
           <button
             type="button"
             onClick={handleSortChange}
-            className={`sort-btn ${darkMode ? 'sort-btn-dark' : ''}`}
+            className={`${styles.sortBtn} ${darkMode ? styles.sortBtnDark : ''}`}
           >
             Sort {sortOrder === 'asc' ? <MdArrowUpward /> : <MdArrowDownward />}
           </button>
@@ -177,27 +170,34 @@ function Comments() {
       </div>
 
       {/* Comment List */}
-      <div className="comment-list">
+      <div className={styles.commentList}>
         {sortedComments.slice(0, visibleCount).map(comment => (
-          <div key={comment.id} className={`comment-item ${darkMode ? 'comment-item-dark' : ''}`}>
-            <div className="comment-content">
-              <div className="comment-content-header">
+          <div
+            key={comment.id}
+            className={`${styles.commentItem} ${darkMode ? styles.commentItemDark : ''}`}
+          >
+            <div className={styles.commentContent}>
+              <div className={styles.commentContentHeader}>
                 <img
                   src={`https://ui-avatars.com/api/?name=${encodeURIComponent(comment.user)}`}
                   alt="User"
-                  className="comment-avatar"
+                  className={styles.commentAvatar}
                 />
-                <strong className="comment-user">{comment.user}</strong>
-                <span className="visibility-tag">{comment.visibility}</span>
+                <strong
+                  className={`${styles.commentUser} ${darkMode ? styles.commentUserDark : ''}`}
+                >
+                  {comment.user}
+                </strong>
+                <span className={styles.visibilityTag}>({comment.visibility})</span>
               </div>
-              <p className={`comment-text ${darkMode ? 'comment-text-dark' : ''}`}>
+              <p className={`${styles.commentText} ${darkMode ? styles.commentTextDark : ''}`}>
                 {comment.text}
               </p>
-              <div className="comment-actions">
-                <div className="comment-votes">
+              <div className={styles.commentActions}>
+                <div className={styles.commentVotes}>
                   <button
                     type="button"
-                    className="like-button"
+                    className={styles.likeButton}
                     onClick={() => handleVote(comment.id, 'like')}
                     disabled={comment.userAction !== null}
                   >
@@ -205,7 +205,7 @@ function Comments() {
                   </button>
                   <button
                     type="button"
-                    className="dislike-button"
+                    className={styles.dislikeButton}
                     onClick={() => handleVote(comment.id, 'dislike')}
                     disabled={comment.userAction !== null}
                   >
@@ -213,11 +213,11 @@ function Comments() {
                   </button>
                 </div>
 
-                <span className="comment-time">{formatTimestamp(comment.timestamp)}</span>
+                <span className={styles.commentTime}>{formatTimestamp(comment.timestamp)}</span>
 
                 <button
                   type="button"
-                  className="reply-button"
+                  className={styles.replyButton}
                   onClick={() => setReplyingTo(comment.id)}
                 >
                   <FaReply /> Reply
@@ -226,14 +226,14 @@ function Comments() {
 
               {/* Reply Input */}
               {replyingTo === comment.id && (
-                <div className="reply-box">
+                <div className={styles.replyBox}>
                   <input
                     type="text"
                     placeholder="Write a reply..."
                     value={replyText}
                     onChange={e => setReplyText(e.target.value)}
                   />
-                  <button className="reply-btn" onClick={() => handleReply(comment.id)}>
+                  <button className={styles.replyBtn} onClick={() => handleReply(comment.id)}>
                     Reply
                   </button>
                 </div>
@@ -241,11 +241,25 @@ function Comments() {
 
               {/* Replies */}
               {comment.replies.length > 0 && (
-                <div className="replies">
+                <div className={styles.replies}>
                   {comment.replies.map((reply, idx) => (
-                    <div key={`${comment.id}-${idx}`} className="reply">
-                      <span>{reply.text}</span>
-                      <span className="reply-time">{formatTimestamp(reply.timestamp)}</span>
+                    <div key={`${comment.id}-${idx}`} className={styles.reply}>
+                      <div className={styles.commentContentHeader}>
+                        <img
+                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(reply.user)}`}
+                          alt="User"
+                          className={styles.replyAvatar}
+                        />
+                        <strong
+                          className={`${styles.replyUser} ${darkMode ? styles.replyUserDark : ''}`}
+                        >
+                          {reply.user}
+                        </strong>
+                        <span className={styles.replyTime}>{formatTimestamp(reply.timestamp)}</span>
+                      </div>
+                      <p className={`${styles.replyText} ${darkMode ? styles.replyTextDark : ''}`}>
+                        {reply.text}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -257,8 +271,10 @@ function Comments() {
 
       {/* Pagination */}
       {visibleCount < sortedComments.length && (
-        <div className="load-more">
-          <button onClick={() => setVisibleCount(visibleCount + 2)}>Load More</button>
+        <div className={styles.loadMore}>
+          <button className={styles.loadMoreBtn} onClick={() => setVisibleCount(visibleCount + 2)}>
+            Load More
+          </button>
         </div>
       )}
     </div>

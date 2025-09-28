@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import './Feedback.css';
+import styles from './Feedback.module.css';
 import { FaSearch } from 'react-icons/fa';
 import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
 import { AiFillStar, AiOutlineStar } from 'react-icons/ai';
@@ -73,50 +73,57 @@ function Feedback() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={`feedback-container ${darkMode ? 'feedback-container-dark' : ''}`}>
-      <h2 className={`feedback-title ${darkMode ? 'feedback-title-dark' : ''}`}>
+    <div className={`${styles.feedbackContainer} ${darkMode ? styles.feedbackContainerDark : ''}`}>
+      <h2 className={`${styles.feedbackTitle} ${darkMode ? styles.feedbackTitleDark : ''}`}>
         Feedback{' '}
-        <span className={`feedback-count ${darkMode ? 'feedback-count-dark' : ''}`}>
+        <span className={`${styles.feedbackCount} ${darkMode ? styles.feedbackCountDark : ''}`}>
           {filteredFeedback.length}
         </span>
       </h2>
 
-      <div className="feedback-header">
-        <div className="search-container">
-          <FaSearch className="icon" />
+      <div className={styles.feedbackHeader}>
+        <div className={styles.searchContainer}>
+          <FaSearch className={styles.icon} />
           <input
             type="text"
             placeholder="Search comments"
             value={searchTerm}
             onChange={handleSearch}
-            className="search-input"
+            className={styles.searchInput}
           />
         </div>
 
-        <div className="sort-options">
-          <label className={`filter ${darkMode ? 'filter-dark' : ''}`}>
+        <div className={styles.sortOptions}>
+          <label className={`${styles.filter} ${darkMode ? styles.filterDark : ''}`}>
             Filter by:
-            <select value={filterBy} onChange={handleFilterChange} className="filter-dropdown">
+            <select
+              value={filterBy}
+              onChange={handleFilterChange}
+              className={styles.filterDropdown}
+            >
               <option value="date">Date</option>
               <option value="rating">Rating</option>
             </select>
           </label>
-          <button type="button" className="sort-btn" onClick={handleSortChange}>
+          <button type="button" className={styles.sortBtn} onClick={handleSortChange}>
             Sort {sortOrder === 'asc' ? <MdArrowUpward /> : <MdArrowDownward />}
           </button>
         </div>
       </div>
 
       {filteredFeedback.map(feedback => (
-        <div key={feedback.id} className={`feedback-card ${darkMode ? 'feedback-card-dark' : ''}`}>
-          <img alt="User" className="avatar" />
-          <div className="feedback-content">
-            <div className="feedback-header">
+        <div
+          key={feedback.id}
+          className={`${styles.feedbackCard} ${darkMode ? styles.feedbackCardDark : ''}`}
+        >
+          <img alt="User" className={styles.avatar} />
+          <div className={styles.feedbackContent}>
+            <div className={styles.feedbackHeader}>
               <strong>{feedback.name}</strong>
-              <span className="feedback-date">{feedback.date}</span>
+              <span className={styles.feedbackDate}>{feedback.date}</span>
             </div>
-            <div className="feedback-rating">{renderStars(feedback)}</div>
-            <p className={`feedback-text ${darkMode ? 'feedback-text-dark' : ''}`}>
+            <div className={styles.feedbackRating}>{renderStars(feedback)}</div>
+            <p className={`${styles.feedbackText} ${darkMode ? styles.feedbackTextDark : ''}`}>
               {feedback.comment}
             </p>
           </div>
