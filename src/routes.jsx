@@ -532,7 +532,7 @@ export default (
           allowedRoles={[UserRole.Owner]}
         />
 
-        <ProtectedRoute path="/job-application" exact component={JobApplicationForm} fallback />
+        <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
