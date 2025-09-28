@@ -11,6 +11,11 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
+TOP_CONVERTED: (limit, startDate, endDate) =>
+`${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+LEAST_CONVERTED: (limit, startDate, endDate) =>
+`${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
@@ -44,6 +49,7 @@ export const ENDPOINTS = {
   BADGE_COUNT: userId => `${APIEndpoint}/badge/badgecount/${userId}`,
   BADGE_COUNT_RESET: userId => `${APIEndpoint}/badge/badgecount/reset/${userId}`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
+  PROJECT_MEMBER_SUMMARY: projectId => `${APIEndpoint}/project/${projectId}/users/summary`,
   PROJECT_MEMBER_ACTIVE: projectId =>
     `${APIEndpoint}/project/${projectId}/users?fields=_id,activeUserCount`,
   PROJECTS_WITH_ACTIVE_USERS: `${APIEndpoint}/projects/with-active-users`,
