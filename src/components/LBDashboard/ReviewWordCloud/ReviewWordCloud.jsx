@@ -3,7 +3,7 @@ import { TagCloud } from 'react-tagcloud';
 import Select from 'react-select';
 import styles from './ReviewWordCloud.module.css';
 
-const ReviewWordCloud = ({ darkMode }) => {
+function ReviewWordCloud({ darkMode }) {
   // Sample reviews data
   const reviewsData = [
     'The Mountain View property in Eco Village has excellent solar panels and a beautiful community garden. Sustainable living at its best with amazing views!',
@@ -13,7 +13,6 @@ const ReviewWordCloud = ({ darkMode }) => {
     'Urban Garden Apartment in City Sanctuary offers perfect sustainable urban living with impressive vertical gardens and efficient rainwater harvesting systems.',
   ];
 
-  // Village options
   const villageOptions = [
     { value: 'Eco Village', label: 'Eco Village' },
     { value: 'Forest Retreat', label: 'Forest Retreat' },
@@ -22,7 +21,6 @@ const ReviewWordCloud = ({ darkMode }) => {
     { value: 'City Sanctuary', label: 'City Sanctuary' },
   ];
 
-  // Property options grouped by village
   const propertyOptions = [
     {
       label: 'Eco Village',
@@ -110,7 +108,6 @@ const ReviewWordCloud = ({ darkMode }) => {
     }),
   };
 
-  // Process text to generate word cloud data
   const processText = text => {
     const stopWords = [
       'the',
@@ -283,6 +280,6 @@ const ReviewWordCloud = ({ darkMode }) => {
       </div>
     </div>
   );
-};
+}
 
 export default ReviewWordCloud;

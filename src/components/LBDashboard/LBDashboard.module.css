@@ -11,7 +11,7 @@ body {
 }
 
 .darkContainer {
-  background: #1C1C1C;
+  background: #1B2A41;
   color: #fff;
 }
 
@@ -20,6 +20,7 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
+  padding: 0 15px;
 }
 
 .title {
@@ -55,6 +56,7 @@ body {
   grid-template-columns: auto 1fr auto;
   gap: 12px 16px;
   align-items: center;
+  margin: 0 15px 18px 15px;
 }
 
 .darkFilterBar {
@@ -166,7 +168,7 @@ body {
 }
 
 .section {
-  margin-bottom: 14px;
+  margin: 0 15px 14px 15px;
 }
 
 .sectionSummary {
