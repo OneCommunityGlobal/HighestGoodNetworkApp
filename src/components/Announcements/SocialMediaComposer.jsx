@@ -55,38 +55,6 @@ export default function SocialMediaComposer({ platform }) {
   };
   const maxLength = 280;
   const [charCount, setCharCount] = useState(0);
-  const loadFacebookSDK = () => {
-    return new Promise((resolve, reject) => {
-      if (window.FB) {
-        resolve(window.FB);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://connect.facebook.net/en_US/sdk.js';
-      script.async = true;
-      script.defer = true;
-      script.crossOrigin = 'anonymous';
-      script.onload = () => {
-        window.fbAsyncInit = function fbAsyncInit() {
-          window.FB.init({
-            appId: '1335318524566163',
-            cookie: true,
-            xfbml: true,
-            version: 'v15.0',
-          });
-          resolve(window.FB);
-        };
-      };
-      script.onerror = error => {
-        reject(error);
-      };
-      document.head.appendChild(script);
-    });
-  };
-
-  useEffect(() => {
-    loadFacebookSDK();
-  }, []);
 
   useEffect(() => {
     setPostContent('');
@@ -192,12 +160,7 @@ export default function SocialMediaComposer({ platform }) {
     }
     const schedules = [];
     const [hours, minutes] = timeContent.split(':').map(Number);
-    // const baseLocalDate = new Date(dateContent);
-    // baseLocalDate.setHours(hours, minutes, 0, 0);
-    // ⬇️ build the local date correctly from parts
     const [year, month, day] = dateContent.split('-').map(Number);
-
-    // month is 0-based
     const baseLocalDate = new Date(year, month - 1, day, hours, minutes, 0, 0);
 
     if (repeatAnnually) {
@@ -295,27 +258,13 @@ export default function SocialMediaComposer({ platform }) {
     return formattedTime;
   };
 
-  const handleEditorChange = (content, editor) => {
-    setEmailContent(content);
-    setEditorContent(content);
-    const charCounts = stripHtml(content).trim();
-    setCharCount(charCounts.length);
-    if (editor) {
-      if (charCounts.length > maxLength) {
-        editor.getBody().style.color = 'red';
-      } else {
-        editor.getBody().style.color = ''; // reset to default
-      }
-    }
-  };
-
   const tabStyle = tabId => {
     const isActive = activeSubTab === tabId;
     return {
       padding: '10px 16px',
       cursor: 'pointer',
       borderBottom: isActive ? '3px solid #007bff' : '3px solid transparent',
-      backgroundColor: isActive ? '#dbeeff' : '#dedede', // ACTIVE vs INACTIVE
+      backgroundColor: isActive ? '#dbeeff' : '#dedede',
       color: isActive ? '#007bff' : '#333',
       fontWeight: isActive ? 'bold' : 'normal',
       flex: 1,
@@ -323,6 +272,25 @@ export default function SocialMediaComposer({ platform }) {
       transition: 'all 0.2s ease-in-out',
     };
   };
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://connect.facebook.net/en_US/sdk.js';
+    script.async = true;
+    script.defer = true;
+    script.crossOrigin = 'anonymous';
+    script.onload = () => {
+      window.fbAsyncInit = function() {
+        window.FB.init({
+          appId: '1335318524566163',
+          cookie: true,
+          xfbml: true,
+          version: 'v15.0',
+        });
+      };
+    };
+    document.head.appendChild(script);
+  }, []);
 
   return (
     <div style={{ padding: '1rem' }}>
@@ -350,9 +318,10 @@ export default function SocialMediaComposer({ platform }) {
           <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             value={postContent}
+            onEditorChange={setPostContent}
             init={{
               height: 300,
-              menubar: true,
+              menubar: false,
               plugins: [
                 'advlist autolink lists link image charmap print preview anchor',
                 'searchreplace visualblocks code fullscreen',
@@ -362,30 +331,13 @@ export default function SocialMediaComposer({ platform }) {
                 'undo redo | formatselect | bold italic backcolor | \
                 alignleft aligncenter alignright alignjustify | \
                 bullist numlist outdent indent | removeformat | help | image',
-              image_title: true,
-              automatic_uploads: true,
-              file_picker_types: 'image',
               file_picker_callback: (cb, value, meta) => {
                 if (meta.filetype === 'image') {
-                  const input = document.createElement('input');
-                  input.setAttribute('type', 'file');
-                  input.setAttribute('accept', 'image/*');
-                  input.onchange = function() {
-                    const file = this.files[0];
-                    const reader = new FileReader();
-                    reader.onload = function() {
-                      const base64 = reader.result; // Base64 string
-                      cb(base64, { title: file.name });
-                    };
-                    reader.readAsDataURL(file);
-                  };
-                  input.click();
+                  pickImageFile(cb);
                 }
               },
             }}
-            onEditorChange={content => setPostContent(content)}
           />
-
           <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
             <button
               onClick={handlePostNow}
@@ -464,14 +416,6 @@ export default function SocialMediaComposer({ platform }) {
             </button>
           ) : (
             <div style={{ marginTop: '15px' }}>
-              {/* <label className="d-block">
-                <h3 className="d-block">Schedule Post for Social Media</h3>
-              </label>
-
-              <label className="d-block">
-                <strong>Select Multiple Platform(s):</strong>
-              </label> */}
-
               <h3 className="d-block">Schedule Post for Social Media</h3>
 
               <strong className="d-block">Select Multiple Platform(s):</strong>
@@ -518,8 +462,7 @@ export default function SocialMediaComposer({ platform }) {
                   </div>
                 )}
               </div>
-
-              <div  className="mb-2">
+              <div className="mb-2">
                 <Label for="timeOfWork">Time</Label>
                 <Input
                   className="responsive-font-size"
@@ -566,9 +509,10 @@ export default function SocialMediaComposer({ platform }) {
                 <Editor
                   tinymceScriptSrc="/tinymce/tinymce.min.js"
                   value={postContent}
+                  onEditorChange={setPostContent}
                   init={{
                     height: 300,
-                    menubar: true,
+                    menubar: false,
                     plugins: [
                       'advlist autolink lists link image charmap print preview anchor',
                       'searchreplace visualblocks code fullscreen',
@@ -576,33 +520,16 @@ export default function SocialMediaComposer({ platform }) {
                     ],
                     toolbar:
                       'undo redo | formatselect | bold italic backcolor | \
-                alignleft aligncenter alignright alignjustify | \
-                bullist numlist outdent indent | removeformat | help | image',
-                    image_title: true,
-                    automatic_uploads: true,
-                    file_picker_types: 'image',
+                    alignleft aligncenter alignright alignjustify | \
+                    bullist numlist outdent indent | removeformat | help | image',
                     file_picker_callback: (cb, value, meta) => {
                       if (meta.filetype === 'image') {
-                        const input = document.createElement('input');
-                        input.setAttribute('type', 'file');
-                        input.setAttribute('accept', 'image/*');
-                        input.onchange = function() {
-                          const file = this.files[0];
-                          const reader = new FileReader();
-                          reader.onload = function() {
-                            const base64 = reader.result; // Base64 string
-                            cb(base64, { title: file.name });
-                          };
-                          reader.readAsDataURL(file);
-                        };
-                        input.click();
+                        pickImageFile(cb);
                       }
                     },
                   }}
-                  onEditorChange={content => setPostContent(content)}
-                />{' '}
+                />
               </div>
-
               <button
                 className="send-button mr-1 ml-1"
                 onClick={handleSubmit}
@@ -633,10 +560,7 @@ export default function SocialMediaComposer({ platform }) {
           )}
 
           <div className="container mx-auto p-4">
-            {/* Title */}
             <h1 className="text-2xl font-bold text-center mb-6">Scheduled Social Media Posts</h1>
-
-            {/* Platform Select Dropdown */}
             <div className="flex text-center mb-6 ml-8" style={{ display: 'flex', gap: '1rem' }}>
               <select
                 className="p-3 border rounded-lg w-96"
@@ -719,8 +643,6 @@ export default function SocialMediaComposer({ platform }) {
               ))}
             </ul>
           </div>
-
-          {/* Example Scheduled Posts List */}
           <ul style={{ marginTop: '1rem' }}>
             <li>Aug 5 at 3:00 PM — “New product alert!”</li>
             <li>Aug 12 at 12:00 PM — “Weekly roundup”</li>
