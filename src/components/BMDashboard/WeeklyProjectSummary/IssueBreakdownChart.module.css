@@ -67,3 +67,26 @@
   background: var(--section-bg, transparent);
   border-radius: 12px;
 }
+
+/* ===========================
+   Recharts globals (CSS Modules safe)
+   =========================== */
+:global(.recharts-cartesian-axis-tick-value) {
+  fill: var(--chart-axis-color, #374151) !important; /* strong contrast */
+  font-weight: 600;
+  font-size: 12px;
+}
+
+:global(.recharts-legend-item-text) {
+  fill: var(--chart-axis-color, #374151) !important;
+  color: var(--chart-axis-color, #374151) !important;
+}
+
+/* Numbers on bars – make them pop on dark bg */
+:global(.recharts-label-list text) {
+  fill: var(--chart-label-color, #111827) !important;
+  paint-order: stroke;                        /* draw outline under fill */
+  stroke: var(--chart-label-outline, rgba(255,255,255,0.65));
+  stroke-width: 3px;
+  font-weight: 700;
+}
