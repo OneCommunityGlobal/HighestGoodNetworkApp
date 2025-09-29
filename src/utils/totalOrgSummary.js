@@ -13,6 +13,7 @@ export const normalizeVolunteerStats = (volunteerNumberStats, totalHoursWorked) 
   return [
     normalizeStats(volunteerNumberStats.activeVolunteers, 'activeVolunteers'),
     normalizeStats(volunteerNumberStats.newVolunteers, 'newVolunteers'),
+    normalizeStats(volunteerNumberStats.mentors, 'mentors'),
     normalizeStats(volunteerNumberStats.deactivatedVolunteers, 'deactivatedVolunteers'),
     {
       ...VOLUNTEER_STATUS_TAB.totalHoursWorked,
