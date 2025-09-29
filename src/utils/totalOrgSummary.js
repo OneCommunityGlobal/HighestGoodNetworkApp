@@ -14,6 +14,7 @@ export const normalizeVolunteerStats = (volunteerNumberStats, totalHoursWorked) 
     normalizeStats(volunteerNumberStats.activeVolunteers, 'activeVolunteers'),
     normalizeStats(volunteerNumberStats.newVolunteers, 'newVolunteers'),
     normalizeStats(volunteerNumberStats.deactivatedVolunteers, 'deactivatedVolunteers'),
+    normalizeStats(volunteerNumberStats.mentors, 'mentors'),
     {
       ...VOLUNTEER_STATUS_TAB.totalHoursWorked,
       number: Math.round(totalHoursWorked.current),
