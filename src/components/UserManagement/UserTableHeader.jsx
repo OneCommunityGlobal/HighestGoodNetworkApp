@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getAllUserProfile } from '../../actions/userManagement';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
 import {
   ACTIVE,
@@ -21,23 +20,18 @@ import {
   MANAGE_FINAL_DAY,
   USER_START_DATE,
   USER_END_DATE,
-  REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 
 /**
  * The header row of the user table.
  */
-const UserTableHeader = React.memo(
-  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
-    console.log("in UserTableHeader");
+const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
     const saveUserInformation = async updatedData => {
       try {
-        console.log("UserTableHeader updatedData: ", updatedData);
         const response = await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE, updatedData);
-        console.log("UserTableHeader response: ", response);
         if (response.status === 200) {
           const toastId = toast.success(' Saving Data...', { autoClose: false });
           await dispatch(getAllUserProfile());
@@ -236,7 +230,22 @@ const UserTableHeader = React.memo(
         </th>
 
         <th scope="col" id="usermanagement_requested_time_off" style={darkModeStyle}>
-          <div className="text-center m-auto">{REQUESTED_TIME_OFF}</div>
+        <div
+          className="text-center m-auto"
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+        >
+          <span>Req.</span>
+          <i
+            className="fa fa-clock-o"
+            aria-hidden="true"
+            title="time"
+            style={{
+              fontSize: '14px',
+              color: darkMode ? 'lightgray' : 'black',
+            }}
+          />
+          <span>off</span>
+        </div>
         </th>
 
         <th scope="col" id="usermanagement_finalday" style={darkModeStyle}>
@@ -306,7 +315,9 @@ const UserTableHeader = React.memo(
         )}
       </tr>
     );
-  },
-);
+  };
+
+const UserTableHeader = React.memo(UserTableHeaderComponent);
+UserTableHeader.displayName = 'UserTableHeader';
 
 export default UserTableHeader;

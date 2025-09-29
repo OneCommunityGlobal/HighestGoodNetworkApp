@@ -217,7 +217,7 @@ function ExperienceDonutChart() {
       <div className="chart-area" style={{ minHeight: '320px', position: 'relative' }}>
         {loading && <LoadingSpinner />}
         {!loading && error && <p className="error-message">{error}</p>}
-        {!loading && !error && !chartData && <p>No Data Available</p>}
+        {!loading && !error && !chartData && <p className="no-data-available">No Data Available</p>}
         {!loading && chartData && (
           <Pie data={chartData.chart} options={options} plugins={[ChartDataLabels]} />
         )}

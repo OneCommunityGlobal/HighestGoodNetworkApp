@@ -1,12 +1,5 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable no-shadow */
-/* eslint-disable react/require-default-props */
-/* eslint-disable react/forbid-prop-types */
-
-// import Select, { components } from 'react-select';
-// import { FixedSizeList as List } from 'react-window';
-import { useEffect } from 'react';
-import { useState } from 'react';
+/* eslint-disable jsx-a11y/label-has-associated-control */
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -30,17 +23,26 @@ import {
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
+import Select, { components } from 'react-select';
 import moment from 'moment';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import 'moment-timezone';
 import axios from 'axios';
 
-import { ENDPOINTS } from 'utils/URL';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { ENDPOINTS } from '~/utils/URL';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import {
+  getSavedFilters,
+  createSavedFilter,
+  deleteSavedFilter,
+  updateSavedFilter,
+  updateSavedFiltersForTeamCodeChange,
+  updateSavedFiltersForIndividualTeamCodeChange,
+} from '../../actions/savedFilterActions';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
@@ -54,7 +56,9 @@ import { setTeamCodes } from '../../actions/teamCodes';
 import CreateFilterModal from './CreateFilterModal';
 import UpdateFilterModal from './UpdateFilterModal';
 import SelectFilterModal from './SelectFilterModal';
-import './WeeklySummariesReport.css';
+// import './WeeklySummariesReport.css';
+import SaveFilterModal from './SaveFilterModal';
+import styles from './WeeklySummariesReport.module.css';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -116,6 +120,8 @@ const initialState = {
   membersFromUnselectedTeam: [],
   filterChoices: [],
   memberDict: {},
+  // Saved filters functionality
+  saveFilterModalOpen: false,
 };
 
 const intialPermissionState = {
@@ -126,6 +132,56 @@ const intialPermissionState = {
   canManageFilter: false,
 };
 
+const CheckboxOption = props => {
+  return (
+    <components.Option {...props}>
+      <input
+        type="checkbox"
+        checked={props.isSelected}
+        onChange={() => null} // react-select handles selection internally
+        style={{ marginRight: 8 }}
+      />
+      <label style={{ fontWeight: 'bold' }}>{props.label}</label>
+    </components.Option>
+  );
+};
+
+// Custom MenuList with "Select All / Deselect All" header
+const CustomMenuList = props => {
+  const { children, selectProps } = props;
+  const allSelected = (selectProps.value?.length || 0) === (selectProps.options?.length || 0);
+
+  const toggleSelectAll = () => {
+    if (allSelected) {
+      selectProps.onChange([]);
+    } else {
+      selectProps.onChange(selectProps.options);
+    }
+  };
+
+  return (
+    <components.MenuList {...props}>
+      <div
+        style={{
+          padding: '6px 10px',
+          borderBottom: '1px solid #ccc',
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <input
+          type="checkbox"
+          checked={allSelected}
+          onChange={toggleSelectAll}
+          style={{ marginRight: 8 }}
+        />
+        <label style={{ fontWeight: 'bold' }}>{allSelected ? 'Deselect All' : 'Select All'}</label>
+      </div>
+      {children}
+    </components.MenuList>
+  );
+};
+
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
   const { loading, infoCollections, getInfoCollections } = props;
@@ -133,6 +189,7 @@ const WeeklySummariesReport = props => {
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
 
+  // Create filters including toggle and extra members
   const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
   const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
   const [selectFilterModalOpen, setSelectFilterModalOpen] = useState(false);
@@ -142,6 +199,9 @@ const WeeklySummariesReport = props => {
   const toggleCreateFilterModal = () => setCreateFilterModalOpen(prev => !prev);
   const toggleUpdateFilterModal = () => setUpdateFilterModalOpen(prev => !prev);
   const toggleSelectFilterModal = () => setSelectFilterModalOpen(prev => !prev);
+  // Saved filters functionality
+  const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
+  const [showModificationModal, setShowModificationModal] = useState(false);
 
   // Misc functionalities
   /**
@@ -352,7 +412,7 @@ const WeeklySummariesReport = props => {
       // Shallow copy and sort
       let summariesCopy = [...summaries];
       summariesCopy = alphabetize(summariesCopy);
-
+      summariesCopy = summariesCopy.filter(summary => summary?.isActive !== false);
       // Add new key of promised hours by week
       summariesCopy = summariesCopy.map(summary => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
@@ -582,6 +642,33 @@ const WeeklySummariesReport = props => {
     }
   };
 
+  // const isLastWeekReport = (startDate, endDate) => {
+  //   const today = new Date();
+  //   const oneWeekAgo = new Date(today);
+  //   oneWeekAgo.setDate(today.getDate() - 7);
+  //   return new Date(startDate) <= oneWeekAgo && new Date(endDate) >= oneWeekAgo;
+  // };
+  const isLastWeekReport = (startDateStr, endDateStr) => {
+    // Parse the summary’s start and end dates
+    const summaryStart = new Date(startDateStr);
+    const summaryEnd = new Date(endDateStr);
+
+    // Use the user's timezone: America/Los_Angeles
+    const weekStartLA = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(1, 'week')
+      .toDate();
+    const weekEndLA = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(1, 'week')
+      .toDate();
+
+    // Check if the summary overlaps any portion of last week
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
+  };
+
   const filterWeeklySummaries = () => {
     try {
       const {
@@ -619,6 +706,30 @@ const WeeklySummariesReport = props => {
       const temp = summaries.filter(summary => {
         const { activeTab } = state;
         const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
+
+        // 🛑 Add this block at the very top inside the filter
+        // if (summary?.isActive === false) {
+        //   const lastWeekStart = moment()
+        //     .tz('America/Los_Angeles')
+        //     .startOf('week')
+        //     .subtract(1, 'week')
+        //     .toDate();
+        //   const lastWeekEnd = moment()
+        //     .tz('America/Los_Angeles')
+        //     .endOf('week')
+        //     .subtract(1, 'week')
+        //     .toDate();
+        //   const summaryStart = new Date(summary.startDate);
+        //   const summaryEnd = new Date(summary.endDate);
+        //   const isLastWeek = summaryStart <= lastWeekEnd && summaryEnd >= lastWeekStart;
+
+        //   if (!isLastWeek) {
+        //     return false; // Skip inactive members unless their summary is from last week
+        //   }
+        // }
+        if (summary?.isActive === false && !isLastWeekReport(summary.startDate, summary.endDate)) {
+          return false;
+        }
         const isMeetCriteria =
           summary.totalTangibleHrs > 80 &&
           summary.daysInTeam > 60 &&
@@ -936,10 +1047,25 @@ const WeeklySummariesReport = props => {
   };
 
   const handleSelectCodeChange = event => {
-    setState(prev => ({
-      ...prev,
-      selectedCodes: event,
-    }));
+    setState(prev => {
+      const selectedValues = event.map(e => e.value);
+      // Move selected codes to the front of the dropdown list // newly added
+      const reorderedTeamCodes = [
+        ...prev.teamCodes.filter(code => selectedValues.includes(code.value)), // selected first
+        ...prev.teamCodes.filter(code => !selectedValues.includes(code.value)), // then the rest
+      ];
+
+      return {
+        ...prev,
+        selectedCodes: event,
+        teamCodes: reorderedTeamCodes,
+      };
+    });
+
+    // Clear current applied filter if selection is cleared
+    if (currentAppliedFilter && event.length === 0) {
+      setCurrentAppliedFilter(null);
+    }
   };
 
   const handleOverHoursToggleChange = () => {
@@ -964,7 +1090,7 @@ const WeeklySummariesReport = props => {
   };
 
   const handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
-    // TODO: This one is NOT updated to the database???
+    // TODO: This might affect Extra Member selected in filters
     try {
       setState(prevState => {
         let { teamCodes, summaries, selectedCodes } = prevState;
@@ -1032,16 +1158,6 @@ const WeeklySummariesReport = props => {
           })
           .filter(Boolean);
 
-        if (!selectedCodes.find(code => code.value === newTeamCode)) {
-          const ids = teamCodeWithUserId[newTeamCode];
-          if (newTeamCode !== undefined && newTeamCode.length > 0) {
-            selectedCodes.push({
-              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
-              value: newTeamCode,
-              _ids: ids,
-            });
-          }
-        }
         // Sort teamCodes by label
         teamCodes
           .sort((a, b) => a.label.localeCompare(b.label))
@@ -1059,7 +1175,190 @@ const WeeklySummariesReport = props => {
           tableData,
         };
       });
+
+      // Update saved filters in the database with the new team code
+      if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
+        // Get the user ID from the userIdObj
+        const userId = Object.keys(userIdObj)[0];
+        props.updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId);
+
+        // Refresh saved filters after the update
+        setTimeout(() => {
+          props.getSavedFilters();
+        }, 1000);
+      }
+
       return null;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const handleSelectColorChange = event => {
+    setState(prevState => ({
+      ...prevState,
+      selectedColors: event,
+    }));
+  };
+
+  const handleReplaceCode = e => {
+    try {
+      e.persist();
+      setState(prevState => ({ ...prevState, replaceCode: e.target?.value }));
+      return e;
+    } catch (error) {
+      return null;
+    }
+  };
+
+  const handleTrophyToggleChange = () => {
+    setState(prevState => ({
+      ...prevState,
+      selectedTrophies: !prevState.selectedTrophies,
+    }));
+  };
+
+  const handleSpecialColorToggleChange = (color, isEnabled) => {
+    setState(prevState => ({
+      ...prevState,
+      selectedSpecialColors: {
+        ...prevState.selectedSpecialColors,
+        [color]: isEnabled,
+      },
+    }));
+  };
+
+  const handleSpecialColorDotClick = (userId, color) => {
+    setState(prevState => {
+      const updatedSummaries = prevState.summaries.map(summary => {
+        if (summary._id === userId) {
+          return { ...summary, filterColor: color };
+        }
+        return summary;
+      });
+
+      // Also update the tab-specific cache
+      const updatedSummariesByTab = {
+        ...prevState.summariesByTab,
+        [prevState.activeTab]: updatedSummaries,
+      };
+
+      return {
+        ...prevState,
+        summaries: updatedSummaries,
+        summariesByTab: updatedSummariesByTab,
+      };
+    });
+  };
+
+  // Saved filters functionality
+  const handleSaveFilter = async filterName => {
+    const filterConfig = {
+      selectedCodes: state.selectedCodes.map(code => code.value),
+    };
+
+    const result = await props.createSavedFilter({
+      name: filterName,
+      filterConfig,
+    });
+
+    if (result.status === 201) {
+      setState(prevState => ({
+        ...prevState,
+        saveFilterModalOpen: false,
+      }));
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleUpdateFilter = async filterName => {
+    if (!currentAppliedFilter) return;
+
+    const filterConfig = {
+      selectedCodes: state.selectedCodes.map(code => code.value),
+    };
+
+    const result = await props.updateSavedFilter(currentAppliedFilter._id, {
+      name: filterName,
+      filterConfig,
+    });
+
+    if (result.status === 200) {
+      setShowModificationModal(false);
+      // Update the current applied filter with the new data
+      setCurrentAppliedFilter(result.data);
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleApplyFilter = filter => {
+    // Validate that the saved filter codes still exist in current team codes
+    const validCodes = filter.filterConfig.selectedCodes
+      .map(codeValue => state.teamCodes.find(currentCode => currentCode.value === codeValue))
+      .filter(Boolean);
+
+    setState(prevState => ({
+      ...prevState,
+      selectedCodes: validCodes,
+    }));
+
+    // Set the current applied filter
+    setCurrentAppliedFilter(filter);
+  };
+
+  const handleDeleteFilter = async filterId => {
+    const result = await props.deleteSavedFilter(filterId);
+    if (result.status === 200) {
+      // Clear current applied filter if it was deleted
+      if (currentAppliedFilter && currentAppliedFilter._id === filterId) {
+        setCurrentAppliedFilter(null);
+      }
+      // Refresh the saved filters list
+      props.getSavedFilters();
+    }
+  };
+
+  const handleOpenSaveFilterModal = () => {
+    // If no current filter is applied, always create a new filter
+    if (!currentAppliedFilter) {
+      setState(prevState => ({
+        ...prevState,
+        saveFilterModalOpen: true,
+      }));
+      return;
+    }
+
+    // If there's a current filter applied, always show modification modal
+    // regardless of whether the selection has changed or not
+    setShowModificationModal(true);
+  };
+
+  const handleCloseSaveFilterModal = () => {
+    setState(prevState => ({
+      ...prevState,
+      saveFilterModalOpen: false,
+    }));
+  };
+
+  const handleCloseModificationModal = () => {
+    setShowModificationModal(false);
+  };
+
+  const passwordInputModalToggle = () => {
+    try {
+      return (
+        <PasswordInputModal
+          open={state.passwordModalOpen}
+          onClose={onpasswordModalClose}
+          checkForValidPwd={checkForValidPwd}
+          isValidPwd={state.isValidPwd}
+          setSummaryRecepientsPopup={setSummaryRecepientsPopup}
+          setAuthpassword={setAuthpassword}
+          authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
+        />
+      );
     } catch (error) {
       return null;
     }
@@ -1177,6 +1476,8 @@ const WeeklySummariesReport = props => {
           toast.success(`Successfully replace codes in all filters`);
         }
         await fetchFilters();
+        // Update saved filters for team code only in the database with the new team code
+        await props.updateSavedFiltersForTeamCodeChange(oldTeamCodes, replaceCode);
 
         setState(prev => ({
           ...prev,
@@ -1206,81 +1507,6 @@ const WeeklySummariesReport = props => {
         ...prev,
         replaceCodeLoading: false,
       }));
-    }
-  };
-
-  const handleSelectColorChange = event => {
-    setState(prevState => ({
-      ...prevState,
-      selectedColors: event,
-    }));
-  };
-
-  const handleReplaceCode = e => {
-    try {
-      e.persist();
-      setState(prevState => ({ ...prevState, replaceCode: e.target?.value }));
-      return e;
-    } catch (error) {
-      return null;
-    }
-  };
-
-  const handleTrophyToggleChange = () => {
-    setState(prevState => ({
-      ...prevState,
-      selectedTrophies: !prevState.selectedTrophies,
-    }));
-  };
-
-  const handleSpecialColorToggleChange = (color, isEnabled) => {
-    setState(prevState => ({
-      ...prevState,
-      selectedSpecialColors: {
-        ...prevState.selectedSpecialColors,
-        [color]: isEnabled,
-      },
-    }));
-  };
-
-  const handleSpecialColorDotClick = (userId, color) => {
-    setState(prevState => {
-      const updatedSummaries = prevState.summaries.map(summary => {
-        if (summary._id === userId) {
-          return { ...summary, filterColor: color };
-        }
-        return summary;
-      });
-
-      // Also update the tab-specific cache
-      const updatedSummariesByTab = {
-        ...prevState.summariesByTab,
-        [prevState.activeTab]: updatedSummaries,
-      };
-
-      return {
-        ...prevState,
-        summaries: updatedSummaries,
-        summariesByTab: updatedSummariesByTab,
-      };
-    });
-  };
-
-  const passwordInputModalToggle = () => {
-    try {
-      return (
-        <PasswordInputModal
-          open={state.passwordModalOpen}
-          onClose={onpasswordModalClose}
-          checkForValidPwd={checkForValidPwd}
-          isValidPwd={state.isValidPwd}
-          setSummaryRecepientsPopup={setSummaryRecepientsPopup}
-          setAuthpassword={setAuthpassword}
-          authEmailWeeklySummaryRecipient={props.authEmailWeeklySummaryRecipient}
-        />
-      );
-    } catch (error) {
-      return null;
     }
   };
 
@@ -1360,6 +1586,39 @@ const WeeklySummariesReport = props => {
     state.summaries,
     state.activeTab,
   ]);
+  useEffect(() => {
+    // On mount: fetch all badges before deriving permissions
+    const fetchInitialPermissions = async () => {
+      try {
+        // Fetch all badges first so we can derive up‑to‑date permissions
+        await props.fetchAllBadges();
+        setPermissionState(prev => ({
+          ...prev,
+          bioEditPermission: props.hasPermission('putUserProfileImportantInfo'),
+          // codeEditPermission: props.hasPermission('replaceTeamCodes'),
+          // allow team‑code edits for specific roles or permissions
+          codeEditPermission:
+            props.hasPermission('editTeamCode') ||
+            props.auth?.user?.role === 'Owner' ||
+            props.auth?.user?.role === 'Administrator',
+          // Permit editing of summary hour counts if the user has that badge
+          canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
+          // Show bio highlights only to users with that permission
+          canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
+        }));
+      } catch (error) {
+        // log failure fetching badges or permissions
+        // eslint-disable-next-line no-console
+        console.error('Failed to fetch badges or permissions', error);
+      }
+    };
+
+    fetchInitialPermissions();
+
+    // Load saved filters when component mounts
+    props.getSavedFilters();
+  }, []);
+
   const { role, darkMode } = props;
   const { error } = props;
   const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -1404,6 +1663,25 @@ const WeeklySummariesReport = props => {
     >
       {passwordInputModalToggle()}
       {popUpElements()}
+      <SaveFilterModal
+        isOpen={state.saveFilterModalOpen}
+        onClose={handleCloseSaveFilterModal}
+        onSave={handleSaveFilter}
+        selectedCodes={state.selectedCodes}
+        darkMode={darkMode}
+        existingFilterNames={props.savedFilters.map(filter => filter.name)}
+      />
+      <SaveFilterModal
+        isOpen={showModificationModal}
+        onClose={handleCloseModificationModal}
+        onSave={handleSaveFilter}
+        onUpdate={handleUpdateFilter}
+        selectedCodes={state.selectedCodes}
+        darkMode={darkMode}
+        existingFilterNames={props.savedFilters.map(filter => filter.name)}
+        currentFilter={currentAppliedFilter}
+        isModification
+      />
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
@@ -1467,14 +1745,6 @@ const WeeklySummariesReport = props => {
                   </DropdownItem>
                 </DropdownMenu>
               </ButtonDropdown>
-              // <Button
-              //   color="primary"
-              //   className="ml-1"
-              //   style={darkMode ? boxStyleDark : boxStyle}
-              //   onClick={() => setCreateFilterModalOpen(true)}
-              // >
-              //   Save Filter
-              // </Button>
             )}
 
             <SelectFilterModal
@@ -1532,20 +1802,20 @@ const WeeklySummariesReport = props => {
       </Row>
       <Row>
         <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-          <div className="filter-container-teamcode">
+          <div className={`${styles.filterContainerTeamcode}`}>
             <div>Select Team Code</div>
-            <div className="filter-style">
+            <div className={`${styles.filterStyle}`}>
               <span>Show Chart</span>
-              <div className="switch-toggle-control">
+              <div className={`${styles.switchToggleControl}`}>
                 <input
                   type="checkbox"
-                  className="switch-toggle"
+                  className={`${styles.switchToggle}`}
                   id="chart-status-toggle"
                   onChange={handleChartStatusToggleChange}
                 />
-                <label className="switch-toggle-label" htmlFor="chart-status-toggle">
-                  <span className="switch-toggle-inner" />
-                  <span className="switch-toggle-switch" />
+                <label className={`${styles.switchToggleLabel}`} htmlFor="chart-status-toggle">
+                  <span className={`${styles.switchToggleInner}`} />
+                  <span className={`${styles.switchToggleSwitch}`} />
                 </label>
               </div>
             </div>
@@ -1583,55 +1853,131 @@ const WeeklySummariesReport = props => {
               </ReactTooltip>
             </>
           )}
-          <MultiSelect
-            className={`report-multi-select-filter top-select text-dark ${
-              darkMode ? 'dark-mode' : ''
-            } ${state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''}`}
-            options={state.teamCodes.map(item => {
-              const [code, count] = item.label.split(' (');
-              return {
-                ...item,
-                label: `${code.padEnd(10, ' ')} (${count}`,
-              };
-            })}
-            value={state.selectedCodes}
-            onChange={handleSelectCodeChange}
-            labelledBy="Select"
-          />
+
+          {/* MultiSelect with Save/Delete Buttons */}
+          <div style={{ position: 'relative' }}>
+            <Select
+              isMulti
+              isSearchable
+              closeMenuOnSelect={false}
+              hideSelectedOptions={false}
+              blurInputOnSelect={false}
+              options={state.teamCodes.map(item => {
+                const [code, count] = item.label.split(' (');
+                return {
+                  ...item,
+                  label: `${code.padEnd(10, ' ')} (${count}`,
+                };
+              })}
+              value={state.selectedCodes}
+              onChange={handleSelectCodeChange}
+              components={{
+                Option: CheckboxOption,
+                MenuList: CustomMenuList,
+              }}
+              placeholder="Search and select team codes..."
+              classNamePrefix="custom-select"
+              className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
+                state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+              }`}
+              styles={{
+                menuList: base => ({
+                  ...base,
+                  maxHeight: '700px',
+                  overflowY: 'auto',
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  fontSize: '13px',
+                  backgroundColor: state.isFocused ? '#eee' : 'white',
+                }),
+              }}
+            />
+
+            {/* Save/Delete Buttons - only visible when codes are selected */}
+            {state.selectedCodes.length > 0 && hasPermissionToFilter && (
+              <div className={styles['filter-save-buttons']}>
+                <button
+                  type="button"
+                  className={`${styles['filter-save-btn']} ${styles.save}`}
+                  onClick={handleOpenSaveFilterModal}
+                  title="Save current filter"
+                  aria-label="Save current filter"
+                >
+                  <i className="fa fa-save" />
+                </button>
+                <button
+                  type="button"
+                  className={`${styles['filter-save-btn']} ${styles.clear}`}
+                  onClick={() => handleSelectCodeChange([])}
+                  title="Clear selection"
+                  aria-label="Clear selection"
+                >
+                  <i className="fa fa-times" />
+                </button>
+              </div>
+            )}
+          </div>
         </Col>
 
         <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
-          <MultiSelect
-            className={`report-multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+          <Select
+            isMulti
+            isSearchable
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
             options={state.colorOptions}
             value={state.selectedColors}
             onChange={handleSelectColorChange}
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
+            placeholder="Select color filters..."
+            classNamePrefix="custom-select"
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              menuList: base => ({
+                ...base,
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }),
+              option: (base, state) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: state.isFocused ? '#eee' : 'white',
+              }),
+            }}
           />
         </Col>
       </Row>
 
       <Row>
         <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
-          <div className="filter-container">
+          <div className={`${styles.filterContainer}`}>
             {hasPermissionToFilter && (
-              <div className="filter-style margin-right">
+              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
                 <span>Filter by Special Colors</span>
                 <div
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
                 >
                   {['purple', 'green', 'navy'].map(color => (
                     <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
-                      <div className="switch-toggle-control">
+                      <div className={`${styles.switchToggleControl}`}>
                         <input
                           type="checkbox"
-                          className="switch-toggle"
+                          className={`${styles.switchToggle}`}
                           id={`${color}-toggle`}
                           checked={state.selectedSpecialColors[color]}
                           onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
                         />
-                        <label className="switch-toggle-label" htmlFor={`${color}-toggle`}>
-                          <span className="switch-toggle-inner" />
-                          <span className="switch-toggle-switch" />
+                        <label
+                          className={`${styles.switchToggleLabel}`}
+                          htmlFor={`${color}-toggle`}
+                        >
+                          <span className={`${styles.switchToggleInner}`} />
+                          <span className={`${styles.switchToggleSwitch}`} />
                         </label>
                       </div>
                       <span
@@ -1651,55 +1997,61 @@ const WeeklySummariesReport = props => {
               </div>
             )}
             {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-              <div className="filter-style margin-right">
+              <div
+                className={`${styles.filterStyle} ${styles.marginRight}`}
+                style={{ minWidth: 'max-content' }}
+              >
                 <span>Filter by Bio Status</span>
-                <div className="switch-toggle-control">
+                <div className={styles.switchToggleControl}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={styles.switchToggle}
                     id="bio-status-toggle"
                     checked={state.selectedBioStatus}
                     onChange={handleBioStatusToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="bio-status-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
+                  <label className={styles.switchToggleLabel} htmlFor="bio-status-toggle">
+                    <span className={styles.switchToggleInner} />
+                    <span className={styles.switchToggleSwitch} />
                   </label>
                 </div>
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className="filter-style margin-right">
+              <div
+                className={`${styles.filterStyle} ${styles.marginRight}`}
+                style={{ minWidth: 'max-content' }}
+              >
                 <span>Filter by Trophies</span>
-                <div className="switch-toggle-control">
+                <div className={`${styles.switchToggleControl}`}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={`${styles.switchToggle}`}
                     id="trophy-toggle"
                     checked={state.selectedTrophies}
                     onChange={handleTrophyToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="trophy-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
+                  <label className={`${styles.switchToggleLabel}`} htmlFor="trophy-toggle">
+                    <span className={`${styles.switchToggleInner}`} />
+                    <span className={`${styles.switchToggleSwitch}`} />
                   </label>
                 </div>
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className="filter-style">
+              <div className={`${styles.filterStyle}`} style={{ minWidth: 'max-content' }}>
                 <span>Filter by Over Hours</span>
-                <div className="switch-toggle-control">
+                <div className={`${styles.switchToggleControl}`}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={`${styles.switchToggle}`}
                     id="over-hours-toggle"
                     checked={state.selectedOverTime}
                     onChange={handleOverHoursToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="over-hours-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
+                  <label className={`${styles.switchToggleLabel}`} htmlFor="over-hours-toggle">
+                    <span className={`${styles.switchToggleInner}`} />
+                    <span className={`${styles.switchToggleSwitch}`} />
                   </label>
                 </div>
                 <ReactTooltip
@@ -1718,6 +2070,57 @@ const WeeklySummariesReport = props => {
         </Col>
       </Row>
 
+      {/* Saved Filter Buttons */}
+      {props.savedFilters && props.savedFilters.length > 0 && (
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}>
+              {props.savedFilters.map(filter => (
+                <div
+                  key={filter._id}
+                  className={`${styles['saved-filter-button']} ${
+                    darkMode ? styles['dark-mode'] : ''
+                  } ${
+                    currentAppliedFilter && currentAppliedFilter._id === filter._id
+                      ? styles['active-filter']
+                      : ''
+                  }`}
+                >
+                  <button
+                    type="button"
+                    className="btn btn-link p-0 mr-1"
+                    style={{
+                      color: 'inherit',
+                      textDecoration: 'none',
+                      fontSize: '0.875rem',
+                      background: 'none',
+                      border: 'none',
+                      padding: 0,
+                      fontWeight:
+                        currentAppliedFilter && currentAppliedFilter._id === filter._id
+                          ? 'bold'
+                          : 'normal',
+                    }}
+                    onClick={() => handleApplyFilter(filter)}
+                    title={`Apply filter: ${filter.name}`}
+                  >
+                    {filter.name}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles['saved-filter-delete-btn']}
+                    onClick={() => handleDeleteFilter(filter._id)}
+                    title="Delete filter"
+                    aria-label={`Delete filter ${filter.name}`}
+                  >
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </Col>
+        </Row>
+      )}
       {/* Select individual members */}
       <Row>
         <Col
@@ -1759,14 +2162,13 @@ const WeeklySummariesReport = props => {
                 </Button>
               )}
               {state.replaceCodeError && (
-                <Alert className="code-alert" color="danger">
+                <Alert className={`${styles.codeAlert}`} color="danger">
                   {state.replaceCodeError}
                 </Alert>
               )}
             </Col>
           )}
       </Row>
-
       {state.chartShow && (
         <Row>
           <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
@@ -1817,7 +2219,11 @@ const WeeklySummariesReport = props => {
                       <Col sm="12" md="6" className="mb-2">
                         From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
                       </Col>
-                      <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                      <Col
+                        sm="12"
+                        md="6"
+                        style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}
+                      >
                         <GeneratePdfReport
                           summaries={state.filteredSummaries}
                           weekIndex={index}
@@ -1868,6 +2274,7 @@ const WeeklySummariesReport = props => {
                               darkMode={darkMode}
                               handleTeamCodeChange={handleTeamCodeChange}
                               loadTrophies={state.loadTrophies}
+                              getWeeklySummariesReport={getWeeklySummariesReport}
                               handleSpecialColorDotClick={handleSpecialColorDotClick}
                             />
                           </Col>
@@ -1905,6 +2312,9 @@ const mapStateToProps = state => ({
   allBadgeData: state.badge?.allBadgeData || [],
   infoCollections: state.infoCollections?.infos || [],
   role: state?.auth?.user?.role || '',
+  savedFilters: state.savedFilters?.savedFilters || [],
+  savedFiltersLoading: state.savedFilters?.loading || false,
+  savedFiltersError: state.savedFilters?.error || null,
   auth: state?.auth || {},
   darkMode: state?.theme?.darkMode || false,
   authEmailWeeklySummaryRecipient: state?.auth?.user?.email || '',
@@ -1918,6 +2328,14 @@ const mapDispatchToProps = dispatch => ({
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
+  createSavedFilter: filter => dispatch(createSavedFilter(filter)),
+  deleteSavedFilter: filterId => dispatch(deleteSavedFilter(filterId)),
+  updateSavedFilter: (filterId, filterData) => dispatch(updateSavedFilter(filterId, filterData)),
+  getSavedFilters: () => dispatch(getSavedFilters()),
+  updateSavedFiltersForTeamCodeChange: (oldTeamCodes, newTeamCode) =>
+    dispatch(updateSavedFiltersForTeamCodeChange(oldTeamCodes, newTeamCode)),
+  updateSavedFiltersForIndividualTeamCodeChange: (oldTeamCode, newTeamCode, userId) =>
+    dispatch(updateSavedFiltersForIndividualTeamCodeChange(oldTeamCode, newTeamCode, userId)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

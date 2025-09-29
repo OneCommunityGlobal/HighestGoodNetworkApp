@@ -8,6 +8,7 @@
   height: 100%;
   padding: 16px;
   overflow: auto;
+  border-radius: 12px;
 }
 
 .report-block-wrapper-dark {

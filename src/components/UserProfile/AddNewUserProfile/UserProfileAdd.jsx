@@ -13,8 +13,8 @@ import {
   TabPane,
   TabContent,
 } from 'reactstrap';
-import CommonInput from 'components/common/Input';
-import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
+import CommonInput from '~/components/common/Input';
+import DuplicateNamePopup from '~/components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
 import { createUser } from '../../../services/userProfileService';
@@ -31,22 +31,23 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { fetchAllProjects } from 'actions/projects';
+import { fetchAllProjects } from '~/actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
+const DEFAULT_PASSWORD = '123Welcome!';
 
 class UserProfileAdd extends Component {
   constructor(props) {
@@ -81,6 +82,7 @@ class UserProfileAdd extends Component {
         createdDate: new Date(),
         actualEmail: '',
         actualPassword: '',
+        defaultPassword: DEFAULT_PASSWORD,
         startDate: new Date(),
         actualConfirmedPassword: '',
       },
@@ -93,6 +95,7 @@ class UserProfileAdd extends Component {
         actualEmail: 'Actual Email is required',
         actualPassword: 'Actual Password is required',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
+        defaultPassword: 'Default Password is required',
         jobTitle: 'Job Title is required',
       },
       timeZoneFilter: '',
@@ -121,6 +124,7 @@ class UserProfileAdd extends Component {
   };
 
   componentDidMount() {
+    // eslint-disable-next-line react/no-direct-mutation-state
     this.state.showphone = true;
     this.onCreateNewUser();
     this.fetchTeamCodeAllUsers();
@@ -143,6 +147,7 @@ class UserProfileAdd extends Component {
       this.setState({ isLoading: false })
 
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
       this.setState({ isLoading: false })
       toast.error(`It was not possible to retrieve the team codes. 
@@ -161,6 +166,7 @@ class UserProfileAdd extends Component {
       actualPassword,
       actualConfirmedPassword,
       jobTitle,
+      defaultPassword,
     } = this.state.userProfile;
 
     const darkMode = this.props.darkMode;
@@ -215,7 +221,7 @@ class UserProfileAdd extends Component {
                         value={lastName}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.lastName)}
+                        invalid={this.state.formSubmitted && (!!this.state.formErrors.lastName || lastName.length < 2)}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
                       {this.state.formSubmitted && this.state.formErrors.lastName && (
@@ -374,6 +380,25 @@ class UserProfileAdd extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label className={fontColor}>Default Password</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <CommonInput
+                        type="password"
+                        name="defaultPassword"
+                        id="defaultPassword"
+                        value={DEFAULT_PASSWORD}
+                        disabled
+                        readOnly
+                        
+                        className="d-flex justify-start items-start"
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
                 {(role === 'Administrator' || role === 'Owner') && (
                   <>
                     <Row className="user-add-row">
@@ -409,7 +434,7 @@ class UserProfileAdd extends Component {
                             value={actualPassword}
                             onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            invalid={!!this.state.formErrors.actualPassword}
                             className="d-flex justify-start items-start"
                           />
                         </FormGroup>
@@ -613,7 +638,7 @@ class UserProfileAdd extends Component {
                   block
                   size="lg"
                   data-testid="create-userProfile"
-                  onClick={() => this.createUserProfile(false)}
+                  onClick={() => this.createUserProfile(true)}
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Create
@@ -681,6 +706,7 @@ class UserProfileAdd extends Component {
     const location = this.state.userProfile.location.userProvided;
 
     if (!location) {
+      // eslint-disable-next-line no-alert
       alert('Please enter valid location');
       return;
     }
@@ -704,25 +730,13 @@ class UserProfileAdd extends Component {
   };
 
   fieldsAreValid = () => {
-    const { firstName, lastName, email, phoneNumber, jobTitle, weeklyCommittedHours } = this.state.userProfile;
-    const emailPattern = /^[\w.%+-]+@[a-zA-Z\d]+(\.[a-zA-Z]{2,})+$/i;
-
-    if (!firstName.trim()) {
-      toast.error('First Name is required');
-      return false;
-    } else if (!lastName.trim()) {
-      toast.error('Last Name is required');
-      return false;
-    } else if (!jobTitle.trim()) {
-      toast.error('Job Title is required');
-      return false;
-    } else if (!email) {
-      toast.error('Email is required');
-      return false;
-    } else if (!email.match(emailPattern)) {
-      toast.error('Email format is invalid');
-      return false;
-    } else if (!phoneNumber) {
+    const firstLength = this.state.userProfile.firstName !== '';
+    const lastLength = this.state.userProfile.lastName !== '';
+    const phone = this.state.userProfile.phoneNumber;
+    const role = this.state.userProfile.role;
+    const defaultPassword = this.state.userProfile.defaultPassword;
+    
+    if (phone === null) {
       toast.error('Phone Number is required');
       return false;
     } else if (!weeklyCommittedHours) {
@@ -731,8 +745,14 @@ class UserProfileAdd extends Component {
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
       return false;
-    } else if (firstName.trim() && lastName.trim() && phoneNumber.length >= 9) {
+    } else if (role !== 'Administrator' && role !== 'Owner' && !defaultPassword) {
+      toast.error('Default Password is required for non-admin users');
+      return false;
+    } else if (firstLength && lastLength && phone.length >= 9) {
       return true;
+    }  else if (this.state.userProfile.lastName.length < 2) {
+      toast.error('Last Name must be at least 2 characters long');
+      return false;
     } else {
       toast.error('Please fill all the required fields');
       return false;
@@ -753,7 +773,7 @@ class UserProfileAdd extends Component {
     else return false;
   };
 
-  createUserProfile = allowsDuplicateName => {
+  createUserProfile = () => {
     let that = this;
     const {
       firstName,
@@ -773,11 +793,11 @@ class UserProfileAdd extends Component {
       actualEmail,
       actualPassword,
       startDate,
-      actualConfirmedPassword
+      actualConfirmedPassword,
     } = that.state.userProfile;
 
     const userData = {
-      password: process.env.REACT_APP_DEF_PWD,
+      password: DEFAULT_PASSWORD,
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -795,12 +815,11 @@ class UserProfileAdd extends Component {
       collaborationPreference: collaborationPreference,
       timeZone: timeZone,
       location: location,
-      allowsDuplicateName: allowsDuplicateName,
+      allowsDuplicateName: true,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
-      trophyFollowedUp: false,
-      actualEmail: actualEmail,
-      actualPassword: actualPassword,
+      actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
+      actualPassword: role === 'Administrator' || role === 'Owner' ? actualPassword : '',
       startDate: startDate,
     };
 
@@ -856,16 +875,9 @@ class UserProfileAdd extends Component {
           .then(res => {
             if (res.data.warning) {
               toast.warn(res.data.warning);
-            } else if (
-              this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-              !allowsDuplicateName
-            ) {
-              this.setState({
-                popupOpen: true,
-              });
-              return;
             } else {
               toast.success('User profile created.');
+              // eslint-disable-next-line react/no-direct-mutation-state
               this.state.userProfile._id = res.data._id;
               if (this.state.teams.length > 0) {
                 this.state.teams.forEach(team => {
@@ -881,62 +893,46 @@ class UserProfileAdd extends Component {
             this.props.userCreated();
           })
           .catch(err => {
-            if (err.response?.data?.type) {
-              switch (err.response.data.type) {
+            const res = err.response;
+            const status = res?.status;
+            const data = res?.data || {};
+
+            if (!res) {
+              toast.error(`Network error: ${err.message}`);
+              return;
+            }
+
+            // Handle Mongoose validation error cleanup
+            if (data?.errors && typeof data.errors === 'object') {
+              const firstErrorKey = Object.keys(data.errors)[0];
+              const firstError = data.errors[firstErrorKey];
+              const fieldName = firstError.path || firstErrorKey;
+              const message = firstError.message;
+          
+              toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}: ${message}`);
+              return;
+            }
+
+            // Fallback to known type-based errors
+            if (data.type) {
+              switch (data.type) {
                 case 'email':
-                  this.setState({
-                    formValid: {
-                      ...that.state.formValid,
-                      email: false,
-                    },
-                    formErrors: {
-                      ...that.state.formErrors,
-                      email: 'Email already exists',
-                    },
-                  });
-                  break;
+                  toast.error('Email already exists');
+                  return;
                 case 'phoneNumber':
-                  this.setState({
-                    formValid: {
-                      ...that.state.formValid,
-                      phoneNumber: false,
-                      showphone: false,
-                    },
-                    formErrors: {
-                      ...that.state.formErrors,
-                      phoneNumber: 'Phone number already exists',
-                    },
-                  });
-                  break;
+                  toast.error('Phone number already exists');
+                  return;
                 case 'name':
-                  if (
-                    this.checkIfDuplicate(userData.firstName, userData.lastName) &&
-                    !allowsDuplicateName
-                  ) {
-                    this.setState({
-                      popupOpen: true,
-                    });
-                  }
-                  break;
+                  toast.error('A user with this first and last name already exists');
+                  return;
                 case 'credentials':
-                  this.setState({
-                    formValid: {
-                      ...that.state.formValid,
-                      email: false,
-                    },
-                    formErrors: {
-                      ...that.state.formErrors,
-                      actualEmail: 'Actual email or password may be incorrect',
-                      actualPassword: 'Actual email or password may be incorrect',
-                    },
-                  });
-                  break;
+                  toast.error('Admin credentials were not accepted');
+                  return;
               }
             }
-            toast.error(
-              err.response?.data?.error ||
-              'An unknown error occurred while attempting to create this user.',
-            );
+
+            // Generic fallback
+            toast.error(`Create failed${status ? ` (${status})` : ''}: ${data.error || 'Unknown error occurred.'}`);
           });
       }
     }
@@ -1046,22 +1042,24 @@ class UserProfileAdd extends Component {
           },
         });
         break;
-      case 'lastName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.length > 0,
-          },
-          formErrors: {
-            ...formErrors,
-            lastName: event.target.value.length > 0 ? '' : 'Last Name required',
-          },
-        });
-        break;
+        case 'lastName':
+          this.setState({
+            userProfile: {
+              ...userProfile,
+              [event.target.id]: event.target.value,
+            },
+            formValid: {
+              ...formValid,
+              [event.target.id]: event.target.value.length >= 2,
+            },
+            formErrors: {
+              ...formErrors,
+              lastName: event.target.value.length >= 2
+                ? ''
+                : 'Last Name cannot be less than 2 characters long',
+            },
+          });
+          break;
       case 'email':
         this.setState({
           userProfile: {
@@ -1250,6 +1248,18 @@ class UserProfileAdd extends Component {
           formErrors: {
             ...formErrors,
             actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
+          },
+        });
+        break;
+      case 'defaultPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            defaultPassword: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            defaultPassword: event.target.value.length > 0 ? '' : 'Default Password is required',
           },
         });
         break;

@@ -16,9 +16,10 @@ import {
 } from 'reactstrap';
 
 import { MultiSelect } from 'react-multi-select-component';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import Select from 'react-select';
 import './CreateFilterModal.css';
+import mainStyles from './WeeklySummariesReport.module.css';
 
 const defaultState = {
   filterName: '',
@@ -367,30 +368,30 @@ function CreateFilterModal({
               </div>
             </Col>
           </Row>
-          <div className="filter-container-start pt-4">
+          <div className={`${mainStyles.filterContainer} pt-4`}>
             {hasPermissionToFilter && (
-              <div className="filter-style margin-right">
+              <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
                 <span>Filter by Special Colors</span>
                 <div
                   style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
                 >
                   {['purple', 'green', 'navy'].map(color => (
                     <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
-                      <div className="switch-toggle-control">
+                      <div className={`${mainStyles.switchToggleControl}`}>
                         <input
                           type="checkbox"
-                          className="switch-toggle"
+                          className={`${mainStyles.switchToggle}`}
                           id={`filter-modal-${color}-toggle`}
                           checked={state.selectedSpecialColors[color]}
                           onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
                         />
-                        <label
-                          className="switch-toggle-label"
-                          htmlFor={`filter-modal-${color}-toggle`}
+                        <Label
+                          className={`${mainStyles.switchToggleLabel}`}
+                          for={`filter-modal-${color}-toggle`}
                         >
-                          <span className="switch-toggle-inner" />
-                          <span className="switch-toggle-switch" />
-                        </label>
+                          <span className={`${mainStyles.switchToggleInner}`} />
+                          <span className={`${mainStyles.switchToggleSwitch}`} />
+                        </Label>
                       </div>
                       <span
                         style={{
@@ -409,58 +410,67 @@ function CreateFilterModal({
               </div>
             )}
           </div>
-          <div className="filter-container-start pt-4">
+          <div className={`${mainStyles.filterContainer} pt-4`}>
             {(hasPermissionToFilter || canSeeBioHighlight) && (
-              <div className="filter-style margin-right">
+              <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
                 <span>Filter by Bio Status</span>
-                <div className="switch-toggle-control">
+                <div className={`${mainStyles.switchToggleControl}`}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={`${mainStyles.switchToggle}`}
                     id="filter-modal-bio-status-toggle"
                     checked={state.selectedBioStatus}
                     onChange={handleBioStatusToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="filter-modal-bio-status-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
-                  </label>
+                  <Label
+                    className={`${mainStyles.switchToggleLabel}`}
+                    for="filter-modal-bio-status-toggle"
+                  >
+                    <span className={`${mainStyles.switchToggleInner}`} />
+                    <span className={`${mainStyles.switchToggleSwitch}`} />
+                  </Label>
                 </div>
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className="filter-style margin-right">
+              <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
                 <span>Filter by Trophies</span>
-                <div className="switch-toggle-control">
+                <div className={`${mainStyles.switchToggleControl}`}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={`${mainStyles.switchToggle}`}
                     checked={state.selectedTrophies}
                     id="filter-modal-trophy-toggle"
                     onChange={handleTrophyToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="filter-modal-trophy-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
-                  </label>
+                  <Label
+                    className={`${mainStyles.switchToggleLabel}`}
+                    for="filter-modal-trophy-toggle"
+                  >
+                    <span className={`${mainStyles.switchToggleInner}`} />
+                    <span className={`${mainStyles.switchToggleSwitch}`} />
+                  </Label>
                 </div>
               </div>
             )}
             {hasPermissionToFilter && (
-              <div className="filter-style">
+              <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
                 <span>Filter by Over Hours</span>
-                <div className="switch-toggle-control">
+                <div className={`${mainStyles.switchToggleControl}`}>
                   <input
                     type="checkbox"
-                    className="switch-toggle"
+                    className={`${mainStyles.switchToggle}`}
                     checked={state.selectedOverTime}
                     id="filter-modal-over-hours-toggle"
                     onChange={handleOverHoursToggleChange}
                   />
-                  <label className="switch-toggle-label" htmlFor="filter-modal-over-hours-toggle">
-                    <span className="switch-toggle-inner" />
-                    <span className="switch-toggle-switch" />
-                  </label>
+                  <Label
+                    className={`${mainStyles.switchToggleLabel}`}
+                    for="filter-modal-over-hours-toggle"
+                  >
+                    <span className={`${mainStyles.switchToggleInner}`} />
+                    <span className={`${mainStyles.switchToggleSwitch}`} />
+                  </Label>
                 </div>
               </div>
             )}
