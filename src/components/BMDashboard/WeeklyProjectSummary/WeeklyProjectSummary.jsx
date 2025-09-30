@@ -18,6 +18,7 @@ import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
+import IssueList from '../Issues/IssuesList';
 import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
@@ -271,9 +272,14 @@ function WeeklyProjectSummary() {
         key: 'Issue Tracking',
         className: 'full',
         content: (
-          <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
-          </div>
+          <>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
+              <IssueList />
+            </div>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
+              <IssueCharts />
+            </div>
+          </>
         ),
       },
       {

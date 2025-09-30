@@ -1,0 +1,337 @@
+/* Main table layout */
+.issue-table {
+  border-collapse: separate;
+  border-spacing: 0 10px; /* vertical spacing between rows */
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.issue-table{
+  background-color: #fff;
+}
+
+/* Header cells */
+.issue-table thead th {
+  font-weight: 600;
+  font-size: 12px;
+  color: #6c757d;
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dee2e6;
+  background-color: white;
+}
+
+/* Body cells */
+.issue-table tbody td {
+  font-size: 10px;
+  color: #212529;
+  padding: 10px 12px;
+  background-color: #ffffff;
+  vertical-align: middle;
+  white-space: normal;     /* Allows text wrapping */
+  word-wrap: break-word;   /* Breaks long words */
+  overflow-wrap: break-word;
+  max-width: 200px;
+}
+
+/* Row styling */
+.issue-table tbody tr {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.rename-active {
+  min-width: 300px; /* Grow the cell */
+  width: 40%;
+}
+
+.rename-input {
+  width: 100%;
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.rename-input:focus {
+  outline: none;
+  border: 1px solid #007bff;
+  box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+/* Button for tags (Virtual / In-person) */
+.issue-table .btn-outline-primary {
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.dropdown-menu-custom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center !important;
+  left: 0 !important;
+  min-width: 4rem!important;
+}
+
+.dropdown-menu-custom .dropdown-item-custom {
+  font-size: 10px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.dropdown-menu-custom .dropdown-item-custom:hover {
+  background-color: #f1f1f1;
+}
+
+/* Dropdown toggle button styling */
+.dropdown-toggle-custom {
+  border: 1px solid #c2b36e !important;
+  background-color: #fff !important;
+  color: #4b4b4b !important;
+  font-size: 10px !important;
+  font-weight: 500;
+  padding: 4px 14px !important;
+  border-radius: 6px !important;
+}
+
+/* Filter section above table */
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+}
+
+  /* Light mode for multi select*/
+.custom-select__control {
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
+  font-size: 10px;
+}
+
+.custom-select__multi-value {
+  background-color: #e2e6ea;
+}
+
+.custom-select__multi-value__label {
+  color: #000;
+}
+
+.custom-select__multi-value__remove {
+  color: #000;
+}
+
+.custom-select__multi-value__remove:hover {
+  background-color: #ced4da;
+  color: #fff;
+}
+
+.date-picker-input {
+  font-size: 10px !important;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+  
+  /* Dark theme overrides */
+.dark-theme .issue-table {
+  background-color: #2b3e59;
+}
+
+.dark-theme .issue-table thead th {
+  background-color: #1c2541;
+  color: #cccccc;
+  border: 1px solid #eceaea;
+}
+
+.dark-theme .issue-table tbody td {
+  background-color: #2b3e59;
+  color: #e0e0e0;
+  border-color: #f6f2f2;
+}
+
+.dark-theme .issue-table tbody tr {
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .btn-outline-primary {
+  background-color: transparent;
+  color: #90caf9;
+  border-color: #90caf9;
+}
+
+.dark-theme .dropdown-menu-custom {
+  background-color: #1c2541;
+  box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.1);
+  min-width: 4rem;
+}
+
+.dark-theme .dropdown-menu-custom .dropdown-item-custom {
+  color: #e0e0e0;
+}
+
+.dark-theme .dropdown-menu-custom .dropdown-item-custom:hover {
+  background-color: #2b3e59;
+}
+
+.dark-theme .dropdown-toggle-custom {
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
+  border: 1px solid #666 !important;
+}
+
+.dark-theme .date-picker-input {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #666 !important;
+  font-size: 10px !important;
+}
+
+/* Dark theme calendar container */
+.dark-theme-calendar {
+  background-color: #2b3e59 !important;
+  color: #fff !important;
+  border: 1px solid #6b6767 !important;
+}
+
+/* Dark theme header */
+.dark-theme-calendar .react-datepicker__header {
+  background-color: #1c2541 !important;
+  color: #e0e0e0 !important;
+  border-bottom: 1px solid #666 !important;
+  font-size: 12px !important;
+}
+
+/* Selected day styling in dark theme */
+.dark-theme-calendar .react-datepicker__day--selected {
+  background-color: #4a90e2 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+/* Hover day styling in dark theme */
+.dark-theme-calendar .react-datepicker__day:hover {
+  background-color: #3b5a81 !important;
+  color: #fff !important;
+  border-radius: 50%;
+}
+
+/* Dark mode for multi select*/
+.dark-theme .custom-select__control, .dark-theme .custom-select__menu {
+  background-color: #2b3e59!important;
+  border-color: #666!important;
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__multi-value {
+  background-color: #1c2541!important;
+}
+
+.dark-theme .custom-select__multi-value__label {
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__multi-value__remove {
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__multi-value__remove:hover {
+  background-color: #ff6b6b!important;
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__option {
+  background-color: #2b3e59!important;
+  color: #fff!important;
+}
+
+.dark-theme .custom-select__option--is-focused {
+  background-color: #6c757d!important;
+}
+
+.dark-theme .custom-select__option--is-selected {
+  background-color: #007bff!important;
+}
+
+/* Filter controls layout for small screens */
+@media (max-width: 768px) {
+  .datepicker-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .datepicker-wrapper .btn {
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .custom-select__control {
+    font-size: 10px;
+  }
+
+  .custom-select__multi-value {
+    font-size: 10px;
+  }
+
+  .table-controls {
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+  }
+}
+
+/* Column adjustments for filter Row */
+@media (max-width: 768px) {
+  .row > .col-md-4,
+  .row > .col-md-2 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+/* Adjust table font and padding for narrow screens */
+@media (max-width: 576px) {
+  .issue-table thead th,
+  .issue-table tbody td {
+    font-size: 8px;
+    padding: 8px 10px;
+  }
+
+  .dropdown-toggle-custom {
+    font-size: 8px !important;
+    padding: 4px 10px !important;
+  }
+
+  .btn-outline-primary {
+    font-size: 8px;
+    padding: 3px 8px;
+  }
+
+  .pagination-container .btn {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+/* Make dropdown menu fill screen width on very small devices */
+@media (max-width: 480px) {
+  .dropdown-menu-custom {
+    width: 100vw;
+    left: 0 !important;
+    right: 0;
+  }
+}
+
+/* Allow table to scroll horizontally on very narrow devices */
+.issue-table {
+  overflow-x: auto;
+  display: block;
+}
