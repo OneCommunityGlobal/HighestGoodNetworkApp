@@ -4,7 +4,14 @@ import Select from 'react-select';
 import styles from './SelectFilterModal.module.scss';
 import mainStyles from './WeeklySummariesReport.module.css';
 
-export default function SelectFilterModal({ isOpen, toggle, filters, applyFilter, memberDict }) {
+export default function SelectFilterModal({
+  isOpen,
+  toggle,
+  filters,
+  applyFilter,
+  memberDict,
+  darkMode,
+}) {
   const [selectedFilter, setSelectedFilter] = useState(null);
 
   useEffect(() => {
@@ -20,18 +27,27 @@ export default function SelectFilterModal({ isOpen, toggle, filters, applyFilter
   };
 
   return (
-    <Modal isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
+    <Modal isOpen={isOpen} toggle={toggle} className={`${darkMode ? mainStyles.darkModal : ''}`}>
       <ModalHeader toggle={toggle}>Select a Filter</ModalHeader>
       <ModalBody>
         <Form>
           <div>Please select a filter:</div>
-          <Select options={filters} value={selectedFilter} onChange={setSelectedFilter} required />
+          <Select
+            className="text-dark"
+            options={filters}
+            value={selectedFilter}
+            onChange={setSelectedFilter}
+            required
+          />
           {selectedFilter && (
             <div>
               <div>Selected Team Codes:</div>
               <div className={styles.smScrollable}>
                 {[...selectedFilter.filterData.selectedCodes].map(item => (
-                  <div key={item} className={styles.chip}>
+                  <div
+                    key={item}
+                    className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
+                  >
                     {item}
                   </div>
                 ))}
@@ -39,7 +55,10 @@ export default function SelectFilterModal({ isOpen, toggle, filters, applyFilter
               <div>Selected Colors:</div>
               <div className={styles.smScrollable}>
                 {[...selectedFilter.filterData.selectedColors].map(item => (
-                  <div key={item} className={styles.chip}>
+                  <div
+                    key={item}
+                    className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
+                  >
                     {item}
                   </div>
                 ))}
@@ -47,7 +66,10 @@ export default function SelectFilterModal({ isOpen, toggle, filters, applyFilter
               <div>Selected Extra Member:</div>
               <div className={styles.smScrollable}>
                 {[...selectedFilter.filterData.selectedExtraMembers].map(item => (
-                  <div key={item} className={styles.chip}>
+                  <div
+                    key={item}
+                    className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
+                  >
                     {item in memberDict ? memberDict[item] : 'N/A'}
                   </div>
                 ))}

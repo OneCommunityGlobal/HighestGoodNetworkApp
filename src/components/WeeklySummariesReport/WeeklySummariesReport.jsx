@@ -1726,11 +1726,10 @@ const WeeklySummariesReport = props => {
             )}
 
             <Button
-              color="primary"
+              color={darkMode ? 'light' : 'primary'}
               outline
               className="mx-1"
               type="button"
-              style={darkMode ? boxStyleDark : boxStyle}
               onClick={() => setSelectFilterModalOpen(true)}
             >
               Select Filter
@@ -1738,18 +1737,23 @@ const WeeklySummariesReport = props => {
             {permissionState.canManageFilter && (
               <ButtonDropdown
                 className="ml-1"
-                style={darkMode ? boxStyleDark : boxStyle}
                 isOpen={saveFilterDropdownOpen}
                 toggle={toggleSaveFilterDropdown}
               >
                 <DropdownToggle caret color="primary">
                   Manage Filters
                 </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem onClick={() => setCreateFilterModalOpen(true)}>
+                <DropdownMenu right className={`${darkMode ? styles['darkMode'] : ''}`}>
+                  <DropdownItem
+                    className={`${darkMode ? styles.filterItemDarkMode : ''}`}
+                    onClick={() => setCreateFilterModalOpen(true)}
+                  >
                     Create New Filter
                   </DropdownItem>
-                  <DropdownItem onClick={() => setUpdateFilterModalOpen(true)}>
+                  <DropdownItem
+                    className={`${darkMode ? styles.filterItemDarkMode : ''}`}
+                    onClick={() => setUpdateFilterModalOpen(true)}
+                  >
                     Update/Delete Filter
                   </DropdownItem>
                 </DropdownMenu>
@@ -1762,6 +1766,7 @@ const WeeklySummariesReport = props => {
               filters={state.filterChoices}
               applyFilter={applyFilter}
               memberDict={state.memberDict}
+              darkMode={darkMode}
             />
             {permissionState.canManageFilter && (
               <UpdateFilterModal
@@ -2140,7 +2145,8 @@ const WeeklySummariesReport = props => {
         >
           <div>Select Extra Members</div>
           <MultiSelect
-            className={`report-multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+            className={`${styles['report-multi-select-filter']} ${styles.textDark} 
+              ${darkMode ? 'dark-mode' : ''}`}
             options={state.membersFromUnselectedTeam}
             value={state.selectedExtraMembers}
             onChange={handleSelectExtraMembersChange}
@@ -2193,7 +2199,7 @@ const WeeklySummariesReport = props => {
           </Col>
         </Row>
       )}
-      <Row>
+      <Row className="my-5">
         <Col lg={{ size: 10, offset: 1 }}>
           <Nav tabs>
             {navItems.map(item => (

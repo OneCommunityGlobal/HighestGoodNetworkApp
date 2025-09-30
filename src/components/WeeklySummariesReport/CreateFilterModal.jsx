@@ -18,7 +18,6 @@ import {
 import { MultiSelect } from 'react-multi-select-component';
 import { ENDPOINTS } from '~/utils/URL';
 import Select from 'react-select';
-import './CreateFilterModal.css';
 import mainStyles from './WeeklySummariesReport.module.css';
 
 const defaultState = {
@@ -224,7 +223,12 @@ function CreateFilterModal({
   };
 
   return (
-    <Modal size="lg" isOpen={isOpen} toggle={toggle} className="weekly-summaries-report">
+    <Modal
+      size="lg"
+      isOpen={isOpen}
+      toggle={toggle}
+      className={`${darkMode ? mainStyles.darkModal : ''}`}
+    >
       <ModalHeader toggle={toggle}>Create A New Filter or Override Existing Filter</ModalHeader>
       <ModalBody>
         <Form>
@@ -241,20 +245,26 @@ function CreateFilterModal({
           </Input>
           {mode === 'update' && (
             <FormGroup>
-              <Label for="filterOverride">Choose a Filter to Override *</Label>
+              <Label for="filterOverride" className={`${darkMode ? mainStyles.textWhite : ''}`}>
+                Choose a Filter to Override *
+              </Label>
 
               <Select
                 id="filterOverride"
                 options={filters}
                 value={selectedFilter}
                 onChange={setSelectedFilter}
-                className={!selectedFilter ? 'error-select' : ''}
+                className={`${mainStyles.textDark} ${
+                  !selectedFilter ? `${mainStyles.errorSelect}` : ''
+                }`}
               />
-              {!selectedFilter && <div className="error-text">Please select a filter</div>}
+              {!selectedFilter && (
+                <div className={`${mainStyles.errorText}`}>Please select a filter</div>
+              )}
             </FormGroup>
           )}
           <FormGroup>
-            <Label for="filterName">
+            <Label for="filterName" className={`${darkMode ? mainStyles.textWhite : ''}`}>
               {mode === 'create'
                 ? 'Filter Name (up to 7 characters) *'
                 : 'New Filter Name (up to 7 characters) *'}
@@ -268,7 +278,9 @@ function CreateFilterModal({
               invalid={!state.filterName}
               maxLength={7}
             />
-            {state.filterName === '' && <div className="error-text">Filter name is required</div>}
+            {state.filterName === '' && (
+              <div className={`${mainStyles.errorText}`}>Filter name is required</div>
+            )}
           </FormGroup>
           <Row className="pt-4">
             <Col md={6} sm={12}>
@@ -276,9 +288,12 @@ function CreateFilterModal({
                 <b>Select Team Code</b>
               </div>
               <MultiSelect
-                className={`report-multi-select-filter top-select text-dark ${
-                  darkMode ? 'dark-mode' : ''
-                } ${state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''}`}
+                className={`top-select ${mainStyles['report-multi-select-filter']} ${
+                  mainStyles.textDark
+                } 
+                  ${darkMode ? 'dark-mode' : ''} ${
+                  state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+                }`}
                 options={state.teamCodes.map(item => {
                   const [code, count] = item.label.split(' (');
                   return {
@@ -293,14 +308,17 @@ function CreateFilterModal({
             </Col>
             <Col md={6} sm={12}>
               <div>Selected Team Code</div>
-              <div className="sm-scrollable">
+              <div className={`${mainStyles.smScrollable}`}>
                 {state.selectedCodes.map(item => (
-                  <div key={item.value} className="chip">
+                  <div
+                    key={item.value}
+                    className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
+                  >
                     {item.label}
                     <Button
                       close
                       onClick={() => removeSelectedCode(item)}
-                      className="min-sz-button px-2"
+                      className={`${mainStyles.minSzButton} px-2`}
                       aria-label={`Remove ${item.label}`}
                     />
                   </div>
@@ -314,7 +332,7 @@ function CreateFilterModal({
                 <b>Select Color</b>
               </div>
               <MultiSelect
-                className={`report-multi-select-filter second-select text-dark ${
+                className={`report-multi-select-filter second-select ${mainStyles.textDark} ${
                   darkMode ? 'dark-mode' : ''
                 }`}
                 options={state.colorOptions}
@@ -324,14 +342,17 @@ function CreateFilterModal({
             </Col>
             <Col md={6} sm={12}>
               <div>Selected Colors</div>
-              <div className="sm-scrollable">
+              <div className={`${mainStyles.smScrollable}`}>
                 {state.selectedColors.map(item => (
-                  <div key={item.value} className="chip">
+                  <div
+                    key={item.value}
+                    className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
+                  >
                     {item.label}
                     <Button
                       close
                       onClick={() => removeSelectedColor(item)}
-                      className="min-sz-button px-2"
+                      className={`${mainStyles.minSzButton} px-2`}
                       aria-label={`Remove ${item.label}`}
                     />
                   </div>
@@ -345,7 +366,9 @@ function CreateFilterModal({
                 <b>Select Extra Members</b>
               </div>
               <MultiSelect
-                className={`report-multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
+                className={`report-multi-select-filter ${mainStyles.textDark} ${
+                  darkMode ? 'dark-mode' : ''
+                }`}
                 options={state.membersFromUnselectedTeam}
                 value={state.selectedExtraMembers}
                 onChange={handleSelectExtraMembersChange}
@@ -353,14 +376,17 @@ function CreateFilterModal({
             </Col>
             <Col md={6} sm={12}>
               <div>Selected Extra Members</div>
-              <div className="sm-scrollable">
+              <div className={`${mainStyles.smScrollable}`}>
                 {state.selectedExtraMembers.map(item => (
-                  <div key={item.value} className="chip">
+                  <div
+                    key={item.value}
+                    className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
+                  >
                     {item.label}
                     <Button
                       close
                       onClick={() => removeSelectedExtraMember(item)}
-                      className="min-sz-button px-2"
+                      className={`${mainStyles.minSzButton} px-2`}
                       aria-label={`Remove ${item.label}`}
                     />
                   </div>
