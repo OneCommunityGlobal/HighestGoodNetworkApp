@@ -162,6 +162,8 @@ import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 
+import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
+
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -701,6 +703,7 @@ export default (
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
+        <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
 
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
