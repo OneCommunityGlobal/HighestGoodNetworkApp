@@ -381,6 +381,25 @@ LEAST_CONVERTED: (limit, startDate, endDate) =>
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
 
+  GET_TOOLS_RENTAL_COST_DATA: (projectIds, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/tools-rental/cost-breakdown`;
+    const params = [];
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (projectIds) params.push(`projectIds=${projectIds}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
+  GET_TOOLS_RENTAL_COST_OVER_TIME_BY_PROJECT: (projectId, startDate, endDate) => {
+    let url = `${APIEndpoint}/bm/rentals/cost-over-time`;
+    const params = [];
+    if (projectId) params.push(`projectId=${projectId}`);
+    if (startDate) params.push(`startDate=${startDate}`);
+    if (endDate) params.push(`endDate=${endDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
+  GET_BM_PROJECTS: `${APIEndpoint}/bm/tools-rental/projects`,
   // Saved Filters endpoints
   SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
   SAVED_FILTER_BY_ID: filterId => `${APIEndpoint}/savedFilters/${filterId}`,
