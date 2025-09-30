@@ -1089,8 +1089,7 @@ const WeeklySummariesReport = props => {
     }));
   };
 
-  const handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
-    // TODO: This might affect Extra Member selected in filters
+  const handleTeamCodeChange = async (oldTeamCode, newTeamCode, userIdObj) => {
     try {
       setState(prevState => {
         let { teamCodes, summaries, selectedCodes } = prevState;
@@ -1176,7 +1175,17 @@ const WeeklySummariesReport = props => {
         };
       });
 
-      // Update saved filters in the database with the new team code
+      // Update the big filters in the database that contains userId
+      if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
+        const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES, {
+          oldTeamCode,
+          newTeamCode,
+          userId: Object.keys(userIdObj)[0],
+        });
+        await fetchFilters();
+      }
+
+      // Update saved filters for team codes only in the database with the new team code
       if (oldTeamCode && newTeamCode && oldTeamCode !== newTeamCode) {
         // Get the user ID from the userIdObj
         const userId = Object.keys(userIdObj)[0];
@@ -1463,8 +1472,7 @@ const WeeklySummariesReport = props => {
           updatedTableData[code] = updatedSummaries.filter(s => s.teamCode === code);
         });
 
-        // Update filters
-
+        // Update big filters
         const res = await axios.post(ENDPOINTS.WEEKLY_SUMMARIES_FILTER_REPLACE_CODES, {
           oldTeamCodes,
           newTeamCode: replaceCode,
@@ -1476,6 +1484,7 @@ const WeeklySummariesReport = props => {
           toast.success(`Successfully replace codes in all filters`);
         }
         await fetchFilters();
+
         // Update saved filters for team code only in the database with the new team code
         await props.updateSavedFiltersForTeamCodeChange(oldTeamCodes, replaceCode);
 
