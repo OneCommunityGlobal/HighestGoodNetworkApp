@@ -626,6 +626,34 @@ export const permissionLabels = [
       },
     ],
   },
+  {
+    label: 'Job Form Management',
+    description: 'Category for all permissions related to job application form management',
+    subperms: [
+      {
+        label: 'Create Form Questions',
+        key: 'createFormQuestions',
+        description:
+          'Gives the user permission to create new question sets for job application forms.',
+      },
+      {
+        label: 'Edit Form Questions',
+        key: 'editFormQuestions',
+        description: 'Gives the user permission to edit existing question sets and form structure.',
+      },
+      {
+        label: 'Delete Form Questions',
+        key: 'deleteFormQuestions',
+        description: 'Gives the user permission to delete questions and question sets from forms.',
+      },
+      {
+        label: 'Manage Job Forms',
+        key: 'manageJobForms',
+        description:
+          'Gives the user permission to create, edit, and manage job application forms and templates.',
+      },
+    ],
+  },
 ];
 
 export const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
