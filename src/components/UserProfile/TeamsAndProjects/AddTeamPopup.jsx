@@ -6,7 +6,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../Header/DarkMode.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
-import axios, { CancelToken } from 'axios';
+// eslint-disable-next-line import/no-named-as-default-member
+import axios from 'axios';
 
 // eslint-disable-next-line react/display-name
 const AddTeamPopup = React.memo((props) => {
@@ -116,6 +117,8 @@ const AddTeamPopup = React.memo((props) => {
       return;
     }
 
+    // eslint-disable-next-line import/no-named-as-default-member
+    const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
 
