@@ -2,7 +2,6 @@ const { FlatCompat } = require('@eslint/eslintrc');
 
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
-// Remove testing-library from shareables
 const shareables = [
   'plugin:react/recommended',
   'plugin:react-hooks/recommended',
