@@ -9,6 +9,7 @@ import {
   Legend,
 } from 'chart.js';
 import styles from '../styles/RadarChart.module.css';
+import { useSelector } from 'react-redux';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -45,6 +46,7 @@ const SKILL_MAPPINGS = [
 ];
 
 function RadarChart({ profileData }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const safeProfileData = profileData || {};
   const skillInfo = safeProfileData.skillInfo || {};
   const general = skillInfo.general || {};
@@ -61,8 +63,8 @@ function RadarChart({ profileData }) {
           const source = skill.value(general) ?? skill.value(frontend) ?? skill.value(backend) ?? 0;
           return source;
         }),
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: darkMode ? 'rgba(37, 98, 240, 0.2)' : 'rgba(255, 99, 132, 0.2)',
+        borderColor: darkMode ? 'rgba(37, 98, 240, 1)' : 'rgba(255, 99, 132, 1)',
         borderWidth: 2,
       },
     ],
@@ -71,10 +73,15 @@ function RadarChart({ profileData }) {
   const chartOptions = {
     scales: {
       r: {
-        angleLines: { display: true },
+        angleLines: {
+          display: true,
+          color: darkMode ? 'gray' : 'lightgray',
+        },
         suggestedMin: 0,
         suggestedMax: 10,
         ticks: { stepSize: 2 },
+        pointLabels: { color: darkMode ? 'white' : 'black' },
+        grid: { color: darkMode ? 'gray' : 'lightgray' },
       },
     },
     plugins: {
