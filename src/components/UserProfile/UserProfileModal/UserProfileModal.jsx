@@ -421,15 +421,36 @@ const handleCcListUpdate = (newCount) => {
 
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div className="d-flex w-100 align-items-center">
-          <Button
-            color="secondary"
-            onClick={openCc}
-            style={boxStyling}
-            className="mr-2"
-          >
-            CC List({ccCount})
-          </Button>
-              <div className="ml-auto d-flex align-items-center" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <Button
+              color="secondary"
+              onClick={openCc}
+              style={boxStyling}
+              className="mr-2"
+            >
+              CC List
+            </Button>
+            {ccCount > 0 && (
+              <span
+              style={{
+              position: 'absolute',
+              top: '-10px',
+              right: '-3px',
+              backgroundColor: '#28a745', // green
+              color: 'white',
+              borderRadius: '50%',
+              padding: '2px 6px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+            }}
+            >
+              {ccCount}
+              </span>
+            )}
+          </div>
+
+            <div className="ml-auto d-flex align-items-center" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
             {type === 'addBlueSquare' && (
               <Button
                 color="danger"
