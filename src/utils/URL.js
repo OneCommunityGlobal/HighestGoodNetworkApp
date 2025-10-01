@@ -353,6 +353,9 @@ LEAST_CONVERTED: (limit, startDate, endDate) =>
   LB_UPDATE_USER_PREFERENCES: `${APIEndpoint}/lb/preferences`,
   LB_MARK_MESSAGES_AS_READ: `${APIEndpoint}/lb/messages/mark-as-read`,
 
+  // Injuries endpoints
+  INJURIES: `${APIEndpoint}/injuries`,
+
   NOTIFICATIONS: `${APIEndpoint}/notification`,
   MSG_NOTIFICATION: `${APIEndpoint}/lb/notifications`,
 
