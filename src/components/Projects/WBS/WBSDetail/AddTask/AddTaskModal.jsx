@@ -19,6 +19,7 @@ import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
+import { getProjectDetail } from '../../../../../actions/project';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /** small v8 DateInput: uses useInput + DayPicker under the hood **/
@@ -74,7 +75,8 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { copiedTask, allMembers, allProjects, error, darkMode, tasks } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode, projectById } = props;
+  const tasksList = Array.isArray(props.tasks) ? props.tasks : [];
 
   const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
@@ -102,30 +104,38 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
-  const activeMembers = useMemo(
-    () =>
-      (allMembers ?? []).filter((u) => {
-        if (!u) return false;
-        // accept boolean true, string "true", or status === "Active"
-        const activeFlag =
-          u.isActive === true || u.isActive === 'true' || u.status === 'Active';
-        return Boolean(activeFlag);
-      }),
-    [allMembers]
-  );
-  
-  const defaultCategory = useMemo(() => {
-    if (props.taskId) {
-      const task = tasks.find(({ _id }) => _id === props.taskId);
-      return task?.category || 'Unspecified';
-    }
-    if (props.projectId) {
-      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
-      return project?.category || 'Unspecified';
-    }
+   const activeMembers = useMemo(() => {
+        const members = Array.isArray(allMembers) ? allMembers : [];
+        const filtered = members.filter(u => {
+          if (!u) return false;
+          // Treat only explicit “inactive” as excluded; accept truthy/unknown as active
+          const isInactive =
+            u.status === 'Inactive' ||
+            u.isActive === false ||
+            String(u?.isActive).toLowerCase() === 'false';
+          return !isInactive;
+        });
+        return filtered.length ? filtered : members; // fallback so the list isn't empty
+      }, [allMembers]);
 
-    return 'Unspecified';
-  }, [props.taskId, props.projectId, tasks, allProjects.projects]);
+const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
+const defaultCategory = useMemo(() => {
+  if (props.taskId) {
+    const task = tasksList.find(t => t?._id === props.taskId);
+    return task?.category ?? 'Unspecified';
+  }
+  if (props.projectId) {
+    // Prefer the category from projectById if available (covers page refresh case)
+    const categoryFromProjectById = projectById?.category;
+    if (typeof categoryFromProjectById === 'string' && categoryFromProjectById.length) {
+      return categoryFromProjectById;
+    }
+    const project = projectsList.find(p => p?._id === props.projectId);
+    return project?.category ?? 'Unspecified';
+  }
+  return 'Unspecified';
+}, [props.taskId, props.projectId, projectById?.category, tasksList.length, projectsList.length]);
+
 
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -178,12 +188,10 @@ function AddTaskModal(props) {
   };
 
   const getNewNum = () => {
-    if (!Array.isArray(props.tasks)) return '1';
+    if (!tasksList.length) return '1';
     let newNum;
-    // eslint-disable-next-line no-console
-    console.log(props)
     if (props.taskId) {
-      const numOfLastInnerLevelTask = props.tasks.reduce((num, task) => {
+      const numOfLastInnerLevelTask = tasksList.reduce((num, task) => {
         if (task.mother === props.taskId) {
           const numIndexArray = task.num.split('.');
           const numOfInnerLevel = numIndexArray[props.level];
@@ -195,7 +203,7 @@ function AddTaskModal(props) {
       currentLevelIndexes[props.level] = `${numOfLastInnerLevelTask + 1}`;
       newNum = currentLevelIndexes.join('.');
     } else {
-      const numOfLastLevelOneTask = props.tasks.reduce((num, task) => {
+      const numOfLastLevelOneTask = tasksList.reduce((num, task) => {
         if (task.level === 1) {
           const numIndexArray = task.num.split('.');
           const indexOfFirstNum = numIndexArray[0];
@@ -381,7 +389,7 @@ function AddTaskModal(props) {
       setNewTaskNum(getNewNum());
     }
     // setNewTaskNum(getNewNum());
-  }, [modal]);
+  }, [modal, tasksList.length, props.taskId, props.level, props.taskNum]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -390,12 +398,12 @@ function AddTaskModal(props) {
   useEffect(() => {
     if (error === 'outdated') {
       // eslint-disable-next-line no-alert
-      alert('Database changed since your page loaded , click OK to get the newest data!');
+      // alert('Database changed since your page loaded , click OK to get the newest data!');
       props.load();
     } else {
       clear();
     }
-  }, [error, tasks]);
+  }, [error, tasksList.length]);
 
   useEffect(() => {
     if (!modal) {
@@ -407,10 +415,28 @@ function AddTaskModal(props) {
   }, [modal]);
 
   useEffect(() => {
-    if (modal && props.projectId && (!allMembers || allMembers.length === 0)) {
-      props.fetchAllMembers(props.projectId);
+        if (modal) {
+          // Fetch for this project whenever modal opens (or project changes)
+          props.fetchAllMembers(props.projectId ?? '');
+        }
+      }, [modal, props.projectId]);
+
+  useEffect(() => {
+    if (!modal || !props.projectId) return;
+
+    const categoryKnownFromProjectById =
+      Boolean(projectById && projectById._id === props.projectId && projectById.category);
+    const categoryKnownFromAllProjects =
+      Boolean(projectsList.find(p => p?._id === props.projectId)?.category);
+
+    if (!categoryKnownFromProjectById && !categoryKnownFromAllProjects) {
+      props.getProjectDetail(props.projectId);
     }
-  }, [modal, props.projectId, allMembers?.length]);
+  }, [modal, props.projectId, projectById, projectsList]);
+
+  useEffect(() => {
+    setCategory(defaultCategory);
+  }, [defaultCategory]);
   
   const fontColor = darkMode ? 'text-light' : '';
 
@@ -490,16 +516,17 @@ function AddTaskModal(props) {
                   Resources
                 </label>
                 <div className="add_new_task_form-input_area">
-                  <TagsSearch
-                    placeholder="Add resources"
-                    members={activeMembers}
-                    addResources={addResources}
-                    removeResource={removeResource}
-                    resourceItems={resourceItems}
-                    disableInput={false}
-                    inputTestId="resource-input"
-                    projectId={props.projectId}
-                  />
+                <TagsSearch
+                  key={`tags-${props.projectId}-${activeMembers.length}`}
+                  placeholder="Add resources"
+                  members={activeMembers}
+                  addResources={addResources}
+                  removeResource={removeResource}
+                  resourceItems={resourceItems}
+                  disableInput={false}
+                  inputTestId="resource-input"
+                  projectId={props.projectId}
+                />
                 </div>
               </div>
 
@@ -917,14 +944,16 @@ const mapStateToProps = state => ({
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
+  projectById: state.projectById,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
 });
 
 const mapDispatchToProps = {
   addNewTask,
   fetchAllMembers,
+  getProjectDetail,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);
