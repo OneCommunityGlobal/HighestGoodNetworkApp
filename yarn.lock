@@ -4345,8 +4345,10 @@ eslint-plugin-react@^7.37.5:
     string.prototype.matchall "^4.0.12"
     string.prototype.repeat "^1.0.0"
 
-eslint-plugin-testing-library@^7.6.0:
-  version "7.6.0"
+eslint-plugin-testing-library@^7.11.0:
+  version "7.11.0"
+  resolved "https://registry.npmjs.org/eslint-plugin-testing-library/-/eslint-plugin-testing-library-7.11.0.tgz"
+  integrity sha512-Fpzn3L3RUmoCEZKaQCkkEgjM2bQwrPrgz7E2StlP1bymjaPmYMHY0knTh0CAAA7Nk+9jkEV2nDhq1UsLR4TbbA==
   dependencies:
     "@typescript-eslint/scope-manager" "^8.15.0"
     "@typescript-eslint/utils" "^8.15.0"
