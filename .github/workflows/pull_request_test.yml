@@ -5,6 +5,25 @@ on:
     branches:
       - development
 jobs:
+  # CSS Enforcement
+  css-check:
+    name: Enforce CSS Modules
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check for disallowed .css files
+        run: |
+          disallowed=$(git ls-files '*.css' | grep -vE '(\.module\.css$|index.css)' || true)
+          if [ -n "$disallowed" ]; then
+            echo "Disallowed CSS file detected! Only '.module.css' (or 'index.css') files are permitted."
+            echo "$disallowed"
+            exit 1
+          else
+            echo "CSS Module Enforcement Check passed"
+          fi
+
   test:
     runs-on: ubuntu-latest
     steps:
