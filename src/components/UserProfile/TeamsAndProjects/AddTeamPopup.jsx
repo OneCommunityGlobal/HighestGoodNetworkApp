@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../Header/DarkMode.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
-import axios from 'axios';
+import axios, { CancelToken } from 'axios';
 
 // eslint-disable-next-line react/display-name
 const AddTeamPopup = React.memo((props) => {
@@ -116,7 +116,6 @@ const AddTeamPopup = React.memo((props) => {
       return;
     }
 
-    const CancelToken = axios.CancelToken;
     const source = CancelToken.source();
     const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
 
@@ -207,14 +206,13 @@ const AddTeamPopup = React.memo((props) => {
     <Modal
       isOpen={props.open}
       toggle={closePopup}
-      autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
         Add Team
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
-        <label className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left' }}>
+        <label  htmlFor="team-search" className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left' }}>
           Add to Team
         </label>
 
