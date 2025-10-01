@@ -1,6 +1,7 @@
 import { Table, Button } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import TypeRow from './TypeRow';
+import styles from './TypesList.module.css';
 
 export function TypesTable(props) {
   const { itemTypes } = props;
@@ -12,7 +13,7 @@ export function TypesTable(props) {
   return (
     <div>
       <Table hover borderless size="sm" responsive="lg">
-        <thead className="table-header">
+        <thead className={`${styles.tableHeader}`}>
           <tr>
             <th>ID</th>
             <th>Name</th>
@@ -27,7 +28,7 @@ export function TypesTable(props) {
           ))}
         </tbody>
       </Table>
-      <Button size="sm" className="btn-types" onClick={handleAdd}>
+      <Button size="sm" className={`${styles.btnTypes}`} onClick={handleAdd}>
         Add
       </Button>
     </div>

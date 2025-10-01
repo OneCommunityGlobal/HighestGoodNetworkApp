@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store'; // If using Redux
+import { configureStore } from 'redux-mock-store'; // If using Redux
 import MockAssignTableRow from '../MockData/MockAssignTableRow';
 import AssignBadgePopup from '../AssignBadgePopup';
 import { themeMock } from '__tests__/mockStates';
@@ -11,6 +11,7 @@ const mockStore = configureStore([]);
 const initialState = {
   badge: {
     selectedBadges: [],
+    allBadges: [], 
   },
   theme: themeMock,
 };
@@ -36,7 +37,7 @@ const renderComponent = () => {
   );
 };
 
-// jest.mock('axios');
+// vi.mock('axios');
 
 /** **************************************TEST CASES******************************************** */
 describe('Userprofile/AssignBadgePopup Test Suite', () => {
@@ -75,6 +76,7 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
     expect(tables.length).toBe(1);
 
     // Find all table headers (th elements) within the table
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const tableHeaders = tables[0].querySelectorAll('th');
 
     // Ensure there are exactly three table headers in the table
@@ -100,16 +102,23 @@ describe('Userprofile/AssignBadgePopup Test Suite', () => {
     expect(message1).toBeNull();
     expect(message2).toBeNull();
   });
-  it('Test case 7 : Assert the tool tip message  displayed when  hover overed', async () => {
-    renderComponent();
+it('Test case 7 : Assert the tool tip message displayed when hovered', async () => {
+  renderComponent();
 
-    const tooltip = screen.getByTestId('test-selectinfo');
-    fireEvent.mouseEnter(tooltip);
-    const message1 = await screen.findByText(tip1);
-    const message2 = await screen.findByText(tip2);
-    expect(message1).toBeInTheDocument();
-    expect(message2).toBeInTheDocument();
-  });
+  const infoIcon = screen.getByTestId('test-selectinfo');
+  fireEvent.mouseOver(infoIcon);  // trigger the tooltip
+
+  // now grab the two <p> elements by their test IDs
+  const tip1El = await screen.findByTestId('test-tip1');
+  const tip2El = await screen.findByTestId('test-tip2');
+
+  expect(tip1El).toBeInTheDocument();
+  // just check the unique leading phrase
+  expect(tip1El).toHaveTextContent('Hmmm, little blank boxes');
+  
+  expect(tip2El).toBeInTheDocument();
+  expect(tip2El).toHaveTextContent('Want to assign multiple of the same badge');
+});
   it('Test case 8 : Assert if the pop up has a submit button ', async () => {
     renderComponent();
     const button = screen.getByTestId('test-button');

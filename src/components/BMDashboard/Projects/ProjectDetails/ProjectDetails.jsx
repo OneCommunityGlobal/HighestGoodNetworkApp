@@ -9,29 +9,42 @@ import './ProjectDetails.css';
 
 function ProjectDetails() {
   const { projectId } = useParams();
-  // Get all projects
-  const projects = useSelector(state => state.bmProjects);
-  // Filter the current project based off of the id from the url param
-  const currProject = projects.filter(project => String(project._id) === projectId);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const projects = useSelector(state => state.bmProjects) || [];
+  const currProject = projects.find(project => String(project._id) === String(projectId));
+
+  if (!currProject) {
+    return (
+      <Container className="project-details text-center mt-5">
+        <h2 className="text-danger">Project Not Found</h2>
+        <p>Please check if the project exists or try selecting another project.</p>
+      </Container>
+    );
+  }
 
   return (
-    <Container className="project-details" fluid>
-      <Row className="mx-auto">
-        <h1>Project {currProject[0].name} Dashboard</h1>
-      </Row>
-      <Row className="mx-auto">
-        <LogBar projectId={projectId} />
-      </Row>
-      <Row className="mx-auto">
-        <Col lg="6" md="12">
-          <RentedToolsDisplay />
+    <Container fluid className={`${darkMode ? 'project-details-dark' : 'project-details'}  `}>
+      <Row className="justify-content-center">
+        <Col xs="12" lg="10">
+          <h1
+            className={`${darkMode ? 'project-details-title-dark' : 'project-details-title'} mb-2 `}
+          >
+            {currProject.name} Dashboard{' '}
+          </h1>
+
+          <LogBar projectId={projectId} />
+
+          <Row className="mt-4">
+            <Col md="6" className="mb-4">
+              <RentedToolsDisplay projectId={projectId} />
+            </Col>
+            <Col md="6" className="mb-4">
+              <MaterialsDisplay projectId={projectId} />
+            </Col>
+          </Row>
+
+          <ProjectLog projectId={projectId} />
         </Col>
-        <Col lg="6" md="12">
-          <MaterialsDisplay />
-        </Col>
-      </Row>
-      <Row className="mx-auto">
-        <ProjectLog />
       </Row>
     </Container>
   );

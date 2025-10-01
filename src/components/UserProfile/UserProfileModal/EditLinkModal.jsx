@@ -12,9 +12,9 @@ import {
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
 import './EditLinkModal.css';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { connect, useSelector } from 'react-redux';
-import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
 
 const EditLinkModal = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
@@ -140,6 +140,7 @@ const EditLinkModal = props => {
       const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
       return pattern.test(url);
     } catch (err) {
+      // eslint-disable-next-line no-console  
       console.log(err);
       return false;
     }

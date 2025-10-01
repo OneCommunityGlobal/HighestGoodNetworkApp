@@ -10,6 +10,7 @@ const SlideToggle = ({ color = 'default', onChange, className }) => {
 
   return (
     <label className={cn(styles.switch, styles[color], checked && styles.checked, className)}>
+      <span className="sr-only">Enable dark mode</span> {/* Hidden but accessible */}
       <input
         type="checkbox"
         checked={checked}
