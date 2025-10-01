@@ -221,6 +221,9 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
+const MonthsPledgedChart = lazy(() =>
+  import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
+);
 
 const JobAnalyticsPage = lazy(() =>
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
@@ -544,6 +547,7 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+        <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
 
         <ProtectedRoute
           path="/communityportal/activity/\:activityid/feedback"
