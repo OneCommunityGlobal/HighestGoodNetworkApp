@@ -1,4 +1,4 @@
-/* Announcements/Announcements.jsx */
+/* src/components/Announcements/index.jsx */
 import { useState } from 'react';
 import './Announcements.css';
 import { useSelector } from 'react-redux';
@@ -101,39 +101,17 @@ function Announcements({ title, email: initialEmail }) {
 
       <div style={{ backgroundColor: darkMode ? '#14233a' : '#fff', padding: '1rem' }}>
         <TabContent activeTab={activeTab}>
-          {/* Email tab now uses the extracted component */}
           <TabPane tabId="email">
             <EmailPanel title={title} initialEmail={initialEmail} />
           </TabPane>
 
-          {/* Platforms stay the same */}
-          {[
-            'x',
-            'facebook',
-            'linkedin',
-            'pinterest',
-            'instagram',
-            'threads',
-            'mastodon',
-            'bluesky',
-            'youtube',
-            'reddit',
-            'tumblr',
-            'imgur',
-            'diigo',
-            'myspace',
-            'medium',
-            'plurk',
-            'bitily',
-            'livejournal',
-            'slashdot',
-            'blogger',
-            'truthsocial',
-          ].map(platform => (
-            <TabPane tabId={platform} key={platform}>
-              <SocialMediaComposer platform={platform} />
-            </TabPane>
-          ))}
+          {tabs
+            .filter(tab => tab.id !== 'email')
+            .map(tab => (
+              <TabPane tabId={tab.id} key={tab.id}>
+                <SocialMediaComposer platform={tab.id} />
+              </TabPane>
+            ))}
         </TabContent>
       </div>
     </div>
