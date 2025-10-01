@@ -1,28 +1,38 @@
+/* Full-screen dark wrapper */
+.full-screen-dark {
+  background-color: #1B2A41; /* Oxford Blue */
+  color: #E0E0E0;            /* Light text */
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+}
+
 /* Main container */
 .months-pledged-chart {
   padding: 20px;
-  background: #ffffff; /* White background */
+  background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(139, 117, 0, 0.1);
   margin: 20px;
-  border: 1px solid #DAA520; /* Keep gold outline */
+  border: 1px solid #DAA520;
 }
 .dark {
-  background: #1e1e2f;
+  background: #1C2541; /* Space Cadet */
   border: 1px solid #444;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.5); /* Dark shadow */
+  color: #E0E0E0;
 }
 
 /* Title */
 .months-pledged-chart__title {
-  color: #8B7500; /* Gold text */
+  color: #8B7500;
   margin-bottom: 20px;
   font-size: 1.5rem;
   font-weight: 600;
   text-align: center;
 }
 .dark .months-pledged-chart__title {
-  color: white;
+  color: #E0E0E0;
 }
 
 /* Filters */
@@ -44,7 +54,7 @@
   color: #8B7500;
 }
 .dark .months-pledged-chart__filter-label {
-  color: white;
+  color: #E0E0E0;
 }
 
 /* Date picker */
@@ -52,7 +62,7 @@
   padding: 8px 12px;
   border: 1px solid #DAA520;
   border-radius: 4px;
-  background-color: #ffffff; /* White instead of gold */
+  background-color: #ffffff;
   color: #8B7500;
   min-width: 150px;
 }
@@ -61,47 +71,29 @@
   border-color: #8B7500;
 }
 .dark .months-pledged-chart__date-picker {
-  background-color: #2a2a3b;
+  background-color: #3A506B; /* Yinmn Blue */
   border: 1px solid #444;
-  color: white;
-}
-
-/* React-select overrides */
-.months-pledged-chart__select__control {
-  border: 1px solid #DAA520;
-  background-color: #ffffff; /* White instead of gold */
-  min-height: 38px;
-}
-.dark .months-pledged-chart__select__control {
-  border: 1px solid #444;
-  background-color: #2a2a3b;
-}
-.months-pledged-chart__select__multi-value {
-  background-color: #DAA520;
-  color: white;
-}
-.dark .months-pledged-chart__select__multi-value {
-  background-color: #444;
+  color: #E0E0E0;
 }
 
 /* Reset button */
 .months-pledged-chart__reset-btn {
   align-self: flex-end;
   padding: 8px 16px;
-  background-color: #ffffff; /* White button */
-  border: 1px solid #DAA520; /* Gold outline */
+  background-color: #ffffff;
+  border: 1px solid #DAA520;
   border-radius: 4px;
   cursor: pointer;
-  color: #8B7500; /* Gold text */
+  color: #8B7500;
   font-weight: 600;
 }
 .dark .months-pledged-chart__reset-btn {
-  background-color: #2a2a3b;
+  background-color: #3A506B; /* Yinmn Blue */
   border: 1px solid #444;
-  color: white;
+  color: #E0E0E0;
 }
 
-/* Chart */
+/* Chart container */
 .months-pledged-chart__container {
   margin-top: 20px;
   height: 500px;
@@ -109,15 +101,24 @@
 
 /* States */
 .months-pledged-chart__loading,
-.months-pledged-chart__empty {
+.months-pledged-chart__empty,
+.months-pledged-chart__error {
   text-align: center;
   padding: 50px;
-  color: #8B7500;
   font-size: 1.1rem;
 }
+.months-pledged-chart__loading,
+.months-pledged-chart__empty {
+  color: #8B7500;
+}
 .dark .months-pledged-chart__loading,
-.dark .months-pledged-chart__empty {
-  color: white;
+.dark .months-pledged-chart__empty,
+.dark .months-pledged-chart__error {
+  color: #E0E0E0;
+}
+.months-pledged-chart__error {
+  color: #ff6b6b;
+  font-weight: 600;
 }
 
 /* Bar labels */
