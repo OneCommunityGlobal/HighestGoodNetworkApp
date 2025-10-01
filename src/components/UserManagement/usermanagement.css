@@ -46,9 +46,8 @@ thead {
 .usermanagement__tr .btn,
 .usermanagement__tr .copy_icon,
 .usermanagement__tr svg {
-  height: 100%;
   margin: 0;
-  padding: 0;
+  padding-top: 15px;
   box-sizing: border-box;
 }
 

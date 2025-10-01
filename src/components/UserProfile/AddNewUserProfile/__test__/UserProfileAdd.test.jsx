@@ -116,6 +116,7 @@ describe('AddUserProfile page structure', () => {
       status: 200,
     });
 
+    // eslint-disable-next-line testing-library/no-render-in-lifecycle
     render(
       <Provider store={store}>
         <MemoryRouter>
@@ -126,11 +127,13 @@ describe('AddUserProfile page structure', () => {
   });
 
   it('should be rendered with 13 input fields', () => {
+    // eslint-disable-next-line testing-library/no-node-access
     const inputs = document.querySelectorAll('.form-input, [data-testid="email-input"]');
     expect(inputs.length).toBe(13);
   });
 
   it('should be rendered with 6 button', () => {
+    // eslint-disable-next-line testing-library/no-node-access
     const buttons = document.querySelectorAll('.form-button, [data-testid="create-userProfile"]');
     expect(buttons.length).toBe(6);
   });
