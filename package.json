@@ -133,6 +133,7 @@
     "start:local": "vite",
     "lint": "eslint \"**/*.{js,jsx}\"",
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
+    "lint:css": "stylelint \"**/*.{css,scss,sass}\"",
     "prepare": "husky install"
   },
   "browserslist": [
@@ -188,6 +189,7 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "prettier --write"
-    ]
+    ],
+    "**/*.{css,scss,sass}": "stylelint"
   }
 }
