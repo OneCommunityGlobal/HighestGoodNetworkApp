@@ -19,6 +19,7 @@ import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
+import { fetchAllProjects } from '../../../../../actions/projects';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /** small v8 DateInput: uses useInput + DayPicker under the hood **/
@@ -74,7 +75,7 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { copiedTask, allMembers, allProjects, error, darkMode, tasks } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode, tasks, fetchAllProjects } = props;
 
   const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
@@ -101,20 +102,13 @@ function AddTaskModal(props) {
     calHoursEstimate('hoursMost');
   };
 
-  // states from hooks
 
-  const defaultCategory = useMemo(() => {
-    if (props.taskId) {
-      const task = tasks.find(({ _id }) => _id === props.taskId);
-      return task?.category || 'Unspecified';
-    }
-    if (props.projectId) {
-      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
-      return project?.category || 'Unspecified';
-    }
+// Project's category derived from Redux; safe during hydration
+const projectCategory = useMemo(() => {
+  const proj = allProjects?.projects?.find(p => p._id === props.projectId);
+  return proj?.category || 'Unspecified';
+}, [allProjects?.projects, props.projectId]);
 
-    return 'Unspecified';
-  }, [props.taskId, props.projectId, tasks, allProjects.projects]);
 
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -128,7 +122,7 @@ function AddTaskModal(props) {
   const [hasNegativeHours, setHasNegativeHours] = useState(false);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
-  const [category, setCategory] = useState(defaultCategory);
+  const [category, setCategory] = useState('Unspecified');
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
@@ -143,15 +137,6 @@ function AddTaskModal(props) {
   const [hoursWarning, setHoursWarning] = useState(false);
   const priorityRef = useRef(null);
 
-  // Auto-default the category from the parent project when creating a new task.
-// This runs when the modal opens and when defaultCategory becomes available.
-// Ensure category is set to parent project's category by default when creating a new task
-useEffect(() => {
-  if (modal && !props.taskId) {
-    // Always set category to defaultCategory when modal opens for new task
-    setCategory(defaultCategory);
-  }
-}, [modal, defaultCategory, props.taskId]);
 
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
@@ -253,6 +238,12 @@ useEffect(() => {
   };
 
   useEffect(() => {
+    if (!allProjects?.fetched && !allProjects?.fetching) {
+      fetchAllProjects();
+    }
+  }, [allProjects?.fetched, allProjects?.fetching, fetchAllProjects]);
+
+  useEffect(() => {
     if (hoursBest < 0 || hoursWorst < 0 || hoursMost < 0 || hoursEstimate < 0) {
       setHasNegativeHours(true);
     } else {
@@ -307,7 +298,7 @@ useEffect(() => {
     setWhyInfo('');
     setIntentInfo('');
     setEndstateInfo('');
-    setCategory(defaultCategory);
+    setCategory(projectCategory);
     setStartDateError(false);
     setEndDateError(false);
     setHasNegativeHours(false);
@@ -410,6 +401,14 @@ useEffect(() => {
       props.fetchAllMembers(props.projectId);
     }
   }, [modal, props.projectId]);
+
+  // Always default to the project's category for NEW tasks
+useEffect(() => {
+  if (modal && !props.taskId) {
+    setCategory(projectCategory);
+  }
+}, [modal, projectCategory, props.taskId]);
+
 
   const fontColor = darkMode ? 'text-light' : '';
 
@@ -924,6 +923,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   addNewTask,
   fetchAllMembers,
+  fetchAllProjects,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);
