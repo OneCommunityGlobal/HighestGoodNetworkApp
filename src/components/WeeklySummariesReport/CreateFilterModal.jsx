@@ -259,7 +259,9 @@ function CreateFilterModal({
                 }`}
               />
               {!selectedFilter && (
-                <div className={`${mainStyles.errorText}`}>Please select a filter</div>
+                <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
+                  Please select a filter
+                </div>
               )}
             </FormGroup>
           )}
@@ -279,7 +281,9 @@ function CreateFilterModal({
               maxLength={7}
             />
             {state.filterName === '' && (
-              <div className={`${mainStyles.errorText}`}>Filter name is required</div>
+              <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
+                Filter name is required
+              </div>
             )}
           </FormGroup>
           <Row className="pt-4">

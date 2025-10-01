@@ -38,6 +38,8 @@ const defaultState = {
   selectedOverTime: false,
   membersFromUnselectedTeam: [],
   selectedCodesInvalid: [],
+  selectedColorsInvalid: [],
+  selectedExtraMembersInvalid: [],
 };
 
 export default function UpdateFilterModal({
@@ -53,6 +55,7 @@ export default function UpdateFilterModal({
   tableData,
   summaries,
   teamCodeWarningUsers,
+  memberDict,
 }) {
   const [state, setState] = useState(defaultState);
   const [update, setUpdate] = useState(false);
@@ -129,6 +132,22 @@ export default function UpdateFilterModal({
     setState(prev => ({
       ...prev,
       selectedCodesInvalid: prev.selectedCodesInvalid.filter(item => item !== removeCode),
+    }));
+  };
+
+  const removeInvalidSelectedColor = removeCode => {
+    setState(prev => ({
+      ...prev,
+      selectedColorsInvalid: prev.selectedColorsInvalid.filter(item => item !== removeCode),
+    }));
+  };
+
+  const removeInvalidSelectedExtraMember = removeCode => {
+    setState(prev => ({
+      ...prev,
+      selectedExtraMembersInvalid: prev.selectedExtraMembersInvalid.filter(
+        item => item !== removeCode,
+      ),
     }));
   };
 
@@ -215,9 +234,20 @@ export default function UpdateFilterModal({
           _ids: [],
         };
       });
+
     const selectedColorsChoice = colorOptions.filter(color =>
       filter.selectedColors.has(color.value),
     );
+    const selectedColorsSet = new Set(selectedColorsChoice.map(item => item.value));
+    const selectedColorsInvalidChoice = [...filter.selectedColors]
+      .filter(item => !selectedColorsSet.has(item))
+      .map(item => {
+        return {
+          label: item,
+          value: item,
+        };
+      });
+
     const selectedExtraMembersChoice = summaries
       .filter(summary => filter.selectedExtraMembers.has(summary._id))
       .map(summary => ({
@@ -225,6 +255,17 @@ export default function UpdateFilterModal({
         value: summary._id,
         role: summary.role,
       }));
+
+    const selectedExtraMembersSet = new Set(selectedExtraMembersChoice.map(item => item.value));
+    const selectedExtraMembersInvalidChoice = [...filter.selectedExtraMembers]
+      .filter(item => !selectedExtraMembersSet.has(item))
+      .map(item => {
+        return {
+          label: item in memberDict ? memberDict[item] : 'N/A',
+          value: item,
+          role: '',
+        };
+      });
 
     setState(prevState => ({
       ...prevState,
@@ -237,6 +278,8 @@ export default function UpdateFilterModal({
       selectedBioStatus: filter.selectedBioStatus,
       selectedOverTime: filter.selectedOverTime,
       selectedCodesInvalid: selectedCodesInvalidChoice,
+      selectedColorsInvalid: selectedColorsInvalidChoice,
+      selectedExtraMembersInvalid: selectedExtraMembersInvalidChoice,
     }));
   };
 
@@ -251,8 +294,13 @@ export default function UpdateFilterModal({
           selectedCodes: [...state.selectedCodes, ...state.selectedCodesInvalid].map(
             code => code.value,
           ),
-          selectedColors: state.selectedColors.map(color => color.value),
-          selectedExtraMembers: state.selectedExtraMembers.map(member => member.value),
+          selectedColors: [...state.selectedColors, ...state.selectedColorsInvalid].map(
+            color => color.value,
+          ),
+          selectedExtraMembers: [
+            ...state.selectedExtraMembers,
+            ...state.selectedExtraMembersInvalid,
+          ].map(member => member.value),
           selectedTrophies: state.selectedTrophies,
           selectedSpecialColors: state.selectedSpecialColors,
           selectedBioStatus: state.selectedBioStatus,
@@ -421,7 +469,9 @@ export default function UpdateFilterModal({
                   disabled={!update}
                 />
                 {state.filterName === '' && (
-                  <div className={`${mainStyles.errorText}`}>Filter name is required</div>
+                  <div className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}>
+                    Filter name is required
+                  </div>
                 )}
 
                 <Row className="pt-4">
@@ -488,7 +538,9 @@ export default function UpdateFilterModal({
                       ))}
                     </div>
                     {state.selectedCodesInvalid.length > 0 && (
-                      <div className={`${mainStyles.errorText}`}>
+                      <div
+                        className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}
+                      >
                         ** The team code in pink is the team code that no longer have any members
                       </div>
                     )}
@@ -529,7 +581,32 @@ export default function UpdateFilterModal({
                           )}
                         </div>
                       ))}
+                      {state.selectedColorsInvalid.map(item => (
+                        <div
+                          key={item.value}
+                          className={`${darkMode ? mainStyles.redChip : ''} ${
+                            mainStyles.invalidChip
+                          }`}
+                        >
+                          {item.label}
+                          {update && (
+                            <Button
+                              close
+                              onClick={() => removeInvalidSelectedColor(item)}
+                              className={`${mainStyles.minSzButton} px-2`}
+                              aria-label={`Remove ${item.label}`}
+                            />
+                          )}
+                        </div>
+                      ))}
                     </div>
+                    {state.selectedColorsInvalid.length > 0 && (
+                      <div
+                        className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}
+                      >
+                        ** The colors in pink are the colors that no longer have any members
+                      </div>
+                    )}
                   </Col>
                 </Row>
                 <Row className="pt-4">
@@ -567,7 +644,33 @@ export default function UpdateFilterModal({
                           )}
                         </div>
                       ))}
+                      {state.selectedExtraMembersInvalid.map(item => (
+                        <div
+                          key={item.value}
+                          className={`${darkMode ? mainStyles.redChip : ''} ${
+                            mainStyles.invalidChip
+                          }`}
+                        >
+                          {item.label}
+                          {update && (
+                            <Button
+                              close
+                              onClick={() => removeInvalidSelectedExtraMember(item)}
+                              className={`${mainStyles.minSzButton} px-2`}
+                              aria-label={`Remove ${item.label}`}
+                            />
+                          )}
+                        </div>
+                      ))}
                     </div>
+                    {state.selectedExtraMembersInvalid.length > 0 && (
+                      <div
+                        className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}
+                      >
+                        ** The members in pink is the members that cannot be found in the dropdown.
+                        They might be inactive, deleted or in a selected team code.
+                      </div>
+                    )}
                   </Col>
                 </Row>
                 <div className={`${mainStyles.filterContainer} pt-4`}>

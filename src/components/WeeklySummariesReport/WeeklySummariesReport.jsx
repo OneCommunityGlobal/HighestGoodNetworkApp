@@ -1782,6 +1782,7 @@ const WeeklySummariesReport = props => {
                 tableData={state.tableData}
                 summaries={state.summaries}
                 teamCodeWarningUsers={state.teamCodeWarningUsers}
+                memberDict={state.memberDict}
               />
             )}
             {permissionState.canManageFilter && (

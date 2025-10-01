@@ -223,6 +223,11 @@
   font-size: 12px;
 }
 
+.errorTextDark {
+  color: rgb(255, 168, 168);
+  font-size: 12px;
+}
+
 .textDark {
   color: #333; /* Default dark text for light mode */
 }
