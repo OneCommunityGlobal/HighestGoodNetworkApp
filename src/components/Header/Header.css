@@ -3,11 +3,41 @@
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
-/*
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap; /* allows wrapping on small screens */
+  width: 100%;
+  padding: 0 1rem; /* optional spacing */
+}
+.header-left,
+.header-center,
+.header-right {
+  flex: 1;           /* sections share space */
+  min-width: 100px;  /* prevents collapse */
+}
+
+.header-center {
+  flex: 1; /* takes up remaining space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-logo {
+  max-height: 150px; /* adjust if needed */
+  width: auto;
+  display: block;
+}
+
+.close-button {
   position: absolute;
   top: 0;
   left: 0;
   padding: 12px;
+
 } */
 /* Timer Message Section */
 .timer-message-section {
@@ -17,7 +47,10 @@
   /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
+
 }
+/* Old timer-message-section is replaced by header-left */
+/* .timer-message-section { ... } */
 
 .card-content {
   padding: 15px;
@@ -86,12 +119,7 @@
   font-size: 1rem;
   min-width: 29px;
 }
-
-.owner-message {
-  margin-right: 1rem;
-  
-}
-
+/* Old owner-message replaced by header-center */
 .navbar {
   z-index: 100;
   overflow: visible;
@@ -230,5 +258,30 @@
     height: 24px !important;
     transform: scale(1) !important;
     vertical-align: middle !important;
+  }
+}
+/* Small screens */
+@media (max-width: 1050px) {
+  .header-left {
+    display: flex;
+    flex-direction: column; /* stack timer controls */
+    align-items: center;
+    gap: 5px;
+  }
+
+  .header-center {
+    display: flex;
+    justify-content: center; /* center owner message */
+    width: 100%;
+  }
+
+  .header-right {
+    display: flex;
+    justify-content: center; /* keep logo/nav centered */
+    width: 100%;
+  }
+
+  .header-logo {
+    max-width: 100px; /* shrink logo a bit */
   }
 }

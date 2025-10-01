@@ -5,11 +5,12 @@ import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import { getAllApplicantVolunteerRatios } from '../../services/applicantVolunteerRatioService';
 import 'react-datepicker/dist/react-datepicker.css';
+import styles from './ApplicantVolunteerRatio.module.css';
 
 function ApplicantVolunteerRatio() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [data, setData] = useState([]);
-  const [allRoles, setAllRoles] = useState([]); // Store all available roles
+  const [allRoles, setAllRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState([]);
@@ -17,20 +18,15 @@ function ApplicantVolunteerRatio() {
   const [endDate, setEndDate] = useState(null);
   const [validationError, setValidationError] = useState('');
 
-  // Fetch all available roles (without filtering)
+  // Fetch all available roles
   useEffect(() => {
     const fetchAllRoles = async () => {
       try {
         const response = await getAllApplicantVolunteerRatios({});
-        const apiData = response.data;
-
-        // Get all unique roles
+        const apiData = response.data || [];
         const uniqueRoles = [...new Set(apiData.map(item => item.role))];
         const roleOptions = uniqueRoles.map(role => ({ label: role, value: role }));
-
         setAllRoles(roleOptions);
-
-        // Set all roles as selected by default
         setSelectedRoles(roleOptions);
       } catch (err) {
         // eslint-disable-next-line no-console
@@ -38,7 +34,6 @@ function ApplicantVolunteerRatio() {
         setError('Failed to load roles. Please try again.');
       }
     };
-
     fetchAllRoles();
   }, []);
 
@@ -60,27 +55,16 @@ function ApplicantVolunteerRatio() {
         setData([]);
         return;
       }
-
       try {
         setLoading(true);
-
-        // Prepare filters
         const filters = {};
-        if (startDate) {
-          filters.startDate = startDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-        }
-        if (endDate) {
-          filters.endDate = endDate.toISOString().split('T')[0]; // Format as YYYY-MM-DD
-        }
-        if (selectedRoles.length > 0) {
-          filters.roles = selectedRoles.map(role => role.value).join(',');
-        }
+        if (startDate) filters.startDate = startDate.toISOString().split('T')[0];
+        if (endDate) filters.endDate = endDate.toISOString().split('T')[0];
+        if (selectedRoles.length > 0) filters.roles = selectedRoles.map(r => r.value).join(',');
 
         const response = await getAllApplicantVolunteerRatios(filters);
-        const apiData = response.data;
-
-        // Transform API data to match chart format
-        const transformedData = apiData.map(item => ({
+        const apiData = response?.data || [];
+        const transformed = apiData.map(item => ({
           role: item.role,
           applicants: item.totalApplicants,
           hired: item.totalHired,
@@ -95,11 +79,9 @@ function ApplicantVolunteerRatio() {
         setLoading(false);
       }
     };
-
     fetchFilteredData();
-  }, [startDate, endDate, selectedRoles]); // Re-fetch when date range or selected roles change
+  }, [startDate, endDate, selectedRoles]);
 
-  // Filter and transform data for chart
   const chartData = useMemo(
     () => data.filter(d => selectedRoles.map(r => r.value).includes(d.role)),
     [data, selectedRoles],
@@ -191,18 +173,18 @@ function ApplicantVolunteerRatio() {
 
   if (loading) {
     return (
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-        <h2>Number of People Hired vs. Total Applications</h2>
-        <div>Loading...</div>
+      <div className={styles.container}>
+        <h2 className={styles.header}>Number of People Hired vs. Total Applications</h2>
+        <div className={styles.loading}>Loading...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}>
-        <h2>Number of People Hired vs. Total Applications</h2>
-        <div style={{ color: 'red' }}>{error}</div>
+      <div className={styles.container}>
+        <h2 className={styles.header}>Number of People Hired vs. Total Applications</h2>
+        <div className={styles.error}>{error}</div>
       </div>
     );
   }
@@ -215,10 +197,72 @@ function ApplicantVolunteerRatio() {
     : {};
 
   return (
+    <div className={styles.container}>
+      <h2 className={styles.header}>Number of People Hired vs. Total Applications</h2>
+
+      <div className={styles.controls}>
+        <div className={styles.dateGroup}>
+          <label htmlFor="start-date" className={styles.label}>
+            Date Range:
+          </label>
+          <DatePicker
+            id="start-date"
+            selected={startDate}
+            onChange={date => setStartDate(date)}
+            selectsStart
+            startDate={startDate}
+            endDate={endDate}
+            placeholderText="Start Date"
+            dateFormat="yyyy/MM/dd"
+          />
+          <span>to</span>
+          <DatePicker
+            id="end-date"
+            selected={endDate}
+            onChange={date => setEndDate(date)}
+            selectsEnd
+            startDate={startDate}
+            endDate={endDate}
+            minDate={startDate}
+            placeholderText="End Date"
+            dateFormat="yyyy/MM/dd"
+          />
+        </div>
+
+        <div className={styles.selectWrapper}>
+          <label htmlFor="role-select" className={styles.label}>
+            Role:
+          </label>
+          <Select
+            id="role-select"
+            isMulti
+            options={allRoles}
+            value={selectedRoles}
+            onChange={setSelectedRoles}
+            placeholder="Select roles..."
+          />
+        </div>
+      </div>
+
+      {chartData.length > 0 ? (
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            margin={{ top: 20, right: 40, left: 80, bottom: 20 }}
+            barCategoryGap={24}
+          >
+            <XAxis
+              type="number"
+              label={{
+                value: 'Percentage of People Hired vs. Total Applications',
+                position: 'insideBottom',
+                offset: -5,
+              }}
+              allowDecimals={false}
     <div
       className={`applicant-volunteer-page ${darkMode ? 'dark-mode' : ''}`}
       style={{ maxWidth: 900, margin: '0 auto', padding: 24 }}
-    >
       <div className="applicant-volunteer-content" style={darkMode ? darkModeStyles : {}}>
         <h2 className={darkMode ? 'text-light' : ''}>
           Number of People Hired vs. Total Applications
@@ -229,7 +273,6 @@ function ApplicantVolunteerRatio() {
               htmlFor="start-date"
               style={{ fontWeight: 500 }}
               className={darkMode ? 'text-light' : ''}
-            >
               Date Range:{' '}
             </label>
             <DatePicker
@@ -281,7 +324,18 @@ function ApplicantVolunteerRatio() {
               styles={selectStyles}
               menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
             />
-          </div>
+            <Tooltip />
+            <Bar dataKey="applicants" fill="#1976d2" name="Total Applicants">
+              <LabelList dataKey="applicants" position="right" />
+            </Bar>
+            <Bar dataKey="hired" fill="#43a047" name="Total Hired">
+              <LabelList dataKey="hired" position="right" />
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className={styles.noData}>
+          No data available. Please add some applicant volunteer ratio data.
         </div>
         {chartData.length > 0 ? (
           <ResponsiveContainer width="100%" height={400}>
