@@ -2,13 +2,13 @@ const { FlatCompat } = require('@eslint/eslintrc');
 
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
+// Remove testing-library from shareables
 const shareables = [
   'plugin:react/recommended',
   'plugin:react-hooks/recommended',
   'plugin:import/recommended',
   'plugin:jsx-a11y/recommended',
   'plugin:prettier/recommended',
-  'plugin:testing-library/react',
 ];
 
 const baseExtends = compat.extends(...shareables).map(presetConfig => ({
@@ -86,6 +86,8 @@ module.exports = [
 
   {
     files: ['**/__tests__/*.{js,jsx}', '**/*.test.{js,jsx}'],
+    // Add testing-library extends HERE for test files only
+    ...compat.extends('plugin:testing-library/react')[0],
     languageOptions: {
       globals: {
         describe: 'readonly',
