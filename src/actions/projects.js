@@ -53,8 +53,9 @@ const addNewProject = ({ newProject, status, error }) => ({
  * @param error: error message
  */
 // const updateProject = (projectId, projectName, category, isActive, status, error) => {
-const updateProject = ({ updatedProject, status, error }) => ({
+const updateProject = ({ projectId, updatedProject, status, error }) => ({
   type: types.UPDATE_PROJECT,
+  projectId: projectId ?? updatedProject?._id,
   updatedProject,
   status,
   error,
