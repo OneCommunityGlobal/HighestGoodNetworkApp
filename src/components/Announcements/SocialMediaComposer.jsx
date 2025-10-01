@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('composer');
+  const [isPostingPlurk, setIsPostingPlurk] = useState(false); // NEW
 
   const tabOrder = [
     { id: 'composer', label: '📝 Make Post' },
@@ -13,12 +14,11 @@ export default function SocialMediaComposer({ platform }) {
 
   const tabStyle = tabId => {
     const isActive = activeSubTab === tabId;
-
     return {
       padding: '10px 16px',
       cursor: 'pointer',
       borderBottom: isActive ? '3px solid #007bff' : '3px solid transparent',
-      backgroundColor: isActive ? '#dbeeff' : '#dedede', // ACTIVE vs INACTIVE
+      backgroundColor: isActive ? '#dbeeff' : '#dedede',
       color: isActive ? '#007bff' : '#333',
       fontWeight: isActive ? 'bold' : 'normal',
       flex: 1,
@@ -27,9 +27,44 @@ export default function SocialMediaComposer({ platform }) {
     };
   };
 
+  // 🔁 NEW: Handler for Plurk posting
+  const handlePlurkPost = async () => {
+    if (!postContent.trim()) {
+      alert('Plurk content cannot be empty.');
+      return;
+    }
+    if (postContent.length > 360) {
+      alert('Plurk content must be 360 characters or less.');
+      return;
+    }
+
+    setIsPostingPlurk(true);
+    try {
+      const res = await fetch('/api/postToPlurk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: postContent.trim() }),
+      });
+
+      const data = await res.json();
+
+      if (!data || typeof data.plurk_id === 'undefined') {
+        alert('Invalid response from Plurk API.');
+      } else {
+        alert(`Plurk posted successfully! ID: ${data.plurk_id}`);
+        setPostContent('');
+      }
+    } catch (err) {
+      console.error('Plurk post failed:', err);
+      alert('Failed to post to Plurk.');
+    } finally {
+      setIsPostingPlurk(false);
+    }
+  };
+
   return (
     <div style={{ padding: '1rem' }}>
-      <h3>{platform} </h3>
+      <h3>{platform}</h3>
       <div style={{ display: 'flex', borderBottom: '1px solid #ccc', marginBottom: '1rem' }}>
         {tabOrder.map(({ id, label }) => (
           <button
@@ -54,6 +89,7 @@ export default function SocialMediaComposer({ platform }) {
             value={postContent}
             onChange={e => setPostContent(e.target.value)}
             placeholder={`Write your ${platform} post here...`}
+            maxLength={platform === 'plurk' ? 360 : undefined}
             style={{
               width: '100%',
               height: '150px',
@@ -63,18 +99,35 @@ export default function SocialMediaComposer({ platform }) {
               marginBottom: '1rem',
             }}
           />
+
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-            <button
-              style={{
-                backgroundColor: '#007bff',
-                color: 'white',
-                padding: '10px 16px',
-                borderRadius: '6px',
-                border: 'none',
-              }}
-            >
-              Post to {platform}
-            </button>
+            {platform === 'plurk' ? (
+              <button
+                onClick={handlePlurkPost}
+                disabled={isPostingPlurk}
+                style={{
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  padding: '10px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                }}
+              >
+                {isPostingPlurk ? 'Posting…' : 'Post to Plurk'}
+              </button>
+            ) : (
+              <button
+                style={{
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  padding: '10px 16px',
+                  borderRadius: '6px',
+                  border: 'none',
+                }}
+              >
+                Post to {platform}
+              </button>
+            )}
 
             <div style={{ position: 'relative' }}>
               <details style={{ position: 'relative' }}>
@@ -122,14 +175,15 @@ export default function SocialMediaComposer({ platform }) {
           </div>
         </div>
       )}
+
       {activeSubTab === 'scheduled' && (
         <div>
           <p>
             <strong>Scheduled Posts for {platform}</strong>
           </p>
           <ul>
-            <li> Aug 5 at 3:00 PM — “New product alert!”</li>
-            <li> Aug 12 at 12:00 PM — “Weekly roundup”</li>
+            <li>Aug 5 at 3:00 PM — “New product alert!”</li>
+            <li>Aug 12 at 12:00 PM — “Weekly roundup”</li>
           </ul>
         </div>
       )}
@@ -152,7 +206,7 @@ export default function SocialMediaComposer({ platform }) {
             <strong>{platform}-Specific Details</strong>
           </p>
           <ul>
-            <li>Max characters: 280</li>
+            <li>Max characters: {platform === 'plurk' ? '360' : '280'}</li>
             <li>Supports hashtags: Yes</li>
             <li>Image support: Yes</li>
             <li>Recommended dimensions: 1200x675 px</li>
