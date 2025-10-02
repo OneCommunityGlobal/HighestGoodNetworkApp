@@ -16,6 +16,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
+import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
 
 const UserProfileModal = props => {
   const {
@@ -49,6 +50,9 @@ const UserProfileModal = props => {
 
   const [adminLinkName, setAdminLinkName] = useState('');
   const [adminLinkURL, setAdminLinkURL] = useState('');
+  const [showCcModal, setShowCcModal] = useState(false);
+
+  const toggleCcModal = () => setShowCcModal(!showCcModal);
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -164,8 +168,20 @@ const UserProfileModal = props => {
 
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
+  
+  //Email CC for Blue Square Email
+  const [ccModalOpen, setCcModalOpen] = useState(false);
+  const [ccCount, setCcCount] = useState(userProfile?.infringementCCList?.length || 0);
+
+const handleCcListUpdate = (newCount) => {
+  setCcCount(newCount);
+};
+  
+  const openCc  = () => setCcModalOpen(true);
+  const closeCc = () => setCcModalOpen(false);
 
   return (
+    <>
     <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
       <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -187,9 +203,9 @@ const UserProfileModal = props => {
                           value={link.Name}
                           onChange={e =>
                             dispatchAdminLinks({
-                              type: 'updateName',
-                              value: e.target.value,
-                              passedIndex: index,
+                            type: 'updateName',
+                            value: e.target.value,
+                            passedIndex: index,
                             })
                           }
                         />
@@ -198,9 +214,9 @@ const UserProfileModal = props => {
                           value={link.Link}
                           onChange={e =>
                             dispatchAdminLinks({
-                              type: 'updateLink',
-                              value: e.target.value,
-                              passedIndex: index,
+                            type: 'updateLink',
+                            value: e.target.value,
+                            passedIndex: index,
                             })
                           }
                         />
@@ -235,8 +251,8 @@ const UserProfileModal = props => {
                         className="addButton"
                         onClick={() =>
                           dispatchAdminLinks({
-                            type: 'add',
-                            value: { Name: adminLinkName, Link: adminLinkURL },
+                          type: 'add',
+                          value: { Name: adminLinkName, Link: adminLinkURL },
                           })
                         }
                       >
@@ -262,9 +278,9 @@ const UserProfileModal = props => {
                         value={link.Name}
                         onChange={e =>
                           dispatchPersonalLinks({
-                            type: 'updateName',
-                            value: e.target.value,
-                            passedIndex: index,
+                          type: 'updateName',
+                          value: e.target.value,
+                          passedIndex: index,
                           })
                         }
                       />
@@ -273,9 +289,9 @@ const UserProfileModal = props => {
                         value={link.Link}
                         onChange={e =>
                           dispatchPersonalLinks({
-                            type: 'updateLink',
-                            value: e.target.value,
-                            passedIndex: index,
+                          type: 'updateLink',
+                          value: e.target.value,
+                          passedIndex: index,
                           })
                         }
                       />
@@ -312,8 +328,8 @@ const UserProfileModal = props => {
                       className="addButton"
                       onClick={() =>
                         dispatchPersonalLinks({
-                          type: 'add',
-                          value: { Name: linkName, Link: linkURL },
+                        type: 'add',
+                        value: { Name: linkName, Link: linkURL },
                         })
                       }
                     >
@@ -335,11 +351,11 @@ const UserProfileModal = props => {
 
             <FormGroup hidden={summaryFieldView}>
               <Label className={fontColor} for="report">Summary</Label>
-              <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
+              <Input
+                type="textarea"
+                id="summary"
+                onChange={handleChange}
+                value={summary}
                 style={{ minHeight: '200px', overflow: 'hidden'}} 
                 onInput={e => adjustTextareaHeight(e.target)} 
               />
@@ -352,7 +368,7 @@ const UserProfileModal = props => {
             <FormGroup>
               <Label className={fontColor} for="date">Date:</Label>
               {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
-              : <span> {blueSquare[0]?.date}</span>}
+                : <span> {blueSquare[0]?.date}</span>}
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
@@ -362,11 +378,11 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
-              {canEditInfringements ? <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
+              {canEditInfringements ? <Input
+                type="textarea"
+                id="summary"
+                onChange={handleChange}
+                value={summary}
                 style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
@@ -379,7 +395,7 @@ const UserProfileModal = props => {
           <>
             <FormGroup>
               <Label className={fontColor} for="date">
-                Date: 
+                Date:
                 <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
@@ -404,88 +420,129 @@ const UserProfileModal = props => {
       </ModalBody>
 
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        {type === 'addBlueSquare' && (
-          <Button
-            color="danger"
-            id="addBlueSquare"
-            disabled={addButton}
-            onClick={() => {
-              modifyBlueSquares('', dateStamp, summary, 'add');
+        <div className="d-flex w-100 align-items-center">
+          <div style={{ position: 'relative', display: 'inline-block' }}>
+            <Button
+              color="secondary"
+              onClick={openCc}
+              style={boxStyling}
+              className="mr-2"
+            >
+              CC List
+            </Button>
+            {ccCount > 0 && (
+              <span
+              style={{
+              position: 'absolute',
+              top: '-10px',
+              right: '-3px',
+              backgroundColor: '#28a745', // green
+              color: 'white',
+              borderRadius: '50%',
+              padding: '2px 6px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
             }}
-            style={boxStyling}
-          >
-            Submit
-          </Button>
-        )}
+            >
+              {ccCount}
+              </span>
+            )}
+          </div>
 
-        {type === 'modBlueSquare' && (
-            <>
-            {canEditInfringements && 
+            <div className="ml-auto d-flex align-items-center" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
+            {type === 'addBlueSquare' && (
+              <Button
+                color="danger"
+                id="addBlueSquare"
+                disabled={addButton}
+                onClick={() => {
+                  modifyBlueSquares('', dateStamp, summary, 'add');
+                }}
+                style={boxStyling}
+              >
+                Submit
+              </Button>
+            )}
+
+            {type === 'modBlueSquare' && (
+              <>
+                {canEditInfringements &&
+                  <Button
+                    color="info"
+                    onClick={() => {
+                      modifyBlueSquares(id, dateStamp, summary, 'update');
+                }}
+                    style={boxStyling}
+                  >
+                    Update
+              </Button>
+              }
+                {canDeleteInfringements &&
+                  <Button
+                    color="danger"
+                    onClick={() => {
+                      modifyBlueSquares(id, dateStamp, summary, 'delete');
+                }}
+                    style={boxStyling}
+                  >
+                    Delete
+              </Button>
+            }
+              </>
+            )}
+
+            {type === 'updateLink' && (
               <Button
                 color="info"
                 onClick={() => {
-                  modifyBlueSquares(id, dateStamp, summary, 'update');
-                }}
-                style={boxStyling}
+                  updateLink(personalLinks, adminLinks);
+            }}
               >
                 Update
               </Button>
-              }
-            {canDeleteInfringements &&
-              <Button
-                color="danger"
-                onClick={() => {
-                  modifyBlueSquares(id, dateStamp, summary, 'delete');
-                }}
-                style={boxStyling}
-              >
-                Delete
-              </Button>
-            }
-          </>
-        )}
+            )}
 
-        {type === 'updateLink' && (
-          <Button
-            color="info"
-            onClick={() => {
-              updateLink(personalLinks, adminLinks);
-            }}
-          >
-            Update
-          </Button>
-        )}
-
-        {type === 'image' && (
-          <>
-            <Button color="primary" onClick={closeModal} style={boxStyling}>
-              {' '}
-              Close{' '}
-            </Button>
-            <Button
-              color="info"
-              onClick={() => {
-                window.open('https://picresize.com/');
+            {type === 'image' && (
+              <>
+                <Button color="primary" onClick={closeModal} style={boxStyling}>
+                  {' '}
+                  Close{' '}
+                </Button>
+                <Button
+                  color="info"
+                  onClick={() => {
+                    window.open('https://picresize.com/');
               }}
-              style={boxStyling}
-            >
-              {' '}
-              Resize{' '}
-            </Button>
-          </>
-        )}
+                  style={boxStyling}
+                >
+                  {' '}
+                  Resize{' '}
+                </Button>
+              </>
+            )}
 
-        {type === 'save' ? (
-          <Button color="primary" onClick={closeModal} style={boxStyling}>
-            Close
-          </Button>
-        ) : (
-          <Button color="primary" onClick={closeModal} style={boxStyling}>
-            Cancel
-          </Button>
-        )}
+            {type === 'save' ? (
+              <Button color="primary" onClick={closeModal} style={boxStyling}>
+                Close
+              </Button>
+            ) : (
+              <Button color="primary" onClick={closeModal} style={boxStyling}>
+                Cancel
+              </Button>
+            )}
+          </div>
+        </div>
       </ModalFooter>
     </Modal>
+    <BlueSquareEmailCCPopup
+    isOpen={ccModalOpen}
+    onClose={closeCc}
+    darkMode={darkMode}
+    userId={userProfile._id}
+    onCcListUpdate={handleCcListUpdate}
+    />
+  </>
   );
 };
 
