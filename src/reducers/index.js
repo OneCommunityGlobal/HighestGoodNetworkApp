@@ -71,10 +71,10 @@ import injuriesReducer from './injuries';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
-import messageReducer from './lbdashboard/messagingReducer';
+import messageReducer from './listBiddashboard/messagingReducer';
 import userPreferencesReducer from './listBiddashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
-// community portal
+// community portalgit
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
