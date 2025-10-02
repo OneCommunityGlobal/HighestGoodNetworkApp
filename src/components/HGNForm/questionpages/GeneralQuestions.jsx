@@ -15,6 +15,7 @@ function GeneralQuestions() {
   const location = useLocation();
   const [questions, setQuestions] = useState([]);
   const formData = useSelector(state => state.hgnForm);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [newVolunteer, setNewVolunteer] = useState(formData);
 
   const { isOwner } = location.state; // Set to `true` if the user is the owner
@@ -267,8 +268,10 @@ function GeneralQuestions() {
   }
 
   return (
-    <div className={`${styles.generalQuestions}`}>
-      <h3 className={`${styles.blueStrip}`}>General Questions</h3>
+    <div className={`${styles.generalQuestions} ${darkMode ? styles.darkContainer : ''}`}>
+      <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
+        General Questions
+      </h3>
       <form onSubmit={handleNext}>
         <div className={`${styles.hours}`}>
           {renderEditableQuestion(0)}

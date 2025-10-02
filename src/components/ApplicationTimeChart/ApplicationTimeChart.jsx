@@ -1,27 +1,24 @@
 import { useState, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import getApplicationData from './api';
+import styles from './ApplicationTimeChart.module.css';
 
 function ApplicationTimeChart() {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedRole, setSelectedRole] = useState('all');
 
-  // Get raw data
   const rawData = getApplicationData();
 
-  // Process data with filters and outlier removal
   const processedData = useMemo(() => {
     let filtered = [...rawData];
 
-    // Remove outliers (applications taking more than 30 minutes)
     filtered = filtered.filter(item => item.timeToApply <= 30);
 
-    // Apply date filter
     if (dateFilter !== 'all') {
       const now = new Date();
       filtered = filtered.filter(item => {
         const itemDate = new Date(item.timestamp);
-        const daysAgo = Math.floor((now - itemDate) / (1000 * 60 * 60 * 24));
+        const daysAgo = Math.floor((now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24));
 
         switch (dateFilter) {
           case 'weekly':
@@ -36,36 +33,30 @@ function ApplicationTimeChart() {
       });
     }
 
-    // Apply role filter
     if (selectedRole !== 'all') {
       filtered = filtered.filter(item => item.role === selectedRole);
     }
 
-    // Group by role and calculate averages
     const roleGroups = {};
     filtered.forEach(item => {
-      if (!roleGroups[item.role]) {
-        roleGroups[item.role] = [];
-      }
+      if (!roleGroups[item.role]) roleGroups[item.role] = [];
       roleGroups[item.role].push(item.timeToApply);
     });
 
-    // Calculate averages and create chart data
     const chartData = Object.entries(roleGroups)
       .map(([role, times]) => {
         const avg = times.reduce((a, b) => a + b, 0) / times.length;
         return {
           role,
-          avgTime: Math.round(avg * 10) / 10, // Round to 1 decimal place
+          avgTime: Math.round(avg * 10) / 10,
           count: times.length,
         };
       })
-      .sort((a, b) => b.avgTime - a.avgTime); // Sort highest to lowest
+      .sort((a, b) => b.avgTime - a.avgTime);
 
     return chartData;
   }, [rawData, dateFilter, selectedRole]);
 
-  // Get unique roles for dropdown
   const roles = useMemo(() => {
     const uniqueRoles = [...new Set(rawData.map(item => item.role))];
     return ['all', ...uniqueRoles];
@@ -74,96 +65,32 @@ function ApplicationTimeChart() {
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: '20px',
-        width: '100%',
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '20px',
-      }}
-    >
+    <div className={styles.container}>
       {/* Chart Container */}
-      <div
-        style={{
-          flex: 1,
-          border: '2px solid #4285f4',
-          borderRadius: '8px',
-          backgroundColor: '#ffffff',
-          padding: '20px',
-        }}
-      >
-        {/* Title */}
-        <h2
-          style={{
-            fontSize: '20px',
-            fontWeight: '400',
-            color: '#5f6368',
-            margin: '0 0 30px 0',
-            fontFamily: 'Arial, sans-serif',
-          }}
-        >
+      <div className={styles.chartCard}>
+        <h2 className={styles.title}>
           Comparing the Average Time Taken to Fill an Application by Role
         </h2>
 
         {/* Chart */}
-        <div
-          style={{
-            minHeight: '400px',
-            position: 'relative',
-            paddingLeft: '140px',
-            paddingRight: '60px',
-            paddingTop: '20px',
-            paddingBottom: '40px',
-          }}
-        >
+        <div className={styles.chartArea}>
           {processedData.length > 0 ? (
             <>
               {/* Grid Lines */}
               <div
+                className={styles.grid}
                 style={{
-                  position: 'absolute',
-                  left: '140px',
-                  right: '60px',
-                  top: '20px',
-                  bottom: '40px',
-                  backgroundImage: `
-                  linear-gradient(to right, #e0e0e0 1px, transparent 1px),
-                  linear-gradient(to bottom, #e0e0e0 1px, transparent 1px)
-                `,
                   backgroundSize: `${100 / 6}% ${100 / processedData.length}%`,
-                  opacity: 0.5,
                 }}
               />
 
               {/* Y-axis (Roles) */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '0',
-                  top: '20px',
-                  bottom: '40px',
-                  width: '130px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
+              <div className={styles.yAxis}>
                 {processedData.map(item => (
                   <div
                     key={uuidv4()}
-                    style={{
-                      height: `${100 / processedData.length}%`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'flex-end',
-                      paddingRight: '10px',
-                      fontSize: '12px',
-                      color: '#5f6368',
-                      borderRight: '1px solid #9aa0a6',
-                    }}
+                    className={styles.yAxisItem}
+                    style={{ height: `${100 / processedData.length}%` }}
                   >
                     {item.role}
                   </div>
@@ -171,19 +98,7 @@ function ApplicationTimeChart() {
               </div>
 
               {/* X-axis */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '140px',
-                  right: '60px',
-                  bottom: '0',
-                  height: '40px',
-                  borderTop: '1px solid #9aa0a6',
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  paddingTop: '5px',
-                }}
-              >
+              <div className={styles.xAxis}>
                 {[0, 5, 10, 15, 20, 25, 30].map(tick => (
                   <div
                     key={tick}
@@ -201,102 +116,36 @@ function ApplicationTimeChart() {
               </div>
 
               {/* Bars */}
-              <div
-                style={{
-                  position: 'absolute',
-                  left: '140px',
-                  right: '60px',
-                  top: '20px',
-                  bottom: '40px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                }}
-              >
+              <div className={styles.bars}>
                 {processedData.map(item => (
                   <div
                     key={uuidv4()}
-                    style={{
-                      height: `${100 / processedData.length}%`,
-                      display: 'flex',
-                      alignItems: 'center',
-                      paddingTop: '10px',
-                      paddingBottom: '10px',
-                    }}
+                    className={styles.barRow}
+                    style={{ height: `${100 / processedData.length}%` }}
                   >
                     <div
-                      style={{
-                        width: `${(item.avgTime / maxTime) * 100}%`,
-                        height: '60%',
-                        backgroundColor: '#93c47d',
-                        border: '1px solid #6aa84f',
-                        borderRadius: '0 4px 4px 0',
-                        position: 'relative',
-                        minWidth: '2px',
-                      }}
+                      className={styles.bar}
+                      style={{ width: `${(item.avgTime / maxTime) * 100}%` }}
                     >
-                      {/* Data Label */}
-                      <div
-                        style={{
-                          position: 'absolute',
-                          right: '-35px',
-                          top: '50%',
-                          transform: 'translateY(-50%)',
-                          fontSize: '14px',
-                          fontWeight: '600',
-                          color: '#2d5016',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {item.avgTime} min
-                      </div>
+                      <div className={styles.dataLabel}>{item.avgTime} min</div>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* X-axis Label */}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '-25px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  fontSize: '12px',
-                  color: '#5f6368',
-                }}
-              >
+              <div className={styles.xAxisLabel}>
                 Average Time taken to fill application (in minutes)
               </div>
             </>
           ) : (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '400px',
-                color: '#5f6368',
-                fontSize: '16px',
-              }}
-            >
-              No data available for the selected filters
-            </div>
+            <div className={styles.noData}>No data available for the selected filters</div>
           )}
         </div>
 
         {/* Summary Info */}
         {processedData.length > 0 && (
-          <div
-            style={{
-              marginTop: '20px',
-              padding: '15px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '4px',
-              fontSize: '14px',
-              color: '#5f6368',
-            }}
-          >
+          <div className={styles.summary}>
             <div>
               <strong>Showing:</strong> {processedData.length} role(s)
             </div>
@@ -312,47 +161,14 @@ function ApplicationTimeChart() {
       </div>
 
       {/* Filters Panel */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          minWidth: '150px',
-        }}
-      >
+      <div className={styles.filters}>
         {/* Dates Filter */}
-        <div
-          style={{
-            border: '1px solid #dadce0',
-            borderRadius: '4px',
-            padding: '12px',
-            backgroundColor: '#ffffff',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#3c4043',
-              marginBottom: '8px',
-            }}
-          >
-            Dates
-          </div>
+        <div className={styles.filterCard}>
+          <div className={styles.filterTitle}>Dates</div>
           <select
             value={dateFilter}
-            onChange={e => {
-              setDateFilter(e.target.value);
-            }}
-            style={{
-              width: '100%',
-              padding: '4px 8px',
-              border: '1px solid #dadce0',
-              borderRadius: '4px',
-              fontSize: '14px',
-              backgroundColor: '#ffffff',
-              color: '#3c4043',
-            }}
+            onChange={e => setDateFilter(e.target.value)}
+            className={styles.select}
           >
             <option value="all">ALL</option>
             <option value="weekly">Last 7 Days</option>
@@ -362,38 +178,12 @@ function ApplicationTimeChart() {
         </div>
 
         {/* Role Filter */}
-        <div
-          style={{
-            border: '1px solid #dadce0',
-            borderRadius: '4px',
-            padding: '12px',
-            backgroundColor: '#ffffff',
-          }}
-        >
-          <div
-            style={{
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#3c4043',
-              marginBottom: '8px',
-            }}
-          >
-            Role
-          </div>
+        <div className={styles.filterCard}>
+          <div className={styles.filterTitle}>Role</div>
           <select
             value={selectedRole}
-            onChange={e => {
-              setSelectedRole(e.target.value);
-            }}
-            style={{
-              width: '100%',
-              padding: '4px 8px',
-              border: '1px solid #dadce0',
-              borderRadius: '4px',
-              fontSize: '14px',
-              backgroundColor: '#ffffff',
-              color: '#3c4043',
-            }}
+            onChange={e => setSelectedRole(e.target.value)}
+            className={styles.select}
           >
             {roles.map(role => (
               <option key={role} value={role}>
