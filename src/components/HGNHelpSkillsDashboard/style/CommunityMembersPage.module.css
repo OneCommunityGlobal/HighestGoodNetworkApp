@@ -1,0 +1,93 @@
+/* ---------- LIGHT MODE (default) ---------- */
+.pageContainer {
+  padding: 40px;
+  font-family: Arial, sans-serif;
+  max-width: 1200px; /* more breathing space */
+  margin: 0 auto;
+  background: #ffffff;
+  color: #222;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px; /* spacing between sections */
+}
+
+.sectionTitle {
+  margin-bottom: 10px;
+  font-size: 1.5rem; /* bigger for visibility */
+  font-weight: 600;
+  color: #222;
+}
+
+.toggleButtonsWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-start; /* align buttons nicely */
+}
+
+.toggleButton {
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  color: #333;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.toggleButton:hover {
+  background: #e5e5e5;
+}
+
+.selected {
+  background: #4f46e5;
+  border: 2px solid #4f46e5;
+  color: #fff;
+}
+
+.message {
+  color: #666;
+  font-size: 1.1rem;
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* ---------- DARK MODE ---------- */
+.darkMode {
+  background: #1b2a41;
+  color: #f1f1f1;
+  min-height: 100vh;
+}
+
+.darkMode .pageContainer {
+  background: #1e1e1e;
+  color: #f1f1f1;
+  border: 1px solid #333;
+}
+
+.darkMode .sectionTitle {
+  color: #e5e5e5;
+}
+
+.darkMode .toggleButton {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  color: #ddd;
+}
+
+.darkMode .toggleButton:hover {
+  background: #333;
+}
+
+.darkMode .selected {
+  background: #4f46e5;
+  border: 2px solid #4f46e5;
+  color: #fff;
+}
+
+.darkMode .message {
+  color: #aaa;
+}

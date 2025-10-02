@@ -1,12 +1,13 @@
-// RankedUserList.jsx
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import UserCard from './UserCard';
+import { useSelector } from 'react-redux';
+import styles from './style/RankedUserList.module.css';
 
 function RankedUserList({ selectedSkills, selectedPreferences }) {
   const [rankedUsers, setRankedUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   useEffect(() => {
     if (
       (!selectedSkills || selectedSkills.length === 0) &&
@@ -26,7 +27,6 @@ function RankedUserList({ selectedSkills, selectedPreferences }) {
         });
         setRankedUsers(response.data);
       } catch (err) {
-        console.error('Error fetching ranked users:', err);
       } finally {
         setLoading(false);
       }
@@ -35,40 +35,18 @@ function RankedUserList({ selectedSkills, selectedPreferences }) {
     fetchRankedUsers();
   }, [selectedSkills, selectedPreferences]);
 
-  if (loading) return <p style={{ color: '#666', fontSize: '1rem' }}>Loading ranked users...</p>;
-  if (!rankedUsers.length)
-    return <p style={{ color: '#666', fontSize: '1rem' }}>No users found.</p>;
+  if (loading) return <p className={`${styles.message}`}>Loading ranked users...</p>;
+  if (!rankedUsers.length) return <p className={`${styles.message}`}>No users found.</p>;
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '20px',
-        justifyContent: 'center',
-      }}
-    >
-      {rankedUsers.map(user => (
-        <div
-          key={user._id}
-          style={{
-            width: '250px',
-            border: '1px solid #ccc',
-            borderRadius: '12px',
-            padding: '15px',
-            background: '#fff',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            transition: 'transform 0.2s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.03)')}
-          onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
-        >
-          <UserCard user={user} />
-        </div>
-      ))}
+    <div className={darkMode ? `${styles.darkMode}` : ''}>
+      <div className={`${styles.container}`}>
+        {rankedUsers.map(user => (
+          <div key={user._id} className={`${styles.userWrapper}`}>
+            <UserCard user={user} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

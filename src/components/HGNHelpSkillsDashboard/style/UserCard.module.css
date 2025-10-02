@@ -1,6 +1,8 @@
+/* UserCard.module.css */
+
 .userCard {
-  width: 360px;
-  height: auto;
+  width: 100%;
+  max-width: 100%;
   padding: 30px 24px;
   background: #ffffff;
   border: 2px solid #eeeeee;
@@ -17,28 +19,21 @@
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  margin-bottom: 8px;
 }
 
 .info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* keeps name/email/slack left-aligned */
-  text-align: left;
-  margin-top: 16px;
-  padding: 0;
-  width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
+  align-items: center; /* center name/email/slack */
+  text-align: center;
+  gap: 4px;
 }
 
 .userName {
   font-size: 30px;
   font-weight: 400;
   color: black;
-  margin-bottom: 8px;
   white-space: nowrap;
-  /*font-size: Large;*/
 }
 
 .contactLine {
@@ -47,13 +42,11 @@
   gap: 8px;
   font-size: 16px;
   color: #616161;
-  margin-bottom: 6px;
 }
 
 .contactIcon {
   width: 18px;
   height: 18px;
-  margin-top: 1px;
 }
 
 .scoreSkillsWrapper {
@@ -61,24 +54,18 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 4px;
 }
 
 .scoreLine {
   font-size: 22px;
   text-align: left;
-  margin-left: 4px;
 }
 
 .scoreLabel {
   font-weight: 400;
 }
 
-.scoreValue {
-  font-weight: 700;
-  padding-left: 4px;
-}
-
+.scoreValue,
 .scoreMax {
   font-weight: 700;
   padding-left: 4px;
@@ -103,4 +90,37 @@
   color: #616161;
   line-height: 22px;
   word-wrap: break-word;
+}
+
+/* --- DARK MODE STYLES --- */
+.darkMode {
+  background-color: #1e1e1e; /* dark background */
+  color: #f0f0f0; /* light text for general elements */
+}
+
+.darkMode .userCard {
+  background-color: #2a2a2a;
+  border: 2px solid #444444;
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.darkMode .userName {
+  color: #ffffff;
+}
+
+.darkMode .contactLine {
+  color: #cccccc;
+}
+
+.darkMode .skillsText {
+  color: #dcdcdc;
+}
+
+.darkMode .scoreValue {
+  /* keep score color dynamic (green/red), override only text */
+  color: inherit;
+}
+
+.darkMode .scoreMax {
+  color: #ffffff;
 }
