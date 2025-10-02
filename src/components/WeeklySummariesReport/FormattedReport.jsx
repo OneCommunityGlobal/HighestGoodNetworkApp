@@ -46,6 +46,7 @@ import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permission
 import { ENDPOINTS } from '~/utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import UserStateManager from "~/components/UserState/UserStateManager";
 
 const textColors = {
   Default: '#000000',
@@ -305,6 +306,10 @@ function ReportDetails({
     setFilteredBadges(badges.filter(badge => badge.showReport === true));
   }, []);
 
+  const canEdit =
+        ['Owner', 'Administrator'].includes(auth.user.role) ||
+        dispatch(hasPermission('manageUserStateIndicator'));
+
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
@@ -359,6 +364,13 @@ function ReportDetails({
                 }}
               >
                 Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+              </p>
+              <p>
+                <UserStateManager
+                  userId={auth.user.personId}
+                  canEdit={canEdit}
+                  user={auth.user}
+                />
               </p>
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -827,7 +839,7 @@ function Index({
         style={{
           color:
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
               : '#007BFF',
         }}

@@ -1,39 +1,29 @@
-.container {
+.wrap {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 4px; 
 }
 
-.pill {
-  padding: 4px 10px;
-  border-radius: 18px;
-  font-size: 8px;
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;           
+  border-radius: 12px;        
+  font-size: 11px;            
   font-weight: 500;
-  color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-  cursor: default;
-  white-space: nowrap;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  line-height: 1;             
+  white-space: nowrap;        
+  max-width: 120px;           
+  overflow: hidden;           
+  text-overflow: ellipsis;    
+  border: 1px solid transparent;
+  background: transparent;    
+  color: inherit;
 }
 
-.pill:hover {
-  transform: scale(1.05);
+.badge:hover {
   opacity: 0.9;
-}
-
-.red {
-  background: linear-gradient(135deg, #ff5a5a, #e60000);
-}
-
-.blue {
-  background: linear-gradient(135deg, #4a90e2, #007bff);
-}
-
-.green {
-  background: linear-gradient(135deg, #28a745, #218838);
-}
-
-.purple {
-  background: linear-gradient(135deg, #9b59b6, #6f42c1);
+  transform: scale(1.02);
+  transition: all 0.15s ease-in-out;
 }
