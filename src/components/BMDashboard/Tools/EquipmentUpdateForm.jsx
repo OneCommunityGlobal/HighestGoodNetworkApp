@@ -18,7 +18,6 @@ export default function EquipmentUpdateForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [isFormValid, setIsFormValid] = useState(false);
   const dispatch = useDispatch();
-  console.log('rendering EquipmentUpdateForm');
   // Fetch dropdown data
   const projects = useSelector(state => state.bmProjects || []);
   const tools = useSelector(state => state.bmTools.toolslist || []);
@@ -90,7 +89,6 @@ export default function EquipmentUpdateForm() {
       toast.error('Please complete all fields before updating.');
       return;
     }
-    console.log('Form submitted:', formData);
     setFormData(initialFormState);
     toast.success('Tool/Equipment updated successfully!');
   };
