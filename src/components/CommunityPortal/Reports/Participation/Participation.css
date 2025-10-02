@@ -1,4 +1,4 @@
-/* General Styling */
+/* ---------- General Styling ---------- */
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
@@ -12,7 +12,7 @@ body {
 }
 
 .participation-landing-page-dark {
-  min-width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   background-color: #1B2A41;
   color: #ffffff;
@@ -42,7 +42,7 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* Save as PDF button */
+/* ---------- Save as PDF button ---------- */
 .save-pdf-btn {
   font-size: 14px;
   font-weight: 500;
@@ -214,27 +214,42 @@ body {
   margin: 0;
 }
 
+.tracking-filters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px;   /* spacing between dropdowns */
+}
+
 .tracking-filters select {
-  margin-left: 10px;
+  flex: 0 0 auto;
   padding: 8px;
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
+/* Summary boxes */
 .tracking-summary {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
+/* Light mode */
 .tracking-rate {
   background: #f8f9fa;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
+  color: #333;
 }
 
+.tracking-rate .tracking-rate-subheading span,
+.tracking-rate .tracking-rate-value span {
+  color: #333;
+}
+
+/* Dark mode */
 .tracking-rate-dark {
   background: #3A506B;
   border-radius: 10px;
@@ -243,10 +258,9 @@ body {
   color: #ffffff;
 }
 
-.tracking-rate-dark .span-dark {
+.tracking-rate-dark .tracking-rate-subheading span,
+.tracking-rate-dark .tracking-rate-value span {
   color: #ffffff;
-  display: inline-block;
-  padding-left: 5px;
 }
 
 .tracking-rate-value {
@@ -255,12 +269,7 @@ body {
   display: inline-block;
 }
 
-.tracking-rate-value span {
-  font-size: 0.9rem;
-  color: #777;
-  display: inline-block;
-}
-
+/* Tables */
 .tracking-list-container {
   max-height: 600px;
   overflow-y: auto;
@@ -438,12 +447,11 @@ body {
   color: #333;
 }
 
-/* --- PDF/Print helpers --- */
+/* ---------- PDF/Print helpers ---------- */
 .page-break-before { break-before: page; page-break-before: always; }
 .page-break-after  { break-after: page;  page-break-after: always; }
 .avoid-break       { break-inside: avoid; page-break-inside: avoid; }
 
-/* Expand long sections during export */
 html[data-exporting="true"] .case-cards.expanded,
 html[data-exporting="true"] .case-list.expanded,
 html[data-exporting="true"] .tracking-list-container {
@@ -452,13 +460,11 @@ html[data-exporting="true"] .tracking-list-container {
   -webkit-overflow-scrolling: auto !important;
 }
 
-/* Freeze transitions/animations for clean output */
 html[data-exporting="true"] * {
   animation: none !important;
   transition: none !important;
 }
 
-/* Ensure dark background renders */
 html[data-exporting="true"] .participation-landing-page-dark {
   background-color: #1B2A41 !important;
 }
@@ -466,11 +472,9 @@ html[data-exporting="true"] .participation-landing-page-dark {
 .print-only { display: none; }
 
 @media print {
-  /* Showing only the Participation page */
   body > *:not(#root) { display: none !important; }
   #root > *:not(.participation-landing-page) { display: none !important; }
 
-  /* Using full page width in print */
   .participation-landing-page {
     max-width: 100% !important;
     margin: 0 !important;
@@ -478,12 +482,11 @@ html[data-exporting="true"] .participation-landing-page-dark {
 
   @page { size: Letter; margin: 0.5in; }
 
-  /* Keep colors */
   @supports (-webkit-print-color-adjust: exact) {
     * { -webkit-print-color-adjust: exact; }
   }
   @supports (print-color-adjust: exact) {
-    * { -webkit-print-color-adjust: exact; }
+    * { print-color-adjust: exact; }
   }
 
   .case-cards {
@@ -497,7 +500,6 @@ html[data-exporting="true"] .participation-landing-page-dark {
   .tracking-table tr,
   .insight-item { break-inside: avoid; page-break-inside: avoid; }
 
-  /* Hiding interactive UI in print */
   .view-switcher,
   .filter-wrapper,
   .create-new,

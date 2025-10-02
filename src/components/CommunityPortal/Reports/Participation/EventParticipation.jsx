@@ -1,3 +1,4 @@
+/* eslint-disable testing-library/no-node-access */
 import { useSelector } from 'react-redux';
 import { useRef, useState, useCallback } from 'react';
 import MyCases from './MyCases';

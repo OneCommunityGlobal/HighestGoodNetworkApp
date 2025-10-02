@@ -1,4 +1,4 @@
-/* General Styles */
+/* ---------- General Styles ---------- */
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
@@ -15,13 +15,14 @@ body {
 }
 
 .my-cases-page-dark {
-  padding: 20px;
+  padding: 16px;
   background-color: #1C2541;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* ---------- Header ---------- */
 .my-cases-page .header {
   display: flex;
   justify-content: space-between;
@@ -32,7 +33,12 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #1C2541;
   color: #ffffff;
+}
+
+.my-cases-page-dark .header-actions {
+  gap: 20px;     /* more room between dropdowns/buttons */
 }
 
 .section-title {
@@ -45,6 +51,7 @@ body {
 .section-title-dark {
   font-size: 24px;
   font-weight: bold;
+  background-color: #1C2541;
   color: #ffffff !important;
   margin: 0;
 }
@@ -55,19 +62,28 @@ body {
   gap: 15px;
 }
 
+/* ---------- View Switcher ---------- */
 .view-switcher {
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  display: flex;
+  gap: 12px; /* clean space between buttons */
 }
 
 .view-switcher button,
 .create-new {
   background-color: #fff;
-  border-radius: 4px;
-  padding: 8px 12px;
+  border-radius: 6px;
+  padding: 10px 20px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 500;
   color: #333;
+  border: 1px solid #ccc;
+}
+
+.view-switcher button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }
 
 .filter-wrapper {
@@ -89,13 +105,6 @@ body {
   outline: none;
 }
 
-.view-switcher button.active,
-.create-new:hover {
-  background-color: #007bff;
-  color: #fff;
-  border-color: #007bff;
-}
-
 .create-new {
   font-weight: bold;
   border: 1px solid #ccc;
@@ -106,7 +115,7 @@ body {
   margin-top: 10px;
 }
 
-/* Card View Styles */
+/* ---------- Card View Styles ---------- */
 .case-cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -230,7 +239,7 @@ body {
   color: #555;
 }
 
-/* List View Styles */
+/* ---------- List View Styles ---------- */
 .case-list {
   list-style-type: none;
   padding: 0;
@@ -272,7 +281,7 @@ body {
   font-size: 14px;
 }
 
-/* Calendar View Styles */
+/* ---------- Calendar View Styles ---------- */
 .calendar-view {
   padding: 20px;
   background-color: #fff;
@@ -295,7 +304,7 @@ body {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* More button */
+/* ---------- More button ---------- */
 .more-btn {
   background-color: #007bff;
   color: #fff;
@@ -311,11 +320,10 @@ body {
   background-color: #0056b3;
 }
 
-/* Expanded scroll area */
+/* ---------- Expanded scroll area ---------- */
 .case-cards.expanded,
 .case-list.expanded {
   max-height: 500px; /* enough space to show ~30 events */
   overflow-y: auto;
   padding-right: 8px;
 }
-
