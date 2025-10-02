@@ -38,11 +38,6 @@ function VolunteerStatusPieChart({
           return [`${value}`, `(${percentage}%)`];
         },
         display: true,
-        font: {
-          size: 20,
-          weight: 'bolder',
-          lineHeight: 1.8,
-        },
         offset: 0,
         align: 'center',
         anchor: 'center',
