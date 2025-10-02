@@ -418,7 +418,7 @@
 
 .weeklyCardTitle {
   color: #000;
-  font-size: 16px;
+  font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
 }
 
