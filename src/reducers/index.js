@@ -72,8 +72,7 @@ import injuriesReducer from './injuries';
 
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
-// eslint-disable-next-line import/no-named-as-default
-import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
+import userPreferencesReducer from './listBiddashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portal
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
