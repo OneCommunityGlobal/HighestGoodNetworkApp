@@ -41,7 +41,11 @@ function ProjectLabel({ viewBox, info }) {
         <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
         <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>{info.amount}</div>
         <div style={{ color: '#666', fontSize: 10 }}>({info.percentage})</div>
-        <div style={{ color: info.fontcolor, fontSize: 10, fontWeight: 'bold' }}>{info.change}</div>
+        {info.ifcompare && (
+          <div style={{ color: info.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
+            {info.change}
+          </div>
+        )}
       </div>
     </foreignObject>
   );
