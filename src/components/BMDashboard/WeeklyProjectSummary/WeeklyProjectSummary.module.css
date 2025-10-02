@@ -223,6 +223,15 @@
   background: var(--section-bg);
 }
 
+/* Adjust grid columns based on section size */
+.weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.weeklyProjectSummaryDashboardSection.small .weeklyProjectSummaryDashboardCategoryContent {
+  grid-template-columns: 1fr;
+}
+
 /* ---------------- DARK MODE VARIABLES ---------------- */
 :root {
   --bg-color: #ffffff;
