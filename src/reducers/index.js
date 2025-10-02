@@ -71,8 +71,8 @@ import injuriesReducer from './injuries';
 // import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
-import messageReducer from './listBiddashboard/messagingReducer';
-import userPreferencesReducer from './listBiddashboard/userPreferencesReducer';
+import messageReducer from './listBidDashboard/messagingReducer';
+import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portalgit
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
