@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -85,7 +85,7 @@ describe('TaskDifferenceModal component', () => {
   });
   it('check if modal is open when isOpen is set to true', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('Task Info Changes')).toBeInTheDocument();
+    expect(screen.getByText('Task Info Changes')).toBeInTheDocument();
   });
   it('check if modal is not open when isOpen is set to false', () => {
     renderComponent(false, 'abc123', taskNotifications);
@@ -93,7 +93,7 @@ describe('TaskDifferenceModal component', () => {
   });
   it('check if modal body does get displayed when task notification user id is same as user id', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('White Bold = No Changes')).toBeInTheDocument();
+    expect(screen.getByText('White Bold = No Changes')).toBeInTheDocument();
   });
   it('check if modal body does not get displayed when task notification user id is not same as user id', () => {
     renderComponent(true, 'ghi123', taskNotifications);
@@ -106,72 +106,53 @@ describe('TaskDifferenceModal component', () => {
   });
   it('check if task name and Task Name header gets displayed properly', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('Task Name')).toBeInTheDocument();
-    expect(screen.queryByText(`${taskNotifications[0].oldTask.taskName}`)).toBeInTheDocument();
+    expect(screen.getByText('Task Name')).toBeInTheDocument();
+    expect(screen.getByText(`${taskNotifications[0].oldTask.taskName}`)).toBeInTheDocument();
   });
   it('check if priority and Assigned gets displayed properly', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('Priority')).toBeInTheDocument();
-    expect(screen.queryByText('Primary')).toBeInTheDocument();
-    expect(screen.queryByText('Assigned')).toBeInTheDocument();
-    expect(screen.queryByText('Yes')).toBeInTheDocument();
+    expect(screen.getByText('Priority')).toBeInTheDocument();
+    expect(screen.getByText('Primary')).toBeInTheDocument();
+    expect(screen.getByText('Assigned')).toBeInTheDocument();
+    expect(screen.getByText('Yes')).toBeInTheDocument();
   });
   it('check if status and Hours - Best-case gets displayed properly', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('Status')).toBeInTheDocument();
-    expect(screen.queryByText('Complete')).toBeInTheDocument();
+    expect(screen.getByText('Status')).toBeInTheDocument();
+    expect(screen.getByText('Complete')).toBeInTheDocument();
 
-    const hoursBestLabel = screen.getByText('Hours - Best-case');
-
-    expect(screen.queryByText('Hours - Best-case')).toBeInTheDocument();
-    const hoursBestValueElement = hoursBestLabel.nextElementSibling;
-    const spanElement = hoursBestValueElement.querySelector('span');
-    expect(spanElement.textContent).toBe('10');
+    expect(screen.getByTestId('hours-best-value')).toHaveTextContent('10');
   });
   it('check if Hours - Worst-case and Hours - Most-case gets displayed properly', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('Hours - Worst-case')).toBeInTheDocument();
+    expect(screen.getByText('Hours - Worst-case')).toBeInTheDocument();
 
-    const hoursWorstLabel = screen.getByText('Hours - Worst-case');
-    const hoursWorstValueElement = hoursWorstLabel.nextElementSibling;
-    const spanElement = hoursWorstValueElement.querySelector('span');
-    expect(spanElement.textContent).toBe('13');
-
-    expect(screen.queryByText('Hours - Most-case')).toBeInTheDocument();
-    const hoursMostLabel = screen.getByText('Hours - Most-case');
-    const hoursMostValueElement = hoursMostLabel.nextElementSibling;
-    const hoursMostSpanElement = hoursMostValueElement.querySelector('span');
-    expect(hoursMostSpanElement.textContent).toBe('13');
+    expect(screen.getByTestId('hours-worst-value')).toHaveTextContent('13');
+    expect(screen.getByText('Hours - Most-case')).toBeInTheDocument();
+    expect(screen.getByTestId('hours-most-value')).toHaveTextContent('13');
   });
   it('check if estimated hours and Classification get displayed properly', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('Estimated Hours')).toBeInTheDocument();
-    const estimatedHoursLabel = screen.getByText('Estimated Hours');
-    const estimatedHoursValueElement = estimatedHoursLabel.nextElementSibling;
-    const estimatedHoursSpanElement = estimatedHoursValueElement.querySelector('span');
-    expect(estimatedHoursSpanElement.textContent).toBe('11');
-
-    expect(screen.queryByText('Classification')).toBeInTheDocument();
-    expect(screen.queryByText('Example')).toBeInTheDocument();
+    expect(screen.getByText('Estimated Hours')).toBeInTheDocument();
+    expect(screen.getByTestId('estimated-hours-value')).toHaveTextContent('11');
+    expect(screen.getByText('Classification')).toBeInTheDocument();
+    expect(screen.getByText('Example')).toBeInTheDocument();
   });
   it('check if Why this Task is Important and Design Intent get displayed properly', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('Why this Task is Important')).toBeInTheDocument();
-    expect(screen.queryByText('some reason')).toBeInTheDocument();
-    expect(screen.queryByText('Design Intent')).toBeInTheDocument();
-    expect(screen.queryByText('Food')).toBeInTheDocument();
+    expect(screen.getByText('Why this Task is Important')).toBeInTheDocument();
+    expect(screen.getByText('some reason')).toBeInTheDocument();
+    expect(screen.getByText('Design Intent')).toBeInTheDocument();
+    expect(screen.getByText('Food')).toBeInTheDocument();
   });
   it('check if Start Date and End Date does not get displayed when Start and End Date is set to null', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    const startDateLabel = screen.getByText('Start Date');
-    const startDateElement = startDateLabel.nextElementSibling;
-    const startSpanElement = startDateElement.querySelector('span');
-    expect(startSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
 
-    const endDateLabel = screen.getByText('End Date');
-    const endDateElement = endDateLabel.nextElementSibling;
-    const endSpanElement = endDateElement.querySelector('span');
-    expect(endSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
+    expect(screen.getByText('Start Date')).toBeInTheDocument();
+    expect(screen.getByText('End Date')).toBeInTheDocument();
+
+    expect(screen.queryByTestId('start-date-value')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('end-date-value')).not.toBeInTheDocument();
   });
   it('check if Start Date and End Date get displayed when Start and End Date is not set to null', () => {
     const newTaskNotifications = [
@@ -196,15 +177,12 @@ describe('TaskDifferenceModal component', () => {
   });
   it('check if links, resources does not get displayed when the array size is 0', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    const resourceLabel = screen.getByText('Resources');
-    const resourceElement = resourceLabel.nextElementSibling;
-    const resourceSpanElement = resourceElement.querySelector('span');
-    expect(resourceSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
 
-    const linksLabel = screen.getByText('Links');
-    const linksElement = linksLabel.nextElementSibling;
-    const linksSpanElement = linksElement.querySelector('span');
-    expect(linksSpanElement).toHaveStyle('color: rgb(0, 0, 0); font-weight: bold;');
+    expect(screen.getByText('Resources')).toBeInTheDocument();
+    expect(screen.getByText('Links')).toBeInTheDocument();
+
+    expect(screen.queryByTestId('resources-value')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('links-value')).not.toBeInTheDocument();
   });
   it('check if links and resources get displayed as expected when links and resources arrays are set to entries more than 0', () => {
     const newResource = [

@@ -68,6 +68,11 @@ export const permissionLabels = [
           'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible.',
       },
       {
+        label: 'See/Edit PR Team Dashboard',
+        key: 'accessPRTeamDashboard',
+        description: 'Gives access to the PR Team dashboard, including view and edit rights.',
+      },
+      {
         label: 'Edit Total Valid Weekly Summaries',
         key: 'totalValidWeeklySummaries',
         description: 'Gives permission to edit total valid weekly summaries count under reports',
@@ -273,6 +278,12 @@ export const permissionLabels = [
         key: 'deleteBadges',
         description:
           'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
+      },
+      {
+        label: 'Modify Badge Amount',
+        key: 'modifyBadgeAmount',
+        description:
+          'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
       },
       {
         label: 'Assign Badges',
