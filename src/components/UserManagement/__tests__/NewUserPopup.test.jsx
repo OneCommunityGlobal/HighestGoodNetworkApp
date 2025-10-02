@@ -37,26 +37,30 @@ describe('new user popup', () => {
         infos: [{ infoName: 'example', infoContent: 'example content', visibility: '1' }],
       },
     });
-    renderWithProvider(<NewUserPopup open={true} onUserPopupClose={onUserPopupClose} />, { store });
   });
 
   describe('Structure', () => {
     it('should render the modal', () => {
+      renderWithProvider(<NewUserPopup open={true} onUserPopupClose={onUserPopupClose} />, { store });
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
     it('should render User Profile', () => {
+      renderWithProvider(<NewUserPopup open={true} onUserPopupClose={onUserPopupClose} />, { store });
       expect(screen.getByRole('heading', { name: /user profile/i })).toBeInTheDocument();
     });
     it('should render two close buttons', () => {
+      renderWithProvider(<NewUserPopup open={true} onUserPopupClose={onUserPopupClose} />, { store });
       expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(2);
     });
     it('should render create new user heading', () => {
+      renderWithProvider(<NewUserPopup open={true} onUserPopupClose={onUserPopupClose} />, { store });
       expect(screen.getByText('Create New User')).toBeInTheDocument();
     });
   });
 
   describe('behavior', () => {
     it('should call onUserPopupClose when close buttons clicked', () => {
+      renderWithProvider(<NewUserPopup open={true} onUserPopupClose={onUserPopupClose} />, { store });
       screen.getAllByRole('button', { name: /close/i }).forEach(btn => userEvent.click(btn));
       expect(onUserPopupClose).toHaveBeenCalledTimes(2);
     });
@@ -85,6 +89,6 @@ describe('new user popup closed', () => {
       <NewUserPopup open={false} onUserPopupClose={onUserPopupClose} />,
       { store },
     );
-    expect(queryByRole('dialog')).toBeNull();
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 });
