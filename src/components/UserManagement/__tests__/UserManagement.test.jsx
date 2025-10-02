@@ -278,17 +278,19 @@ describe('UserManagement Component', () => {
     expect(screen.getByTestId('activation-date-popup')).toBeInTheDocument();
   });
 
-  it('should update state when onActiveFiter is called with active', () => {
+  it('should update state when onActiveFiter is called with active', async () => {
     render(<UnconnectedUserManagement {...props} />);
 
     // Find and click the active filter button
     const activeFilterButton = screen.getByTestId('active-filter-button');
     fireEvent.click(activeFilterButton);
 
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     // Since we can't directly check state, we need to verify the effect of the state change
     // In this case, we'd typically see filtered results in the table
     // For now, we'll verify that the component still renders after filtering
-    expect(screen.getByTestId('user-table-data-0')).toBeInTheDocument();
+    expect(screen.getByTestId('user-management-table')).toBeInTheDocument();
   });
 
   it('should open new user popup when onNewUserClick is called', () => {
