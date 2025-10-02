@@ -82,6 +82,9 @@ import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
 
+// job analytics
+import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -150,6 +153,9 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+
+  // job analytics
+  hoursPledged: hoursPledgedReducer,
 };
 
 const sessionReducers = {
