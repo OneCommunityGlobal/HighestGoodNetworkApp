@@ -91,3 +91,4 @@ export const PR_PROMOTIONS = 'PR Promotions';
 
 
 export const SEND_EMAILS = 'Send Emails';
+export const BLUE_SQUARE_EMAIL_MANAGEMENT = 'Blue Square Email Management';
