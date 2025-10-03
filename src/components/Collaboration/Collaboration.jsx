@@ -316,15 +316,16 @@ function Collaboration() {
           </button>
         </nav>
         <div className={styles['job-queries-title']}>
-          {!searchTerm && !category && !position ? (
+          {!jobAdsQueryTerm && !category && !position ? (
             <h3 className={styles['job-query']}>Listing all job ads.</h3>
           ) : (
             <h3 className={styles['job-query']}>
               Listing results for{' '}
-              {[jobAdsQueryTerm, category, position].filter(Boolean).join(' + ')}
+              {[jobAdsQueryTerm, category, position].filter(Boolean).join(' , ')}
             </h3>
           )}
         </div>
+
         <div className={styles['filter-chips-container']}>
           {/*onClick={filter.onRemove} */}
           {filters.map((filter, index) => (
