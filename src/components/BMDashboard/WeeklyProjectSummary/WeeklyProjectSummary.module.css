@@ -190,6 +190,13 @@
   min-height: 250px;
 }
 
+.mapCard {
+  width: 100%;
+  min-height: 500px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
   border-radius: 8px;

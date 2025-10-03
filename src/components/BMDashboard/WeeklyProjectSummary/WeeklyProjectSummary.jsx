@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
-import { useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -17,6 +17,7 @@ import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
 import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
@@ -331,18 +332,16 @@ function WeeklyProjectSummary() {
         ),
       },
       {
-        title: 'Global Distribution and Project Status',
+        title: 'Global Distribution and Project Status Overview',
         key: 'Global Distribution and Project Status',
-        className: 'half',
+        className: 'full',
         content: (
-          <>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
-              📊 Wide Card
-            </div>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-              📊 Normal Card
-            </div>
-          </>
+          <div
+            className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
+            style={{ height: '500px', padding: '0' }}
+          >
+            <EmbedInteractiveMap />
+          </div>
         ),
       },
       {
@@ -474,7 +473,7 @@ function WeeklyProjectSummary() {
   };
 
   return (
-    <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
