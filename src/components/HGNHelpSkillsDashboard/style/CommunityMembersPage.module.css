@@ -63,9 +63,8 @@
 }
 
 .darkMode .pageContainer {
-  background: #1e1e1e;
+  background: #1b2a41;
   color: #f1f1f1;
-  border: 1px solid #333;
 }
 
 .darkMode .sectionTitle {

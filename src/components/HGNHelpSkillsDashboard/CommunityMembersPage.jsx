@@ -4,8 +4,8 @@ import RankedUserList from './RankedUserList';
 import styles from './style/CommunityMembersPage.module.css';
 import { useSelector } from 'react-redux';
 
-const availableSkills = ['React', 'Redux', 'HTML', 'CSS', 'MongoDB', 'Database', 'JavaScript'];
-const availablePreferences = ['Design', 'Backend', 'Frontend', 'Data', 'Agile', 'DevOps'];
+const availableSkills = ['React', 'Redux', 'HTML', 'CSS', 'MongoDB', 'Database'];
+const availablePreferences = ['Design', 'Backend', 'Frontend', 'Management', 'Testing'];
 
 function CommunityMembersPage() {
   const [selectedSkills, setSelectedSkills] = useState([]);

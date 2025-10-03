@@ -5,8 +5,7 @@
   max-width: 100%;
   padding: 30px 24px;
   background: #ffffff;
-  border: 2px solid #eeeeee;
-  box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
   border-radius: 8px;
   font-family: 'Roboto', sans-serif;
   display: flex;
@@ -94,14 +93,16 @@
 
 /* --- DARK MODE STYLES --- */
 .darkMode {
-  background-color: #1e1e1e; /* dark background */
-  color: #f0f0f0; /* light text for general elements */
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
 }
 
-.darkMode .userCard {
+.userCard.darkMode {
   background-color: #2a2a2a;
-  border: 2px solid #444444;
-  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2), 0 2px 6px rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #f0f0f0;
 }
 
 .darkMode .userName {
@@ -117,7 +118,6 @@
 }
 
 .darkMode .scoreValue {
-  /* keep score color dynamic (green/red), override only text */
   color: inherit;
 }
 
