@@ -712,10 +712,17 @@ export default (
           component={EventStats}
         />
         <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+
+        <CPProtectedRoute
           path="/communityportal/reports/resourceusage"
           exact
           component={ResourceUsage}
         />
+
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 
