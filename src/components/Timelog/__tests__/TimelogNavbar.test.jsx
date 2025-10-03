@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter, Router, Switch } from 'react-router-dom';
+// import { BrowserRouter as Router , Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import configureStore from 'redux-mock-store';
-import { Route } from 'react-router-dom';
+// import configureStore from 'redux-mock-store';
+import { configureStore } from '@reduxjs/toolkit';
 import TimelogNavbar from '../TimelogNavbar';
 import { renderWithRouterMatch } from '../../../__tests__/utils';
 // eslint-disable-next-line no-unused-vars
@@ -15,7 +16,6 @@ describe('TimelogNavbar', () => {
   let store;
   let component;
 
-  beforeEach(() => {
     const initialState = {
       userProfile: {
         firstName: 'John',
@@ -31,46 +31,61 @@ describe('TimelogNavbar', () => {
           ],
         ],
       },
-    };
-    store = mockStore(initialState);
-    component = render(
-      <Provider store={store}>
-        <Router>
-          <TimelogNavbar userId="user123" />
-        </Router>
-      </Provider>
-    );
-  });
+    }
+      beforeEach(() => {
+        store = mockStore(initialState);
+      });
+
+      const renderNavbar = () =>
+        render(
+          <Provider store={store}>
+            <Router>
+              <TimelogNavbar userId="user123" />
+            </Router>
+          </Provider>
+        );
+
+  //   store = mockStore(initialState);
+  //   component = render(
+  //     <Provider store={store}>
+  //       <Router>
+  //         <TimelogNavbar userId="user123" />
+  //       </Router>
+  //     </Provider>
+  //   );
+  // });
 
   test('renders TimelogNavbar component', () => {
-    expect(component.getByText('John Doe\'s Timelog')).toBeInTheDocument();
+    renderNavbar();
+    expect(screen.getByText('John Doe\'s Timelog')).toBeInTheDocument();
   });
 
   test('renders user name correctly', () => {
-    expect(component.getByText('John Doe\'s Timelog')).toBeInTheDocument();
+    renderNavbar();
+    expect(screen.getByText('John Doe\'s Timelog')).toBeInTheDocument();
   });
 
   test('renders total effort and weekly committed hours correctly', () => {
-    expect(component.getByText(/Current Week\s*:\s*25\.25\s*\/\s*40/)).toBeInTheDocument();
+    expect(screen.getByText(/Current Week\s*:\s*25\.25\s*\/\s*40/)).toBeInTheDocument();
   });
 
   it('renders progress bar with correct value and color', () => {
-    const progressBar = component.getByRole('progressbar');
+    const progressBar = screen.getByRole('progressbar');
     expect(progressBar).toHaveAttribute('aria-valuenow', '63');
     expect(progressBar).toHaveAttribute('aria-valuemax', '100');
     expect(progressBar).not.toHaveStyle('background-color: orange');
   });
 
   it('toggles navbar on click', () => {
-    const toggleButton = component.getByRole('button');
-    const navElement = component.getByRole('navigation');
+    const toggleButton = screen.getByRole('button');
+    const navElement = screen.getByRole('navigation');
     // Check if the navigation element is initially visible
     expect(navElement).not.toHaveAttribute('hidden');
     fireEvent.click(toggleButton);
   });
 
   it('renders "View Profile" link correctly', () => {
-    const profileLink = component.getByRole('link', { name: 'View Profile' });
+    const profileLink = screen.getByRole('link', { name: 'View Profile' });
     expect(profileLink).toHaveAttribute('href', '/userprofile/user123');
   });
 });
