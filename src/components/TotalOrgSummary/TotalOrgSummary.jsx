@@ -129,6 +129,7 @@ function TotalOrgSummary(props) {
   useEffect(() => {
     const fetchVolunteerStats = async () => {
       try {
+        setIsLoading(true);
         const { comparisonStartDate, comparisonEndDate } = calculateComparisonDates(
           selectedComparison,
           currentFromDate,
