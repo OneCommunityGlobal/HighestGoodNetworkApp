@@ -1,4 +1,3 @@
-// src/components/UserState/UserStateManager.jsx
 import React from "react";
 import axios from "axios";
 import UserState from "./UserState";
@@ -7,22 +6,21 @@ import styles from "./UserStateEdit.module.css";
 
 const API_BASE = process.env.REACT_APP_APIENDPOINT;
 
-// ---- Global caches ----------------------------------------------------------
 let catalogCache = null;
 let catalogPromise = null;
 
-const selectionsCache = new Map();          // userId -> [{key, assignedAt?}, ...]
-const selectionsPromiseCache = new Map();   // userId -> inflight Promise
+const selectionsCache = new Map();          
+const selectionsPromiseCache = new Map();   
 
 export default function UserStateManager({
   userId,
   canEdit,
   user,
-  initialSelections = [],   // e.g. pass user.stateIndicators
+  initialSelections = [],   
 }) {
   const [open, setOpen] = React.useState(false);
 
-  // show pills immediately from props (if present)
+  
   const [selections, setSelections] = React.useState(
     (Array.isArray(initialSelections) ? initialSelections : [])
       .map(s => (typeof s === "string" ? { key: s } : s))
@@ -39,23 +37,20 @@ export default function UserStateManager({
       baseURL: `${API_BASE}/user-states`,
       headers: {
         "Content-Type": "application/json",
-        Authorization: token, // keep your auth header scheme
+        Authorization: token, 
       },
     });
   }, []);
 
-  // --- 1) Prefetch assigned states ONCE per user at page load ----------------
+  
   React.useEffect(() => {
     if (!userId) return;
     let cancelled = false;
-
-    // if cached, use it immediately
     if (selectionsCache.has(userId)) {
       setSelections(selectionsCache.get(userId));
       return;
     }
 
-    // if another instance is fetching the same user, reuse the promise
     const inflight = selectionsPromiseCache.get(userId);
     if (inflight) {
       setLoadingSel(true);
@@ -87,7 +82,6 @@ export default function UserStateManager({
     return () => { cancelled = true; };
   }, [api, userId]);
 
-  // --- 2) Fetch catalog ONLY when the modal opens (with cache) ---------------
   React.useEffect(() => {
     if (!open) return;
     let cancelled = false;
@@ -114,7 +108,6 @@ export default function UserStateManager({
 
   return (
     <div>
-      {/* Pills: always render from local state (prefilled from cache/prop) */}
       <UserState selections={selections} catalog={catalog} />
 
       <div style={{ marginTop: 6 }}>
@@ -141,7 +134,6 @@ export default function UserStateManager({
           onSaved={(nextSelections, nextCatalog) => {
             setSelections(nextSelections);
             setCatalog(nextCatalog);
-            // keep caches in sync
             selectionsCache.set(userId, nextSelections);
             catalogCache = nextCatalog;
           }}
