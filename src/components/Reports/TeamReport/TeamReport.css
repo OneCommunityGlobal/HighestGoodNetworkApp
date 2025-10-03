@@ -96,3 +96,10 @@
   margin-top: 0;
   margin-left: -80px;
 }
+
+/* Force white header text only in dark mode */
+.report-page-wrapper.bg-oxford-blue .tableHeader thead tr td,
+.report-page-wrapper.bg-oxford-blue .tableHeader thead tr th,
+.report-page-wrapper.bg-oxford-blue .tableHeader thead tr strong {
+  color: #ffffff !important;
+}

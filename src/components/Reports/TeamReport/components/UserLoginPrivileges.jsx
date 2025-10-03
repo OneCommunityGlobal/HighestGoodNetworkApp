@@ -137,7 +137,7 @@ function UserLoginPrivileges({
       >
         <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
           <TeamsReportCharts
-            title="Weekly Commited Hours"
+            title="Weekly Committed Hours"
             pieChartId="chart2"
             selectedTeamsData={selectedTeamsData}
             darkMode={darkMode}
