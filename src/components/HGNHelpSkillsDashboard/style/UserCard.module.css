@@ -1,8 +1,9 @@
-/* UserCard.module.css */
+/* --- USER CARD STYLING --- */
 
 .userCard {
   width: 100%;
   max-width: 100%;
+  min-height: 500px;
   padding: 30px 24px;
   background: #ffffff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.25);
@@ -12,35 +13,48 @@
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  box-sizing: border-box;
 }
 
 .avatar {
   width: 140px;
   height: 140px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .info {
   display: flex;
   flex-direction: column;
-  align-items: center; /* center name/email/slack */
+  align-items: center;
   text-align: center;
   gap: 4px;
+  width: 100%;
 }
 
 .userName {
-  font-size: 30px;
-  font-weight: 400;
+  font-size: 28px;
+  font-weight: 500;
   color: black;
-  white-space: nowrap;
+  text-align: center;
+  max-width: 100%;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 .contactLine {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   font-size: 16px;
   color: #616161;
+  text-align: center;
+  flex-wrap: wrap;
 }
 
 .contactIcon {
@@ -53,6 +67,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex-grow: 1;
 }
 
 .scoreLine {
@@ -89,9 +104,13 @@
   color: #616161;
   line-height: 22px;
   word-wrap: break-word;
+  max-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* --- DARK MODE STYLES --- */
+/* --- DARK MODE --- */
+
 .darkMode {
   background-color: #1e1e1e;
   color: #f0f0f0;

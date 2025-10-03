@@ -2,19 +2,19 @@
 .pageContainer {
   padding: 40px;
   font-family: Arial, sans-serif;
-  max-width: 1200px; /* more breathing space */
+  max-width: 1200px;
   margin: 0 auto;
   background: #ffffff;
   color: #222;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
-  gap: 30px; /* spacing between sections */
+  gap: 30px;
 }
 
 .sectionTitle {
   margin-bottom: 10px;
-  font-size: 1.5rem; /* bigger for visibility */
+  font-size: 1.5rem;
   font-weight: 600;
   color: #222;
 }
@@ -23,7 +23,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  justify-content: flex-start; /* align buttons nicely */
+  justify-content: flex-start;
 }
 
 .toggleButton {
