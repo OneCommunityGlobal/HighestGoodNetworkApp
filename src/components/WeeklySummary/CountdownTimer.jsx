@@ -65,10 +65,11 @@ export default function CountdownTimer({ date, darkMode }) {
     <div className={`countdown ${darkMode ? 'text-light' : ''}`}>
       {!isEmpty(timeLeft)
         ? Object.keys(timeLeft).map(interval => (
-            // eslint-disable-next-line react/jsx-indent
             <span key={interval} className="countdown__col">
               <span className="countdown__col__element">
-                <strong>{addLeadingZeros(interval)}</strong>
+                <strong style={darkMode ? { color: '#fff', fontWeight: 700 } : undefined}>
+                  {addLeadingZeros(interval)}
+                </strong>
                 <span>{pluralOrSingle(interval)}</span>
               </span>
             </span>

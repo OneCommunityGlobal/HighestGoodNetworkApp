@@ -1,15 +1,22 @@
 .popup_container {
   position: sticky;
-  width: 100%;
   top: 0;
-  left: 0%;
+  left: 0;
+  width: 100%;
   margin: 0;
   text-align: center;
   background-color: #ffcc00;
-  color: #fff;
-  z-index: 2;
   opacity: 0.8;
+  z-index: 2;
 }
+
+body.dark-mode,
+#root.dark-mode,
+.dark-mode,
+.dark-mode #root {
+  background-color: #1d2c44 !important; 
+}
+
 .popup_container.black_text{
   color: #000000
 }
