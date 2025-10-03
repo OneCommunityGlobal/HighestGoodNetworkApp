@@ -1,0 +1,263 @@
+.cost-breakdown-container {
+  display: flex;
+  align-items: center;
+  gap: 12px; 
+  height: 240px;  
+}
+
+.cost-breakdown-chart {
+  position: relative;
+  width: 220px;  
+  height: 220px;  
+}
+
+.cost-breakdown-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.cost-breakdown-project {
+  font-size: 14px;  
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 3px 0;  
+  line-height: 1.2;
+  max-width: 120px;  
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cost-breakdown-total {
+  font-size: 20px;  
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+  line-height: 1;
+}
+
+.cost-breakdown-label {
+  font-size: 10px;  
+  color: #666;
+  font-weight: 600;
+  margin: 3px 0 0 0;  
+  letter-spacing: 0.5px;
+}
+
+.cost-breakdown-labels {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;  
+  min-width: 140px;  
+  max-width: 140px;  
+}
+
+.cost-breakdown-label-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;  
+}
+
+.cost-breakdown-color {
+  width: 10px;  
+  height: 10px;  
+  border-radius: 2px;  
+  flex-shrink: 0;
+}
+
+.cost-breakdown-text {
+  font-size: 10px;  
+  color: #333;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;  
+}
+
+/* Tablet View (768px - 1024px) */
+@media screen and (max-width: 1024px) and (min-width: 769px) {
+  .cost-breakdown-container {
+    gap: 10px;
+    height: 220px;
+  }
+
+  .cost-breakdown-chart {
+    width: 200px;
+    height: 200px;
+  }
+
+  .cost-breakdown-project {
+    font-size: 13px;
+    max-width: 110px;
+  }
+
+  .cost-breakdown-total {
+    font-size: 18px;
+  }
+
+  .cost-breakdown-labels {
+    min-width: 120px;
+    max-width: 120px;
+  }
+
+  .cost-breakdown-text {
+    max-width: 100px;
+  }
+}
+
+/* Mobile View (up to 768px) */
+@media screen and (max-width: 768px) {
+  .cost-breakdown-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    height: auto;
+    padding: 10px 0;
+  }
+
+  .cost-breakdown-chart {
+    width: 180px;
+    height: 180px;
+  }
+
+  .cost-breakdown-project {
+    font-size: 12px;
+    max-width: 100px;
+  }
+
+  .cost-breakdown-total {
+    font-size: 16px;
+  }
+
+  .cost-breakdown-label {
+    font-size: 9px;
+  }
+
+  .cost-breakdown-labels {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    min-width: auto;
+    max-width: 280px;
+  }
+
+  .cost-breakdown-label-item {
+    gap: 4px;
+    margin: 2px;
+  }
+
+  .cost-breakdown-color {
+    width: 8px;
+    height: 8px;
+  }
+
+  .cost-breakdown-text {
+    font-size: 9px;
+    max-width: 80px;
+  }
+}
+
+/* Small Mobile View (up to 480px) */
+@media screen and (max-width: 480px) {
+  .cost-breakdown-container {
+    gap: 12px;
+  }
+
+  .cost-breakdown-chart {
+    width: 160px;
+    height: 160px;
+  }
+
+  .cost-breakdown-project {
+    font-size: 11px;
+    max-width: 90px;
+  }
+
+  .cost-breakdown-total {
+    font-size: 14px;
+  }
+
+  .cost-breakdown-label {
+    font-size: 8px;
+  }
+
+  .cost-breakdown-labels {
+    max-width: 260px;
+    gap: 6px;
+  }
+
+  .cost-breakdown-text {
+    font-size: 8px;
+    max-width: 70px;
+  }
+}
+
+/* Add these additional responsive styles for controls */
+@media screen and (max-width: 768px) {
+  /* Make controls stack vertically on mobile */
+  .cost-breakdown-controls {
+    flex-direction: column !important;
+    gap: 8px !important;
+    align-items: stretch !important;
+  }
+
+  .cost-breakdown-controls > div {
+    text-align: left !important;
+  }
+
+  .cost-breakdown-controls select {
+    width: 100% !important;
+    max-width: 200px;
+  }
+
+  .cost-breakdown-controls input {
+    width: 100% !important;
+    max-width: 120px;
+    margin-bottom: 4px !important;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .cost-breakdown-labels {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px 12px !important;
+    min-width: auto !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .cost-breakdown-label-item {
+    flex: 0 0 auto !important;
+    min-width: 80px !important;
+    max-width: 120px !important;
+  }
+
+  .cost-breakdown-text {
+    max-width: none !important;
+    flex: 1 !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .cost-breakdown-labels {
+    gap: 6px 8px !important;
+  }
+
+  .cost-breakdown-label-item {
+    min-width: 70px !important;
+    max-width: 100px !important;
+  }
+
+  .cost-breakdown-text {
+    font-size: 8px !important;
+  }
+}
+
