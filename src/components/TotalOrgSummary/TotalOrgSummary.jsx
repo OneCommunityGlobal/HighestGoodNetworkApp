@@ -463,14 +463,23 @@ function TotalOrgSummary(props) {
               toggle={() => setDateRangeDropdownOpen(!dateRangeDropdownOpen)}
             >
               <DropdownToggle caret>{selectedDateRange}</DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={() => handleDateRangeSelect('Current Week')}>
+              <DropdownMenu className={styles.menuDropdownColor}>
+                <DropdownItem
+                  className={styles.colorOptionsText}
+                  onClick={() => handleDateRangeSelect('Current Week')}
+                >
                   Current Week
                 </DropdownItem>
-                <DropdownItem onClick={() => handleDateRangeSelect('Previous Week')}>
+                <DropdownItem
+                  className={styles.colorOptionsText}
+                  onClick={() => handleDateRangeSelect('Previous Week')}
+                >
                   Previous Week
                 </DropdownItem>
-                <DropdownItem onClick={() => handleDateRangeSelect('Select Date Range')}>
+                <DropdownItem
+                  className={styles.colorOptionsText}
+                  onClick={() => handleDateRangeSelect('Select Date Range')}
+                >
                   Select Date Range
                 </DropdownItem>
               </DropdownMenu>
@@ -480,17 +489,29 @@ function TotalOrgSummary(props) {
               toggle={() => setComparisonDropdownOpen(!comparisonDropdownOpen)}
             >
               <DropdownToggle caret>{selectedComparison}</DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem onClick={() => setSelectedComparison('No Comparison')}>
+              <DropdownMenu className={styles.menuDropdownColor}>
+                <DropdownItem
+                  className={styles.colorOptionsText}
+                  onClick={() => setSelectedComparison('No Comparison')}
+                >
                   No Comparison
                 </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Week Over Week')}>
+                <DropdownItem
+                  className={styles.colorOptionsText}
+                  onClick={() => setSelectedComparison('Week Over Week')}
+                >
                   Week Over Week
                 </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Month Over Month')}>
+                <DropdownItem
+                  className={styles.colorOptionsText}
+                  onClick={() => setSelectedComparison('Month Over Month')}
+                >
                   Month Over Month
                 </DropdownItem>
-                <DropdownItem onClick={() => setSelectedComparison('Year Over Year')}>
+                <DropdownItem
+                  className={styles.colorOptionsText}
+                  onClick={() => setSelectedComparison('Year Over Year')}
+                >
                   Year Over Year
                 </DropdownItem>
               </DropdownMenu>
