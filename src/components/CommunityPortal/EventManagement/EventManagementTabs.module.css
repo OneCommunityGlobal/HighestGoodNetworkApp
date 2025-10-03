@@ -1,0 +1,109 @@
+/* Container */
+.eventTabs {
+  width: 100%;
+  min-height: 100%;
+}
+.eventTabsDark {
+  background-color: #1b2a41;
+  color: white;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Tab buttons */
+.tabButtons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+.tabButtonsDark {
+  background-color: #1c2541;
+  color: white;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tabBtn {
+  padding: 10px 15px;
+  border: none;
+  background-color: transparent;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: normal;
+}
+.tabBtnDark {
+  background-color: #1c2541;
+  color: white;
+}
+
+.tabBtn:hover {
+  font-weight: bold;
+}
+.active {
+  font-weight: bold;
+  border-bottom: 2px solid black;
+}
+.activeDark {
+  font-weight: bold;
+  border-bottom: 2px solid white;
+}
+
+/* Content Area */
+.contentBox {
+  padding: 20px;
+  border-radius: 10px;
+}
+.contentBoxDark {
+  background-color: #1c2541;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.mainContent {
+  margin-top: 15px;
+}
+.mainContentDark {
+  background-color: #1c2541;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Engagement Sections */
+.engagementSections {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.engagementSectionsDark {
+  background-color: #1b2a41;
+}
+
+/* Section buttons */
+.sectionBtn {
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.2s ease-in-out;
+  font-size: 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.sectionBtnDark {
+  background-color: #1c2541;
+  color: white;
+}
+.sectionBtnActive {
+  font-weight: bold;
+  background-color: #e2e2e2;
+  color: black;
+}
+.sectionBtnDarkActive {
+  font-weight: bold;
+  background-color: #e2e2e2;
+  color: black;
+}

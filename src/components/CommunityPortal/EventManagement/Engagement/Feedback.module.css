@@ -1,0 +1,145 @@
+.feedbackContainer {
+  width: 50%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.feedbackContainerDark {
+  width: 50%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+  background-color: #1b2a41;
+  color: white;
+}
+
+.feedbackTitle {
+  font-size: 20px;
+  color: black;
+  font-weight: bold;
+  text-align: left;
+}
+
+.feedbackTitleDark {
+  padding-left: 20px;
+  padding-top: 20px;
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+  text-align: left;
+}
+
+.feedbackCount {
+  font-size: 14px;
+  color: gray;
+}
+
+.feedbackCountDark {
+  font-size: 14px;
+  color: white;
+}
+
+.feedbackHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.searchContainer {
+  flex: 1;
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 8px 8px 8px 30px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  background-color: white;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: gray;
+}
+
+.sortOptions {
+  margin-left: auto;
+}
+
+.filter {
+  font-size: 14px;
+  color: gray;
+  margin-right: 10px;
+}
+
+.filterDark {
+  color: white;
+}
+
+.filterDropdown {
+  margin-left: 5px;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.sortBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: gray;
+}
+
+.feedbackCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+}
+
+.feedbackCardDark {
+  display: flex;
+  align-items: flex-start;
+  background: #3a506b;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: gray;
+}
+
+.feedbackContent {
+  flex: 1;
+}
+
+.feedbackText {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+}
+
+.feedbackTextDark {
+  color: white;
+}
+
+.feedbackDate {
+  color: gray;
+  font-size: 12px;
+}
+
+.feedbackRating {
+  color: gold;
+  font-size: 16px;
+}
