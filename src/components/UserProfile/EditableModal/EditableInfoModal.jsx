@@ -210,7 +210,7 @@ export class EditableInfoModal extends Component {
 
     const { darkMode } = this.props;
     const sanitizedContent = darkMode
-      ? infoContent.replace(/color\s*:\s*[^;"']+;?/gi, '')
+      ? infoContent.replace(/(<[^>]+)>/gi, '$1 style="color: #ffffff">')
       : infoContent;
     return (
       (CanRead) && (
@@ -228,6 +228,17 @@ export class EditableInfoModal extends Component {
             <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
               <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
               <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ padding: '20px 40px' }}>
+                {darkMode && (
+                  <style>
+                    {`
+                      .info-modal-content a:hover,
+                      .info-modal-content *:hover {
+                      background-color: #444 !important;
+                      color: #ffffff !important;
+                      }
+                    `}
+                  </style>
+                )}
                 {this.state.editing
                   ? <RichTextEditor
                     disabled={!this.state.editing}
