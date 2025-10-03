@@ -3,6 +3,7 @@ import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
+import { useSelector } from 'react-redux';
 
 function JobApplicationForm() {
   const [forms, setForms] = useState([]);
@@ -11,6 +12,8 @@ function JobApplicationForm() {
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Fetch all job forms on mount
   useEffect(() => {
@@ -84,7 +87,7 @@ function JobApplicationForm() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       <header className={styles.logo}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
@@ -129,11 +132,16 @@ function JobApplicationForm() {
           {showDescription && filteredForm && (
             <div className={styles.popupOverlay}>
               <div className={styles.popupContent}>
-                <div>
-                  <h2>{filteredForm.title}</h2>
-                  <p>{filteredForm.description || 'No description available.'}</p>
-                </div>
-                <button onClick={handleCloseDescription}>x</button>
+                <button
+                  className={styles.popupCloseBtn}
+                  onClick={handleCloseDescription}
+                  aria-label="Close"
+                  type="button"
+                >
+                  &times;
+                </button>
+                <h2>{filteredForm.title}</h2>
+                <p>{filteredForm.description || 'No description available.'}</p>
               </div>
             </div>
           )}
