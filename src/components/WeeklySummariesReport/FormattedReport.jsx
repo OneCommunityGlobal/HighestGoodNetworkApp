@@ -3,8 +3,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-// import moment from 'moment';
-// import 'moment-timezone';
 import moment from 'moment-timezone';
 import parse from 'html-react-parser';
 import { Link } from 'react-router-dom';
@@ -46,7 +44,7 @@ import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permission
 import { ENDPOINTS } from '~/utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
-import UserStateManager from "~/components/UserState/UserStateManager";
+import UserStateManager from '~/components/UserState/UserStateManager';
 
 const textColors = {
   Default: '#000000',
@@ -66,16 +64,8 @@ const isLastWeekReport = (startDateStr, endDateStr) => {
   const summaryStart = new Date(startDateStr);
   const summaryEnd = new Date(endDateStr);
 
-  const weekStartLA = moment()
-    .tz('America/Los_Angeles')
-    .startOf('week')
-    .subtract(1, 'week')
-    .toDate();
-  const weekEndLA = moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .subtract(1, 'week')
-    .toDate();
+  const weekStartLA = moment().tz('America/Los_Angeles').startOf('week').subtract(1, 'week').toDate();
+  const weekEndLA = moment().tz('America/Los_Angeles').endOf('week').subtract(1, 'week').toDate();
 
   return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
 };
@@ -103,8 +93,8 @@ function FormattedReport({
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
-  // Only proceed if summaries is valid
-  if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+  // Guard: nothing to render
+  if (!Array.isArray(summaries) || summaries.length === 0) {
     return (
       <div className="text-center py-4">
         <p>No data available to display</p>
@@ -112,40 +102,16 @@ function FormattedReport({
     );
   }
 
-  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
-
-  // Determining if it's the final week:
-  // const isFinalWeek =
-  //   !summaries.isActive && // backend tells user is inactive
-  //   summaries.startDate &&
-  //   summaries.endDate &&
-  //   isLastWeekReport(summaries.startDate, summaries.endDate) &&
-  //   weekIndex === 1; // second report row
-
-  // // Final week date range to show in message
-  // const finalWeekStart = moment()
-  //   .tz('America/Los_Angeles')
-  //   .startOf('week')
-  //   .subtract(1, 'week')
-  //   .format('MMM D, YYYY');
-
-  // const finalWeekEnd = moment()
-  //   .tz('America/Los_Angeles')
-  //   .endOf('week')
-  //   .subtract(1, 'week')
-  //   .format('MMM D, YYYY');
+  const loggedInUserEmail = auth?.user?.email || '';
 
   return (
     <>
       <ListGroup flush>
-        {summaries.map(summary => {
-          // Add safety check for each summary
-          if (!summary || !summary.totalSeconds) {
-            return null;
-          }
+        {summaries.map((summary) => {
+          if (!summary) return null;
 
           const isFinalWeek =
-            !summary.isActive && // THIS now refers to individual user
+            !summary.isActive &&
             summary.startDate &&
             summary.endDate &&
             isLastWeekReport(summary.startDate, summary.endDate) &&
@@ -183,92 +149,61 @@ function FormattedReport({
 function EmailsList({ summaries, auth }) {
   const [emailTooltipOpen, setEmailTooltipOpen] = useState(false);
   const [copyTooltipOpen, setCopyTooltipOpen] = useState(false);
-  if (auth?.user?.role) {
-    const { role } = auth.user;
-    if (role === 'Administrator' || role === 'Owner') {
-      const emails = [];
-      summaries.forEach(summary => {
-        if (summary.email !== undefined && summary.email !== null) {
-          emails.push(summary.email);
-        }
-      });
-      const handleEmailButtonClick = () => {
-        const batchSize = 90;
-        const emailChunks = [];
-        for (let i = 0; i < emails.length; i += batchSize) {
-          emailChunks.push(emails.slice(i, i + batchSize));
-        }
-        const openEmailClientWithBatchInNewTab = batch => {
-          const emailAddresses = batch.join(', ');
-          const mailtoLink = `mailto:?bcc=${emailAddresses}`;
-          window.open(mailtoLink, '_blank');
-        };
-        emailChunks.forEach((batch, index) => {
-          setTimeout(() => {
-            openEmailClientWithBatchInNewTab(batch);
-          }, index * 2000);
-        });
-      };
 
-      const toggleEmailTooltip = () => {
-        setEmailTooltipOpen(!emailTooltipOpen);
-      };
+  const role = auth?.user?.role;
+  if (!(role === 'Administrator' || role === 'Owner')) return null;
 
-      const toggleCopyTooltip = () => {
-        setCopyTooltipOpen(!copyTooltipOpen);
-      };
+  const emails = (summaries || [])
+    .map((s) => s?.email)
+    .filter((e) => e !== undefined && e !== null);
 
-      return (
-        <>
-          <div className="d-flex align-items-center">
-            <h4>Emails</h4>
-            <Tooltip
-              placement="top"
-              isOpen={emailTooltipOpen}
-              target="emailIcon"
-              toggle={toggleEmailTooltip}
-            >
-              Launch the email client, organizing the recipient email addresses into batches, each
-              containing a maximum of 90 addresses.
-            </Tooltip>
-            <FontAwesomeIcon
-              className="mx-2"
-              onClick={handleEmailButtonClick}
-              icon={faMailBulk}
-              size="lg"
-              style={{ color: '#0f8aa9', cursor: 'pointer' }}
-              id="emailIcon"
-            />
-            <Tooltip
-              placement="top"
-              isOpen={copyTooltipOpen}
-              target="copytoclipboard"
-              toggle={toggleCopyTooltip}
-            >
-              Click to copy all emails.
-            </Tooltip>
-            <div id="copytoclipboard">
-              <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
-            </div>
-          </div>
-          <p>{emails.join(', ')}</p>
-        </>
-      );
+  const handleEmailButtonClick = () => {
+    const batchSize = 90;
+    const chunks = [];
+    for (let i = 0; i < emails.length; i += batchSize) {
+      chunks.push(emails.slice(i, i + batchSize));
     }
-    return null;
-  }
-  return null;
+    chunks.forEach((batch, index) => {
+      setTimeout(() => {
+        const mailtoLink = `mailto:?bcc=${batch.join(', ')}`;
+        window.open(mailtoLink, '_blank');
+      }, index * 2000);
+    });
+  };
+
+  return (
+    <>
+      <div className="d-flex align-items-center">
+        <h4>Emails</h4>
+        <Tooltip placement="top" isOpen={emailTooltipOpen} target="emailIcon" toggle={() => setEmailTooltipOpen((o) => !o)}>
+          Launch the email client, organizing the recipient email addresses into batches, each containing a maximum of 90
+          addresses.
+        </Tooltip>
+        <FontAwesomeIcon
+          className="mx-2"
+          onClick={handleEmailButtonClick}
+          icon={faMailBulk}
+          size="lg"
+          style={{ color: '#0f8aa9', cursor: 'pointer' }}
+          id="emailIcon"
+        />
+        <Tooltip placement="top" isOpen={copyTooltipOpen} target="copytoclipboard" toggle={() => setCopyTooltipOpen((o) => !o)}>
+          Click to copy all emails.
+        </Tooltip>
+        <div id="copytoclipboard">
+          <CopyToClipboard writeText={emails.join(', ')} message="Emails Copied!" />
+        </div>
+      </div>
+      <p>{emails.join(', ')}</p>
+    </>
+  );
 }
 
 function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+  if (!promisedHours || promisedHours <= 0) return 'black';
   const percentage = (hoursLogged / promisedHours) * 100;
-
-  if (percentage < 50) {
-    return 'red';
-  }
-  if (percentage < 100) {
-    return '#0B6623';
-  }
+  if (percentage < 50) return 'red';
+  if (percentage < 100) return '#0B6623';
   return 'black';
 }
 
@@ -289,26 +224,26 @@ function ReportDetails({
   auth,
   handleSpecialColorDotClick,
   getWeeklySummariesReport,
-  isFinalWeek, // new prop
+  isFinalWeek,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
-  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary?.email, loggedInUserEmail);
 
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const hoursLogged = (summary?.totalSeconds?.[weekIndex] || 0) / 3600;
+  const promised = summary?.promisedHoursByWeek?.[weekIndex] || 0;
+
   const isMeetCriteria =
-    canSeeBioHighlight &&
-    summary.totalTangibleHrs > 80 &&
-    summary.daysInTeam > 60 &&
-    summary.bioPosted !== 'posted';
+    canSeeBioHighlight && (summary?.totalTangibleHrs || 0) > 80 && (summary?.daysInTeam || 0) > 60 && summary?.bioPosted !== 'posted';
 
   useEffect(() => {
-    setFilteredBadges(badges.filter(badge => badge.showReport === true));
-  }, []);
+    setFilteredBadges((badges || []).filter((b) => b?.showReport === true));
+  }, [badges]);
 
+  const dispatch = useDispatch();
+  const initialSelected = Array.isArray(summary?.stateIndicators) ? summary.stateIndicators : [];
   const canEdit =
-        ['Owner', 'Administrator'].includes(auth.user.role) ||
-        dispatch(hasPermission('manageUserStateIndicator'));
+    ['Owner', 'Administrator'].includes(auth?.user?.role) || dispatch(hasPermission('manageUserStateIndicator'));
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -335,14 +270,10 @@ function ReportDetails({
                 getWeeklySummariesReport={getWeeklySummariesReport}
               />
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
-                <Bio
-                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
-                  userId={summary._id}
-                  bioPosted={summary.bioPosted}
-                  summary={summary}
-                />
+                <Bio bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord} userId={summary?._id} bioPosted={summary?.bioPosted} summary={summary} />
               </div>
             </ListGroupItem>
 
@@ -353,32 +284,30 @@ function ReportDetails({
                 darkMode={darkMode}
               />
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
-              <p
-                style={{
-                  color: getTextColorForHoursLogged(
-                    hoursLogged,
-                    summary.promisedHoursByWeek[weekIndex],
-                  ),
-                  fontWeight: 'bold',
-                }}
-              >
-                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-              </p>
-              <p>
-                <UserStateManager
-                  userId={auth.user.personId}
-                  canEdit={canEdit}
-                  user={auth.user}
-                />
-              </p>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <p style={{ margin: 0, color: getTextColorForHoursLogged(hoursLogged, promised), fontWeight: 'bold' }}>
+                  Hours logged: {hoursLogged.toFixed(2)} / {promised}
+                </p>
+                <div style={{ marginLeft: 'auto' }}>
+                  <UserStateManager
+                    userId={summary?._id}
+                    canEdit={canEdit}
+                    user={summary}
+                    initialSelections={initialSelected}
+                  />
+                </div>
+              </div>
             </ListGroupItem>
+
             <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
+
           <Col xs="6">
-            {loadBadges && summary.badgeCollection?.length > 0 && (
+            {loadBadges && Array.isArray(summary?.badgeCollection) && summary.badgeCollection.length > 0 && (
               <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
             )}
           </Col>
@@ -397,23 +326,22 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
-  const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
-  let summaryDate = moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .subtract(weekIndex, 'week')
-    .format('YYYY-MMM-DD');
-  let summaryDateText = `Weekly Summary (${summaryDate}):`;
+  // SAFELY access weekly summaries
+  const ws = Array.isArray(summary?.weeklySummaries) ? summary.weeklySummaries : [];
+  const current = ws[weekIndex]; // may be undefined
+  const summaryText = current?.summary;
+
+  const defaultDate = moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week').format('YYYY-MMM-DD');
+  let summaryDateText = `Weekly Summary (${defaultDate}):`;
+
   const summaryContent = (() => {
     if (summaryText) {
-      const style = {
-        color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-      };
+      const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
-      summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-        .tz('America/Los_Angeles')
-        .format('MMM-DD-YY');
-      summaryDateText = `Summary Submitted On (${summaryDate}):`;
+      const uploaded = current?.uploadDate
+        ? moment(current.uploadDate).tz('America/Los_Angeles').format('MMM-DD-YY')
+        : null;
+      if (uploaded) summaryDateText = `Summary Submitted On (${uploaded}):`;
 
       return (
         <div style={style} className={styles.weeklySummaryReportContainer}>
@@ -430,12 +358,11 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         </div>
       );
     }
-    if (
-      summary?.weeklySummaryOption === 'Not Required' ||
-      (!summary?.weeklySummaryOption && summary.weeklySummaryNotReq)
-    ) {
+
+    if (summary?.weeklySummaryOption === 'Not Required' || (!summary?.weeklySummaryOption && summary?.weeklySummaryNotReq)) {
       return <p style={{ color: textColors['Not Required'] }}>Not required for this user</p>;
     }
+
     return <span style={{ color: 'red' }}>Not provided!</span>;
   })();
 
@@ -449,52 +376,35 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({
-  canEditTeamCode,
-  summary,
-  handleTeamCodeChange,
-  darkMode,
-  getWeeklySummariesReport,
-}) {
-  const [teamCode, setTeamCode] = useState(summary.teamCode);
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode }) {
+  const [teamCode, setTeamCode] = useState(summary?.teamCode || '');
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^.{5,7}$/;
   const dispatch = useDispatch();
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
-
     try {
       await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
-      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
-        [userProfileSummary._id]: true,
-      }); // Update the team code dynamically
+      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, { [userProfileSummary._id]: true });
     } catch (err) {
-      // eslint-disable-next-line no-alert
-      alert(
-        `An error occurred while attempting to save the new team code change to the profile.${err}`,
-      );
+      alert(`An error occurred while attempting to save the new team code change to the profile.${err}`);
     }
   };
 
-  const handleCodeChange = e => {
+  const handleCodeChange = (e) => {
     const { value } = e.target;
     if (value.length <= 7) {
-      const regexTest = fullCodeRegex.test(value);
-      if (regexTest) {
-        setHasError(false);
-        setTeamCode(value);
-        handleOnChange(summary, value);
-      } else {
-        setTeamCode(value);
-        setHasError(true);
-      }
+      const ok = fullCodeRegex.test(value);
+      setTeamCode(value);
+      setHasError(!ok);
+      if (ok) handleOnChange(summary, value);
     }
   };
 
   useEffect(() => {
-    setTeamCode(summary?.teamCode);
-  }, [summary.teamCode]);
+    setTeamCode(summary?.teamCode || '');
+  }, [summary?.teamCode]);
 
   return (
     <>
@@ -504,19 +414,15 @@ function TeamCodeRow({
             <Input
               id="codeInput"
               value={teamCode}
-              onChange={e => {
-                if (e.target.value !== teamCode) {
-                  handleCodeChange(e);
-                }
+              onChange={(e) => {
+                if (e.target.value !== teamCode) handleCodeChange(e);
               }}
               placeholder="X-XXX"
               className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             />
           </div>
         ) : (
-          <div style={{ paddingRight: '5px' }}>
-            {teamCode === '' ? 'No assigned team code!' : teamCode}
-          </div>
+          <div style={{ paddingRight: '5px' }}>{teamCode === '' ? 'No assigned team code!' : teamCode}</div>
         )}
         <b>Media URL:</b>
         <MediaUrlLink summary={summary} />
@@ -531,60 +437,39 @@ function TeamCodeRow({
 }
 
 function MediaUrlLink({ summary }) {
-  if (summary.mediaUrl) {
+  if (summary?.mediaUrl) {
     return (
-      <a
-        href={summary.mediaUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ paddingLeft: '5px', color: '#007BFF' }}
-      >
+      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer" style={{ paddingLeft: '5px', color: '#007BFF' }}>
         Open link to media files
       </a>
     );
   }
 
-  if (summary.adminLinks) {
-    const link = summary.adminLinks.find(item => item.Name === 'Media Folder');
-    if (link) {
-      return (
-        <a
-          href={link.Link}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ paddingLeft: '5px' }}
-        >
-          Open link to media files
-        </a>
-      );
-    }
+  const link = Array.isArray(summary?.adminLinks) ? summary.adminLinks.find((item) => item?.Name === 'Media Folder') : null;
+  if (link) {
+    return (
+      <a href={link.Link} target="_blank" rel="noopener noreferrer" style={{ paddingLeft: '5px' }}>
+        Open link to media files
+      </a>
+    );
   }
   return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
-  const style = {
-    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-  };
-
-  const [weeklySummariesCount, setWeeklySummariesCount] = useState(
-    // parseInt() returns an integer or NaN, convert to 0 if it's NaM
-    parseInt(summary.weeklySummariesCount, 10) || 0,
-  );
+  const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
+  const [weeklySummariesCount, setWeeklySummariesCount] = useState(parseInt(summary?.weeklySummariesCount, 10) || 0);
 
   const handleOnChange = async (userProfileSummary, count) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
     } catch (err) {
-      // eslint-disable-next-line no-alert
-      alert(
-        'An error occurred while attempting to save the new weekly summaries count change to the profile.',
-      );
+      alert('An error occurred while attempting to save the new weekly summaries count change to the profile.');
     }
   };
 
-  const handleWeeklySummaryCountChange = e => {
+  const handleWeeklySummaryCountChange = (e) => {
     setWeeklySummariesCount(e.target.value);
     handleOnChange(summary, e.target.value);
   };
@@ -607,7 +492,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
             name="weeklySummaryCount"
             step="1"
             value={weeklySummariesCount}
-            onChange={e => handleWeeklySummaryCountChange(e)}
+            onChange={(e) => handleWeeklySummaryCountChange(e)}
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             min="0"
           />
@@ -623,7 +508,6 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
 }
 
 function Bio({ bioCanEdit, ...props }) {
-  // eslint-disable-next-line react/jsx-props-no-spreading
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
@@ -632,12 +516,9 @@ function BioSwitch({ userId, bioPosted, summary }) {
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
-  // eslint-disable-next-line no-shadow
-  const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(toggleUserBio(userId, bioStatus));
-    if (res.status === 200) {
-      toast.success('You have changed the bio announcement status of this user.');
-    }
+  const handleChangeBioPosted = async (id, status) => {
+    const res = await dispatch(toggleUserBio(id, status));
+    if (res.status === 200) toast.success('You have changed the bio announcement status of this user.');
   };
 
   return (
@@ -649,7 +530,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
         <ToggleSwitch
           switchType="bio"
           state={bioStatus}
-          handleUserProfile={bio => {
+          handleUserProfile={(bio) => {
             setBioStatus(bio);
             handleChangeBioPosted(userId, bio);
           }}
@@ -660,18 +541,8 @@ function BioSwitch({ userId, bioPosted, summary }) {
 }
 
 function BioLabel({ bioPosted, summary }) {
-  const style = {
-    color: textColors[summary?.weeklySummaryOption] || textColors.Default,
-  };
-
-  let text = '';
-  if (bioPosted === 'default') {
-    text = 'Not requested/posted';
-  } else if (bioPosted === 'posted') {
-    text = 'Posted';
-  } else {
-    text = 'Requested';
-  }
+  const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
+  const text = bioPosted === 'default' ? 'Not requested/posted' : bioPosted === 'posted' ? 'Posted' : 'Requested';
   return (
     <div>
       <b style={style}>Bio announcement: </b>
@@ -681,46 +552,39 @@ function BioLabel({ bioPosted, summary }) {
 }
 
 function WeeklyBadge({ summary, weekIndex, badges }) {
-  const badgeEndDate = moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .subtract(weekIndex, 'week')
-    .format('YYYY-MM-DD');
-  const badgeStartDate = moment()
-    .tz('America/Los_Angeles')
-    .startOf('week')
-    .subtract(weekIndex, 'week')
-    .format('YYYY-MM-DD');
+  const badgeEndDate = moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week').format('YYYY-MM-DD');
+  const badgeStartDate = moment().tz('America/Los_Angeles').startOf('week').subtract(weekIndex, 'week').format('YYYY-MM-DD');
+
   const badgeIdThisWeek = [];
   const badgeThisWeek = [];
-  summary.badgeCollection.forEach(badge => {
-    if (badge.earnedDate) {
-      const { length } = badge.earnedDate;
-      const earnedDate = moment(badge.earnedDate[length - 1]);
+
+  (summary?.badgeCollection || []).forEach((badge) => {
+    if (!badge) return;
+    if (Array.isArray(badge.earnedDate)) {
+      const earnedDate = moment(badge.earnedDate[badge.earnedDate.length - 1]);
       if (earnedDate.isBetween(badgeStartDate, badgeEndDate, 'days', '[]')) {
         badgeIdThisWeek.push(badge.badge);
       }
     } else {
-      const modifiedDate = badge.lastModified.substring(0, 10);
+      const modifiedDate = (badge.lastModified || '').substring(0, 10);
       if (modifiedDate <= badgeEndDate && modifiedDate >= badgeStartDate) {
         badgeIdThisWeek.push(badge.badge);
       }
     }
   });
+
   if (badgeIdThisWeek.length > 0) {
-    badgeIdThisWeek.forEach(badgeId => {
-      // eslint-disable-next-line no-shadow
-      const badge = badges.find(badge => badge._id === badgeId);
-      badgeThisWeek.push(badge);
+    badgeIdThisWeek.forEach((badgeId) => {
+      const found = (badges || []).find((b) => b?._id === badgeId);
+      if (found) badgeThisWeek.push(found);
     });
   }
+
   return (
     badgeThisWeek.length > 0 && (
       <ListGroupItem className="row">
         {badgeThisWeek.map((value, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <div className={styles.badgeTd} key={`${weekIndex}_${summary._id}_${index}`}>
-            {' '}
+          <div className={styles.badgeTd} key={`${weekIndex}_${summary?._id}_${index}`}>
             {value && value.imageUrl && value._id && (
               <>
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
@@ -751,17 +615,11 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({
-  summary,
-  weekIndex,
-  allRoleInfo,
-  auth,
-  loadTrophies,
-  handleSpecialColorDotClick,
-  isFinalWeek,
-}) {
+function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpecialColorDotClick, isFinalWeek }) {
   const colors = ['purple', 'green', 'navy'];
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const hoursLogged = (summary?.totalSeconds?.[weekIndex] || 0) / 3600;
+  const promised = summary?.promisedHoursByWeek?.[weekIndex] || 0;
+
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
   const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
   const dispatch = useDispatch();
@@ -770,117 +628,82 @@ function Index({
 
   const trophyIconToggle = () => {
     if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
-      setModalOpen(prevState => (prevState ? false : summary._id));
+      setModalOpen((prevState) => (prevState ? false : summary?._id));
     }
   };
 
-  const handleChangingTrophyIcon = async newTrophyStatus => {
+  const handleChangingTrophyIcon = async (newTrophyStatus) => {
     setModalOpen(false);
-    await dispatch(postLeaderboardData(summary._id, newTrophyStatus));
-
+    await dispatch(postLeaderboardData(summary?._id, newTrophyStatus));
     setTrophyFollowedUp(newTrophyStatus);
-
     toast.success('Trophy status updated successfully');
   };
 
-  const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
-    if (currentElement.Name === 'Google Doc') {
-      // eslint-disable-next-line no-param-reassign
-      targetLink = currentElement.Link;
-    }
-    return targetLink;
-  }, undefined);
+  const googleDocLink = Array.isArray(summary?.adminLinks)
+    ? summary.adminLinks.reduce((targetLink, currentElement) => {
+        if (currentElement?.Name === 'Google Doc') targetLink = currentElement.Link;
+        return targetLink;
+      }, undefined)
+    : undefined;
 
-  const summarySubmissionDate = moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .subtract(weekIndex, 'week')
-    .format('YYYY-MM-DD');
+  const summarySubmissionDate = moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week').format('YYYY-MM-DD');
 
   const durationSinceStarted = calculateDurationBetweenDates(
     summarySubmissionDate,
     summary?.startDate?.split('T')[0] || null,
   );
 
-  const handleIconContent = duration => {
-    if (duration.months >= 5.8 && duration.months <= 6.2) {
-      return '6M';
-    }
-    if (duration.years >= 0.9) {
-      return `${Math.round(duration.years)}Y`;
-    }
+  const handleIconContent = (duration) => {
+    if (duration.months >= 5.8 && duration.months <= 6.2) return '6M';
+    if (duration.years >= 0.9) return `${Math.round(duration.years)}Y`;
     return null;
   };
 
-  // if (isLastWeekReport(weekIndex)) {
-  //   return <b style={{ fontWeight: 'bold', fontSize: '1.2em' }}>FINAL WEEK REPORTING</b>;
-  // }
-
-  // const isFinalWeek = isLastWeekReport(weekIndex);
-  // const isFinalWeek = weekIndex === 0 && isLastWeekReport(summary.startDate, summary.endDate);
-
-  const finalWeekStart = moment()
-    .tz('America/Los_Angeles')
-    .startOf('week')
-    .subtract(1, 'week')
-    .format('MMM D, YYYY');
-  const finalWeekEnd = moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
-    .subtract(1, 'week')
-    .format('MMM D, YYYY');
+  const finalWeekStart = moment().tz('America/Los_Angeles').startOf('week').subtract(1, 'week').format('MMM D, YYYY');
+  const finalWeekEnd = moment().tz('America/Los_Angeles').endOf('week').subtract(1, 'week').format('MMM D, YYYY');
 
   return (
     <>
       <b>Name: </b>
       <Link
         className="ml-2"
-        to={`/userProfile/${summary._id}`}
+        to={`/userProfile/${summary?._id}`}
         style={{
           color:
-            currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-              currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+            currentDate.isSameOrAfter(moment(summary?.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+            currentDate.isBefore(moment(summary?.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
               : '#007BFF',
         }}
         title="View Profile"
       >
-        {summary.firstName} {summary.lastName}
+        {summary?.firstName} {summary?.lastName}
       </Link>
 
       <div style={{ display: 'inline-block' }}>
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
           <span>
-            <b>
-              &nbsp;&nbsp;
-              {summary.role !== 'Volunteer' && `(${summary.role})`}
-            </b>
+            <b>&nbsp;&nbsp;{summary?.role !== 'Volunteer' && `(${summary?.role})`}</b>
           </span>
-          {summary.role !== 'Volunteer' && (
-            <RoleInfoModal
-              info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
-              auth={auth}
-            />
+          {summary?.role !== 'Volunteer' && (
+            <RoleInfoModal info={(allRoleInfo || []).find((item) => item?.infoName === `${summary?.role}Info`)} auth={auth} />
           )}
-          {loadTrophies &&
-            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
-              <i
-                className="fa fa-trophy"
-                style={{
-                  marginLeft: '10px',
-                  fontSize: '25px',
-                  cursor: 'pointer',
-                  color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
-                }}
-                onClick={trophyIconToggle}
-              >
-                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
-                  {handleIconContent(durationSinceStarted)}
-                </p>
-              </i>
-            )}
-          <Modal isOpen={modalOpen === summary._id} toggle={trophyIconToggle}>
+          {loadTrophies && showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
+            <i
+              className="fa fa-trophy"
+              style={{
+                marginLeft: '10px',
+                fontSize: '25px',
+                cursor: 'pointer',
+                color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
+              }}
+              onClick={trophyIconToggle}
+            >
+              <p style={{ fontSize: '10px', marginLeft: '5px' }}>{handleIconContent(durationSinceStarted)}</p>
+            </i>
+          )}
+          <Modal isOpen={modalOpen === summary?._id} toggle={trophyIconToggle}>
             <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
             <ModalBody>
               <p>Are you sure you have followed up this icon?</p>
@@ -889,12 +712,7 @@ function Index({
               <Button variant="secondary" onClick={trophyIconToggle}>
                 Cancel
               </Button>{' '}
-              <Button
-                color="primary"
-                onClick={() => {
-                  handleChangingTrophyIcon(true);
-                }}
-              >
+              <Button color="primary" onClick={() => handleChangingTrophyIcon(true)}>
                 Confirm
               </Button>
             </ModalFooter>
@@ -903,17 +721,17 @@ function Index({
       </div>
 
       <div style={{ display: 'inline-block', marginLeft: '10px' }}>
-        {colors.map(color => (
+        {['purple', 'green', 'navy'].map((color) => (
           <span
             key={color}
-            onClick={() => handleSpecialColorDotClick(summary._id, color)}
+            onClick={() => handleSpecialColorDotClick(summary?._id, color)}
             style={{
               display: 'inline-block',
               width: '15px',
               height: '15px',
               margin: '0 5px',
               borderRadius: '50%',
-              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              backgroundColor: summary?.filterColor === color ? color : 'transparent',
               border: `3px solid ${color}`,
               cursor: 'pointer',
             }}
@@ -921,12 +739,6 @@ function Index({
         ))}
       </div>
 
-      {/* This conditional message ONLY on last week tab */}
-      {/* {isFinalWeek && (
-        <p style={{ color: '#8B0000', fontWeight: 'bold', marginTop: '5px' }}>
-          FINAL WEEK REPORTING: This team member is no longer active
-        </p>
-      )} */}
       {isFinalWeek && (
         <p style={{ color: '#8B0000', fontWeight: 'bold', marginTop: '5px' }}>
           FINAL WEEK REPORTING: This team member is no longer active
@@ -937,12 +749,12 @@ function Index({
         </p>
       )}
 
-      {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+      {showStar(hoursLogged, promised) && (
         <i
           className="fa fa-star"
-          title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
+          title={`Weekly Committed: ${promised} hours`}
           style={{
-            color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+            color: assignStarDotColors(hoursLogged, promised),
             fontSize: '55px',
             marginLeft: '10px',
             verticalAlign: 'middle',
@@ -960,7 +772,7 @@ function Index({
               fontSize: '10px',
             }}
           >
-            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+            +{promised ? Math.round((hoursLogged / promised - 1) * 100) : 0}%
           </span>
         </i>
       )}
@@ -969,7 +781,6 @@ function Index({
 }
 
 FormattedReport.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekIndex: PropTypes.number.isRequired,
 };

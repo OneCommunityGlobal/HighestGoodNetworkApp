@@ -7,13 +7,31 @@ import styles from "./UserStateEdit.module.css";
 
 const API_BASE = process.env.REACT_APP_APIENDPOINT;
 
-export default function UserStateManager({ userId, canEdit, user}) {
+// ---- Global caches ----------------------------------------------------------
+let catalogCache = null;
+let catalogPromise = null;
+
+const selectionsCache = new Map();          // userId -> [{key, assignedAt?}, ...]
+const selectionsPromiseCache = new Map();   // userId -> inflight Promise
+
+export default function UserStateManager({
+  userId,
+  canEdit,
+  user,
+  initialSelections = [],   // e.g. pass user.stateIndicators
+}) {
   const [open, setOpen] = React.useState(false);
 
-  const [catalog, setCatalog]       = React.useState([]);  
-  const [selections, setSelections] = React.useState([]);  
-  const [loading, setLoading]       = React.useState(true);
-  const [error, setError]           = React.useState("");
+  // show pills immediately from props (if present)
+  const [selections, setSelections] = React.useState(
+    (Array.isArray(initialSelections) ? initialSelections : [])
+      .map(s => (typeof s === "string" ? { key: s } : s))
+  );
+
+  const [catalog, setCatalog] = React.useState(catalogCache || []);
+  const [loadingSel, setLoadingSel] = React.useState(false);
+  const [loadingCat, setLoadingCat] = React.useState(false);
+  const [error, setError] = React.useState("");
 
   const api = React.useMemo(() => {
     const token = localStorage.getItem("token");
@@ -21,93 +39,124 @@ export default function UserStateManager({ userId, canEdit, user}) {
       baseURL: `${API_BASE}/user-states`,
       headers: {
         "Content-Type": "application/json",
-        Authorization: token,
+        Authorization: token, // keep your auth header scheme
       },
     });
-  }, [API_BASE]);
+  }, []);
 
+  // --- 1) Prefetch assigned states ONCE per user at page load ----------------
   React.useEffect(() => {
-    console.log(user);
-  },[open])
-
-  React.useEffect(() => {
+    if (!userId) return;
     let cancelled = false;
 
-    (async () => {
-      try {
-        setLoading(true);
-        setError("");
+    // if cached, use it immediately
+    if (selectionsCache.has(userId)) {
+      setSelections(selectionsCache.get(userId));
+      return;
+    }
 
-        const [cataRes, selRes] = await Promise.allSettled([
-          api.get("/catalog"),
-          api.get(`/users/${userId}/state-indicators`),
-        ]);
+    // if another instance is fetching the same user, reuse the promise
+    const inflight = selectionsPromiseCache.get(userId);
+    if (inflight) {
+      setLoadingSel(true);
+      inflight
+        .then(data => { if (!cancelled) setSelections(data); })
+        .catch(() => { if (!cancelled) setError("Failed to load user state"); })
+        .finally(() => { if (!cancelled) setLoadingSel(false); });
+      return;
+    }
 
-        if (!cancelled) {
-          // catalog
-          if (cataRes.status === "fulfilled") {
-            const items = Array.isArray(cataRes.value?.data?.items) ? cataRes.value.data.items : [];
-            console.log(items);
-            setCatalog(items);
-          } else {
-            setCatalog([]);
-            setError("Could not load catalog");
-            console.error("GET /catalog failed", cataRes.reason?.response?.status, cataRes.reason?.message);
-          }
+    setLoadingSel(true);
+    const p = api.get(`/users/${userId}/state-indicators`)
+      .then(res => {
+        const d = res?.data;
+        const sels = Array.isArray(d?.selections)
+          ? d.selections
+          : (d?.stateIndicators || []).map(k => ({ key: k, assignedAt: null }));
+        selectionsCache.set(userId, sels);
+        return sels;
+      })
+      .finally(() => selectionsPromiseCache.delete(userId));
 
-          if (selRes.status === "fulfilled") {
-            const data = selRes.value?.data;
-            const sels = Array.isArray(data?.selections)
-              ? data.selections
-              : Array.isArray(data?.stateIndicators)
-                ? data.stateIndicators.map(k => ({ key: k, assignedAt: null }))
-                : [];
-            setSelections(sels);
-          } else {
-            setSelections([]);
-            setError(prev => prev || "Could not load user state");
-            console.error("GET /users/:id/state-indicators failed", selRes.reason?.response?.status, selRes.reason?.message);
-          }
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+    selectionsPromiseCache.set(userId, p);
+
+    p.then(sels => { if (!cancelled) setSelections(sels); })
+     .catch(() => { if (!cancelled) setError("Failed to load user state"); })
+     .finally(() => { if (!cancelled) setLoadingSel(false); });
 
     return () => { cancelled = true; };
   }, [api, userId]);
 
+  // --- 2) Fetch catalog ONLY when the modal opens (with cache) ---------------
+  React.useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+
+    const loadCatalog = async () => {
+      if (catalogCache) return catalogCache;
+      if (!catalogPromise) {
+        catalogPromise = api.get("/catalog")
+          .then(res => Array.isArray(res?.data?.items) ? res.data.items : [])
+          .then(items => (catalogCache = items))
+          .finally(() => { catalogPromise = null; });
+      }
+      return catalogPromise;
+    };
+
+    setLoadingCat(true);
+    loadCatalog()
+      .then(items => { if (!cancelled) setCatalog(items || []); })
+      .catch(() => { if (!cancelled) setError("Failed to load catalog"); })
+      .finally(() => { if (!cancelled) setLoadingCat(false); });
+
+    return () => { cancelled = true; };
+  }, [open, api]);
+
   return (
     <div>
-      {loading && <div style={{ opacity: .7, marginBottom: 6 }}>Loading…</div>}
-      {!!error && !loading && <div style={{ color: "red", marginBottom: 6 }}>{error}</div>}
-
+      {/* Pills: always render from local state (prefilled from cache/prop) */}
       <UserState selections={selections} catalog={catalog} />
+
       <div style={{ marginTop: 6 }}>
         <button
           type="button"
           className={styles.secondaryBtn}
           onClick={() => setOpen(true)}
           title="Add user state"
-          disabled={!canEdit}  
+          disabled={!canEdit}
         >
           Add
         </button>
       </div>
 
-      <UserStateEdit
-        open={open}
-        onClose={() => setOpen(false)}
-        userId={userId}
-        catalog={catalog}
-        selections={selections}
-        canEditCatalog={canEdit}
-        apiBase={`${API_BASE}`} 
-        onSaved={(nextSelections, nextCatalog) => {
-          setSelections(nextSelections);
-          setCatalog(nextCatalog);
-        }}
-      />
+      {open && (
+        <UserStateEdit
+          open={open}
+          onClose={() => setOpen(false)}
+          userId={userId}
+          catalog={catalog}
+          selections={selections}
+          canEditCatalog={canEdit}
+          apiBase={`${API_BASE}`}
+          onSaved={(nextSelections, nextCatalog) => {
+            setSelections(nextSelections);
+            setCatalog(nextCatalog);
+            // keep caches in sync
+            selectionsCache.set(userId, nextSelections);
+            catalogCache = nextCatalog;
+          }}
+        />
+      )}
+
+      {(loadingSel || loadingCat) && (
+        <div style={{ opacity: .7, marginTop: 6 }}>
+          {loadingSel ? "(loading user state…)" : ""}
+          {loadingCat ? " (loading catalog…)" : ""}
+        </div>
+      )}
+      {!!error && !(loadingSel || loadingCat) && (
+        <div style={{ color: "red", marginTop: 6 }}>— {error}</div>
+      )}
     </div>
   );
 }

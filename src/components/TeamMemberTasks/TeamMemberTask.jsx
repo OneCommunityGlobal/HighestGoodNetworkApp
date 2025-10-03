@@ -460,10 +460,11 @@ const TeamMemberTask = React.memo(
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                             <div style={{ marginTop: "29px", marginLeft: "-70px" }}>
                               <UserStateManager
-                                userId={user.personId}
-                                canEdit={canEdit}
-                                user={user}
-                              />
+  userId={user.personId}
+  canEdit={canEdit}
+  user={user}
+  initialSelections={initialSelected}
+/>
                             </div>
                           </td>
                         </tr>
