@@ -162,6 +162,8 @@ import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 
+import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
+
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -189,7 +191,7 @@ const UpdateMaterialsBulk = lazy(() =>
 const UpdateReusablesBulk = lazy(() =>
   import('./components/BMDashboard/UpdateReusables/UpdateReusablesBulk/UpdateReusablesBulk'),
 );
-
+const InjuryChart = lazy(() => import('./components/BMDashboard/InjuryChart/InjuryChart'));
 const PurchaseConsumable = lazy(() => import('./components/BMDashboard/ConsumablePurchaseRequest'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
 const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
@@ -662,6 +664,7 @@ export default (
           exact
           component={WeeklyProjectSummary}
         />
+        <BMProtectedRoute path="/bmdashboard/injurychart" fallback exact component={InjuryChart} />
 
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
@@ -701,6 +704,7 @@ export default (
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
+        <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
 
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
