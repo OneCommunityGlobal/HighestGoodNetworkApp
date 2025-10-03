@@ -113,11 +113,13 @@ function UpdateDocumentTitle() {
       try {
         initMessagingSocket(token);
       } catch (error) {
-        console.error('WebSocket initialization failed:', error);
+        // console.error('WebSocket initialization failed:', error);
+        return error;
       }
-    } else {
-      console.warn('No auth token found for WebSocket connection');
     }
+    // else {
+    //   // console.warn('No auth token found for WebSocket connection');
+    // }
   }, []);
 
   return null;

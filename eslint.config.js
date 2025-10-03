@@ -32,7 +32,7 @@ module.exports = [
       'src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx',
       // Ignore entire component folders
       'src/components/Badge/**',
-      'src/components/UserProfile/**',
+      //'src/components/UserProfile/**',
     ],
   },
 

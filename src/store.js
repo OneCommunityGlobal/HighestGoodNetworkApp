@@ -29,10 +29,8 @@ const persistConfig = {
   blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)],
   timeout: 0, // No timeout
   writeFailHandler: (err) => {
-    console.error('Redux persist write failed:', err);
     // If storage quota is exceeded, clear storage and try again
     if (err.name === 'QuotaExceededError') {
-      console.warn('localStorage quota exceeded, clearing persist data');
       try {
         storage.removeItem('persist:root');
         // Use setTimeout to avoid blocking the current execution
@@ -40,16 +38,16 @@ const persistConfig = {
           window.location.reload();
         }, 100);
       } catch (clearError) {
-        console.error('Failed to clear localStorage:', clearError);
         // If we can't clear storage, just reload anyway
         setTimeout(() => {
           window.location.reload();
         }, 100);
       }
-    } else {
-      // For other errors, just log them and continue
-      console.warn('Non-quota storage error, continuing without persistence');
-    }
+    } 
+    // else {
+    //   // For other errors, just log them and continue
+    //   console.warn('Non-quota storage error, continuing without persistence');
+    // }
   }
 };
 
