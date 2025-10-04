@@ -137,7 +137,9 @@ function InjuryCategoryBarChart() {
 
         <div className="injury-chart-filters">
           <div className="filter">
-            <label htmlFor="project-names-select">Projects</label>
+            <label htmlFor="project-names-select" className="injury-chart-label">
+              Projects
+            </label>
             <Select
               inputId="project-names-select"
               classNamePrefix="injury-select"
@@ -150,7 +152,9 @@ function InjuryCategoryBarChart() {
           </div>
 
           <div className="filter">
-            <label htmlFor="severities-select">Severities</label>
+            <label htmlFor="severities-select" className="injury-chart-label">
+              Severities
+            </label>
             <Select
               inputId="severities-select"
               classNamePrefix="injury-select"
@@ -163,7 +167,9 @@ function InjuryCategoryBarChart() {
           </div>
 
           <div className="filter">
-            <label htmlFor="injury-types-select">Injury types</label>
+            <label htmlFor="injury-types-select" className="injury-chart-label">
+              Injury types
+            </label>
             <Select
               inputId="injury-types-select"
               classNamePrefix="injury-select"
@@ -176,7 +182,9 @@ function InjuryCategoryBarChart() {
           </div>
 
           <div className="filter">
-            <label htmlFor="start-date">Start date</label>
+            <label htmlFor="start-date" className="injury-chart-label">
+              Start date
+            </label>
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -190,7 +198,9 @@ function InjuryCategoryBarChart() {
           </div>
 
           <div className="filter">
-            <label htmlFor="end-date">End date</label>
+            <label htmlFor="end-date" className="injury-chart-label">
+              End date
+            </label>
             <DatePicker
               id="end-date"
               selected={endDate}

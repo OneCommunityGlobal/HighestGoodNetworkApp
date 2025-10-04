@@ -64,6 +64,7 @@ export const TEAM_NAME = 'Team Names';
 export const TOTAL_TEAMS = 'Total Teams';
 export const TOTAL_PROJECTS = 'Total Projects';
 export const ACTIVE_TEAMS = 'Active Teams';
+export const IN_ACTIVE_TEAMS = 'In Active Teams';
 export const ADMIN = 'Admin';
 export const POPUP_MANAGEMENT = 'Popup Management';
 export const CANCEL = 'Delete Final Day';
@@ -89,6 +90,7 @@ export const REGISTRATION = "Registration";
 export const JOB_ANALYTICS_REPORT = 'Job Analytics Report';
 
 
+export const PR_PROMOTIONS = 'PR Promotions';
 
 
 export const SEND_EMAILS = 'Send Emails';

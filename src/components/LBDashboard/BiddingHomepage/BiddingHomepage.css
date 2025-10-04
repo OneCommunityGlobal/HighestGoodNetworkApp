@@ -21,7 +21,7 @@ body, .bidding-bg {
   display: block;
 }
 
-.row {
+.bidding-homepage-container .row {
   width: 100%;
   margin-right: 0px !important;
   margin-left: 0px !important;

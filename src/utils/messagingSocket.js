@@ -19,7 +19,7 @@ export const initMessagingSocket = (token) => {
     };
 
     messagingSocket.onerror = (error) => {
-        Error("❌ Messaging WebSocket error:", error);
+        console.error("❌ Messaging WebSocket error:", error);
     };
 
     messagingSocket.onmessage = (message) => {
@@ -48,7 +48,7 @@ export const initMessagingSocket = (token) => {
                 initMessagingSocket(token);
             }, 2000);
         } else {
-            Error("❌ Maximum reconnection attempts reached");
+            console.error("❌ Maximum reconnection attempts reached");
         }
     };
 

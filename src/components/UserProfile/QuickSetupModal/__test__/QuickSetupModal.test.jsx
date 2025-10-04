@@ -43,6 +43,7 @@ describe('QuickSetupModal Component', () => {
   });
 
   test('renders "Add New QST" button when user has addTitle permission', async () => {
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       render(
         <Provider store={store}>
@@ -57,6 +58,7 @@ describe('QuickSetupModal Component', () => {
   });
 
   test('opens AddNewTitleModal when "Add New QST" button is clicked', async () => {
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       render(
         <Provider store={store}>
@@ -77,6 +79,7 @@ describe('QuickSetupModal Component', () => {
   });
 
   test('renders Edit and Save buttons conditionally', async () => {
+    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       render(
         <Provider store={store}>
