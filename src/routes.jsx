@@ -164,6 +164,11 @@ import { UserRole } from './utils/enums';
 
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 
+// eslint-disable-next-line import/order, import/no-unresolved
+import LogTools from './components/BMDashboard/LogTools/LogTools';
+// import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -543,6 +548,13 @@ export default (
           component={JobCCDashboard}
           fallback
           allowedRoles={[UserRole.Owner]}
+        />
+        <ProtectedRoute
+          path="/application/analytics"
+          exact
+          component={AnalyticsDashboard}
+          fallback
+          // allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
 
         <ProtectedRoute

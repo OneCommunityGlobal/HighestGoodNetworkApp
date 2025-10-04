@@ -42,6 +42,8 @@ LEAST_CONVERTED: (limit, startDate, endDate) =>
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
+  JOB_ANALYTICS: `${APIEndpoint}/jobAnalytics/data`,
+  JOB_ANALYTICS_REALTIME: `${APIEndpoint}/jobAnalytics/realtime`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   PROJECT_MEMBER_SEARCH: (projectId, query) =>
@@ -113,7 +115,7 @@ LEAST_CONVERTED: (limit, startDate, endDate) =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
-      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+    ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
     `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
       customStartDate ? `&customStartDate=${customStartDate}` : ''
