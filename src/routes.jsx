@@ -159,7 +159,48 @@ import Register from './components/CommunityPortal/Activities/Register/Register'
 import CPLogin from './components/CommunityPortal/Login';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
+import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
+import Resources from './components/CommunityPortal/Activities/activityId/Resources';
+import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import VirtualVsInPerson from './components/CommunityPortal/Reports/Participation/VirtualVsInPerson';
+import EventValue from './components/CommunityPortal/Reports/Participation/EventValue';
+import ParticipationTrends from './components/CommunityPortal/Reports/Participation/ParticipationTrends';
+import EventPerformance from './components/CommunityPortal/Reports/Participation/EventPerformance';
+
+import MaterialSummary from './components/MaterialSummary/MaterialSummary';
+
+// Activity Feedback Modal
+import FeedbackRatingEntry from './components/FeedbackActivityModal/FeedbackActivityEntry';
+
+import TeamLocations from './components/TeamLocations';
+import Inventory from './components/Inventory';
+import Collaboration from './components/Collaboration';
+import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
+import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
+
+import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
+import MemberList from './components/QuestionnaireDashboard/MemberList';
+import EventPopularity from './components/EventPopularity/EventPopularity';
+import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
+import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
+import LBHome from './components/LBDashboard/Home/Home';
+import LBDashboard from './components/LBDashboard';
+import LBLogin from './components/LBDashboard/Login';
+import LBRegister from './components/LBDashboard/Register/LBRegister';
+import LBMessaging from './components/LBDashboard/Messaging/LBMessaging';
+import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
+import ListOveriew from './components/LBDashboard/ListingOverview/ListOverview';
+import LBBidOverview from './components/LBDashboard/BiddingOverview/BiddingOverview';
+import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHomepage';
+import WishList from './components/LBDashboard/WishList/WishList';
+import WishListItem from './components/LBDashboard/WishList/ItemOverview';
+import CheckTypes from './components/BMDashboard/shared/CheckTypes';
+import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
+import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
+import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+
+// Community Calendarimport CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
 import KICalendar from './components/KitchenandInventory/KICalendar/KICalendar';
@@ -1072,7 +1113,7 @@ export default (
           component={ResourceUsage}
         />
         <CPProtectedRoute
-          path="/communityportal/activity/:activityid"
+path="/communityportal/activity/:activityid"
           exact
           component={ActivityAgenda}
         />
@@ -1080,6 +1121,26 @@ export default (
           path="/communityportal/database/design"
           exact
           component={DatabaseDesign}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/virtual-vs-inperson"
+          exact
+          component={VirtualVsInPerson}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/event-value"
+          exact
+          component={EventValue}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/trends"
+          exact
+          component={ParticipationTrends}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/performance"
+          exact
+          component={EventPerformance}
         />
 
         <ProtectedRoute path="/kitchenandinventory" exact component={KIDashboard} />
@@ -1135,7 +1196,7 @@ export default (
         <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
         <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
         <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
-        <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
+        <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />owns and CSS modules)
 
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />

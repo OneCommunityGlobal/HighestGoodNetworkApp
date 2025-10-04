@@ -3,6 +3,11 @@ import { useSelector } from 'react-redux';
 import { useRef, useState, useCallback } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import EventParticipationHeader from './EventParticipationHeader';
+import EngagementSummaryCards from './EngagementSummaryCards';
+import EventTypePieChart from './EventTypePieChart';
+import EngagementBarChart from './EngagementBarChart';
+import AnalyticsNavigation from './AnalyticsNavigation';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
@@ -43,8 +48,7 @@ function EventParticipation() {
   }, [exporting]);
 
   return (
-    <div
-      ref={exportRef}
+    <div ref={exportRef}
       className={`participation-landing-page-global ${styles.participationLandingPage} ${
         darkMode ? styles.participationLandingPageDark : ''
       }`}
@@ -92,11 +96,21 @@ function EventParticipation() {
         </div>
       </header>
 
+      <EventParticipationHeader />
+      <EngagementSummaryCards />
+      <div className={styles.chartsSection}>
+        <div className={styles.chartsRow}>
+          <EventTypePieChart />
+          <EngagementBarChart />
+        </div>
+      </div>
+
       <MyCases />
       <div className={`${styles.analyticsSection}`}>
         <DropOffTracking />
         <NoShowInsights />
       </div>
+      <AnalyticsNavigation />
 
       {/* Print-only footer note */}
     </div>
