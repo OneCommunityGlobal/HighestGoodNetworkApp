@@ -32,7 +32,6 @@ module.exports = [
       'src/components/BMDashboard/_tests_/BMDashboard.test.jsx',
       'src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx',
       // Ignore entire component folders
-      'src/components/Badge/**',
       'src/components/Dashboard/**',
       'src/components/Projects/**',
       'src/components/SummaryManagement/**',
