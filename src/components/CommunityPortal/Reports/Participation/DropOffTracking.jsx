@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import './Participation.css';
+import styles from './Participation.module.css';
 import mockEvents from './mockData';
 
 function DropOffTracking() {
@@ -61,10 +61,10 @@ function DropOffTracking() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={`tracking-container ${darkMode ? 'tracking-container-dark' : ''}`}>
-      <div className={`tracking-header ${darkMode ? 'tracking-header-dark' : ''}`}>
+    <div className={`${styles.trackingContainer} ${darkMode ? styles.trackingContainerDark : ''}`}>
+      <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
         <h3>Drop-off and no-show rate tracking</h3>
-        <div className="tracking-filters">
+        <div className={styles.trackingFilters}>
           <select value={selectedEvent} onChange={e => setSelectedEvent(e.target.value)}>
             <option value="All Events">All Events</option>
             <option value="Yoga Class">Yoga Class</option>
@@ -80,23 +80,27 @@ function DropOffTracking() {
           </select>
         </div>
       </div>
-      <div className="tracking-summary">
-        <div className={`tracking-rate ${darkMode ? 'tracking-rate-dark' : ''}`}>
-          <p className="tracking-rate-value">
+      <div className={styles.trackingSummary}>
+        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+          <p className={styles.trackingRateValue}>
             +5%
-            <span className={darkMode ? 'span-dark' : ''}>Last week</span>
+            <span className={darkMode ? styles.spanDark : ''}>Last week</span>
           </p>
           <p>Drop-off rate</p>
         </div>
-        <div className={`tracking-rate ${darkMode ? 'tracking-rate-dark' : ''}`}>
-          <p className="tracking-rate-value">
-            +5% <span className={darkMode ? 'span-dark' : ''}>Last week</span>
+        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+          <p className={styles.trackingRateValue}>
+            +5% <span className={darkMode ? styles.spanDark : ''}>Last week</span>
           </p>
           <p>No-show rate</p>
         </div>
       </div>
-      <div className={`tracking-list-container ${darkMode ? 'tracking-list-container-dark' : ''}`}>
-        <table className={`tracking-table ${darkMode ? 'tracking-table-dark' : ''}`}>
+      <div
+        className={`${styles.trackingListContainer} ${
+          darkMode ? styles.trackingListContainerDark : ''
+        }`}
+      >
+        <table className={`${styles.trackingTable} ${darkMode ? styles.trackingTableDark : ''}`}>
           <thead>
             <tr>
               <th>Event name</th>
@@ -109,8 +113,8 @@ function DropOffTracking() {
             {filteredEvents.map(event => (
               <tr key={event.id}>
                 <td>{event.eventName}</td>
-                <td className="tracking-rate-green">{event.noShowRate}</td>
-                <td className="tracking-rate-red">{event.dropOffRate}</td>
+                <td className={styles.trackingRateGreen}>{event.noShowRate}</td>
+                <td className={styles.trackingRateRed}>{event.dropOffRate}</td>
                 <td>{event.attendees}</td>
               </tr>
             ))}

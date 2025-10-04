@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import mockEvents from './mockData'; // Import mock data
-import './Participation.css';
+import styles from './Participation.module.css';
 
 function NoShowInsights() {
   // State for the selected date filter and tab
@@ -78,25 +78,23 @@ function NoShowInsights() {
     const stats = calculateStats(filteredEvents);
 
     return stats.map(item => (
-      <div key={item.label} className="insight-item">
-        <div className={`insights-label ${darkMode ? 'insights-label-dark' : ''}`}>
+      <div key={item.label} className={styles.insightItem}>
+        <div className={`${styles.insightLabel} ${darkMode ? styles.insightLabelDark : ''}`}>
           {item.label}
         </div>
-        <div className="insight-bar">
-          <div className="insight-fill" style={{ width: `${item.percentage}%` }} />
+        <div className={styles.insightBar}>
+          <div className={styles.insightFill} style={{ width: `${item.percentage}%` }} />
         </div>
-        <div className={`insights-percentage ${darkMode ? 'insights-percentage-dark' : ''}`}>
-          {item.percentage}%
-        </div>
+        <div className={styles.insightPercentage}>{item.percentage}%</div>
       </div>
     ));
   };
 
   return (
-    <div className={`insights ${darkMode ? 'insights-dark' : ''}`}>
-      <div className={`insights-header ${darkMode ? 'insights-header-dark' : ''}`}>
+    <div className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
+      <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
         <h3>No-show rate insights</h3>
-        <div className="insights-filters">
+        <div className={styles.insightsFilters}>
           <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
             <option value="All">All Time</option>
             <option value="Today">Today</option>
@@ -106,12 +104,12 @@ function NoShowInsights() {
         </div>
       </div>
 
-      <div className="insights-tabs">
+      <div className={styles.insightsTabs}>
         {['Event type', 'Time', 'Location'].map(tab => (
           <button
             type="button"
             key={tab}
-            className={`insights-tab ${activeTab === tab ? 'active-tab' : ''}`}
+            className={`${styles.insightsTab} ${activeTab === tab ? styles.insightsTabActive : ''}`}
             onClick={() => setActiveTab(tab)}
           >
             {tab}
@@ -119,7 +117,7 @@ function NoShowInsights() {
         ))}
       </div>
 
-      <div className="insights-content">{renderStats()}</div>
+      <div className={styles.insightsContent}>{renderStats()}</div>
     </div>
   );
 }

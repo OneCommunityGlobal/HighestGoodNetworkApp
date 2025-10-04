@@ -110,6 +110,10 @@ import EventStats from './components/CommunityPortal/EventPersonalization/EventS
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import VirtualVsInPerson from './components/CommunityPortal/Reports/Participation/VirtualVsInPerson';
+import EventValue from './components/CommunityPortal/Reports/Participation/EventValue';
+import ParticipationTrends from './components/CommunityPortal/Reports/Participation/ParticipationTrends';
+import EventPerformance from './components/CommunityPortal/Reports/Participation/EventPerformance';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
@@ -705,6 +709,31 @@ export default (
           path="/communityportal/reports/resourceusage"
           exact
           component={ResourceUsage}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/virtual-vs-inperson"
+          exact
+          component={VirtualVsInPerson}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/event-value"
+          exact
+          component={EventValue}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/trends"
+          exact
+          component={ParticipationTrends}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/performance"
+          exact
+          component={EventPerformance}
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
