@@ -187,7 +187,7 @@ function InjurySeverityDashboard(props) {
         });
       });
       // eslint-disable-next-line prettier/prettier
-      
+
       return bars;
     }
   }, [visibleProjects, visibleDepartments]);
@@ -208,7 +208,18 @@ function InjurySeverityDashboard(props) {
         darkMode ? `${styles.oxideDark} text-light` : ''
       }`}
     >
-      <h2 className={`${darkMode && 'text-light'}`}>Injury Severity by Projects</h2>
+      <h2
+        style={{
+          textAlign: 'center',
+          color: '#007bff',
+          fontSize: '2rem',
+          fontWeight: 'bold',
+          marginBottom: '20px',
+        }}
+        className={`${darkMode && 'text-light'}`}
+      >
+        Injury Severity by Projects
+      </h2>
 
       {/* Filters */}
       <div

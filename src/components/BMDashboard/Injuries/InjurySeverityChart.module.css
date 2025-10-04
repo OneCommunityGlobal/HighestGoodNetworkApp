@@ -1,4 +1,3 @@
-
 .customTooltip {
   background-color: #ffffff;
   border: 1px solid #ccc;
@@ -13,49 +12,9 @@
 }
 
 .filterSelect .ant-select-selector,
-.filterSelect .ant-select-selection-item {
-  color: #000000 !important;
-}
-
-/* Select placeholder text - this is the key selector for "Projects", "Injury Types", etc. */
+.filterSelect .ant-select-selection-item,
 .filterSelect .ant-select-selection-placeholder {
-  color: #000000 !important;
-}
-
-/* Scoped to only this component using a unique container class */
-.injurySeverityContainer .filterSelect :global(.ant-select-selection-placeholder) {
-  color: #000000 !important;
-}
-
-.injurySeverityContainer .filterSelect :global(.ant-select-multiple .ant-select-selection-placeholder) {
-  color: #000000 !important;
-}
-
-.injurySeverityContainer .filterSelect :global(.ant-select-single .ant-select-selection-placeholder) {
-  color: #000000 !important;
-}
-
-/* Ensure Select dropdown text is also dark */
-.filterSelect .ant-select-item-option-content {
-  color: #000000 !important;
-}
-
-/* Target the actual Select input text */
-.filterSelect .ant-select .ant-select-selector {
-  color: #000000 !important;
-}
-
-/* Additional selectors for Select components */
-.filterSelect .ant-select-multiple .ant-select-selection-item {
-  color: #000000 !important;
-}
-
-.filterSelect .ant-select-single .ant-select-selector .ant-select-selection-search-input {
-  color: #000000 !important;
-}
-
-.filterSelect .ant-select-multiple .ant-select-selector .ant-select-selection-search-input {
-  color: #000000 !important;
+  color: #333333 !important;
 }
 
 .filterSelect .ant-select-selector {
@@ -64,24 +23,7 @@
 
 /* RangePicker placeholder */
 .filterSelect .ant-picker-input > input::placeholder {
-  color: #000000 !important;
-}
-
-.filterSelect .ant-picker-input > input {
-  color: #000000 !important;
-}
-
-.filterSelect.ant-picker .ant-picker-input > input::placeholder {
-  color: #000000 !important;
-}
-
-/* Additional selectors for DatePicker placeholder */
-.filterSelect input::placeholder {
-  color: #000000 !important;
-}
-
-.filterSelect .ant-picker .ant-picker-input input::placeholder {
-  color: #000000 !important;
+  color: #666666 !important;
 }
 
 .filterSelect .ant-picker {
@@ -101,7 +43,7 @@
   background-color: #1B2A41;
 }
 
-/* Only in darkMode: target filter-select under .oxideDark */
+/* Only in darkMode: target filterSelect under .oxideDark */
 .oxideDark .filterSelect .ant-select-selector {
   background-color: #1c2541 !important;
   border-color: rgba(255, 255, 255, 0.2) !important;
