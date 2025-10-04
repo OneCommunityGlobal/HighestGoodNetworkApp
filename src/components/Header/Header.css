@@ -9,15 +9,15 @@
   left: 0;
   padding: 12px;
 } */
-/* Timer Message Section */
-.timer-message-section {
+/* Timer Message Section - used */
+/* NOTE: available in development */
+/* .timer-message-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* flex-wrap: wrap; */
   width: 100%;
   gap: 1rem;
-}
+} */
 
 .card-content {
   padding: 15px;
@@ -62,13 +62,16 @@
 .navbar {
   z-index: 100;
   white-space: nowrap;
+}
+
+/* .timer-message-section {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  white-space: nowrap;
-}
+  gap: 1rem;
+} */
 
 .redBackGroupHeader {
   z-index: 10;
@@ -87,21 +90,19 @@
   min-width: 29px;
 }
 
-.owner-message {
-  margin-right: 1rem;
-  
+.navbar-owner-message {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
-.navbar {
-  z-index: 100;
-  overflow: visible;
-}
-
-.nav-links {
+.menu-container {
   display: flex;
-  flex-direction: row;
+  justify-content: flex-end;
   align-items: center;
-  overflow: visible;
+  flex-wrap: wrap;
 }
 
 .dashboard-text-link {
@@ -110,73 +111,81 @@
   gap: 1rem;
 }
 
-.dropdown-item-hover:hover {
+.dark-menu-dropdown {
+  background-color: #3a506b !important;
+}
+
+.dark-dropdown-text {
+  color: white !important;
+}
+
+.dark-dropdown-item:hover {
   background-color: #2f4157 !important;
 }
 
-@media (max-width: 1400px) {
-  .nav-links {
-    flex-direction: column !important;
-  }
+.no-max-height {
+  max-height: none !important;
+  overflow: visible !important;
 }
 
-
-
-/* Media Queries for Responsiveness */
-@media (max-width: 1400px) {
-  .nav-links {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    width: 100%;
-    overflow: visible;
-    flex-wrap: wrap;
-  }
+.show-in-mobile {
+  display: none;
 }
 
-@media (max-width: 1050px) {
+/* NOTE: available in development */
+/* @media (max-width: 1050px) {
   .timer-message-section {
     width: 100%;
     margin-right: 0;
   }
+} */
 
-  .owner-message {
-    display: block;
-    margin-right: 0;
-    text-align: center;
-    width: 100%;
-  }
-  .nav-links {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    overflow: visible;
-    flex-wrap: wrap;
-  }
-}
-
-@media screen and (max-width: 768px) {
-  .responsive-spacing {
-    margin-right: 5px;
-  }
-
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-    overflow: visible;
-    flex-wrap: wrap;
-  }
-}
-
-@media screen and (min-width: 1400px) and (max-width: 1700px) {
-  .owner-message {
+@media (max-width: 1700px) {
+  .navbar-owner-message {
     display: none;
   }
 }
 
-@media screen and (max-width: 769px) {
-  .responsive-spacing {
-    margin-right: 5px;
+@media screen and (max-width: 1151px) and (min-width: 992px) {
+  .dropdown-menu {
+      width: auto !important;
+  }
+}
+
+@media screen and (max-width: 1199px) {
+  .menu-container {
+    align-items: start;
+    flex-direction: column !important;
+    /* width: 100%; */
+    padding-left: 50px;
+  }
+  .mobile-menu-dropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+  .mobile-dropdown-text{
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .mobile-dropdown-item:hover{
+    background-color: #343a40 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  .dark-menu-dropdown {
+    background-color: #343a40 !important;
+    border: none !important;
+  }
+  .dark-dropdown-text {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .dark-dropdown-item:hover {
+    background-color: #343a40 !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  .hide-in-mobile {
+    display: none;
+  }
+  .show-in-mobile {
+    display: block;
   }
 }
 
@@ -204,7 +213,7 @@
   }
 
   /* Ensure navbar is compact and font size is correct */
-  .navbar {
+  /* .navbar {
     padding: 0.5rem 1rem !important;
     min-height: auto !important;
     height: auto !important;
@@ -212,16 +221,16 @@
     position: relative !important;
     font-size: 16px !important;
     margin: 0 !important;
-  }
+  } */
 
   /* Ensure navigation links display correctly */
-  .nav-links {
+  /* .nav-links {
     gap: 0.5rem !important;
     width: auto !important;
     font-size: 16px !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
+  } */
 
   /* Ensure all icons have correct size */
   .navbar img,
