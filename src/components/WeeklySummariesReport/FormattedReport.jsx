@@ -385,6 +385,15 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
+  // Safety check for weeklySummaries
+  if (!summary.weeklySummaries || !Array.isArray(summary.weeklySummaries)) {
+    return (
+      <p>
+        <b>Weekly Summary:</b> Not available!
+      </p>
+    );
+  }
+
   const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
   let summaryDate = moment()
     .tz('America/Los_Angeles')
@@ -849,6 +858,7 @@ function Index({
             <RoleInfoModal
               info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
               auth={auth}
+              roleName={`${summary.role}Info`}
             />
           )}
           {loadTrophies &&
