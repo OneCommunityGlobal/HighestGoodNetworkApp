@@ -42,6 +42,8 @@ import WeeklySummaryEmailAssignment from './WeeklySummaryEmailAssignment';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
+// eslint-disable-next-line import/no-named-as-default
+import savedFilterReducer from './savedFilterReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -53,9 +55,11 @@ import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import toolAvailabilityReducer from './bmdashboard/toolAvailabilityReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
+import bmInjuryReducer from './bmdashboard/injuryReducer';
 
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
@@ -63,12 +67,17 @@ import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
+import injuriesReducer from './injuries';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
-import { userPreferencesReducer } from './lbdashboard/userPreferencesReducer';
-
+// eslint-disable-next-line import/no-named-as-default
+import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
+import userSkillsReducer from './userSkillsReducer';
 // community portal
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
+import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
@@ -78,6 +87,7 @@ const localReducers = {
   allUserProfiles: allUserProfilesReducer,
   weeklySummaries: weeklySummariesReducer,
   weeklySummariesReport: weeklySummariesReportReducer,
+  savedFilters: savedFilterReducer,
   allProjects: allProjectsReducer,
   projectReport: projectReportReducer,
   projectMembers: projectMembershipReducer,
@@ -108,9 +118,10 @@ const localReducers = {
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
 
-  // bmdashboard
+  // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,
+  toolAvailability: toolAvailabilityReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
@@ -123,6 +134,7 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
 
   // lbdashboard
@@ -130,15 +142,18 @@ const localReducers = {
 
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
+  eventFeedback: eventFeedbackReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,
+  bmInjury: bmInjuryReducer,
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
 };
 
 const sessionReducers = {
+  userSkills: userSkillsReducer,
   hgnForm: HGNFormReducer,
   userPagination: changeUserPageStatusReducer,
   userProfileEdit: enableUserInfoEditReducer,
