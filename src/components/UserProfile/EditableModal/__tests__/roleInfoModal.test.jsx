@@ -24,6 +24,7 @@ describe('RoleInfoModal component Test cases', () => {
       CanRead: true,
     };
     const { getByTitle}=render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const infoIcon = getByTitle('Click for user class information');
     expect(infoIcon).toBeInTheDocument();
   });
@@ -38,8 +39,10 @@ describe('RoleInfoModal component Test cases', () => {
     };
 
     const { getByTitle, getByText } = render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const infoIcon = getByTitle('Click for user class information');
     fireEvent.click(infoIcon);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const modalTitle = getByText('Welcome to Information Page!');
     expect(modalTitle).toBeInTheDocument();
   });
@@ -53,8 +56,10 @@ describe('RoleInfoModal component Test cases', () => {
       CanRead: true,
     };
     const { getByTitle, getByText } = render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const infoIcon = getByTitle('Click for user class information');
     fireEvent.click(infoIcon);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const modalContent = getByText('Testing the info content', { exact: false });
     expect(modalContent).toBeInTheDocument();
   });
@@ -70,6 +75,7 @@ describe('RoleInfoModal component Test cases', () => {
 
     const { queryByText } = render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
 
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const modalTitle = queryByText('Welcome to Information Page!');
     expect(modalTitle).not.toBeInTheDocument();
   });

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Col, Row} from 'reactstrap';
 import { updateInfoCollection, addInfoCollection } from '../../../actions/information'
 import { boxStyle, boxStyleDark } from '~/styles';
-import { useEffect } from 'react';
+
 import { toast } from 'react-toastify';
 import RichTextEditor from './RichTextEditor';
 
@@ -105,6 +105,7 @@ const RoleInfoModal = ({ info, auth, roleName}) => {
             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
               {canEditInfoModal && isEditing ?
                 <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} darkMode={darkMode}/> :
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <div
                   style={{ paddingLeft: '20px' }}
                   dangerouslySetInnerHTML={{ __html: infoContentModal }}
