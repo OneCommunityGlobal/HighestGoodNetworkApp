@@ -25,7 +25,7 @@ export const getInfoCollections = () => {
     try {
       const response = await axios.get(ENDPOINTS.INFO_COLLECTIONS);
       dispatch(fetchInfosSuccess(response.data));
-      return response.status;
+      return response.data;
     } catch (error) {
       toast.error(error.message || 'Failed to fetch info collections.');
       return null;
