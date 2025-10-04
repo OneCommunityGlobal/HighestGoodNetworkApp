@@ -68,6 +68,11 @@ export const permissionLabels = [
           'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible.',
       },
       {
+        label: 'See/Edit PR Team Dashboard',
+        key: 'accessPRTeamDashboard',
+        description: 'Gives access to the PR Team dashboard, including view and edit rights.',
+      },
+      {
         label: 'Edit Total Valid Weekly Summaries',
         key: 'totalValidWeeklySummaries',
         description: 'Gives permission to edit total valid weekly summaries count under reports',
@@ -275,6 +280,12 @@ export const permissionLabels = [
           'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
       },
       {
+        label: 'Modify Badge Amount',
+        key: 'modifyBadgeAmount',
+        description:
+          'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
+      },
+      {
         label: 'Assign Badges',
         key: 'assignBadges',
         description:
@@ -343,24 +354,10 @@ export const permissionLabels = [
                   'Gives the user permission to add a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Add task button"',
               },
               {
-                label: 'Edit Task/Task Extension',
+                label: 'Edit Task',
+                key: 'updateTask',
                 description:
-                  'Category for all permissions related to editing tasks and task extensions',
-                subperms: [
-                  {
-                    label: 'Edit Task',
-                    key: 'updateTask',
-                    description:
-                      'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
-                  },
-                  {
-                    // task extension count viewing permission
-                    label: 'See # of Times Time Added to Task',
-                    key: 'viewTaskDeadlineCount',
-                    description:
-                      'Gives the user permission to view the task extension count. "Other Links" -> "Permissions Management" -> "Manage User Permissions" -> "Choose any user" -> "Add button to view task deadline count" ',
-                  },
-                ],
+                  'Gives the user permission to edit a task on any WBS. "Other Links" -> "Projects" -> "WBS Button" -> "Choose any WBS" -> "Edit" -> "Edit" ',
               },
               {
                 label: 'Delete Task',

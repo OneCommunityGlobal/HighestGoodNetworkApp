@@ -1,4 +1,10 @@
 import {
+  FETCH_INJURIES_REQUEST,
+  FETCH_INJURIES_SUCCESS,
+  FETCH_INJURIES_FAILURE,
+} from '../../actions/bmdashboard/types';
+
+import {
   FETCH_BM_INJURY_DATA_REQUEST,
   FETCH_BM_INJURY_DATA_SUCCESS,
   FETCH_BM_INJURY_DATA_FAILURE,
@@ -24,6 +30,28 @@ const initialState = {
 
 function bmInjuryReducer(state = initialState, action) {
   switch (action.type) {
+    case FETCH_INJURIES_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case FETCH_INJURIES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        data: action.payload,
+        error: null,
+      };
+
+    case FETCH_INJURIES_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
+
     case FETCH_BM_INJURY_DATA_REQUEST:
       return { ...state, loading: true, error: null };
 
