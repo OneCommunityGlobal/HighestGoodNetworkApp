@@ -64,7 +64,10 @@ describe('NewBadges component', () => {
     for (const [index, badge] of mockBadges.entries()) {
       fireEvent.mouseEnter(badgeImages[index]);
       await screen.findByText(text => text.includes(badge.badge.badgeName));
-      expect(screen.getByText(text => text.includes(badge.badge.description))).toBeInTheDocument();
+      const descriptionElements = screen.getAllByText(text =>
+        text.includes(badge.badge.description),
+      );
+      expect(descriptionElements.length).toBeGreaterThan(0);
     }
   });
 

@@ -177,8 +177,9 @@ describe('BadgeDevelopmentTable component', () => {
   });
   it('check action: edit button', () => {
     const { container } = renderComponent(mockData);
-    mockData.allBadgeData.forEach(item => {
-      const editElement = screen.getByRole('button', { name: 'Edit' });
+    mockData.allBadgeData.forEach((item, index) => {
+      const editElements = screen.getAllByRole('button', { name: 'Edit' });
+      const editElement = editElements[index];
       fireEvent.click(editElement);
       expect(screen.getByText('Update')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
@@ -186,8 +187,9 @@ describe('BadgeDevelopmentTable component', () => {
   });
   it('check action: delete button', () => {
     const { container } = renderComponent(mockData);
-    mockData.allBadgeData.forEach(item => {
-      const deleteElement = screen.getByRole('button', { name: 'Delete' });
+    mockData.allBadgeData.forEach((item, index) => {
+      const deleteElements = screen.getAllByRole('button', { name: 'Delete' });
+      const deleteElement = deleteElements[index];
       fireEvent.click(deleteElement);
       expect(screen.getByText('Confirm Delete Badge')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();

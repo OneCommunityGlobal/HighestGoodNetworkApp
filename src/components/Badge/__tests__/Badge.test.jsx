@@ -37,7 +37,7 @@ describe('Badge Component', () => {
       it('should display the correct title upon render', () => {
         // Render the Badge component with the provided props and mock store
         renderWithProvider(<Badge {...badgeProps} />, { store });
-        expect(screen.getByRole('heading', { name: /badges/i })).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /badges/i })).toBeInTheDocument();
       });
     });
 

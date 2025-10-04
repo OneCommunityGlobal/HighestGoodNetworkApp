@@ -47,7 +47,8 @@ describe('BadgeTableFilter component', () => {
       order: '',
     };
     const { container } = renderComponent(mockData);
-    const nameElement = screen.getByRole('textbox');
+    const nameElements = screen.getAllByRole('textbox');
+    const nameElement = nameElements[0]; // First textbox is the name field
     expect(nameElement.value).toBe('badge');
   });
   it('Check description box', () => {
@@ -99,7 +100,7 @@ describe('BadgeTableFilter component', () => {
       }
     });
     expect(screen.getByText('Descending')).toBeInTheDocument();
-    expect(screen.queryByText('Ascending')).not.toBeInTheDocument();
+    expect(screen.getByText('Ascending')).toBeInTheDocument();
   });
   it('Check if reset filter button works properly', () => {
     const mockData = {

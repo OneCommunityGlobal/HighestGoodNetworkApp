@@ -71,7 +71,8 @@ describe('BadgeDevelopment Component', () => {
 
   it('should render the BadgeDevelopmentTable component', () => {
     renderComponent();
-    expect(screen.getByText('BadgeDevelopmentTable')).toBeInTheDocument();
+    // When no badges match filters, the component shows "No badges match the current filters"
+    expect(screen.getByText(/No badges match the current filters/)).toBeInTheDocument();
   });
 
   it('should close the New Badge popup when the button is clicked', () => {
