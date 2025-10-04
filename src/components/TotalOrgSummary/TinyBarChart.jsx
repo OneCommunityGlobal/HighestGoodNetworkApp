@@ -1,3 +1,5 @@
+// ...existing code...
+import CustomTooltip from '../CustomTooltip';
 import {
   BarChart,
   Bar,
@@ -86,7 +88,7 @@ export default function TinyBarChart(props) {
             fontWeight: 'bold',
           }}
         />
-        <Tooltip cursor={{ fill: 'transparent' }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
         <Bar dataKey="amount" fill="#8884d8">
           {chartData.map((entry, index) => (
             <Cell key={`cell-${entry.name}-${entry.amount}`} fill={entry.color[index]} />
