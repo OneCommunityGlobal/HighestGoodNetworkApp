@@ -382,6 +382,11 @@ export const ENDPOINTS = {
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
+
+  // Collaboration - Job Ads endpoints
+  JOBS: `${APIEndpoint}/jobs`,
+  JOB_CATEGORIES: `${APIEndpoint}/jobs/categories`,
+  JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
 };
 
 export const ApiEndpoint = APIEndpoint;
