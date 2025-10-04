@@ -65,6 +65,7 @@ const AddProject = (props) => {
       setWbsList([...wbsList, wbsName]);
       setWbsName('');
     } else if (wbsList.includes(wbsName)) {
+      // eslint-disable-next-line no-console
       console.log('This WBS already exists');
     }
   };
@@ -85,6 +86,7 @@ const AddProject = (props) => {
     if (!isDuplicate) {
       setMembersList([...membersList, newMember]);
     } else {
+      // eslint-disable-next-line no-console
       console.log('This member is already in the list');
     }
     setMemberName('');
@@ -135,6 +137,7 @@ const AddProject = (props) => {
         
         closeModalAndShowNotification('Project added successfully!');
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error("Error adding project:", error);
         setLoading(false);
         closeModalAndShowNotification('Error adding project. Please try again.');
@@ -151,8 +154,8 @@ const AddProject = (props) => {
         className="btn btn-outline-success"
         onClick={toggleModal}
         style={{
-          borderColor: 'green',
-          color: 'green',
+          borderColor: '#8ec233',
+          color: '#8ec233',
           borderWidth: '1px',
         }}
       >
@@ -188,7 +191,8 @@ const AddProject = (props) => {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="form-group">
-            <label htmlFor="projectName" className={darkMode ? "text-light":" "}>Project Name (required)</label>
+            <label htmlFor="projectName" className={darkMode ? "text-light":" "}>Project Name</label>
+            <span className="red-asterisk">* </span>
             <input
               type="text"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
@@ -270,12 +274,12 @@ const AddProject = (props) => {
                 />
               </div>
 
-              {showFoundUserList && props.state.projectMembers.foundUsers.length > 0 && (
+              {showFoundUserList && props.state.projectMembers?.foundUsers?.length > 0 && (
                 <ul className="list-group mt-2" style={{ maxHeight: '15vh', overflowY: 'auto' }}>
                   {props.state.projectMembers.foundUsers.map((member) => (
                     <li key={member._id} className="list-group-item d-flex justify-content-between align-items-center" style={{color: darkMode ? '#fff' : '#403e3e'}}>
                       {props.hasPermission('getProjectMembers') ? (
-                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target='_blank'>
+                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target='_blank' rel="noreferrer">
                           {member.firstName} {member.lastName}
                         </a>
                       ) : (
@@ -294,7 +298,7 @@ const AddProject = (props) => {
                   {membersList.map((member, index) => (
                     <li key={index} className="list-group-item d-flex justify-content-between align-items-center" style={{color: darkMode ? '#fff' : '#403e3e'}}>
                       {props.hasPermission('getProjectMembers') ? (
-                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target="_blank">
+                        <a href={`/userprofile/${member._id}`} className={darkMode ? 'text-azure' : ''} target="_blank" rel="noreferrer">
                           {member.firstName} {member.lastName}
                         </a>
                       ) : (

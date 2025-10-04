@@ -1,5 +1,18 @@
-.container,
-.job-landing .header img {
+.job-header {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+.job-select {
+  appearance: auto; /* let the browser handle it */
+  -webkit-appearance: auto;
+  background-color: #fff;
+  color: #000;
+  max-width:100%;
+  width:max-content;
+}
+
+.collaboration-container {
   width: 60%;
   max-width: 1000px;
   display: flex;
@@ -8,45 +21,100 @@
 .job-ad {
   text-align: center;
 }
-.container {
-  margin: 0 auto 50px;
+.user-collaboration-container {
+  width: 90%;
+  margin: 0 auto;
   flex-direction: column;
   align-items: center;
   background-color: #fff;
   border: 1px solid #ddd;
-  border-radius: 10px;
+  /* border-radius: 10px; */
+}
+.user-collaboration-container .job-queries {
+  display: flex;
+  flex-direction: row;
+  gap:2rem;
+  padding:2rem;
+  margin:1rem;
+}
+.filter-chips-container {
+  display:flex;
+  flex-direction: row;
+  padding:1.1rem;
+  margin:0.1rem;
+  gap:1rem;
+  max-width: 100%;
+  width:max-content;
+  flex-wrap: wrap;
+}
+.filter-chips {
+  display:flex;
+  flex-direction:row;
+  gap:0.1rem;
+  align-items:center;
+ /* align-content: space-between; */
+ cursor: pointer;                          /* shows hand cursor */
+transition: background-color 0.2s ease, 
+            box-shadow 0.2s ease;         /* smooth hover effect */
+    border: 1px solid #ccc;         
+  border-radius: 10px;      /* makes it pill-shaped */
+}
+.filter-chips:hover {
+  background-color: #f0f0f0; /* highlight on hover */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.user-collaboration-dark-mode .filter-chips:hover {
+   background: linear-gradient(135deg, #23272a, #181a1b);
+  border-color: #333;
+ color: #e0e0e0;
+
+  /* background-color: #f0f0f0;  highlight on hover */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.filter-chips > .btn.btn-primary {
+  margin-right:0.1rem;
+  padding:0;
+  border:none;
+/*  background-color:transparent;
+  color:white; */
+  color: #f1f1f1;
+  background-color: yellow; /* blue; */
+  border: 1px solid #444;
+
+}
+
+.job-queries-title {
+  display:flex;
+  padding:1rem;
+  margin:1rem;
 }
 .job-landing .header img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
-}
-.navbar {
+} 
+.job-navbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 0.1rem; 
+  padding: 1rem;
+  flex-flow: row wrap;
   background-color: #9c0;
-  padding: 10px;
-  flex-flow: row nowrap;
+  gap:1rem;
+  
 }
-.navbar-left input,
-.navbar-left select {
-  display: flex;
-  padding: 8px;
-  margin-right: 10px;
-  align-items: center;
-}
-.navbar-left,
-.navbar-right,
-.search-form {
-  display: flex;
-  align-items: center;
+.job-navbar > .btn {
+  padding:0.4rem;
+  margin:0.2rem;
 }
 .search-form input {
-  margin-right: 10px;
-  padding: 5px;
+  margin-left: 0.5rem; /* 10px; */
+  
+  margin-right: 0.1rem; /* 10px; */
+  padding: 0.1rem; /* 5px; */
+  margin-bottom: 0;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
@@ -60,11 +128,18 @@ select {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+.job-list-pagination{
+
+   display: flex;
+  flex-direction: column;
+}
 .job-list {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 20px;
-  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin:10px;
+  padding:10px;
 }
 .job-ad {
   border: 1px solid #ddd;
@@ -73,10 +148,21 @@ select {
   overflow: hidden;
   background: linear-gradient(135deg, #fff, #f9f9f9);
   transition: transform 0.3s, box-shadow 0.3s;
+  width:250px;
+  height:auto; /*100px; */
+  overflow: hidden;
+   width: calc((100% - 2rem) / 2);
+  flex-shrink: 0;
 }
-.job-ad img {
-  max-width: 100%;
-  height: auto;
+.delete-icon {
+  filter:none;
+}
+.delete-icon.dark-mode {
+  filter:invert(1);
+}
+.job-list .job-ad img {
+  height:105px;
+  width:100%;
   border-bottom: 1px solid #ddd;
 }
 .job-ad h3 {
@@ -89,6 +175,7 @@ select {
 .job-ad a {
   text-decoration: none;
   color: inherit;
+  display:flex;
 }
 .job-ad a:hover h3 {
   color: #007acc;
@@ -100,9 +187,12 @@ select {
 .pagination {
   margin-top: 20px;
   margin-bottom: 20px;
+  display:flex;
+  justify-content: center;
 }
 .pagination button {
   margin: 0 5px;
+  
 }
 .pagination button:disabled {
   background-color: #ccc;
@@ -115,4 +205,174 @@ select {
   background-color: #fff;
   border: 1px solid #fff;
   border-radius: 5px;
+}
+.search-form .btn {
+
+  margin-top: 0;
+  margin-left: 10px;
+  min-width: auto;
+  max-width: 250px;
+  padding: 5px 15px 5px 15px;
+}
+.filter-chip-heading {
+  padding-left:1rem;
+}
+
+
+.user-collaboration-dark-mode {
+  background-color: #1B2A41;
+  color: #f1f1f1;
+}
+/* #1C1C1C 
+#3A506B
+#1C2541
+#1C2541
+#6C757D
+#225163
+*/
+.user-collaboration-dark-mode .user-collaboration-container {
+  background-color: #1B2A41;
+}
+
+.user-collaboration-dark-mode .job-navbar {
+  background-color: #1C2541;
+  border-bottom: 1px solid white;
+  border-color: white;
+}
+
+.user-collaboration-dark-mode .job-ad {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  border-color: #333;
+}
+
+.user-collaboration-dark-mode .job-ad h3,
+.user-collaboration-dark-mode .jobs-summaries-list h3 {
+  color: #e0e0e0;
+}
+
+.user-collaboration-dark-mode .job-tooltip,
+.user-collaboration-dark-mode .category-tooltip {
+  background-color: #225163;
+  color: #f1f1f1;
+  box-shadow: 2px 2px 4px 1px black;
+  border-color: #3A506B;
+}
+
+.user-collaboration-dark-mode .job-tooltip p{
+  color: #f1f1f1;
+}
+
+.user-collaboration-dark-mode .job-tooltip button {
+  color: #f1f1f1;
+  background-color: #6C757D;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.user-collaboration-dark-mode .job-tooltip::after {
+  border-color: transparent #225163 transparent transparent;
+}
+
+.user-collaboration-dark-mode .pagination button {
+  color: #f1f1f1;
+  background-color: blue;
+  border: 1px solid #444;
+
+}
+
+.user-collaboration-dark-mode .pagination button:disabled {
+  background-color: #333333;
+  color: #888888;
+}
+
+.user-collaboration-dark-mode .search-form input,
+.user-collaboration-dark-mode select {
+   background-color: #1C1C1C; 
+   color: #f1f1f1;
+  border: 1px solid white; ; 
+}
+
+.user-collaboration-dark-mode .search-form input::placeholder{
+  color: #ffffff;   
+}
+
+.user-collaboration-dark-mode .job-select {
+  background-color: #1C1C1C;
+  color: #f1f1f1;
+  border: 1px solid #444;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px 18px;
+  padding-right: 36px;
+}
+
+
+.user-collaboration-dark-mode .filter-chip-heading {
+  background-color: #1C1C1C;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+
+.user-collaboration-dark-mode .search-form .btn,
+.user-collaboration-dark-mode .btn {
+  color: #f1f1f1;
+  background-color: blue;
+  border: 1px solid #444;
+}
+
+.user-collaboration-dark-mode .job-query {
+  color:#f1f1f1;
+}
+
+.user-collaboration-dark-mode .job-query strong {
+  color: #9c0;
+}
+
+.user-collaboration-dark-mode .job-head {
+  color: #f1f1f1;
+}
+
+.job-headings {
+  text-align: center;
+}
+.jobs-summaries-list {
+  padding-left: 28px;  
+}
+.user-collaboration-dark-mode .job-intro {
+  color: #f1f1f1;
+}
+
+.user-collaboration-dark-mode .jobs-summaries-list {
+  gap: 10px;
+}
+
+.user-collaboration-dark-mode .job-summary-item {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  /* padding: 1rem; */
+  border-radius: 0.5rem;
+}
+
+.user-collaboration-dark-mode .job-summary-item p {
+  color: #e0e0e0;
+}
+
+.user-collaboration-dark-mode button {
+  color: #f1f1f1;
+  background-color: blue;
+  border: 1px solid #444;
+
+}
+
+.user-collaboration-dark-mode .job-select:focus,
+.user-collaboration-dark-mode .job-select:active {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+}
+ @media (min-width:768px) {
+  .job-ad {
+  background-color: #9c0;
+     width: calc((100% - 4rem) / 5);
+  }
+  
 }

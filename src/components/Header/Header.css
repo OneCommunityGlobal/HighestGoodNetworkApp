@@ -1,32 +1,62 @@
+/* General Styling */
 .header-wrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
-
-.close-button {
+/*
   position: absolute;
   top: 0;
   left: 0;
   padding: 12px;
-}
+} */
+/* Timer Message Section - used */
+/* NOTE: available in development */
+/* .timer-message-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 1rem;
+} */
 
 .card-content {
-  padding: 5px;
+  padding: 15px;
   padding-left: 40px;
-  padding-right: 30px;
+  padding-right: 40px; /* Match left padding for balance */
   white-space: pre-line;
   color: white;
   font-size: medium;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0; /* Remove all margins */
 }
 
-.card {
-  margin-left: 35px;
-  margin-right: 50px;
+.headerCard {
+  margin-left: 0; /* Remove left margin */
+  margin-right: 0; /* Remove right margin */
+  /* Use full viewport width */
+  width: 100vw;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  /* Ensure card extends to full width */
+  left: 0;
+  right: 0;
 }
 
 .card-wrapper {
   padding-top: 1rem;
   padding-bottom: 1rem;
+  /* Ensure wrapper uses full width */
+  width: 100%;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
 }
 
 .navbar {
@@ -36,8 +66,9 @@
 
 /* .timer-message-section {
   display: flex;
-  align-items: center;
+  flex-wrap: nowrap;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
   gap: 1rem;
 } */
@@ -74,6 +105,12 @@
   flex-wrap: wrap;
 }
 
+.dashboard-text-link {
+  font-size: 16px;
+  flex-wrap: nowrap;
+  gap: 1rem;
+}
+
 .dark-menu-dropdown {
   background-color: #3a506b !important;
 }
@@ -95,13 +132,13 @@
   display: none;
 }
 
-@media (max-width: 1050px) {
+/* NOTE: available in development */
+/* @media (max-width: 1050px) {
   .timer-message-section {
-    display: flex;
-    width: 0;
+    width: 100%;
     margin-right: 0;
   }
-}
+} */
 
 @media (max-width: 1700px) {
   .navbar-owner-message {
@@ -118,6 +155,7 @@
 @media screen and (max-width: 1199px) {
   .menu-container {
     align-items: start;
+    flex-direction: column !important;
     /* width: 100%; */
     padding-left: 50px;
   }
@@ -148,5 +186,58 @@
   }
   .show-in-mobile {
     display: block;
+  }
+}
+
+.header-margin {
+  height: 20px;
+  background-color: #1B2A41;
+}
+
+.header-margin-light {
+  height: 20px;
+  background-color: #fff;
+}
+
+@media print {
+  /* Reset all print styles */
+  * {
+    box-sizing: border-box !important;
+  }
+
+  /* Set print scaling */
+  @page {
+    size: auto;
+    margin: 0;
+    scale: 100%;
+  }
+
+  /* Ensure navbar is compact and font size is correct */
+  /* .navbar {
+    padding: 0.5rem 1rem !important;
+    min-height: auto !important;
+    height: auto !important;
+    width: 100% !important;
+    position: relative !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+  } */
+
+  /* Ensure navigation links display correctly */
+  /* .nav-links {
+    gap: 0.5rem !important;
+    width: auto !important;
+    font-size: 16px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  } */
+
+  /* Ensure all icons have correct size */
+  .navbar img,
+  .navbar svg {
+    width: auto !important;
+    height: 24px !important;
+    transform: scale(1) !important;
+    vertical-align: middle !important;
   }
 }

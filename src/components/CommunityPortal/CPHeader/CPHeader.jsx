@@ -14,9 +14,9 @@ import {
   DropdownMenu,
   DropdownItem,
 } from 'reactstrap';
-import DarkModeButton from 'components/Header/DarkModeButton';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
-import BellNotification from 'components/Header/BellNotification';
+import DarkModeButton from '~/components/Header/DarkModeButton';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
+import BellNotification from '~/components/Header/BellNotification';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
 import Timer from '../../Timer/Timer';
@@ -47,7 +47,8 @@ import {
   SEND_EMAILS,
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
-import './CPHeader.css';
+// import './CPHeader.css';
+import '../../Header/Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
 export function Header(props) {
@@ -199,7 +200,7 @@ export function Header(props) {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         {isAuthenticated && <Timer />}

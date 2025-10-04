@@ -26,9 +26,9 @@ import './Badge.css';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
-import { clearSelected } from 'actions/badgeManagement';
+import { clearSelected } from '~/actions/badgeManagement';
 import hasPermission from '../../utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export const Badges = (props) => {
@@ -45,6 +45,9 @@ export const Badges = (props) => {
 
   // Added restriction: Jae's badges only editable by Jae or Owner
   const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
+  // const canAssignBadges = props.hasPermission('assignBadges');
+  const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
+
   const toggle = () => setOpen(!isOpen);
   
   const toggleBadge = () => {setIsBadgeOpen(!isBadgeOpen)};
@@ -82,6 +85,7 @@ export const Badges = (props) => {
         setSortedBadges([]);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error("Error sorting badges:", error);
       setSortedBadges([]);
     }
@@ -125,7 +129,7 @@ export const Badges = (props) => {
             </span>
 
             <div className='d-flex'>
-              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
+              {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator' || canModifyBadgeAmount) && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
@@ -193,6 +197,7 @@ export const Badges = (props) => {
           <div>
             {badgesEarned ? (
               <div>
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 Bravo! {subject} earned <a href="#" onClick={toggleBadge} >{badgesEarned}</a> {object}!
               </div>
             ) : (
