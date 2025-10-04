@@ -33,12 +33,12 @@ describe("AddProject component", () => {
   };
 
 //helper function
-const typeIntoInput = ({ input }) => {
+const typeIntoInput = async ({ input }) => {
   const inputField = screen.getByRole('textbox');
 
   if (input) {
-    userEvent.type(inputField, input);
-    userEvent.type(inputField, input);
+    await userEvent.type(inputField, input);
+    await userEvent.type(inputField, input);
   }
 
   return {
@@ -52,35 +52,35 @@ const typeIntoInput = ({ input }) => {
     expect(screen.getByText("Add New Project")).toBeInTheDocument();
   })
 
-  test("opens modal on button click", () => {
+  test("opens modal on button click", async () => {
     renderComponent();
-    userEvent.click(screen.getByText("Add New Project"));
+    await userEvent.click(screen.getByText("Add New Project"));
     expect(screen.getByText("Add New Project", { selector: 'h5' })).toBeInTheDocument();
   });
 
-  test("category select updates correctly", () => {
+  test("category select updates correctly", async () => {
     renderComponent();
-    userEvent.click(screen.getByText("Add New Project"));
+    await userEvent.click(screen.getByText("Add New Project"));
     const select = screen.getByLabelText("Select Category");
-    userEvent.selectOptions(select, "Food");
+    await userEvent.selectOptions(select, "Food");
     expect(select).toHaveValue("Food");
   });
 
-  test("WBS input and list work correctly", () => {
+  test("WBS input and list work correctly", async () => {
     renderComponent();
-    userEvent.click(screen.getByText("Add New Project"));
+    await userEvent.click(screen.getByText("Add New Project"));
     const input = screen.getByPlaceholderText("Enter WBS name");
-    userEvent.type(input, "WBS 1");
-    userEvent.click(screen.getByText("Add WBS"));
+    await userEvent.type(input, "WBS 1");
+    await userEvent.click(screen.getByText("Add WBS"));
     expect(screen.getByText("WBS 1")).toBeInTheDocument();
   });
 
   test("adds project on form submission", async () => {
     renderComponent();
-    userEvent.click(screen.getByText("Add New Project"));
-    userEvent.type(screen.getByLabelText("Project Name"), "Test Project");
-    userEvent.selectOptions(screen.getByLabelText("Select Category"), "Food");
-    userEvent.click(screen.getByText("Add Project"));
+    await userEvent.click(screen.getByText("Add New Project"));
+    await userEvent.type(screen.getByLabelText("Project Name"), "Test Project");
+    await userEvent.selectOptions(screen.getByLabelText("Select Category"), "Food");
+    await userEvent.click(screen.getByText("Add Project"));
     
     await waitFor(() => {
       expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function));

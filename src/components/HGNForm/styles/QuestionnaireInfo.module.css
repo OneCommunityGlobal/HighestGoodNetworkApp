@@ -7,6 +7,13 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Dark mode container */
+.darkContainer {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
 .questionnaireInfo h1 {
   text-align: left;
   margin-bottom: 20px;
@@ -15,12 +22,31 @@
   font-weight: 400;
 }
 
+.darkContainer h1 {
+  color: #93c5fd;
+}
+
 .questionnaireInfo p {
   line-height: 1.2;
   text-align: left;
   margin-left: 30px;
   margin-right: 30px;
   margin-bottom: 0;
+  color: #555;
+}
+
+.darkContainer p {
+  color: #b3bfca;
+}
+
+.darkContainer ol,
+.darkContainer li {
+  color: #f3f6fa;
+}
+
+/* Dark mode list marker accent for better distinction */
+.darkContainer li::marker {
+  color: #78a5c4;
 }
 
 .questionnaireInfo ol {
@@ -35,6 +61,11 @@
   margin: 10px 0;
 }
 
+/* Dark mode divider */
+.darkContainer hr {
+  border-top-color: #3a506b;
+}
+
 .blueStrip {
   height: 20px;
   background-color: #5082a7;
@@ -43,6 +74,11 @@
   margin-bottom: 10px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+}
+
+/* Dark mode strip */
+.darkStrip {
+  background-color: #3a506b;
 }
 
 .editLink {

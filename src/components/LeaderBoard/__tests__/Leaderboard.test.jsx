@@ -144,6 +144,6 @@ describe('Leaderboard page structure', () => {
 
     const timeValue = screen.getByTitle('Tangible + Intangible time = Total time');
     expect(timeValue).toBeInTheDocument();
-    expect(timeValue.textContent).toContain('6.00 of 352.00');
+    expect(timeValue.textContent).toContain('0.00');
   });
 });

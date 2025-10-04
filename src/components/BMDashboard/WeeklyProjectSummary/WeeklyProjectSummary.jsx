@@ -19,6 +19,7 @@ import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 
 const projectStatusButtons = [
   {
@@ -170,7 +171,6 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
-
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -235,9 +235,9 @@ function WeeklyProjectSummary() {
       {
         title: 'Issues Breakdown',
         key: 'Issues Breakdown',
-        className: 'large',
+        className: 'full',
         content: (
-          <div className="weekly-project-summary-card normal-card">
+          <div className={`${styles.weeklyProjectSummaryCard} ${styles.fullCard}`}>
             <IssuesBreakdownChart />
           </div>
         ),
@@ -280,25 +280,27 @@ function WeeklyProjectSummary() {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
         className: 'half',
-        content: (
-          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
-            <div className="tools-donut-wrap">
-              <ToolStatusDonutChart />
-            </div>
-            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
-              <ToolsHorizontalBarChart darkMode={darkMode} />
-            </div>
-          </div>
-        ),
+        content: [
+          <div
+            key="donut-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <ToolStatusDonutChart />
+          </div>,
+          <div
+            key="bar-chart"
+            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+          >
+            <ToolsHorizontalBarChart darkMode={darkMode} />
+          </div>,
+        ],
       },
       {
         title: 'Lessons Learned',
         key: 'Lessons Learned',
         className: 'half',
         content: [
-          <div key="text-card" className="weekly-project-summary-card normal-card">
-            📊 Card
-          </div>,
+          <MostFrequentKeywords key="frequent-tags-card" />,
           <div key="injury-chart" className="weekly-project-summary-card normal-card">
             <InjuryCategoryBarChart />
           </div>,

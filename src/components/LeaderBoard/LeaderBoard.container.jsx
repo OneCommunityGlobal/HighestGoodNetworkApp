@@ -44,7 +44,7 @@ const mapStateToProps = state => {
 
   const orgData = get(state, 'orgData', {});
 
-  orgData.name = `Active Team: ${orgData.memberCount} Members`;
+  orgData.name = `HGN Totals: ${orgData.memberCount} Members`;
   orgData.tangibletime = round(orgData.totaltangibletime_hrs, 2);
   orgData.totaltime = round(orgData.totaltime_hrs, 2);
   orgData.intangibletime = round(orgData.totalintangibletime_hrs, 2);

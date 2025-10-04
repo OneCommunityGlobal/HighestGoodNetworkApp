@@ -30,17 +30,6 @@ vi.mock('axios', () => {
   const mAxios = {
     defaults: { headers: { post: {} } },
     patch: vi.fn(() => Promise.resolve({ status: 200 })),
-    // Add the interceptors property with request and response objects
-    interceptors: {
-      request: {
-        use: vi.fn(callback => callback),
-        eject: vi.fn(),
-      },
-      response: {
-        use: vi.fn(successCallback => successCallback),
-        eject: vi.fn(),
-      },
-    },
   };
   return {
     __esModule: true,

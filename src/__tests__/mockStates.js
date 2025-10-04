@@ -593,8 +593,8 @@ export const userProfileMock = {
   },
   mediaUrl: 'http://dropbox.com',
   weeklySummariesCount: 0,
-  savedTangibleHrs: [
-    0, 0, 0, 0, 0, 0, 0, 0
+  savedTangibleHrs:[
+    0,0,0,0,0,0,0,0
   ],
 };
 
@@ -1095,7 +1095,6 @@ export const rolesMock = {
           'swapTask',
           'deleteTask',
           'updateNum',
-          'viewTaskExtensionCount',
           // Teams
           'postTeam',
           'deleteTeam',
@@ -1255,7 +1254,6 @@ export const rolesMock = {
           'updateTask',
           'swapTask',
           'deleteTask',
-          'viewTaskExtensionCount',
           'postTeam',
           'deleteTeam',
           'putTeam',
@@ -1329,9 +1327,9 @@ export const createAuthMocks = (permissions) => {
       frontPermissions: []
     },
     firstName: 'Dev',
-    profilePic: ''
+    profilePic:''
   };
-  const onlyPermissions = { ...authTemplate, permissions: { frontPermissions: permissions } };
-  const allOtherPermissions = { ...authTemplate, permissions: { frontPermissions: allPermissionsExcept(permissions) } };
+  const onlyPermissions = {...authTemplate, permissions: {frontPermissions: permissions}};
+  const allOtherPermissions = {...authTemplate, permissions: {frontPermissions: allPermissionsExcept(permissions)}};
   return [onlyPermissions, allOtherPermissions];
 };
