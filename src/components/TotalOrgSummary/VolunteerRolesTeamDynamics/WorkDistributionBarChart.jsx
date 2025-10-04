@@ -1,6 +1,7 @@
 import CustomTooltip from '../../CustomTooltip';
 import Loading from '~/components/common/Loading';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
+import './WorkDistributionBarChart.css';
 
 const COLORS = [
   '#14b32b',
@@ -70,8 +71,8 @@ export default function WorkDistributionBarChart({ isLoading, workDistributionSt
   }
 
   return (
-    <div style={{ overflowX: 'auto' }}>
-      <div style={{ minWidth: 500 }}>
+    <div className="work-distribution-container">
+      <div className="work-distribution-chart" style={{ minWidth: 500 }}>
         <ResponsiveContainer width="100%" height="100%" minWidth={400} minHeight={430}>
           <BarChart
             data={data}
