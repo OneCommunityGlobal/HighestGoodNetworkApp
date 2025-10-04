@@ -8,7 +8,8 @@ const wordCount = input
   .filter(word => {
     // Remove empty strings and standalone symbols
     const cleanedWord = word.trim();
-    return cleanedWord && !excludedSymbols.has(cleanedWord);
+    return cleanedWord && !excludedSymbols.has(cleanedWord) &&
+        !/^\d+$/.test(cleanedWord) // exclude if only digits;
   }).length;
 
   return wordCount;
