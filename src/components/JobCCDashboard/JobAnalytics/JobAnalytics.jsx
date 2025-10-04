@@ -294,6 +294,19 @@ const styles = {
     border: '1px solid #374151',
   },
 };
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(window.matchMedia(query).matches);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    if (media.matches !== matches) setMatches(media.matches);
+    const listener = () => setMatches(media.matches);
+    media.addListener(listener);
+    return () => media.removeListener(listener);
+  }, [matches, query]);
+
+  return matches;
+}
 
 // ======================== API SERVICE ========================
 class AnalyticsService {
@@ -767,6 +780,7 @@ function DateRangeSelector({
   comparisonPeriod,
   setComparisonPeriod,
   darkMode,
+  isMobile,
 }) {
   const [activePreset, setActivePreset] = useState('last30Days');
 
@@ -842,7 +856,14 @@ function DateRangeSelector({
           >
             Custom Date Range
           </label>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: isMobile ? 'column' : 'row',
+              gap: '8px',
+              alignItems: isMobile ? 'flex-start' : 'center',
+            }}
+          >
             <input
               type="date"
               value={dateRange.start}
@@ -926,6 +947,7 @@ function DateRangeSelector({
 function JobAnalytics(props) {
   // eslint-disable-next-line no-shadow
   const { darkMode, role, hasPermission } = props;
+  const isMobile = useMediaQuery('(max-width: 640px)');
 
   // Add CSS animation for spinner
   React.useEffect(() => {
@@ -958,6 +980,15 @@ function JobAnalytics(props) {
     await refetch();
     setRefreshing(false);
   };
+
+  const mergedData = useMemo(() => {
+    if (!analyticsData?.currentPeriod || !analyticsData?.previousPeriod) return [];
+
+    return analyticsData.currentPeriod.map((d, i) => ({
+      ...d,
+      prevUsers: analyticsData.previousPeriod[i]?.users ?? null,
+    }));
+  }, [analyticsData]);
 
   const metrics = useMemo(() => {
     if (!analyticsData) return null;
@@ -1047,7 +1078,7 @@ function JobAnalytics(props) {
                 />
                 Refresh
               </button>
-              <div
+              {/* <div
                 style={{
                   ...styles.badge,
                   ...(darkMode ? styles.badgeDark : styles.badgeLight),
@@ -1058,7 +1089,7 @@ function JobAnalytics(props) {
                   {role === 'Owner' ? 'Owner' : role === 'Administrator' ? 'Admin' : 'Authorized'}{' '}
                   Access
                 </span>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -1068,6 +1099,7 @@ function JobAnalytics(props) {
             comparisonPeriod={comparisonPeriod}
             setComparisonPeriod={setComparisonPeriod}
             darkMode={darkMode}
+            isMobile={isMobile}
           />
         </header>
 
@@ -1125,16 +1157,20 @@ function JobAnalytics(props) {
             <section
               style={{
                 ...styles.grid,
-                gridTemplateColumns: 'repeat(auto-fit, minmax(500px, 1fr))',
+                gridTemplateColumns: isMobile
+                  ? 'repeat(auto-fit, minmax(280px, 1fr))' // mobile
+                  : 'repeat(auto-fit, minmax(500px, 1fr))', // desktop/tablet
                 marginBottom: '32px',
               }}
+              className="chart-grid"
             >
               {/* User Trend Chart */}
               <ChartCard title="User Trend Comparison" icon={TrendingUp} darkMode={darkMode}>
                 <ResponsiveContainer width="100%" height={320}>
                   <LineChart
-                    data={analyticsData?.currentPeriod || []}
+                    data={mergedData}
                     margin={{ top: 10, right: 10, left: 0, bottom: 10 }}
+                    // padding={{ top: 20 }}
                   >
                     <CartesianGrid
                       strokeDasharray="3 3"
@@ -1185,8 +1221,8 @@ function JobAnalytics(props) {
                     />
                     <Line
                       type="monotone"
-                      dataKey="users"
-                      data={analyticsData?.previousPeriod || []}
+                      dataKey="prevUsers"
+                      // data={analyticsData?.previousPeriod || []}
                       stroke={colors.gray}
                       strokeWidth={2}
                       strokeDasharray="5 5"

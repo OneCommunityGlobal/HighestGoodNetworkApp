@@ -1,0 +1,7 @@
+
+
+@media (max-width: 640px) {
+  .chart-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* smaller min width on mobile */
+  }
+}
