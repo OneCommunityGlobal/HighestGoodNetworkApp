@@ -104,6 +104,7 @@ const RoleInfoModal = ({ info, auth, roleName}) => {
             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
               {canEditInfoModal && isEditing ?
                 <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} darkMode={darkMode}/> :
+                // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <div
                   style={{ paddingLeft: '20px' }}
                   dangerouslySetInnerHTML={{ __html: infoContentModal }}

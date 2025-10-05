@@ -338,7 +338,6 @@ function TotalOrgSummary(props) {
       const screenshotCanvas = await html2canvas(pdfContainer, {
         scale: 2,
         useCORS: true,
-        // backgroundColor: '#fff',
         windowWidth: pdfContainer.scrollWidth,
         windowHeight: pdfContainer.scrollHeight,
         logging: false,
@@ -437,7 +436,7 @@ function TotalOrgSummary(props) {
           style={{ width: '30%', margin: '0 auto' }}
         >
           <Col>
-            <Alert color="danger">Error! {error.message}</Alert>
+            <Alert color="danger">Error! {error?.message}</Alert>
           </Col>
         </Row>
       </Container>
@@ -852,6 +851,7 @@ function TotalOrgSummary(props) {
                   isLoading={isLoading}
                   blueSquareStats={volunteerStats?.blueSquareStats}
                   comparisonType={selectedComparison}
+                  darkMode={darkMode}
                 />
               </div>
             </Col>

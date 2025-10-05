@@ -102,6 +102,12 @@ describe("<UserProfileEdit />", () => {
     );
 
     await waitFor(() => expect(mockProps.getUserProfile).toHaveBeenCalled());
+    
+    // Wait for the form fields to be rendered after loading completes
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText("First Name")).toBeInTheDocument();
+    });
+    
     fireEvent.change(screen.getByPlaceholderText("First Name"), {
       target: { value: "" },
     });

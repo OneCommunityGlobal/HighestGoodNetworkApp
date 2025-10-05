@@ -31,7 +31,7 @@ function ControllerRow(props) {
   const canPostTask = props.hasPermission('postTask');
 
   // props from store
-  const { role, userPermissions, roles, popupContent, darkMode } = props;
+  const { role, userPermissions, roles, popupContent, darkMode, tasks } = props;
 
   // states from hooks
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -90,6 +90,7 @@ function ControllerRow(props) {
               pageLoadTime={props.pageLoadTime}
               isOpen={props.isOpen}
               setIsOpen={props.setIsOpen}
+              tasks={tasks}
             />
           ) : null}
           <EditTaskModal

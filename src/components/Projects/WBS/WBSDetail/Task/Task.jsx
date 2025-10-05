@@ -404,6 +404,7 @@ function Task(props) {
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
+              tasks={props.tasks}
             />
           ) : null}
         </>

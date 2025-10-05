@@ -8,7 +8,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 // import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { connect } from 'react-redux';
+import { connect , useDispatch } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
 import './BasicInformationTab.css';
@@ -19,7 +19,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
+
 
 const Name = props => {
   const {
@@ -487,6 +487,7 @@ const BasicInformationTab = props => {
   };
   const onClickGetTimeZone = () => {
     if (!userProfile.location.userProvided) {
+      // eslint-disable-next-line no-alert
       alert('Please enter valid location');
       return;
     }
@@ -813,6 +814,7 @@ const BasicInformationTab = props => {
   const timeZoneDifferenceComponent = (
     <>
       <Col md={desktopDisplay ? '5' : ''}>
+        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className={darkMode ? 'text-light' : ''}>
           Difference in this Time Zone from Your Local
         </label>

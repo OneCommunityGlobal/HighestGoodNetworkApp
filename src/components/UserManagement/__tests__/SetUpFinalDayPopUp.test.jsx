@@ -70,7 +70,8 @@ describe('SetUpFinalDayPopUp Component', () => {
     fireEvent.change(screen.getByTestId('date-input'), { target: { value: futureDate } });
     fireEvent.click(screen.getByText('Save'));
 
-    expect(onSaveMock).toHaveBeenCalledWith(futureDate);
+    const expectedIso = moment(futureDate, 'YYYY-MM-DD').endOf('day').toISOString();
+    expect(onSaveMock).toHaveBeenCalledWith(expectedIso);
     expect(screen.queryByText('Please choose a future date.')).not.toBeInTheDocument();
   });
 
@@ -142,7 +143,8 @@ describe('SetUpFinalDayPopUp Component', () => {
     fireEvent.change(screen.getByTestId('date-input'), { target: { value: futureDate } });
     fireEvent.click(screen.getByText('Save'));
 
-    expect(onSaveMock).toHaveBeenCalledWith(futureDate);
+    const expectedIso = moment(futureDate, 'YYYY-MM-DD').endOf('day').toISOString();
+    expect(onSaveMock).toHaveBeenCalledWith(expectedIso);
   });
   it('should close the modal without calling onSave when the Close button is clicked', () => {
     renderComponent(store, { open: true, onClose: onCloseMock, onSave: onSaveMock });
