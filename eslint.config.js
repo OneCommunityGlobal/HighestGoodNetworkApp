@@ -31,13 +31,7 @@ module.exports = [
       // Ignore test files inside /src/components
       'src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx',
       // Ignore entire component folders
-      'src/components/Dashboard/**',
-      'src/components/Projects/**',
-      'src/components/SummaryManagement/**',
-      'src/components/TeamMemberTasks/**',
-      'src/components/Teams/TeamMembersPopup.jsx',
-      'src/components/UserManagement/**',
-      'src/components/UserProfile/**',
+      
     ],
   },
 
