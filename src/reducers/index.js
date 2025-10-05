@@ -85,6 +85,9 @@ import wishListReducer from './lbdashboard/wishListItemReducer';
 // pr analytics
 import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 
+// job analytics
+import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -154,6 +157,9 @@ const localReducers = {
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
   reviewsInsights: reviewsInsightReducer,
+
+  // job analytics
+  hoursPledged: hoursPledgedReducer,
 };
 
 const sessionReducers = {
