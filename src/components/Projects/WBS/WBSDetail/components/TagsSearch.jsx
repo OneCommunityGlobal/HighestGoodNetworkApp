@@ -88,7 +88,7 @@ function TagsSearch(props) {
     const firstName = member.firstName || member.first;
     const lastName = member.lastName || member.last;
 
-    addResources(userId, firstName, lastName);
+    addResources(userId, firstName, lastName, member.profilePic);
     setSearchWord('');
   };
 
