@@ -710,8 +710,50 @@ export default (
           component={Feedbackform}
         />
         <CPProtectedRoute
-          path="/communityportal/activities/FollowUpEmailTemplate"
-          component={FollowUpEmailTemplate}
+          path="/communityportal/activities/:activityid"
+          exact
+          component={Activity}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/event/personalization"
+          exact
+          component={EventStats}
+        />
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
+        <CPProtectedRoute
+          path="/communityportal/Activities/Register/:activityId"
+          exact
+          component={Register}
+        />
+
+        {/* Listing and Bidding Routes */}
+        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+        <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
+        <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
+        <Route path="/lbdashboard/login" component={LBLogin} />
+        <Route path="/lbdashboard/register" component={LBRegister} />
+        <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+        <Route // Should be LBProtectedRoute
+          path="/lbdashboard/listingshome"
+          render={() => (
+            <>
+              <AutoUpdate />
+              <LBHome />
+            </>
+          )}
+        />
+        <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+        <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
+
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
         />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
