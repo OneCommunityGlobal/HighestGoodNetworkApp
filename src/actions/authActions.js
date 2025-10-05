@@ -23,6 +23,7 @@ export const setHeaderData = data => ({
 });
 
 export const loginUser = credentials => dispatch => {
+  console.log(ENDPOINTS.LOGIN);
   return httpService
     .post(ENDPOINTS.LOGIN, credentials)
     .then(res => {
@@ -50,7 +51,7 @@ export const loginUser = credentials => dispatch => {
         type: GET_ERRORS,
         payload: errors,
       });
-
+      
       return { success: false, errors };
     });
 };

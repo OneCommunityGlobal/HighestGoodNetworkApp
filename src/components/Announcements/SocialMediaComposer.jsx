@@ -39,6 +39,9 @@ export async function handleImmediatePost({
     };
   }
 
+  console.log(`[${platform}] Immediate Post Payload:`, postValue);
+
+
   try {
     await axios.post(ENDPOINTS[`POST_${platform.toUpperCase()}`], postValue);
     toast.success(`Post to ${platform} successful!`);

@@ -181,7 +181,7 @@ export const ENDPOINTS = {
   POST_PINTEREST: `${APIEndpoint}/social/pinterest/createPin`,
   SCHEDULE_PINTEREST: `${APIEndpoint}/social/pinterest/schedule`,
 
-  // reasons endpoints
+  // reasons endpointsl
   CREATEREASON: () => {
     return `${APIEndpoint}/reason/`;
   },
