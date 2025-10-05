@@ -1,8 +1,8 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import React from 'react';
-import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from '../../../styles';
+import React, { useState } from 'react';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css';
+import { toast } from 'react-toastify';
 
 const TaskCompletedModal = React.memo(props => {
   const { darkMode } = props;
@@ -35,8 +35,6 @@ const TaskCompletedModal = React.memo(props => {
         prevTasks.map(t => (t._id === task._id ? updatedTask : t)),
       );
     }
-
-    toast.success('Task is successfully marked as done.');
   };
 
   const removeUserFromTask = task => {
@@ -94,5 +92,7 @@ const TaskCompletedModal = React.memo(props => {
     </Modal>
   );
 });
+
+TaskCompletedModal.displayName = 'TaskCompletedModal';
 
 export default TaskCompletedModal;

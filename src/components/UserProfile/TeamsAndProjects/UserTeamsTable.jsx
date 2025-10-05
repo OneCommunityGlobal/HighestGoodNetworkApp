@@ -2,11 +2,11 @@ import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
-import styles from './UserTeamsTable.css';
-import { boxStyle, boxStyleDark } from 'styles';
+// import styles from './UserTeamsTable.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { connect } from 'react-redux';
 import Switch from './Switch';
-import './TeamsAndProjects.css';
+
 import './UserTeamsTable.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
@@ -16,7 +16,7 @@ import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './../../Teams/Team.css';
 import { TeamMember } from './TeamMember';
 import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL.js';
+import { ENDPOINTS } from '~/utils/URL.js';
 import { toast } from 'react-toastify';
 
 const UserTeamsTable = props => {
@@ -137,6 +137,7 @@ const UserTeamsTable = props => {
 
       isUpdate ? toast.info('Team updated successfully') : setIsOpenModalTeamMember(true);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log(error);
     }
   };
@@ -256,7 +257,7 @@ const UserTeamsTable = props => {
       </div>
       <div style={{ maxHeight: '300px', overflow: 'auto' }}>
         <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
-          <thead>
+          <thead className="user-team-head">
             {props.role && (
               <tr>
                 <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
@@ -272,7 +273,7 @@ const UserTeamsTable = props => {
               </tr>
             )}
           </thead>
-          <tbody className={darkMode ? 'text-light' : ''}>
+          <tbody className={`user-team-body ${darkMode ? 'text-light' : ''}`}>
             {props.userTeamsById.length > 0 ? (
               props.userTeamsById.map((team, index) => (
                 <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
@@ -284,8 +285,7 @@ const UserTeamsTable = props => {
                         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                       >
                         <button
-                          style={darkMode ? {} : boxStyle}
-                          style={{ boxShadow: 'none' }}
+                          style={darkMode ? { boxShadow: 'none' } : { boxShadow: 'none', ...boxStyle}}
                           disabled={!canAssignTeamToUsers}
                           type="button"
                           className="btn btn-outline-info"

@@ -3,8 +3,7 @@ import axios from 'axios';
 
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import './PermissionsManagement.css';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { FaInfoCircle } from 'react-icons/fa'; // Importing react-icons for the info icon
 import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip functionality
@@ -12,12 +11,11 @@ import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip
 import { updateUserProfile, getUserProfile } from '../../actions/userProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
-import { ENDPOINTS } from '../../utils/URL';
-import { ModalContext } from '../../context/ModalContext';
+import { ENDPOINTS } from '~/utils/URL';
+import { ModalContext } from '~/context/ModalContext';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
-import { getAllRoles } from '../../actions/role';
-import { addNewRole } from '../../actions/role';
+import { getAllRoles, addNewRole } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
@@ -268,7 +266,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
       )}{' '}
       {/* Add data-testid for testing */}
       {changeLogs?.length > 0 && (
-        <PermissionChangeLogTable changeLogs={changeLogs} darkMode={darkMode} />
+        <PermissionChangeLogTable
+          changeLogs={changeLogs}
+          darkMode={darkMode}
+          roleNamesToHighlight={roleNames}
+        />
       )}
       <br />
       <br />

@@ -16,14 +16,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import './style.css';
 import './reviewButton.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
-import { faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
-import { boxStyle, boxStyleDark } from '../../styles';
-import { ApiEndpoint } from '../../utils/URL';
-import hasPermission from '../../utils/permissions';
+import { faCheck, faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
+import { ApiEndpoint } from '~/utils/URL';
+import hasPermission from '~/utils/permissions';
 
 function ReviewButton({ user, task, updateTask }) {
   const dispatch = useDispatch();
@@ -140,7 +139,7 @@ function ReviewButton({ user, task, updateTask }) {
   };
 
   const handleLink = e => {
-    const url = e.target.value;
+    const url = e.target.value.trim();
     setLink(url);
     if (!url) {
       setEditLinkState(prev => ({ ...prev, error: 'A valid URL is required for review' }));
@@ -205,10 +204,12 @@ function ReviewButton({ user, task, updateTask }) {
     ) {
       return { isValid: true, errorType: null };
     }
-
-    // 5. Figma check
+    // 5. Figma design file check
     if (normalizedUrl.includes('figma.com')) {
-      return { isValid: true, errorType: null };
+      if (normalizedUrl.includes('/design/')) {
+        return { isValid: true, errorType: null };
+      }
+      return { isValid: false, errorType: 'general_invalid' };
     }
 
     // Generic invalid domain
@@ -403,7 +404,11 @@ function ReviewButton({ user, task, updateTask }) {
             >
               Work Submitted and Awaiting Review
             </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+            <DropdownMenu
+              className={
+                darkMode ? 'review-button-dropdown bg-space-cadet' : 'review-button-dropdown'
+              }
+            >
               {task.relatedWorkLinks &&
                 // eslint-disable-next-line no-shadow
                 task.relatedWorkLinks.map(link => (
@@ -442,7 +447,11 @@ function ReviewButton({ user, task, updateTask }) {
             >
               Ready for Review
             </DropdownToggle>
-            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+            <DropdownMenu
+              className={
+                darkMode ? 'review-button-dropdown bg-space-cadet' : 'review-button-dropdown'
+              }
+            >
               {task.relatedWorkLinks &&
                 task.relatedWorkLinks.map(dropLink => (
                   <DropdownItem

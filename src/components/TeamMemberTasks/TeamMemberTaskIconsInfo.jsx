@@ -3,10 +3,10 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-import { useSelector } from 'react-redux';
-import { boxStyle, boxStyleDark } from '../../styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import './style.css';
 import '../Header/DarkMode.css';
+import { useSelector } from 'react-redux';
 import infoTaskIconContent from './infoTaskIconContent';
 
 const TeamMemberTaskInfo = React.memo(() => {
@@ -54,5 +54,7 @@ const TeamMemberTaskInfo = React.memo(() => {
     </>
   );
 });
+
+TeamMemberTaskInfo.displayName = 'TeamMemberTaskInfo';
 
 export default TeamMemberTaskInfo;

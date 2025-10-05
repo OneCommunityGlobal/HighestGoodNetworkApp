@@ -1,6 +1,6 @@
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import { fetchReusableTypes } from 'actions/bmdashboard/invTypeActions';
-import { purchaseReusable } from 'actions/bmdashboard/reusableActions';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchReusableTypes } from '~/actions/bmdashboard/invTypeActions';
+import { purchaseReusable } from '~/actions/bmdashboard/reusableActions';
 import PurchaseForm from '../PurchaseForm';
 
 const formLabels = {
