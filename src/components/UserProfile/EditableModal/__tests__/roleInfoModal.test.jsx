@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, screen } from '@testing-library/react';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux'; 
 import { configureStore } from 'redux-mock-store';
@@ -23,8 +23,8 @@ describe('RoleInfoModal component Test cases', () => {
     const info = {
       CanRead: true,
     };
-    const { getByTitle}=render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
-    const infoIcon = getByTitle('Click for user class information');
+    render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
+    const infoIcon = screen.getByTitle('Click for user class information');
     expect(infoIcon).toBeInTheDocument();
   });
 
@@ -37,10 +37,10 @@ describe('RoleInfoModal component Test cases', () => {
       CanRead: true,
     };
 
-    const { getByTitle, getByText } = render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
-    const infoIcon = getByTitle('Click for user class information');
+    render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
+    const infoIcon = screen.getByTitle('Click for user class information');
     fireEvent.click(infoIcon);
-    const modalTitle = getByText('Welcome to Information Page!');
+    const modalTitle = screen.getByText('Welcome to Information Page!');
     expect(modalTitle).toBeInTheDocument();
   });
 
@@ -52,10 +52,10 @@ describe('RoleInfoModal component Test cases', () => {
       infoContent: '<p>Testing the info content</p>',
       CanRead: true,
     };
-    const { getByTitle, getByText } = render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
-    const infoIcon = getByTitle('Click for user class information');
+    render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
+    const infoIcon = screen.getByTitle('Click for user class information');
     fireEvent.click(infoIcon);
-    const modalContent = getByText('Testing the info content', { exact: false });
+    const modalContent = screen.getByText('Testing the info content', { exact: false });
     expect(modalContent).toBeInTheDocument();
   });
 
@@ -68,9 +68,9 @@ describe('RoleInfoModal component Test cases', () => {
       CanRead: false,
     };
 
-    const { queryByText } = render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
+    render(<Provider store={store}><RoleInfoModal info={info}/></Provider>);
 
-    const modalTitle = queryByText('Welcome to Information Page!');
+    const modalTitle = screen.queryByText('Welcome to Information Page!');
     expect(modalTitle).not.toBeInTheDocument();
   });
 
@@ -79,20 +79,20 @@ describe('RoleInfoModal component Test cases', () => {
       theme: themeMock,
     });
 
-    const { getByTitle, getByText } = render(
+    render(
       <Provider store={store}>
         <RoleInfoModal info={undefined} roleName="MentorInfo" />
       </Provider>
     );
-    
-    const infoIcon = getByTitle('Click for user class information');
+
+    const infoIcon = screen.getByTitle('Click for user class information');
     expect(infoIcon).toBeInTheDocument();
-    
+
     fireEvent.click(infoIcon);
-    const modalTitle = getByText('Welcome to Information Page!');
+    const modalTitle = screen.getByText('Welcome to Information Page!');
     expect(modalTitle).toBeInTheDocument();
-    
-    const defaultMessage = getByText('Please input information!');
+
+    const defaultMessage = screen.getByText('Please input information!');
     expect(defaultMessage).toBeInTheDocument();
   });
 
@@ -106,16 +106,16 @@ describe('RoleInfoModal component Test cases', () => {
       infoContent: '',
     };
 
-    const { getByTitle, getByText } = render(
+    render(
       <Provider store={store}>
         <RoleInfoModal info={info} roleName="MentorInfo" />
       </Provider>
     );
-    
-    const infoIcon = getByTitle('Click for user class information');
+
+    const infoIcon = screen.getByTitle('Click for user class information');
     fireEvent.click(infoIcon);
-    
-    const defaultMessage = getByText('Please input information!');
+
+    const defaultMessage = screen.getByText('Please input information!');
     expect(defaultMessage).toBeInTheDocument();
   });
 });
