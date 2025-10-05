@@ -48,11 +48,11 @@ import EquipmentList from './components/BMDashboard/Equipment/List';
 import EquipmentDetail from './components/BMDashboard/Equipment/Detail/EquipmentDetail';
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
-import LogTools from './components/BMDashboard/LogTools/LogTools';
+//import LogTools from './components/BMDashboard/LogTools/LogTools';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
-import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+//import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import Issue from './components/BMDashboard/Issue/Issue';
 import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import IssueChart from './components/BMDashboard/Issues/issueCharts';
@@ -157,6 +157,14 @@ import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTo
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+
+// eslint-disable-next-line import/order, import/no-unresolved
+import LogTools from './components/BMDashboard/LogTools/LogTools';
+// import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
+
+//project status
+const ProjectStatus = lazy(() => import('./components/ProjectStatus/ProjectStatus'));
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
@@ -319,6 +327,9 @@ export default (
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+
+        <ProtectedRoute path="/projectstatus" exact component={ProjectStatus} fallback />
+
         <ProtectedRoute
           path="/inventory/:projectId"
           component={Inventory}
