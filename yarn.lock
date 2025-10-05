@@ -8299,7 +8299,7 @@ symbol-tree@^3.2.4:
   resolved "https://registry.npmjs.org/symbol-tree/-/symbol-tree-3.2.4.tgz"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
-tapable@^2.1.1, tapable@^2.2.0:
+tapable@^2.2.0, tapable@^2.2.3:
   version "2.2.3"
   resolved "https://registry.npmjs.org/tapable/-/tapable-2.2.3.tgz"
   integrity sha512-ZL6DDuAlRlLGghwcfmSn9sK3Hr6ArtyudlSAiCqQ6IfE+b+HHbydbYDIG15IfS5do+7XQQBdBiubF/cV2dnDzg==
@@ -8843,7 +8843,7 @@ warning@^4.0.0, warning@^4.0.2, warning@^4.0.3:
   dependencies:
     loose-envify "^1.0.0"
 
-watchpack@^2.4.1:
+watchpack@^2.4.4:
   version "2.4.4"
   resolved "https://registry.npmjs.org/watchpack/-/watchpack-2.4.4.tgz"
   integrity sha512-c5EGNOiyxxV5qmTtAB7rbiXxi1ooX1pQKMLX/MIabJjRA0SJBQOjKF+KSVfHkr9U1cADPon0mRiVe/riyaiDUA==
@@ -8861,10 +8861,10 @@ webpack-sources@^3.3.3:
   resolved "https://registry.npmjs.org/webpack-sources/-/webpack-sources-3.3.3.tgz"
   integrity sha512-yd1RBzSGanHkitROoPFd6qsrxt+oFhg/129YzheDGqeustzX0vTZJZsSsQjVQC4yzBQ56K55XU8gaNCtIzOnTg==
 
-webpack@^5.0.0, webpack@^5.1.0, webpack@^5.101.3:
-  version "5.101.3"
-  resolved "https://registry.npmjs.org/webpack/-/webpack-5.101.3.tgz"
-  integrity sha512-7b0dTKR3Ed//AD/6kkx/o7duS8H3f1a4w3BYpIriX4BzIhjkn4teo05cptsxvLesHFKK5KObnadmCHBwGc+51A==
+webpack@^5.0.0, webpack@^5.1.0, webpack@^5.102.0:
+  version "5.102.0"
+  resolved "https://registry.npmjs.org/webpack/-/webpack-5.102.0.tgz"
+  integrity sha512-hUtqAR3ZLVEYDEABdBioQCIqSoguHbFn1K7WlPPWSuXmx0031BD73PSE35jKyftdSh4YLDoQNgK4pqBt5Q82MA==
   dependencies:
     "@types/eslint-scope" "^3.7.7"
     "@types/estree" "^1.0.8"
@@ -8874,7 +8874,7 @@ webpack@^5.0.0, webpack@^5.1.0, webpack@^5.101.3:
     "@webassemblyjs/wasm-parser" "^1.14.1"
     acorn "^8.15.0"
     acorn-import-phases "^1.0.3"
-    browserslist "^4.24.0"
+    browserslist "^4.24.5"
     chrome-trace-event "^1.0.2"
     enhanced-resolve "^5.17.3"
     es-module-lexer "^1.2.1"
@@ -8887,9 +8887,9 @@ webpack@^5.0.0, webpack@^5.1.0, webpack@^5.101.3:
     mime-types "^2.1.27"
     neo-async "^2.6.2"
     schema-utils "^4.3.2"
-    tapable "^2.1.1"
+    tapable "^2.2.3"
     terser-webpack-plugin "^5.3.11"
-    watchpack "^2.4.1"
+    watchpack "^2.4.4"
     webpack-sources "^3.3.3"
 
 whatwg-encoding@^3.1.1:
