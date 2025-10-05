@@ -110,6 +110,9 @@ export const getAllUserProfile = () => {
   const userProfilesPromise = axios.get(ENDPOINTS.USER_PROFILES);
   return async dispatch => {
     await dispatch(userProfilesFetchStartAction());
+    if (!userProfilesPromise || typeof userProfilesPromise.then !== 'function') {
+      return Promise.resolve([]);
+    }
     return userProfilesPromise
       .then(res => {
         dispatch(userProfilesFetchCompleteACtion(res.data));
@@ -286,10 +289,14 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
 /**
  * fetching all user profiles basic info
  */
-export const getUserProfileBasicInfo = () => {
+export const getUserProfileBasicInfo = (userId) => {
   // API request to fetch basic user profile information
-  const userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
-
+ let userProfileBasicInfoPromise;
+ if (userId)
+    userProfileBasicInfoPromise = axios.get(`${ENDPOINTS.USER_PROFILE_BASIC_INFO}?userId=${userId}`);
+ else
+    userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+  
   return async dispatch => {
     // Dispatch action indicating the start of the fetch process
     await dispatch(userProfilesBasicInfoFetchStartAction());

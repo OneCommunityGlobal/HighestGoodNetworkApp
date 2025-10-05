@@ -48,6 +48,8 @@ import {
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
+  PR_PROMOTIONS,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -62,6 +64,7 @@ import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
 import PermissionWatcher from '../Auth/PermissionWatcher';
+import DisplayBox from '../PRPromotions/DisplayBox';
 
 export function Header(props) {
   const location = useLocation();
@@ -75,6 +78,7 @@ export function Header(props) {
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
   const [isAckLoading, setIsAckLoading] = useState(false);
+  const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -141,6 +145,9 @@ export function Header(props) {
     props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+  
+  // Blue Square Email Management
+  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -334,6 +341,8 @@ export function Header(props) {
     <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
+        {showPromotionsPopup && 
+        (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
         <div
           className="timer-message-section"
           style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
@@ -458,6 +467,9 @@ export function Header(props) {
                       >
                         {TOTAL_CONSTRUCTION_SUMMARY}
                       </DropdownItem>
+                      <DropdownItem onClick={() => setShowPromotionsPopup(true)} className={fontColor}>
+                        {PR_PROMOTIONS}
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
@@ -476,7 +488,8 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
-                  canAccessPermissionsManagement) && (
+                  canAccessPermissionsManagement ||
+                  canAccessBlueSquareEmailManagement) && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
@@ -518,6 +531,19 @@ export function Header(props) {
                             {PERMISSIONS_MANAGEMENT}
                           </DropdownItem>
                         </>
+                      )}
+                      <DropdownItem divider />
+                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
+                        PR Team Analytics
+                      </DropdownItem>
+                      {canAccessBlueSquareEmailManagement && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bluesquare-email-management"
+                          className={fontColor}
+                        >
+                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                        </DropdownItem>
                       )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
@@ -591,6 +617,7 @@ export function Header(props) {
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
         />
       )}
+      <PermissionWatcher props={props} />
       {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
         <PopUpBar
           firstName={viewingUser?.firstName || firstName}
