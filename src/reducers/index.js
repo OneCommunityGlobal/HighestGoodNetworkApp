@@ -79,6 +79,8 @@ import userSkillsReducer from './userSkillsReducer';
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
+import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
+
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
 
@@ -154,6 +156,8 @@ const localReducers = {
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
   reviewsInsights: reviewsInsightReducer,
+
+  jobApplication: jobApplicationReducer,
 };
 
 const sessionReducers = {

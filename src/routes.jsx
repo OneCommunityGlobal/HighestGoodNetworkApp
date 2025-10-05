@@ -166,6 +166,8 @@ import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
 // Social Architecture
+
+import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
@@ -548,6 +550,8 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+
+        <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
 
         <ProtectedRoute
           path="/communityportal/activity/\:activityid/feedback"
