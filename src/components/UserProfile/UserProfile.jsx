@@ -817,14 +817,14 @@ const onAssignProject = assignedProject => {
     projects: projectsIds,  // single source of truth
   };
 
-  console.log('Submitting UserProfile:', userProfileToUpdate);
 
   // update tasks (optionally await if you need sequencing)
   for (let i = 0; i < updatedTasks.length; i += 1) {
     const updatedTask = updatedTasks[i];
     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
     // consider await here if order matters
-    axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    // eslint-disable-next-line no-console
+    axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
   }
 
   try {
@@ -837,6 +837,7 @@ const onAssignProject = assignedProject => {
     setSaved(false);
   } catch (err) {
     if (err?.response?.data?.error) {
+      // eslint-disable-next-line no-alert
       alert(err.response.data.error.join('\n'));
     }
     return err;

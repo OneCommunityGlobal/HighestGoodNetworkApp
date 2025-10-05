@@ -1,20 +1,20 @@
-.resource-usage-container {
+.resourceUsageContainer {
   display: flex;
   min-height: 100vh;
   background-color: #fff;
 }
 
-.chart-section {
+.chartSection {
   flex: 1;
   padding: 1.5rem;
   background: #fff;
 }
 
-.header-section {
+.headerSection {
   margin-bottom: 2rem;
 }
 
-.header-section h1 {
+.headerSection h1 {
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -27,7 +27,7 @@
   justify-content: left;
 }
 
-.custom-dropdown {
+.customDropdown {
   background: transparent !important;
   border: 1px solid #e5e7eb !important;
   color: #374151 !important;
@@ -40,62 +40,62 @@
   gap: 0.5rem !important;
 }
 
-.custom-dropdown:hover,
-.custom-dropdown:focus {
+.customDropdown:hover,
+.customDropdown:focus {
   background-color: #f9fafb !important;
   border-color: #e5e7eb !important;
 }
 
-.custom-dropdown::after {
+.customDropdown::after {
   margin-left: 0.5rem !important;
 }
 
-.chart-container {
+.chartContainer {
   height: calc(100vh - 200px);
   width: 100%;
 }
 
-.insights-section {
+.insightsSection {
   width: 400px;
   background-color: #f9fafb;
   border-left: 1px solid #e5e7eb;
   padding: 1.5rem;
 }
 
-.insights-header {
+.insightsHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
 }
 
-.insights-header h2 {
+.insightsHeader h2 {
   font-size: 1.5rem;
   font-weight: 600;
   margin: 0;
   color: #111827;
 }
 
-.insights-grid {
+.insightsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
-.insight-card {
+.insightCard {
   background: white;
   border-radius: 0.75rem;
   padding: 1rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.insight-title {
+.insightTitle {
   color: #6b7280;
   font-size: 0.875rem;
   margin-bottom: 0.75rem;
 }
 
-.insight-badge {
+.insightBadge {
   display: inline-block;
   padding: 0.25rem 0.75rem;
   border-radius: 1rem;
@@ -103,7 +103,7 @@
   font-weight: 500;
 }
 
-.custom-tooltip {
+.customTooltip {
   background: white;
   border-radius: 0.375rem;
   padding: 0.75rem;
@@ -113,27 +113,27 @@
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-  .resource-usage-container {
+  .resourceUsageContainer {
     flex-direction: column;
   }
 
-  .insights-section {
+  .insightsSection {
     width: 100%;
     border-left: none;
     border-top: 1px solid #e5e7eb;
   }
 
-  .insights-grid {
+  .insightsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .chart-container {
+  .chartContainer {
     height: 400px;
   }
 }
 
 @media (max-width: 768px) {
-  .header-section {
+  .headerSection {
     flex-direction: column;
   }
 
@@ -141,8 +141,8 @@
     flex-wrap: wrap;
   }
 
-  .chart-section,
-  .insights-section {
+  .chartSection,
+  .insightsSection {
     padding: 1rem;
   }
 }
