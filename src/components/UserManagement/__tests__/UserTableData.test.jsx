@@ -8,6 +8,8 @@ import { configureStore } from 'redux-mock-store';
 import UserTableData from '../UserTableData';
 import { authMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
+import { MemoryRouter } from 'react-router-dom';
+
 // Mock Axios requests
 vi.mock('axios');
 const mockStore = configureStore([thunk]);
@@ -79,18 +81,20 @@ describe('User Table Data: Non-Jae related Account', () => {
   let store;
   const renderRow = (user) => {
     renderWithProvider(
-      <table>
-        <tbody>
-          <UserTableData
-            isActive
-            index={0}
-            user={user}
-            onActiveInactiveClick={onActiveInactiveClick}
-            onPauseResumeClick={onPauseResumeClick}
-            onDeleteClick={onDeleteClick}
-          />
-        </tbody>
-      </table>,
+      <MemoryRouter initialEntries={['/usermanagement']}>
+        <table>
+          <tbody>
+            <UserTableData
+              isActive
+              index={0}
+              user={user}
+              onActiveInactiveClick={onActiveInactiveClick}
+              onPauseResumeClick={onPauseResumeClick}
+              onDeleteClick={onDeleteClick}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>,
       { store },
     );
   }
@@ -229,19 +233,21 @@ describe('User Table Data: Jae protected account record and login as Jae related
   let onActiveInactiveClick;
   let store;
   const renderRow = (user) => {
-     renderWithProvider(
-      <table>
-        <tbody>
-          <UserTableData
-            isActive
-            index={0}
-            user={user}
-            onActiveInactiveClick={onActiveInactiveClick}
-            onPauseResumeClick={onPauseResumeClick}
-            onDeleteClick={onDeleteClick}
-          />
-        </tbody>
-      </table>,
+    renderWithProvider(
+      <MemoryRouter initialEntries={['/usermanagement']}>
+        <table>
+          <tbody>
+            <UserTableData
+              isActive
+              index={0}
+              user={user}
+              onActiveInactiveClick={onActiveInactiveClick}
+              onPauseResumeClick={onPauseResumeClick}
+              onDeleteClick={onDeleteClick}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>,
       { store },
     );
   }
