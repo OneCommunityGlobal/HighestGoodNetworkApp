@@ -31,9 +31,23 @@ const persistConfig = {
   writeFailHandler: (err) => {
     // If storage quota is exceeded, clear storage and try again
     if (err.name === 'QuotaExceededError') {
-      storage.removeItem('persist:root');
-      window.location.reload();
-    }
+      try {
+        storage.removeItem('persist:root');
+        // Use setTimeout to avoid blocking the current execution
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      } catch (clearError) {
+        // If we can't clear storage, just reload anyway
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      }
+    } 
+    // else {
+    //   // For other errors, just log them and continue
+    //   console.warn('Non-quota storage error, continuing without persistence');
+    // }
   }
 };
 

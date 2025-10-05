@@ -1,7 +1,6 @@
 .pie-chart-wrapper {
     display: flex;
     align-items: center;
-    height: 40vh;
     /* overflow: hidden; */
   }
   

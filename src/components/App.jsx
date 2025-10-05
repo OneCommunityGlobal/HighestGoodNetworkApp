@@ -95,6 +95,10 @@ function UpdateDocumentTitle() {
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
     { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
     { pattern: /.*/, title: 'HGN APP' }, // Default case
+    {
+      pattern: /^\/communityportal\/activity\/activityid\/feedback$/,
+      title: 'Activity Feedback',
+    },
   ];
 
   useEffect(() => {
@@ -106,10 +110,16 @@ function UpdateDocumentTitle() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      initMessagingSocket(token);
-    } else {
-      Error('❌ No auth token found for WebSocket connection.');
+      try {
+        initMessagingSocket(token);
+      } catch (error) {
+        // console.error('WebSocket initialization failed:', error);
+        return error;
+      }
     }
+    // else {
+    //   // console.warn('No auth token found for WebSocket connection');
+    // }
   }, []);
 
   return null;
