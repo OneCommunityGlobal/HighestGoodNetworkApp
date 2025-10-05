@@ -89,6 +89,9 @@ import {
   listingBookingReducer,
 } from './listBidDashboard/listOverviewReducer';
 
+// pr analytics
+import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -163,6 +166,7 @@ const localReducers = {
   listOverview: listOverviewReducer,
   listingAvailability: listingAvailabilityReducer,
   listingBooking: listingBookingReducer,
+  reviewsInsights: reviewsInsightReducer,
 };
 
 const sessionReducers = {
