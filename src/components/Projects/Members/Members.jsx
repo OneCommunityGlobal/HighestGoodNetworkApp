@@ -13,9 +13,8 @@ import {
   findProjectMembers,
   getAllUserProfiles,
   assignProject,
-  foundUsers
-} from '~/actions/projectMembers';
-
+ foundUsers } from '~/actions/projectMembers';
+ 
 import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
