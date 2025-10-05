@@ -1,17 +1,35 @@
 /* Popularity Timeline Chart Styles */
+.light-screen {
+  background-color: #f7fafc; /* light gray background */
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.dark-screen {
+  background-color: #0f172a; /* deep navy-dark background */
+  min-height: 100vh;
+  padding: 20px;
+  color: #e2e8f0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+
+
 .pt-container {
   padding: 20px;
-  background-color: #fff;
+  background-color: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   margin: 20px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  transition: background-color 0.3s, color 0.3s;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .dark-theme {
-  background-color: #2d3748;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  background-color: #1a202c;
+  border: 1px solid #2d3748;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+  color: #e2e8f0;
 }
 
 .pt-header {
@@ -33,6 +51,7 @@
   color: #e2e8f0;
 }
 
+/* ---------------- FILTERS ---------------- */
 .pt-filters {
   display: flex;
   flex-wrap: wrap;
@@ -74,15 +93,15 @@
   padding: 10px 12px;
   border: 1px solid #dcdfe6;
   border-radius: 4px;
-  background-color: white;
+  background-color: #ffffff;
   font-size: 0.9rem;
   color: #2c3e50;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .dark-theme .pt-select {
-  background-color: #4a5568;
-  border-color: #718096;
+  background-color: #2d3748;
+  border-color: #4a5568;
   color: #e2e8f0;
 }
 
@@ -97,6 +116,7 @@
   box-shadow: 0 0 0 2px rgba(99, 179, 237, 0.2);
 }
 
+/* ---------------- DATE PICKERS ---------------- */
 .pt-date-pickers {
   display: flex;
   gap: 10px;
@@ -110,16 +130,39 @@
   font-size: 0.9rem;
   min-width: 120px;
   width: 100%;
-  background-color: white;
+  background-color: #fff;
   color: #2c3e50;
 }
 
 .dark-theme .pt-date-picker {
-  background-color: #4a5568;
-  border-color: #718096;
+  background-color: #2d3748;
+  border-color: #4a5568;
   color: #e2e8f0;
 }
 
+/* Override React Datepicker Popper */
+:global(.react-datepicker-dark) {
+  background-color: #1a202c !important;
+  border: 1px solid #2d3748 !important;
+  color: #e2e8f0 !important;
+}
+
+:global(.react-datepicker-dark .react-datepicker__header) {
+  background-color: #2d3748 !important;
+  border-bottom-color: #4a5568 !important;
+}
+
+:global(.react-datepicker-dark .react-datepicker__current-month),
+:global(.react-datepicker-dark .react-datepicker__day-name),
+:global(.react-datepicker-dark .react-datepicker__day) {
+  color: #e2e8f0 !important;
+}
+
+:global(.react-datepicker-dark .react-datepicker__day:hover) {
+  background-color: #4a5568 !important;
+}
+
+/* ---------------- MULTISELECT ---------------- */
 .pt-role-filter {
   flex: 2;
 }
@@ -128,6 +171,7 @@
   min-width: 100%;
 }
 
+/* ---------------- RESET BUTTON ---------------- */
 .pt-reset-btn {
   padding: 10px 16px;
   background-color: #f8f9fa;
@@ -142,8 +186,8 @@
 }
 
 .dark-theme .pt-reset-btn {
-  background-color: #4a5568;
-  border-color: #718096;
+  background-color: #2d3748;
+  border-color: #4a5568;
   color: #e2e8f0;
 }
 
@@ -153,12 +197,13 @@
 }
 
 .dark-theme .pt-reset-btn:hover {
-  background-color: #718096;
+  background-color: #4a5568;
   border-color: #a0aec0;
 }
 
+/* ---------------- CHART WRAPPER ---------------- */
 .pt-chart-wrapper {
-  background-color: white;
+  background-color: #ffffff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
@@ -166,17 +211,18 @@
 }
 
 .dark-theme .pt-chart-wrapper {
-  background-color: #2d3748;
-  border-color: #4a5568;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  background-color: #1a202c;
+  border-color: #2d3748;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }
 
+/* ---------------- STATUS TEXTS ---------------- */
 .pt-loading,
 .pt-error,
 .pt-no-data {
   padding: 25px;
   text-align: center;
-  background-color: white;
+  background-color: #ffffff;
   border-radius: 8px;
   margin: 20px 0;
   border: 1px solid #eee;
@@ -187,8 +233,8 @@
 .dark-theme .pt-loading,
 .dark-theme .pt-error,
 .dark-theme .pt-no-data {
-  background-color: #2d3748;
-  border-color: #4a5568;
+  background-color: #1a202c;
+  border-color: #2d3748;
   color: #e2e8f0;
 }
 
@@ -208,12 +254,11 @@
   color: #a0aec0;
 }
 
-/* Responsive design */
+/* ---------------- RESPONSIVE ---------------- */
 @media (max-width: 992px) {
   .pt-filters {
     gap: 12px;
   }
-
   .pt-filter-group {
     min-width: 180px;
   }
@@ -225,29 +270,23 @@
     align-items: stretch;
     gap: 15px;
   }
-
   .pt-filter-group {
     min-width: 100%;
   }
-
   .pt-date-pickers {
     flex-direction: column;
     gap: 8px;
   }
-
   .pt-reset-btn {
     width: 100%;
     margin-top: 5px;
   }
-
   .pt-chart-wrapper {
     padding: 15px;
   }
-
   .pt-title {
     font-size: 1.25rem;
   }
-
   .pt-header {
     flex-direction: column;
     gap: 15px;
@@ -260,67 +299,16 @@
     margin: 10px;
     padding: 15px;
   }
-
   .pt-title {
     font-size: 1.15rem;
-    margin-bottom: 20px;
   }
-
-  .pt-label {
-    font-size: 0.85rem;
-  }
-
-  .pt-sublabel {
-    font-size: 0.8rem;
-  }
-
   .pt-select,
   .pt-date-picker,
   .pt-reset-btn {
     font-size: 0.85rem;
     padding: 8px 10px;
   }
-
   .pt-chart-wrapper {
     padding: 10px;
   }
-
-  .pt-chart-wrapper .recharts-wrapper {
-    overflow-x: auto;
-  }
 }
-
-/* For very small screens */
-@media (max-width: 400px) {
-  .pt-title {
-    font-size: 1.1rem;
-  }
-
-  .pt-date-pickers > div {
-    width: 100%;
-  }
-}
-
-/* Clean Date Picker Styles (global overrides) */
-:global(.react-datepicker__header) {
-  background-color: #fff;
-  border-bottom: 1px solid #f0f0f0;
-  padding: 12px 0;
-}
-
-:global(.dark-theme .react-datepicker__header) {
-  background-color: #2d3748;
-  border-bottom-color: #4a5568;
-}
-
-:global(.react-datepicker__current-month) {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 8px;
-}
-
-:global(.dark-theme .react-datepicker__current-month) {
-  color: #e2e8f0;
-}
-
