@@ -84,6 +84,9 @@ import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
 
+// pr analytics
+import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -152,6 +155,7 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  reviewsInsights: reviewsInsightReducer,
 
   jobApplication: jobApplicationReducer,
 };
