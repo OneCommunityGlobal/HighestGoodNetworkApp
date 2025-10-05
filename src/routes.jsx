@@ -49,8 +49,6 @@ import EquipmentDetail from './components/BMDashboard/Equipment/Detail/Equipment
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
-import Toolslist from './components/BMDashboard/Tools/ToolsList';
-import AddTool from './components/BMDashboard/Tools/AddTool';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import Issue from './components/BMDashboard/Issue/Issue';
@@ -139,7 +137,13 @@ import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHom
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
-import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
+import Toolslist from './components/BMDashboard/Tools/ToolsList';
+import AddTool from './components/BMDashboard/Tools/AddTool';
+import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
+
+//job analytics
+import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
+
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
@@ -547,6 +551,12 @@ export default (
           component={JobCCDashboard}
           fallback
           allowedRoles={[UserRole.Owner]}
+        />
+        <ProtectedRoute
+          path="/jobanalytics"
+          exact
+          component={HoursPledgedChart}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
 
         <ProtectedRoute

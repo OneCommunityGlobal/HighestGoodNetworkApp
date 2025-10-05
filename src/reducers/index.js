@@ -92,6 +92,9 @@ import {
 // pr analytics
 import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 
+// job analytics
+import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -167,6 +170,9 @@ const localReducers = {
   listingAvailability: listingAvailabilityReducer,
   listingBooking: listingBookingReducer,
   reviewsInsights: reviewsInsightReducer,
+
+  // job analytics
+  hoursPledged: hoursPledgedReducer,
 };
 
 const sessionReducers = {
