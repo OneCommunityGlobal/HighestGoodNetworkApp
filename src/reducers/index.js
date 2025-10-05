@@ -67,6 +67,9 @@ import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
+import injuriesReducer from './injuries';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './lbdashboard/messagingReducer';
 // eslint-disable-next-line import/no-named-as-default
@@ -78,6 +81,9 @@ import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
+
+// pr analytics
+import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -115,7 +121,7 @@ const localReducers = {
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
 
-  // bmdashboard
+  // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,
   toolAvailability: toolAvailabilityReducer,
@@ -131,6 +137,7 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
 
   // lbdashboard
@@ -146,6 +153,7 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  reviewsInsights: reviewsInsightReducer,
 };
 
 const sessionReducers = {

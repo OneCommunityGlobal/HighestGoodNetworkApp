@@ -1,0 +1,90 @@
+:root {
+  --rail-w: 72px;               /* nav width */
+  --rail-bg: #ffffff;
+  --rail-border: #ececec;
+  --icon: #000;                 /* black icons */
+  --pill: #dedede;              /* active bg */
+  --pill-hover: #e9e9e9;
+  --radius: 10px;
+}
+
+/* Fixed left rail below your site header */
+.sidebar {
+  position: fixed;
+  top: 64px;                    /* adjust if your top header is different */
+  left: 0;
+  width: var(--rail-w);
+  height: calc(100vh - 64px);
+  background: var(--rail-bg);
+  border-right: 1px solid var(--rail-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 5;
+}
+
+/* “three lines” button */
+.hamburger {
+  width: 44px;
+  height: 44px;
+  margin: 8px 0 6px;
+  border: 0;
+  background: transparent;
+  color: var(--icon);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  color: var(--icon);
+  display: inline-grid;
+  place-items: center;
+}
+
+.nav {
+  width: 100%;
+  display: grid;
+  gap: 18px;
+  padding: 10px 12px 0;
+}
+
+.navItem {
+  width: 100%;
+  height: 56px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  transition: background .15s ease;
+}
+.navItem:hover { background: var(--pill-hover); }
+.active { background: var(--pill); }
+
+.bottom {
+  margin-top: auto;
+  width: 100%;
+  padding: 16px 8px 18px;
+  display: grid;
+  gap: 10px;
+}
+
+.bottomItem {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 0;
+  padding: 8px 10px;
+  color: #000;
+  font-size: 13px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.bottomItem:hover { background: var(--pill-hover); }
