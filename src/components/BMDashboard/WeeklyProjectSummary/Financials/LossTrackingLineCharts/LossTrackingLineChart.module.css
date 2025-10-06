@@ -1,0 +1,228 @@
+/* ---------- Theme tokens ---------- */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #1f1f1f;
+  --muted-text: #555555;
+  --border-color: #d3d7df;
+  --tooltip-bg: #f6f7f9;
+
+  --surface: #ffffff;
+  --surface-muted: #f5f7fb;
+
+  --accent-color: #2b60ff;
+  --accent-hover: #1c47c7;
+
+  --grid-color: #e6e9f0;
+
+  --ring: #2b60ff;
+  --ring-offset: #ffffff;
+
+  --reset-btn-bg: #e53935;
+  --reset-btn-hover: #c62828;
+  --reset-btn-text: #ffffff;
+
+  --radius: 10px;
+  --radius-sm: 8px;
+  --space: 1rem;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Optional manual dark mode (toggle this class on our container) */
+.darkMode {
+  --bg-color: #0f1522;
+  --text-color: #f1f3f7;
+  --muted-text: #c9ced8;
+  --border-color: #2c3a52;
+  --tooltip-bg: #1a2336;
+
+  --surface: #182235;
+  --surface-muted: #111a2b;
+
+  --accent-color: #7aa2ff;
+  --accent-hover: #9bb9ff;
+
+  --grid-color: rgba(255, 255, 255, 0.14);
+
+  --ring: #7aa2ff;
+  --ring-offset: #0f1522;
+
+  --reset-btn-bg: #ff6b5e;
+  --reset-btn-hover: #ff4a3a;
+  --reset-btn-text: #0f1522;
+}
+
+/* ---------- Host & card container ---------- */
+.host {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.lossTrackingChartContainer {
+  padding: 1.25rem;
+  background-color: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  align-self: stretch;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  color: var(--text-color);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.chartTitle {
+  color: var(--text-color);
+  font-size: 1.05rem;
+  font-weight: 650;
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.1px;
+}
+
+/* ---------- Filters (grid: one lane when space allows) ---------- */
+.lossTrackingChartFilters {
+  display: grid;
+  /* Each item gets at least 220px; if space allows, they all sit on one row */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.85rem var(--space);
+  align-items: end; /* align baselines for inputs and button */
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.85rem;
+}
+
+.lossTrackingChartFilters label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-color);
+  gap: 0.35rem;
+  min-width: 0; /* allow shrinking to column width */
+}
+
+/* Inputs */
+.lossTrackingChartFilters select,
+.lossTrackingChartFilters input[type="month"] {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  min-height: 40px;
+  background-color: var(--surface);
+  color: var(--text-color);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.lossTrackingChartFilters select:focus-visible,
+.lossTrackingChartFilters input[type="month"]:focus-visible {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset);
+}
+
+/* Reset button — behaves like any grid item so it aligns in the same lane */
+.resetBtn {
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 650;
+  background-color: var(--reset-btn-bg);
+  color: var(--reset-btn-text);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  min-height: 40px;
+  letter-spacing: 0.2px;
+  transition: background-color 0.15s ease, transform 0.02s ease, box-shadow 0.15s ease, color 0.15s ease;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04), 0 2px 8px rgba(0,0,0,0.08);
+
+  /* IMPORTANT: no margin-left/auto and no order hacks */
+  justify-self: start; /* align start like labels */
+  align-self: end;     /* baseline alignment with inputs */
+}
+
+.resetBtn:hover { background-color: var(--reset-btn-hover); }
+.resetBtn:active { transform: translateY(1px); }
+.resetBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--ring), 0 0 0 4px var(--ring-offset);
+}
+.resetBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Optional: on very narrow screens, make the button full width to match stacked inputs */
+@media (max-width: 768px) {
+  .resetBtn { justify-self: stretch; }
+}
+
+/* ---------- Chart area (responsive height) ---------- */
+.chartWrapper {
+  width: 100%;
+  /* Responsive, predictable height for ResponsiveContainer (height="100%") */
+  --chart-height: clamp(320px, 42vh, 680px);
+  height: var(--chart-height);
+
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+
+  min-width: 0; /* let SVG measure correctly in flex/grid */
+}
+
+@media screen and (min-width: 1440px) {
+  .chartWrapper { --chart-height: clamp(340px, 40vh, 720px); }
+}
+
+/* Recharts tweaks */
+.recharts-cartesian-grid line { stroke: var(--grid-color); }
+.recharts-legend-wrapper { color: var(--text-color); }
+
+/* ---------- No data state ---------- */
+.noDataMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted-text);
+  background-color: var(--surface);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  padding: 1rem;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+/* --- Ultra-narrow phones: <= 400px --- */
+@media (max-width: 400px) {
+  .lossTrackingChartFilters {
+    grid-template-columns: 1fr;     /* force single column */
+    gap: 0.6rem;                     /* slightly tighter spacing */
+    padding: 0.75rem;                /* reduce inner padding */
+  }
+
+  .lossTrackingChartFilters label {
+    min-width: 0;                    /* allow shrink */
+  }
+
+  .lossTrackingChartFilters select,
+  .lossTrackingChartFilters input[type="month"],
+  .resetBtn {
+    width: 100%;                     /* full width controls */
+    box-sizing: border-box;          /* respect padding/border */
+  }
+
+  .resetBtn {
+    justify-self: stretch;           /* no overflow due to intrinsic width */
+  }
+}

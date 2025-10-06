@@ -40,7 +40,6 @@ import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
 import styles from './WeeklySummariesReport.module.css';
-import Select, { components } from 'react-select';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -106,60 +105,6 @@ const intialPermissionState = {
   codeEditPermission: false,
   canSeeBioHighlight: false,
 };
-
-const CheckboxOption = props => {
-  return (
-    <components.Option {...props}>
-      <input
-        type="checkbox"
-        checked={props.isSelected}
-        onChange={() => null} // react-select handles selection
-        style={{ marginRight: 8 }}
-      />
-      <label style={{ fontWeight: 'bold' }}>{props.label}</label>
-    </components.Option>
-  );
-};
-
-const CustomMenuList = props => {
-  const {
-    children,
-    selectProps, // gives access to props like value and options
-  } = props;
-
-  const allSelected = selectProps.value?.length === selectProps.options.length;
-
-  const toggleSelectAll = () => {
-    if (allSelected) {
-      selectProps.onChange([]);
-    } else {
-      selectProps.onChange(selectProps.options);
-    }
-  };
-
-  return (
-    <components.MenuList {...props}>
-      <div
-        style={{
-          padding: '6px 10px',
-          borderBottom: '1px solid #ccc',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
-        <input
-          type="checkbox"
-          checked={allSelected}
-          onChange={toggleSelectAll}
-          style={{ marginRight: 8 }}
-        />
-        <label style={{ fontWeight: 'bold' }}>{allSelected ? 'Deselect All' : 'Select All'}</label>
-      </div>
-      {children}
-    </components.MenuList>
-  );
-};
-
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
   const { loading, infoCollections, getInfoCollections } = props;
@@ -1324,12 +1269,10 @@ const WeeklySummariesReport = props => {
               </ReactTooltip>
             </>
           )}
-          <Select
-            isMulti
-            isSearchable
-            closeMenuOnSelect={false}
-            hideSelectedOptions={false}
-            blurInputOnSelect={false}
+          <MultiSelect
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''} ${
+              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+            }`}
             options={state.teamCodes.map(item => {
               const [code, count] = item.label.split(' (');
               return {
@@ -1339,59 +1282,16 @@ const WeeklySummariesReport = props => {
             })}
             value={state.selectedCodes}
             onChange={handleSelectCodeChange}
-            components={{
-              Option: CheckboxOption,
-              MenuList: CustomMenuList,
-            }}
-            placeholder="Search and select team codes..."
-            classNamePrefix="custom-select"
-            className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
-              state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-            }`}
-            styles={{
-              menuList: base => ({
-                ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
-              }),
-            }}
+            labelledBy="Select"
           />
         </Col>
 
         <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
-          <Select
-            isMulti
-            isSearchable
-            closeMenuOnSelect={false}
-            hideSelectedOptions={false}
-            blurInputOnSelect={false}
+          <MultiSelect
+            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
             options={state.colorOptions}
             value={state.selectedColors}
             onChange={handleSelectColorChange}
-            components={{
-              Option: CheckboxOption,
-              MenuList: CustomMenuList,
-            }}
-            placeholder="Select color filters..."
-            classNamePrefix="custom-select"
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
-            styles={{
-              menuList: base => ({
-                ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
-              }),
-            }}
           />
         </Col>
       </Row>
