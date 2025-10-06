@@ -11,10 +11,10 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
-TOP_CONVERTED: (limit, startDate, endDate) =>
-`${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
-LEAST_CONVERTED: (limit, startDate, endDate) =>
-`${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+  TOP_CONVERTED: (limit, startDate, endDate) =>
+    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+  LEAST_CONVERTED: (limit, startDate, endDate) =>
+    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
@@ -117,10 +117,9 @@ LEAST_CONVERTED: (limit, startDate, endDate) =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
-      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+    ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
-      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -165,6 +164,14 @@ LEAST_CONVERTED: (limit, startDate, endDate) =>
 
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
+
+  MONTHS_PLEDGED: (startDate, endDate, roles) => {
+    let url = `${APIEndpoint}/analytics/months-pledged?`;
+    if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
+    if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
+    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    return url;
+  },
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
@@ -389,7 +396,13 @@ LEAST_CONVERTED: (limit, startDate, endDate) =>
 
   LB_LISTINGS: `${APIEndpoint}/lb/getListings`,
   LB_LISTINGS_BASE: `${APIEndpoint}/lb`,
+  LB_LISTING_GET_BY_ID: `${APIEndpoint}/lb/listing/getById`,
+  LB_LISTING_AVAILABILITY: `${APIEndpoint}/lb/listing/availability`,
+  LB_LISTING_BOOK: `${APIEndpoint}/lb/listing/availability/booking`,
   HELP_CATEGORIES: `${APIEndpoint}/help-categories`,
+
+  // job analytics
+  HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
 
   // Saved Filters endpoints
   SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
