@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   LineChart,
   Line,
@@ -10,23 +11,25 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
+import styles from './CostPredictionChart.module.css';
 import projectCostService from '../../../services/projectCostService';
 
-// Custom dot renderer to show value above the top line and below the bottom line
+// Custom dot renderer (unchanged)
 function renderDotTopOrBottom(lineKey, color) {
   return function CustomDot(props) {
     const { cx, cy, value, payload, index } = props;
     if (value == null) return null;
-    // Get all three values for this x-position
+
     const planned = payload.plannedCost;
     const actual = payload.actualCost;
     const predicted = payload.predictedCost;
-    const values = [planned, actual, predicted].filter(v => v !== null && v !== undefined);
+    const values = [planned, actual, predicted].filter(v => v != null);
     if (values.length === 0) return null;
+
     const max = Math.max(...values);
     const min = Math.min(...values);
-    const dx = index === 0 ? 32 : 0; // shift more right for first value
-    // Only render if this line is the top or bottom at this x
+    const dx = index === 0 ? 32 : 0;
+
     if (value === max) {
       return (
         <text
@@ -62,31 +65,33 @@ function renderDotTopOrBottom(lineKey, color) {
 }
 
 function CostPredictionChart({ projectId }) {
+  const dispatch = useDispatch();
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const legendItems = [
+    { label: 'Planned Cost', color: '#7acba6', type: 'circle' },
+    { label: 'Actual Cost', color: '#9aa6ff', type: 'circle' },
+    { label: 'Predicted Cost', color: '#ff8c2a', type: 'dash' },
+  ];
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch both costs and predictions
         const [costsResponse, predictionsResponse] = await Promise.all([
           projectCostService.getProjectCosts(projectId),
           projectCostService.getProjectPredictions(projectId),
         ]);
 
-        // Combine costs and predictions data
         const costsData = costsResponse.data.costs;
         const predictionsData = predictionsResponse.data.predictions;
 
-        // Create a map of predictions by month
         const predictionsMap = predictionsData.reduce((acc, pred) => {
           acc[pred.month] = pred.predictedCost;
           return acc;
         }, {});
 
-        // Combine the data
         const combinedData = costsData.map(cost => ({
           ...cost,
           predictedCost: predictionsMap[cost.month] || null,
@@ -94,65 +99,107 @@ function CostPredictionChart({ projectId }) {
 
         setChartData(combinedData);
         setError(null);
-      } catch (err) {
-        // console.error('Error fetching project costs:', err);
+      } catch {
         setError('Failed to load project cost data');
       } finally {
         setLoading(false);
       }
     };
 
-    if (projectId) {
-      fetchData();
-    }
+    if (projectId) fetchData();
   }, [projectId]);
 
-  if (loading) {
-    return <div>Loading chart data...</div>;
-  }
+  if (loading) return <div>Loading chart data...</div>;
+  if (error) return <div>Error: {error}</div>;
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  const currentMonth = new Date().toLocaleString('default', {
+    month: 'long',
+    year: 'numeric',
+  });
 
-  // Get current month for reference line
-  const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-
+  // THEME COLORS — only for grid, axis ticks/lines, legend
+  const gridColor = darkMode ? '#e5e7eb' : '#9ca3af'; // grid lines
+  const tickColor = darkMode ? '#e5e7eb' : '#9ca3af'; // tick text
+  const axisLineCol = darkMode ? '#e5e7eb' : '#9ca3af'; // axis baseline & tick marks
+  const legendColor = darkMode ? '#e5e7eb' : '#9ca3af'; // legend text
+  console.log('ticl', tickColor);
   return (
-    <div style={{ width: '100%', height: '100%', padding: '20px' }}>
-      <h2
-        style={{
-          textAlign: 'center',
-          marginBottom: '40px',
-          fontSize: '24px',
-          fontWeight: 'normal',
-        }}
-      >
-        Planned Vs Actual costs tracking
-      </h2>
+    <div className={styles.titleContainer}>
+      <h2 className={styles.title}>Planned Vs Actual costs tracking</h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis dataKey="month" tick={{ fill: '#666' }} tickSize={10} />
-          <YAxis tick={{ fill: '#666' }} tickSize={10} domain={[0, 'auto']} />
+          {/* Grid */}
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={gridColor}
+            vertical
+            horizontal
+            verticalFill={[]}
+            horizontalFill={[]}
+          />
+          {/* Axes: tick text, tick marks, baseline lines */}
+          <XAxis
+            dataKey="month"
+            tick={({ x, y, payload }) => (
+              <text
+                x={x}
+                y={y + 15} // push text down so it doesn’t overlap axis line
+                textAnchor="middle"
+                fill={darkMode ? '#e5e7eb' : '#9ca3af'}
+              >
+                {payload.value}
+              </text>
+            )}
+            tickMargin={0} // apply margin at XAxis level, not inside <text>
+          />
+          <YAxis
+            tick={({ x, y, payload }) => (
+              <text x={x} y={y} textAnchor="end" fill={darkMode ? '#e5e7eb' : '#9ca3af'}>
+                {payload.value}
+              </text>
+            )}
+          />
+          {/* Tooltip & Legend */}
           <Tooltip />
           <Legend
             verticalAlign="bottom"
-            height={36}
-            wrapperStyle={{
-              paddingTop: '20px',
-            }}
+            height={48}
+            wrapperStyle={{ paddingTop: 10 }}
+            content={() => (
+              <ul className={styles.legendList}>
+                {legendItems.map(item => (
+                  <li key={item.label} className={styles.legendListItem}>
+                    {/* icon */}
+                    {item.type === 'circle' ? (
+                      <span className={styles.legendItem} />
+                    ) : (
+                      <svg width="18" height="12">
+                        <line
+                          x1="0"
+                          y1="6"
+                          x2="18"
+                          y2="6"
+                          stroke={item.color}
+                          strokeWidth="3"
+                          strokeDasharray="4 4"
+                        />
+                      </svg>
+                    )}
+                    {/* label */}
+                    <span style={{ color: item.color }}>{item.label}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           />
+          {/* Reference line (kept fixed color) */}
           <ReferenceLine
             x={currentMonth}
             stroke="#ff0000"
             strokeDasharray="3 3"
-            label={{
-              value: 'Current Month',
-              position: 'top',
-              fill: '#ff0000',
-            }}
+            label={{ value: 'Current Month', position: 'top', fill: '#fc07cfff' }}
           />
+          {/* Series (kept fixed colors) */}
           <Line
             type="monotone"
             dataKey="plannedCost"
