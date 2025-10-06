@@ -165,6 +165,14 @@ export const ENDPOINTS = {
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
 
+  MONTHS_PLEDGED: (startDate, endDate, roles) => {
+    let url = `${APIEndpoint}/analytics/months-pledged?`;
+    if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
+    if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
+    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    return url;
+  },
+
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
 

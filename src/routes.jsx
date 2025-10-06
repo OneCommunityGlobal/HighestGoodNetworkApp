@@ -229,6 +229,9 @@ const BlueSquareEmailManagement = lazy(() =>
 );
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
+const MonthsPledgedChart = lazy(() =>
+  import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
+);
 
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
@@ -552,6 +555,7 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+        <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
         <ProtectedRoute
           path="/jobanalytics"
           exact
