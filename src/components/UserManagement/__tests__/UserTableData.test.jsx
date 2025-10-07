@@ -21,7 +21,7 @@ const jaeAccountMock = {
     iat: 1597272666,
     userid: '1',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -41,7 +41,7 @@ const nonJaeAccountMock = {
     iat: 1597272666,
     userid: '2',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -62,7 +62,7 @@ const ownerAccountMock = {
     iat: 1597272666,
     userid: '3',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Owner',
@@ -106,7 +106,7 @@ describe('User Table Data: Non-Jae related Account', () => {
         roles: [
           {
             roleName: nonJaeAccountMock.role,
-            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+            permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
           },
         ],
       },
@@ -259,7 +259,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
         roles: [
           {
             roleName: jaeAccountMock.role,
-            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+            permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
           },
         ],
       },
