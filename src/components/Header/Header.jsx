@@ -49,10 +49,11 @@ import {
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
   PR_PROMOTIONS,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
-import './Header.css';
+// import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
   getUnreadUserNotifications,
@@ -64,6 +65,7 @@ import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
 import PermissionWatcher from '../Auth/PermissionWatcher';
 import DisplayBox from '../PRPromotions/DisplayBox';
+import styles from './Header.module.css';
 
 export function Header(props) {
   const location = useLocation();
@@ -146,6 +148,9 @@ export function Header(props) {
     props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+  
+  // Blue Square Email Management
+  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -350,21 +355,21 @@ export function Header(props) {
     };
   }, [isOpen]);
 
-  const fontColor = darkMode ? 'dark-dropdown-text dark-dropdown-item' : 'mobile-dropdown-text mobile-dropdown-item';
+  const fontColor = darkMode ? `${styles.darkDropdownText} ${styles.darkDropdownItem}` : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
   if (location.pathname === '/login') return null;
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+    <div className={`${styles.headerWrapper} ${darkMode ? ' dark-mode' : ''}`} data-testid="header">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && 
         (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
         {isAuthenticated && <Timer darkMode={darkMode} />}
         
         {/* ITEM SHOWS OUTSIDE OF THE DROPDOWN IN MOBILE */}
-        <div className="show-in-mobile ml-auto mr-3">
+        <div className={`${styles.showInMobile} ml-auto mr-3`}>
           <BellNotification userId={displayUserId}/>
         </div>
         {/* --------------------------------------------- */}
@@ -376,12 +381,12 @@ export function Header(props) {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar innerRef={collapseRef}>
             {isAuthenticated && (
-              <div className="navbar-owner-message">
+              <div className={styles.navbarOwnerMessage}>
                 <OwnerMessage />
               </div>
             )}
-            <Nav className="ml-auto menu-container mr-3" navbar>
-              <NavItem className="show-in-mobile">
+            <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
+              <NavItem className={styles.showInMobile}>
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
@@ -391,13 +396,13 @@ export function Header(props) {
                   />
                 </NavLink>
               </NavItem>
-              <UncontrolledDropdown nav inNavbar className="show-in-mobile">
+              <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
                   <DropdownToggle nav caret>
                     <span>
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu className={`no-max-height ${darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'}`}>
+                  <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                     <DropdownItem
                       tag={Link}
                       to={`/userprofile/${displayUserId}`}
@@ -429,12 +434,12 @@ export function Header(props) {
                 {canUpdateTask && (
                   <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions">
-                      <div className="redBackGroupHeader hide-in-mobile">
+                      <div className={`${styles.redBackGroupHeader} ${styles.hideInMobile}`}>
                         <span>{props.taskEditSuggestionCount}</span>
                       </div>
 
                       {/* --- MOBILE VIEW ONLY --- */}
-                      <span className='show-in-mobile'>Task Edit Suggestion ({props.taskEditSuggestionCount})</span>
+                      <span className={styles.showInMobile}>Task Edit Suggestion ({props.taskEditSuggestionCount})</span>
                       {/* ------------------- */}
                     </NavLink>
                   </NavItem>
@@ -455,7 +460,7 @@ export function Header(props) {
                     <DropdownToggle nav caret>
                       <span>{PROJECTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={`no-max-height ${darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'}`}>
+                    <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       <DropdownItem
                         tag={Link}
                         to="/bmdashboard/materials/add"
@@ -508,7 +513,7 @@ export function Header(props) {
                     <DropdownToggle nav caret>
                       <span>{REPORTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className= {`no-max-height ${darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'}`}>
+                    <DropdownMenu className= {`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       {canGetReports && (
                         <DropdownItem tag={Link} to="/reports" className={fontColor}>
                           {REPORTS}
@@ -542,7 +547,7 @@ export function Header(props) {
                 ) : (
                   <NavItem>
                     <NavLink tag={Link} to="/teamlocations">
-                      <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
+                      <span>{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
@@ -552,12 +557,13 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
-                  canAccessPermissionsManagement) && (
+                  canAccessPermissionsManagement ||
+                  canAccessBlueSquareEmailManagement) && (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                       <span>{OTHER_LINKS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={`no-max-height ${darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'}`}>
+                    <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
                       {canAccessUserManagement && (
                         <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                           {USER_MANAGEMENT}
@@ -585,7 +591,7 @@ export function Header(props) {
                       )}
                       {canAccessPermissionsManagement && (
                         <>
-                          <DropdownItem divider className="hide-in-mobile"/>
+                          <DropdownItem divider className={styles.hideInMobile}/>
                           <DropdownItem
                             tag={Link}
                             to="/permissionsmanagement"
@@ -595,17 +601,26 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
-                      <DropdownItem divider className="hide-in-mobile" />
+                      <DropdownItem divider className={styles.hideInMobile} />
                       <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
                         PR Team Analytics
                       </DropdownItem>
+                      {canAccessBlueSquareEmailManagement && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bluesquare-email-management"
+                          className={fontColor}
+                        >
+                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                        </DropdownItem>
+                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem className="hide-in-mobile">
+                <NavItem className={styles.hideInMobile}>
                   <BellNotification userId={displayUserId}/>
                 </NavItem>
-                <NavItem className="hide-in-mobile">
+                <NavItem className={styles.hideInMobile}>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <div
                       style={{
@@ -622,14 +637,14 @@ export function Header(props) {
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav className="hide-in-mobile">
+                <UncontrolledDropdown nav className={styles.hideInMobile}>
                   <DropdownToggle nav caret>
                     <span>
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu className={`no-max-height ${darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'}`}>
-                    <DropdownItem header className={darkMode ? 'text-custom-grey' : 'mobile-dropdown-text'}>
+                  <DropdownMenu className={`${styles.noMaxHeight} ${darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown}`}>
+                    <DropdownItem header className={darkMode ? 'text-custom-grey' : styles.mobileDropdownText}>
                       Hello {firstName}
                     </DropdownItem>
                     <DropdownItem divider />
@@ -703,12 +718,12 @@ export function Header(props) {
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className="headerCard">
+        <div className={`${darkMode ? 'bg-oxford-blue' : ''} ${styles.cardWrapper}`}>
+          <Card color="primary" className={styles.headerCard}>
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>
-            <div className="card-content">{modalContent}</div>
+            <div className={`${styles.cardContent}`}>{modalContent}</div>
           </Card>
         </div>
       )}
@@ -716,7 +731,7 @@ export function Header(props) {
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
-      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
+      <div className={darkMode ? styles.headerMargin : styles.headerMarginLight} />
     </div>
   );
 }

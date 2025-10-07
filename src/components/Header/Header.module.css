@@ -1,25 +1,10 @@
 /* General Styling */
-.header-wrapper {
+.headerWrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
-/*
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px;
-} */
-/* Timer Message Section - used */
-/* NOTE: available in development */
-/* .timer-message-section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 1rem;
-} */
 
-.card-content {
+.cardContent {
   padding: 15px;
   padding-left: 40px;
   padding-right: 40px; /* Match left padding for balance */
@@ -48,7 +33,7 @@
   right: 0;
 }
 
-.card-wrapper {
+.cardWrapper {
   padding-top: 1rem;
   padding-bottom: 1rem;
   /* Ensure wrapper uses full width */
@@ -64,14 +49,6 @@
   white-space: nowrap;
 }
 
-/* .timer-message-section {
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  gap: 1rem;
-} */
 
 .redBackGroupHeader {
   z-index: 10;
@@ -90,7 +67,7 @@
   min-width: 29px;
 }
 
-.navbar-owner-message {
+.navbarOwnerMessage {
   flex: 1;
   text-align: center;
   justify-content: center;
@@ -98,103 +75,96 @@
   padding-right: 20px;
 }
 
-.menu-container {
+.menuContainer {
   display: flex;
   justify-content: flex-end;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.dashboard-text-link {
+.dashboardTextLink {
   font-size: 16px;
   flex-wrap: nowrap;
   gap: 1rem;
 }
 
-.dark-menu-dropdown {
+.darkMenuDropdown {
   background-color: #3a506b !important;
 }
 
-.dark-dropdown-text {
+.darkDropdownText {
   color: white !important;
 }
 
-.dark-dropdown-item:hover {
+.darkDropdownItem:hover {
   background-color: #2f4157 !important;
 }
 
-.no-max-height {
+.noMaxHeight {
   max-height: none !important;
   overflow: visible !important;
 }
 
-.show-in-mobile {
+.showInMobile {
   display: none;
 }
 
-/* NOTE: available in development */
-/* @media (max-width: 1050px) {
-  .timer-message-section {
-    width: 100%;
-    margin-right: 0;
-  }
-} */
 
 @media (max-width: 1700px) {
-  .navbar-owner-message {
+  .navbarOwnerMessage {
     display: none;
   }
 }
 
 @media screen and (max-width: 1151px) and (min-width: 992px) {
-  .dropdown-menu {
+  .dropdownMenu {
       width: auto !important;
   }
 }
 
 @media screen and (max-width: 1199px) {
-  .menu-container {
+  .menuContainer {
     align-items: start;
     flex-direction: column !important;
     /* width: 100%; */
     padding-left: 50px;
   }
-  .mobile-menu-dropdown {
+  .mobileMenuDropdown {
     background-color: #343a40 !important;
     border: none !important;
   }
-  .mobile-dropdown-text{
+  .mobileDropdownText{
     color: rgba(255, 255, 255, 0.5) !important;
   }
-  .mobile-dropdown-item:hover{
+  .mobileDropdownItem:hover{
     background-color: #343a40 !important;
     color: rgba(255, 255, 255, 0.75) !important;
   }
-  .dark-menu-dropdown {
+  .darkMenuDropdown {
     background-color: #343a40 !important;
     border: none !important;
   }
-  .dark-dropdown-text {
+  .darkDropdownText {
     color: rgba(255, 255, 255, 0.5) !important;
   }
-  .dark-dropdown-item:hover {
+  .darkDropdownItem:hover {
     background-color: #343a40 !important;
     color: rgba(255, 255, 255, 0.75) !important;
   }
-  .hide-in-mobile {
+  .hideInMobile {
     display: none;
   }
-  .show-in-mobile {
+  .showInMobile {
     display: block;
   }
 }
 
-.header-margin {
+.headerMargin {
   height: 20px;
   background-color: #1B2A41;
 }
 
-.header-margin-light {
+.headerMarginLight {
   height: 20px;
   background-color: #fff;
 }
@@ -213,7 +183,7 @@
   }
 
   /* Ensure navbar is compact and font size is correct */
-  /* .navbar {
+  .navbar {
     padding: 0.5rem 1rem !important;
     min-height: auto !important;
     height: auto !important;
@@ -221,16 +191,7 @@
     position: relative !important;
     font-size: 16px !important;
     margin: 0 !important;
-  } */
-
-  /* Ensure navigation links display correctly */
-  /* .nav-links {
-    gap: 0.5rem !important;
-    width: auto !important;
-    font-size: 16px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  } */
+  }
 
   /* Ensure all icons have correct size */
   .navbar img,

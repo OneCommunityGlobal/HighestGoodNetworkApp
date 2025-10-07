@@ -48,7 +48,7 @@ function WishListItem(props) {
   }, [wishlistItem]);
 
   return (
-    <div className="item">
+    <div className="item item_overview_module">
       <div className="item__container">
         <Header />
         <div className="item__overview">

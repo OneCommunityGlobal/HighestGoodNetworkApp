@@ -366,14 +366,14 @@ p {
     font-size: 16px;
     margin-bottom: 0;
   }
-  /* Conflict with Header css, affected globally */
-  /* .navbar-nav {
+
+  .item_overview_module .navbar-nav {
     display: flex;
     flex-direction: row !important;
     padding-left: 0;
     margin-bottom: 0;
     list-style: none;
-  } */
+  }
   .item__overview {
     flex-direction: column;
     align-items: center;

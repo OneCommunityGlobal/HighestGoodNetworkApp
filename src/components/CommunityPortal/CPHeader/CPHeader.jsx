@@ -48,7 +48,7 @@ import {
 } from '../../../languages/en/ui';
 import Logout from '../../Logout/Logout';
 // import './CPHeader.css';
-import '../../Header/Header.css';
+import styles from '../../Header/Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
 
 export function Header(props) {
@@ -195,18 +195,18 @@ export function Header(props) {
   }, [isOpen]);
 
   const fontColor = darkMode
-    ? 'dark-dropdown-text dark-dropdown-item'
-    : 'mobile-dropdown-text mobile-dropdown-item';
+    ? `${styles.darkDropdownText} ${styles.darkDropdownItem}`
+    : `${styles.mobileDropdownText} ${styles.mobileDropdownItem}`;
 
   return (
-    <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="md">
+    <div className={styles.headerWrapper}>
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         {isAuthenticated && <Timer />}
 
         {/* ITEM SHOWS OUTSIDE OF THE DROPDOWN IN MOBILE */}
-        <div className="show-in-mobile ml-auto mr-3">
+        <div className={`${styles.showInMobile} ml-auto mr-3`}>
           <BellNotification userId={displayUserId} />
         </div>
         {/* --------------------------------------------- */}
@@ -218,13 +218,13 @@ export function Header(props) {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar innerRef={collapseRef}>
             {isAuthenticated && (
-              <div className="navbar-owner-message">
+              <div className={styles.navbarOwnerMessage}>
                 <OwnerMessage />
               </div>
             )}
-            <Nav className="ml-auto menu-container mr-3" navbar>
+            <Nav className={`ml-auto ${styles.menuContainer} mr-3`} navbar>
               {/* --PROFILE SHOWS ON TOP IN MOBILE VIEW */}
-              <NavItem className="show-in-mobile">
+              <NavItem className={styles.showInMobile}>
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
@@ -234,15 +234,15 @@ export function Header(props) {
                   />
                 </NavLink>
               </NavItem>
-              <UncontrolledDropdown nav inNavbar className="show-in-mobile">
+              <UncontrolledDropdown nav inNavbar className={styles.showInMobile}>
                 <DropdownToggle nav caret>
                   <span>
                     {WELCOME}, {firstName}
                   </span>
                 </DropdownToggle>
                 <DropdownMenu
-                  className={`no-max-height ${
-                    darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'
+                  className={`${styles.noMaxHeight} ${
+                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                   }`}
                 >
                   <DropdownItem
@@ -274,11 +274,11 @@ export function Header(props) {
               {canUpdateTask && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">
-                    <div className="redBackGroupHeader hide-in-mobile">
+                    <div className={`${styles.redBackGroupHeader} ${styles.hideInMobile}`}>
                       <span>{props.taskEditSuggestionCount}</span>
                     </div>
                     {/* --- MOBILE VIEW ONLY --- */}
-                    <span className="show-in-mobile">
+                    <span className={styles.showInMobile}>
                       Task Edit Suggestion ({props.taskEditSuggestionCount})
                     </span>
                     {/* ------------------- */}
@@ -295,8 +295,8 @@ export function Header(props) {
                   <span>{ACTIVITY}</span>
                 </DropdownToggle>
                 <DropdownMenu
-                  className={`no-max-height ${
-                    darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'
+                  className={`${styles.noMaxHeight} ${
+                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                   }`}
                 >
                   <DropdownItem tag={Link} to="/communityportal/activities" className={fontColor}>
@@ -321,8 +321,8 @@ export function Header(props) {
                   <span>{REPORTS}</span>
                 </DropdownToggle>
                 <DropdownMenu
-                  className={`no-max-height ${
-                    darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'
+                  className={`${styles.noMaxHeight} ${
+                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                   }`}
                 >
                   <DropdownItem
@@ -348,7 +348,7 @@ export function Header(props) {
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
-              <NavItem className="hide-in-mobile">
+              <NavItem className={styles.hideInMobile}>
                 <BellNotification userId={displayUserId} />
               </NavItem>
               {(canAccessUserManagement ||
@@ -363,8 +363,8 @@ export function Header(props) {
                     <span>{OTHER_LINKS}</span>
                   </DropdownToggle>
                   <DropdownMenu
-                    className={`no-max-height ${
-                      darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'
+                    className={`${styles.noMaxHeight} ${
+                      darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                     }`}
                   >
                     {canAccessUserManagement ? (
@@ -394,7 +394,7 @@ export function Header(props) {
                     )}
                     {canAccessPermissionsManagement && (
                       <>
-                        <DropdownItem divider className="hide-in-mobile" />
+                        <DropdownItem divider className={styles.hideInMobile} />
                         <DropdownItem tag={Link} to="/permissionsmanagement" className={fontColor}>
                           {PERMISSIONS_MANAGEMENT}
                         </DropdownItem>
@@ -403,7 +403,7 @@ export function Header(props) {
                   </DropdownMenu>
                 </UncontrolledDropdown>
               )}
-              <NavItem className="hide-in-mobile">
+              <NavItem className={styles.hideInMobile}>
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
                     src={`${profilePic || '/pfp-default-header.png'}`}
@@ -413,15 +413,15 @@ export function Header(props) {
                   />
                 </NavLink>
               </NavItem>
-              <UncontrolledDropdown nav className="hide-in-mobile">
+              <UncontrolledDropdown nav className={styles.hideInMobile}>
                 <DropdownToggle nav caret>
                   <span>
                     {WELCOME}, {firstName}
                   </span>
                 </DropdownToggle>
                 <DropdownMenu
-                  className={`no-max-height ${
-                    darkMode ? 'dark-menu-dropdown' : 'mobile-menu-dropdown'
+                  className={`${styles.noMaxHeight} ${
+                    darkMode ? styles.darkMenuDropdown : styles.mobileMenuDropdown
                   }`}
                 >
                   <DropdownItem header className={fontColor}>
