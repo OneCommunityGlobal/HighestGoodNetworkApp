@@ -24,7 +24,15 @@ export const availableSkills = [
   'AgileDevelopment',
 ];
 
-export const availablePreferences = ['Design', 'Backend', 'Frontend', 'Management', 'Testing'];
+export const availablePreferences = [
+  'Design',
+  'Backend',
+  'Frontend',
+  'Management',
+  'Testing',
+  'Deployment',
+  'No Preference',
+];
 
 export const formatSkillName = key => {
   switch (key) {
