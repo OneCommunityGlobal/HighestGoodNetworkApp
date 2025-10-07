@@ -20,8 +20,14 @@ import { ENDPOINTS } from '../../utils/URL';
 import { useSelector } from 'react-redux';
 import styles from './PopularityTimelineChart.module.css';
 
+// ✅ format helper (local, not UTC)
+const formatForQuery = date => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`; // e.g., 2024-09
+};
+
 const fetchPopularityData = async ({ range, roleValues = [], start, end }) => {
-  // `roleValues` is an array of strings (role names)
   return axios.get(ENDPOINTS.POPULARITY(range, roleValues, start, end)).then(res => res.data);
 };
 
@@ -46,7 +52,6 @@ const MONTH_NAMES = [
 ];
 
 const parseMonthString = monthStr => {
-  // Accepts "January 2024" or "Jan 2024"
   if (!monthStr) return null;
   const parts = monthStr.split(' ');
   if (parts.length < 2) return null;
@@ -59,24 +64,23 @@ const parseMonthString = monthStr => {
   return new Date(year, monthIndex);
 };
 
-const formatMonth = date => date.toLocaleString('default', { month: 'short', year: 'numeric' }); // e.g. "Oct 2025"
+const formatMonth = date => date.toLocaleString('default', { month: 'short', year: 'numeric' });
 
 const PopularityTimelineChart = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
-
   const timeRangeId = useId();
   const roleFilterId = useId();
   const startDateId = useId();
   const endDateId = useId();
 
-  const [range, setRange] = useState('12'); // number of months when using presets
+  const [range, setRange] = useState('12');
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [allRoles, setAllRoles] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [dateRangeOption, setDateRangeOption] = useState('12months');
+  const [error, setError] = useState('');
 
-  // get roles
   const { data: rolesData } = useQuery({
     queryKey: ['allRoles'],
     queryFn: fetchAllRoles,
@@ -86,35 +90,28 @@ const PopularityTimelineChart = () => {
     if (rolesData) setAllRoles(rolesData);
   }, [rolesData]);
 
-  // stable array of role strings for query key & request
   const selectedRoleValues = React.useMemo(() => selectedRoles.map(r => r.value), [selectedRoles]);
 
-  const startISO = startDate ? startDate.toISOString() : null;
-  const endISO = endDate ? endDate.toISOString() : null;
-
-  const { data: chartData, isLoading, error } = useQuery({
-    queryKey: ['popularityData', range, selectedRoleValues.join(','), startISO, endISO],
+  const { data: chartData, isLoading, error: queryError } = useQuery({
+    queryKey: [
+      'popularityData',
+      range,
+      selectedRoleValues.join(','),
+      startDate ? formatForQuery(startDate) : null,
+      endDate ? formatForQuery(endDate) : null,
+    ],
     queryFn: () =>
       fetchPopularityData({
         range,
         roleValues: selectedRoleValues,
-        start: startDate
-          ? `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}`
-          : null,
-        end: endDate
-          ? `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}`
-          : null,
+        start: startDate ? formatForQuery(startDate) : null,
+        end: endDate ? formatForQuery(endDate) : null,
       }),
     keepPreviousData: false,
   });
 
-  // build processedData:
-  // - parse date/timestamp (front-end parsing if backend returns month strings),
-  // - aggregate by month (sum hits & applications),
-  // - for preset ranges fill in missing months with zero counts so X-axis is stable.
   const processedData = React.useMemo(() => {
     if (!chartData || chartData.length === 0) {
-      // if preset range, still produce last N months with zeros
       if (range && !startDate && !endDate) {
         const monthsCount = parseInt(range, 10);
         const out = [];
@@ -133,7 +130,6 @@ const PopularityTimelineChart = () => {
       return [];
     }
 
-    // Map incoming rows -> { date, hitsCount, applicationsCount }
     const mapped = chartData.map(item => {
       const dateFromTs = item.timestamp ? new Date(item.timestamp) : null;
       const dateFromMonth = item.month ? parseMonthString(item.month) : null;
@@ -145,7 +141,6 @@ const PopularityTimelineChart = () => {
       };
     });
 
-    // Aggregate by month key
     const grouped = {};
     mapped.forEach(({ date, hitsCount, applicationsCount }) => {
       const key = `${date.getFullYear()}-${date.getMonth()}`;
@@ -161,7 +156,6 @@ const PopularityTimelineChart = () => {
         month: formatMonth(v.date),
       }));
 
-    // If user selected a preset range (3/6/12) and no custom dates, ensure we show exactly last N months
     if (range && !startDate && !endDate) {
       const monthsCount = parseInt(range, 10);
       const out = [];
@@ -191,12 +185,33 @@ const PopularityTimelineChart = () => {
     return arr;
   }, [chartData, range, startDate, endDate]);
 
+  const handleStartDateChange = date => {
+    setError('');
+    if (endDate && date && date > endDate) {
+      setError('Start month cannot be later than end month.');
+    } else {
+      setStartDate(date);
+    }
+  };
+
+  const handleEndDateChange = date => {
+    setError('');
+    if (startDate && date && date < startDate) {
+      setError('End month cannot be earlier than start month.');
+    } else {
+      setEndDate(date);
+    }
+  };
+
+  const shouldShowChart = dateRangeOption !== 'custom' || (startDate && endDate);
+
   const resetFilters = () => {
     setRange('12');
     setSelectedRoles([]);
     setStartDate(null);
     setEndDate(null);
     setDateRangeOption('12months');
+    setError('');
   };
 
   return (
@@ -220,10 +235,10 @@ const PopularityTimelineChart = () => {
                 setDateRangeOption(value);
 
                 if (value !== 'custom') {
-                  // Clear custom dates when switching away — this was the root cause
                   setStartDate(null);
                   setEndDate(null);
                   setRange(value.replace('months', ''));
+                  setError('');
                 }
               }}
               className={styles['pt-select']}
@@ -246,7 +261,7 @@ const PopularityTimelineChart = () => {
                   <DatePicker
                     id={startDateId}
                     selected={startDate}
-                    onChange={date => setStartDate(date)}
+                    onChange={handleStartDateChange}
                     selectsStart
                     startDate={startDate}
                     endDate={endDate}
@@ -255,7 +270,6 @@ const PopularityTimelineChart = () => {
                     showMonthYearPicker
                     isClearable
                     className={styles['pt-date-picker']}
-                    // apply module popper class and when in dark mode also add global class used by our CSS
                     popperClassName={`${styles['pt-datepicker-popper']} ${
                       darkMode ? 'react-datepicker-dark' : ''
                     }`}
@@ -269,7 +283,7 @@ const PopularityTimelineChart = () => {
                   <DatePicker
                     id={endDateId}
                     selected={endDate}
-                    onChange={date => setEndDate(date)}
+                    onChange={handleEndDateChange}
                     selectsEnd
                     startDate={startDate}
                     endDate={endDate}
@@ -300,22 +314,68 @@ const PopularityTimelineChart = () => {
               options={allRoles}
               value={selectedRoles}
               onChange={setSelectedRoles}
-              placeholder="Select roles..."
-              className={styles['pt-multiselect']}
-              classNamePrefix="pt-select"
+              placeholder="All Roles"
+              classNamePrefix="months-pledged-chart__select"
               styles={{
-                control: base => ({
-                  ...base,
+                control: provided => ({
+                  ...provided,
+                  backgroundColor: darkMode ? '#3A506B' : 'white',
+                  borderColor: darkMode ? '#444' : '#ccc',
+                  color: darkMode ? '#E0E0E0' : '#000',
                   minHeight: '38px',
-                  borderRadius: '4px',
-                  borderColor: darkMode ? '#555' : '#ddd',
-                  backgroundColor: darkMode ? '#333' : 'white',
-                  color: darkMode ? '#fff' : '#2c3e50',
+                  boxShadow: 'none',
+                  '&:hover': { borderColor: darkMode ? '#666' : '#999' },
                 }),
-                menu: base => ({
-                  ...base,
-                  backgroundColor: darkMode ? '#2d3748' : 'white',
-                  color: darkMode ? '#e2e8f0' : '#2c3e50',
+                input: provided => ({ ...provided, color: darkMode ? '#E0E0E0' : '#000' }),
+                placeholder: provided => ({
+                  ...provided,
+                  color: darkMode ? '#B0B0B0' : '#666',
+                  opacity: 0.8,
+                }),
+                singleValue: provided => ({ ...provided, color: darkMode ? '#E0E0E0' : '#000' }),
+                multiValue: provided => ({
+                  ...provided,
+                  backgroundColor: darkMode ? '#444' : '#e0e0e0',
+                  color: darkMode ? '#E0E0E0' : '#000',
+                  borderRadius: '4px',
+                  padding: '2px 4px',
+                }),
+                multiValueLabel: provided => ({
+                  ...provided,
+                  color: darkMode ? '#E0E0E0' : '#000',
+                  fontWeight: 500,
+                }),
+                multiValueRemove: provided => ({
+                  ...provided,
+                  color: darkMode ? '#E0E0E0' : '#000',
+                  ':hover': {
+                    backgroundColor: darkMode ? '#555' : '#ccc',
+                    color: darkMode ? '#fff' : '#000',
+                  },
+                }),
+                menu: provided => ({
+                  ...provided,
+                  backgroundColor: darkMode ? '#2a2a3b' : 'white',
+                  color: darkMode ? '#E0E0E0' : '#000',
+                  zIndex: 100,
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  backgroundColor: state.isFocused
+                    ? darkMode
+                      ? '#444'
+                      : '#f5f5f5'
+                    : darkMode
+                    ? '#2a2a3b'
+                    : 'white',
+                  color: darkMode
+                    ? state.isSelected
+                      ? '#fff'
+                      : '#E0E0E0'
+                    : state.isSelected
+                    ? '#000'
+                    : '#000',
+                  cursor: 'pointer',
                 }),
               }}
             />
@@ -326,11 +386,15 @@ const PopularityTimelineChart = () => {
           </button>
         </div>
 
+        {/* Error Message */}
+        {error && <div className={styles['pt-error']}>{error}</div>}
+        {queryError && <div className={styles['pt-error']}>Error: {queryError.message}</div>}
+
         {/* Chart */}
         {isLoading ? (
           <div className={styles['pt-loading']}>Loading data...</div>
-        ) : error ? (
-          <div className={styles['pt-error']}>Error: {error.message}</div>
+        ) : !shouldShowChart && dateRangeOption === 'custom' ? (
+          <div className={styles['pt-no-data']}>Please select both start and end months</div>
         ) : processedData.length > 0 ? (
           <div className={styles['pt-chart-wrapper']}>
             <ResponsiveContainer width="100%" height={400}>
@@ -357,44 +421,18 @@ const PopularityTimelineChart = () => {
                   tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
                   stroke={darkMode ? '#ccc' : '#333'}
                 />
-                <Tooltip
-                  formatter={value => [value, 'Count']}
-                  labelFormatter={label => `${label}`}
-                  contentStyle={{
-                    borderRadius: '6px',
-                    border: '1px solid #e0e0e0',
-                    backgroundColor: darkMode ? '#333' : '#fff',
-                    color: darkMode ? '#fff' : '#333',
-                  }}
-                />
+                <Tooltip />
                 <Legend verticalAlign="top" height={36} iconType="circle" iconSize={10} />
-                <Line
-                  dataKey="hitsCount"
-                  name="Hits"
-                  stroke="#3366cc"
-                  strokeWidth={2}
-                  dot={{ r: 3 }}
-                  activeDot={{ r: 5 }}
-                >
-                  <LabelList
-                    dataKey="hitsCount"
-                    position="top"
-                    style={{ fill: darkMode ? '#e2e8f0' : '#333', fontSize: 11 }}
-                  />
+                <Line dataKey="hitsCount" name="Hits" stroke="#3366cc" strokeWidth={2}>
+                  <LabelList dataKey="hitsCount" position="top" />
                 </Line>
                 <Line
                   dataKey="applicationsCount"
                   name="Applications"
                   stroke="#109618"
                   strokeWidth={2}
-                  dot={{ r: 3 }}
-                  activeDot={{ r: 5 }}
                 >
-                  <LabelList
-                    dataKey="applicationsCount"
-                    position="top"
-                    style={{ fill: darkMode ? '#e2e8f0' : '#333', fontSize: 11 }}
-                  />
+                  <LabelList dataKey="applicationsCount" position="top" />
                 </Line>
               </LineChart>
             </ResponsiveContainer>

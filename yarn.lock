@@ -2030,9 +2030,13 @@
 
 "@tanstack/query-core@5.90.2":
   version "5.90.2"
+  resolved "https://registry.npmjs.org/@tanstack/query-core/-/query-core-5.90.2.tgz"
+  integrity sha512-k/TcR3YalnzibscALLwxeiLUub6jN5EDLwKDiO7q5f4ICEoptJ+n9+7vcEFy5/x/i6Q+Lb/tXrsKCggf5uQJXQ==
 
 "@tanstack/react-query@^5.85.3":
   version "5.90.2"
+  resolved "https://registry.npmjs.org/@tanstack/react-query/-/react-query-5.90.2.tgz"
+  integrity sha512-CLABiR+h5PYfOWr/z+vWFt5VsOA2ekQeRQBFSKlcoW6Ndx/f8rfyVmq4LbgOM4GG2qtxAxjLYLOpCNTYm4uKzw==
   dependencies:
     "@tanstack/query-core" "5.90.2"
 
@@ -2863,6 +2867,8 @@ ansi-escapes@^4.3.2:
 
 ansi-escapes@^7.0.0:
   version "7.1.1"
+  resolved "https://registry.npmjs.org/ansi-escapes/-/ansi-escapes-7.1.1.tgz"
+  integrity sha512-Zhl0ErHcSRUaVfGUeUdDuLgpkEo8KIFjB4Y9uAc46ScOpdDiU1Dbyplh7qWJeJ/ZHpbyMSM26+X3BySgnIz40Q==
   dependencies:
     environment "^1.0.0"
 
@@ -2873,6 +2879,8 @@ ansi-regex@^5.0.0, ansi-regex@^5.0.1:
 
 ansi-regex@^6.0.1:
   version "6.2.2"
+  resolved "https://registry.npmjs.org/ansi-regex/-/ansi-regex-6.2.2.tgz"
+  integrity sha512-Bq3SmSpyFHaWjPk8If9yc6svM8c56dB5BAtW4Qbw5jHTwwXXcTLoRMkpDJp6VL0XzlWaCHTXrkFURMYmD0sLqg==
 
 ansi-styles@^3.2.1:
   version "3.2.1"
@@ -2900,6 +2908,8 @@ ansi-styles@^5.2.0:
 
 ansi-styles@^6.2.1:
   version "6.2.3"
+  resolved "https://registry.npmjs.org/ansi-styles/-/ansi-styles-6.2.3.tgz"
+  integrity sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==
 
 anymatch@^3.0.3:
   version "3.1.3"
@@ -3581,11 +3591,15 @@ classnames@^2.2.3, classnames@^2.2.5, classnames@^2.2.6, classnames@^2.3.1:
 
 cli-cursor@^5.0.0:
   version "5.0.0"
+  resolved "https://registry.npmjs.org/cli-cursor/-/cli-cursor-5.0.0.tgz"
+  integrity sha512-aCj4O5wKyszjMmDT4tZj93kxyydN/K5zPWSCe6/0AV/AA1pqe5ZBIw0a2ZfPQV7lL5/yb5HsUreJ6UFAF1tEQw==
   dependencies:
     restore-cursor "^5.0.0"
 
 cli-truncate@^5.0.0:
   version "5.1.0"
+  resolved "https://registry.npmjs.org/cli-truncate/-/cli-truncate-5.1.0.tgz"
+  integrity sha512-7JDGG+4Zp0CsknDCedl0DYdaeOhc46QNpXi3NLQblkZpXXgA6LncLDUUyvrjSvZeF3VRQa+KiMGomazQrC1V8g==
   dependencies:
     slice-ansi "^7.1.0"
     string-width "^8.0.0"
@@ -3640,6 +3654,8 @@ color-name@1.1.3:
 
 colorette@^2.0.20:
   version "2.0.20"
+  resolved "https://registry.npmjs.org/colorette/-/colorette-2.0.20.tgz"
+  integrity sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==
 
 combined-stream@^1.0.8:
   version "1.0.8"
@@ -3650,6 +3666,8 @@ combined-stream@^1.0.8:
 
 commander@^14.0.1:
   version "14.0.1"
+  resolved "https://registry.npmjs.org/commander/-/commander-14.0.1.tgz"
+  integrity sha512-2JkV3gUZUVrbNA+1sjBOYLsMZ5cEEl8GTFP2a4AVz5hvasAMCQ1D2l2le/cX+pV4N6ZU17zjUahLpIXRrnWL8A==
 
 commander@^2.20.0:
   version "2.20.3"
@@ -4425,6 +4443,8 @@ elliptic@^6.5.3, elliptic@^6.5.5, elliptic@^6.6.1:
 
 emoji-regex@^10.3.0:
   version "10.5.0"
+  resolved "https://registry.npmjs.org/emoji-regex/-/emoji-regex-10.5.0.tgz"
+  integrity sha512-lb49vf1Xzfx080OKA0o6l8DQQpV+6Vg95zyCJX9VB/BqKYlhG7N4wgROUUHRA+ZPUefLnteQOad7z1kT2bV7bg==
 
 emoji-regex@^8.0.0:
   version "8.0.0"
@@ -4474,6 +4494,8 @@ entities@^6.0.0:
 
 environment@^1.0.0:
   version "1.1.0"
+  resolved "https://registry.npmjs.org/environment/-/environment-1.1.0.tgz"
+  integrity sha512-xUtoPkMggbz0MPyPiIWr1Kp4aeWJjDZ6SMvURhimjdZgsRuDplF5/s9hcgGhyXMhs+6vpnuoiZ2kFiu3FMnS8Q==
 
 error-ex@^1.3.1:
   version "1.3.2"
@@ -4938,6 +4960,8 @@ eventemitter3@^4.0.1:
 
 eventemitter3@^5.0.1:
   version "5.0.1"
+  resolved "https://registry.npmjs.org/eventemitter3/-/eventemitter3-5.0.1.tgz"
+  integrity sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==
 
 events@^3.2.0:
   version "3.3.0"
@@ -5191,6 +5215,8 @@ get-caller-file@^2.0.5:
 
 get-east-asian-width@^1.0.0, get-east-asian-width@^1.3.0, get-east-asian-width@^1.3.1:
   version "1.4.0"
+  resolved "https://registry.npmjs.org/get-east-asian-width/-/get-east-asian-width-1.4.0.tgz"
+  integrity sha512-QZjmEOC+IT1uk6Rx0sX22V6uHWVwbdbxf1faPqJ1QhLdGgsRGCZoyaQBm/piRdJy/D2um6hM1UP7ZEeQ4EkP+Q==
 
 get-intrinsic@^1.2.4, get-intrinsic@^1.2.5, get-intrinsic@^1.2.6, get-intrinsic@^1.2.7, get-intrinsic@^1.3.0:
   version "1.3.0"
@@ -5703,6 +5729,8 @@ is-fullwidth-code-point@^3.0.0:
 
 is-fullwidth-code-point@^5.0.0:
   version "5.1.0"
+  resolved "https://registry.npmjs.org/is-fullwidth-code-point/-/is-fullwidth-code-point-5.1.0.tgz"
+  integrity sha512-5XHYaSyiqADb4RnZ1Bdad6cPp8Toise4TzEjcOYDHZkTCbKgiUl7WTUCpNWHuxmDt91wnsZBc9xinNzopv3JMQ==
   dependencies:
     get-east-asian-width "^1.3.1"
 
@@ -6289,6 +6317,8 @@ lines-and-columns@^1.1.6:
 
 lint-staged@^16.1.5:
   version "16.2.3"
+  resolved "https://registry.npmjs.org/lint-staged/-/lint-staged-16.2.3.tgz"
+  integrity sha512-1OnJEESB9zZqsp61XHH2fvpS1es3hRCxMplF/AJUDa8Ho8VrscYDIuxGrj3m8KPXbcWZ8fT9XTMUhEQmOVKpKw==
   dependencies:
     commander "^14.0.1"
     listr2 "^9.0.4"
@@ -6300,6 +6330,8 @@ lint-staged@^16.1.5:
 
 listr2@^9.0.4:
   version "9.0.4"
+  resolved "https://registry.npmjs.org/listr2/-/listr2-9.0.4.tgz"
+  integrity sha512-1wd/kpAdKRLwv7/3OKC8zZ5U8e/fajCfWMxacUvB79S5nLrYGPtUI/8chMQhn3LQjsRVErTb9i1ECAwW0ZIHnQ==
   dependencies:
     cli-truncate "^5.0.0"
     colorette "^2.0.20"
@@ -6364,6 +6396,8 @@ lodash@^4.17.15, lodash@^4.17.21:
 
 log-update@^6.1.0:
   version "6.1.0"
+  resolved "https://registry.npmjs.org/log-update/-/log-update-6.1.0.tgz"
+  integrity sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==
   dependencies:
     ansi-escapes "^7.0.0"
     cli-cursor "^5.0.0"
@@ -6498,6 +6532,8 @@ mimic-fn@^3.1.0:
 
 mimic-function@^5.0.0:
   version "5.0.1"
+  resolved "https://registry.npmjs.org/mimic-function/-/mimic-function-5.0.1.tgz"
+  integrity sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==
 
 min-indent@^1.0.0:
   version "1.0.1"
@@ -6586,6 +6622,8 @@ mute-stream@^2.0.0:
 
 nano-spawn@^1.0.3:
   version "1.0.3"
+  resolved "https://registry.npmjs.org/nano-spawn/-/nano-spawn-1.0.3.tgz"
+  integrity sha512-jtpsQDetTnvS2Ts1fiRdci5rx0VYws5jGyC+4IYOTnIQ/wwdf6JdomlHBwqC3bJYOvaKu0C2GSZ1A60anrYpaA==
 
 nanoid@^3.3.11:
   version "3.3.11"
@@ -6732,6 +6770,8 @@ once@^1.3.0:
 
 onetime@^7.0.0:
   version "7.0.0"
+  resolved "https://registry.npmjs.org/onetime/-/onetime-7.0.0.tgz"
+  integrity sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==
   dependencies:
     mimic-function "^5.0.0"
 
@@ -6961,6 +7001,8 @@ picomatch@^2.0.4, picomatch@^2.2.3, picomatch@^2.3.1:
 
 pidtree@^0.6.0:
   version "0.6.0"
+  resolved "https://registry.npmjs.org/pidtree/-/pidtree-0.6.0.tgz"
+  integrity sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g==
 
 pirates@^4.0.4:
   version "4.0.7"
@@ -7805,6 +7847,8 @@ resolve@^2.0.0-next.5:
 
 restore-cursor@^5.0.0:
   version "5.1.0"
+  resolved "https://registry.npmjs.org/restore-cursor/-/restore-cursor-5.1.0.tgz"
+  integrity sha512-oMA2dcrw6u0YfxJQXm342bFKX/E4sG9rbTzO9ptUcR/e8A33cHuvStiYOwH7fszkZlZ1z/ta9AAoPk2F4qIOHA==
   dependencies:
     onetime "^7.0.0"
     signal-exit "^4.1.0"
@@ -7816,6 +7860,8 @@ reusify@^1.0.4:
 
 rfdc@^1.4.1:
   version "1.4.1"
+  resolved "https://registry.npmjs.org/rfdc/-/rfdc-1.4.1.tgz"
+  integrity sha512-q1b3N5QkRUWUl7iyylaaj3kOpIT0N2i9MqIEQXP73GVsN9cw3fdx8X63cEmWhJGi2PPCF23Ijp7ktmd39rawIA==
 
 rgbcolor@^1.0.1:
   version "1.0.1"
@@ -8168,6 +8214,8 @@ slash@^3.0.0:
 
 slice-ansi@^7.1.0:
   version "7.1.2"
+  resolved "https://registry.npmjs.org/slice-ansi/-/slice-ansi-7.1.2.tgz"
+  integrity sha512-iOBWFgUX7caIZiuutICxVgX1SdxwAVFFKwt1EvMYYec/NWO5meOJ6K5uQxhrYBdQJne4KxiqZc+KptFOWFSI9w==
   dependencies:
     ansi-styles "^6.2.1"
     is-fullwidth-code-point "^5.0.0"
@@ -8257,6 +8305,8 @@ string_decoder@^1.1.1, string_decoder@~1.1.1:
 
 string-argv@^0.3.2:
   version "0.3.2"
+  resolved "https://registry.npmjs.org/string-argv/-/string-argv-0.3.2.tgz"
+  integrity sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==
 
 string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
@@ -8269,6 +8319,8 @@ string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
 
 string-width@^7.0.0:
   version "7.2.0"
+  resolved "https://registry.npmjs.org/string-width/-/string-width-7.2.0.tgz"
+  integrity sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==
   dependencies:
     emoji-regex "^10.3.0"
     get-east-asian-width "^1.0.0"
@@ -8276,6 +8328,8 @@ string-width@^7.0.0:
 
 string-width@^8.0.0:
   version "8.1.0"
+  resolved "https://registry.npmjs.org/string-width/-/string-width-8.1.0.tgz"
+  integrity sha512-Kxl3KJGb/gxkaUMOjRsQ8IrXiGW75O4E3RPjFIINOVH8AMl2SQ/yWdTzWwF3FevIX9LcMAjJW+GRwAlAbTSXdg==
   dependencies:
     get-east-asian-width "^1.3.0"
     strip-ansi "^7.1.0"
@@ -8357,6 +8411,8 @@ strip-ansi@^6.0.0, strip-ansi@^6.0.1:
 
 strip-ansi@^7.1.0:
   version "7.1.2"
+  resolved "https://registry.npmjs.org/strip-ansi/-/strip-ansi-7.1.2.tgz"
+  integrity sha512-gmBGslpoQJtgnMAvOVqGZpEz9dyoKTCzy2nfz/n8aIFhN/jCE/rCmcxabB6jOOHV+0WNnylOxaxBQPSvcWklhA==
   dependencies:
     ansi-regex "^6.0.1"
 
@@ -9145,6 +9201,8 @@ wrap-ansi@^7.0.0:
 
 wrap-ansi@^9.0.0:
   version "9.0.2"
+  resolved "https://registry.npmjs.org/wrap-ansi/-/wrap-ansi-9.0.2.tgz"
+  integrity sha512-42AtmgqjV+X1VpdOfyTGOYRi0/zsoLqtXQckTmqTeybT+BDIbM/Guxo7x3pE2vtpr1ok6xRqM9OpBe+Jyoqyww==
   dependencies:
     ansi-styles "^6.2.1"
     string-width "^7.0.0"
