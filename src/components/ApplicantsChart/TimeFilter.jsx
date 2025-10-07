@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import styles from './TimeFilter.module.css';
 
 function TimeFilter({ onFilterChange, darkMode }) {
   const [selectedOption, setSelectedOption] = useState('weekly');
@@ -11,7 +12,7 @@ function TimeFilter({ onFilterChange, darkMode }) {
   useEffect(() => {
     if (selectedOption === 'custom' && startDate && endDate) {
       if (startDate > endDate) {
-        setError('🚨 Start date cannot be after end date.');
+        setError('Start date cannot be after end date.');
         return;
       } else {
         setError('');
@@ -24,23 +25,11 @@ function TimeFilter({ onFilterChange, darkMode }) {
   }, [selectedOption, startDate, endDate]);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '12px',
-        margin: '20px auto',
-      }}
-    >
-      {/* Top row */}
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+    <div className={`${styles.timeFilterContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.filterRow}>
         <label
           htmlFor="timeFilterSelect"
-          style={{
-            fontWeight: 600,
-            color: darkMode ? '#fff' : '#000',
-          }}
+          className={`${styles.label} ${darkMode ? styles.labelDark : styles.labelLight}`}
         >
           Time Filter:
         </label>
@@ -49,12 +38,7 @@ function TimeFilter({ onFilterChange, darkMode }) {
           id="timeFilterSelect"
           value={selectedOption}
           onChange={e => setSelectedOption(e.target.value)}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
-            fontSize: '14px',
-          }}
+          className={styles.select}
         >
           <option value="weekly">Weekly</option>
           <option value="monthly">Monthly</option>
@@ -70,7 +54,7 @@ function TimeFilter({ onFilterChange, darkMode }) {
               placeholderText="Start Date"
               dateFormat="yyyy/MM/dd"
             />
-            <span style={{ color: darkMode ? '#fff' : '#000' }}>to</span>
+            <span className={darkMode ? styles.labelDark : styles.labelLight}>to</span>
             <DatePicker
               selected={endDate}
               onChange={date => setEndDate(date)}
@@ -81,20 +65,7 @@ function TimeFilter({ onFilterChange, darkMode }) {
         )}
       </div>
 
-      {/* Error message */}
-      {error && (
-        <p
-          style={{
-            color: 'red',
-            fontSize: '18px',
-            fontWeight: '600',
-            textAlign: 'center',
-            marginTop: '8px',
-          }}
-        >
-          {error}
-        </p>
-      )}
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 }
