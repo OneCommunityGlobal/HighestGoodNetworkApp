@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import styles from './TimeFilter.module.css';
+import styles from './ApplicationChart.module.css';
 
 function TimeFilter({ onFilterChange, darkMode }) {
   const [selectedOption, setSelectedOption] = useState('weekly');
@@ -25,45 +25,36 @@ function TimeFilter({ onFilterChange, darkMode }) {
   }, [selectedOption, startDate, endDate, onFilterChange]);
 
   return (
-    <div className={`${styles.timeFilterContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <div className={styles.filterRow}>
-        <label
-          htmlFor="timeFilterSelect"
-          className={`${styles.label} ${darkMode ? styles.labelDark : styles.labelLight}`}
-        >
-          Time Filter:
-        </label>
+    <div className={`${styles.TimeFilter}`}>
+      <label htmlFor="timeFilterSelect">Time Filter:</label>
+      <select
+        id="timeFilterSelect"
+        value={selectedOption}
+        onChange={e => setSelectedOption(e.target.value)}
+      >
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+        <option value="yearly">Yearly</option>
+        <option value="custom">Custom Dates</option>
+      </select>
 
-        <select
-          id="timeFilterSelect"
-          value={selectedOption}
-          onChange={e => setSelectedOption(e.target.value)}
-          className={styles.select}
-        >
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-          <option value="custom">Custom Dates</option>
-        </select>
-
-        {selectedOption === 'custom' && (
-          <>
-            <DatePicker
-              selected={startDate}
-              onChange={date => setStartDate(date)}
-              placeholderText="Start Date"
-              dateFormat="yyyy/MM/dd"
-            />
-            <span className={darkMode ? styles.labelDark : styles.labelLight}>to</span>
-            <DatePicker
-              selected={endDate}
-              onChange={date => setEndDate(date)}
-              placeholderText="End Date"
-              dateFormat="yyyy/MM/dd"
-            />
-          </>
-        )}
-      </div>
+      {selectedOption === 'custom' && (
+        <>
+          <DatePicker
+            selected={startDate}
+            onChange={date => setStartDate(date)}
+            placeholderText="Start Date"
+            dateFormat="yyyy/MM/dd"
+          />
+          <span>to</span>
+          <DatePicker
+            selected={endDate}
+            onChange={date => setEndDate(date)}
+            placeholderText="End Date"
+            dateFormat="yyyy/MM/dd"
+          />
+        </>
+      )}
 
       {error && <p className={styles.error}>{error}</p>}
     </div>
