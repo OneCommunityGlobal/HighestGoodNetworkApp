@@ -385,6 +385,20 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
+  // Add safety check for weeklySummaries array and weekIndex
+  if (
+    !summary.weeklySummaries ||
+    !Array.isArray(summary.weeklySummaries) ||
+    weekIndex < 0 ||
+    weekIndex >= summary.weeklySummaries.length
+  ) {
+    return (
+      <p>
+        <b>Weekly Summary:</b> Not available for this week!
+      </p>
+    );
+  }
+
   const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
   let summaryDate = moment()
     .tz('America/Los_Angeles')
