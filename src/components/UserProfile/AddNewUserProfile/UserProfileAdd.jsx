@@ -92,7 +92,7 @@ class UserProfileAdd extends Component {
         lastName: 'Last Name is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
-        actualEmail: 'Actual Email is required',
+        actualEmail: 'Use your production sign-in email.',
         actualPassword: 'Actual Password is required',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
         defaultPassword: 'Default Password is required',
@@ -744,6 +744,9 @@ class UserProfileAdd extends Component {
       return false;
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
+      return false;
+    } else if ((role === 'Administrator' || role === 'Owner') && !this.state.userProfile.actualPassword) {
+      toast.error('Actual Password is required for this role');
       return false;
     } else if (role !== 'Administrator' && role !== 'Owner' && !defaultPassword) {
       toast.error('Default Password is required for non-admin users');
