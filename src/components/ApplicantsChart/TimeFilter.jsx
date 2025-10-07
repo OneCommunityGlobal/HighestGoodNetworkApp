@@ -22,7 +22,7 @@ function TimeFilter({ onFilterChange, darkMode }) {
     }
 
     onFilterChange({ selectedOption, startDate, endDate, error: '' });
-  }, [selectedOption, startDate, endDate]);
+  }, [selectedOption, startDate, endDate, onFilterChange]);
 
   return (
     <div className={`${styles.timeFilterContainer} ${darkMode ? styles.darkMode : ''}`}>
