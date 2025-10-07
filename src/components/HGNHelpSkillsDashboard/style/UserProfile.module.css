@@ -1,0 +1,116 @@
+.userProfilePage {
+  padding: 1rem;
+}
+
+.skillsSection {
+  margin-top: 1rem;
+}
+
+.cardBody {
+  padding: 1rem;
+}
+
+.skillsRow {
+  min-height: 400px;
+}
+
+.navCol {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.navItem {
+  margin-bottom: 15px;
+}
+
+.navLink {
+  background-color: #f1f1f1;
+  color: #555;
+  font-weight: 500;
+  text-align: center;
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 10px;
+}
+
+.activeNavLink {
+  background-color: #e3f2fd;
+  color: #007bff;
+}
+
+.contentCol {
+  overflow-y: auto;
+}
+
+.chartContainer {
+  height: 350px;
+  overflow: hidden;
+}
+
+/* Tooltip styles */
+.tooltip {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 12px;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.1);
+  max-width: 180px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.tooltipTitle {
+  margin: 0 0 4px 0;
+  font-weight: bold;
+}
+
+.tooltipScore {
+  margin: 0 0 4px 0;
+}
+
+.scoreLow {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.scoreHigh {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.tooltipQuestion {
+  margin: 0;
+}
+
+/* Skill Item */
+.skillItem {
+  position: relative;
+  padding: 15px 10px;
+  height: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.skillScoreLow {
+  font-size: 24px;
+  font-weight: bold;
+  color: #dc3545;
+  margin-bottom: 8px;
+}
+
+.skillScoreHigh {
+  font-size: 24px;
+  font-weight: bold;
+  color: #28a745;
+  margin-bottom: 8px;
+}
+
+.skillName {
+  font-size: 14px;
+  font-weight: bold;
+}
