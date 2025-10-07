@@ -49,8 +49,6 @@ import EquipmentDetail from './components/BMDashboard/Equipment/Detail/Equipment
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import EDailyActivityLog from './components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
-import Toolslist from './components/BMDashboard/Tools/ToolsList';
-import AddTool from './components/BMDashboard/Tools/AddTool';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 import Issue from './components/BMDashboard/Issue/Issue';
@@ -139,7 +137,13 @@ import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHom
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
-import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
+import Toolslist from './components/BMDashboard/Tools/ToolsList';
+import AddTool from './components/BMDashboard/Tools/AddTool';
+import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
+
+//job analytics
+import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
+
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
@@ -225,6 +229,9 @@ const BlueSquareEmailManagement = lazy(() =>
 );
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
+const MonthsPledgedChart = lazy(() =>
+  import('./components/MonthsPledgedAnalytics/MonthsPledgedChart'),
+);
 
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
@@ -548,6 +555,13 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+        <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
+        <ProtectedRoute
+          path="/jobanalytics"
+          exact
+          component={HoursPledgedChart}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+        />
 
         <ProtectedRoute
           path="/communityportal/activity/\:activityid/feedback"
@@ -700,8 +714,50 @@ export default (
           component={Feedbackform}
         />
         <CPProtectedRoute
-          path="/communityportal/activities/FollowUpEmailTemplate"
-          component={FollowUpEmailTemplate}
+          path="/communityportal/activities/:activityid"
+          exact
+          component={Activity}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/event/personalization"
+          exact
+          component={EventStats}
+        />
+        <CPProtectedRoute path="/communityportal/ActivitiesPage" exact component={ActivitiesPage} />
+        <CPProtectedRoute
+          path="/communityportal/Activities/Register/:activityId"
+          exact
+          component={Register}
+        />
+
+        {/* Listing and Bidding Routes */}
+        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+        <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
+        <LBProtectedRoute path="/lbdashboard/masterplan" exact component={MasterPlan} />
+        <Route path="/lbdashboard/login" component={LBLogin} />
+        <Route path="/lbdashboard/register" component={LBRegister} />
+        <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+        <Route // Should be LBProtectedRoute
+          path="/lbdashboard/listingshome"
+          render={() => (
+            <>
+              <AutoUpdate />
+              <LBHome />
+            </>
+          )}
+        />
+        <Route path="/lbdashboard/bidoverview" exact component={LBBidOverview} />
+        <LBProtectedRoute path="/lbdashboard/bidding" exact component={BiddingHomepage} />
+
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
         />
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />

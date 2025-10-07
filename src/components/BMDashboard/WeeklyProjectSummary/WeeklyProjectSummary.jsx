@@ -1,6 +1,6 @@
 /* eslint-disable import/no-unresolved */
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState, useEffect, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
@@ -21,6 +21,7 @@ import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 
 const projectStatusButtons = [
   {
@@ -355,7 +356,7 @@ function WeeklyProjectSummary() {
               key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
-              {index === 1 ? <PaidLaborCost /> : '📊 Card'}
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
             </div>
           );
         }),

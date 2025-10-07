@@ -92,8 +92,8 @@ class UserProfileAdd extends Component {
         lastName: 'Last Name is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
-        actualEmail: 'Actual Email is required',
-        actualPassword: 'Actual Password is required',
+        actualEmail: 'Must use of your PRODUCTION sign-in email',
+        actualPassword: 'Must use your PRODUCTION sign-in password',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
         defaultPassword: 'Default Password is required',
         jobTitle: 'Job Title is required',
@@ -745,6 +745,9 @@ class UserProfileAdd extends Component {
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
       return false;
+    } else if ((role === 'Administrator' || role === 'Owner') && !this.state.userProfile.actualPassword) {
+      toast.error('Must use your Production sign-in password');
+      return false;
     } else if (role !== 'Administrator' && role !== 'Owner' && !defaultPassword) {
       toast.error('Default Password is required for non-admin users');
       return false;
@@ -925,9 +928,18 @@ class UserProfileAdd extends Component {
                 case 'name':
                   toast.error('A user with this first and last name already exists');
                   return;
-                case 'credentials':
-                  toast.error('Admin credentials were not accepted');
+                case 'credentials': {
+                // Prefer the backend’s explanation if available
+                  const detail =
+                    (typeof data.error === 'string' && data.error) ||
+                    data?.error?.message ||
+                    data?.message ||
+                    '';
+                  toast.error(
+                    `Admin credentials were not accepted${detail ? `: ${detail}` : ''}`
+                  );
                   return;
+                }
               }
             }
 
@@ -1235,7 +1247,7 @@ class UserProfileAdd extends Component {
           },
           formErrors: {
             ...formErrors,
-            actualPassword: event.target.value.length > 0 ? '' : 'Actual Password is required',
+            actualPassword: event.target.value.length > 0 ? '' : 'Must use your Production sign-in password',
           },
         });
         break;
