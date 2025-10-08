@@ -42,7 +42,6 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
 
   const getAnniversaryListItem = (userData = {}, anniversaryMonths = 6) => {
     const { _id, profilePic, email, firstName, lastName, createdDate } = userData;
-    console.log(createdDate);
     return (
       <li key={_id} className="d-flex flex-column">
         <div
@@ -103,6 +102,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
     const link = document.createElement('a');
     link.href = url;
     link.download = 'anniversaries.json';
+    // eslint-disable-next-line testing-library/no-node-access
     link.click();
   };
 
