@@ -36,7 +36,9 @@ function CustomTooltip({ active, payload }) {
         <p className={`${styles.tooltipTitle}`}>{data.name}</p>
         <p className={`${styles.tooltipScore}`}>
           Score:{' '}
-          <span className={data.value < 5 ? `${styles.scoreLow}` : `${styles.scoreHigh}`}>{data.value}</span>
+          <span className={data.value < 5 ? `${styles.scoreLow}` : `${styles.scoreHigh}`}>
+            {data.value}
+          </span>
         </p>
         <p className={`${styles.tooltipQuestion}`}>{data.question}</p>
       </div>
