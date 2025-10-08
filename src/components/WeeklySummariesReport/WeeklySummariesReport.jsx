@@ -622,7 +622,7 @@ const WeeklySummariesReport = props => {
           !selectedOverTime ||
           (summary.weeklycommittedHours > 0 &&
             hoursLogged > 0 &&
-            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
 
         // Add trophy filter logic
         const summarySubmissionDate = moment()
