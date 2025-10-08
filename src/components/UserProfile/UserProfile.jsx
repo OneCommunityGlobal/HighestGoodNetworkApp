@@ -817,14 +817,14 @@ const onAssignProject = assignedProject => {
     projects: projectsIds,  // single source of truth
   };
 
-  console.log('Submitting UserProfile:', userProfileToUpdate);
 
   // update tasks (optionally await if you need sequencing)
   for (let i = 0; i < updatedTasks.length; i += 1) {
     const updatedTask = updatedTasks[i];
     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
     // consider await here if order matters
-    axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    // eslint-disable-next-line no-console
+    axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
   }
 
   try {
@@ -835,9 +835,9 @@ const onAssignProject = assignedProject => {
     await loadUserProfile();
     await loadUserTasks();
     setSaved(false);
-    return result;
   } catch (err) {
     if (err?.response?.data?.error) {
+      // eslint-disable-next-line no-alert
       alert(err.response.data.error.join('\n'));
     }
     return err;
@@ -1103,9 +1103,8 @@ const onAssignProject = assignedProject => {
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('updatePassword')&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
-
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
@@ -1677,12 +1676,12 @@ const onAssignProject = assignedProject => {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {canResetPassword && (
+              {canResetPassword && !isUserSelf &&  (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canUpdatePassword
+                  canUpdatePassword={canResetPassword}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1810,7 +1809,7 @@ const onAssignProject = assignedProject => {
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canResetPassword && (
+                      {canUpdatePassword && canEdit && !isUserSelf && (
                         <ResetPasswordButton
                           className="mr-1 btn-bottom"
                           user={userProfile}

@@ -3,12 +3,25 @@
 
 echo ""
 echo "🛡️  Husky pre-commit hook triggered"
+
+# Block plain .css files (except .module.css and index.css)
+for file in $(git diff --cached --name-only --diff-filter=ACM | grep '\.css$'); do
+  case "$file" in
+    *index.css) ;;            # allow index.css
+    *.module.css) ;;          # allow module.css
+    *)
+      echo "❌  $file is not allowed. Use .module.css instead."
+      exit 1
+      ;;
+  esac
+done
+
 echo "🛠️  Attempting to auto-fix lint issues (if possible)..."
 echo "🔍 Running ESLint via lint-staged on staged files:"
-git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx)$' || echo "No JS/TS files staged."
+git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|css)$' || echo "No JS/TS/CSS files staged."
 
 # Run lint-staged only if relevant files are staged
-if git diff --cached --name-only | grep -qE '\.(js|jsx|ts|tsx)$'; then
+if git diff --cached --name-only | grep -qE '\.(js|jsx|ts|tsx|css)$'; then
   npx lint-staged
   lint_exit_code=$?
 
@@ -20,5 +33,5 @@ if git diff --cached --name-only | grep -qE '\.(js|jsx|ts|tsx)$'; then
     exit $lint_exit_code
   fi
 else
-  echo "ℹ️  No JS/TS files to lint. Skipping lint-staged."
+  echo "ℹ️  No JS/TS/CSS files to lint. Skipping lint-staged."
 fi
