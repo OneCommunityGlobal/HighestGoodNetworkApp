@@ -5,11 +5,7 @@ import { toast } from 'react-toastify';
 
 import { ENDPOINTS } from '../../utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
-import {
-  isValidDropboxImageUrl,
-  isValidDropboxDocUrl,
-  isValidUrl,
-} from '../../utils/checkValidURL';
+import { isValidDropboxImageUrl, isValidUrl } from '../../utils/checkValidURL';
 import { createCollaborationAds } from '../../actions/collaborationAdsActions';
 import getWordCount from '../../utils/getWordCount';
 
@@ -20,7 +16,7 @@ function JobAdsCreation() {
     { key: 'imageUrl', display: 'Image Url' },
     { key: 'location', display: 'Location' },
     // { key: 'applyLink', display: 'Apply Link' },
-    { key: 'jobDetailsLink', display: 'Job Details Link' },
+    // { key: 'jobDetailsLink', display: 'Job Details Link' },
   ];
 
   const initialState = {
@@ -36,6 +32,7 @@ function JobAdsCreation() {
   const [categories, setCategories] = useState([]);
   const [positions, setPositions] = useState([]);
   const [jobFormsAll, setJobFormsAll] = useState([]);
+  const [jobTemplates, setJobTemplates] = useState([]);
 
   const [errors, setErrors] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -66,7 +63,6 @@ function JobAdsCreation() {
       setLoading(false);
       setFormData({ ...initialState });
     } catch (error) {
-      console.log(error);
       toast.error('Failed to submit jobs');
     }
   };
@@ -84,13 +80,28 @@ function JobAdsCreation() {
     }
   };
 
+  // Get all templates
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch(`${ENDPOINTS.GET_ALL_TEMPLATES}`, {
+        method: 'GET',
+        headers: {
+          Authorization: localStorage.getItem('token'),
+        },
+      });
+
+      if (!res.ok) throw new Error(`Failed to fetch all Templates: ${response.statusText}`);
+
+      const data = await res.json();
+
+      setJobTemplates(data.templates);
+    } catch (error) {
+      toast.error('Error fetching Templates');
+    }
+  };
+
   const fetchJobFormsAll = async () => {
     try {
-      // eslint-disable-next-line no-console
-      console.log('localStorage.getItem(access_token)');
-
-      // eslint-disable-next-line no-console
-      console.log(localStorage.getItem('token'));
       // eslint-disable-next-line no-console
       console.log(`${ENDPOINTS.GET_ALL_JOB_FORMS}`);
       const response = await fetch(`${ENDPOINTS.GET_ALL_JOB_FORMS}`, {
@@ -99,22 +110,10 @@ function JobAdsCreation() {
           Authorization: localStorage.getItem('token'),
         },
       });
-      // eslint-disable-next-line no-console
-      console.log('response');
+      if (!response.ok) throw new Error(`Failed to fetch all jobForms: ${response.statusText}`);
       // eslint-disable-next-line no-console
       console.log(response);
-      // eslint-disable-next-line no-console
-      console.log(response.ok);
-      // eslint-disable-next-line no-console
-      console.log(!response.ok);
-      if (!response.ok) throw new Error(`Failed to fetch all jobForms: ${response.statusText}`);
-
       const data = await response.json();
-      // eslint-disable-next-line no-console
-      console.log('fetchJobFormsAll');
-      // eslint-disable-next-line no-console
-      console.log(data.forms);
-      //      const sortedJobFormsAll = data.forms.title.sort((a, b) => a.localeCompare(b));
       setJobFormsAll(data.forms);
     } catch (error) {
       toast.error('Error fetching jobFormsAll');
@@ -198,28 +197,38 @@ function JobAdsCreation() {
       toast.error('Apply Link is required');
       return;
     }
+    // eslint-disable-next-line no-console
     console.log('formData.applyLink');
-
+    // eslint-disable-next-line no-console
     console.log(formData.applyLink);
+    // eslint-disable-next-line no-console
     console.log(isValidUrl(applyLink));
     if (!formData.applyLink || !isValidUrl(formData.applyLink)) {
       setErrors({ applyLink: 'Enter the valid Apply Link' });
       toast.error('Enter the valid Apply Link');
       return;
     }
+    // eslint-disable-next-line no-console
+    //console.log(formData.jobDetailsLink);
+    // eslint-disable-next-line no-console
+    // console.log(isValidUrl(formData.jobDetailsLink));
 
-    if (!formData.jobDetailsLink) {
+    /*    if (!formData.jobDetailsLink) {
       setErrors({ jobDetailsLink: 'Job Details Link is required' });
       toast.error('Job Details Link is required');
       return;
-    }
+    } */
+    // eslint-disable-next-line no-console
+    console.log(formData.jobDetailsLink);
+    // eslint-disable-next-line no-console
+    console.log(isValidUrl(formData.jobDetailsLink));
 
-    if (!formData.jobDetailsLink || !isValidDropboxDocUrl(formData.jobDetailsLink)) {
+    /* if (!formData.jobDetailsLink || !isValidUrl(formData.jobDetailsLink)) {
       setErrors({ jobDetailsLink: 'Enter the valid Job Details Link' });
       toast.error('Enter the valid Job Details Link');
       return;
     }
-
+*/
     const emptyMsg = '';
     setErrors(emptyMsg);
     submitJobAds();
@@ -250,13 +259,29 @@ function JobAdsCreation() {
       // eslint-disable-next-line no-console
       console.log(value);
     }
+    if (name === 'applyLinktest') {
+      // eslint-disable-next-line no-console
+      console.log('APPLYLINKTEST');
+
+      // eslint-disable-next-line no-console
+      console.log(value);
+    }
   };
 
   useEffect(() => {
     fetchCategories();
     //  fetchPositions();
     fetchJobFormsAll();
+    fetchTemplates();
   }, []);
+  /*useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      jobDetailsLink: `http://localhost:5173/jobDetailsLink/${encodeURIComponent(
+        prev.category,
+      )}/${encodeURIComponent(prev.title)}`,
+    }));
+  }, [formData.category, formData.title]); */
 
   return (
     <div
@@ -361,7 +386,25 @@ function JobAdsCreation() {
             {errors[field.key] && <div className={styles.error}>{errors[field.key]}</div>}
           </div>
         ))}
-
+        {/*}
+        <div className={styles['input-error']}>
+          <div className={styles['input-item']}>
+            <label className={styles['input-label']} htmlFor="jobDetailsLink">
+              Job Details Link
+            </label>
+            <input
+              className={styles['jobAds-input']}
+              id="jobDetailsLink"
+              value={formData.jobDetailsLink}
+              placeholder={`Enter the jobDetailsLink`}
+              onChange={handleChange}
+              name="jobDetailsLink"
+              disabled
+            />
+          </div>
+          {errors.jobDetailsLink && <div className={styles.error}>{errors.jobDetailsLink}</div>}
+        </div>
+*/}
         <div className={styles['input-error']}>
           <div className={styles['input-item']}>
             <label className={styles['input-label']} htmlFor="applyLink">
@@ -374,6 +417,30 @@ function JobAdsCreation() {
               onChange={handleChange}
               name="applyLink"
             >
+              <option value="">Select from Templates</option>
+              {jobTemplates.map(({ _id, name }) => {
+                return (
+                  <option key={_id} value={`${ENDPOINTS.APIEndpoint()}/templates/${_id}`}>
+                    {name}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
+        </div>
+        {/*}     <div className={styles['input-error']}>
+          <div className={styles['input-item']}>
+            <label className={styles['input-label']} htmlFor="applyLinktest2">
+              Apply Link test2
+            </label>
+            <select
+              className={styles['jobAds-input']}
+              id="applyLinktest2"
+              value={formData.applyLinktest2}
+              onChange={handleChange}
+              name="applyLinktest2"
+            >
               <option value="">Select from job forms</option>
               {jobFormsAll.map(({ _id, title }) => {
                 return (
@@ -384,9 +451,11 @@ function JobAdsCreation() {
               })}
             </select>
           </div>
-          {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
+          {!errors.applyLinktest2 ? null : (
+            <div className={styles.error}>{errors.applyLinktest2}</div>
+          )}
         </div>
-
+*/}
         <div className={styles['jobAds-creation-button-group']}>
           <button type="submit" className={`${styles['submit-button']} btn-primary`}>
             Submit

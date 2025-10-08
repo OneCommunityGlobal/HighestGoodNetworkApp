@@ -1,0 +1,36 @@
+.job-details-landing {
+  display:flex;
+  flex-direction:column;
+  flex-wrap: wrap;
+  align-content: center;
+}
+.job-details-header {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.job-details-container {
+  display:flex;
+  width: 90%;
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  /* border-radius: 10px; */
+}
+.job-details-card {  
+  display:flex;
+  /*width:70%; */
+  border: 1px solid #ddd;
+  margin:10px;
+  padding:10px;
+  justify-content:center;
+  align-items: center;
+
+  text-align: justify;
+  font-weight: 500;
+    font-size: 1.5rem;     
+  line-height: 1.6;      
+}
