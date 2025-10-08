@@ -36,7 +36,7 @@ function CustomTooltip({ active, payload }) {
         <p className={`${styles.tooltipTitle}`}>{data.name}</p>
         <p className={`${styles.tooltipScore}`}>
           Score:{' '}
-          <span className={data.value < 5 ? styles.scoreLow : styles.scoreHigh}>{data.value}</span>
+          <span className={data.value < 5 ? `${styles.scoreLow}` : `${styles.scoreHigh}`}>{data.value}</span>
         </p>
         <p className={`${styles.tooltipQuestion}`}>{data.question}</p>
       </div>
@@ -49,7 +49,7 @@ function CustomTooltip({ active, payload }) {
 function SkillItem({ item }) {
   return (
     <div id={`tooltip-${item.id}`} className={`${styles.skillItem}`}>
-      <div className={item.score < 5 ? styles.skillScoreLow : styles.skillScoreHigh}>
+      <div className={item.score < 5 ? `${styles.skillScoreLow}` : `${styles.skillScoreHigh}`}>
         {item.score}
       </div>
       <div className={`${styles.skillName}`}>{item.name}</div>

@@ -8,6 +8,8 @@ import { configureStore } from 'redux-mock-store';
 import UserTableData from '../UserTableData';
 import { authMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
+import { MemoryRouter } from 'react-router-dom';
+
 // Mock Axios requests
 vi.mock('axios');
 const mockStore = configureStore([thunk]);
@@ -19,7 +21,7 @@ const jaeAccountMock = {
     iat: 1597272666,
     userid: '1',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -39,7 +41,7 @@ const nonJaeAccountMock = {
     iat: 1597272666,
     userid: '2',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Administrator',
@@ -60,7 +62,7 @@ const ownerAccountMock = {
     iat: 1597272666,
     userid: '3',
     permissions: {
-      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      frontPermissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
       backPermissions: [],
     },
     role: 'Owner',
@@ -79,18 +81,20 @@ describe('User Table Data: Non-Jae related Account', () => {
   let store;
   const renderRow = (user) => {
     renderWithProvider(
-      <table>
-        <tbody>
-          <UserTableData
-            isActive
-            index={0}
-            user={user}
-            onActiveInactiveClick={onActiveInactiveClick}
-            onPauseResumeClick={onPauseResumeClick}
-            onDeleteClick={onDeleteClick}
-          />
-        </tbody>
-      </table>,
+      <MemoryRouter initialEntries={['/usermanagement']}>
+        <table>
+          <tbody>
+            <UserTableData
+              isActive
+              index={0}
+              user={user}
+              onActiveInactiveClick={onActiveInactiveClick}
+              onPauseResumeClick={onPauseResumeClick}
+              onDeleteClick={onDeleteClick}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>,
       { store },
     );
   }
@@ -102,7 +106,7 @@ describe('User Table Data: Non-Jae related Account', () => {
         roles: [
           {
             roleName: nonJaeAccountMock.role,
-            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+            permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
           },
         ],
       },
@@ -229,19 +233,21 @@ describe('User Table Data: Jae protected account record and login as Jae related
   let onActiveInactiveClick;
   let store;
   const renderRow = (user) => {
-     renderWithProvider(
-      <table>
-        <tbody>
-          <UserTableData
-            isActive
-            index={0}
-            user={user}
-            onActiveInactiveClick={onActiveInactiveClick}
-            onPauseResumeClick={onPauseResumeClick}
-            onDeleteClick={onDeleteClick}
-          />
-        </tbody>
-      </table>,
+    renderWithProvider(
+      <MemoryRouter initialEntries={['/usermanagement']}>
+        <table>
+          <tbody>
+            <UserTableData
+              isActive
+              index={0}
+              user={user}
+              onActiveInactiveClick={onActiveInactiveClick}
+              onPauseResumeClick={onPauseResumeClick}
+              onDeleteClick={onDeleteClick}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>,
       { store },
     );
   }
@@ -253,7 +259,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
         roles: [
           {
             roleName: jaeAccountMock.role,
-            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+            permissions: ['deleteUserProfile', 'updatePassword', 'changeUserStatus'],
           },
         ],
       },
