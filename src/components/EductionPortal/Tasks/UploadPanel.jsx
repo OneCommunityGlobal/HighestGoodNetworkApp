@@ -163,6 +163,7 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
     setCurrentName('');
     setProgress(0);
     setPendingFiles([]);
+    // eslint-disable-next-line testing-library/no-node-access
     if (inputRef.current) inputRef.current.value = '';
 
     onFilesUploaded?.(uploaded);
@@ -183,6 +184,7 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
         role="button"
         tabIndex={0}
         onKeyDown={e => {
+          // eslint-disable-next-line testing-library/no-node-access
           if (e.key === 'Enter' || e.key === ' ') inputRef.current?.click();
         }}
         aria-label="File upload drop zone"
@@ -212,6 +214,7 @@ export default function UploadPanel({ id, maxBytes = 10 * 1024 * 1024, onFilesUp
               <button
                 type="button"
                 className={styles.browseBtn}
+                // eslint-disable-next-line testing-library/no-node-access
                 onClick={() => inputRef.current?.click()}
               >
                 Browse File
