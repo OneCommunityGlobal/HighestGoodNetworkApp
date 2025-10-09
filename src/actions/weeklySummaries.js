@@ -38,7 +38,7 @@ export const fetchWeeklySummariesError = error => ({
  * @param {ObjectId} userId The user id.
  */
 export const getWeeklySummaries = userId => {
-  const url = ENDPOINTS.USER_PROFILE(userId);
+  const url = ENDPOINTS.USER_PROFILE_FIXED(userId);
   return async dispatch => {
     dispatch(fetchWeeklySummariesBegin());
     try {

@@ -1,9 +1,15 @@
-/* html{
-    background-color: #e7f4f9;
+.container-hgnform-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 1px;
+  padding-left: 0;
+  padding-right: 0;
+  background-color: #ffffff;
+  margin: 0;
+  box-sizing: border-box;
 }
-body{
-    background-color: #e7f4f9;
+
+.container-hgnform-wrapper.bg-oxford-blue {
+  color: #ffffff;
 }
-.hgnform{
-    background-color: #e7f4f9;
-} */

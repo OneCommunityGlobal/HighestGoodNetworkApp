@@ -68,17 +68,33 @@ import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import issueReducer from './bmdashboard/issueReducer';
 import HGNFormReducer from './hgnFormReducers';
+import injuriesReducer from './injuries';
+// import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
+
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
-import messageReducer from './lbdashboard/messagingReducer';
-// eslint-disable-next-line import/no-named-as-default
-import userPreferencesReducer from './lbdashboard/userPreferencesReducer';
+import messageReducer from './listBidDashboard/messagingReducer';
+import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
-// community portal
+// community portalgit
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
 // lbdashboard
-import wishListReducer from './lbdashboard/wishListItemReducer';
+import wishListReducer from './listBidDashboard/wishListItemReducer';
+
+// listing and biddding dashboard
+
+import {
+  listOverviewReducer,
+  listingAvailabilityReducer,
+  listingBookingReducer,
+} from './listBidDashboard/listOverviewReducer';
+
+// pr analytics
+import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
+
+// job analytics
+import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -116,7 +132,7 @@ const localReducers = {
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
 
-  // bmdashboard
+  // bm dashboard
   materials: materialsReducer,
   tools: toolReducer,
   toolAvailability: toolAvailabilityReducer,
@@ -132,6 +148,7 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
+  injuries: injuriesReducer,
   weeklyProjectSummary: weeklyProjectSummaryReducer,
 
   // lbdashboard
@@ -147,6 +164,16 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+
+  WishListItem: wishListReducer,
+
+  listOverview: listOverviewReducer,
+  listingAvailability: listingAvailabilityReducer,
+  listingBooking: listingBookingReducer,
+  reviewsInsights: reviewsInsightReducer,
+
+  // job analytics
+  hoursPledged: hoursPledgedReducer,
 };
 
 const sessionReducers = {
