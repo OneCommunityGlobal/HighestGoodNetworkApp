@@ -4,7 +4,7 @@ import { connect, useSelector, useDispatch} from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
 // import { Link, useHistory } from 'react-router-dom';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
@@ -64,8 +64,8 @@ const UserTableDataComponent = (props) => {
     );
   };
   const canDeleteUsers = props.hasPermission('deleteUserProfile');
-  const resetPasswordStatus = props.hasPermission('resetPassword');
-  const updatePasswordStatus = props.hasPermission('updatePassword');
+  const resetPasswordStatus = props.hasPermission('updatePassword');
+  //const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canSeeReports = props.hasPermission('getReports');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
@@ -176,42 +176,50 @@ const UserTableDataComponent = (props) => {
           ''
         )}
         <span style={{ position: 'absolute', top: 0, right: 0 }}>
-          <button
-            type="button"
-            className="team-member-tasks-user-report-link"
+          <Link
+          to={`/peoplereport/${props.user._id}`}
+          onClick={(event) => {
+            if (!canSeeReports) {
+              event.preventDefault();
+              return;
+            }
+
+            if (
+              event.metaKey || event.ctrlKey ||
+              event.shiftKey || event.altKey ||
+              event.button !== 0
+            ) {
+              return;
+            }
+
+            event.preventDefault(); 
+            history.push(`/peoplereport/${props.user._id}`);
+          }}
+          style={{
+            textDecoration: 'none',
+            opacity: canSeeReports ? 1 : 0.7,
+            cursor: canSeeReports ? 'pointer' : 'not-allowed',
+            display: 'inline-block',               
+            lineHeight: 0,                        
+            padding: 0,                           
+          }}
+          title="Click to view user report"
+        >
+          <img
+            src="/report_icon.png"
+            alt="reportsicon"
+            className="team-member-tasks-user-report-link-image"
+            id={`report-icon-${props.user._id}`}
             style={{
-              fontSize: 18,
-              opacity: canSeeReports ? 1 : 0.7,
-              background: 'none',
-              border: 'none',
-              padding: 0,
+              width: 16,   
+              height: 16,
+              verticalAlign: 'middle',
             }}
-            onClick={(event) => {
-              if (!canSeeReports) {
-                event.preventDefault();
-                return;
-              }
+          />
+        </Link>
 
-              if (event.metaKey || event.ctrlKey || event.button === 1) {
-                window.open(`/peoplereport/${props.user._id}`, '_blank');
-                return;
-              }
+      </span>
 
-              event.preventDefault(); // prevent full reload
-              history.push(`/peoplereport/${props.user._id}`);
-            }}
-          >
-            <img
-              src="/report_icon.png"
-              alt="reportsicon"
-              className="team-member-tasks-user-report-link-image"
-              id={`report-icon-${props.user._id}`}
-              style={{
-                cursor: canSeeReports ? 'pointer' : 'not-allowed', // Change cursor style to indicate the disabled state
-              }}
-            />
-          </button>
-        </span>
 
         <span style={{ position: 'absolute', bottom: 0, right: 0 }}>
           <i
@@ -584,7 +592,7 @@ const UserTableDataComponent = (props) => {
               user={props.user}
               darkMode={darkMode}
               isSmallButton
-              canUpdatePassword={resetPasswordStatus || updatePasswordStatus}
+              canUpdatePassword={resetPasswordStatus}
             />
           </span>
         </td>

@@ -516,16 +516,17 @@ const defaultCategory = useMemo(() => {
                   Resources
                 </label>
                 <div className="add_new_task_form-input_area">
-                  <TagsSearch
-                    placeholder="Add resources"
-                    members={activeMembers}
-                    addResources={addResources}
-                    removeResource={removeResource}
-                    resourceItems={resourceItems}
-                    disableInput={false}
-                    inputTestId="resource-input"
-                    projectId={props.projectId}
-                  />
+                <TagsSearch
+                  key={`tags-${props.projectId}-${activeMembers.length}`}
+                  placeholder="Add resources"
+                  members={activeMembers}
+                  addResources={addResources}
+                  removeResource={removeResource}
+                  resourceItems={resourceItems}
+                  disableInput={false}
+                  inputTestId="resource-input"
+                  projectId={props.projectId}
+                />
                 </div>
               </div>
 
