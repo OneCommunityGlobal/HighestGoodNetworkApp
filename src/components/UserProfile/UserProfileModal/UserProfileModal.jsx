@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -171,10 +171,16 @@ const UserProfileModal = props => {
   
   //Email CC for Blue Square Email
   const [ccModalOpen, setCcModalOpen] = useState(false);
-  const [ccCount, setCcCount] = useState(userProfile?.infringementCCList?.length || 0);
+  const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
+  const currentUser = allUsers.find(u => u._id === userProfile._id) || userProfile;
+  const [ccCount, setCcCount] = useState(currentUser?.infringementCCList?.length || 0);
 
-const handleCcListUpdate = (newCount) => {
-  setCcCount(newCount);
+useEffect(() => {
+  setCcCount(currentUser?.infringementCCList?.length || 0);
+}, [currentUser?.infringementCCList?.length]);
+
+const handleCcListUpdate = () => {
+  setCcCount(currentUser?.infringementCCList?.length || 0);
 };
   
   const openCc  = () => setCcModalOpen(true);
