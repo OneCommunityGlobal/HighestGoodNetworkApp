@@ -11,6 +11,7 @@ import {
   faUserMinus,
   faSync,
   faFolder,
+  faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../../utils/URL';
 import './AccessManagementModal.css';
@@ -28,6 +29,13 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
   const [teamFolders, setTeamFolders] = useState([]);
   const [selectedTeamFolder, setSelectedTeamFolder] = useState('');
   const [teamFoldersLoading, setTeamFoldersLoading] = useState(false);
+  const [detailsModal, setDetailsModal] = useState({
+    isOpen: false,
+    app: null,
+    data: null,
+    loading: false,
+    credentials: null,
+  });
 
   const targetUserId = userProfile._id;
   const role = userProfile.role;
@@ -81,8 +89,25 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       setTeamFolderTouched(false);
       setInviteLoading({});
       setRevokeLoading({});
+      setDetailsModal({ isOpen: false, app: null, data: null, loading: false, credentials: null });
     }
   }, [isOpen, userProfile?._id]);
+
+  // Close details modal if app status becomes invalid
+  useEffect(() => {
+    if (detailsModal.isOpen && detailsModal.app && accessData?.data?.apps) {
+      const app = accessData.data.apps.find(a => a.app === detailsModal.app);
+      if (!app || app.status !== 'invited') {
+        setDetailsModal({
+          isOpen: false,
+          app: null,
+          data: null,
+          loading: false,
+          credentials: null,
+        });
+      }
+    }
+  }, [accessData, detailsModal.isOpen, detailsModal.app]);
 
   const fetchAccessData = async () => {
     setLoading(true);
@@ -225,6 +250,62 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     }
   };
 
+  // Fetch detailed information for a specific app
+  const fetchAppDetails = async appName => {
+    // Validate that we should fetch details for this app
+    const app = accessData?.data?.apps?.find(a => a.app === appName);
+    if (!app || app.status !== 'invited') {
+      toast.error(`Cannot view details for ${appName} - app must be invited`);
+      return;
+    }
+
+    setDetailsModal(prev => ({ ...prev, loading: true }));
+
+    try {
+      let endpoint;
+
+      switch (appName) {
+        case 'github':
+          endpoint = `${ENDPOINTS.APIEndpoint()}/github/user-details`;
+          break;
+        case 'dropbox':
+          endpoint = `${ENDPOINTS.APIEndpoint()}/dropbox/folder-details`;
+          break;
+        case 'sentry':
+          endpoint = `${ENDPOINTS.APIEndpoint()}/sentry/user-details`;
+          break;
+        default:
+          throw new Error(`Details not available for ${appName}`);
+      }
+
+      // Use POST request with targetUser in body (consistent with other API calls)
+      // Note: requestor role is automatically injected by backend middleware from JWT token
+      const response = await axios.post(endpoint, {
+        targetUser: { targetUserId },
+      });
+
+      setDetailsModal(prev => ({ ...prev, data: response.data.data, loading: false }));
+    } catch (error) {
+      //console.error(`Error fetching ${appName} details:`, error);
+      const errorMessage =
+        error.response?.data?.message || error.message || `Failed to fetch ${appName} details`;
+      toast.error(errorMessage);
+      setDetailsModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  // Handle toggle details
+  const handleToggleDetails = appName => {
+    if (detailsModal.app === appName && detailsModal.isOpen) {
+      // Hide details
+      setDetailsModal({ isOpen: false, app: null, data: null, loading: false, credentials: null });
+    } else {
+      // Show details
+      setDetailsModal({ isOpen: true, app: appName, data: null, loading: true, credentials: null });
+      fetchAppDetails(appName);
+    }
+  };
+
   // Handle revoke all apps
   const handleRevokeAll = async () => {
     const revokableApps = getRevokableApps();
@@ -267,23 +348,23 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_ADD;
-          payload = { username, targetUser: { targetUserId, role } };
+          payload = { username, targetUser: { targetUserId } };
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_CREATE_ADD;
           payload = {
             folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
             teamFolderKey: selectedTeamFolder,
-            targetUser: { targetUserId, role, email },
+            targetUser: { targetUserId, email },
           };
           break;
         case 'slack':
           endpoint = ENDPOINTS.SLACK_ADD;
-          payload = { targetUser: { targetUserId, role, email } };
+          payload = { targetUser: { targetUserId, email } };
           break;
         case 'sentry':
           endpoint = ENDPOINTS.SENTRY_ADD;
-          payload = { targetUser: { targetUserId, role, email } };
+          payload = { targetUser: { targetUserId, email } };
           break;
         default:
           throw new Error('Unknown app');
@@ -316,17 +397,17 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_REMOVE;
-          payload = { targetUser: { targetUserId, role } };
+          payload = { targetUser: { targetUserId } };
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_DELETE;
           payload = {
-            targetUser: { targetUserId, role },
+            targetUser: { targetUserId },
           };
           break;
         case 'sentry':
           endpoint = ENDPOINTS.SENTRY_REMOVE;
-          payload = { targetUser: { targetUserId, role } };
+          payload = { targetUser: { targetUserId } };
           break;
         default:
           throw new Error('Unknown app');
@@ -534,7 +615,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
           )}
 
           {status === 'revoked' && (
-            <div className="text-warning small mb-2">
+            <div className="text-warning small mb-1 mt-3">
               <FontAwesomeIcon icon={faTimesCircle} className="mr-1" />
               Access previously revoked on{' '}
               {app?.revokedOn ? new Date(app.revokedOn).toLocaleDateString() : 'N/A'}. You can
@@ -543,25 +624,98 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
           )}
 
           {app?.credentials && (
-            <div className="credentials">
-              <strong>
-                {(() => {
-                  const prefix = status === 'revoked' ? 'Previous' : 'Current';
-                  switch (appName) {
-                    case 'github':
-                      return `${prefix} GitHub Username:`;
-                    case 'sentry':
-                      return `${prefix} Email:`;
-                    case 'dropbox':
-                      return `${prefix} Folder ID:`;
-                    case 'slack':
-                      return `${prefix} Email:`;
-                    default:
-                      return `${prefix} Credentials:`;
-                  }
-                })()}
-              </strong>{' '}
-              {app.credentials}
+            <div className="credentials d-flex justify-content-between align-items-center">
+              <div>
+                <strong className={darkMode ? 'text-light' : 'text-dark'}>
+                  {(() => {
+                    if (status === 'revoked') {
+                      switch (appName) {
+                        case 'github':
+                          return 'GitHub Username (Revoked):';
+                        case 'sentry':
+                          return 'Email (Revoked):';
+                        case 'dropbox':
+                          return 'Folder ID (Revoked):';
+                        case 'slack':
+                          return 'Email (Revoked):';
+                        default:
+                          return 'Credentials (Revoked):';
+                      }
+                    } else {
+                      switch (appName) {
+                        case 'github':
+                          return 'GitHub Username:';
+                        case 'sentry':
+                          return 'Email:';
+                        case 'dropbox':
+                          return 'Folder ID:';
+                        case 'slack':
+                          return 'Email:';
+                        default:
+                          return 'Credentials:';
+                      }
+                    }
+                  })()}
+                </strong>{' '}
+                <span className={darkMode ? 'text-light' : 'text-dark'}>{app.credentials}</span>
+              </div>
+              {status === 'invited' && appName !== 'slack' && (
+                <Button
+                  color="info"
+                  size="sm"
+                  className="btn-details ml-2"
+                  onClick={() => handleToggleDetails(appName)}
+                  title={`View ${appConfigs[appName].name} details`}
+                >
+                  {detailsModal.app === appName && detailsModal.isOpen ? 'Hide' : 'Show'} Details
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Inline Details Section - Only show for invited status */}
+          {detailsModal.app === appName && detailsModal.isOpen && status === 'invited' && (
+            <div className="app-details-section mt-3">
+              {detailsModal.loading ? (
+                <div className="text-center py-3">
+                  <Spinner size="sm" color="primary" className="mr-2" />
+                  Loading details...
+                </div>
+              ) : detailsModal.data ? (
+                <div className="details-content">
+                  <h6 className="details-title mb-3">
+                    <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
+                    {appConfigs[appName].name} Details
+                  </h6>
+                  <div className="details-list">
+                    {Object.entries(detailsModal.data).map(([key, value]) => (
+                      <div key={key} className="detail-row">
+                        <span className="detail-key">{key}:</span>
+                        <span className="detail-value">
+                          {value === null || value === undefined || value === ''
+                            ? 'N/A'
+                            : typeof value === 'object'
+                            ? JSON.stringify(value, null, 2)
+                            : String(value)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="details-actions mt-3">
+                    <Button
+                      size="sm"
+                      color="primary"
+                      outline
+                      onClick={() => fetchAppDetails(appName)}
+                    >
+                      <FontAwesomeIcon icon={faSync} className="mr-1" />
+                      Refresh
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-3 text-muted">No details available</div>
+              )}
             </div>
           )}
         </div>

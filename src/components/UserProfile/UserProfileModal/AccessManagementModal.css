@@ -98,9 +98,144 @@
   border-color: #395886;
   background-color: #23395d;
 }
+
+/* Details Modal Styles */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.detail-item {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #007bff;
+}
+
+.detail-item strong {
+  color: #495057;
+  margin-right: 8px;
+}
+
+.access-management-modal.dark-mode .detail-item {
+  background-color: #395886;
+  border-left-color: #17a2b8;
+  color: #f8f9fa;
+}
+
+.access-management-modal.dark-mode .detail-item strong {
+  color: #ffffff;
+}
+
+.btn-details {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Inline Details Section */
+.app-details-section {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.details-title {
+  color: #495057;
+  font-weight: 600;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 8px;
+}
+
+.details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid #f1f3f4;
+  gap: 12px;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-key {
+  font-weight: bold;
+  color: #495057;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: #6c757d;
+  font-weight: normal;
+  flex: 1;
+  word-break: break-word;
+}
+
+.details-actions {
+  border-top: 1px solid #dee2e6;
+  padding-top: 12px;
+}
+
+/* Dark Mode for Inline Details */
+.access-management-modal.dark-mode .app-details-section {
+  background-color: #2c4875;
+  border-color: #4a6fa5;
+}
+
+.access-management-modal.dark-mode .details-title {
+  color: #f8f9fa;
+  border-bottom-color: #4a6fa5;
+}
+
+.access-management-modal.dark-mode .detail-row {
+  border-bottom-color: #4a6fa5;
+}
+
+.access-management-modal.dark-mode .detail-key {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.access-management-modal.dark-mode .detail-value {
+  color: #adb5bd;
+  font-weight: normal;
+}
+
+.access-management-modal.dark-mode .details-actions {
+  border-top-color: #4a6fa5;
+}
 .access-management-modal.dark-mode .user-info,
 .access-management-modal.dark-mode .modal-header,
 .access-management-modal.dark-mode .modal-footer {
+  background-color: #23395d;
+  color: #f8f9fa;
+}
+
+.access-management-modal.dark-mode .modal-body {
   background-color: #23395d;
   color: #f8f9fa;
 }
