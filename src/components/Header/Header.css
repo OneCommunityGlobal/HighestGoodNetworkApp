@@ -2,9 +2,6 @@
 .header-wrapper {
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
-  position: relative;
-  z-index: 1000;
-  background-color: inherit; /* Ensure proper background */
 }
 /*
   position: absolute;
@@ -63,7 +60,7 @@
 }
 
 .navbar {
-  z-index: 1000;
+  z-index: 100;
   white-space: nowrap;
   display: flex;
   flex-wrap: nowrap;
@@ -71,7 +68,6 @@
   align-items: center;
   width: 100%;
   white-space: nowrap;
-  position: relative; /* Ensure proper stacking context */
 }
 
 .redBackGroupHeader {
