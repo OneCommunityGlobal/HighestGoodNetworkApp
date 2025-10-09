@@ -1,7 +1,7 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
 
-import './ToolRecordsModal.css';
+import styles from './ToolRecordsModal.module.css';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
   if (record) {
@@ -14,7 +14,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
       <Modal isOpen={modal} size="xl">
         <ModalHeader>{recordType} Record</ModalHeader>
         <ModalBody>
-          <div className="records_modal_table_container">
+          <div className={`${styles.recordsModalTableContainer}`}>
             <Table>
               <Record record={record} recordType={recordType} />
             </Table>

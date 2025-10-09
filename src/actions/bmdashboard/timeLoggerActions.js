@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { GET_ERRORS } from '../../constants/errors';
 import {
   START_TIME_LOG,

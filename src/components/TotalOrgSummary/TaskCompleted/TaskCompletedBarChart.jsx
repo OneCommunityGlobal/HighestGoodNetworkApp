@@ -7,12 +7,12 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
 
   const stats = [
     {
-      name: 'Task Assigned',
+      name: 'Assigned',
       amount: active.current || 0,
       change: active.percentage || 0,
     },
     {
-      name: 'Task Completed',
+      name: 'Completed',
       amount: complete.current || 0,
       change: complete.percentage || 0,
     },
@@ -71,15 +71,14 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   return (
     <div
       style={{
-        height: '548px',
-        minHeight: '548px',
+        height: '380px',
+        minHeight: '300px',
         maxHeight: '548px',
         display: 'flex',
         flexDirection: 'column',
       }}
     >
       <div style={{ textAlign: 'center', marginBottom: 0 }} />
-      <div style={{ height: 47 }} />
       <div style={{ flex: 1, minHeight: 0 }}>
         {isLoading ? (
           <div className="d-flex justify-content-center align-items-center">
@@ -89,11 +88,11 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
         ) : (
           <TinyBarChart
             chartData={chartData}
-            maxY={maxY}
+            maxY={maxY + 1}
             tickInterval={tickInterval}
             renderCustomizedLabel={renderCustomizedLabel}
             darkMode={darkMode}
-            showYAxisLabel={false}
+            yAxisLabel="Total Tasks"
           />
         )}
       </div>

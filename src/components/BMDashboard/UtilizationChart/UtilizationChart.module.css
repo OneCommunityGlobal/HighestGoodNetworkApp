@@ -1,0 +1,47 @@
+.utilizationChartContainer {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.chartTitle {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.select,
+.datepickerWrapper,
+.button {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.button {
+  background-color: #a0e7e5;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #72d6d3;
+}
+
+.utilizationChartError {
+  color: red;
+  text-align: center;
+}
