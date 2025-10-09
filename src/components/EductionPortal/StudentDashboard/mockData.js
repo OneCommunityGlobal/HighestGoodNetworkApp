@@ -1,0 +1,52 @@
+// Mock data for testing the Student Dashboard
+export const mockTasks = [
+  {
+    id: 1,
+    course_name: 'Mathematics 101',
+    subtitle: 'Algebra Fundamentals',
+    task_type: 'read-only',
+    logged_hours: 6,
+    suggested_total_hours: 10,
+    last_logged_date: '2025-09-10',
+    created_at: '2025-09-01',
+    is_completed: false,
+    has_upload: false,
+    has_comments: true,
+    status: 'in_progress',
+  },
+  {
+    id: 2,
+    course_name: 'English 200',
+    subtitle: 'Creative Writing',
+    task_type: 'write',
+    logged_hours: 8,
+    suggested_total_hours: 8,
+    last_logged_date: '2025-09-09',
+    created_at: '2025-09-01',
+    is_completed: true,
+    has_upload: true,
+    has_comments: false,
+    status: 'completed',
+  },
+  {
+    id: 3,
+    course_name: 'Science 150',
+    subtitle: 'Introduction to Biology',
+    task_type: 'read-only',
+    logged_hours: 6,
+    suggested_total_hours: 6,
+    last_logged_date: '2025-09-08',
+    created_at: '2025-09-01',
+    is_completed: true,
+    has_upload: false,
+    has_comments: false,
+    status: 'completed',
+  },
+];
+
+export const mockSummaryData = {
+  totalTimeLogged: '4h 45min',
+  thisWeek: '4h 45min',
+  activeCourses: 3,
+  logEntries: 3,
+};
