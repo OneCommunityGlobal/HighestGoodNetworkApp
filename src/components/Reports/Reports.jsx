@@ -109,6 +109,7 @@ class ReportsPage extends Component {
     this.onDateChange = this.onDateChange.bind(this);
     this.handleClearFilters = this.handleClearFilters.bind(this);
     this.showContributorsReport = this.showContributorsReport.bind(this);
+    this.handleSearchClick = this.handleSearchClick.bind(this);
   }
 
   async componentDidMount() {
@@ -458,6 +459,13 @@ class ReportsPage extends Component {
     }));
   }
 
+  handleSearchClick() {
+    // This function is called when the search button is clicked
+    // The actual scroll behavior is handled in ReportTableSearchPanel
+    // No additional action needed here
+  }
+
+
   render() {
     const { darkMode } = this.props.state.theme;
     const userRole = this.props.state.userProfile.role;
@@ -598,6 +606,7 @@ class ReportsPage extends Component {
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
+                    onSearchClick={this.handleSearchClick}
                     darkMode={darkMode}
                   />
                   <ViewReportByDate
