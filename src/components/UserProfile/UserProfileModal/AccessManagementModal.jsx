@@ -525,6 +525,13 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
 
           {(status === 'none' || status === 'revoked') && (
             <div className="invite-section">
+              {isDropbox && !teamFoldersLoading && selectedTeamFolder && isCredentialValid && (
+                <div className="text-info small mb-2">
+                  <FontAwesomeIcon icon={faFolder} className="mr-1" />
+                  <strong>User folder name to be created:</strong> {userProfile?.firstName}{' '}
+                  {userProfile?.lastName}
+                </div>
+              )}
               <div className="input-group mb-2">
                 <input
                   type="text"
@@ -603,14 +610,6 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                       : 'Please select a Dropbox team folder'}
                   </div>
                 )}
-
-              {isDropbox && !teamFoldersLoading && selectedTeamFolder && isCredentialValid && (
-                <div className="text-info small mt-2">
-                  <FontAwesomeIcon icon={faFolder} className="mr-1" />
-                  <strong>User folder name to be created:</strong> {userProfile?.firstName}{' '}
-                  {userProfile?.lastName}
-                </div>
-              )}
             </div>
           )}
 
@@ -675,21 +674,21 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
 
           {/* Inline Details Section - Only show for invited status */}
           {detailsModal.app === appName && detailsModal.isOpen && status === 'invited' && (
-            <div className="app-details-section mt-3">
+            <div className="app-details-section mt-2">
               {detailsModal.loading ? (
-                <div className="text-center py-3">
+                <div className="text-center py-2">
                   <Spinner size="sm" color="primary" className="mr-2" />
                   Loading details...
                 </div>
               ) : detailsModal.data ? (
                 <div className="details-content">
-                  <h6 className="details-title mb-3">
+                  <h6 className="details-title mb-2">
                     <FontAwesomeIcon icon={faInfoCircle} className="mr-2" />
                     {appConfigs[appName].name} Details
                   </h6>
                   <div className="details-list">
                     {Object.entries(detailsModal.data).map(([key, value]) => (
-                      <div key={key} className="detail-row">
+                      <div key={key} className="detail-row mb-1">
                         <span className="detail-key">{key}:</span>
                         <span className="detail-value">
                           {value === null || value === undefined || value === ''
@@ -701,7 +700,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                       </div>
                     ))}
                   </div>
-                  <div className="details-actions mt-3">
+                  <div className="details-actions mt-2">
                     <Button
                       size="sm"
                       color="primary"
