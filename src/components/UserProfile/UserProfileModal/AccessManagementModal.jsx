@@ -176,12 +176,12 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     return Object.keys(appConfigs).filter(appName => {
       const status = getAppStatus(appName);
       const credential = credentialsInput[appName]?.trim() || '';
-      const app = accessData?.data?.apps?.find(a => a.app === appName);
-      // Don't allow inviting if user has been revoked (has revokedOn date)
-      const hasBeenRevoked = app?.revokedOn;
 
-      // Basic validation: must have 'none' status, credential, and not been revoked
-      const basicValidation = status === 'none' && credential.length > 0 && !hasBeenRevoked;
+      // Allow invitations for users with 'none' status OR 'revoked' status (re-invitations)
+      const canInvite = status === 'none' || status === 'revoked';
+
+      // Basic validation: must be invitable status and have valid credentials
+      const basicValidation = canInvite && credential.length > 0;
 
       // Additional validation for Dropbox: must have Dropbox team folder selected
       if (appName === 'dropbox') {
@@ -215,16 +215,6 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
         invitableApps.map(appName => handleInviteApp(appName)),
       );
 
-      const successCount = results.filter(result => result.status === 'fulfilled').length;
-      const failCount = results.length - successCount;
-
-      if (successCount > 0) {
-        toast.success(`Successfully invited to ${successCount} app${successCount > 1 ? 's' : ''}`);
-      }
-      if (failCount > 0) {
-        toast.error(`Failed to invite to ${failCount} app${failCount > 1 ? 's' : ''}`);
-      }
-
       await fetchAccessData(); // Refresh data
     } catch (error) {
       //console.error('Error in bulk invite:', error);
@@ -248,18 +238,6 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       const results = await Promise.allSettled(
         revokableApps.map(appName => handleRevokeApp(appName)),
       );
-
-      const successCount = results.filter(result => result.status === 'fulfilled').length;
-      const failCount = results.length - successCount;
-
-      if (successCount > 0) {
-        toast.success(
-          `Successfully revoked access from ${successCount} app${successCount > 1 ? 's' : ''}`,
-        );
-      }
-      if (failCount > 0) {
-        toast.error(`Failed to revoke access from ${failCount} app${failCount > 1 ? 's' : ''}`);
-      }
 
       await fetchAccessData(); // Refresh data
     } catch (error) {
@@ -464,7 +442,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
             </div>
           </div>
 
-          {status === 'none' && !app?.revokedOn && (
+          {(status === 'none' || status === 'revoked') && (
             <div className="invite-section">
               <div className="input-group mb-2">
                 <input
@@ -555,16 +533,35 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
             </div>
           )}
 
-          {status === 'none' && app?.revokedOn && (
-            <div className="text-muted small">
+          {status === 'revoked' && (
+            <div className="text-warning small mb-2">
               <FontAwesomeIcon icon={faTimesCircle} className="mr-1" />
-              Access previously revoked
+              Access previously revoked on{' '}
+              {app?.revokedOn ? new Date(app.revokedOn).toLocaleDateString() : 'N/A'}. You can
+              re-invite this user.
             </div>
           )}
 
           {app?.credentials && (
             <div className="credentials">
-              <strong>Credentials:</strong> {app.credentials}
+              <strong>
+                {(() => {
+                  const prefix = status === 'revoked' ? 'Previous' : 'Current';
+                  switch (appName) {
+                    case 'github':
+                      return `${prefix} GitHub Username:`;
+                    case 'sentry':
+                      return `${prefix} Email:`;
+                    case 'dropbox':
+                      return `${prefix} Folder ID:`;
+                    case 'slack':
+                      return `${prefix} Email:`;
+                    default:
+                      return `${prefix} Credentials:`;
+                  }
+                })()}
+              </strong>{' '}
+              {app.credentials}
             </div>
           )}
         </div>
