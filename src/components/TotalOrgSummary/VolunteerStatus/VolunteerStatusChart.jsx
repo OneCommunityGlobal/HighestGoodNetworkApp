@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import Loading from '~/components/common/Loading';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
 
@@ -55,5 +56,36 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats, comparisonType 
     </section>
   );
 }
+
+VolunteerStatusChart.propTypes = {
+  isLoading: PropTypes.bool,
+  comparisonType: PropTypes.string,
+  volunteerNumberStats: PropTypes.shape({
+    donutChartData: PropTypes.shape({
+      existingActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      newActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      deactivated: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+    }),
+    activeVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    newVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    deactivatedVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    totalVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+      comparisonPercentage: PropTypes.number,
+    }),
+  }),
+};
 
 export default VolunteerStatusChart;
