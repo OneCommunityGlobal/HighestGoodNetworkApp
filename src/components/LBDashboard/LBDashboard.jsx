@@ -158,7 +158,11 @@ export function LBDashboard() {
       .slice(0, 20);
   }, [villagesRaw, effectiveMetric]);
 
-  const stripVillageWord = s => String(s || '').replace(/\s+Village\b/i, '');
+  const stripVillageWord = s => {
+    const str = String(s || '');
+    const suffix = ' village';
+    return str.toLowerCase().endsWith(suffix) ? str.slice(0, str.length - suffix.length) : str;
+  };
   const villagesDataClean = villagesData.map(d => ({
     ...d,
     village: stripVillageWord(d.village),
