@@ -188,3 +188,40 @@
   gap: 8px;
   margin-top: 8px;
 }
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fff;
+  padding: 16px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #111827;
+}
+
+.statSub {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+@media (max-width: 820px) {
+  .statsGrid { grid-template-columns: 1fr; }
+}

@@ -235,7 +235,7 @@ const MonthsPledgedChart = lazy(() =>
 
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
-import DailyLogPage from './components/Students/DailyLogPage';
+import DailyLogPage from './components/EductionPortal/DailyLogPage';
 
 const JobAnalyticsPage = lazy(() =>-
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),

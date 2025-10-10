@@ -30,13 +30,6 @@ export const loginUser = credentials => dispatch => {
         dispatch(setCurrentUser({ new: true, userId: res.data.userId }));
         return { success: true, new: true };
       }
-      const token = res.data.token;
-      console.log(
-        "%c[DEBUG] loginUser token:",
-        "color: cyan; font-weight: bold;",
-        token ? token.slice(0, 50) + "..." : token
-      );
-
       localStorage.setItem(tokenKey, res.data.token);
       httpService.setjwt(res.data.token);
       const decoded = jwtDecode(res.data.token);
