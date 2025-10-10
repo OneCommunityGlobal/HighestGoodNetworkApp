@@ -200,7 +200,14 @@ export function Header(props) {
 
   return (
     <div className={styles.headerWrapper}>
-      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="md">
+      <Navbar
+        color="dark"
+        dark
+        className={`pt-2 px-5 justify-content-center ${styles.showInTablet}`}
+      >
+        <OwnerMessage />
+      </Navbar>
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="xl">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
 
         {isAuthenticated && <Timer />}
@@ -218,7 +225,7 @@ export function Header(props) {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar innerRef={collapseRef}>
             {isAuthenticated && (
-              <div className={styles.navbarOwnerMessage}>
+              <div className={`${styles.navbarOwnerMessage} ${styles.hideInTablet}`}>
                 <OwnerMessage />
               </div>
             )}

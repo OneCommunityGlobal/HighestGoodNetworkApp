@@ -4,9 +4,8 @@ import { render, screen, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
-import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
-
+import configureStore from 'redux-mock-store';
+import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp.jsx';
 const mockStore = configureStore([]);
 const onSaveMock = vi.fn();
 const onCloseMock = vi.fn();
@@ -130,6 +129,7 @@ describe('SetUpFinalDayPopUp Component', () => {
       .format('YYYY-MM-DD');
     fireEvent.change(screen.getByTestId('date-input'), { target: { value: pastDate } });
     fireEvent.click(screen.getByText('Save'));
+
 
     expect(screen.getByText('Please choose a future date.')).toBeInTheDocument();
     expect(onSaveMock).not.toHaveBeenCalled();

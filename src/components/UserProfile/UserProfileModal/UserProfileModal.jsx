@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -17,6 +17,7 @@ import '../../Header/DarkMode.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
+import CcUserList from './CCUserList';
 
 const UserProfileModal = props => {
   const {
@@ -171,10 +172,16 @@ const UserProfileModal = props => {
   
   //Email CC for Blue Square Email
   const [ccModalOpen, setCcModalOpen] = useState(false);
-  const [ccCount, setCcCount] = useState(userProfile?.infringementCCList?.length || 0);
+  const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
+  const currentUser = allUsers.find(u => u._id === userProfile._id) || userProfile;
+  const [ccCount, setCcCount] = useState(currentUser?.infringementCCList?.length || 0);
 
-const handleCcListUpdate = (newCount) => {
-  setCcCount(newCount);
+useEffect(() => {
+  setCcCount(currentUser?.infringementCCList?.length || 0);
+}, [currentUser?.infringementCCList?.length]);
+
+const handleCcListUpdate = () => {
+  setCcCount(currentUser?.infringementCCList?.length || 0);
 };
   
   const openCc  = () => setCcModalOpen(true);
@@ -387,6 +394,44 @@ const handleCcListUpdate = (newCount) => {
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
               :<p>{blueSquare[0]?.description}</p>}
+              {/* {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                <small
+                  style={{
+                    display: 'block',
+                    color: '#6c757d',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                    marginBottom: '4px',
+                  }}
+                  >
+                    CC’d Users:
+                </small>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '6px',
+                  }}
+                >
+                  {blueSquare[0].ccdUsers.map((u, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      backgroundColor: '#e9ecef',
+                      borderRadius: '16px',
+                      padding: '6px 12px',
+                      fontSize: '0.85rem',
+                      color: '#343a40',
+                    }}
+                  >
+                    {u.firstName} {u.lastName} &lt;{u.email}&gt;
+                  </span>
+                  ))}
+                </div>
+              </div>
+              )} */}
+              <CcUserList users={blueSquare[0]?.ccdUsers} />
             </FormGroup>
           </>
         )}
@@ -408,6 +453,44 @@ const handleCcListUpdate = (newCount) => {
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
+              {/* {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                <small
+                  style={{
+                    display: 'block',
+                    color: '#6c757d',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                    marginBottom: '4px',
+                  }}
+                  >
+                    CC’d Users:
+                </small>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '6px',
+                  }}
+                >
+                  {blueSquare[0].ccdUsers.map((u, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      backgroundColor: '#e9ecef',
+                      borderRadius: '16px',
+                      padding: '6px 12px',
+                      fontSize: '0.85rem',
+                      color: '#343a40',
+                    }}
+                  >
+                    {u.firstName} {u.lastName} &lt;{u.email}&gt;
+                  </span>
+                  ))}
+                </div>
+              </div>
+              )} */}
+              <CcUserList users={blueSquare[0]?.ccdUsers} />
             </FormGroup>
           </>
         )}

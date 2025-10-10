@@ -724,18 +724,20 @@ const onAssignProject = assignedProject => {
               },
             ];
             toast.success('Blue Square Added!');
+            const updatedInfringements = res.data.infringements;
+
             setOriginalUserProfile({
               ...originalUserProfile,
-              infringements: newBlueSqrs,
+              infringements: updatedInfringements,
             });
             setUserProfile({
               ...userProfile,
-              infringements: newBlueSqrs,
+              infringements: updatedInfringements,
             });
           })
           .catch(error => {
             // eslint-disable-next-line no-console
-            console.log('error in modifying bluequare', error);
+            console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
