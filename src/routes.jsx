@@ -146,6 +146,25 @@ import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/Hours
 
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
+import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
+import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+import CostPredictionPage from './components/BMDashboard/CostPrediction/CostPredictionPage';
+
+// Community Portal
+import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
+import CPLogin from './components/CommunityPortal/Login';
+import CPDashboard from './components/CommunityPortal';
+import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
+import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+import Register from './components/CommunityPortal/Activities/Register/Register';
+import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
+import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
+
+import Resources from './components/CommunityPortal/Activities/activityId/Resources';
+import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 
 // Community Calendar
@@ -639,6 +658,7 @@ export default (
           component={PurchaseConsumable}
         />
 
+        <BMProtectedRoute path="/bmdashboard/cost-prediction" component={CostPredictionPage} />
         <BMProtectedRoute path="/bmdashboard/rentalchart" component={RentalChart} />
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
