@@ -1,4 +1,4 @@
-.expenditure-chart-wrapper {
+.expenditureChartWrapper {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -8,7 +8,7 @@
   margin: 0;
 }
 
-.expenditure-chart-card {
+.expenditureChartCard {
   flex: 1 1 220px;
   max-width: 260px;
   padding: 12px 10px;
@@ -22,7 +22,7 @@
   justify-content: flex-start;
 }
 
-.expenditure-chart-title {
+.expenditureChartTitle {
   font-size: 1.1rem;
   font-weight: bold;
   text-align: center;
@@ -47,12 +47,12 @@
   white-space: nowrap;
 }
 
-.dark-mode .expenditure-chart-card {
+.dark-mode .expenditureChartCard {
   background: var(--card-bg);
   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.08);
 }
 
-.dark-mode .expenditure-chart-title {
+.dark-mode .expenditureChartTitle {
   color: var(--text-color);
 }
 
@@ -60,4 +60,20 @@
   background-color: #333 !important;
   color: #fff !important;
   border: 1px solid #555 !important;
+}
+
+.expenditureChartLoading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--text-color);
+}
+
+.expenditureChartError {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--error-color, #ff4d4f);
 }

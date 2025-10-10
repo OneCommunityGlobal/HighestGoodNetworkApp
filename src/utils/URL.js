@@ -269,6 +269,18 @@ export const ENDPOINTS = {
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+
+  // Project cost tracking endpoints
+  PROJECT_COST_IDS: `${APIEndpoint}/bm/projects-cost/ids`,
+  PROJECT_COSTS_BY_ID: (projectId, categories, fromDate, toDate) => {
+    let url = `${APIEndpoint}/bm/projects/${projectId}/costs`;
+    const params = [];
+    if (categories) params.push(`categories=${categories}`);
+    if (fromDate) params.push(`fromDate=${fromDate}`);
+    if (toDate) params.push(`toDate=${toDate}`);
+    if (params.length > 0) url += `?${params.join('&')}`;
+    return url;
+  },
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;

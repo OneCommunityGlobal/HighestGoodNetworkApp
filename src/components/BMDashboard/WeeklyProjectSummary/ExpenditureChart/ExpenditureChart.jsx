@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
-import axios from 'axios';
+import httpService from '../../../../services/httpService';
 import styles from './ExpenditureChart.module.css';
 
 const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
@@ -46,7 +46,7 @@ function ExpenditureChart({ projectId }) {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(
+        const res = await httpService.get(
           `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/${projectId}/pie`,
         );
         setActual(res.data.actual);
@@ -61,8 +61,8 @@ function ExpenditureChart({ projectId }) {
   }, [projectId]);
 
   const renderChart = (data, title) => (
-    <div className={styles.expenditure - chart - card}>
-      <h4 className={styles.expenditure - chart - title}>{title}</h4>
+    <div className={styles.expenditureChartCard}>
+      <h4 className={styles.expenditureChartTitle}>{title}</h4>
       <PieChart width={280} height={280}>
         <Pie
           data={data}
@@ -86,11 +86,11 @@ function ExpenditureChart({ projectId }) {
   );
 
   if (loading)
-    return <div className={styles.expenditure - chart - loading}>Loading expenditure data...</div>;
-  if (error) return <div className={styles.expenditure - chart - error}>{error}</div>;
+    return <div className={styles.expenditureChartLoading}>Loading expenditure data...</div>;
+  if (error) return <div className={styles.expenditureChartError}>{error}</div>;
 
   return (
-    <div className={styles.expenditure - chart - wrapper}>
+    <div className={styles.expenditureChartWrapper}>
       {renderChart(normalizeData(actual), 'Actual Expenditure')}
       {renderChart(normalizeData(planned), 'Planned Expenditure')}
     </div>

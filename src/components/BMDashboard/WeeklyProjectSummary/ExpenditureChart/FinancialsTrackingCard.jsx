@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import httpService from '../../../../services/httpService';
 import ExpenditureChart from './ExpenditureChart';
 
 function FinancialsTrackingCard() {
@@ -12,7 +12,9 @@ function FinancialsTrackingCard() {
     const fetchProjects = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/projects`);
+        const res = await httpService.get(
+          `${process.env.REACT_APP_APIENDPOINT}/bm/expenditure/projects`,
+        );
         const labeledProjects = res.data.map((id, index) => ({
           id,
           name: `Project ${String.fromCharCode(65 + index)}`,
@@ -22,7 +24,6 @@ function FinancialsTrackingCard() {
           setSelectedProject(labeledProjects[0].id);
         }
       } catch (err) {
-        // console.error('Error fetching project IDs:', err);
         setError('Failed to load projects');
       } finally {
         setLoading(false);
