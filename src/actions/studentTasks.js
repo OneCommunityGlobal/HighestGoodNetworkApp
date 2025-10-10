@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import * as types from '../constants/studentTasks';
 import { ENDPOINTS } from '~/utils/URL';
 import { mockTasks } from '../components/EductionPortal/StudentDashboard/mockData';
+import httpService from '../services/httpService';
 
 /**
  * Set a flag that fetching Student Tasks
@@ -60,31 +61,79 @@ export const fetchStudentTasks = () => {
       const state = getState();
       const userId = state.auth.user.userid;
 
+      if (!userId) {
+        console.error('No user ID found in auth state');
+        dispatch(setStudentTasksError('User not authenticated'));
+        return;
+      }
+
       try {
         // Try to use the student tasks endpoint
-        const response = await axios.get(ENDPOINTS.STUDENT_TASKS());
+        console.log('Making API call to:', ENDPOINTS.STUDENT_TASKS());
 
-        // Transform the data to match our student task format
-        const studentTasks = response.data.map(task => ({
-          id: task._id,
-          course_name: task.taskName || task.course_name,
-          subtitle: task.subtitle || task.description,
-          task_type: task.task_type || 'read-only',
-          logged_hours: task.hoursLogged || 0,
-          suggested_total_hours: task.estimatedHours || task.suggested_total_hours || 0,
-          last_logged_date: task.last_logged_date || task.created_at,
-          created_at: task.created_at,
-          is_completed: task.status === 'Complete' || task.is_completed || false,
-          has_upload: task.has_upload || false,
-          has_comments: task.has_comments || false,
-          status: task.status || 'in_progress',
-          _id: task._id, // Keep original ID for API calls
-          mother: task.mother,
-        }));
+        const response = await httpService.get(ENDPOINTS.STUDENT_TASKS());
 
-        dispatch(setStudentTasks(studentTasks));
+        console.log('API response:', response.data);
+
+        // The API returns grouped tasks, we need to flatten them for our UI
+        const groupedTasks = response.data.tasks;
+        const flattenedTasks = [];
+
+        // Flatten the grouped structure to get individual tasks
+        Object.values(groupedTasks).forEach(subject => {
+          Object.values(subject.colorLevels).forEach(colorLevel => {
+            Object.values(colorLevel.activityGroups).forEach(activityGroup => {
+              activityGroup.tasks.forEach(task => {
+                flattenedTasks.push({
+                  id: task._id,
+                  course_name: task.subject?.name || 'Unknown Subject',
+                  subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
+                  task_type: task.type || 'read-only',
+                  logged_hours: task.loggedHours || 0,
+                  suggested_total_hours: task.suggestedTotalHours || 0,
+                  last_logged_date: task.completedAt || task.assignedAt,
+                  created_at: task.assignedAt,
+                  is_completed: task.status === 'completed' || task.status === 'graded',
+                  has_upload: task.uploadUrls && task.uploadUrls.length > 0,
+                  has_comments: task.feedback && task.feedback.length > 0,
+                  status: task.status || 'assigned',
+                  _id: task._id,
+                  grade: task.grade,
+                  feedback: task.feedback,
+                  dueAt: task.dueAt,
+                  lessonPlan: task.lessonPlan,
+                  subject: task.subject,
+                  atom: task.atom,
+                  color_level: task.color_level,
+                  difficulty_level: task.difficulty_level,
+                  activity_group: task.activity_group,
+                });
+              });
+            });
+          });
+        });
+
+        dispatch(setStudentTasks(flattenedTasks));
       } catch (apiError) {
         // If API is not available, use mock data
+        console.error('Student tasks API error:', apiError);
+        console.error('Error response:', apiError.response?.data);
+        console.error('Error status:', apiError.response?.status);
+        console.error('Error config:', apiError.config);
+
+        // Try alternative endpoint if the first one fails
+        if (apiError.response?.status === 404) {
+          console.log('Trying alternative endpoint...');
+          try {
+            const altResponse = await httpService.post(`${ENDPOINTS.APIEndpoint()}/student-tasks`);
+            console.log('Alternative endpoint response:', altResponse.data);
+            dispatch(setStudentTasks(altResponse.data.tasks || []));
+            return;
+          } catch (altError) {
+            console.error('Alternative endpoint also failed:', altError);
+          }
+        }
+
         console.warn('Student tasks API not available, using mock data:', apiError.message);
         dispatch(setStudentTasks(mockTasks));
         toast.info('Using demo data. Student tasks API is not yet available.');
@@ -132,7 +181,13 @@ export const markStudentTaskAsDone = (taskId) => {
 
       try {
         // Try to use the student task mark done endpoint
-        await axios.put(ENDPOINTS.STUDENT_TASK_MARK_DONE(taskId), {});
+        await httpService.put(ENDPOINTS.STUDENT_TASK_MARK_DONE(taskId), {
+          requestor: {
+            requestorId: state.auth.user.userid
+          },
+          status: 'completed',
+          progressPercent: 100
+        });
         toast.success('Task marked as completed successfully!');
       } catch (apiError) {
         // If API is not available, just update local state

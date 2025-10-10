@@ -71,11 +71,16 @@
 
 .dropdownItem {
   display: block;
+  width: 100%;
   padding: 0.5rem 1rem;
   color: #374151;
   text-decoration: none;
   font-size: 0.875rem;
   transition: background-color 0.2s ease;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
 }
 
 .dropdownItem:hover {

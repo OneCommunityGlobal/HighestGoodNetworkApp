@@ -27,7 +27,7 @@ const TaskListItem = ({ task, onMarkAsDone }) => {
 
   // Get status badge info
   const getStatusBadge = () => {
-    if (task.is_completed) {
+    if (task.status === 'completed' || task.status === 'graded') {
       return { text: 'Completed', className: styles.completedBadge };
     }
 
@@ -39,8 +39,12 @@ const TaskListItem = ({ task, onMarkAsDone }) => {
       return { text: 'Hours Met', className: styles.hoursMetBadge };
     }
 
-    if (task.has_comments) {
+    if (task.has_comments || (task.feedback && task.feedback.length > 0)) {
       return { text: 'Comments', className: styles.commentsBadge };
+    }
+
+    if (task.status === 'assigned') {
+      return { text: 'Assigned', className: styles.pendingBadge };
     }
 
     return { text: 'Pending Review', className: styles.pendingBadge };

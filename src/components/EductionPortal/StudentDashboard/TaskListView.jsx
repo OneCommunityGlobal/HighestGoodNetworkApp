@@ -13,12 +13,8 @@ const TaskListView = ({ tasks, onMarkAsDone }) => {
 
   return (
     <div className={styles.listView}>
-      {tasks.map((task) => (
-        <TaskListItem
-          key={task.id}
-          task={task}
-          onMarkAsDone={onMarkAsDone}
-        />
+      {tasks.map(task => (
+        <TaskListItem key={task.id} task={task} onMarkAsDone={onMarkAsDone} />
       ))}
     </div>
   );

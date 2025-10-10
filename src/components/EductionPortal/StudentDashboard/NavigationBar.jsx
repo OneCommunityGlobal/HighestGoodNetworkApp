@@ -116,15 +116,9 @@ const NavigationBar = () => {
             {item.hasDropdown && activeDropdown === item.name && (
               <div className={styles.dropdown}>
                 <div className={styles.dropdownContent}>
-                  <a href="#" className={styles.dropdownItem}>
-                    Option 1
-                  </a>
-                  <a href="#" className={styles.dropdownItem}>
-                    Option 2
-                  </a>
-                  <a href="#" className={styles.dropdownItem}>
-                    Option 3
-                  </a>
+                  <button className={styles.dropdownItem}>Option 1</button>
+                  <button className={styles.dropdownItem}>Option 2</button>
+                  <button className={styles.dropdownItem}>Option 3</button>
                 </div>
               </div>
             )}
