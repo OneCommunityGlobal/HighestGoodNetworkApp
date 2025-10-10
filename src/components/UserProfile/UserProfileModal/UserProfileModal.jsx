@@ -393,6 +393,43 @@ const handleCcListUpdate = () => {
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
               :<p>{blueSquare[0]?.description}</p>}
+              {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                <small
+                  style={{
+                    display: 'block',
+                    color: '#6c757d',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                    marginBottom: '4px',
+                  }}
+                  >
+                    CC’d Users:
+                </small>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '6px',
+                  }}
+                >
+                  {blueSquare[0].ccdUsers.map((u, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      backgroundColor: '#e9ecef',
+                      borderRadius: '16px',
+                      padding: '6px 12px',
+                      fontSize: '0.85rem',
+                      color: '#343a40',
+                    }}
+                  >
+                    {u.firstName} {u.lastName} &lt;{u.email}&gt;
+                  </span>
+                  ))}
+                </div>
+              </div>
+              )}
             </FormGroup>
           </>
         )}
@@ -414,6 +451,43 @@ const handleCcListUpdate = () => {
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
+              {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
+              <div style={{ marginTop: '10px' }}>
+                <small
+                  style={{
+                    display: 'block',
+                    color: '#6c757d',
+                    fontSize: '0.85rem',
+                    fontWeight: 500,
+                    marginBottom: '4px',
+                  }}
+                  >
+                    CC’d Users:
+                </small>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '6px',
+                  }}
+                >
+                  {blueSquare[0].ccdUsers.map((u, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      backgroundColor: '#e9ecef',
+                      borderRadius: '16px',
+                      padding: '6px 12px',
+                      fontSize: '0.85rem',
+                      color: '#343a40',
+                    }}
+                  >
+                    {u.firstName} {u.lastName} &lt;{u.email}&gt;
+                  </span>
+                  ))}
+                </div>
+              </div>
+              )}
             </FormGroup>
           </>
         )}
