@@ -4,7 +4,7 @@ import './ReportCharts.css';
 import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
-import '../../../common/PieChart/PieChart.css';
+import styles from '../../../common/PieChart/PieChart.module.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
 function TeamReportCharts({
@@ -75,16 +75,16 @@ function TeamReportCharts({
           className="team-report-chart-info-wrapper mobile-pie-chart"
         >
           <div className="team-report-chart-info">
-            <div className="pie-chart-wrapper mobile-pie-chart">
+            <div className={`${styles['pie-chart-wrapper']} mobile-pie-chart`}>
               <div
                 id={`pie-chart-container-${pieChartId}`}
-                className="pie-chart"
+                className={styles['pie-chart']}
                 data-testid={`pie-chart-container-${pieChartId}`}
               />
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
-                  <h5 className={darkMode ? 'text-light' : ''}>Name</h5>
-                  <h5 className={darkMode ? 'text-light' : ''}>Hours</h5>
+                  <h5 className={darkMode ? styles['text-light'] : ''}>Name</h5>
+                  <h5 className={darkMode ? styles['text-light'] : ''}>Hours</h5>
                 </div>
                 <PieChartInfoDetail
                   keyName="Commited"
