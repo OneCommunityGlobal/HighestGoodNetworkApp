@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import httpService from '../services/httpService';
 import { store } from '../store';
 import { setCurrentUser, logoutUser } from '../actions/authActions';

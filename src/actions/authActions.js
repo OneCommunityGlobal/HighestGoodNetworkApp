@@ -1,4 +1,4 @@
-import jwtDecode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import httpService from '../services/httpService';
 import config from '../config.json';
@@ -30,6 +30,13 @@ export const loginUser = credentials => dispatch => {
         dispatch(setCurrentUser({ new: true, userId: res.data.userId }));
         return { success: true, new: true };
       }
+      const token = res.data.token;
+      console.log(
+        "%c[DEBUG] loginUser token:",
+        "color: cyan; font-weight: bold;",
+        token ? token.slice(0, 50) + "..." : token
+      );
+
       localStorage.setItem(tokenKey, res.data.token);
       httpService.setjwt(res.data.token);
       const decoded = jwtDecode(res.data.token);
@@ -115,10 +122,10 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
   const timerId = setTimeout(async () => {
     try {
       const { userProfile } = getState();
-      
+
       if (userProfile && userProfile._id) {
         const { firstName: name, lastName, personalLinks, adminLinks, _id } = userProfile;
-        
+
         await axios.put(ENDPOINTS.USER_PROFILE(_id), {
           firstName: name,
           lastName,
@@ -126,7 +133,7 @@ export const startForceLogout = (delayMs = 20000) => (dispatch, getState) => {
           adminLinks,
           isAcknowledged: true,
         });
-        
+
         // eslint-disable-next-line no-console
         console.log('Permission changes acknowledged during force logout');
       }
