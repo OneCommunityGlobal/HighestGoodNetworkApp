@@ -218,6 +218,31 @@ export const ENDPOINTS = {
   PERMISSION_CHANGE_LOGS: userId => `${APIEndpoint}/permissionChangeLogs/${userId}`,
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
+  
+  // Country Application Map Chart endpoints
+  COUNTRY_APPLICATION_DATA: (params = {}) => {
+    let url = `${APIEndpoint}/analytics/country-applications`;
+    const queryParams = new URLSearchParams();
+    
+    if (params.roles && params.roles.length > 0) {
+      queryParams.append('roles', params.roles.join(','));
+    }
+    if (params.timeFrame && params.timeFrame !== 'ALL') {
+      queryParams.append('timeFrame', params.timeFrame);
+    }
+    if (params.startDate) {
+      queryParams.append('startDate', params.startDate);
+    }
+    if (params.endDate) {
+      queryParams.append('endDate', params.endDate);
+    }
+    if (params.customDateRange) {
+      queryParams.append('customDateRange', 'true');
+    }
+    
+    const queryString = queryParams.toString();
+    return queryString ? `${url}?${queryString}` : url;
+  },
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
 
