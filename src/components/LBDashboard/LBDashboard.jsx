@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Container,
   Row,
@@ -13,19 +13,23 @@ import {
   CardBody,
 } from 'reactstrap';
 import styles from './LBDashboard.module.css';
+import { CompareBarGraph } from './BarGraphs/CompareGraphs';
+
+import httpService from '../../services/httpService';
+import { ApiEndpoint } from '../../utils/URL';
 
 const METRIC_OPTIONS = {
   DEMAND: [
-    { key: 'pageVisits', label: 'Page Visits' }, // default overall
+    { key: 'pageVisits', label: 'Page Visits' },
     { key: 'numBids', label: 'Number of Bids' },
     { key: 'avgRating', label: 'Average Rating' },
   ],
   REVENUE: [
     { key: 'avgBid', label: 'Average Bid' },
-    { key: 'finalPrice', label: 'Final Price / Income' }, // default for Revenue
+    { key: 'finalPrice', label: 'Final Price / Income' },
   ],
   VACANCY: [
-    { key: 'occupancyRate', label: 'Occupancy Rate (% days not vacant)' }, // default for Vacancy
+    { key: 'occupancyRate', label: 'Occupancy Rate (% days not vacant)' },
     { key: 'avgStay', label: 'Average Duration of Stay' },
   ],
 };
@@ -35,6 +39,15 @@ const DEFAULTS = {
   REVENUE: 'finalPrice',
   VACANCY: 'occupancyRate',
 };
+
+//Dummy Data For Property
+const propertiesData = [
+  { property: 'House AB', value: 4.72 },
+  { property: 'Room A', value: 4.5 },
+  { property: 'Room C', value: 4.05 },
+  { property: 'Room A34', value: 3.91 },
+  { property: 'Room 5', value: 3.0 },
+];
 
 function GraphCard({ title, metricLabel }) {
   return (
@@ -58,10 +71,98 @@ export function LBDashboard() {
 
   const [openDD, setOpenDD] = useState({ DEMAND: false, REVENUE: false, VACANCY: false });
 
+  // ---- Backend data from /villages ----
+  const [villagesRaw, setVillagesRaw] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const dateChipValue = 'ALL';
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const res = await httpService.get(`${ApiEndpoint}/villages`);
+        if (!mounted) return;
+        setVillagesRaw(Array.isArray(res?.data) ? res.data : []);
+      } catch (e) {
+        if (!mounted) return;
+        setError('Failed to load villages');
+        setVillagesRaw([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const metricLabel = (() => {
     const all = Object.values(METRIC_OPTIONS).flat();
     return (all.find(o => o.key === selectedMetricKey) || {}).label || '';
   })();
+
+  const effectiveMetric = useMemo(() => {
+    switch (selectedMetricKey) {
+      case 'avgBid':
+      case 'finalPrice':
+        return 'avgCurrentBid';
+      case 'pageVisits':
+      case 'numBids':
+      case 'avgRating':
+      case 'occupancyRate':
+      case 'avgStay':
+        return 'totalCurrentBid';
+      default:
+        return 'totalCurrentBid';
+    }
+  }, [selectedMetricKey]);
+
+  const valueFormatter = useMemo(() => {
+    if (selectedMetricKey === 'avgRating') return v => Number(v).toFixed(2);
+    if (selectedMetricKey === 'occupancyRate') return v => `${v}%`;
+    if (selectedMetricKey === 'avgStay') return v => `${v} days`;
+    if (selectedMetricKey === 'avgBid' || selectedMetricKey === 'finalPrice') {
+      return v => `₹${Number(v).toLocaleString()}`;
+    }
+    return v => Number(v);
+  }, [selectedMetricKey]);
+
+  // Derive villagesData from backend
+  const villagesData = useMemo(() => {
+    if (!villagesRaw.length) return [];
+    return villagesRaw
+      .map(v => {
+        const props = Array.isArray(v.properties) ? v.properties : [];
+        const bids = props.map(p => Number(p?.currentBid || 0));
+        const sum = bids.reduce((a, b) => a + b, 0);
+        const avg = bids.length ? sum / bids.length : 0;
+        const count = props.length;
+
+        const value =
+          effectiveMetric === 'avgCurrentBid'
+            ? avg
+            : effectiveMetric === 'propertyCount'
+            ? count
+            : /* totalCurrentBid (default) */ sum;
+
+        return {
+          village: v.name || v.regionId || 'Unknown',
+          value,
+        };
+      })
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 20);
+  }, [villagesRaw, effectiveMetric]);
+
+  const stripVillageWord = s => String(s || '').replace(/\s+Village\b/i, '');
+  const villagesDataClean = villagesData.map(d => ({
+    ...d,
+    village: stripVillageWord(d.village),
+  }));
 
   const handleCategoryClick = category => {
     setActiveCategory(category);
@@ -209,7 +310,30 @@ export function LBDashboard() {
                 />
               </Col>
               <Col>
-                <GraphCard title="Demand across Villages" metricLabel={metricLabel} />
+                <CompareBarGraph
+                  title="Demand across Villages"
+                  orientation="horizontal"
+                  data={villagesDataClean}
+                  nameKey="village"
+                  valueKey="value"
+                  xLabel="Vacancy Rate"
+                  yLabel="Village Name"
+                  showYAxisTitle={true}
+                  yTickFormatter={stripVillageWord}
+                  yCategoryWidth={96}
+                  margins={{ top: 8, right: 16, bottom: 28, left: 22 }}
+                  barSize={18}
+                  maxBars={6}
+                  xDomain={[0, 100]}
+                  xTicks={[0, 25, 50, 75, 100]}
+                  barColor="#3b82f6"
+                  headerChips={[
+                    { label: 'Dates', value: 'ALL' },
+                    { label: 'Villages', value: 'ALL' },
+                    { label: 'Metric', value: 'ALL' },
+                    { label: 'List/Bid', value: 'ALL' },
+                  ]}
+                />
               </Col>
               <Col>
                 <GraphCard title="Comparing Villages" metricLabel={metricLabel} />
@@ -232,7 +356,30 @@ export function LBDashboard() {
                 />
               </Col>
               <Col>
-                <GraphCard title="Comparing Ratings of Properties" metricLabel={metricLabel} />
+                <Col>
+                  <CompareBarGraph
+                    title="Comparing Ratings of Properties"
+                    orientation="vertical"
+                    data={propertiesData}
+                    nameKey="property"
+                    valueKey="value"
+                    xLabel="Property Name"
+                    yLabel="Average Rating"
+                    yDomain={[0, 5]}
+                    yTicks={[0, 1, 2, 3, 4, 5]}
+                    barColor="#f2b233"
+                    barSize={40}
+                    height={320}
+                    valueFormatter={v => Number(v).toFixed(2)}
+                    tooltipLabel="Average Rating"
+                    headerChips={[
+                      { label: 'List/Bid', value: 'ALL' },
+                      { label: 'Dates', value: 'ALL' },
+                      { label: 'Metric', value: 'ALL' },
+                      { label: 'Properties', value: 'ALL' },
+                    ]}
+                  />
+                </Col>
               </Col>
             </Row>
           </div>
