@@ -1,3 +1,11 @@
+:global .dark-mode .modal-body p { 
+  color: #fff; 
+  background-color: transparent; /* no bg by default; apply on hover */
+  transition: background-color 120ms ease-in-out;
+}
+:global .dark-mode .modal-body p:hover {
+  background-color: #444;
+}
 .team-member-tasks {
   background-color: white;
   overflow: hidden;
@@ -391,6 +399,12 @@
   border-radius: 5px;
   justify-self: end;
   margin-right: -12px;
+
+.review-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
   margin-bottom: -12px;
 }
 
@@ -641,52 +655,6 @@
   .expand-time-off-detail-button {
     margin-right: 0;
     margin-bottom: 0;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .team-member-tasks h1 {
-    font-size: 28px;
-  }
-
-  .remove-child-borders > td {
-    border-top-width: 0 !important;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .mobile-view-select {
-    display: none;
-  }
-}
-
-@media only screen and (max-width: 767px) {
-  .hours-btn-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .mobile-view-select {
-    width: 63px;
-    color: white;
-  }
-
-  .responsive-btn-size {
-    display: none;
-  }
-}
-
-@media only screen and (max-width: 530px) {
-  .hours-btn-container {
-    padding: 0;
-    /* preserve min-width:none from one side of the conflict */
-    min-width: none;
-  }
-
-  .team-selector-container {
-    display: flex;
-    flex-direction: column;
   }
 }
 

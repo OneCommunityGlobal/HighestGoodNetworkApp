@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from '~/styles';
 import RichTextEditor from './RichTextEditor';
+import styles from './EditableInfoModal.module.css';
 
 const options = [
   { value: '0', label: 'All (default)' },
@@ -209,9 +210,7 @@ export class EditableInfoModal extends Component {
     } = this.state;
 
     const { darkMode } = this.props;
-    const sanitizedContent = darkMode
-      ? infoContent.replace(/color\s*:\s*[^;"']+;?/gi, '')
-      : infoContent;
+    const sanitizedContent = infoContent;
     return (
       (CanRead) && (
         <div>
@@ -237,8 +236,7 @@ export class EditableInfoModal extends Component {
                   />
                   // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                   : <div
-                    className={darkMode ? 'info-modal-content force-white-text' : ''}
-                    style={{ paddingLeft: '20px' }}
+                    className={darkMode ? `${styles.infoModalContent} ${styles.forceWhiteText}` : ''}
                     dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                     onClick={() => this.handleEdit(true)} />
                 }
