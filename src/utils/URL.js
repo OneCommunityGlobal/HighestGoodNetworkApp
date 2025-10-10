@@ -358,6 +358,11 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+  // event endpoint
+  EVENTS: `${APIEndpoint}/events`,
+  EVENT_TYPES: `${APIEndpoint}/events/types`,
+  EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,
