@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import './SkeletonLoading.css';
+import styles from './SkeletonLoading.module.css';
 import { Container, Row, Col } from 'reactstrap';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,13 +15,15 @@ const SkeletonLoading = ({ template, className }) => {
         return (
           <Container fluid="sm">
             <div
-              className={`skeleton-loading-timelog ${darkMode ? 'bg-space-cadet' : ''}`}
+              className={`${styles['skeleton-loading-timelog']} ${
+                darkMode ? 'bg-space-cadet' : ''
+              }`}
               data-testid="timelog"
             >
-              <div className="skeleton-loading-item-timelog" />
-              <div className="skeleton-loading-item-timelog" />
+              <div className={styles['skeleton-loading-item-timelog']} />
+              <div className={styles['skeleton-loading-item-timelog']} />
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <div className="skeleton-loading-item-add-intangible" />
+                <div className={styles['skeleton-loading-item-add-intangible']} />
               </div>
             </div>
           </Container>
@@ -29,13 +31,15 @@ const SkeletonLoading = ({ template, className }) => {
       case 'TimelogFilter':
         return (
           <div
-            className={`skeleton-loading-timelog-filter ${darkMode ? 'bg-space-cadet' : ''}`}
+            className={`${styles['skeleton-loading-timelog-filter']} ${
+              darkMode ? 'bg-space-cadet' : ''
+            }`}
             data-testid="timelog-filter"
           >
-            <div className="skeleton-loading-timelog-filter-item" />
-            <div className="skeleton-loading-timelog-filter-item" />
-            <div className="skeleton-loading-timelog-filter-item" />
-            <div className="skeleton-loading-timelog-filter-item" />
+            <div className={styles['skeleton-loading-timelog-filter-item']} />
+            <div className={styles['skeleton-loading-timelog-filter-item']} />
+            <div className={styles['skeleton-loading-timelog-filter-item']} />
+            <div className={styles['skeleton-loading-timelog-filter-item']} />
           </div>
         );
       case 'TeamMemberTasks':
@@ -44,7 +48,7 @@ const SkeletonLoading = ({ template, className }) => {
             <tr key={uuidv4()}>
               <td
                 colSpan={6}
-                className="skeleton-loading-team-member-tasks-row"
+                className={styles['skeleton-loading-team-member-tasks-row']}
                 data-testid="team-member-tasks-row"
               />
             </tr>,
@@ -54,7 +58,10 @@ const SkeletonLoading = ({ template, className }) => {
       case 'WeeklySummary':
         return (
           <Container fluid="sm" className={darkMode ? 'bg-space-cadet' : ''}>
-            <div className="skeleton-loading-weekly-summary" data-testid="weekly-summary" />
+            <div
+              className={styles['skeleton-loading-weekly-summary']}
+              data-testid="weekly-summary"
+            />
           </Container>
         );
       case 'WeeklySummariesReport':
@@ -62,14 +69,14 @@ const SkeletonLoading = ({ template, className }) => {
           reportItems.push(
             <div
               key={i}
-              className={`skeleton-loading-weekly-summaries-report ${
+              className={`${styles['skeleton-loading-weekly-summaries-report']} ${
                 darkMode ? 'bg-yinmn-blue' : ''
               }`}
             >
               {[...Array(8)].map(() => (
                 <div
                   key={uuidv4()}
-                  className="skeleton-loading-weekly-summaries-report-item"
+                  className={styles['skeleton-loading-weekly-summaries-report-item']}
                   data-testid="weekly-summaries-report-item"
                 />
               ))}
@@ -85,7 +92,7 @@ const SkeletonLoading = ({ template, className }) => {
               darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
             }`}
           >
-            <Row className="mx-max-sm-0">
+            <Row className={styles['mx-max-sm-0']}>
               <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
                 <h3 className="mt-3 mb-5">
                   <div className="d-flex align-items-center">
@@ -111,16 +118,16 @@ const SkeletonLoading = ({ template, className }) => {
           >
             <div style={{ margin: '3rem 3rem 0 16rem' }}>
               <div
-                className="skeleton-loading-user-profile-picture"
+                className={styles['skeleton-loading-user-profile-picture']}
                 style={{ marginBottom: '16rem' }}
               />
-              <div className="skeleton-loading-user-profile-picture" />
+              <div className={styles['skeleton-loading-user-profile-picture']} />
             </div>
             <div className="mx-5" style={{ marginTop: '6rem' }}>
               {[...Array(15)].map(() => (
                 <div
                   key={uuidv4()}
-                  className="skeleton-loading-user-profile-item mt-3"
+                  className={`${styles['skeleton-loading-user-profile-item']} mt-3`}
                   data-testid="user-profile-item"
                 />
               ))}
@@ -132,7 +139,7 @@ const SkeletonLoading = ({ template, className }) => {
           userManagementItems.push(
             <div
               key={i}
-              className="skeleton-loading-user-management-item"
+              className={styles['skeleton-loading-user-management-item']}
               data-testid="user-management-item"
             />,
           );
