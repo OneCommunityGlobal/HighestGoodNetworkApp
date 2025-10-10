@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import styles from "./DailyLogPage.module.css";
+import LogItemCard from "./LogItemCard"; 
+import { Link } from "react-router-dom";
 
 export default function DailyLogPage() {
   const [logs, setLogs] = useState([
@@ -73,7 +74,7 @@ export default function DailyLogPage() {
       created_at: now,
     };
 
-    setLogs([log, ...logs]);
+    setLogs((prev) => [log, ...prev]);
     setShowForm(false);
     setNewLog({ course: "", duration: "", badge: "Pending Review" });
   };
@@ -153,35 +154,7 @@ export default function DailyLogPage() {
 
         <div className={styles.list}>
           {logs.map((row) => (
-            <div className={styles.row} key={row.log_id}>
-              <div className={styles.left}>
-                <div className={styles.titleLine}>
-                  <span className={styles.title}>{row.metadata.course}</span>
-                  {row.metadata.badge && (
-                    <span className={styles.badge}>{row.metadata.badge}</span>
-                  )}
-                  {typeof row.metadata.comments_count === "number" && (
-                    <span className={styles.pill}>Comments</span>
-                  )}
-                </div>
-                <div className={styles.metaLine}>
-                  <span className={styles.metaDot}>⏱</span>
-                  <span className={styles.meta}>{row.metadata.duration}</span>
-                  <span className={styles.metaSep}>•</span>
-                  <span className={styles.meta}>
-                    {new Date(row.created_at).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-              </div>
-
-              <Link to={row.metadata.link} className={styles.viewBtn}>
-                View
-              </Link>
-            </div>
+            <LogItemCard key={row.log_id} row={row} />
           ))}
         </div>
       </section>

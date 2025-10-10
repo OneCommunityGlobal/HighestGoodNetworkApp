@@ -235,8 +235,9 @@ const MonthsPledgedChart = lazy(() =>
 
 // PR Analytics Dashboard
 import ReviewsInsight from './components/PRAnalyticsDashboard/ReviewsInsight/ReviewsInsight';
+import DailyLogPage from './components/Students/DailyLogPage';
 
-const JobAnalyticsPage = lazy(() =>
+const JobAnalyticsPage = lazy(() =>-
   import('./components/Reports/HitsAndApplicationRatio/JobAnalyticsPage'),
 );
 
@@ -763,6 +764,7 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute path="/educationportal/dailylog" exact component={DailyLogPage} /> {/*student logging*/}
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         <CPProtectedRoute
