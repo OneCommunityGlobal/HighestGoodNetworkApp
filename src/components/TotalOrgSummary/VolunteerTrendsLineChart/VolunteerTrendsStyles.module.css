@@ -1,0 +1,48 @@
+.datePickerContainer {
+  position: relative;
+}
+
+.datePickerPostion {
+  position: absolute !important;
+  z-index: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  height: min-content;
+}
+
+.chartContainer {
+  display: grid;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+  position: relative;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.customDateRange {
+  margin-top: 8px;
+}
+
+.customDateRange > span {
+  font-weight: bold;
+}
+
+.dateFilterContainer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dateFilterContainer > select {
+  margin-top: 0;
+  width: min-content;
+}
+
+@media (max-width: 500px) {
+  .chartContainer {
+    justify-content: start;
+    overflow: scroll;
+  }
+}

@@ -1,8 +1,7 @@
-/* eslint-disable no-plusplus */
-
 import { useSelector } from 'react-redux';
 import './SkeletonLoading.css';
 import { Container, Row, Col } from 'reactstrap';
+import { v4 as uuidv4 } from 'uuid';
 
 const SkeletonLoading = ({ template, className }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -10,11 +9,15 @@ const SkeletonLoading = ({ template, className }) => {
     const rows = [];
     const reportItems = [];
     const userManagementItems = [];
+
     switch (template) {
       case 'Timelog':
         return (
           <Container fluid="sm">
-            <div className={`skeleton-loading-timelog ${darkMode ? 'bg-space-cadet' : ''}`}>
+            <div
+              className={`skeleton-loading-timelog ${darkMode ? 'bg-space-cadet' : ''}`}
+              data-testid="timelog"
+            >
               <div className="skeleton-loading-item-timelog" />
               <div className="skeleton-loading-item-timelog" />
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -25,7 +28,10 @@ const SkeletonLoading = ({ template, className }) => {
         );
       case 'TimelogFilter':
         return (
-          <div className={`skeleton-loading-timelog-filter ${darkMode ? 'bg-space-cadet' : ''}`}>
+          <div
+            className={`skeleton-loading-timelog-filter ${darkMode ? 'bg-space-cadet' : ''}`}
+            data-testid="timelog-filter"
+          >
             <div className="skeleton-loading-timelog-filter-item" />
             <div className="skeleton-loading-timelog-filter-item" />
             <div className="skeleton-loading-timelog-filter-item" />
@@ -33,10 +39,14 @@ const SkeletonLoading = ({ template, className }) => {
           </div>
         );
       case 'TeamMemberTasks':
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 15; i += 1) {
           rows.push(
-            <tr key={i}>
-              <td colSpan={6} className="skeleton-loading-team-member-tasks-row" />
+            <tr key={uuidv4()}>
+              <td
+                colSpan={6}
+                className="skeleton-loading-team-member-tasks-row"
+                data-testid="team-member-tasks-row"
+              />
             </tr>,
           );
         }
@@ -44,11 +54,11 @@ const SkeletonLoading = ({ template, className }) => {
       case 'WeeklySummary':
         return (
           <Container fluid="sm" className={darkMode ? 'bg-space-cadet' : ''}>
-            <div className="skeleton-loading-weekly-summary" />
+            <div className="skeleton-loading-weekly-summary" data-testid="weekly-summary" />
           </Container>
         );
       case 'WeeklySummariesReport':
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 10; i += 1) {
           reportItems.push(
             <div
               key={i}
@@ -56,14 +66,13 @@ const SkeletonLoading = ({ template, className }) => {
                 darkMode ? 'bg-yinmn-blue' : ''
               }`}
             >
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item mt-5" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
+              {[...Array(8)].map(() => (
+                <div
+                  key={uuidv4()}
+                  className="skeleton-loading-weekly-summaries-report-item"
+                  data-testid="weekly-summaries-report-item"
+                />
+              ))}
               <hr />
             </div>,
           );
@@ -77,7 +86,7 @@ const SkeletonLoading = ({ template, className }) => {
             }`}
           >
             <Row className="mx-max-sm-0">
-              <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }} className="px-max-sm-0">
+              <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
                 <h3 className="mt-3 mb-5">
                   <div className="d-flex align-items-center">
                     <span className="mr-2">Weekly Summaries Reports page</span>
@@ -87,35 +96,6 @@ const SkeletonLoading = ({ template, className }) => {
                 {reportItems}
               </Col>
             </Row>
-          </Container>
-        );
-      case 'WeeklyVolunteerSummaries':
-        for (let i = 0; i < 10; i++) {
-          reportItems.push(
-            <div key={i} className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item mt-5" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <div className="skeleton-loading-weekly-summaries-report-item" />
-              <hr />
-            </div>,
-          );
-        }
-
-        return (
-          <Container fluid>
-            <div style={{ marginTop: '2rem', marginLeft: '12rem', marginRight: '5rem' }}>
-              <h3 style={{ textAlign: 'left', paddingBottom: '2rem' }}>
-                Weekly Volunteer Summaries
-              </h3>
-              <div className={`skeleton-loading-weekly-summaries-report ${className}`}>
-                {reportItems}
-              </div>
-            </div>
           </Container>
         );
       case 'UserProfile':
@@ -137,37 +117,27 @@ const SkeletonLoading = ({ template, className }) => {
               <div className="skeleton-loading-user-profile-picture" />
             </div>
             <div className="mx-5" style={{ marginTop: '6rem' }}>
-              <div className="skeleton-loading-user-profile-item" />
-              <div className="skeleton-loading-user-profile-item mt-5" />
-              <div className="skeleton-loading-user-profile-item" style={{ height: '16rem' }} />
-              <div className="skeleton-loading-user-profile-item" style={{ marginTop: '4rem' }} />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
-              <div className="skeleton-loading-user-profile-item mt-3" />
+              {[...Array(15)].map(() => (
+                <div
+                  key={uuidv4()}
+                  className="skeleton-loading-user-profile-item mt-3"
+                  data-testid="user-profile-item"
+                />
+              ))}
             </div>
           </Container>
         );
       case 'UserManagement':
-        for (let i = 0; i < 17; i++) {
+        for (let i = 0; i < 17; i += 1) {
           userManagementItems.push(
-            <div key={i} className="skeleton-loading-user-management-item" />,
+            <div
+              key={i}
+              className="skeleton-loading-user-management-item"
+              data-testid="user-management-item"
+            />,
           );
         }
         return <div>{userManagementItems}</div>;
-      case 'WeeklyVolunteerSummary':
-        return (
-          <Container fluid="sm" className={darkMode ? 'bg-space-cadet' : ''}>
-            <div className="skeleton-loading-weekly-summary" />
-          </Container>
-        );
       default:
         return null;
     }

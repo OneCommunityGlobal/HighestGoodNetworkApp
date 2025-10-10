@@ -1,6 +1,4 @@
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#800080'];
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 const RADIAN = Math.PI / 180;
 
@@ -14,16 +12,18 @@ const renderCustomizedLabel = ({
   value,
   totalHours,
   title,
-  totalOverTimeHours,
+  comparisonPercentage,
+  comparisonType,
 }) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
 
-  const percentage = Math.round((totalHours / totalOverTimeHours - 1) * 100);
-  const fillColor = totalHours / totalOverTimeHours > 1 ? 'green' : 'red';
+  const percentage = Math.round(comparisonPercentage);
+  const fillColor = comparisonPercentage > 1 ? 'green' : 'red';
 
-  const textContent = `${percentage}% week over week`;
+  const textContent =
+    comparisonType !== 'No Comparison' ? `${percentage}% ${comparisonType.toLowerCase()}` : '';
   const fontSize = 10;
   const maxTextLength = Math.floor((innerRadius / fontSize) * 4);
 
@@ -37,36 +37,42 @@ const renderCustomizedLabel = ({
       <text
         x={x}
         y={y}
-        fill="white"
+        fill="black"
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
+        fontWeight="bold"
       >
         {value > 0 && value.toFixed(0)}
       </text>
       <text
         x={x}
         y={y + 18}
-        fill="white"
+        fill="black"
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
-        fontSize="8"
+        fontSize="12"
+        fontWeight="bold"
       >
         {percent > 0 && `(${(percent * 100).toFixed(0)}%)`}
       </text>
-      <text x={cx} y={cy} dy={-7} textAnchor="middle" fill="#696969">
+      <text x={cx} y={cy} dy={-15} textAnchor="middle" fill="#696969">
         {title}
       </text>
       <text x={cx} y={cy} dy={14} textAnchor="middle" fill="#696969" fontSize="25">
         {totalHours.toFixed(0)}
       </text>
-      <text x={cx} y={cy} dy={24} textAnchor="middle" fill={fillColor} fontSize="10">
-        {adjustedText}
-      </text>
+      {comparisonType !== 'No Comparison' && (
+        <text x={cx} y={cy} dy={35} textAnchor="middle" fill={fillColor} fontSize="12">
+          {adjustedText}
+        </text>
+      )}
     </>
   );
 };
 
-export default function HoursWorkedPieChart({ userData, darkMode, windowSize }) {
+import CustomTooltip from '../../CustomTooltip';
+
+export default function HoursWorkedPieChart({ userData, windowSize, comparisonType, colors }) {
   let innerRadius = 80;
   let outerRadius = 160;
   if (windowSize.width <= 650) {
@@ -74,7 +80,7 @@ export default function HoursWorkedPieChart({ userData, darkMode, windowSize }) 
     outerRadius = 130;
   }
   return (
-    <div className={darkMode ? 'text-light' : ''}>
+    <div>
       <ResponsiveContainer maxWidth={600} maxHeight={600} minWidth={320} minHeight={320}>
         <PieChart>
           <Pie
@@ -82,7 +88,7 @@ export default function HoursWorkedPieChart({ userData, darkMode, windowSize }) 
             cx="50%"
             cy="50%"
             labelLine={false}
-            label={renderCustomizedLabel}
+            label={props => renderCustomizedLabel({ ...props, comparisonType })}
             innerRadius={innerRadius}
             outerRadius={outerRadius}
             fill="#8884d8"
@@ -91,9 +97,10 @@ export default function HoursWorkedPieChart({ userData, darkMode, windowSize }) 
             {Array.isArray(userData) &&
               userData.length > 0 &&
               userData.map((entry, index) => (
-                <Cell key={`cell-${entry.value}`} fill={COLORS[index % COLORS.length]} />
+                <Cell key={`cell-${entry.value}`} fill={colors[index % colors.length]} />
               ))}
           </Pie>
+          <Tooltip content={<CustomTooltip />} />
         </PieChart>
       </ResponsiveContainer>
     </div>

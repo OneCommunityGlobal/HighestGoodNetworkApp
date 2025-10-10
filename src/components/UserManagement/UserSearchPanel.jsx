@@ -45,6 +45,7 @@ function UserSearchPanel({
           className="btn btn-info mr-2 mb-2"
           onClick={handleSetupHistoryPopup}
           style={darkMode ? boxStyleDark : boxStyle}
+          aria-label="Setup History"
         >
           <FontAwesomeIcon className="bell_icon" icon={faBell} />
         </button>
@@ -98,6 +99,7 @@ function UserSearchPanel({
         <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SHOW}</span>
         <select
           id="active-filter-dropdown"
+          style={{marginBottom: "0px"}}
           onChange={e => {
             onActiveFiter(e.target.value);
           }}

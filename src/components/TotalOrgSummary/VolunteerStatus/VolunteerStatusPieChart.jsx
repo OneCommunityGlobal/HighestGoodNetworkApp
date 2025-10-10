@@ -6,9 +6,12 @@ import './VolunteerStatusPieChart.css';
 
 Chart.register(ArcElement);
 
-function VolunteerStatusPieChart(props) {
-  const { totalVolunteers, percentageChange, data: volunteerData } = props.data;
-
+function VolunteerStatusPieChart({
+  data: { totalVolunteers, percentageChange, data: volunteerData },
+  comparisonType,
+}) {
+  // Debug: Log the data used for the chart
+  // console.log('VolunteerStatusPieChart data:', { volunteerData, totalVolunteers });
   const chartData = {
     labels: volunteerData.map(item => item.label),
     datasets: [
@@ -23,15 +26,19 @@ function VolunteerStatusPieChart(props) {
   const options = {
     plugins: {
       datalabels: {
-        color: '#fff',
+        color: '#000',
         font: {
-          size: 16,
+          size: 20,
           weight: 'bolder',
+          lineHeight: 1.8,
         },
-        formatter: value => {
+        formatter: function(value, context) {
           const percentage = ((value / totalVolunteers) * 100).toFixed(0);
-          return `${value}\n(${percentage}%)`;
+          // Show value and percent as two lines for clarity
+          return [`${value}`, `(${percentage}%)`];
         },
+        display: true,
+        offset: 0,
         align: 'center',
         anchor: 'center',
       },
@@ -55,15 +62,17 @@ function VolunteerStatusPieChart(props) {
         <div className="volunteer-status-center">
           <h2 className="volunteer-status-heading">TOTAL VOLUNTEERS</h2>
           <p className="volunteer-count">{totalVolunteers}</p>
-          <p
-            className="percentage-change"
-            style={{ color: percentageChangeColor }}
-            aria-label={`Percentage change: ${percentageChange}% week over week`}
-          >
-            {percentageChange >= 0
-              ? `+${percentageChange}% WEEK OVER WEEK`
-              : `${percentageChange}% WEEK OVER WEEK`}
-          </p>
+          {comparisonType !== 'No Comparison' && (
+            <p
+              className="percentage-change"
+              style={{ color: percentageChangeColor }}
+              aria-label={`Percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
+            >
+              {percentageChange >= 0
+                ? `+${percentageChange}% ${comparisonType.toUpperCase()}`
+                : `${percentageChange}% ${comparisonType.toUpperCase()}`}
+            </p>
+          )}
         </div>
       </div>
       <div className="volunteer-status-labels">
@@ -93,6 +102,7 @@ VolunteerStatusPieChart.propTypes = {
       }),
     ).isRequired,
   }).isRequired,
+  comparisonType: PropTypes.string.isRequired,
 };
 
 export default VolunteerStatusPieChart;

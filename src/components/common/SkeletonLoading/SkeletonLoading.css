@@ -133,6 +133,11 @@
   margin: 0.625rem 0.25rem 0.125rem 0.25rem;
 }
 
+.mx-max-sm-0 {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
 @keyframes skeleton-loading-animation {
   0% {
     background-position: -200% 0;
