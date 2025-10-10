@@ -91,9 +91,9 @@ export function PieChart({
       .append('xhtml:div')
       .html(
         `
-        <label class="switch">
+        <label class="${styles.switch}">
           <input type="checkbox" ${togglePercentage ? 'checked' : ''} />
-          <span class="slider"></span>
+          <span class="${styles.slider}"></span>
         </label>
       `,
       )
@@ -123,12 +123,12 @@ export function PieChart({
 
     const dataReady = pie(tasksData);
 
-    let div = d3.select('.tooltip-donut');
+    let div = d3.select(`.${styles['tooltip-donut']}`);
     if (div.empty()) {
       div = d3
         .select('body')
         .append('div')
-        .attr('class', 'tooltip-donut')
+        .attr('class', styles['tooltip-donut'])
         .style('opacity', 0)
         .style('position', 'absolute')
         .style('pointer-events', 'none');
@@ -192,9 +192,9 @@ export function PieChart({
   return !tasksData || tasksData?.length === 0 ? (
     <div>Loading</div>
   ) : (
-    <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
-      <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-      <div className="pie-chart-legend-container">
+    <div className={`${styles['pie-chart-wrapper']} ${darkMode ? styles['text-light'] : ''}`}>
+      <div id={`pie-chart-container-${pieChartId}`} className={styles['pie-chart']} />
+      <div className={styles['pie-chart-legend-container ']}>
         <div className="pie-chart-legend-table-wrapper">
           <table className={darkMode ? 'pie-chart-legend-table-dark' : 'pie-chart-legend-table'}>
             <thead>
