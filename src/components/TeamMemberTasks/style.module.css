@@ -652,52 +652,6 @@
   }
 }
 
-@media only screen and (min-width: 768px) {
-  .team-member-tasks h1 {
-    font-size: 28px;
-  }
-
-  .remove-child-borders > td {
-    border-top-width: 0 !important;
-  }
-}
-
-@media only screen and (min-width: 768px) {
-  .mobile-view-select {
-    display: none;
-  }
-}
-
-@media only screen and (max-width: 767px) {
-  .hours-btn-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .mobile-view-select {
-    width: 63px;
-    color: white;
-  }
-
-  .responsive-btn-size {
-    display: none;
-  }
-}
-
-@media only screen and (max-width: 530px) {
-  .hours-btn-container {
-    padding: 0;
-    /* preserve min-width:none from one side of the conflict */
-    min-width: none;
-  }
-
-  .team-selector-container {
-    display: flex;
-    flex-direction: column;
-  }
-}
-
 @media only screen and (max-width: 440px) {
   .hours-btn-container {
     column-gap: 0.2em;
