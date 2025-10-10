@@ -185,10 +185,10 @@ p {
   padding: 2.5%;
 }
 
-.item__listing-details h1,
+/* .item__listing-details h1,
 p {
   color: #000;
-}
+} */
 
 .item__rent {
   display: flex;
@@ -337,6 +337,7 @@ p {
 
   .item__navbar-right {
     padding: 1rem 0 0;
+    justify-content: space-between;
   }
 
   .item__navbar{
@@ -347,9 +348,7 @@ p {
     background-color: green;
     padding: 1rem 2rem !important;
   }
-  .item__navbar-right {
-    justify-content: space-between;
-  }
+
   .item__navbar-right h2{
     font-family: sans-serif;
     color: #000000;

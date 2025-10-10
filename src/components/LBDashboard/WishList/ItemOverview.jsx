@@ -1,4 +1,4 @@
-import './ItemOverview.css';
+import './ItemOverview.module.css';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
