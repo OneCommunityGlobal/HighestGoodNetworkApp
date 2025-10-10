@@ -62,7 +62,7 @@
   flex-direction: column;
   justify-content: center;
   border: 1px solid rgba(0, 0, 0, 0.125);
-  background-color: #f3f4f6;
+  /* background-color: #f3f4f6; */
   width: 16rem;
   height: 8rem;
   margin: 1.5rem 0;
@@ -86,7 +86,7 @@
 
 .skeleton-loading-weekly-summaries-report-item {
   border: 1px solid rgba(0, 0, 0, 0.125);
-  background-color: #f3f4f6;
+  /* background-color: #f3f4f6; */
   margin-top: 5px;
   width: 90%;
   height: 1.5rem;
@@ -102,7 +102,7 @@
   display: flex;
   flex-direction: column;
   border: 1px solid rgba(0, 0, 0, 0.125);
-  background-color: #f3f4f6;
+  /* background-color: #f3f4f6; */
   width: 16rem;
   height: 8rem;
   margin-top: 2.5rem;
