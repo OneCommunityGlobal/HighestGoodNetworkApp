@@ -53,7 +53,6 @@ import {
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
-// import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
   getUnreadUserNotifications,

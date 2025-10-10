@@ -1,8 +1,6 @@
 .pie-chart-wrapper {
     display: flex; 
     align-items: center;
-    
-    /* overflow: hidden; */
   }
   .donut-box {
   width: 240px;   /* match the bottom donut look */
@@ -10,7 +8,6 @@
 }
   .pie-chart-wrapper svg,
 .pie-chart-wrapper .recharts-surface {
-  /* border: none !important; */
   outline: none !important;
   box-shadow: none !important;
 }
@@ -149,9 +146,7 @@
 
   
   .pie-chart-legend-table-wrapper {
-    /* height: 27vh; */
     width: 100%;
-    /* border: 1px solid rgba(0, 0, 0, 0.1); */
     overflow-y: auto;
   }
   
@@ -165,7 +160,6 @@
   .pie-chart-legend-table td {
     padding: 8px;
     text-align: left;
-    /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
   }
   
  
@@ -189,7 +183,6 @@
   .pie-chart-legend-table-dark td {
     padding: 8px;
     text-align: left;
-    /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
     color:rgb(236, 233, 233)
   }
   
@@ -197,7 +190,6 @@
   .pie-chart-legend-table-dark th {
     font-weight: bold;
     background: none;
-    /* color: inherit; */
   }
   .pie-chart-legend-table-dark tr{
     background-color: #1f2a40; 

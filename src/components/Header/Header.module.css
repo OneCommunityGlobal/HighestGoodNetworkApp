@@ -132,7 +132,6 @@
   .menuContainer {
     align-items: start;
     flex-direction: column !important;
-    /* width: 100%; */
     padding-left: 50px;
   }
   .mobileMenuDropdown {
