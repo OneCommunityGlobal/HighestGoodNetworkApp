@@ -17,6 +17,7 @@ import '../../Header/DarkMode.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
+import CcUserList from './CCUserList';
 
 const UserProfileModal = props => {
   const {
@@ -393,7 +394,7 @@ const handleCcListUpdate = () => {
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
               :<p>{blueSquare[0]?.description}</p>}
-              {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
+              {/* {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
               <div style={{ marginTop: '10px' }}>
                 <small
                   style={{
@@ -429,7 +430,8 @@ const handleCcListUpdate = () => {
                   ))}
                 </div>
               </div>
-              )}
+              )} */}
+              <CcUserList users={blueSquare[0]?.ccdUsers} />
             </FormGroup>
           </>
         )}
@@ -451,7 +453,7 @@ const handleCcListUpdate = () => {
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
-              {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
+              {/* {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
               <div style={{ marginTop: '10px' }}>
                 <small
                   style={{
@@ -487,7 +489,8 @@ const handleCcListUpdate = () => {
                   ))}
                 </div>
               </div>
-              )}
+              )} */}
+              <CcUserList users={blueSquare[0]?.ccdUsers} />
             </FormGroup>
           </>
         )}
