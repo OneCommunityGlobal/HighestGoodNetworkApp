@@ -1,9 +1,9 @@
-.dark-mode .modal-body p { 
+:global .dark-mode .modal-body p { 
   color: #fff; 
   background-color: transparent; /* no bg by default; apply on hover */
   transition: background-color 120ms ease-in-out;
 }
-.dark-mode .modal-body p:hover {
+:global .dark-mode .modal-body p:hover {
   background-color: #444;
 }
 .team-member-tasks {
@@ -399,6 +399,12 @@
   border-radius: 5px;
   justify-self: end;
   margin-right: -12px;
+
+.review-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
   margin-bottom: -12px;
 }
 

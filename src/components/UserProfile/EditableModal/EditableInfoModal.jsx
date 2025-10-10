@@ -210,9 +210,7 @@ export class EditableInfoModal extends Component {
     } = this.state;
 
     const { darkMode } = this.props;
-    const sanitizedContent = darkMode
-      ? infoContent.replace(/(<[^>]+)>/gi, '$1 style="color: #ffffff">')
-      : infoContent;
+    const sanitizedContent = infoContent;
     return (
       (CanRead) && (
         <div>
