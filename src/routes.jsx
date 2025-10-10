@@ -359,9 +359,9 @@ export default (
         />
 
         <ProtectedRoute
-          path="/pr-dashboard"
+          path="/pr-dashboard/analytics"
           exact
-          component={PRDashboard}
+          component={PRReviewTeamAnalytics}
           fallback
           routePermissions={RoutePermissions.prDashboard}
         />
