@@ -208,7 +208,7 @@ const ExperienceDonutChart = () => {
                     ? '#2c2f4a'
                     : '#eee'
                   : 'transparent',
-                color: isSelected ? (darkMode ? '#fff' : '#000') : darkMode ? '#fff' : '#000',
+                color: darkMode ? '#fff' : '#000',
               }),
               singleValue: base => ({
                 ...base,
