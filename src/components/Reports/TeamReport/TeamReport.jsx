@@ -489,7 +489,7 @@ export function TeamReport({ match }) {
             </div>
           </div>
           <table className="table tableHeader" style={{ marginTop: '10px' }}>
-            <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
+            <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}` }>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <td>
                   <strong>All</strong>
@@ -546,7 +546,7 @@ export function TeamReport({ match }) {
                           See
                         </button>
                         {showMembersForTeam === teamData?._id && (
-                          <div className="mt-2 p-2 border rounded" style={{ backgroundColor: '#f8f9fa' }}>
+                          <div className="mt-2 p-2 border rounded text-muted" style={{ backgroundColor: '#f8f9fa' }}>
                             {allTeamsMembers[index] && allTeamsMembers[index].length > 1 ? (
                               allTeamsMembers[index].map(member => (
                                 <div key={`${teamData?._id}-${member?._id}`} className="mb-1">
