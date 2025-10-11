@@ -213,9 +213,13 @@ const ExperienceDonutChart = () => {
                 ...base,
                 color: darkMode ? '#fff' : '#000',
               }),
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#306AC0' : '#d1d1d1',
+              }),
               multiValueLabel: base => ({
                 ...base,
-                color: darkMode ? 'red' : '#000',
+                color: darkMode ? '#fff' : '#000',
               }),
             }}
           />
@@ -284,6 +288,8 @@ const ExperienceDonutChart = () => {
               labelFormatter={() => 'Experience'}
               contentStyle={{
                 backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+              }}
+              itemStyle={{
                 color: darkMode ? '#fff' : '#000',
               }}
             />
