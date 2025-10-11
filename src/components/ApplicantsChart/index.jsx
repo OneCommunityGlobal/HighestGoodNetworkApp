@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import TimeFilter from './TimeFilter';
 import AgeChart from './AgeChart';
 import fetchApplicantsData from './api';
@@ -12,22 +12,17 @@ function ApplicantsChart() {
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const handleFilterChange = useCallback(async filter => {
+  const handleFilterChange = async filter => {
     setLoading(true);
+    const data = await fetchApplicantsData(filter);
+    setChartData(data);
 
-    try {
-      const data = await fetchApplicantsData(filter);
-      setChartData(data || []);
+    setCompareLabel(
+      filter.selectedOption === 'custom' ? null : `last ${filter.selectedOption.slice(0, -2)}`,
+    );
+    setLoading(false);
+  };
 
-      setCompareLabel(
-        filter.selectedOption === 'custom' ? null : `last ${filter.selectedOption.slice(0, -2)}`,
-      );
-    } catch (error) {
-      setChartData([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
   useEffect(() => {
     handleFilterChange({ selectedOption: 'weekly' });
   }, []);
@@ -36,17 +31,7 @@ function ApplicantsChart() {
     <div className={`${darkMode ? styles.darkMode : ''}`}>
       <div className={`${styles.ApplicantChart} `}>
         <TimeFilter onFilterChange={handleFilterChange} />
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <p>Loading...</p>
-          </div>
-        ) : chartData && chartData.length > 0 ? (
-          <AgeChart data={chartData} compareLabel={compareLabel} />
-        ) : (
-          <div style={{ textAlign: 'center', padding: '20px' }}>
-            <p>No data available</p>
-          </div>
-        )}
+        {loading ? <p>Loading...</p> : <AgeChart data={chartData} compareLabel={compareLabel} />}
       </div>
     </div>
   );
