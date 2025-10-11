@@ -37,7 +37,18 @@ function WBSTasks(props) {
   const [copiedTask, setCopiedTask] = useState(null);
   const myRef = useRef(null);
 
-  const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
+  // Pass projectId to the hook so it can watch for category changes
+  const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId, projectId);
+  
+  // Debug log tasks with category flags when tasks change
+  useEffect(() => {
+    if (tasks && tasks.length > 0) {
+      console.log('[WBS Tasks] Tasks changed, showing current state with flags:');
+      tasks.slice(0, 5).forEach(t => {
+        console.log(`  - Task: "${t.taskName}", Category: "${t.category}", Override: ${t.categoryOverride}, Locked: ${t.categoryLocked}`);
+      });
+    }
+  }, [tasks]);
 
   useEffect(() => {
     if(!isLoading){
