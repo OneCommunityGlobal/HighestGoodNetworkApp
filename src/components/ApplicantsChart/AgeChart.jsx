@@ -8,35 +8,8 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
-import { useSelector } from 'react-redux';
-import { useRef, useEffect, useState } from 'react';
-import styles from './ApplicationChart.module.css';
 
-function AgeChart({ data, compareLabel }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const containerRef = useRef(null);
-  const [chartColors, setChartColors] = useState({
-    gridColor: '#ccc',
-    textColor: '#000',
-    tooltipBg: '#fff',
-    tooltipTextColor: '#000',
-    tooltipBorder: '#ccc',
-    barColor: '#3b82f6',
-  });
-
-  useEffect(() => {
-    if (containerRef.current) {
-      const computedStyle = getComputedStyle(containerRef.current);
-      setChartColors({
-        gridColor: computedStyle.getPropertyValue('--grid-color').trim(),
-        textColor: computedStyle.getPropertyValue('--text-color').trim(),
-        tooltipBg: computedStyle.getPropertyValue('--tooltip-bg').trim(),
-        tooltipTextColor: computedStyle.getPropertyValue('--tooltip-text-color').trim(),
-        tooltipBorder: computedStyle.getPropertyValue('--tooltip-border').trim(),
-        barColor: computedStyle.getPropertyValue('--bar-color').trim(),
-      });
-    }
-  }, [darkMode]);
+function AgeChart({ data, compareLabel, darkMode }) {
   const formatTooltip = (value, name, props) => {
     const { change } = props.payload;
     if (compareLabel && change !== undefined) {
@@ -55,23 +28,30 @@ function AgeChart({ data, compareLabel }) {
 
   return (
     <div
-      ref={containerRef}
-      className={`${styles.ageChartContainer} ${darkMode ? styles.darkMode : ''}`}
+      className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
+      style={{
+        width: '100%', // take full available width
+        maxWidth: '1000px', // optional: cap at some max width
+        margin: '0 auto',
+        padding: '20px',
+      }}
     >
-      <h2 className={styles.ageChartTitle}>Applicants Grouped by Age</h2>
-      <div className={styles.ageChartWrapper}>
+      <h2 style={{ color: darkMode ? '#fff' : '#000', textAlign: 'center' }}>
+        Applicants Grouped by Age
+      </h2>
+      <div style={{ width: '100%', height: '60vh', minHeight: '350px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 40 }} barSize={60}>
-            <CartesianGrid strokeDasharray="3 3" stroke={chartColors.gridColor} />
+            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#555' : '#ccc'} />
             <XAxis
               dataKey="ageGroup"
               label={{
                 value: 'Age Group',
                 position: 'insideBottom',
                 offset: -5,
-                fill: chartColors.textColor,
+                fill: darkMode ? '#fff' : '#000',
               }}
-              tick={{ fill: chartColors.textColor }}
+              tick={{ fill: darkMode ? '#fff' : '#000' }}
             />
             <YAxis
               label={{
@@ -79,20 +59,20 @@ function AgeChart({ data, compareLabel }) {
                 angle: -90,
                 position: 'insideLeft',
                 offset: -5,
-                fill: chartColors.textColor,
+                fill: darkMode ? '#fff' : '#000',
               }}
-              tick={{ fill: chartColors.textColor }}
+              tick={{ fill: darkMode ? '#fff' : '#000' }}
             />
             <Tooltip
               formatter={formatTooltip}
               contentStyle={{
-                backgroundColor: chartColors.tooltipBg,
-                color: chartColors.tooltipTextColor,
-                border: `1px solid ${chartColors.tooltipBorder}`,
+                backgroundColor: darkMode ? '#fff' : '#fff',
+                color: darkMode ? '#000' : '#000',
+                border: `1px solid ${darkMode ? '#555' : '#ccc'}`,
               }}
             />
-            <Bar dataKey="applicants" fill={chartColors.barColor}>
-              <LabelList dataKey="applicants" position="top" fill={chartColors.textColor} />
+            <Bar dataKey="applicants" fill={darkMode ? '#60a5fa' : '#3b82f6'}>
+              <LabelList dataKey="applicants" position="top" fill={darkMode ? '#fff' : '#000'} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
