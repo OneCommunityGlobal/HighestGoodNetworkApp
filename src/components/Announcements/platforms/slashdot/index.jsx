@@ -313,7 +313,7 @@ function SlashdotAutoPoster({ platform }) {
                 placeholder="https://"
               />
               {!trimmedUrl && (
-                <p className="slashdot-field__hint">Paste the canonical article or project URL.</p>
+                <p className="slashdot-field__hint">Paste an article or project URL.</p>
               )}
               {highlightUrl && (
                 <p className="slashdot-field__error">
@@ -344,11 +344,7 @@ function SlashdotAutoPoster({ platform }) {
                 className="slashdot-field__input"
                 placeholder="e.g. volunteer-tech"
               />
-              {!trimmedDept && (
-                <p className="slashdot-field__hint">
-                  Set the playful department label Slashdot shows under the headline.
-                </p>
-              )}
+              {!trimmedDept && <p className="slashdot-field__hint"> Department label. </p>}
               {highlightDept && (
                 <p className="slashdot-field__error">
                   Use a short slug-style phrase with lowercase letters and dashes.
@@ -513,10 +509,7 @@ function SlashdotAutoPoster({ platform }) {
       ) : (
         <section className="slashdot-card slashdot-card--scheduler">
           <h3>Schedule Slashdot Post</h3>
-          <p>
-            Draft content captured from the composer. Scheduling controls will live here—edit the
-            copy below or switch back to Make Post for more changes.
-          </p>
+          <p>Scheduled posts.</p>
           <label htmlFor="slashdot-schedule-content">Scheduled draft</label>
           <textarea
             id="slashdot-schedule-content"
