@@ -1,229 +1,297 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import axios from 'axios';
-import { Pie } from 'react-chartjs-2';
-import 'chart.js/auto';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import './ExperienceDonutChart.css';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import DatePicker from 'react-datepicker';
+import Select from 'react-select';
+import 'react-datepicker/dist/react-datepicker.css';
+import { ApiEndpoint } from '~/utils/URL';
 
-function LoadingSpinner() {
-  return <div className="spinner">Loading...</div>;
-}
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042'];
 
-function ExperienceDonutChart() {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+const ExperienceDonutChart = () => {
+  const [data, setData] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [noData, setNoData] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
-  const [chartData, setChartData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
 
-  const segmentColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'];
-  const experienceLabels = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const ro = new ResizeObserver(entries => {
+      const w = entries[0]?.contentRect?.width || 0;
+      setContainerWidth(w);
+    });
+    ro.observe(containerRef.current);
+    return () => ro.disconnect();
+  }, []);
 
-  // Helper to fetch data with given filters
-  const fetchDataWithFilters = async ({
-    startDate: filterStartDate,
-    endDate: filterEndDate,
-    roles: filterRoles,
-  }) => {
+  const isNarrow = containerWidth && containerWidth < 520;
+
+  const fontSizeFor = percent => {
+    if (containerWidth < 320) return percent < 0.12 ? 9 : 10;
+    if (containerWidth < 400) return percent < 0.12 ? 10 : 11;
+    if (containerWidth < 520) return percent < 0.12 ? 11 : 12;
+    return 13;
+  };
+
+  const renderInsideLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, payload }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) / 2;
+    const rad = (-midAngle * Math.PI) / 180;
+    const x = cx + radius * Math.cos(rad);
+    const y = cy + radius * Math.sin(rad);
+    const txt = `${payload.experience} (${payload.count})`;
+    return (
+      <text
+        x={x}
+        y={y}
+        fill={darkMode ? '#fff' : '#000'}
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize={fontSizeFor(percent)}
+        style={{ pointerEvents: 'none' }}
+      >
+        {txt}
+      </text>
+    );
+  };
+
+  const renderOutsideLabel = ({ experience, count, percentage }) =>
+    `${experience} - ${count} (${percentage}%)`;
+
+  const fetchData = async () => {
     setLoading(true);
-    setError(null);
-
+    setNoData(false);
     try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No token found. Please log in.');
-
-      const url = 'http://localhost:4500/api/experience-breakdown';
       const params = {};
-
-      if (filterStartDate && filterEndDate) {
-        params.startDate = filterStartDate;
-        params.endDate = filterEndDate;
-      } else if (filterRoles && filterRoles.length > 0) {
-        params.roles = filterRoles.join(',');
-      }
-
-      const response = await axios.get(url, {
-        headers: { Authorization: token },
+      if (startDate) params.startDate = startDate.toISOString().split('T')[0];
+      if (endDate) params.endDate = endDate.toISOString().split('T')[0];
+      if (selectedRoles.length > 0) params.roles = selectedRoles.map(r => r.value).join(',');
+      const res = await axios.get(`${ApiEndpoint}/applicants/experience-breakdown`, {
         params,
       });
-
-      const { data } = response;
-
-      if (!data || data.length === 0) {
-        setChartData(null);
-        setLoading(false);
-        return;
+      setData(res.data);
+      if (res.data.length === 0) setNoData(true);
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setData([]);
+        setNoData(true);
+      } else {
+        console.error('Error fetching chart data:', error);
       }
-
-      const counts = experienceLabels.map(label => {
-        const found = data.find(d => d.experience === label);
-        return found ? found.count : 0;
-      });
-
-      const totalCount = counts.reduce((a, b) => a + b, 0);
-
-      const chart = {
-        labels: experienceLabels,
-        datasets: [
-          {
-            data: counts,
-            backgroundColor: segmentColors,
-            hoverOffset: 20,
-          },
-        ],
-      };
-
-      setChartData({ chart, totalCount });
-    } catch (err) {
-      setError(err.response?.data?.message || err.message || 'Error fetching data.');
-      setChartData(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch initial data with no filters
+  const fetchAllRoles = async () => {
+    try {
+      const res = await axios.get(`${ApiEndpoint}/applicants/experience-roles`);
+      const options = res.data.map(role => ({ value: role, label: role }));
+      setRoles(options);
+    } catch (error) {
+      console.error('Error fetching roles:', error);
+    }
+  };
+
   useEffect(() => {
-    fetchDataWithFilters({ startDate: '', endDate: '', roles: [] });
+    fetchData();
+    fetchAllRoles();
   }, []);
 
-  // Handle Roles change: clear dates, fetch by roles
-  const handleRoleChange = e => {
-    const newRoles = Array.from(e.target.selectedOptions, option => option.value);
-    setSelectedRoles(newRoles);
-
-    // Clear dates
-    if (startDate !== '' || endDate !== '') {
-      setStartDate('');
-      setEndDate('');
-    }
-
-    fetchDataWithFilters({ roles: newRoles, startDate: '', endDate: '' });
-  };
-
-  // Handle Start Date change: clear roles, fetch if endDate present
-  const handleStartDateChange = e => {
-    const newStart = e.target.value;
-    setStartDate(newStart);
-
-    if (selectedRoles.length > 0) {
-      setSelectedRoles([]);
-    }
-
-    if (newStart && endDate) {
-      fetchDataWithFilters({ startDate: newStart, endDate, roles: [] });
-    }
-  };
-
-  // Handle End Date change: clear roles, fetch if startDate present
-  const handleEndDateChange = e => {
-    const newEnd = e.target.value;
-    setEndDate(newEnd);
-
-    if (selectedRoles.length > 0) {
-      setSelectedRoles([]);
-    }
-
-    if (startDate && newEnd) {
-      fetchDataWithFilters({ startDate, endDate: newEnd, roles: [] });
-    }
-  };
-
-  // Optionally, you can keep the apply button for manual fetch or remove it since we fetch on change now
-
-  const options = chartData
-    ? {
-        cutout: '70%',
-        plugins: {
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              label: context => {
-                const count = context.parsed || 0;
-                const total = chartData.totalCount || 1;
-                const percentage = ((count / total) * 100).toFixed(1);
-                return `${context.label}: ${percentage}% (${count})`;
-              },
-            },
-          },
-          datalabels: {
-            color: '#fff',
-            font: {
-              weight: 'bold',
-              size: 14,
-            },
-            formatter: value => {
-              const count = value;
-              const total = chartData.totalCount || 1;
-              const percentage = ((count / total) * 100).toFixed(1);
-              return `${percentage}%\n(${count})`;
-            },
-          },
-          legend: {
-            display: false,
-          },
-        },
-        responsive: true,
-        maintainAspectRatio: false,
-      }
-    : {};
-
   return (
-    <div className="chart-container">
-      <h2>Breakdown of Applicants by Experience</h2>
-
-      <div className="filter-section">
-        <div className="filter-group">
-          <label htmlFor="startDate">Start Date</label>
-          <input
-            id="startDate"
-            type="date"
-            value={startDate}
-            onChange={handleStartDateChange}
-            max={endDate || ''}
+    <div
+      ref={containerRef}
+      className={`${darkMode ? 'bg-oxford-blue text-light' : ''}`}
+      style={{
+        padding: '20px',
+        width: '100%',
+        minHeight: '100vh',
+      }}
+    >
+      {/* Filters */}
+      <div
+        className={`mb-6 rounded-lg shadow ${darkMode ? 'bg-space-cadet text-light' : 'bg-white'}`}
+        style={{
+          padding: '15px 20px',
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 30,
+          alignItems: 'flex-end',
+        }}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label
+            htmlFor="startDate"
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              marginBottom: 5,
+              color: darkMode ? '#fff' : '#000',
+            }}
+          >
+            Start Date
+          </label>
+          <DatePicker
+            selected={startDate}
+            onChange={setStartDate}
+            placeholderText="Select start date"
+            className={darkMode ? 'bg-space-cadet text-light dark-mode-placeholder' : ''}
           />
         </div>
 
-        <div className="filter-group">
-          <label htmlFor="endDate">End Date</label>
-          <input
-            id="endDate"
-            type="date"
-            value={endDate}
-            onChange={handleEndDateChange}
-            min={startDate || ''}
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <label
+            htmlFor="endDate"
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              marginBottom: 5,
+              color: darkMode ? '#fff' : '#000',
+            }}
+          >
+            End Date
+          </label>
+          <DatePicker
+            selected={endDate}
+            onChange={setEndDate}
+            placeholderText="Select end date"
+            className={darkMode ? 'bg-space-cadet text-light dark-mode-placeholder' : ''}
           />
         </div>
 
-        <div className="filter-group">
-          <label htmlFor="roles">Roles</label>
-          <select id="roles" multiple value={selectedRoles} onChange={handleRoleChange}>
-            <option value="Frontend Developer">Frontend Developer</option>
-            <option value="DevOps Engineer">DevOps Engineer</option>
-            <option value="Project Manager">Project Manager</option>
-            <option value="Junior Developer">Junior Developer</option>
-            <option value="Full Stack Developer">Full Stack Developer</option>
-          </select>
+        <div style={{ display: 'flex', flexDirection: 'column', minWidth: 250 }}>
+          <label
+            htmlFor="roles"
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              marginBottom: 5,
+              color: darkMode ? '#fff' : '#000',
+            }}
+          >
+            Roles
+          </label>
+          <Select
+            isMulti
+            options={roles}
+            value={selectedRoles}
+            onChange={setSelectedRoles}
+            placeholder="Select roles"
+            classNamePrefix={darkMode ? 'react-select-dark' : 'react-select'}
+            styles={{
+              control: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+              }),
+              option: (base, { isFocused, isSelected }) => ({
+                ...base,
+                backgroundColor: isSelected
+                  ? darkMode
+                    ? '#4a4f74'
+                    : '#d1d1d1'
+                  : isFocused
+                  ? darkMode
+                    ? '#2c2f4a'
+                    : '#eee'
+                  : 'transparent',
+                color: isSelected ? (darkMode ? '#fff' : '#000') : darkMode ? '#fff' : '#000',
+              }),
+              singleValue: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#000',
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? 'red' : '#000',
+              }),
+            }}
+          />
         </div>
 
-        {/* Optional: Remove if not needed */}
-        {/* <button type="button" onClick={() => fetchDataWithFilters({ startDate, endDate, roles: selectedRoles })}>
+        <button
+          onClick={fetchData}
+          style={{
+            marginLeft: 'auto',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            padding: '8px 16px',
+            borderRadius: 4,
+            cursor: 'pointer',
+            fontWeight: 600,
+          }}
+        >
           Apply Filters
-        </button> */}
+        </button>
       </div>
 
-      <div className="chart-area" style={{ minHeight: '320px', position: 'relative' }}>
-        {loading && <LoadingSpinner />}
-        {!loading && error && <p className="error-message">{error}</p>}
-        {!loading && !error && !chartData && <p className="no-data-available">No Data Available</p>}
-        {!loading && chartData && (
-          <Pie data={chartData.chart} options={options} plugins={[ChartDataLabels]} />
-        )}
-      </div>
+      {/* Chart or Message */}
+      {loading && <p style={{ textAlign: 'center' }}>Loading...</p>}
+
+      {noData && !loading && (
+        <div style={{ textAlign: 'center', marginTop: 40, color: darkMode ? '#ccc' : '#777' }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ width: 60, height: 60, marginBottom: 10 }}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M9 13h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v4a2 2 0 002 2m2 0v5a2 2 0 004 0v-5"
+            />
+          </svg>
+          <p style={{ fontSize: 18 }}>No data available for the selected filters.</p>
+        </div>
+      )}
+
+      {!loading && !noData && data.length > 0 && (
+        <ResponsiveContainer width="100%" height={320}>
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey="count"
+              nameKey="experience"
+              cx="50%"
+              cy="50%"
+              innerRadius={isNarrow ? 40 : 0}
+              outerRadius={Math.max(90, Math.min(130, Math.floor(containerWidth / 3)))}
+              labelLine={!isNarrow}
+              label={isNarrow ? renderInsideLabel : renderOutsideLabel}
+            >
+              {data.map((entry, index) => (
+                <Cell key={entry.experience} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip
+              formatter={value => [`${value}`, 'Applicants']}
+              labelFormatter={() => 'Experience'}
+              contentStyle={{
+                backgroundColor: darkMode ? '#1b1f3b' : '#fff',
+                color: darkMode ? '#fff' : '#000',
+              }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
-}
+};
 
 export default ExperienceDonutChart;
