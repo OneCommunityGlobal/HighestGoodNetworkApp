@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import CommentSection from './CommentSection/CommentSection';
-import './Activity.css';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Typography from '@mui/material/Typography';
+import Feedback from './FeedBackSection/Feedback';
+import { feedbackData } from './FeedbackData';
+import styles from './Activity.module.css';
 
 const data = {
   eventName: 'Event Name',
@@ -13,7 +19,7 @@ const data = {
   eventCapacity: '7/20',
   eventRating: 4,
   eventStatus: 'Activated',
-  eventStatusClass: 'status-active',
+  createdAt: '2025-09-20',
   eventDescription:
     'this is activity comments. this is activity comments. this is activity comments. this is activity comments. this is activity comments.',
   eventParticipates: [{ name: 'Summer' }, { name: 'Jimmy' }],
@@ -47,30 +53,85 @@ const data = {
 };
 
 function Activity() {
-  const [tab, setTab] = useState('Description');
+  const darkMode = useSelector(state => state.theme?.darkMode);
+  const [tab, setTab] = useState('Feedback');
   const [event, setEvent] = useState(data);
-
-  const handleTabClick = tabName => {
-    setTab(tabName);
-  };
+  const [viewSelected, setViewSelected] = useState('Host');
+  const [reviewsChecked, setReviewsChecked] = useState(true);
+  const [suggestionChecked, setSuggestionChecked] = useState(false);
+  const [feedbackList, setFeedbackList] = useState(feedbackData);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const views = ['Host', 'Participant'];
 
   useEffect(() => {
     setEvent(data);
-  }, [data]);
+  }, []);
 
   return (
-    <div className="activity-container">
-      <div className="activity-event-card">
-        <div className="activity-event-header">
-          <div className="activity-event-image">Participated</div>
-          <div className="activity-event-details">
-            <p className="activity-event-type">{event.eventType}</p>
-            <h2 className="activity-event-title">{event.eventName}</h2>
-            <p className="activity-event-location">{event.eventLocation}</p>
-            <a href="https://devforum.zoom.us" className="activity-event-link">
-              {event.eventLink}
-            </a>
-            <div className="activity-event-info">
+    <div className={`${styles.activityContainer} ${darkMode ? styles.activityContainerDark : ''}`}>
+      <div
+        className={`${styles.activityEventCard} ${darkMode ? styles.activityEventCardDark : ''}`}
+      >
+        <div className={styles.activityEventHeader}>
+          <div className={styles.activityEventImage}>Participated</div>
+
+          <div
+            className={`${styles.activityEventDetails} ${
+              darkMode ? styles.activityEventDetailsDark : ''
+            }`}
+          >
+            <div className={styles.titlesAndViews}>
+              <div className={styles.titles}>
+                <p
+                  className={`${styles.activityEventType} ${
+                    darkMode ? styles.activityEventTypeDark : ''
+                  }`}
+                >
+                  {event.eventType}
+                </p>
+                <h2
+                  className={`${styles.activityEventTitle} ${
+                    darkMode ? styles.activityEventTitleDark : ''
+                  }`}
+                >
+                  {event.eventName}
+                </h2>
+                <p
+                  className={`${styles.activityEventLocation} ${
+                    darkMode ? styles.activityEventLocationDark : ''
+                  }`}
+                >
+                  {event.eventLocation}
+                </p>
+                <a
+                  href={event.eventLink}
+                  className={styles.activityEventLink}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {event.eventLink}
+                </a>
+              </div>
+
+              <div className={`${styles.viewToggler} ${darkMode ? styles.viewTogglerDark : ''}`}>
+                {views.map(sec => (
+                  <button
+                    key={sec}
+                    type="button"
+                    onClick={() => setViewSelected(sec)}
+                    className={`${styles.activityTab} ${viewSelected === sec ? styles.active : ''}`}
+                  >
+                    {sec}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div
+              className={`${styles.activityEventInfo} ${
+                darkMode ? styles.activityEventInfoDark : ''
+              }`}
+            >
               <div>
                 <strong>Date</strong>
                 <br />
@@ -89,18 +150,18 @@ function Activity() {
               <div>
                 <strong>Capacity</strong>
                 <br />
-                <span className="activity-capacity">{event.eventCapacity}</span>
+                <span className={styles.activityCapacity}>{event.eventCapacity}</span>
               </div>
               <div>
                 <strong>Overall Rating</strong>
                 <br />
                 {Array.from({ length: event.eventRating }, (_, i) => (
-                  <span key={i} className="activity-star">
+                  <span key={i} className={styles.activityStar}>
                     ★
                   </span>
                 ))}
                 {Array.from({ length: 5 - event.eventRating }, (_, i) => (
-                  <span key={i} className="activity-star-empty">
+                  <span key={i} className={styles.activityStarEmpty}>
                     ☆
                   </span>
                 ))}
@@ -108,141 +169,177 @@ function Activity() {
               <div>
                 <strong>Status</strong>
                 <br />
-                <span className="activity-status-active">{event.eventStatus}</span>
+                <span className={styles.activityStatusActive}>{event.eventStatus}</span>
               </div>
+
+              {viewSelected === 'Host' && (
+                <div>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={reviewsChecked}
+                        onChange={e => setReviewsChecked(e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label={
+                      <Typography
+                        className={`${styles.switchToggle} ${
+                          darkMode ? styles.switchToggleDark : ''
+                        }`}
+                      >
+                        Allow Reviews
+                      </Typography>
+                    }
+                  />
+                  <br />
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={suggestionChecked}
+                        onChange={e => setSuggestionChecked(e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label={
+                      <Typography
+                        className={`${styles.switchToggle} ${
+                          darkMode ? styles.switchToggleDark : ''
+                        }`}
+                      >
+                        Suggestions Only
+                      </Typography>
+                    }
+                  />
+                </div>
+              )}
             </div>
-            <div className="activity-event-buttons">
-              <button type="button" className="activity-feedback-btn">
-                Feedback
-              </button>
-              <button type="button" className="activity-contact-btn">
-                Contact organizer
-              </button>
-            </div>
+
+            {viewSelected !== 'Host' && (
+              <div className={styles.activityEventButtons}>
+                <button type="button" className={styles.contactBtn}>
+                  Contact organizer
+                </button>
+              </div>
+            )}
           </div>
-          <div className="activity-calendar-box">
-            <div className="activity-calendar-header">September 2024</div>
-            <table className="activity-calendar-table">
+
+          <div className={styles.activityCalendarBox}>
+            <div className={styles.activityCalendarHeader}>September 2024</div>
+            <table
+              className={`${styles.activityCalendarTable} ${
+                darkMode ? styles.activityCalendarTableDark : ''
+              }`}
+            >
               <thead>
                 <tr>
-                  <th>S</th>
-                  <th>M</th>
-                  <th>T</th>
-                  <th>W</th>
-                  <th>T</th>
-                  <th>F</th>
-                  <th>S</th>
+                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                    <th key={day}>{day}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1</td>
-                  <td className="activity-active-date">2</td>
-                  <td>3</td>
-                  <td>4</td>
-                  <td>5</td>
-                  <td>6</td>
-                  <td>7</td>
-                </tr>
-                <tr>
-                  <td>8</td>
-                  <td>9</td>
-                  <td>10</td>
-                  <td>11</td>
-                  <td>12</td>
-                  <td>13</td>
-                  <td>14</td>
-                </tr>
-                <tr>
-                  <td>15</td>
-                  <td>16</td>
-                  <td>17</td>
-                  <td>18</td>
-                  <td>19</td>
-                  <td>20</td>
-                  <td>21</td>
-                </tr>
-                <tr>
-                  <td>22</td>
-                  <td>23</td>
-                  <td>24</td>
-                  <td>25</td>
-                  <td>26</td>
-                  <td>27</td>
-                  <td>28</td>
-                </tr>
-                <tr>
-                  <td>29</td>
-                  <td>30</td>
-                  <td> </td>
-                  <td> </td>
-                  <td> </td>
-                  <td> </td>
-                  <td> </td>
-                </tr>
+                {[0, 1, 2, 3, 4].map(row => (
+                  <tr key={row}>
+                    {Array.from({ length: 7 }).map((_, col) => {
+                      const day = row * 7 + col + 1;
+                      return (
+                        <td key={col} className={day === 2 ? styles.activityActiveDate : ''}>
+                          {day <= 31 ? day : ''}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         </div>
 
-        <div className="activity-event-tabs">
-          <button
-            className={`activity-tab ${tab === 'Description' ? 'active' : ''}`}
-            onClick={() => handleTabClick('Description')}
-            type="button"
-          >
-            Description
-          </button>
-          <button
-            className={`activity-tab ${tab === 'Participates' ? 'active' : ''}`}
-            onClick={() => handleTabClick('Participates')}
-            type="button"
-          >
-            Participates
-          </button>
-          <button
-            className={`activity-tab ${tab === 'Comments' ? 'active' : ''}`}
-            onClick={() => handleTabClick('Comments')}
-            type="button"
-          >
-            Comments
-          </button>
-          <button
-            className={`activity-tab ${tab === 'FAQs' ? 'active' : ''}`}
-            onClick={() => handleTabClick('FAQs')}
-            type="button"
-          >
-            FAQs
-          </button>
+        <div
+          className={`${styles.activityEventTabs} ${darkMode ? styles.activityEventTabsDark : ''}`}
+        >
+          {['Description', 'Participates', 'Comments', 'FAQs', 'Feedback'].map(name => (
+            <button
+              key={name}
+              className={`${styles.activityTab} ${tab === name ? styles.activityTabActive : ''}`}
+              onClick={() => setTab(name)}
+              type="button"
+            >
+              {name}
+            </button>
+          ))}
         </div>
+
         {tab === 'Description' && (
-          <div className="activity-event-description">
+          <div
+            className={
+              darkMode ? styles.activityEventDescriptionDark : styles.activityEventDescription
+            }
+          >
             <p>{event.eventDescription}</p>
           </div>
         )}
+
         {tab === 'Participates' && (
-          <div className="activity-participates-section">
-            {event.eventParticipates.map(participant => (
-              <div key={participant.id} className="activity-participant">
-                <span className={`activity-icon ${Math.random() > 0.5 ? 'purple' : 'blue'}`}>
-                  {participant.name[0]}
+          <div className={styles.activityParticipatesSection}>
+            {event.eventParticipates.map((p, i) => (
+              <div key={i} className={styles.activityParticipant}>
+                <span
+                  className={`${styles.activityIcon} ${
+                    Math.random() > 0.5 ? styles.purple : styles.blue
+                  }`}
+                >
+                  {p.name[0]}
                 </span>
-                <div className="activity-participant-name">{participant.name}</div>
+                <div>{p.name}</div>
               </div>
             ))}
           </div>
         )}
+
         {tab === 'FAQs' && (
-          <div className="activity-faqs-section">
+          <div className={styles.activityFaqsSection}>
             {event.eventFAQs.map(faq => (
-              <div key={faq.id} className="activity-faq">
-                <h3>{faq.question}</h3>
-                <p>{faq.answer}</p>
+              <div key={faq.id} className={styles.activityFaq}>
+                <h3 className={darkMode ? styles.activityFaqDarkTitle : styles.activityFaqTitle}>
+                  {faq.question}
+                </h3>
+                <p className={darkMode ? styles.activityFaqDarkText : styles.activityFaqText}>
+                  {faq.answer}
+                </p>
               </div>
             ))}
           </div>
         )}
-        {tab === 'Comments' && <CommentSection comments={event.eventComments} />}
+
+        {tab === 'Comments' && (
+          <CommentSection comments={event.eventComments} darkMode={darkMode} />
+        )}
+
+        {tab === 'Feedback' && viewSelected === 'Host' && (
+          <Feedback
+            reviewsEnabled={reviewsChecked}
+            suggestionsOnly={suggestionChecked}
+            isHost
+            eventCreatedAt={event.createdAt}
+            feedbackList={feedbackList}
+            setFeedbackList={setFeedbackList}
+          />
+        )}
+
+        {tab === 'Feedback' && viewSelected !== 'Host' && (
+          <Feedback
+            reviewsEnabled={reviewsChecked}
+            suggestionsOnly={suggestionChecked}
+            isHost={false}
+            eventCreatedAt={event.createdAt}
+            showModal={showFeedbackModal}
+            setShowModal={setShowFeedbackModal}
+            feedbackList={feedbackList}
+            setFeedbackList={setFeedbackList}
+          />
+        )}
       </div>
     </div>
   );

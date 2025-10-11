@@ -1,19 +1,38 @@
-import './CommentSection.css';
+import styles from './CommentSection.module.css';
 
-function CommentSection({ comments }) {
+function CommentSection({ comments, darkMode }) {
   return (
     <div>
-      <div className="activity-comments-section">
+      <div
+        className={`${styles.activityCommentsSection} ${
+          darkMode ? styles.activityCommentsSectionDark : ''
+        }`}
+      >
         {comments.map(comment => (
-          <div key={comment.id} className="activity-comment">
-            <div className="activity-comment-user">
-              <span className={`activity-icon ${Math.random() > 0.5 ? 'purple' : 'blue'}`}>
+          <div
+            key={comment.id}
+            className={`${styles.activityComment} ${darkMode ? styles.activityCommentDark : ''}`}
+          >
+            <div className={styles.activityCommentUser}>
+              <span
+                className={`${styles.activityIcon} ${
+                  Math.random() > 0.5 ? styles.purple : styles.blue
+                }`}
+              >
                 {comment.name[0]}
               </span>
             </div>
-            <div className="activity-comment-text">
+            <div
+              className={`${styles.activityCommentText} ${
+                darkMode ? styles.activityCommentTextDark : ''
+              }`}
+            >
               {comment.comment}
-              <div className="activity-comment-footer">
+              <div
+                className={`${styles.activityCommentFooter} ${
+                  darkMode ? styles.activityCommentFooterDark : ''
+                }`}
+              >
                 <span>{comment.name} - </span>
                 <span>{comment.time}</span>
               </div>
