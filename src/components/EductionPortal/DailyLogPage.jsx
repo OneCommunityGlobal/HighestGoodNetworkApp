@@ -17,6 +17,12 @@ const formatMin = (min) => {
 };
 
 export default function DailyLogPage() {
+  const courseOptions = [
+    "Mathematics 101 - Algebra Fundamentals",
+    "English 200 - Creative Writing",
+    "Science 150 - Biology Basics",
+  ];
+
   const [logs, setLogs] = useState([
     {
       log_id: "lg-2",
@@ -30,6 +36,7 @@ export default function DailyLogPage() {
         badge: "Graded (A-)",
         link: "/time-logs/101",
         comments_count: 8,
+        notes: "Worked on quadratic equations practice and reviewed feedback.",
       },
       created_at: "2025-09-10T14:00:00Z",
     },
@@ -43,6 +50,7 @@ export default function DailyLogPage() {
         duration: "1h 30m",
         badge: "Reviewed",
         link: "/time-logs/102",
+        notes: "Drafted a short story outline and edited the introduction.",
       },
       created_at: "2025-09-09T16:00:00Z",
     },
@@ -56,14 +64,21 @@ export default function DailyLogPage() {
         duration: "1h 15m",
         badge: "Pending Review",
         link: "/time-logs/103",
+        notes: "Completed notes on cell structure and watched lecture video.",
       },
       created_at: "2025-09-08T18:00:00Z",
     },
   ]);
 
   const [showForm, setShowForm] = useState(false);
-  const [newLog, setNewLog] = useState({ course: "", duration: "", badge: "Pending Review" });
+  const [newLog, setNewLog] = useState({
+    course: courseOptions[0],
+    duration: "",
+    badge: "Pending Review",
+    notes: "",
+  });
 
+  // ---- stats
   const { totalMin, weekMin, weekCount, activeCourses } = useMemo(() => {
     const now = new Date();
     const weekAgo = new Date(now);
@@ -88,8 +103,8 @@ export default function DailyLogPage() {
 
     return {
       totalMin: tMin,
-      weekMin: wMin || tMin,            
-      weekCount: wCount || logs.length, 
+      weekMin: wMin || tMin,
+      weekCount: wCount || logs.length,
       activeCourses: courseSet.size || 3,
     };
   }, [logs]);
@@ -108,14 +123,20 @@ export default function DailyLogPage() {
         course: newLog.course,
         duration: newLog.duration,
         badge: newLog.badge,
-        link: `/time-logs/${id}`,
+        notes: newLog.notes,
+        link: `/time-logs/${id}`,  // "View" will navigate here
       },
       created_at: nowIso,
     };
 
     setLogs((prev) => [log, ...prev]);
     setShowForm(false);
-    setNewLog({ course: "", duration: "", badge: "Pending Review" });
+    setNewLog({
+      course: courseOptions[0],
+      duration: "",
+      badge: "Pending Review",
+      notes: "",
+    });
   };
 
   return (
@@ -127,19 +148,18 @@ export default function DailyLogPage() {
         </button>
       </div>
 
+      {/* Stats */}
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Total Time Logged</div>
           <div className={styles.statValue}>{formatMin(totalMin)}</div>
           <div className={styles.statSub}>Across all courses</div>
         </div>
-
         <div className={styles.statCard}>
           <div className={styles.statLabel}>This Week</div>
           <div className={styles.statValue}>{formatMin(weekMin)}</div>
           <div className={styles.statSub}>{weekCount} log entries</div>
         </div>
-
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Active Courses</div>
           <div className={styles.statValue}>{activeCourses}</div>
@@ -149,7 +169,6 @@ export default function DailyLogPage() {
 
       <section className={styles.card}>
         <div className={styles.cardHeader}>
-          <span className={styles.headerIcon}>🗓</span>
           <h3 className={styles.headerTitle}>Recent Time Logs</h3>
         </div>
 
@@ -157,14 +176,17 @@ export default function DailyLogPage() {
           <form className={styles.form} onSubmit={handleSave}>
             <div className={styles.formRow}>
               <label>Course</label>
-              <input
-                type="text"
+              <select
                 className={styles.input}
                 value={newLog.course}
                 onChange={(e) => setNewLog({ ...newLog, course: e.target.value })}
-                required
-              />
+              >
+                {courseOptions.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
             </div>
+
             <div className={styles.formRow}>
               <label>Duration</label>
               <input
@@ -176,18 +198,16 @@ export default function DailyLogPage() {
                 required
               />
             </div>
+
             <div className={styles.formRow}>
-              <label>Status</label>
-              <select
-                className={styles.input}
-                value={newLog.badge}
-                onChange={(e) => setNewLog({ ...newLog, badge: e.target.value })}
-              >
-                <option>Pending Review</option>
-                <option>Reviewed</option>
-                <option>Graded (A-)</option>
-                <option>Graded (A)</option>
-              </select>
+              <label>Notes</label>
+              <textarea
+                className={`${styles.input} ${styles.textarea}`}
+                rows={4}
+                placeholder="Describe what you worked on in this time"
+                value={newLog.notes}
+                onChange={(e) => setNewLog({ ...newLog, notes: e.target.value })}
+              />
             </div>
 
             <div className={styles.formActions}>
