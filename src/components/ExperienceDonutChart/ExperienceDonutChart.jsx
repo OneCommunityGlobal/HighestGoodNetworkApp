@@ -261,7 +261,9 @@ const ExperienceDonutChart = () => {
               d="M9 13h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v4a2 2 0 002 2m2 0v5a2 2 0 004 0v-5"
             />
           </svg>
-          <p style={{ fontSize: 18 }}>No data available for the selected filters.</p>
+          <p className={darkMode ? 'text-light' : ''} style={{ fontSize: 18 }}>
+            No data available for the selected filters.
+          </p>
         </div>
       )}
 
