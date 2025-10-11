@@ -37,8 +37,8 @@ function AgeChart({ data, compareLabel }) {
   return (
     <div className={`${styles.AgeChart} ${darkMode ? 'darkMode' : ''}`}>
       <h2 style={{ color: axisColor }}>Applicants grouped by Age</h2>
-      <ResponsiveContainer width="100%" height={500}>
-        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barSize={40}>
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barSize={80}>
           <CartesianGrid stroke={gridColor} strokeDasharray="3 3" strokeWidth={1.5} />
           <XAxis
             dataKey="ageGroup"
