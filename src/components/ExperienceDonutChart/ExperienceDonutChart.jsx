@@ -6,6 +6,7 @@ import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
 import { ApiEndpoint } from '~/utils/URL';
+import Loading from '../common/Loading';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042'];
 
@@ -243,7 +244,7 @@ const ExperienceDonutChart = () => {
       </div>
 
       {/* Chart or Message */}
-      {loading && <p style={{ textAlign: 'center' }}>Loading...</p>}
+      {loading && <Loading align="center" darkMode={darkMode} />}
 
       {noData && !loading && (
         <div style={{ textAlign: 'center', marginTop: 40, color: darkMode ? '#ccc' : '#777' }}>
