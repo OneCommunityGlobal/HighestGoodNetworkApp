@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { Input, Label, Row, Col, Alert, Spinner } from 'reactstrap';
 import { fetchProjects, fetchPlannedCostBreakdown } from './plannedCostService';
-import './PlannedCostDonutChart.css';
+import './PlannedCostDonutChart.module.css';
 
 const COLORS = {
   Plumbing: '#FF6384',
