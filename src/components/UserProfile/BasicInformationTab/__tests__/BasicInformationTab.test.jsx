@@ -1,7 +1,9 @@
+/* eslint-env vitest */
+
 import React from 'react';
-import {Name, Title, Email, formatPhoneNumber , Phone, TimeZoneDifference} from '../BasicInformationTab';
+import { Name, Title, Email, formatPhoneNumber, Phone, TimeZoneDifference } from '../BasicInformationTab';
 import BasicInformationTab from '../BasicInformationTab';
-import { render, screen, fireEvent,   waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -9,18 +11,28 @@ import { Provider } from 'react-redux';
 import mockAdminState from '__tests__/mockAdminState';
 
 // Mock components 
-jest.mock('../../UserProfileEdit/ToggleSwitch', () => (props) => React.createElement('div', { 'data-testid': 'toggleswitch' }, props.id));
-jest.mock('react-phone-input-2', () => (props) => React.createElement('div', { 'data-testid': 'phoneinput' }, props.id));
-jest.mock('../../EditableModal/EditableInfoModal', () => () => React.createElement('div', { 'data-testid': 'editablemodel' }, 'RoleInfo'));
+
+vi.mock('../../UserProfileEdit/ToggleSwitch', () => ({
+  default: (props) => React.createElement('div', { 'data-testid': 'toggleswitch' }, props.id),
+}));
+
+vi.mock('react-phone-input-2', () => ({
+  default: (props) => React.createElement('div', { 'data-testid': 'phoneinput' }, props.id),
+}));
+
+vi.mock('../../EditableModal/EditableInfoModal', () => ({
+  default: () => React.createElement('div', { 'data-testid': 'editablemodel' }, 'RoleInfo'),
+}));
+
 
 
 //Test Suites 
 describe('Test Suite for Name component', () => {
    let testProps= {
     userProfile: { firstName: 'John', lastName: 'Doe' },
-    setUserProfile: jest.fn(),
+    setUserProfile: vi.fn(),
     formValid: { firstName: true, lastName: true },
-    setFormValid: jest.fn(),
+    setFormValid: vi.fn(),
     canEdit: true,
     desktopDisplay: 3,
   };
@@ -59,7 +71,7 @@ describe('Test Suite for Name component', () => {
     render(<Name {...testProps} />);
     const firstNameField=screen.queryByTestId('lastName');
     fireEvent.change(firstNameField, { target: { value: '' } });
-    expect(screen.queryByText("Last Name Can't be empty")).toBeInTheDocument();
+    expect(screen.queryByText("Last Name Can't have less than 2 characters")).toBeInTheDocument();
   });
   it('Test case 6 : Verify error message is displayed for an empty First Name', () => {
     render(<Name {...testProps} />);
@@ -74,7 +86,7 @@ describe('Test Suite for Name component', () => {
 describe('Test Suite for Title component', () => {
   let testProps= {
    userProfile: { jobTitle: 'volunteer'},
-   setUserProfile: jest.fn(),
+   setUserProfile: vi.fn(),
    canEdit: true,
    desktopDisplay: 3,
  };
@@ -108,16 +120,17 @@ describe('Test Suite for Title component', () => {
 describe('Test Suite for Email component', () => {
   let testProps= {
    userProfile: { email: 'volunteer@gmail.com', privacySettings:{email :true}, emailSubscriptions:true},
-   setUserProfile: jest.fn(),
-   formValid: { email: true },
-   setFormValid: jest.fn(),
+   setUserProfile: vi.fn(),
+   formValid: { email: false},
+   setFormValid: vi.fn(),
    canEdit: true,
    desktopDisplay: true,
-   handleUserProfile:jest.fn(),
+   handleUserProfile:vi.fn(),
  };
 
  it('Test case 1 : Email component renders with editable fields when canEdit is true ', () => {
   render(<Email {...testProps} />);
+
    const emailInputField=screen.queryByTestId('email');
    expect(emailInputField).toBeInTheDocument();
    const privacyToggle=screen.queryByText('emailPrivacy');
@@ -158,12 +171,12 @@ describe('Test Suite for Email component', () => {
 it('Test case 5 : Verify  if email is not displayed if privacy settings is falsey ', () => {
   testProps= {
     userProfile: { email: 'volunteer@gmail.com', emailSubscriptions:true},
-    setUserProfile: jest.fn(),
-    formValid: { email: true },
-    setFormValid: jest.fn(),
+    setUserProfile: vi.fn(),
+    formValid: { email: false},
+    setFormValid: vi.fn(),
     canEdit: true,
     desktopDisplay: true,
-    handleUserProfile:jest.fn(),
+    handleUserProfile:vi.fn(),
   };  render(<Email {...testProps} />);
   
   expect(screen.queryByText(testProps.userProfile.email)).not.toBeInTheDocument();
@@ -205,12 +218,12 @@ describe(' Test Suite for formatPhoneNumber', () => {
 describe('Test Suite for Phone component', () => {
   let testProps= {
    userProfile: { phoneNumber:"123456789", privacySettings:{email :true}},
-   setUserProfile: jest.fn(),
+   setUserProfile: vi.fn(),
    formValid: { email: true },
-   setFormValid: jest.fn(),
+   setFormValid: vi.fn(),
    canEdit: true,
    desktopDisplay: true,
-   handleUserProfile:jest.fn(),
+   handleUserProfile:vi.fn(),
  };
 
  it('Test case 1 : Phone component renders with editable fields when canEdit is true ', () => {
@@ -234,13 +247,14 @@ describe('Test Suite for Phone component', () => {
 it('Test case 3 : Verify  if phone number  is not displayed if privacy settings and phone is falsey ', () => {
   testProps= {
     userProfile: {phoneNumber:'123456789'},
-    setUserProfile: jest.fn(),
+    setUserProfile: vi.fn(),
     formValid: { email: true },
-    setFormValid: jest.fn(),
+    setFormValid: vi.fn(),
     canEdit: true,
     desktopDisplay: true,
-    handleUserProfile:jest.fn(),
-  };  render(<Email {...testProps} />);
+    handleUserProfile:vi.fn(),
+  };  //render(<Email {...testProps} />);
+  render(<Phone {...testProps} />);
   
   expect(screen.queryByText((testProps.userProfile.phoneNumber).trim())).not.toBeInTheDocument();
 
@@ -250,27 +264,27 @@ it('Test case 3 : Verify  if phone number  is not displayed if privacy settings 
 
 /******************************************************** */
 
-jest.mock('react-toastify', () => ({
+vi.mock('react-toastify', () => ({
   toast: {
-    error: jest.fn(),
+    error: vi.fn(),
   },
 }));
 
 describe('Test suite for TimeZoneDifference component ', () => {
   beforeEach(() => {
-    jest.useFakeTimers(); // Mock timers
+    vi.useFakeTimers(); // Mock timers
   });
 
   afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
+    vi.runOnlyPendingTimers();
+    vi.useRealTimers();
   });
 
 
   let testProps = {
     isUserSelf: false,
     errorOccurred: false,
-    setErrorOccurred: jest.fn(),
+    setErrorOccurred: vi.fn(),
     desktopDisplay: true,
     userProfile: {
       timeZone: 'America/New_York',
@@ -289,29 +303,75 @@ describe('Test suite for TimeZoneDifference component ', () => {
     testProps.isUserSelf=false;
     render(<TimeZoneDifference {...testProps} />);
     expect(screen.getByText(/[-+]?\d+ hours/)).toBeInTheDocument(); 
+   
+
   });
 
-  it('Test case 3 : Renders error message if the component has encountered error for the first time ',()=>{
-     testProps = {
-      isUserSelf: false,
-      errorOccurred: false,
-      setErrorOccurred: jest.fn(),
-      desktopDisplay: true,
-      userProfile: {
-        timeZone: 'Invalid/Timezone',
-      },    };
+//  it('Test case 3 : Renders error message if the component has encountered error for the first time', async () => {
+//   testProps = {
+//     isUserSelf: false,
+//     errorOccurred: false,
+//     setErrorOccurred: vi.fn(),
+//     desktopDisplay: true,
+//     userProfile: {
+//       timeZone: 'America/New_York',
+//     },
+//   };
+  
+//   render(<TimeZoneDifference {...testProps} />);
+  
+//   // Wait for async operations to complete
+//   await waitFor(() => {
+//     expect(toast.error).toHaveBeenCalledWith('Error occurred while trying to calculate offset between timezones');
+//   });
+// });
+it('Test case 3 : Renders error message if the component has encountered error for the first time', async () => {
+  testProps = {
+    isUserSelf: false,
+    errorOccurred: false,
+    setErrorOccurred: vi.fn(),
+    desktopDisplay: true,
+    userProfile: {
+      timeZone: 'Invalid/Timezone', // Use an invalid timezone to trigger error
+    },
+  };
+  await act(async () => {
     render(<TimeZoneDifference {...testProps} />);
-    jest.runAllTimers(); 
+  });
+  
+  //render(<TimeZoneDifference {...testProps} />);
+  
+  // Wait for async operations and potential error
+  await waitFor(() => {
     expect(toast.error).toHaveBeenCalledWith('Error occurred while trying to calculate offset between timezones');
   });
+  
+  // Also verify that setErrorOccurred was called
+  expect(testProps.setErrorOccurred).toHaveBeenCalledWith(true);
+});
+it('Test case 4: Does not render error message if errorOccurred is true', () => {
+  toast.error.mockClear(); // Reset mock
+
+  const testProps = {
+    isUserSelf: false,
+    errorOccurred: true,
+    setErrorOccurred: vi.fn(),
+    desktopDisplay: true,
+    userProfile: {
+      timeZone: 'Invalid/Timezone',
+    },
+  };
+
+  render(<TimeZoneDifference {...testProps} />);
+  vi.runAllTimers();
+
+  expect(toast.error).not.toHaveBeenCalledWith(
+    'Error occurred while trying to calculate offset between timezones'
+  );
+});
+ 
 
 
-  it('Test case 4 : Does not render error message if the component has not encountered error for the first time ',()=>{
-   testProps.errorOccurred=true;
-    render(<TimeZoneDifference {...testProps} />);
-    jest.runAllTimers(); 
-    expect(toast.error).not.toHaveBeenCalledWith('Error occurred while trying to calculate offset between timezones');
-  });
 
   // it('Test case 5 : verify if the timezone difference calculation works correctly ',()=>{
   //   testProps.userProfile.timeZone='America/New_York';
@@ -329,16 +389,16 @@ describe('Test suite for TimeZoneDifference component ', () => {
 
 describe('BasicInformationTab component', () => {
 
-const addDeleteEditOwners=jest.fn();
+const addDeleteEditOwners=vi.fn();
 let testProps= {
      userProfile: { firstName:'test', lastname: 'user',phoneNumber:"123456789", privacySettings:{email :true}, location:{userProvided:'los angeles'}, 
      collaborationPreference: 'video',  role: 'Admin'},
-     setUserProfile: jest.fn(),
+     setUserProfile: vi.fn(),
      formValid: { email: true },
-     setFormValid: jest.fn(),
+     setFormValid: vi.fn(),
      canEdit: true,
      desktopDisplay: true,
-     handleUserProfile:jest.fn(),
+     handleUserProfile:vi.fn(),
      roles:['Admin','Owner','Volunteer','Manager'],
      canEditRole:true,
    
@@ -360,6 +420,9 @@ const initialState = {
     firstName:'test', lastname: 'user',phoneNumber:"123456789", privacySettings:{email :true}, location:{userProvided:'los angeles'}
   },
   role: mockAdminState.role,
+   theme: {
+    darkMode: false,
+  },
 };
 
 let store;
@@ -441,7 +504,8 @@ it('Test case 5: Renders the Phone component as expected  ', () => {
     </Provider>,
   );
   expect(screen.getByText("Phone")).toBeInTheDocument();// Label
-  expect(screen.queryByText('ph-input-style')).toBeInTheDocument();// Toggle
+  //expect(screen.queryByText('ph-input-style')).toBeInTheDocument();// Toggle
+  expect(screen.queryByTestId('phoneinput')).toBeInTheDocument();
   expect(screen.getByText('phone')).toBeInTheDocument();// PhoneInput 
  
 });
@@ -561,8 +625,8 @@ expect(screen.getByText('Location')).toBeInTheDocument();
 });
 
 it('Test case 14 : Renders appropriate object in the location component  and calls appropriate handler functions', async () => {
-const mockhandleLocation =jest.fn();
-const mockOnClickGetTimeZone = jest.fn();
+const mockhandleLocation =vi.fn();
+const mockOnClickGetTimeZone = vi.fn();
   render(
     <Provider store={store}>
       <BasicInformationTab

@@ -21,7 +21,7 @@ import { isString } from 'lodash';
 import { toast } from 'react-toastify';
 import { useDispatch } from 'react-redux';
 
-const Name = props => {
+export const Name = props => {
   const {
     userProfile,
     setUserProfile,
@@ -141,7 +141,7 @@ const Name = props => {
   );
 };
 
-  const Title = props => {
+  export const Title = props => {
   const { userProfile, setUserProfile, canEdit, desktopDisplay, darkMode } = props;
   const { jobTitle } = userProfile;
 
@@ -197,7 +197,7 @@ const Name = props => {
 };
 
 
-const Email = props => {
+export const Email = props => {
   const {
     userProfile,
     setUserProfile,
