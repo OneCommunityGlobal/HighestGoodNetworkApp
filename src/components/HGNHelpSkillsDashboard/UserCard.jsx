@@ -4,7 +4,7 @@ import emailIcon from './style/email_icon.png';
 import slackIcon from './style/slack_icon.png';
 
 function UserCard({ user }) {
-  const { name, email, slack, score, topSkills } = user;
+  const { name, email, slack, score, topSkills = [] } = user;
 
   const getScoreColor = userScore => {
     if (userScore >= 5) return '#00754A';
