@@ -1,0 +1,161 @@
+.email-sender {
+  padding: 20px 0;
+}
+
+.email-sender .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.email-sender .form-label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.email-sender .form-control:focus,
+.email-sender .form-select:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.email-sender .badge {
+  font-size: 0.75em;
+}
+
+.email-sender .btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.email-sender .spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+}
+
+.email-sender .list-group-item {
+  border-left: none;
+  border-right: none;
+  padding: 0.25rem 0;
+}
+
+.email-sender .list-group-item:first-child {
+  border-top: none;
+}
+
+.email-sender .list-group-item:last-child {
+  border-bottom: none;
+}
+
+.email-sender .list-group-item code {
+  background-color: #f8f9fa;
+  color: #e83e8c;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+.email-sender .modal-body .border {
+  border-radius: 0.375rem;
+  min-height: 200px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.email-sender .text-muted {
+  font-size: 0.875em;
+}
+
+.email-sender .text-danger {
+  color: #dc3545 !important;
+}
+
+/* Quick add recipient styling */
+.email-sender .d-flex .form-control {
+  flex: 1;
+}
+
+.email-sender .d-flex .btn {
+  flex-shrink: 0;
+}
+
+/* Variable form styling */
+.email-sender .card .card-header h6 {
+  color: #495057;
+  font-weight: 600;
+}
+
+.email-sender .card .card-body {
+  background-color: #f8f9fa;
+}
+
+/* Template info panel styling */
+.email-sender .card .card-body strong {
+  color: #495057;
+}
+
+/* Form validation styling */
+.email-sender .is-invalid {
+  border-color: #dc3545;
+}
+
+.email-sender .invalid-feedback {
+  display: block;
+}
+
+/* Alert styling */
+.email-sender .alert {
+  border-radius: 0.375rem;
+}
+
+.email-sender .alert-success {
+  background-color: #d1e7dd;
+  border-color: #badbcc;
+  color: #0f5132;
+}
+
+.email-sender .alert-danger {
+  background-color: #f8d7da;
+  border-color: #f5c2c7;
+  color: #842029;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .email-sender .card-header .btn {
+    margin-bottom: 0.5rem;
+  }
+  
+  .email-sender .card-header > div {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .email-sender .card-header > div .btn {
+    margin-right: 0;
+    margin-bottom: 0.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .email-sender .btn-sm {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.75rem;
+  }
+  
+  .email-sender .modal-body {
+    padding: 1rem 0.5rem;
+  }
+  
+  .email-sender .d-flex {
+    flex-direction: column;
+  }
+  
+  .email-sender .d-flex .form-control {
+    margin-bottom: 0.5rem;
+  }
+  
+  .email-sender .d-flex .btn {
+    align-self: flex-start;
+  }
+}

@@ -78,6 +78,7 @@ import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
 // lbdashboard
 import wishListReducer from './lbdashboard/wishListItemReducer';
+import emailTemplateReducer from './emailTemplateReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -146,6 +147,7 @@ const localReducers = {
   // lbdashboard
   lbmessaging: messageReducer,
   lbuserpreferences: userPreferencesReducer,
+  emailTemplates: emailTemplateReducer,
 };
 
 const sessionReducers = {

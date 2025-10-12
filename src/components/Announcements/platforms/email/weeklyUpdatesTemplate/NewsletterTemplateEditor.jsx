@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import ReactDOMServer from 'react-dom/server';
 import { Editor } from '@tinymce/tinymce-react';
+import { IntegratedEmailSender } from '../../../../EmailTemplateManagement';
 import {
   Button,
   Input,
@@ -44,6 +45,7 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
   const [isBroadcasting, setIsBroadcasting] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showIntegratedSender, setShowIntegratedSender] = useState(false);
 
   // Form validation
   const [validationErrors, setValidationErrors] = useState({});
@@ -381,6 +383,14 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
         <div className="toolbar-right">
           <Button color="secondary" size="md" onClick={toggleFullscreen} className="fullscreen-btn">
             {isFullscreen ? '⤓ Exit Fullscreen' : '⤢ Fullscreen'}
+          </Button>
+          <Button
+            color="info"
+            size="md"
+            onClick={() => setShowIntegratedSender(true)}
+            className="template-sender-btn me-2"
+          >
+            📧 Send with Templates
           </Button>
           <Button
             color="primary"
@@ -913,6 +923,28 @@ function NewsletterTemplateEditor({ onContentChange, onSendEmails, onBroadcastEm
           </div>
         </div>
       </div>
+
+      {/* Integrated Email Sender Modal */}
+      <Modal
+        isOpen={showIntegratedSender}
+        toggle={() => setShowIntegratedSender(false)}
+        size="xl"
+        className={`integrated-sender-modal ${darkMode ? 'dark-mode' : ''}`}
+      >
+        <ModalHeader
+          toggle={() => setShowIntegratedSender(false)}
+          className="integrated-sender-header"
+        >
+          📧 Send Email with Templates
+        </ModalHeader>
+        <ModalBody className="integrated-sender-body p-0">
+          <IntegratedEmailSender
+            initialContent={previewHtml}
+            initialSubject={templateData.subject}
+            onClose={() => setShowIntegratedSender(false)}
+          />
+        </ModalBody>
+      </Modal>
     </div>
   );
 }

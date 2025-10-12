@@ -33,6 +33,7 @@ import SubscribePage from './components/EmailSubscribeForm/SubscribePage';
 import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import EmailSender from './components/common/EmailSender/EmailSender';
+import { EmailTemplateManagement } from './components/EmailTemplateManagement';
 
 import FormEditor from './components/Forms/FormEditor';
 import FormViewer from './components/Forms/FormViewer';
@@ -488,6 +489,13 @@ export default (
           exact
           component={EmailSender}
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
+        />
+        <ProtectedRoute
+          path="/email-templates"
+          exact
+          component={EmailTemplateManagement}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
           routePermissions={RoutePermissions.projects}
         />
 

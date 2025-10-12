@@ -1,9 +1,10 @@
 /* Announcements/Announcements.jsx */
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Announcements.css';
 import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
+import { useHistory, useLocation } from 'react-router-dom';
 import SocialMediaComposer from './SocialMediaComposer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
@@ -12,8 +13,53 @@ import ReactTooltip from 'react-tooltip';
 import EmailPanel from './platforms/email/index.jsx';
 
 function Announcements({ title, email: initialEmail }) {
-  const [activeTab, setActiveTab] = useState('email');
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
+  const location = useLocation();
+
+  // Get active tab from URL query params, default to 'email'
+  const getActiveTabFromURL = () => {
+    const urlParams = new URLSearchParams(location.search);
+    const platform = urlParams.get('platform');
+    return platform || 'email';
+  };
+
+  const [activeTab, setActiveTab] = useState(getActiveTabFromURL());
+
+  // Update URL when activeTab changes
+  const updateURL = tab => {
+    const urlParams = new URLSearchParams();
+
+    // Clear all existing parameters and set only the platform
+    urlParams.set('platform', tab);
+
+    // If switching to email platform, preserve email-specific tab parameter
+    if (tab === 'email') {
+      const currentParams = new URLSearchParams(location.search);
+      const currentTab = currentParams.get('tab');
+      if (currentTab && ['sender', 'templates'].includes(currentTab)) {
+        urlParams.set('tab', currentTab);
+      }
+    }
+
+    const newSearch = urlParams.toString();
+    const newURL = `${location.pathname}?${newSearch}`;
+    history.replace(newURL);
+  };
+
+  // Handle tab change
+  const handleTabChange = tab => {
+    setActiveTab(tab);
+    updateURL(tab);
+  };
+
+  // Update activeTab when URL changes (e.g., browser back/forward)
+  useEffect(() => {
+    const newTab = getActiveTabFromURL();
+    if (newTab !== activeTab) {
+      setActiveTab(newTab);
+    }
+  }, [location.search]);
 
   const getIconColor = id => {
     switch (id) {
@@ -79,7 +125,7 @@ function Announcements({ title, email: initialEmail }) {
             <NavLink
               data-tip={label}
               className={classnames('tab-nav-item', { active: activeTab === id, dark: darkMode })}
-              onClick={() => setActiveTab(id)}
+              onClick={() => handleTabChange(id)}
               aria-selected={activeTab === id}
             >
               <div className="tab-icon">

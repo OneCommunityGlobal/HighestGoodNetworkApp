@@ -1,0 +1,223 @@
+.email-template-management {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* Global styles for all email template components */
+.email-template-management .card {
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border-radius: 0.5rem;
+}
+
+.email-template-management .card-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1.25rem 1.5rem;
+}
+
+.email-template-management .card-body {
+  padding: 1.5rem;
+}
+
+.email-template-management .btn {
+  border-radius: 0.375rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+}
+
+.email-template-management .btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+.email-template-management .btn-primary {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.email-template-management .btn-primary:hover {
+  background-color: #0b5ed7;
+  border-color: #0a58ca;
+}
+
+.email-template-management .btn-success {
+  background-color: #198754;
+  border-color: #198754;
+}
+
+.email-template-management .btn-success:hover {
+  background-color: #157347;
+  border-color: #146c43;
+}
+
+.email-template-management .btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.email-template-management .btn-danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+.email-template-management .btn-outline-primary {
+  color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+.email-template-management .btn-outline-primary:hover {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+  color: #ffffff;
+}
+
+.email-template-management .form-control,
+.email-template-management .form-select {
+  border-radius: 0.375rem;
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.email-template-management .form-control:focus,
+.email-template-management .form-select:focus {
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.email-template-management .table {
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.email-template-management .table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+.email-template-management .table td {
+  vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.email-template-management .table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.email-template-management .badge {
+  font-size: 0.75em;
+  font-weight: 500;
+  padding: 0.375em 0.75em;
+  border-radius: 0.375rem;
+}
+
+.email-template-management .alert {
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.email-template-management .modal-content {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.email-template-management .modal-header {
+  border-bottom: 1px solid #dee2e6;
+  padding: 1.25rem 1.5rem;
+}
+
+.email-template-management .modal-body {
+  padding: 1.5rem;
+}
+
+.email-template-management .modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 1.5rem;
+}
+
+/* Animation classes */
+.email-template-management .fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading states */
+.email-template-management .loading-overlay {
+  position: relative;
+}
+
+.email-template-management .loading-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  z-index: 10;
+}
+
+.email-template-management .spinner-border {
+  color: #0d6efd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .email-template-management .card-header {
+    padding: 1rem;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .email-template-management .card-header > div {
+    margin-top: 1rem;
+  }
+  
+  .email-template-management .card-header .btn {
+    margin-bottom: 0.5rem;
+  }
+  
+  .email-template-management .card-body {
+    padding: 1rem;
+  }
+  
+  .email-template-management .table {
+    font-size: 0.875rem;
+  }
+  
+  .email-template-management .btn-sm {
+    padding: 0.125rem 0.25rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .email-template-management .modal-dialog {
+    margin: 0.5rem;
+  }
+  
+  .email-template-management .modal-header,
+  .email-template-management .modal-body,
+  .email-template-management .modal-footer {
+    padding: 1rem;
+  }
+}
