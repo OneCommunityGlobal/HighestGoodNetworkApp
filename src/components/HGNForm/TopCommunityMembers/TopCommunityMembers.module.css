@@ -1,0 +1,118 @@
+.top-members-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.members-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.members-table th,
+.members-table td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+.low-score {
+  color: red;
+  font-weight: bold;
+}
+
+.high-score {
+  color: green;
+  font-weight: bold;
+}
+
+.private {
+  color: gray;
+  cursor: help;
+  font-style: italic;
+}
+
+.team-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  margin-top: 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.team-btn:hover {
+  background-color: #0056b3;
+}
+.icon-link {
+  font-size: 18px;
+  margin: 0 5px;
+  color: #0073e6;
+  transition: color 0.2s;
+}
+.icon-link:hover {
+  color: #005bb5;
+}
+.icon-slack {
+  color: #611f69;
+  font-size: 18px;
+  transition: color 0.2s ease;
+}
+
+.icon-slack:hover {
+  color: #400d40; /* darker shade on hover */
+}
+
+.center-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Full height of viewport */
+  flex-direction: column;
+}
+
+.underline-link {
+  text-decoration: underline;
+  color: rgb(3, 3, 7);
+  cursor: pointer;
+  font-size: 16px;
+}
+.underline-link:hover {
+  text-decoration: none;
+  color: rgb(3, 3, 7);
+}
+.component-box {
+  border: 1px solid #ccc;        /* Light gray border */
+  padding: 20px;
+  border-radius: 10px;           /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Soft shadow */
+  background-color: #fff;        /* Optional: white background */
+  width: 90%;
+  max-width: 700px;
+  margin: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 12px 20px; /* Adjust as needed for vertical & horizontal spacing */
+  text-align: left;
+}
+
+thead {
+  background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+td a, td span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px; /* gap between icon and text if needed */
+}
