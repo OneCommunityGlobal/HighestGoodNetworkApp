@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import {
   LineChart,
   Line,
@@ -18,16 +19,17 @@ function renderDotTopOrBottom(lineKey, color) {
   return function CustomDot(props) {
     const { cx, cy, value, payload, index } = props;
     if (value == null) return null;
-    // Get all three values for this x-position
+
     const planned = payload.plannedCost;
     const actual = payload.actualCost;
     const predicted = payload.predictedCost;
     const values = [planned, actual, predicted].filter(v => v !== null && v !== undefined);
     if (values.length === 0) return null;
+
     const max = Math.max(...values);
     const min = Math.min(...values);
-    const dx = index === 0 ? 32 : 0; // shift more right for first value
-    // Only render if this line is the top or bottom at this x
+    const dx = index === 0 ? 32 : 0;
+
     if (value === max) {
       return (
         <text
@@ -66,28 +68,25 @@ function CostPredictionChart({ projectId }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch both costs and predictions
         const [costsResponse, predictionsResponse] = await Promise.all([
           projectCostService.getProjectCosts(projectId),
           projectCostService.getProjectPredictions(projectId),
         ]);
 
-        // Combine costs and predictions data
         const costsData = costsResponse.data.costs;
         const predictionsData = predictionsResponse.data.predictions;
 
-        // Create a map of predictions by month
         const predictionsMap = predictionsData.reduce((acc, pred) => {
           acc[pred.month] = pred.predictedCost;
           return acc;
         }, {});
 
-        // Combine the data
         const combinedData = costsData.map(cost => ({
           ...cost,
           predictedCost: predictionsMap[cost.month] || null,
@@ -95,8 +94,7 @@ function CostPredictionChart({ projectId }) {
 
         setChartData(combinedData);
         setError(null);
-      } catch (err) {
-        // console.error('Error fetching project costs:', err);
+      } catch {
         setError('Failed to load project cost data');
       } finally {
         setLoading(false);
@@ -108,31 +106,35 @@ function CostPredictionChart({ projectId }) {
     }
   }, [projectId]);
 
-  if (loading) {
-    return <div>Loading chart data...</div>;
-  }
+  if (loading) return <div>Loading chart data...</div>;
+  if (error) return <div>Error: {error}</div>;
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  // Get current month for reference line
   const currentMonth = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
+  const textColor = darkMode ? '#ffffff' : '#333333';
+  const gridColor = darkMode ? '#555555' : '#e0e0e0';
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.title}>Planned Vs Actual costs tracking</h2>
+    <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
+      <h2 className={styles.title}>Planned Vs Actual Costs Tracking</h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis dataKey="month" tick={{ fill: '#666' }} tickSize={10} />
-          <YAxis tick={{ fill: '#666' }} tickSize={10} domain={[0, 'auto']} />
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+          <XAxis dataKey="month" tick={{ fill: textColor }} tickSize={10} />
+          <YAxis tick={{ fill: textColor }} tickSize={10} domain={[0, 'auto']} />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: darkMode ? '#222' : '#fff',
+              borderColor: darkMode ? '#444' : '#ccc',
+              color: textColor,
+            }}
+            labelStyle={{ color: textColor }}
+          />
           <Legend
             verticalAlign="bottom"
             height={36}
             wrapperStyle={{
               paddingTop: '20px',
+              color: textColor,
             }}
           />
           <ReferenceLine
