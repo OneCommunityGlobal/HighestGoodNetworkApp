@@ -111,6 +111,57 @@ class UserProfileAdd extends Component {
     this.canAddDeleteEditOwners = user && user.role === 'Owner';
   }
 
+  normalizeName = s => (s || '').toLowerCase().replace(/[^a-z]/g, '');
+
+  productionNameIsIncluded = () => {
+    const prodFirstRaw = this.props?.auth?.user?.firstName || '';
+    const prodLastRaw  = this.props?.auth?.user?.lastName || '';
+  
+    const prodFirst  = this.normalizeName(prodFirstRaw);
+    const prodLast   = this.normalizeName(prodLastRaw);
+    const inputFirst = this.normalizeName(this.state.userProfile.firstName);
+    const inputLast  = this.normalizeName(this.state.userProfile.lastName);
+  
+    if (!prodFirst || !prodLast) return true;
+  
+    const combined = `${inputFirst}${inputLast}`;
+    const hasFirst = combined.includes(prodFirst);
+    const hasLast  = combined.includes(prodLast);
+  
+    if (!hasFirst || !hasLast) {
+      const examples = [
+        `${prodFirstRaw} ${prodLastRaw} Admin`,
+        `${prodFirstRaw}${prodLastRaw} Test`,
+        `${prodFirstRaw} ${prodLastRaw}A`,
+      ];
+  
+      toast.error(
+        (
+          <div style={{ lineHeight: 1.5 }}>
+            <div>
+              Your account names (first and last names) must include your Production first name&nbsp;
+              <b>&quot;{prodFirstRaw}&quot;</b> and last name&nbsp;
+              <b>&quot;{prodLastRaw}&quot;</b>.
+            </div>
+      
+            <div style={{ marginTop: 8, fontWeight: 600 }}>Allowed examples:</div>
+            <ul style={{ margin: '6px 0', paddingLeft: '1.5rem' }}>
+              <li>{`${prodFirstRaw} ${prodLastRaw} Admin`}</li>
+              <li>{`${prodFirstRaw}${prodLastRaw} Test`}</li>
+              <li>{`${prodFirstRaw} ${prodLastRaw}A`}</li>
+              <li>{`${prodLastRaw}Test ${prodFirstRaw}`}</li>
+              <li>{`${prodLastRaw}Owner ${prodFirstRaw}`}</li>
+            </ul>
+          </div>
+        ),
+        { autoClose: 7000 }
+      );
+      return false;
+    }
+    return true;
+  };
+  
+
   popupClose = () => {
     this.setState({
       popupOpen: false,
@@ -827,6 +878,10 @@ class UserProfileAdd extends Component {
     };
 
     this.setState({ formSubmitted: true });
+
+    if (!this.productionNameIsIncluded()) {
+      return;
+    }
 
     if (actualPassword != actualConfirmedPassword) {
       toast.error('Your passwords do not match!');
