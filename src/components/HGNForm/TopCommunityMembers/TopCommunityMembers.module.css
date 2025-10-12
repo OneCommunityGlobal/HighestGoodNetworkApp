@@ -16,12 +16,12 @@
   text-align: center;
 }
 
-.low-score {
+.lowScore {
   color: red;
   font-weight: bold;
 }
 
-.high-score {
+.highScore {
   color: green;
   font-weight: bold;
 }
@@ -45,26 +45,26 @@
 .team-btn:hover {
   background-color: #0056b3;
 }
-.icon-link {
+.iconLink {
   font-size: 18px;
   margin: 0 5px;
   color: #0073e6;
   transition: color 0.2s;
 }
-.icon-link:hover {
+.iconLink:hover {
   color: #005bb5;
 }
-.icon-slack {
+.iconSlack {
   color: #611f69;
   font-size: 18px;
   transition: color 0.2s ease;
 }
 
-.icon-slack:hover {
+.iconSlack:hover {
   color: #400d40; /* darker shade on hover */
 }
 
-.center-container {
+.centerContainer {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,17 +72,18 @@
   flex-direction: column;
 }
 
-.underline-link {
+.underlineLink {
   text-decoration: underline;
   color: rgb(3, 3, 7);
   cursor: pointer;
   font-size: 16px;
 }
-.underline-link:hover {
+.underlineLink:hover {
   text-decoration: none;
   color: rgb(3, 3, 7);
 }
-.component-box {
+
+.componentBox {
   border: 1px solid #ccc;        /* Light gray border */
   padding: 20px;
   border-radius: 10px;           /* Rounded corners */
@@ -93,26 +94,131 @@
   margin: auto;
 }
 
-table {
+.table {
   border-collapse: collapse;
   width: 100%;
 }
 
-th, td {
+.table th, .table td {
   padding: 12px 20px; /* Adjust as needed for vertical & horizontal spacing */
   text-align: left;
 }
 
-thead {
+.table thead {
   background-color: #f2f2f2;
 }
 
-tr:nth-child(even) {
+.table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-td a, td span {
+.table td a, .table td span {
   display: inline-flex;
   align-items: center;
   gap: 5px; /* gap between icon and text if needed */
+}
+
+.select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  font-size: 14px;
+}
+
+/* ============================================
+   DARK MODE STYLES
+   ============================================ */
+
+.darkMode {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+.darkMode .componentBox {
+  background-color: #2b3e59 !important;
+  border: 1px solid #4a5a77 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.darkMode h2 {
+  color: #ffffff !important;
+}
+
+.darkMode label {
+  color: #ffffff !important;
+}
+
+.selectDark {
+  padding: 8px 12px;
+  border: 1px solid #4a5a77;
+  border-radius: 4px;
+  background-color: #3a506b;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.selectDark:focus {
+  border-color: #e8a71c;
+  outline: none;
+}
+
+.tableDark {
+  border-collapse: collapse;
+  width: 100%;
+  color: #ffffff;
+}
+
+.tableDark th, .tableDark td {
+  padding: 12px 20px;
+  text-align: left;
+  border: 1px solid #4a5a77;
+}
+
+.tableDark thead {
+  background-color: #2d4059;
+}
+
+.tableDark th {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.tableDark tr:nth-child(even) {
+  background-color: #253342;
+}
+
+.tableDark tr:hover {
+  background-color: #2f4157;
+}
+
+.tableDark td a, .tableDark td span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.iconLinkDark {
+  font-size: 18px;
+  margin: 0 5px;
+  color: #e8a71c;
+  transition: color 0.2s;
+}
+
+.iconLinkDark:hover {
+  color: #f5b13a;
+}
+
+.underlineLinkDark {
+  text-decoration: underline;
+  color: #e8a71c;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.underlineLinkDark:hover {
+  text-decoration: none;
+  color: #f5b13a;
 }
