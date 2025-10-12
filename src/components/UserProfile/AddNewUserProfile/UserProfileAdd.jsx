@@ -92,8 +92,8 @@ class UserProfileAdd extends Component {
         lastName: 'Last Name is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
-        actualEmail: 'Actual Email is required',
-        actualPassword: 'Actual Password is required',
+        actualEmail: 'Must use of your PRODUCTION sign-in email',
+        actualPassword: 'Must use your PRODUCTION sign-in password',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
         defaultPassword: 'Default Password is required',
         jobTitle: 'Job Title is required',
@@ -110,6 +110,57 @@ class UserProfileAdd extends Component {
     const { user } = this.props.auth;
     this.canAddDeleteEditOwners = user && user.role === 'Owner';
   }
+
+  normalizeName = s => (s || '').toLowerCase().replace(/[^a-z]/g, '');
+
+  productionNameIsIncluded = () => {
+    const prodFirstRaw = this.props?.auth?.user?.firstName || '';
+    const prodLastRaw  = this.props?.auth?.user?.lastName || '';
+  
+    const prodFirst  = this.normalizeName(prodFirstRaw);
+    const prodLast   = this.normalizeName(prodLastRaw);
+    const inputFirst = this.normalizeName(this.state.userProfile.firstName);
+    const inputLast  = this.normalizeName(this.state.userProfile.lastName);
+  
+    if (!prodFirst || !prodLast) return true;
+  
+    const combined = `${inputFirst}${inputLast}`;
+    const hasFirst = combined.includes(prodFirst);
+    const hasLast  = combined.includes(prodLast);
+  
+    if (!hasFirst || !hasLast) {
+      const examples = [
+        `${prodFirstRaw} ${prodLastRaw} Admin`,
+        `${prodFirstRaw}${prodLastRaw} Test`,
+        `${prodFirstRaw} ${prodLastRaw}A`,
+      ];
+  
+      toast.error(
+        (
+          <div style={{ lineHeight: 1.5 }}>
+            <div>
+              Your account names (first and last names) must include your Production first name&nbsp;
+              <b>&quot;{prodFirstRaw}&quot;</b> and last name&nbsp;
+              <b>&quot;{prodLastRaw}&quot;</b>.
+            </div>
+      
+            <div style={{ marginTop: 8, fontWeight: 600 }}>Allowed examples:</div>
+            <ul style={{ margin: '6px 0', paddingLeft: '1.5rem' }}>
+              <li>{`${prodFirstRaw} ${prodLastRaw} Admin`}</li>
+              <li>{`${prodFirstRaw}${prodLastRaw} Test`}</li>
+              <li>{`${prodFirstRaw} ${prodLastRaw}A`}</li>
+              <li>{`${prodLastRaw}Test ${prodFirstRaw}`}</li>
+              <li>{`${prodLastRaw}Owner ${prodFirstRaw}`}</li>
+            </ul>
+          </div>
+        ),
+        { autoClose: 7000 }
+      );
+      return false;
+    }
+    return true;
+  };
+  
 
   popupClose = () => {
     this.setState({
@@ -745,6 +796,9 @@ class UserProfileAdd extends Component {
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
       return false;
+    } else if ((role === 'Administrator' || role === 'Owner') && !this.state.userProfile.actualPassword) {
+      toast.error('Must use your Production sign-in password');
+      return false;
     } else if (role !== 'Administrator' && role !== 'Owner' && !defaultPassword) {
       toast.error('Default Password is required for non-admin users');
       return false;
@@ -824,6 +878,10 @@ class UserProfileAdd extends Component {
     };
 
     this.setState({ formSubmitted: true });
+
+    if (!this.productionNameIsIncluded()) {
+      return;
+    }
 
     if (actualPassword != actualConfirmedPassword) {
       toast.error('Your passwords do not match!');
@@ -925,9 +983,18 @@ class UserProfileAdd extends Component {
                 case 'name':
                   toast.error('A user with this first and last name already exists');
                   return;
-                case 'credentials':
-                  toast.error('Admin credentials were not accepted');
+                case 'credentials': {
+                // Prefer the backend’s explanation if available
+                  const detail =
+                    (typeof data.error === 'string' && data.error) ||
+                    data?.error?.message ||
+                    data?.message ||
+                    '';
+                  toast.error(
+                    `Admin credentials were not accepted${detail ? `: ${detail}` : ''}`
+                  );
                   return;
+                }
               }
             }
 
@@ -1235,7 +1302,7 @@ class UserProfileAdd extends Component {
           },
           formErrors: {
             ...formErrors,
-            actualPassword: event.target.value.length > 0 ? '' : 'Actual Password is required',
+            actualPassword: event.target.value.length > 0 ? '' : 'Must use your Production sign-in password',
           },
         });
         break;

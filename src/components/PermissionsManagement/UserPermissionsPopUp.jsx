@@ -12,10 +12,11 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from '~/utils/constants';
+} from '../../utils/constants';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
+
 import ReminderModal from './ReminderModal';
 
 function UserPermissionsPopUp({
