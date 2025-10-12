@@ -12,16 +12,13 @@ const TaskCard = ({ task, onMarkAsDone }) => {
   const canMarkAsDone = () => {
     if (task.is_completed) return false;
 
-    // For read-only tasks: can be marked done only after requisite hours are logged
-    if (task.task_type === 'read-only') {
+    // Only read-only tasks can be marked as complete manually
+    // Must have logged hours >= suggested hours
+    if (task.task_type === 'read' || task.task_type === 'read-only') {
       return task.logged_hours >= task.suggested_total_hours;
     }
 
-    // For write tasks: can be marked done if upload is made OR hours requirement is met
-    if (task.task_type === 'write') {
-      return task.has_upload || task.logged_hours >= task.suggested_total_hours;
-    }
-
+    // For other task types, cannot be marked done manually
     return false;
   };
 
@@ -158,6 +155,13 @@ const TaskCard = ({ task, onMarkAsDone }) => {
               className={`${styles.markDoneButton} ${!canMarkDone ? styles.disabled : ''}`}
               onClick={handleMarkAsDone}
               disabled={!canMarkDone}
+              title={
+                canMarkDone
+                  ? 'Mark as Done'
+                  : `Complete required hours first (${task.logged_hours || 0}/${
+                      task.suggested_total_hours
+                    } hrs)`
+              }
             >
               <svg
                 width="16"

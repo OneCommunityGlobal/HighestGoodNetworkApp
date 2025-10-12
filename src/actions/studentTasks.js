@@ -159,6 +159,24 @@ export const markStudentTaskAsDone = (taskId) => {
         throw new Error('Task not found');
       }
 
+      // Validate task can be marked as done
+      if (task.is_completed) {
+        toast.warning('Task is already completed');
+        return;
+      }
+
+      // Only read-only tasks can be marked as complete manually
+      if (task.task_type !== 'read' && task.task_type !== 'read-only') {
+        toast.error('Only read-only tasks can be marked as complete manually');
+        return;
+      }
+
+      // Check if logged hours meet the requirement
+      if (task.logged_hours < task.suggested_total_hours) {
+        toast.error(`Insufficient hours logged. Required: ${task.suggested_total_hours}, Logged: ${task.logged_hours}`);
+        return;
+      }
+
       // Update task status to Complete
       const updatedTask = {
         status: 'Complete',
@@ -180,18 +198,19 @@ export const markStudentTaskAsDone = (taskId) => {
       };
 
       try {
-        // Try to use the student task mark done endpoint
-        await httpService.put(ENDPOINTS.STUDENT_TASK_MARK_DONE(taskId), {
+        // Call the student mark-complete API endpoint
+        await httpService.post(`${ENDPOINTS.APIEndpoint()}/education-tasks/student/mark-complete`, {
+          taskId: taskId,
+          studentId: state.auth.user.userid,
           requestor: {
             requestorId: state.auth.user.userid
-          },
-          status: 'completed',
-          progressPercent: 100
+          }
         });
         toast.success('Task marked as completed successfully!');
       } catch (apiError) {
         // If API is not available, just update local state
-        console.warn('Student task mark done API not available, updating local state only:', apiError.message);
+        console.warn('Student task mark complete API not available, updating local state only:', apiError.message);
+        console.error('API Error:', apiError.response?.data || apiError.message);
         toast.info('Task marked as completed locally. API not yet available.');
       }
 
