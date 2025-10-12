@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef , useMemo } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DayPicker, useInput } from 'react-day-picker';
+import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
+import dateFnsParse from 'date-fns/parse';
+import { isValid } from 'date-fns';
 import { boxStyle, boxStyleDark } from '~/styles';
-
 import { addNewTask } from '../../../../../actions/task';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
@@ -19,36 +20,81 @@ import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
+import { getProjectDetail } from '../../../../../actions/project';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-/** small v8 DateInput: uses useInput + DayPicker under the hood **/
+/** small v8 DateInput - manual control without useInput **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
-  const { inputProps, dayPickerProps, show, toggle } = useInput({
-    mode: 'single',
-    selected: value ? new Date(value) : undefined,
-    onDayChange(date) {
+  const FORMAT = 'MM/dd/yy';
+  const [isOpen, setIsOpen] = React.useState(false);
+  
+  // Parse the value properly - it could be in MM/dd/yy format or empty
+  let selectedDate;
+  if (value) {
+    try {
+      if (value.includes('T')) {
+        // ISO format
+        selectedDate = new Date(value);
+      } else {
+        // MM/dd/yy format
+        selectedDate = dateFnsParse(value, FORMAT, new Date());
+      }
+      // Validate the parsed date
+      if (!isValid(selectedDate)) {
+        selectedDate = undefined;
+      }
+    } catch (error) {
+      selectedDate = undefined;
+    }
+  }
+
+  const handleDaySelect = (date) => {
+    if (date) {
       // format back to your MM/dd/yy
       const f = dateFnsFormat(date, FORMAT);
       onChange(f);
-      toggle(false);
-    },
-  });
+      setIsOpen(false);
+    }
+  };
 
   return (
     <div style={{ position: 'relative' }}>
       <input
-        {...inputProps}
         id={id}
         aria-label={ariaLabel}
         placeholder={placeholder}
-        onFocus={() => !disabled && toggle(true)}
+        value={value || ''}
+        onFocus={() => !disabled && setIsOpen(true)}
         readOnly
         disabled={disabled}
-        className="form-control" /* or whatever styling you need */
+        className="form-control"
+        style={{ 
+          cursor: disabled ? 'default' : 'pointer',
+          backgroundColor: disabled ? '#e9ecef' : 'white',
+          opacity: 1
+        }}
       />
-      {show && !disabled && (
-        <div style={{ position: 'absolute', zIndex: 10 }}>
-          <DayPicker {...dayPickerProps} />
+      {isOpen && !disabled && (
+        <div style={{ position: 'absolute', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
+          <DayPicker 
+            mode="single"
+            selected={selectedDate}
+            onSelect={handleDaySelect}
+          />
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            style={{ 
+              width: '100%', 
+              padding: '8px', 
+              border: 'none', 
+              borderTop: '1px solid #ddd',
+              background: '#f5f5f5',
+              cursor: 'pointer'
+            }}
+          >
+            Close
+          </button>
         </div>
       )}
     </div>
@@ -74,7 +120,8 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { copiedTask, allMembers, allProjects, error, darkMode, tasks } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode, projectById } = props;
+  const tasksList = Array.isArray(props.tasks) ? props.tasks : [];
 
   const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
@@ -115,19 +162,25 @@ function AddTaskModal(props) {
         });
         return filtered.length ? filtered : members; // fallback so the list isn't empty
       }, [allMembers]);
-      
-  const defaultCategory = useMemo(() => {
-    if (props.taskId) {
-      const task = tasks.find(({ _id }) => _id === props.taskId);
-      return task?.category || 'Unspecified';
-    }
-    if (props.projectId) {
-      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
-      return project?.category || 'Unspecified';
-    }
 
-    return 'Unspecified';
-  }, [props.taskId, props.projectId, tasks, allProjects.projects]);
+const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
+const defaultCategory = useMemo(() => {
+  if (props.taskId) {
+    const task = tasksList.find(t => t?._id === props.taskId);
+    return task?.category ?? 'Unspecified';
+  }
+  if (props.projectId) {
+    // Prefer the category from projectById if available (covers page refresh case)
+    const categoryFromProjectById = projectById?.category;
+    if (typeof categoryFromProjectById === 'string' && categoryFromProjectById.length) {
+      return categoryFromProjectById;
+    }
+    const project = projectsList.find(p => p?._id === props.projectId);
+    return project?.category ?? 'Unspecified';
+  }
+  return 'Unspecified';
+}, [props.taskId, props.projectId, projectById?.category, tasksList.length, projectsList.length]);
+
 
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -148,6 +201,8 @@ function AddTaskModal(props) {
   const [endstateInfo, setEndstateInfo] = useState('');
   const [startDateError, setStartDateError] = useState(false);
   const [endDateError, setEndDateError] = useState(false);
+  const [startDateFormatError, setStartDateFormatError] = useState(false);
+  const [endDateFormatError, setEndDateFormatError] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -180,12 +235,10 @@ function AddTaskModal(props) {
   };
 
   const getNewNum = () => {
-    if (!Array.isArray(props.tasks)) return '1';
+    if (!tasksList.length) return '1';
     let newNum;
-    // eslint-disable-next-line no-console
-    console.log(props)
     if (props.taskId) {
-      const numOfLastInnerLevelTask = props.tasks.reduce((num, task) => {
+      const numOfLastInnerLevelTask = tasksList.reduce((num, task) => {
         if (task.mother === props.taskId) {
           const numIndexArray = task.num.split('.');
           const numOfInnerLevel = numIndexArray[props.level];
@@ -197,7 +250,7 @@ function AddTaskModal(props) {
       currentLevelIndexes[props.level] = `${numOfLastInnerLevelTask + 1}`;
       newNum = currentLevelIndexes.join('.');
     } else {
-      const numOfLastLevelOneTask = props.tasks.reduce((num, task) => {
+      const numOfLastLevelOneTask = tasksList.reduce((num, task) => {
         if (task.level === 1) {
           const numIndexArray = task.num.split('.');
           const indexOfFirstNum = numIndexArray[0];
@@ -231,6 +284,37 @@ function AddTaskModal(props) {
 
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
 
+  const parseDate = (str, format, locale) => {
+    // Allow empty string for partial typing
+    if (!str || str.trim() === '') return undefined;
+    
+    try {
+      const parsed = dateFnsParse(str, format, new Date(), { locale });
+      if (isValid(parsed)) {
+        return parsed;
+      }
+    } catch (error) {
+      // Return undefined for invalid dates while typing
+    }
+    return undefined;
+  };
+
+  const validateDateFormat = (dateString) => {
+    if (!dateString || dateString.trim() === '') return true;
+    
+    // Check if it matches the expected format pattern MM/dd/yy
+    const formatRegex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/\d{2}$/;
+    if (!formatRegex.test(dateString)) return false;
+    
+    // Check if it's a valid date
+    try {
+      const parsed = dateFnsParse(dateString, FORMAT, new Date());
+      return isValid(parsed);
+    } catch (error) {
+      return false;
+    }
+  };
+
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
@@ -263,16 +347,24 @@ function AddTaskModal(props) {
     }
   }, [hoursBest, hoursWorst, hoursMost, hoursEstimate]);
 
-  const changeDateStart = startDate => {
-    setStartedDate(startDate);
+  const changeDateStart = (value) => {
+    setStartedDate(value);
+    
+    // Validate format
+    const isValidFormat = validateDateFormat(value);
+    setStartDateFormatError(!isValidFormat);
   };
 
-  const changeDateEnd = dueDate => {
-    if (!startedDate) {
+  const changeDateEnd = (value) => {
+    if (!startedDate && value) {
       const newDate = dateFnsFormat(new Date(), FORMAT);
       setStartedDate(newDate);
     }
-    setDueDate(dueDate);
+    setDueDate(value);
+    
+    // Validate format
+    const isValidFormat = validateDateFormat(value);
+    setEndDateFormatError(!isValidFormat);
   };
 
   useEffect(() => {
@@ -284,6 +376,25 @@ function AddTaskModal(props) {
       setStartDateError(false);
     }
   }, [startedDate, dueDate]);
+
+  // Validate date formats when dates change
+  useEffect(() => {
+    if (startedDate) {
+      const isValidFormat = validateDateFormat(startedDate);
+      setStartDateFormatError(!isValidFormat);
+    } else {
+      setStartDateFormatError(false);
+    }
+  }, [startedDate]);
+
+  useEffect(() => {
+    if (dueDate) {
+      const isValidFormat = validateDateFormat(dueDate);
+      setEndDateFormatError(!isValidFormat);
+    } else {
+      setEndDateFormatError(false);
+    }
+  }, [dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);
@@ -313,6 +424,8 @@ function AddTaskModal(props) {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
+    setStartDateFormatError(false);
+    setEndDateFormatError(false);
     setHasNegativeHours(false);
   };
 
@@ -383,7 +496,7 @@ function AddTaskModal(props) {
       setNewTaskNum(getNewNum());
     }
     // setNewTaskNum(getNewNum());
-  }, [modal]);
+  }, [modal, tasksList.length, props.taskId, props.level, props.taskNum]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -392,12 +505,12 @@ function AddTaskModal(props) {
   useEffect(() => {
     if (error === 'outdated') {
       // eslint-disable-next-line no-alert
-      alert('Database changed since your page loaded , click OK to get the newest data!');
+      // alert('Database changed since your page loaded , click OK to get the newest data!');
       props.load();
     } else {
       clear();
     }
-  }, [error, tasks]);
+  }, [error, tasksList.length]);
 
   useEffect(() => {
     if (!modal) {
@@ -405,6 +518,8 @@ function AddTaskModal(props) {
       setDueDate('');
       setStartDateError(false);
       setEndDateError(false);
+      setStartDateFormatError(false);
+      setEndDateFormatError(false);
     }
   }, [modal]);
 
@@ -414,6 +529,23 @@ function AddTaskModal(props) {
           props.fetchAllMembers(props.projectId ?? '');
         }
       }, [modal, props.projectId]);
+
+  useEffect(() => {
+    if (!modal || !props.projectId) return;
+
+    const categoryKnownFromProjectById =
+      Boolean(projectById && projectById._id === props.projectId && projectById.category);
+    const categoryKnownFromAllProjects =
+      Boolean(projectsList.find(p => p?._id === props.projectId)?.category);
+
+    if (!categoryKnownFromProjectById && !categoryKnownFromAllProjects) {
+      props.getProjectDetail(props.projectId);
+    }
+  }, [modal, props.projectId, projectById, projectsList]);
+
+  useEffect(() => {
+    setCategory(defaultCategory);
+  }, [defaultCategory]);
   
   const fontColor = darkMode ? 'text-light' : '';
 
@@ -493,16 +625,17 @@ function AddTaskModal(props) {
                   Resources
                 </label>
                 <div className="add_new_task_form-input_area">
-                  <TagsSearch
-                    placeholder="Add resources"
-                    members={activeMembers}
-                    addResources={addResources}
-                    removeResource={removeResource}
-                    resourceItems={resourceItems}
-                    disableInput={false}
-                    inputTestId="resource-input"
-                    projectId={props.projectId}
-                  />
+                <TagsSearch
+                  key={`tags-${props.projectId}-${activeMembers.length}`}
+                  placeholder="Add resources"
+                  members={activeMembers}
+                  addResources={addResources}
+                  removeResource={removeResource}
+                  resourceItems={resourceItems}
+                  disableInput={false}
+                  inputTestId="resource-input"
+                  projectId={props.projectId}
+                />
                 </div>
               </div>
 
@@ -856,6 +989,9 @@ function AddTaskModal(props) {
                       onChange={changeDateStart}
                       disabled={false} // always enabled here
                     />
+                    <div className="warning text-danger">
+                      {startDateFormatError && 'Please enter date in MM/dd/yy format'}
+                    </div>
                     <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
                 </span>
@@ -879,6 +1015,9 @@ function AddTaskModal(props) {
                     onChange={changeDateEnd}
                     disabled={false}
                   />
+                  <div className="warning text-danger">
+                    {endDateFormatError && 'Please enter date in MM/dd/yy format'}
+                  </div>
                   <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
               </div>
@@ -895,6 +1034,8 @@ function AddTaskModal(props) {
               isLoading ||
               startDateError ||
               endDateError ||
+              startDateFormatError ||
+              endDateFormatError ||
               hasNegativeHours
             }
             style={darkMode ? boxStyleDark : boxStyle}
@@ -920,14 +1061,16 @@ const mapStateToProps = state => ({
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
+  projectById: state.projectById,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
-  tasks: state.tasks.taskItems,
+  // tasks: state.tasks.taskItems,
 });
 
 const mapDispatchToProps = {
   addNewTask,
   fetchAllMembers,
+  getProjectDetail,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);
