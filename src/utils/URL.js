@@ -286,6 +286,7 @@ export const ENDPOINTS = {
   BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
+  BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
