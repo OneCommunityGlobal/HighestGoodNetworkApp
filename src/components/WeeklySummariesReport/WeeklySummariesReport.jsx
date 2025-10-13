@@ -80,7 +80,6 @@ const initialState = {
   isValidPwd: true,
   badges: [],
   loadBadges: false,
-  hasSeeBadgePermission: false,
   selectedCodes: [],
   selectedColors: [],
   filteredSummaries: [],
@@ -115,6 +114,7 @@ const intialPermissionState = {
   canEditSummaryCount: false,
   codeEditPermission: false,
   canSeeBioHighlight: false,
+  hasSeeBadgePermission: false,
 };
 
 const CheckboxOption = props => {
@@ -173,6 +173,16 @@ const WeeklySummariesReport = props => {
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+
+  useEffect(() => {
+    // Update local state whenever allBadgeData prop changes
+    if (props.allBadgeData && props.allBadgeData.length > 0) {
+      setState(prevState => ({
+        ...prevState,
+        badges: props.allBadgeData,
+      }));
+    }
+  }, [props.allBadgeData]);
 
   // Saved filters functionality
   const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
@@ -273,14 +283,7 @@ const WeeklySummariesReport = props => {
   // Initial data loading
   const createIntialSummaries = async () => {
     try {
-      const {
-        allBadgeData,
-        getWeeklySummariesReport,
-        fetchAllBadges,
-        hasPermission,
-        auth,
-        setTeamCodes,
-      } = props;
+      const { getWeeklySummariesReport, fetchAllBadges, hasPermission, auth, setTeamCodes } = props;
 
       // Get the active tab from session storage or use default
       const activeTab =
@@ -315,6 +318,7 @@ const WeeklySummariesReport = props => {
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
         canSeeBioHighlight: hasPermission('highlightEligibleBios'),
+        hasSeeBadgePermission: hasPermission('seeBadges') && badgeStatusCode === 200,
       }));
 
       // Fetch data for the active tab only
@@ -433,8 +437,7 @@ const WeeklySummariesReport = props => {
         summariesByTab: {
           [activeTab]: summariesCopy,
         },
-        badges: allBadgeData,
-        hasSeeBadgePermission: badgeStatusCode === 200,
+        badges: props.allBadgeData || [],
         filteredSummaries: summariesCopy,
         tableData: teamCodeGroup,
         chartData,
@@ -768,6 +771,7 @@ const WeeklySummariesReport = props => {
           refreshing: false,
           summaries: summariesCopy,
           filteredSummaries: summariesCopy,
+          badges: props.allBadgeData || prevState.badges,
           summariesByTab: {
             ...prevState.summariesByTab,
             [activeTab]: summariesCopy, // Also update the cached tab data
@@ -809,6 +813,7 @@ const WeeklySummariesReport = props => {
           ...prevState,
           summaries: prevState.summariesByTab[tab],
           filteredSummaries: prevState.summariesByTab[tab],
+          badges: props.allBadgeData || prevState.badges,
           tabsLoading: {
             ...prevState.tabsLoading,
             [tab]: false,
@@ -842,6 +847,7 @@ const WeeklySummariesReport = props => {
                 ...prevState,
                 summaries: summariesCopy,
                 filteredSummaries: summariesCopy,
+                badges: props.allBadgeData || prevState.badges,
                 loadedTabs: [...prevState.loadedTabs, tab],
                 summariesByTab: {
                   ...prevState.summariesByTab,
@@ -1358,6 +1364,8 @@ const WeeklySummariesReport = props => {
           canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
           // Show bio highlights only to users with that permission
           canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
+          // Show badges if user has permission and badges loaded successfully
+          hasSeeBadgePermission: props.hasPermission('seeBadges'),
         }));
       } catch (error) {
         // log failure fetching badges or permissions
@@ -1850,16 +1858,27 @@ const WeeklySummariesReport = props => {
                           weekDates={weekDates[index]}
                           darkMode={darkMode}
                         />
-                        {state.hasSeeBadgePermission && (
-                          <Button
-                            className="btn--dark-sea-green"
-                            style={darkMode ? boxStyleDark : boxStyle}
-                            onClick={() =>
-                              setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
-                            }
-                          >
-                            {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
-                          </Button>
+                        {permissionState.hasSeeBadgePermission && (
+                          <>
+                            <Button
+                              className="btn--dark-sea-green mr-2"
+                              style={darkMode ? boxStyleDark : boxStyle}
+                              onClick={() =>
+                                setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))
+                              }
+                            >
+                              {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
+                            </Button>
+                            <Button
+                              className="btn--dark-sea-green"
+                              style={darkMode ? boxStyleDark : boxStyle}
+                              onClick={() =>
+                                setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
+                              }
+                            >
+                              {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
+                            </Button>
+                          </>
                         )}
                         <Button
                           className="btn--dark-sea-green mr-2"

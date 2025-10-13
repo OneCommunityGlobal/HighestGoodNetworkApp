@@ -70,7 +70,9 @@ import { ExperienceDonutChart } from './components/ExperienceDonutChart';
 
 import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
+import InjurySeverityChart from './components/BMDashboard/Injuries/InjurySeverityChart';
 
+// hgnform routes
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
 import Page3 from './components/HGNForm/pages/Page3';
@@ -655,6 +657,12 @@ export default (
           component={WeeklyProjectSummary}
         />
         <BMProtectedRoute path="/bmdashboard/injurychart" fallback exact component={InjuryChart} />
+        <BMProtectedRoute
+          path="/bmdashboard/injuries-severity"
+          fallback
+          exact
+          component={InjurySeverityChart}
+        />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
