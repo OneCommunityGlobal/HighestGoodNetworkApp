@@ -26,14 +26,14 @@ const ImportTask = props => {
   const [modal, setModal] = useState(false);
   const [taskList, setTaskList] = useState([]);
   const [alert, setAlert] = useState('')
-  const [instruction, setInstruction] = useState(parse(popupContent));  // right now the saved popupContent for this is 'Task PR#905', better to change it 
+  const [instruction, setInstruction] = useState('');  // right now the saved popupContent for this is 'Task PR#905', better to change it 
 
   /*
   * -------------------------------- functions -------------------------------- 
   */
- const toggle = async () => {
-    props.getPopupById(TASK_IMPORT_POPUP_ID);
-    setInstruction(parse(popupContent));
+  const toggle = async () => {
+    // fetch latest popup content
+    await props.getPopupById(TASK_IMPORT_POPUP_ID);
     setModal(!modal);
     setImportStatus('choosing');
   };
@@ -68,10 +68,12 @@ const ImportTask = props => {
           }
         }
       });
-      setInstruction(parse(rows[0][0] + '<br/> Rows: ' + rows.length))
+      const title = rows?.[0]?.[0] ?? '';
+      setInstruction(`${title}<br/> Rows: ${rows?.length ?? 0}`);
       setImportStatus('imported');
       setTaskList(tmpList);
     } catch (error) {
+      console.log("ERROR!!!!!")
       setImportStatus('importError');
       setAlert(error.message);
     }
@@ -79,17 +81,16 @@ const ImportTask = props => {
 
   const newTask = (num, taskName, level, rowArr, i) => {
     const nameCache = []; // check for duplicates
-    const resourcesNames = rowArr[9]?.split(',').map(name => {
-      name = name.trim();
-      const member = members.find(p => `${p.firstName} ${p.lastName}`.toLocaleLowerCase() === name.toLowerCase());
-
-      if (!member) throw new Error(`Error: ${name} is not in the project member list`);
-
-      if (nameCache.includes(name)) throw new Error(`Error: There are more than one [${name}] in resources on line ${i + 1}`);
-      nameCache.push(name);
-      
-      return name + '|' + member._id + '|' + (member.profilePic || '/defaultprofilepic.png');
-    }) || [];  // if cell under resources column is empty (rowArr[9] is undefined), then assign resources with []
+    const resourcesNames = rowArr[9]
+  ? rowArr[9].split(',').map(name => {
+      const trimmed = name.trim();
+      const member = members.find(
+        p => `${p.firstName} ${p.lastName}`.toLocaleLowerCase() === trimmed.toLowerCase()
+      );
+      if (!member) throw new Error(`Error: ${trimmed} is not in the project member list`);
+      return `${trimmed}|${member._id}|${member.profilePic || '/defaultprofilepic.png'}`;
+    })
+  : []; // if cell under resources column is empty (rowArr[9] is undefined), then assign resources with []
 
     let newTask = {
       taskName: taskName,
@@ -149,8 +150,13 @@ const ImportTask = props => {
   */
 
   useEffect(() => {
-    props.getPopupById(TASK_IMPORT_POPUP_ID)
-  }, [popupContent])
+    if (typeof popupContent === 'string') {
+      setInstruction(popupContent);
+    } else if (popupContent != null) {
+      // if it’s somehow not a string (e.g., an object), stringify safely
+      setInstruction(String(popupContent));
+    }
+  }, [popupContent]);
 
   return (
     <>
@@ -163,7 +169,7 @@ const ImportTask = props => {
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td scope="col">
                   <div id="instruction">
-                    {instruction}
+                    {instruction ? parse(instruction) : null}
                   </div>
                 </td>
               </tr>
