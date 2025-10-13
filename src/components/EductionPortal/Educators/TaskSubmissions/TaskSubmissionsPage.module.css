@@ -1,0 +1,127 @@
+.container {
+  min-height: 100vh;
+  background-color: #F8F9FA;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #EDEDED;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.filterWrapper {
+  position: relative;
+  width: 220px;
+}
+
+.filterSelect {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  border-radius: 6px;
+  padding: 8px 16px;
+  padding-right: 40px;
+  font-size: 14px;
+  color: #333333;
+  cursor: pointer;
+  width: 100%;
+  height: 40px;
+}
+
+.filterIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #8C8C8C;
+  font-size: 20px;
+}
+
+.tabs {
+  display: flex;
+  background-color: #262626;
+  padding-left: 32px;
+}
+
+.tab {
+  padding: 12px 24px;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: #BFBFBF;
+}
+
+.activeTab {
+  color: #FFFFFF;
+  background-color: #1A1A1A;
+}
+
+.content {
+  padding: 24px 32px;
+}
+
+.taskSection {
+  background-color: #ffffff;
+  border: 1px solid #EAEAEA;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.sectionHeader {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-bottom: 1px solid #EAEAEA;
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333333;
+}
+
+.dueDate {
+  margin: 0 0 0 16px;
+  font-size: 13px;
+  color: #8C8C8C;
+}
+
+.expandIcon {
+  margin-left: auto;
+  color: #8C8C8C;
+  font-size: 20px;
+}
+
+.cardsGrid {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.noData {
+  text-align: center;
+  padding: 40px 20px;
+  color: #757575;
+  font-size: 16px;
+  background-color: #FFFFFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+}
