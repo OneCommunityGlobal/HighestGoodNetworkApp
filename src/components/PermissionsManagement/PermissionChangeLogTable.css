@@ -105,3 +105,50 @@
   display: inline-block;
   padding: 5px 10px;
 }
+
+.permissions-list {
+  list-style-type: disc;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.permissions-list li {
+  margin-bottom: 2px;
+  line-height: 1.3;
+}
+
+.permissions-cell {
+  position: relative;
+}
+
+.toggle-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #007bff;
+  padding: 2px;
+  border-radius: 3px;
+}
+
+.toggle-button:hover {
+  background-color: rgba(0, 123, 255, 0.1);
+}
+
+.dark-mode .toggle-button {
+  color: #66b3ff;
+}
+
+.dark-mode .toggle-button:hover {
+  background-color: rgba(102, 179, 255, 0.1);
+}
+
+.dark-mode .permissions-list {
+  color: #e0e0e0;
+}
+
+.dark-mode .permissions-list li {
+  color: #e0e0e0;
+}
