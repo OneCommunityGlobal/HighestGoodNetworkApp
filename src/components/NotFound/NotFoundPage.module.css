@@ -3,10 +3,21 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 100%;
   text-align: center;
-  color: #333;
-  background-color: #fff;
+  width: 100%;
+  position: absolute;
+  top: 0;
+}
+
+body,
+html {
+  overflow: hidden;
+}
+.notFoundContent {
+  padding: 5px;
+  border-radius: 20px;
+  width: 60%;
 }
 
 .notFoundImage {
@@ -42,18 +53,26 @@
 
 .darkMode {
   color: #f1f1f1;
-
-  .notFoundImage {
-    height: 38%;
-    width: auto;
-  }
-}
-
-.bgBlack {
   background-color: #121212;
 }
 
+@media (max-width: 1039px) {
+  .notFoundContent {
+    margin-top: 20rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .notFoundContent {
+    width: 92%;
+  }
+}
+
 @media (max-width: 768px) {
+  .notFoundContent {
+    margin-top: 0rem;
+  }
+
   .notFoundText h1 {
     font-size: 1.5em;
   }
