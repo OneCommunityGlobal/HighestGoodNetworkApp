@@ -335,3 +335,21 @@ export const copyTask = taskId => {
     await dispatch(saveTmpTask(taskId));
   };
 };
+
+export const replicateTask = ({ taskId, resourceUserIds, includeAttachments = true, requestor }) => {
+  return async dispatch => {
+    try {
+      const { replicateTask: replicateTaskService } = await import('~/services/taskService');
+      const data = await replicateTaskService({
+        taskId,
+        resourceUserIds,
+        includeAttachments,
+        requestor,
+      });
+      return data;
+    } catch (error) {
+      console.error('Error replicating task:', error);
+      throw error;
+    }
+  };
+};

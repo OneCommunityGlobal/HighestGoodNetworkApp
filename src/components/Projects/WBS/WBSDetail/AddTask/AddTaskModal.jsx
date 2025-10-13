@@ -8,7 +8,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
 import { boxStyle, boxStyleDark } from '~/styles';
 
-import { addNewTask } from '../../../../../actions/task';
+import { addNewTask, replicateTask } from '../../../../../actions/task';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   START_DATE_ERROR_MESSAGE,
@@ -346,6 +346,42 @@ const defaultCategory = useMemo(() => {
     setEndstateInfo(copiedTask.endstateInfo);
   };
 
+  const handleReplicate = async () => {
+    if (!copiedTask) {
+      console.warn('No task copied to replicate');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      
+      // Extract user IDs from the copied task resources
+      const resourceUserIds = copiedTask.resources?.map(resource => resource.userId || resource._id) || [];
+      
+      // Get the current user ID from auth state
+      const requestor = props.authUser?.userid || 'current-user';
+      
+      await props.replicateTask({
+        taskId: copiedTask._id,
+        resourceUserIds,
+        includeAttachments: true,
+        requestor,
+      });
+
+      // Optionally close the modal and refresh the task list
+      toggle();
+      props.load();
+      
+      // Show success message or handle success
+      console.log('Task replicated successfully');
+    } catch (error) {
+      console.error('Error replicating task:', error);
+      // You might want to show an error message to the user here
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const addNewTask = async () => {
     setIsLoading(true);
     const newTask = {
@@ -527,6 +563,25 @@ const defaultCategory = useMemo(() => {
                   inputTestId="resource-input"
                   projectId={props.projectId}
                 />
+                </div>
+              </div>
+
+              <div className="add_new_task_form-group">
+                <div className="add_new_task_form-input_area">
+                  <button
+                    type="button"
+                    className="btn btn-info btn-sm"
+                    onClick={handleReplicate}
+                    disabled={!copiedTask || isLoading}
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    {isLoading ? 'Replicating...' : 'Replicate'}
+                  </button>
+                  {!copiedTask && (
+                    <small className={`ml-2 ${fontColor}`}>
+                      Copy a task first to enable replication
+                    </small>
+                  )}
                 </div>
               </div>
 
@@ -947,11 +1002,13 @@ const mapStateToProps = state => ({
   projectById: state.projectById,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
+  authUser: state.auth.user,
   // tasks: state.tasks.taskItems,
 });
 
 const mapDispatchToProps = {
   addNewTask,
+  replicateTask,
   fetchAllMembers,
   getProjectDetail,
 };
