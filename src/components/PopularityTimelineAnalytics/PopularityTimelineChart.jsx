@@ -1,5 +1,5 @@
 // src/components/PopularityTimelineAnalytics/PopularityTimelineChart.jsx
-import React, { useState, useEffect, useId } from 'react';
+import React, { useState, useEffect, useId, useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -20,20 +20,21 @@ import { ENDPOINTS } from '../../utils/URL';
 import { useSelector } from 'react-redux';
 import styles from './PopularityTimelineChart.module.css';
 
-// ✅ format helper (local, not UTC)
+// Helper: Format date for query (local, not UTC)
 const formatForQuery = date => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
-  return `${year}-${month}`; // e.g., 2024-09
+  return `${year}-${month}`;
 };
 
 const fetchPopularityData = async ({ range, roleValues = [], start, end }) => {
-  return axios.get(ENDPOINTS.POPULARITY(range, roleValues, start, end)).then(res => res.data);
+  const { data } = await axios.get(ENDPOINTS.POPULARITY(range, roleValues, start, end));
+  return data;
 };
 
 const fetchAllRoles = async () => {
-  const response = await axios.get(ENDPOINTS.POPULARITY_ROLES);
-  return response.data.map(role => ({ value: role, label: role }));
+  const { data } = await axios.get(ENDPOINTS.POPULARITY_ROLES);
+  return data.map(role => ({ value: role, label: role }));
 };
 
 const MONTH_NAMES = [
@@ -55,19 +56,41 @@ const parseMonthString = monthStr => {
   if (!monthStr) return null;
   const parts = monthStr.split(' ');
   if (parts.length < 2) return null;
+
   const monthName = parts[0];
-  const year = parseInt(parts[1], 10);
+  const year = Number.parseInt(parts[1], 10);
   const monthIndex = MONTH_NAMES.findIndex(m =>
     m.toLowerCase().startsWith(monthName.toLowerCase()),
   );
-  if (monthIndex === -1 || isNaN(year)) return null;
+
+  if (monthIndex === -1 || Number.isNaN(year)) return null;
   return new Date(year, monthIndex);
 };
 
 const formatMonth = date => date.toLocaleString('default', { month: 'short', year: 'numeric' });
 
+const getOptionStyles = (darkMode, state) => {
+  let backgroundColor;
+  let color;
+
+  if (state.isFocused) {
+    backgroundColor = darkMode ? '#444' : '#f5f5f5';
+  } else {
+    backgroundColor = darkMode ? '#2a2a3b' : 'white';
+  }
+
+  if (darkMode) {
+    color = state.isSelected ? '#fff' : '#E0E0E0';
+  } else {
+    color = '#000';
+  }
+
+  return { backgroundColor, color };
+};
+
 const PopularityTimelineChart = () => {
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const timeRangeId = useId();
   const roleFilterId = useId();
   const startDateId = useId();
@@ -90,7 +113,7 @@ const PopularityTimelineChart = () => {
     if (rolesData) setAllRoles(rolesData);
   }, [rolesData]);
 
-  const selectedRoleValues = React.useMemo(() => selectedRoles.map(r => r.value), [selectedRoles]);
+  const selectedRoleValues = useMemo(() => selectedRoles.map(r => r.value), [selectedRoles]);
 
   const { data: chartData, isLoading, error: queryError } = useQuery({
     queryKey: [
@@ -110,27 +133,30 @@ const PopularityTimelineChart = () => {
     keepPreviousData: false,
   });
 
-  const processedData = React.useMemo(() => {
-    if (!chartData || chartData.length === 0) {
+  const generateEmptyMonths = monthsCount => {
+    const output = [];
+    for (let i = monthsCount - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      output.push({
+        date: new Date(d.getFullYear(), d.getMonth(), 1),
+        month: formatMonth(d),
+        hitsCount: 0,
+        applicationsCount: 0,
+      });
+    }
+    return output;
+  };
+
+  const processChartData = data => {
+    if (!data || data.length === 0) {
       if (range && !startDate && !endDate) {
-        const monthsCount = parseInt(range, 10);
-        const out = [];
-        for (let i = monthsCount - 1; i >= 0; i--) {
-          const d = new Date();
-          d.setMonth(d.getMonth() - i);
-          out.push({
-            date: new Date(d.getFullYear(), d.getMonth(), 1),
-            month: formatMonth(d),
-            hitsCount: 0,
-            applicationsCount: 0,
-          });
-        }
-        return out;
+        return generateEmptyMonths(Number.parseInt(range, 10));
       }
       return [];
     }
 
-    const mapped = chartData.map(item => {
+    const mapped = data.map(item => {
       const dateFromTs = item.timestamp ? new Date(item.timestamp) : null;
       const dateFromMonth = item.month ? parseMonthString(item.month) : null;
       const date = dateFromTs || dateFromMonth || new Date();
@@ -142,48 +168,37 @@ const PopularityTimelineChart = () => {
     });
 
     const grouped = {};
-    mapped.forEach(({ date, hitsCount, applicationsCount }) => {
+    for (const { date, hitsCount, applicationsCount } of mapped) {
       const key = `${date.getFullYear()}-${date.getMonth()}`;
-      if (!grouped[key]) grouped[key] = { date, hitsCount: 0, applicationsCount: 0 };
+      if (!grouped[key]) {
+        grouped[key] = { date, hitsCount: 0, applicationsCount: 0 };
+      }
       grouped[key].hitsCount += hitsCount;
       grouped[key].applicationsCount += applicationsCount;
-    });
+    }
 
-    let arr = Object.values(grouped)
+    const arr = Object.values(grouped)
       .sort((a, b) => a.date - b.date)
-      .map(v => ({
-        ...v,
-        month: formatMonth(v.date),
-      }));
+      .map(v => ({ ...v, month: formatMonth(v.date) }));
 
     if (range && !startDate && !endDate) {
-      const monthsCount = parseInt(range, 10);
-      const out = [];
-      for (let i = monthsCount - 1; i >= 0; i--) {
-        const d = new Date();
-        d.setMonth(d.getMonth() - i);
-        const key = `${d.getFullYear()}-${d.getMonth()}`;
-        const entry = grouped[key];
-        if (entry) {
-          out.push({
-            ...entry,
-            month: formatMonth(new Date(d.getFullYear(), d.getMonth(), 1)),
-            date: new Date(d.getFullYear(), d.getMonth(), 1),
-          });
-        } else {
-          out.push({
-            date: new Date(d.getFullYear(), d.getMonth(), 1),
-            month: formatMonth(new Date(d.getFullYear(), d.getMonth(), 1)),
-            hitsCount: 0,
-            applicationsCount: 0,
-          });
-        }
-      }
-      return out;
+      const monthsCount = Number.parseInt(range, 10);
+      const filled = generateEmptyMonths(monthsCount);
+      return filled.map(d => {
+        const key = `${d.date.getFullYear()}-${d.date.getMonth()}`;
+        return grouped[key] ? { ...grouped[key], month: formatMonth(d.date) } : d;
+      });
     }
 
     return arr;
-  }, [chartData, range, startDate, endDate]);
+  };
+
+  const processedData = useMemo(() => processChartData(chartData), [
+    chartData,
+    range,
+    startDate,
+    endDate,
+  ]);
 
   const handleStartDateChange = date => {
     setError('');
@@ -214,6 +229,61 @@ const PopularityTimelineChart = () => {
     setError('');
   };
 
+  const renderChart = () => {
+    if (isLoading) {
+      return <div className={styles['pt-loading']}>Loading data...</div>;
+    }
+    if (!shouldShowChart && dateRangeOption === 'custom') {
+      return <div className={styles['pt-no-data']}>Please select both start and end months</div>;
+    }
+    if (processedData.length > 0) {
+      return (
+        <div className={styles['pt-chart-wrapper']}>
+          <ResponsiveContainer width="100%" height={400}>
+            <LineChart data={processedData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#f0f0f0'} />
+              <XAxis
+                dataKey="month"
+                label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
+                angle={-45}
+                textAnchor="end"
+                height={70}
+                tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
+                stroke={darkMode ? '#ccc' : '#333'}
+              />
+              <YAxis
+                label={{
+                  value: 'Activity Count',
+                  angle: -90,
+                  position: 'insideLeft',
+                  style: { textAnchor: 'middle' },
+                  offset: -10,
+                  fill: darkMode ? '#ccc' : '#333',
+                }}
+                tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
+                stroke={darkMode ? '#ccc' : '#333'}
+              />
+              <Tooltip />
+              <Legend verticalAlign="top" height={36} iconType="circle" iconSize={10} />
+              <Line dataKey="hitsCount" name="Hits" stroke="#3366cc" strokeWidth={2}>
+                <LabelList dataKey="hitsCount" position="top" />
+              </Line>
+              <Line
+                dataKey="applicationsCount"
+                name="Applications"
+                stroke="#109618"
+                strokeWidth={2}
+              >
+                <LabelList dataKey="applicationsCount" position="top" />
+              </Line>
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      );
+    }
+    return <div className={styles['pt-no-data']}>No data available for selected filters</div>;
+  };
+
   return (
     <div className={darkMode ? styles['dark-screen'] : styles['light-screen']}>
       <div className={`${styles['pt-container']} ${darkMode ? styles['dark-theme'] : ''}`}>
@@ -223,6 +293,7 @@ const PopularityTimelineChart = () => {
 
         {/* Filters */}
         <div className={styles['pt-filters']}>
+          {/* Time Range */}
           <div className={styles['pt-filter-group']}>
             <label className={styles['pt-label']} htmlFor={timeRangeId}>
               Time Range
@@ -233,7 +304,6 @@ const PopularityTimelineChart = () => {
               onChange={e => {
                 const value = e.target.value;
                 setDateRangeOption(value);
-
                 if (value !== 'custom') {
                   setStartDate(null);
                   setEndDate(null);
@@ -250,6 +320,7 @@ const PopularityTimelineChart = () => {
             </select>
           </div>
 
+          {/* Date Pickers */}
           {dateRangeOption === 'custom' && (
             <div className={styles['pt-filter-group']}>
               <div className={styles['pt-label']}>Date Range</div>
@@ -270,10 +341,6 @@ const PopularityTimelineChart = () => {
                     showMonthYearPicker
                     isClearable
                     className={styles['pt-date-picker']}
-                    popperClassName={`${styles['pt-datepicker-popper']} ${
-                      darkMode ? 'react-datepicker-dark' : ''
-                    }`}
-                    calendarClassName={styles['pt-datepicker-calendar']}
                   />
                 </div>
                 <div>
@@ -293,10 +360,6 @@ const PopularityTimelineChart = () => {
                     showMonthYearPicker
                     isClearable
                     className={styles['pt-date-picker']}
-                    popperClassName={`${styles['pt-datepicker-popper']} ${
-                      darkMode ? 'react-datepicker-dark' : ''
-                    }`}
-                    calendarClassName={styles['pt-datepicker-calendar']}
                   />
                 </div>
               </div>
@@ -315,67 +378,10 @@ const PopularityTimelineChart = () => {
               value={selectedRoles}
               onChange={setSelectedRoles}
               placeholder="All Roles"
-              classNamePrefix="months-pledged-chart__select"
               styles={{
-                control: provided => ({
-                  ...provided,
-                  backgroundColor: darkMode ? '#3A506B' : 'white',
-                  borderColor: darkMode ? '#444' : '#ccc',
-                  color: darkMode ? '#E0E0E0' : '#000',
-                  minHeight: '38px',
-                  boxShadow: 'none',
-                  '&:hover': { borderColor: darkMode ? '#666' : '#999' },
-                }),
-                input: provided => ({ ...provided, color: darkMode ? '#E0E0E0' : '#000' }),
-                placeholder: provided => ({
-                  ...provided,
-                  color: darkMode ? '#B0B0B0' : '#666',
-                  opacity: 0.8,
-                }),
-                singleValue: provided => ({ ...provided, color: darkMode ? '#E0E0E0' : '#000' }),
-                multiValue: provided => ({
-                  ...provided,
-                  backgroundColor: darkMode ? '#444' : '#e0e0e0',
-                  color: darkMode ? '#E0E0E0' : '#000',
-                  borderRadius: '4px',
-                  padding: '2px 4px',
-                }),
-                multiValueLabel: provided => ({
-                  ...provided,
-                  color: darkMode ? '#E0E0E0' : '#000',
-                  fontWeight: 500,
-                }),
-                multiValueRemove: provided => ({
-                  ...provided,
-                  color: darkMode ? '#E0E0E0' : '#000',
-                  ':hover': {
-                    backgroundColor: darkMode ? '#555' : '#ccc',
-                    color: darkMode ? '#fff' : '#000',
-                  },
-                }),
-                menu: provided => ({
-                  ...provided,
-                  backgroundColor: darkMode ? '#2a2a3b' : 'white',
-                  color: darkMode ? '#E0E0E0' : '#000',
-                  zIndex: 100,
-                }),
                 option: (provided, state) => ({
                   ...provided,
-                  backgroundColor: state.isFocused
-                    ? darkMode
-                      ? '#444'
-                      : '#f5f5f5'
-                    : darkMode
-                    ? '#2a2a3b'
-                    : 'white',
-                  color: darkMode
-                    ? state.isSelected
-                      ? '#fff'
-                      : '#E0E0E0'
-                    : state.isSelected
-                    ? '#000'
-                    : '#000',
-                  cursor: 'pointer',
+                  ...getOptionStyles(darkMode, state),
                 }),
               }}
             />
@@ -386,60 +392,12 @@ const PopularityTimelineChart = () => {
           </button>
         </div>
 
-        {/* Error Message */}
+        {/* Error Messages */}
         {error && <div className={styles['pt-error']}>{error}</div>}
         {queryError && <div className={styles['pt-error']}>Error: {queryError.message}</div>}
 
         {/* Chart */}
-        {isLoading ? (
-          <div className={styles['pt-loading']}>Loading data...</div>
-        ) : !shouldShowChart && dateRangeOption === 'custom' ? (
-          <div className={styles['pt-no-data']}>Please select both start and end months</div>
-        ) : processedData.length > 0 ? (
-          <div className={styles['pt-chart-wrapper']}>
-            <ResponsiveContainer width="100%" height={400}>
-              <LineChart data={processedData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#f0f0f0'} />
-                <XAxis
-                  dataKey="month"
-                  label={{ value: 'Month', position: 'insideBottom', offset: -10 }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={70}
-                  tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
-                  stroke={darkMode ? '#ccc' : '#333'}
-                />
-                <YAxis
-                  label={{
-                    value: 'Activity Count',
-                    angle: -90,
-                    position: 'insideLeft',
-                    style: { textAnchor: 'middle' },
-                    offset: -10,
-                    fill: darkMode ? '#ccc' : '#333',
-                  }}
-                  tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
-                  stroke={darkMode ? '#ccc' : '#333'}
-                />
-                <Tooltip />
-                <Legend verticalAlign="top" height={36} iconType="circle" iconSize={10} />
-                <Line dataKey="hitsCount" name="Hits" stroke="#3366cc" strokeWidth={2}>
-                  <LabelList dataKey="hitsCount" position="top" />
-                </Line>
-                <Line
-                  dataKey="applicationsCount"
-                  name="Applications"
-                  stroke="#109618"
-                  strokeWidth={2}
-                >
-                  <LabelList dataKey="applicationsCount" position="top" />
-                </Line>
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        ) : (
-          <div className={styles['pt-no-data']}>No data available for selected filters</div>
-        )}
+        {renderChart()}
       </div>
     </div>
   );
