@@ -48,12 +48,7 @@ const UserTableDataComponent = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { roles } = useSelector(state => state.role);
-  const joinTimeStamp = date => {
-    const now = new Date();
-    let formattedTimestamp = now.toISOString();
-    formattedTimestamp = `${date.toString()}T${formattedTimestamp.split('T')[1]}`;
-    return formattedTimestamp;
-  };
+  const joinTimeStamp = (date) => `${String(date).slice(0,10)}T12:00:00.000Z`;
   const addUserInformation = (item, value, id) => {
     dispatch(
       updateUserInfomation({

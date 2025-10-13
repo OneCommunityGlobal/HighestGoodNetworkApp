@@ -135,6 +135,7 @@
     "start:local": "vite",
     "lint": "eslint \"**/*.{js,jsx}\"",
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
+    "lint:css": "stylelint \"**/*.{css,scss,sass}\"",
     "prepare": "husky install"
   },
   "browserslist": [
@@ -172,7 +173,7 @@
     "eslint-plugin-prettier": "^3.4.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-testing-library": "^7.6.0",
+    "eslint-plugin-testing-library": "^7.11.0",
     "eslint-plugin-vitest": "^0.5.4",
     "husky": "^7.0.4",
     "joi-browser": "^13.4.0",
@@ -191,6 +192,7 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "prettier --write"
-    ]
+    ],
+    "**/*.{css,scss,sass}": "stylelint"
   }
 }
