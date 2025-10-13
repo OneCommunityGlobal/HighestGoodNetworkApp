@@ -83,6 +83,87 @@ function QuantityOfMaterialsUsed({ data }) {
 
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
+  const selectStyles = useMemo(
+    () => ({
+      control: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        borderColor: darkMode ? '#375071' : '#ccc',
+        color: darkMode ? '#fff' : '#232323',
+        minHeight: 38,
+        boxShadow: 'none',
+        borderRadius: 8,
+      }),
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        fontSize: 12,
+        zIndex: 10001,
+        borderRadius: 8,
+        marginTop: 2,
+        color: darkMode ? '#fff' : '#232323',
+      }),
+      menuList: base => ({
+        ...base,
+        maxHeight: 400,
+        overflowY: 'auto',
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        color: darkMode ? '#fff' : '#232323',
+        padding: 0,
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected
+          ? '#0d55b3'
+          : state.isFocused
+          ? '#0d55b3'
+          : darkMode
+          ? '#22272e'
+          : '#fff',
+        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
+        fontSize: 13,
+        padding: '10px 16px',
+        cursor: 'pointer',
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
+        borderRadius: 6,
+        fontSize: 12,
+        marginRight: 4,
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        fontSize: 12,
+        padding: '2px 6px',
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        ':hover': {
+          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
+          color: '#fff',
+        },
+        borderRadius: 4,
+        padding: 2,
+      }),
+      singleValue: base => ({
+        ...base,
+        color: darkMode ? '#fff' : base.color,
+      }),
+      input: base => ({
+        ...base,
+        color: darkMode ? '#fff' : base.color,
+      }),
+      placeholder: base => ({
+        ...base,
+        color: darkMode ? '#fff' : base.color,
+      }),
+    }),
+    [darkMode],
+  );
+
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 1200);
@@ -594,7 +675,8 @@ function QuantityOfMaterialsUsed({ data }) {
           </li>
           <li>Hover over bars or dots to view exact quantities.</li>
           <li>
-            <strong>Click on a bar</strong> to view detailed usage:
+            <strong className={darkMode ? 'text-light' : ''}>Click on a bar </strong> to view
+            detailed usage:
             <ul style={{ paddingLeft: '16px' }}>
               <li>Usage timeline (date-wise quantity)</li>
               <li>Project where it was used the most</li>
@@ -618,13 +700,13 @@ function QuantityOfMaterialsUsed({ data }) {
             Legend colors match chart bars. Dots are color-coded based on change:
             <ul style={{ paddingLeft: '16px' }}>
               <li>
-                <strong>Red</strong> – Increase in usage
+                <strong className={darkMode ? 'text-light' : ''}>Red</strong> – Increase in usage
               </li>
               <li>
-                <strong>Green</strong> – Decrease in usage
+                <strong className={darkMode ? 'text-light' : ''}>Green</strong> – Decrease in usage
               </li>
               <li>
-                <strong>Gray</strong> – No change
+                <strong className={darkMode ? 'text-light' : ''}>Gray</strong> – No change
               </li>
             </ul>
           </li>
@@ -642,13 +724,14 @@ function QuantityOfMaterialsUsed({ data }) {
           onChange={selectedOptions =>
             setSelectedMaterials(selectedOptions.map(({ value }) => value))
           }
-          placeholder="All Materials"
+          placeholder="All Materials testing"
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
           menuPosition="fixed"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           closeMenuOnSelect={false}
           hideSelectedOptions={false}
+          styles={selectStyles}
         />
 
         <Select
@@ -659,6 +742,7 @@ function QuantityOfMaterialsUsed({ data }) {
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
           // isDisabled
+          styles={selectStyles}
         />
         <Select
           options={dateOptions}
@@ -673,6 +757,7 @@ function QuantityOfMaterialsUsed({ data }) {
           placeholder="Date"
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
+          styles={selectStyles}
         />
       </div>
 
@@ -865,7 +950,7 @@ function QuantityOfMaterialsUsed({ data }) {
             color: 'var(--text-color)',
           }}
         >
-          <strong>
+          <strong className={darkMode ? 'text-light' : ''}>
             Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
           </strong>
           {chartData.datasets[0].data
@@ -923,19 +1008,25 @@ function QuantityOfMaterialsUsed({ data }) {
 
               return (
                 <>
-                  <p>
-                    <strong>Highest Usage in:</strong> {details.project}
+                  <p className={darkMode ? 'text-light' : ''}>
+                    <strong className={darkMode ? 'text-light' : ''}>Highest Usage in:</strong>{' '}
+                    {details.project}
                   </p>
-                  <p>
-                    <strong>Total Quantity:</strong> {details.total}
+                  <p className={darkMode ? 'text-light' : ''}>
+                    <strong className={darkMode ? 'text-light' : ''}>Total Quantity:</strong>{' '}
+                    {details.total}
                   </p>
 
                   <h4 className={`${styles.quantityModalSubheading}`}>📅 Usage Timeline</h4>
                   <div className={`${styles.quantityModalTimeline}`}>
                     {details.timeline.map(item => (
                       <div key={uuidv4()} className={`${styles.timelineRow}`}>
-                        <span className={`${styles.timelineDate}`}>{item.date}</span>
-                        <span className={`${styles.timelineQty}`}>{item.quantity}</span>
+                        <span className={`${styles.timelineDate} ${darkMode ? ' text-light' : ''}`}>
+                          {item.date}
+                        </span>
+                        <span className={`${styles.timelineQty} ${darkMode ? ' text-light' : ''}`}>
+                          {item.quantity}
+                        </span>
                       </div>
                     ))}
                   </div>
