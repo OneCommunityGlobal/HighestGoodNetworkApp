@@ -19,23 +19,25 @@
   align-items: center;
 }
 
-.saveTemplate, .loadTemplate {
+.saveTemplate,
+.loadTemplate {
   display: flex;
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.saveTemplate input, .loadTemplate select {
+.saveTemplate input,
+.loadTemplate select {
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   min-width: 180px;
 }
 
-.saveTemplateButton, 
-.loadTemplateButton, 
-.appendTemplateButton, 
+.saveTemplateButton,
+.loadTemplateButton,
+.appendTemplateButton,
 .deleteTemplateButton {
   padding: 8px 12px;
   border: none;
@@ -86,9 +88,9 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
-  .saveTemplate, .loadTemplate {
+
+  .saveTemplate,
+  .loadTemplate {
     flex-direction: column;
   }
-} 
-
+}

@@ -1,4 +1,4 @@
-.overlay {
+.questionEditModalOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -11,7 +11,7 @@
   z-index: 1000;
 }
 
-.modal {
+.questionEditModal {
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -22,7 +22,7 @@
   padding: 20px;
 }
 
-.modal h3 {
+.questionEditModal h3 {
   margin-top: 0;
   margin-bottom: 15px;
   color: #333;
@@ -46,7 +46,7 @@
   font-weight: 500;
 }
 
-.formGroup input[type="text"],
+.formGroup input[type='text'],
 .formGroup select,
 .formGroup textarea {
   padding: 8px;
@@ -55,7 +55,7 @@
   font-size: 1rem;
 }
 
-.formGroup input[type="checkbox"] {
+.formGroup input[type='checkbox'] {
   margin-right: 5px;
 }
 
@@ -134,16 +134,17 @@
 }
 
 @media (max-width: 600px) {
-  .modal {
+  .questionEditModal {
     width: 95%;
     padding: 15px;
   }
-  
+
   .modalButtons {
     flex-direction: column;
   }
-  
-  .saveButton, .cancelButton {
+
+  .saveButton,
+  .cancelButton {
     width: 100%;
   }
 }
