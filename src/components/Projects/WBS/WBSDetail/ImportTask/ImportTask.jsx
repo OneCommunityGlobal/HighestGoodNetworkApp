@@ -49,27 +49,17 @@ const ImportTask = props => {
     const tmpList = [];
     try {
       rows.forEach((rowArr, i) => {
-        if (i >= 2) {
-          // level 1
-          if (rowArr[0] !== null && rowArr[1] !== null) {
-            tmpList.push(newTask(rowArr[0], rowArr[1], 1, rowArr, i));
-          }
-          // level 2
-          if (rowArr[2] !== null && rowArr[3] !== null) {
-            tmpList.push(newTask(rowArr[2], rowArr[3], 2, rowArr, i));
-          }
-          // level 3
-          if (rowArr[4] !== null && rowArr[5] !== null) {
-            tmpList.push(newTask(rowArr[4], rowArr[5], 3, rowArr, i));
-          }
-          // level 4
-          if (rowArr[6] !== null && rowArr[7] !== null) {
-            tmpList.push(newTask(rowArr[6], rowArr[7], 4, rowArr, i));
+        if (i < 2) return;
+        for (let c = 0; c <= 6; c += 2) {
+          const num = rowArr[c];
+          const name = rowArr[c + 1];
+          if (num !== null && name !== null) {
+            tmpList.push(newTask(num, name, c / 2 + 1, rowArr, i));
           }
         }
       });
-      const title = rows?.[0]?.[0] ?? '';
-      setInstruction(`${title}<br/> Rows: ${rows?.length ?? 0}`);
+      const header = rows?.[0]?.[0] ?? '';
+      setInstruction(`${header}<br/> Rows: ${rows?.length ?? 0}`);
       setImportStatus('imported');
       setTaskList(tmpList);
     } catch (error) {
@@ -79,19 +69,25 @@ const ImportTask = props => {
     }
   };
 
-  const newTask = (num, taskName, level, rowArr, i) => {
-    const nameCache = []; // check for duplicates
-    const resourcesNames = rowArr[9]
-  ? rowArr[9].split(',').map(name => {
-      const trimmed = name.trim();
+  const parseResources = (cell, members, lineNo) => {
+    if (!cell) return [];
+    const seen = new Set();
+    return cell.split(',').map(raw => {
+      const name = raw.trim();
+      if (seen.has(name)) {
+        throw new Error(`Error: There are more than one [${name}] in resources on line ${lineNo + 1}`);
+      }
+      seen.add(name);
       const member = members.find(
-        p => `${p.firstName} ${p.lastName}`.toLocaleLowerCase() === trimmed.toLowerCase()
+        p => `${p.firstName} ${p.lastName}`.toLowerCase() === name.toLowerCase()
       );
-      if (!member) throw new Error(`Error: ${trimmed} is not in the project member list`);
-      return `${trimmed}|${member._id}|${member.profilePic || '/defaultprofilepic.png'}`;
-    })
-  : []; // if cell under resources column is empty (rowArr[9] is undefined), then assign resources with []
+      if (!member) throw new Error(`Error: ${name} is not in the project member list`);
+      return `${name}|${member._id}|${member.profilePic || '/defaultprofilepic.png'}`;
+    });
+  };
 
+  const newTask = (num, taskName, level, rowArr, i) => {
+    const resourcesNames = parseResources(rowArr[9], members, i);
     let newTask = {
       taskName: taskName,
       wbsId: String(props.wbsId),
@@ -159,6 +155,73 @@ const ImportTask = props => {
     }
   }, [popupContent]);
 
+  const SpinnerRow = ({ label }) => (
+    <tr>
+      <td>
+        <button className="btn btn-primary" type="button" disabled>
+          <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true">
+            {label}
+          </span>
+        </button>
+      </td>
+    </tr>
+  );
+  
+  const FileInput = () => (
+    <input
+      type="file"
+      id="file"
+      accept=".xlsx"
+      onChange={e => handleFileChosen(e.target.files[0])}
+    />
+  );
+  
+  const renderStatusRow = (status) => {
+    switch (status) {
+      case 'choosing':
+        return (
+          <tr>
+            <td><FileInput /></td>
+          </tr>
+        );
+      case 'importing':
+        return <SpinnerRow label="Importing..." />;
+      case 'importError':
+        return (
+          <tr>
+            <td>
+              <Alert color="danger">{alert}</Alert>
+              <FileInput />
+            </td>
+          </tr>
+        );
+      case 'imported':
+        return (
+          <tr>
+            <td>
+              <Alert color="primary">Are you sure you want to upload it? </Alert>
+              <button className="btn btn-primary" type="button" onClick={uploadTaskList}>
+                Upload
+              </button>
+              <button className="btn btn-secondary ml-2" type="button" onClick={reset}>
+                Reset
+              </button>
+            </td>
+          </tr>
+        );
+      case 'uploading':
+        return <SpinnerRow label="Uploading..." />;
+      case 'uploaded':
+        return (
+          <tr>
+            <td><Alert color="primary">File Uploaded!</Alert></td>
+          </tr>
+        );
+      default:
+        return null;
+    }
+  };  
+
   return (
     <>
       <Modal isOpen={modal} toggle={toggle} onClosed={onCloseHandler} className={darkMode ? 'dark-mode text-light' : ''}>
@@ -174,92 +237,7 @@ const ImportTask = props => {
                  </div>
                 </td>
               </tr>
-              {importStatus === 'choosing' ? (
-                <tr>
-                  {/* eslint-disable-next-line jsx-a11y/scope */}
-                  <td scope="col">
-                    <input
-                      type="file"
-                      id="file"
-                      accept=".xlsx"
-                      onChange={e => handleFileChosen(e.target.files[0])}
-                    />
-                  </td>
-                </tr>
-              ) : null}
-              {importStatus === 'importing' ? (
-                <tr>
-                  <td>
-                    <button className="btn btn-primary" type="button" disabled>
-                      <span
-                        className="spinner-grow spinner-grow-sm"
-                        role="status"
-                        aria-hidden="true"
-                      >
-                        Importing...
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-              ) : null}
-              {importStatus === 'importError' ? (
-                <tr>
-                  <td>
-                    <Alert color='danger'>{alert}</Alert>
-                    <input
-                      type="file"
-                      id="file"
-                      accept=".xlsx"
-                      onChange={e => handleFileChosen(e.target.files[0])}
-                    />
-                  </td>
-                </tr>
-              ) : null}
-
-              {importStatus === 'imported' ? (
-                <tr>
-                  <td>
-                    <Alert color='primary'>Are you sure you want to upload it? </Alert>
-                    <button
-                      className="btn btn-primary"
-                      type="button"
-                      onClick={uploadTaskList}
-                    >
-                      Upload
-                    </button>
-                    <button
-                      className="btn btn-secondary ml-2"
-                      type="button"
-                      onClick={reset}
-                    >
-                      Reset
-                    </button>
-                  </td>
-                </tr>
-              ) : null}
-
-              {importStatus === 'uploading' ? (
-                <tr>
-                  <td>
-                    <button className="btn btn-primary" type="button" disabled>
-                      <span
-                        className="spinner-grow spinner-grow-sm"
-                        role="status"
-                        aria-hidden="true"
-                      >
-                        Uploading...
-                      </span>
-                    </button>
-                  </td>
-                </tr>
-              ) : null}
-              {importStatus === 'uploaded' ? (
-                <tr>
-                  <td>
-                    <Alert color='primary'>File Uploaded!</Alert>
-                  </td>
-                </tr>
-              ) : null}
+              {renderStatusRow(importStatus)}
             </tbody>
           </table>
         </ModalBody>
