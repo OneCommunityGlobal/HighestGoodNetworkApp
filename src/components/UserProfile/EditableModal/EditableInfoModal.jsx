@@ -245,7 +245,7 @@ export class EditableInfoModal extends Component {
                 <Row className='no-gutters'>
                   {(this.state.editing) &&
                     (
-                      <Col md={6} style={{ paddingRight: '2px' }}>
+                      <Col md={6} style={{ paddingRight: '2px' }} className='my-2'>
                         <Select
                           options={options}
                           onChange={this.handleSelectChange}
@@ -253,23 +253,18 @@ export class EditableInfoModal extends Component {
                         />
                       </Col>)
                   }
-
-                  {(CanEdit && this.state.editing) &&
-                    (
-                      <Col md={3} style={{ paddingLeft: '4px' }}
-                      >
-                        <Button
-                          className='saveBtn'
-                          onClick={this.handleSave}
-                          color='primary'
-                          style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
-                      </Col>)
-                  }
-                  <Col
-                    md={3} className='d-flex justify-content-center'
-                  >
+                  <div className='my-2'>
+                    {(CanEdit && this.state.editing) &&
+                      (
+                          <Button
+                            className='saveBtn mx-2'
+                            onClick={this.handleSave}
+                            color='primary'
+                            style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
+                      )
+                    }
                     <Button onClick={this.handleClose} color='danger' style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
-                  </Col>
+                  </div>
                 </Row>
               </ModalFooter>
             </Modal>
