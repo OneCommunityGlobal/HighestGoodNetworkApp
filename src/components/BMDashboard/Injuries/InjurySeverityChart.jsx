@@ -36,7 +36,7 @@ function CustomTooltip({ active, payload, label, darkMode }) {
   payload.forEach(entry => {
     if (entry.value > 0) {
       // Extract project and department from dataKey
-      const match = entry.dataKey.match(/^(.+)_(.+)$/);
+      const match = entry.dataKey.match(/^([^_]+)_(.+)$/);
       if (match) {
         const [, projectName, department] = match;
         if (!projectData[projectName]) projectData[projectName] = [];
