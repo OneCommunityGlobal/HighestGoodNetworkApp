@@ -1,20 +1,22 @@
-
 import React, { useState , useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Col, Row} from 'reactstrap';
-import { updateInfoCollection } from '../../../actions/information'
+import { updateInfoCollection, addInfoCollection } from '../../../actions/information'
 import { boxStyle, boxStyleDark } from '~/styles';
-
 import { toast } from 'react-toastify';
 import RichTextEditor from './RichTextEditor';
 
-const RoleInfoModal = ({ info, auth}) => {
+const RoleInfoModal = ({ info, auth, roleName}) => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setOpen] = useState(false);
   const [canEditInfoModal, setCanEditInfoModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const { infoContent, CanRead } = { ...info };
+  
+  // Handle case where info doesn't exist in database
+  const infoContent = info?.infoContent || 'Please input information!';
+  const CanRead = info?.CanRead !== undefined ? info.CanRead : true; // Default to true if not specified
+  
   const [infoContentModal, setInfoContentModal] = useState('');
   const dispatch = useDispatch();
 
@@ -60,8 +62,21 @@ const RoleInfoModal = ({ info, auth}) => {
     }
 
     const updateInfo = {infoContent: infoContentModal}
+    let saveResult;
 
-    let saveResult = await dispatch(updateInfoCollection(info._id, updateInfo));
+    // If info doesn't exist in database, create new record
+    if (!info || !info._id) {
+      const newInfo = {
+        infoName: roleName || 'UnknownRoleInfo',
+        infoContent: infoContentModal,
+        visibility: '0'
+      };
+      saveResult = await dispatch(addInfoCollection(newInfo));
+    } else {
+      // Update existing record
+      saveResult = await dispatch(updateInfoCollection(info._id, updateInfo));
+    }
+    
     setInfoContentModal(infoContentModal);
 
     if (saveResult === 200 || saveResult === 201) {
@@ -69,7 +84,6 @@ const RoleInfoModal = ({ info, auth}) => {
     } else {
       handleSaveError();
     }
-
   }
 
   if (CanRead) {
@@ -122,8 +136,12 @@ const RoleInfoModal = ({ info, auth}) => {
 };
 
 RoleInfoModal.propTypes = {
+  info: PropTypes.object,
+  auth: PropTypes.object,
+  roleName: PropTypes.string,
   fetchError: PropTypes.any,
   updateInfoCollection: PropTypes.func.isRequired,
+  addInfoCollection: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = ({ infoCollections }) => ({
@@ -135,7 +153,8 @@ const mapStateToProps = ({ infoCollections }) => ({
 const mapDispatchToProps = dispatch => {
   return {
     updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
+    addInfoCollection: (newInfo) => dispatch(addInfoCollection(newInfo)),
   };
 };
 
-export default connect(mapDispatchToProps, mapStateToProps)(RoleInfoModal);
+export default connect(mapStateToProps, mapDispatchToProps)(RoleInfoModal);
