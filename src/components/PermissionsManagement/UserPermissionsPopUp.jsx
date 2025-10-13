@@ -84,9 +84,19 @@ function UserPermissionsPopUp({
       }
       return;
     }
+
+    if (searchText === '') {
+      toast.error('Please select a user');
+      return;
+    }
     const userId = actualUserProfile?._id;
 
     const url = ENDPOINTS.USER_PROFILE(userId);
+    if (url.includes('undefined')) {
+      toast.error('Este usuário não existe.');
+      return;
+    }
+
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = {
       ...allUserInfo,
