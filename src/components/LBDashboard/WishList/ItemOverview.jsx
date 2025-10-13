@@ -1,4 +1,4 @@
-import './ItemOverview.css';
+import './ItemOverview.module.css';
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
@@ -48,7 +48,7 @@ function WishListItem(props) {
   }, [wishlistItem]);
 
   return (
-    <div className="item">
+    <div className="item item_overview_module">
       <div className="item__container">
         <Header />
         <div className="item__overview">

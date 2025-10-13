@@ -15,6 +15,7 @@ export default function BellNotification({ userId }) {
   const [isDataReady, setIsDataReady] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const notificationRef = useRef(null);
+  const bellRef = useRef(null);
 
   const [dbNotifications, setDbNotifications] = useState([]); // Notifications from the database
   const [messageNotifications, setMessageNotifications] = useState([]);
@@ -128,42 +129,52 @@ export default function BellNotification({ userId }) {
    * useEffect to check if a notification should be triggered based on time and effort logged.
    * Triggers the notification if effort is < 50% and time left < 48 hours.
    */
+
+  const checkCondition = () => {
+    const currentWeekNumber = getCurrentWeekNumber();
+    const storedWeekNumber = parseInt(localStorage.getItem(`${userId}_weekNumber`), 10);
+    const notificationSeen = localStorage.getItem(`${userId}_notificationSeen`) === 'true';
+
+    // Reset the notification state if it's a new week
+    if (storedWeekNumber !== currentWeekNumber) {
+      localStorage.removeItem(`${userId}_notificationSeen`);
+      localStorage.setItem(`${userId}_weekNumber`, currentWeekNumber.toString());
+    }
+
+    const totalEffort = calculateTotalEffort;
+    const effortPercentage = (totalEffort / weeklycommittedHours) * 100;
+    const { hoursLeft } = calculateTimeLeft;
+
+    // Trigger a notification if the effort is less than 50% and fewer than 48 hours remain
+    if (
+      weeklycommittedHours > 0 &&
+      !notificationSeen &&
+      effortPercentage < 50 &&
+      hoursLeft <= 48
+    ) {
+      setHasNotification(true);
+    } else {
+      setHasNotification(false);
+    }
+    setIsDataReady(true);
+  };
+
   useEffect(() => {
-    const checkCondition = () => {
-      const currentWeekNumber = getCurrentWeekNumber();
-      const storedWeekNumber = parseInt(localStorage.getItem(`${userId}_weekNumber`), 10);
-      const notificationSeen = localStorage.getItem(`${userId}_notificationSeen`) === 'true';
-
-      // Reset the notification state if it's a new week
-      if (storedWeekNumber !== currentWeekNumber) {
-        localStorage.removeItem(`${userId}_notificationSeen`);
-        localStorage.setItem(`${userId}_weekNumber`, currentWeekNumber.toString());
-      }
-
-      const totalEffort = calculateTotalEffort;
-      const effortPercentage = (totalEffort / weeklycommittedHours) * 100;
-      const { hoursLeft } = calculateTimeLeft;
-
-      // Trigger a notification if the effort is less than 50% and fewer than 48 hours remain
-      if (
-        weeklycommittedHours > 0 &&
-        !notificationSeen &&
-        effortPercentage < 50 &&
-        hoursLeft <= 48
-      ) {
-        setHasNotification(true);
-      } else {
-        setHasNotification(false);
-      }
-      setIsDataReady(true);
-    };
-
     // Initial check and set interval to check every hour
     checkCondition();
     const id = setInterval(checkCondition, 3600000); // Every hour
 
     return () => clearInterval(id); // Cleanup interval on unmount
-  }, [weeklycommittedHours, calculateTotalEffort, calculateTimeLeft, getCurrentWeekNumber, userId]);
+  }, [weeklycommittedHours, calculateTotalEffort, calculateTimeLeft, getCurrentWeekNumber]);
+
+  useEffect(() => {
+    setIsDataReady(false);
+    // Initial check and set interval to check every hour
+    checkCondition();
+    const id = setInterval(checkCondition, 3600000); // Every hour
+
+    return () => clearInterval(id); // Cleanup interval on unmount
+  },[userId])
 
   useEffect(() => {
     const socket = getMessagingSocket();
@@ -216,7 +227,11 @@ export default function BellNotification({ userId }) {
 
   useEffect(() => {
     const handleClickOutside = event => {
-      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+      if (
+        notificationRef.current && 
+        !notificationRef.current.contains(event.target) &&
+        !bellRef.current.contains(event.target)
+      ) {
         handleNotificationClick();
       }
     };
@@ -253,6 +268,7 @@ export default function BellNotification({ userId }) {
     <>
       {isDataReady && (
         <button
+          ref={bellRef}
           type="button"
           onClick={handleMessageNotificationClick}
           className={`fa fa-bell i-large ${
@@ -299,7 +315,7 @@ export default function BellNotification({ userId }) {
           ref={notificationRef}
           style={{
             position: 'absolute',
-            top: '75%',
+            top: '4rem',
             right: '5%',
             transform: 'translateX(0)',
             backgroundColor: darkMode ? '#3A506B' : 'white',
