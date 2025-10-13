@@ -133,9 +133,10 @@ const ImportTask = props => {
 
   const reset = () => {
     setImportStatus('choosing');
-    setInstruction(parse(popupContent));
+    // store raw string; guard non-strings
+    setInstruction(typeof popupContent === 'string' ? popupContent : String(popupContent ?? ''));
     setTaskList([]);
-  }
+  };
 
   const onCloseHandler = async () => {
     props.setIsLoading(true);
@@ -168,9 +169,9 @@ const ImportTask = props => {
               <tr>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td scope="col">
-                  <div id="instruction">
-                    {instruction ? parse(instruction) : null}
-                  </div>
+                 <div id="instruction">
+                    {typeof instruction === 'string' && instruction.trim() ? parse(instruction) : null}
+                 </div>
                 </td>
               </tr>
               {importStatus === 'choosing' ? (
