@@ -1,78 +1,173 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
+import { FiInfo, FiCheck } from 'react-icons/fi';
 import styles from './SubmissionCard.module.css';
-import { FiInfo } from 'react-icons/fi';
 
 const getInitials = (name = '') => {
-  const [firstName, lastName] = name.split(' ');
-  if (firstName && lastName) {
-    return `${firstName[0]}${lastName[0]}`;
+  const parts = name.trim().split(' ');
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
   }
-  return firstName ? firstName[0] : '?';
+  return parts[0] ? parts[0].substring(0, 2).toUpperCase() : '?';
+};
+
+const getAvatarColor = name => {
+  const colors = [
+    { bg: '#8B5CF6', shadow: 'rgba(139, 92, 246, 0.3)' },
+    { bg: '#3B82F6', shadow: 'rgba(59, 130, 246, 0.3)' },
+    { bg: '#EC4899', shadow: 'rgba(236, 72, 153, 0.3)' },
+    { bg: '#10B981', shadow: 'rgba(16, 185, 129, 0.3)' },
+    { bg: '#F59E0B', shadow: 'rgba(245, 158, 11, 0.3)' },
+    { bg: '#EF4444', shadow: 'rgba(239, 68, 68, 0.3)' },
+  ];
+  const index = (name?.charCodeAt(0) || 0) % colors.length;
+  return colors[index];
+};
+
+const getTaskTypeLabel = type => {
+  const labels = {
+    read: 'Read Task',
+    write: 'Write Task',
+    quiz: 'Quiz Task',
+    practice: 'Practice Task',
+    project: 'Project Task',
+  };
+  return labels[type] || 'Task';
 };
 
 const SubmissionCard = ({ submission }) => {
-  const { studentName, studentAvatarUrl, status, submittedAt, dueAt } = submission;
+  const [showTooltip, setShowTooltip] = useState(false);
+  const { studentName, taskType, status, submittedAt, dueAt, grade } = submission;
 
-  const isLate = submittedAt && dueAt && new Date(submittedAt) > new Date(dueAt);
+  const statusDetails = useMemo(() => {
+    const isLate = submittedAt && dueAt && new Date(submittedAt) > new Date(dueAt);
 
-  const submissionTimestamp = isLate
-    ? `Submitted ${new Date(submittedAt).toLocaleDateString('en-US', {
-        month: '2-digit',
-        day: '2-digit',
-        year: '2-digit',
-      })} ${new Date(submittedAt).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true,
-      })}`
-    : '';
+    if (status === 'Graded') {
+      return {
+        showBadge: true,
+        badgeText: 'Graded',
+        badgeClass: styles.gradedBadge,
+        cardClass: styles.gradedCard,
+        icon: <FiCheck size={14} strokeWidth={3} />,
+      };
+    }
 
-  const cardStyles = [
-    styles.card,
-    isLate ? styles.lateBorder : '',
-    status === 'Graded' ? styles.gradedBorder : '',
-  ].join(' ');
+    if (isLate) {
+      return {
+        showLateSection: true,
+        cardClass: styles.lateCard,
+        showInfoIcon: true,
+        tooltipContent: (
+          <>
+            <span className={styles.tooltipTitle}>Late Submission</span>
+            <span className={styles.tooltipText}>
+              Submitted{' '}
+              {new Date(submittedAt).toLocaleDateString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}{' '}
+              at{' '}
+              {new Date(submittedAt).toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+              })}
+            </span>
+          </>
+        ),
+      };
+    }
+
+    if (status === 'Pending Review') {
+      return {
+        showInfoIcon: true,
+        tooltipContent: <span className={styles.tooltipText}>Pending Review</span>,
+      };
+    }
+
+    return {};
+  }, [status, submittedAt, dueAt]);
+
+  const avatarColor = getAvatarColor(studentName);
 
   return (
-    <div className={cardStyles}>
-      <div className={styles.studentInfoWrapper}>
+    <div className={`${styles.card} ${statusDetails.cardClass || ''}`}>
+      <div className={styles.cardHeader}>
         <div className={styles.studentInfo}>
-          {studentAvatarUrl ? (
-            <img src={studentAvatarUrl} alt={studentName} className={styles.avatar} />
-          ) : (
-            <div className={styles.avatarPlaceholder}>{getInitials(studentName)}</div>
-          )}
-          <span className={styles.studentName}>{studentName}</span>
+          <div
+            className={styles.avatar}
+            style={{
+              backgroundColor: avatarColor.bg,
+              boxShadow: `0 4px 12px ${avatarColor.shadow}`,
+            }}
+          >
+            {getInitials(studentName)}
+          </div>
+          <div className={styles.studentDetails}>
+            <span className={styles.studentName} title={studentName}>
+              {studentName}
+            </span>
+            <span className={styles.taskType}>{getTaskTypeLabel(taskType)}</span>
+          </div>
         </div>
-        {isLate && <p className={styles.submissionTimestamp}>{submissionTimestamp}</p>}
+
+        <div className={styles.statusArea}>
+          {statusDetails.showBadge && (
+            <div className={statusDetails.badgeClass}>
+              {statusDetails.icon}
+              {statusDetails.badgeText}
+            </div>
+          )}
+
+          {statusDetails.showInfoIcon && (
+            <div
+              className={styles.infoIconWrapper}
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              <div className={styles.infoIcon}>
+                <FiInfo size={20} />
+              </div>
+
+              {showTooltip && (
+                <div className={styles.tooltip}>
+                  <div className={styles.tooltipContent}>{statusDetails.tooltipContent}</div>
+                  <div className={styles.tooltipArrow} />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className={styles.statusInfo}>
-        {status === 'Graded' && (
-          <div className={`${styles.badge} ${styles.graded}`}>
-            <svg
-              width="12"
-              height="9"
-              viewBox="0 0 12 9"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <path d="M4.24264 8.48528L0 4.24264L1.41421 2.82843L4.24264 5.65685L10.5858 0L12 1.41421L4.24264 8.48528Z" />
-            </svg>
-            Graded
-          </div>
-        )}
-        {isLate && (
-          <div className={`${styles.badge} ${styles.late}`}>
-            Late submission
-            <FiInfo className={styles.infoIcon} />
-          </div>
-        )}
-        {status === 'Pending Review' && !isLate && (
-          <FiInfo className={styles.infoIconPending} title="Submission is pending review" />
-        )}
-      </div>
+      <div className={styles.spacer} />
+
+      {status === 'Graded' && grade && grade !== 'pending' && (
+        <div className={styles.gradeSection}>
+          <span className={styles.gradeLabel}>Grade</span>
+          <span className={styles.gradeValue}>{grade}</span>
+        </div>
+      )}
+
+      {statusDetails.showLateSection && (
+        <div className={styles.lateSection}>
+          <span className={styles.lateLabel}>LATE SUBMISSION</span>
+          <span className={styles.lateDate}>
+            Submitted{' '}
+            {new Date(submittedAt).toLocaleDateString('en-US', {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            })}{' '}
+            •{' '}
+            {new Date(submittedAt).toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            })}
+          </span>
+        </div>
+      )}
     </div>
   );
 };
