@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
+import styles from './Badge.module.css';
 
 function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
   // Pull selected badges from Redux if prop is not passed

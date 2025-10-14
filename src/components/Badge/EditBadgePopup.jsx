@@ -14,7 +14,7 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import './Badge.css';
+import styles from './Badge.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { updateBadge, closeAlert } from '../../actions/badgeManagement';
 import badgeTypes from './BadgeTypes';

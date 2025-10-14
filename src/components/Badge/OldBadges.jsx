@@ -1,5 +1,6 @@
 import { Card, CardTitle, CardBody, UncontrolledTooltip } from 'reactstrap';
 import BadgeHistory from './BadgeHistory';
+import styles from './Badge.module.css';
 
 function OldBadges({ personalBestMaxHrs, badges, darkMode }) {
   return (

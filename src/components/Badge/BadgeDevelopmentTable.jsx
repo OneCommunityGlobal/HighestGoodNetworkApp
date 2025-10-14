@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+import styles from './Badge.module.css';
 import {
   Container,
   Button,
@@ -21,7 +21,6 @@ import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
-import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;

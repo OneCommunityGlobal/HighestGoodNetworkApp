@@ -5,6 +5,7 @@ import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import BadgeTypes from './BadgeTypes';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
 import '../Header/DarkMode.css';
+import styles from './Badge.module.css';
 
 function BadgeDevelopment(props) {
   const { darkMode, allBadgeData = [] } = props;

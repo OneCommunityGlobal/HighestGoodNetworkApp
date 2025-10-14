@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { UncontrolledTooltip } from 'reactstrap';
+import styles from './Badge.module.css';
+
 function BadgeTableHeader({ darkMode }) {
   return (
     <tr className={darkMode ? 'bg-space-cadet' : ''}>

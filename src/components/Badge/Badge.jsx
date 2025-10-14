@@ -12,7 +12,7 @@ import {
   UncontrolledTooltip,
   ModalHeader,
 } from 'reactstrap';
-import './Badge.css';
+import styles from './Badge.module.css';
 import BadgeSummaryViz from '~/components/Reports/BadgeSummaryViz';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
