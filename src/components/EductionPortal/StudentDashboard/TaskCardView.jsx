@@ -14,7 +14,7 @@ const TaskCardView = ({ tasks, onMarkAsDone }) => {
   return (
     <div className={styles.cardView}>
       {tasks.map(task => (
-        <TaskCard key={task.id} task={task} onMarkAsDone={onMarkAsDone} />
+        <TaskCard key={task._id || task.id} task={task} onMarkAsDone={onMarkAsDone} />
       ))}
     </div>
   );

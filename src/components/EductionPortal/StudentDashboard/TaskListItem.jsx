@@ -50,6 +50,25 @@ const TaskListItem = ({ task, onMarkAsDone }) => {
   const statusBadge = getStatusBadge();
   const canMarkDone = canMarkAsDone();
 
+  // Get tooltip text for mark as done button
+  const getMarkAsDoneTooltip = () => {
+    if (task.is_completed) {
+      return 'Task is already completed';
+    }
+
+    if (task.task_type !== 'read' && task.task_type !== 'read-only') {
+      return `Cannot mark as done: Only read-only tasks can be completed manually (Current type: ${task.task_type})`;
+    }
+
+    if (task.logged_hours < task.suggested_total_hours) {
+      return `Cannot mark as done: Insufficient hours logged (${task.logged_hours || 0}/${
+        task.suggested_total_hours
+      } hrs required)`;
+    }
+
+    return 'Mark as Done - All requirements met';
+  };
+
   // Format time
   const formatTime = hours => {
     const wholeHours = Math.floor(hours);
@@ -144,13 +163,7 @@ const TaskListItem = ({ task, onMarkAsDone }) => {
             className={`${styles.markDoneButton} ${!canMarkDone ? styles.disabled : ''}`}
             onClick={handleMarkAsDone}
             disabled={!canMarkDone}
-            title={
-              canMarkDone
-                ? 'Mark as Done'
-                : `Complete required hours first (${task.logged_hours || 0}/${
-                    task.suggested_total_hours
-                  } hrs)`
-            }
+            title={getMarkAsDoneTooltip()}
           >
             <svg
               width="20"

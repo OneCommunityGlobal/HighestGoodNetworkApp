@@ -77,43 +77,55 @@ export const fetchStudentTasks = () => {
 
         // The API returns grouped tasks, we need to flatten them for our UI
         const groupedTasks = response.data.tasks;
-        const flattenedTasks = [];
+        const taskMap = new Map(); // Use Map to deduplicate tasks by _id
 
         // Flatten the grouped structure to get individual tasks
         Object.values(groupedTasks).forEach(subject => {
           Object.values(subject.colorLevels).forEach(colorLevel => {
             Object.values(colorLevel.activityGroups).forEach(activityGroup => {
               activityGroup.tasks.forEach(task => {
-                flattenedTasks.push({
-                  id: task._id,
-                  course_name: task.subject?.name || 'Unknown Subject',
-                  subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
-                  task_type: task.type || 'read-only',
-                  logged_hours: task.loggedHours || 0,
-                  suggested_total_hours: task.suggestedTotalHours || 0,
-                  last_logged_date: task.completedAt || task.assignedAt,
-                  created_at: task.assignedAt,
-                  is_completed: task.status === 'completed' || task.status === 'graded',
-                  has_upload: task.uploadUrls && task.uploadUrls.length > 0,
-                  has_comments: task.feedback && task.feedback.length > 0,
-                  status: task.status || 'assigned',
-                  _id: task._id,
-                  grade: task.grade,
-                  feedback: task.feedback,
-                  dueAt: task.dueAt,
-                  lessonPlan: task.lessonPlan,
-                  subject: task.subject,
-                  atom: task.atom,
-                  color_level: task.color_level,
-                  difficulty_level: task.difficulty_level,
-                  activity_group: task.activity_group,
-                });
+                // Only add task if it hasn't been seen before (deduplication)
+                if (!taskMap.has(task._id)) {
+                  taskMap.set(task._id, {
+                    id: task._id, // Use _id as the primary id for React keys
+                    course_name: task.subject?.name || 'Unknown Subject',
+                    subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
+                    task_type: task.type || 'read-only',
+                    logged_hours: task.loggedHours || 0,
+                    suggested_total_hours: task.suggestedTotalHours || 0,
+                    last_logged_date: task.completedAt || task.assignedAt,
+                    created_at: task.assignedAt,
+                    is_completed: task.status === 'completed' || task.status === 'graded',
+                    has_upload: task.uploadUrls && task.uploadUrls.length > 0,
+                    has_comments: task.feedback && task.feedback.length > 0,
+                    status: task.status || 'assigned',
+                    _id: task._id,
+                    grade: task.grade,
+                    feedback: task.feedback,
+                    dueAt: task.dueAt,
+                    lessonPlan: task.lessonPlan,
+                    subject: task.subject,
+                    atom: task.atom,
+                    color_level: task.color_level,
+                    difficulty_level: task.difficulty_level,
+                    activity_group: task.activity_group,
+                  });
+                }
               });
             });
           });
         });
 
-        dispatch(setStudentTasks(flattenedTasks));
+        // Convert Map values to array and add final deduplication as safety measure
+        const flattenedTasks = Array.from(taskMap.values());
+
+        // Final deduplication by _id as a safety measure
+        const uniqueTasks = flattenedTasks.filter((task, index, self) =>
+          index === self.findIndex(t => t._id === task._id)
+        );
+
+        console.log(`Processed ${uniqueTasks.length} unique tasks from API response (${flattenedTasks.length} before final deduplication)`);
+        dispatch(setStudentTasks(uniqueTasks));
       } catch (apiError) {
         // If API is not available, use mock data
         console.error('Student tasks API error:', apiError);
@@ -206,20 +218,23 @@ export const markStudentTaskAsDone = (taskId) => {
             requestorId: state.auth.user.userid
           }
         });
+
+        // Only update local state if API call succeeds
+        dispatch(updateStudentTask(taskId, {
+          ...task,
+          is_completed: true,
+          status: 'completed'
+        }));
+
         toast.success('Task marked as completed successfully!');
       } catch (apiError) {
-        // If API is not available, just update local state
-        console.warn('Student task mark complete API not available, updating local state only:', apiError.message);
+        // Show error toast if API fails
+        console.error('Student task mark complete API error:', apiError);
         console.error('API Error:', apiError.response?.data || apiError.message);
-        toast.info('Task marked as completed locally. API not yet available.');
-      }
 
-      // Update local state
-      dispatch(updateStudentTask(taskId, {
-        ...task,
-        is_completed: true,
-        status: 'completed'
-      }));
+        const errorMessage = apiError.response?.data?.error || apiError.message || 'Failed to mark task as complete';
+        toast.error(`Error: ${errorMessage}`);
+      }
     } catch (err) {
       console.error('Error marking task as done:', err);
       toast.error('Failed to mark task as done. Please try again.');
