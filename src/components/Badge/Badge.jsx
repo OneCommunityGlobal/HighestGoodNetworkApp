@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
-  Container,
   Row,
   Col,
   Card,
@@ -25,23 +24,6 @@ function Badge(props) {
   // const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
-
-  // const toggle = () => {
-  //   if (isOpen) {
-  //     let count = 0;
-  //     if (props.userProfile.badgeCollection) {
-  //       props.userProfile.badgeCollection.forEach(badge => {
-  //         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-  //           count += 1;
-  //         } else {
-  //           count += Number(badge.count);
-  //         }
-  //       });
-  //       setTotalBadge(Math.round(count));
-  //     }
-  //   }
-  //   setOpen(isOpen => !isOpen);
-  // };
 
   const toggleTypes = () => {
     setOpenTypes(prevIsOpen => !prevIsOpen);
@@ -97,7 +79,7 @@ function Badge(props) {
               id="badgesearned"
             >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
-                Badges <i className="fa fa-info-circle" id="BadgeInfo" />
+                Badges <i className="fa fa-info-circle" id="BadgeInfo" data-testid="BadgeInfo" />
               </CardHeader>
               <CardBody>
                 <NewBadges
@@ -123,7 +105,7 @@ function Badge(props) {
                     props.userProfile.badgeCollection,
                     props.userProfile.personalBestMaxHrs,
                   )}
-                  <i className="fa fa-info-circle" id="CountInfo" />
+                  <i className="fa fa-info-circle" id="CountInfo" data-testid="CountInfo" />
                 </CardText>
                 <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard />
               </CardBody>

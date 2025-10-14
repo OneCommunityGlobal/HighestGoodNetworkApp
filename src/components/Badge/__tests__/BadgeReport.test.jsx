@@ -1,7 +1,6 @@
 import React from 'react';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import BadgeReport from '../BadgeReport';
-import { UncontrolledTooltip } from 'reactstrap';
 import { formatDate } from '~/utils/formatDate';
 
 vi.mock('react-redux', () => ({
@@ -42,7 +41,7 @@ describe('BadgeReport Component', () => {
     const badgeHeaders = screen.getAllByText('Badge');
     const nameHeaders = screen.getAllByText('Name');
     const modifiedHeaders = screen.getAllByText('Modified');
-    const earnedDatesHeaders = screen.getAllByText('Earned Dates'); // Fix for multiple matches
+    const earnedDatesHeaders = screen.getAllByText('Earned Dates');
     expect(badgeHeaders).toHaveLength(2);
     expect(nameHeaders).toHaveLength(2);
     expect(modifiedHeaders).toHaveLength(2);

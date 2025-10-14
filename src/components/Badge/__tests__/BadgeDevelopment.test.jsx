@@ -7,14 +7,22 @@ import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 
-// Mock the BadgeDevelopmentTable and CreateNewBadgePopup components
-vi.mock('components/Badge/BadgeDevelopmentTable', () => () => <div>BadgeDevelopmentTable</div>);
-vi.mock('components/Badge/CreateNewBadgePopup', () => () => <div>CreateNewBadgePopup</div>);
+// Mock the BadgeDevelopmentTable and CreateNewBadgePopup components using the same relative paths as in BadgeDevelopment.jsx
+vi.mock('../BadgeDevelopmentTable', () => {
+  const MockBadgeDevelopmentTable = () => <div>BadgeDevelopmentTable</div>;
+  MockBadgeDevelopmentTable.displayName = 'MockBadgeDevelopmentTable';
+  return { default: MockBadgeDevelopmentTable };
+});
+vi.mock('../CreateNewBadgePopup', () => {
+  const MockCreateNewBadgePopup = () => <div>CreateNewBadgePopup</div>;
+  MockCreateNewBadgePopup.displayName = 'MockCreateNewBadgePopup';
+  return { default: MockCreateNewBadgePopup };
+});
 
 describe('BadgeDevelopment Component', () => {
   const mockStore = configureStore([thunk]);
 
-  const renderComponent = () => {
+  const renderComponent = (allBadgeData = []) => {
     const store = mockStore({
       allProjects: {
         projects: [],
@@ -49,7 +57,7 @@ describe('BadgeDevelopment Component', () => {
 
     return render(
       <Provider store={store}>
-        <BadgeDevelopment />
+        <BadgeDevelopment allBadgeData={allBadgeData} />
       </Provider>,
     );
   };
@@ -66,9 +74,11 @@ describe('BadgeDevelopment Component', () => {
   });
 
   it('should render the BadgeDevelopmentTable component', () => {
-    renderComponent();
-    const table = document.querySelector('.table');
-    expect(table);
+    // Provide a mock badge so the table is rendered
+    const mockBadges = [{ _id: '1', badgeName: 'Test Badge', type: 'Type', ranking: 1 }];
+    renderComponent(mockBadges);
+    // Assuming BadgeDevelopmentTable renders text "BadgeDevelopmentTable" as per the mock
+    expect(screen.getByText('BadgeDevelopmentTable')).toBeInTheDocument();
   });
 
   it('should close the New Badge popup when the button is clicked', () => {

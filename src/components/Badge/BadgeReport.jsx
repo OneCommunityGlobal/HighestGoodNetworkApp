@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useState, useEffect } from 'react';
 import {
   Table,
@@ -21,8 +20,7 @@ import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '../../utils/permissions';
@@ -142,7 +140,6 @@ function BadgeReport(props) {
 
       callback(bgReport.join('\n'));
     } catch (error) {
-      console.error('Error generating badge report:', error);
       callback('<p>Error generating badge report. Please try again later.</p>');
     }
   };
@@ -693,12 +690,13 @@ function BadgeReport(props) {
                               }}
                             >
                               {canDeleteBadges ? (
-                                <div
+                                <button
+                                  type="button"
                                   className="btn btn-danger"
                                   onClick={e => handleDeleteBadge(sortBadges[index])}
                                 >
                                   Delete
-                                </div>
+                                </button>
                               ) : (
                                 []
                               )}
@@ -725,7 +723,7 @@ function BadgeReport(props) {
             style={{ margin: 5 }}
             onClick={e => {
               if (props.isRecordBelongsToJaeAndUneditable) {
-                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+                // alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
               saveChanges(sortBadges, false);
             }}

@@ -116,8 +116,9 @@ describe('BadgeDevelopmentTable component', () => {
     expect(reportElement.textContent).toBe('Reports Page Notification');
   });
   it('tooltip associated with ranking works properly', async () => {
-    const { container } = renderComponent(mockData);
-    const iconElement = container.querySelector('.fa.fa-info-circle');
+    renderComponent(mockData);
+    // Use getByLabelText or getByRole to select the info icon, assuming it has an accessible label
+    const iconElement = screen.getByLabelText(/ranking info/i);
 
     fireEvent.mouseEnter(iconElement);
 
@@ -126,9 +127,15 @@ describe('BadgeDevelopmentTable component', () => {
       expect(updatedText.textContent).toContain(
         'Sort the number by ascending or descending order. The lower the number (other than zero) the higher the badge ranking.',
       );
+    });
+    await waitFor(() => {
+      const updatedText = screen.getByRole('tooltip');
       expect(updatedText.textContent).toContain(
         'Note that 0 is treated as the largest number (thus the lowest ranking). When no number is specified for the ranking field, the default value is 0.',
       );
+    });
+    await waitFor(() => {
+      const updatedText = screen.getByRole('tooltip');
       expect(updatedText.textContent).toContain(
         'All badges of the same number in ranking sort alphabetically by their names.',
       );
@@ -141,10 +148,13 @@ describe('BadgeDevelopmentTable component', () => {
     });
   });
   it('check if the right images are printing beside each badge row', () => {
-    const { container } = renderComponent(mockData);
-    mockData.allBadgeData.forEach((item, index) => {
-      const imageElement = container.querySelector(`#popover_${item._id}`);
-      expect(imageElement.src).toBe(item.imageUrl);
+    renderComponent(mockData);
+    mockData.allBadgeData.forEach(item => {
+      // Try to get the image by alt text or role, depending on how BadgeDevelopmentTable renders it
+      // Adjust the alt text if needed to match the actual alt attribute in your component
+      const imageElement = screen.getByAltText(item.badgeName);
+      expect(imageElement).toBeInTheDocument();
+      expect(imageElement).toHaveAttribute('src', item.imageUrl);
     });
   });
   it('check badge name, description, type, details, ranking', () => {
@@ -178,18 +188,20 @@ describe('BadgeDevelopmentTable component', () => {
     });
   });
   it('check action: edit button', () => {
-    const { container } = renderComponent(mockData);
-    mockData.allBadgeData.forEach(item => {
-      const editElement = container.querySelector('.btn.btn-outline-info');
+    renderComponent(mockData);
+    // Get all edit buttons by their accessible name or role
+    const editButtons = screen.getAllByRole('button', { name: /edit/i });
+    editButtons.forEach(editElement => {
       fireEvent.click(editElement);
       expect(screen.getByText('Update')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
   });
   it('check action: delete button', () => {
-    const { container } = renderComponent(mockData);
-    mockData.allBadgeData.forEach(item => {
-      const deleteElement = container.querySelector('.btn.btn-outline-danger');
+    renderComponent(mockData);
+    // Get all delete buttons by their accessible name or role
+    const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
+    deleteButtons.forEach(deleteElement => {
       fireEvent.click(deleteElement);
       expect(screen.getByText('Confirm Delete Badge')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
@@ -206,16 +218,15 @@ describe('BadgeDevelopmentTable component', () => {
     });
   });
   it('check reports page notification checkmark', () => {
-    const { container } = renderComponent(mockData);
-    const checkElement = container.querySelector('#abc1');
+    renderComponent(mockData);
+    // Find the checkbox by role and accessible name or label (using correct aria-label format)
+    const firstCheckboxLabel = `${mockData.allBadgeData[0]._id} ${mockData.allBadgeData[0].badgeName}`;
+    const checkElement = screen.getByRole('checkbox', { name: firstCheckboxLabel });
     fireEvent.click(checkElement);
-    mockData.allBadgeData.forEach(async (item, index) => {
-      const checkbox = container.querySelector(`#${item._id}`);
-      if (index == 0) {
-        expect(checkbox.checked).toBe(false);
-      } else {
-        expect(checkbox.checked).toBe(false);
-      }
+    mockData.allBadgeData.forEach(item => {
+      const checkboxLabel = `${item._id} ${item.badgeName}`;
+      const checkbox = screen.getByRole('checkbox', { name: checkboxLabel });
+      expect(checkbox.checked).toBe(false);
     });
   });
 });

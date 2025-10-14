@@ -135,21 +135,27 @@ describe('DeleteBadgePopup Component', () => {
   test('applies correct styles in light mode', () => {
     renderComponent(false);
 
-    expect(screen.getByText(/Confirm Delete Badge/i)).not.toHaveClass('bg-space-cadet');
-    expect(screen.getByText(/Hold up there Sparky/i).parentElement).not.toHaveClass(
-      'bg-yinmn-blue',
-    );
+    // ModalHeader should not have dark class
+    const modalHeader = screen.getByTestId('delete-badge-modal-header');
+    expect(modalHeader).not.toHaveClass('bg-space-cadet');
+
+    // ModalBody should not have dark class
+    const modalBody = screen.getByTestId('delete-badge-modal-body');
+    expect(modalBody).not.toHaveClass('bg-yinmn-blue');
+
     expect(screen.getByRole('button', { name: /Delete/i })).toHaveClass('btn-danger');
   });
 
   test('applies correct styles in dark mode', () => {
     renderComponent(true);
 
-    const header = screen.getByText(/Confirm Delete Badge/i).closest('.modal-header');
-    expect(header).toHaveClass('bg-space-cadet');
+    // ModalHeader should have dark class
+    const modalHeader = screen.getByTestId('delete-badge-modal-header');
+    expect(modalHeader).toHaveClass('bg-space-cadet');
 
-    const body = screen.getByText(/Hold up there Sparky/i).closest('.modal-body');
-    expect(body).toHaveClass('bg-yinmn-blue');
+    // ModalBody should have dark class
+    const modalBody = screen.getByTestId('delete-badge-modal-body');
+    expect(modalBody).toHaveClass('bg-yinmn-blue');
 
     const deleteButton = screen.getByRole('button', { name: /Delete/i });
     expect(deleteButton).toHaveClass('btn-danger');

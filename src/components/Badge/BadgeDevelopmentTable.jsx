@@ -163,7 +163,6 @@ function BadgeDevelopmentTable(props) {
   };
 
   const handleSortName = () => {
-    console.log('here sort name');
     setSortRankState('default');
     setSortNameState(prevState => {
       // change the icon
@@ -187,7 +186,6 @@ function BadgeDevelopmentTable(props) {
 
   const handleSortRank = () => {
     setSortNameState('default');
-    console.log('sort rank');
     setSortRankState(prevState => {
       // Change the icon state
       let newState = 'ascending';
@@ -222,6 +220,7 @@ function BadgeDevelopmentTable(props) {
           type="checkbox"
           id={badgeValue._id}
           name="reportable"
+          aria-label={badgeValue._id + (badgeValue.badgeName ? ' ' + badgeValue.badgeName : '')}
           checked={badgeValue.showReport || false}
           onChange={() => {
             const updatedValue = { ...badgeValue, showReport: !checkValue };
@@ -288,7 +287,7 @@ function BadgeDevelopmentTable(props) {
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
-                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt={value.badgeName} />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />

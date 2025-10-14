@@ -156,7 +156,7 @@ function CreateNewBadgePopup(props) {
       multiple,
       people,
     };
-    // eslint-disable-next-line
+
     props.createNewBadge(newBadge).then(() => {
       closePopup();
     });

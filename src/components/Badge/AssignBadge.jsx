@@ -63,7 +63,6 @@ function AssignBadge(props) {
       }
       setError(null);
     } catch (err) {
-      console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
       // Also clear selection on error

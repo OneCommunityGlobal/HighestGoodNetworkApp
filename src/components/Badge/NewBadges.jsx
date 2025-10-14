@@ -26,7 +26,7 @@ function NewBadges(props) {
 
       return filteredList;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

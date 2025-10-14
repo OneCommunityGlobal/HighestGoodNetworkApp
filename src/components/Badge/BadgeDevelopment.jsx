@@ -5,7 +5,6 @@ import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import BadgeTypes from './BadgeTypes';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
 import '../Header/DarkMode.css';
-import { matches } from 'lodash';
 
 function BadgeDevelopment(props) {
   const { darkMode, allBadgeData = [] } = props;
