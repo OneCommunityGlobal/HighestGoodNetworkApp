@@ -343,14 +343,14 @@ function Home() {
             {/* Tabs Section */}
             <div className={`${styles.lbTabsSection}`}>
               <button className={styles.lbTab} onClick={() => setActiveTab('listings')}>
-                Listings
+                Listings Page
               </button>
               <button
                 type="button"
                 className={styles.lbTab}
-                onClick={() => setActiveTab('listings')}
+                onClick={() => setActiveTab('biddings')}
               >
-                Listings
+                Biddings Page
               </button>
             </div>
 
@@ -390,30 +390,43 @@ function Home() {
         {/* Properties Container */}
         {!isLoading && !error && (
           <div className={`${styles.lbPropertiesContainer} ${styles[`lb${viewMode}View`]}`}>
-            {currentItems.map(unit => (
-              <div
-                key={unit.id}
-                className={`${styles.lbPropertyCard}`}
-                onClick={() => handlePropertySelect(unit)}
-              >
-                <div className={`${styles.lbPropertyImage}`}>
-                  <img src={unit.images[0]} alt={unit.title} />
-                </div>
-                <div className={`${styles.lbPropertyDetails}`}>
-                  <div>
-                    <h3>{unit.title}</h3>
-                    <p>
-                      {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
-                    </p>
+            {currentItems.map(unit => {
+              const firstImage =
+                Array.isArray(unit.images) && unit.images.length ? unit.images[0] : DEFAULT_IMAGE;
+
+              return (
+                <div
+                  key={unit.id}
+                  className={styles.lbPropertyCard}
+                  onClick={() => handlePropertySelect(unit)}
+                >
+                  <div className={styles.lbPropertyImage}>
+                    <img
+                      src={firstImage}
+                      alt={unit.title || 'Unit'}
+                      loading="lazy"
+                      onError={e => {
+                        if (e.currentTarget.src !== DEFAULT_IMAGE)
+                          e.currentTarget.src = DEFAULT_IMAGE;
+                      }}
+                    />
                   </div>
-                  <div
-                    className={`${styles.lbPrice} ${unit.isBidding ? styles.lbBiddingPrice : ''}`}
-                  >
-                    ${unit.price}/{unit.perUnit}
+                  <div className={styles.lbPropertyDetails}>
+                    <div>
+                      <h3>{unit.title}</h3>
+                      <p>
+                        {unit.village} {unit.village !== 'City Center' ? 'Village' : ''}
+                      </p>
+                    </div>
+                    <div
+                      className={`${styles.lbPrice} ${unit.isBidding ? styles.lbBiddingPrice : ''}`}
+                    >
+                      ${unit.price}/{unit.perUnit}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
 
