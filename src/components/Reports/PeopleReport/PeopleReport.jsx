@@ -674,6 +674,7 @@ class PeopleReport extends Component {
                     label="Rehireable"
                     darkMode={darkMode}
                     className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
+                    backgroundColorCN={darkMode ? styles.bgYinmnBlue : ""}
                     textColorCN={darkMode ? styles.textLight : ""}
                   />
                 </div>
