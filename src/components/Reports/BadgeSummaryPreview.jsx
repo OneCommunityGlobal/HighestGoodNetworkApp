@@ -1,13 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { MdPreview } from 'react-icons/md';
-import {
-  Button as ReactStrapButton,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
-} from 'reactstrap';
+import { Button as ReactStrapButton, Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
 import styles from '../Badge/BadgeReport.module.css';
@@ -31,9 +25,7 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
         });
         setSortedBadges(sortBadges);
       }
-    } catch (error) {
-      // console.log(error);
-    }
+    } catch (error) {}
   }, [badges]);
 
   const toggle = () => setIsOpen(prev => !prev);
@@ -61,7 +53,6 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
                             count={value.count}
                             badgeData={value.badge}
                             index={index}
-                            // key={index}
                             cssSuffix="_preview"
                           />
                         </div>
@@ -82,7 +73,6 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
                             count={value.count}
                             badgeData={value.badge}
                             index={index}
-                            // key={index}
                             cssSuffix="_preview"
                           />
                         </div>
