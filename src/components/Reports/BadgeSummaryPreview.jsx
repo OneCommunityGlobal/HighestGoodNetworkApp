@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Badge/BadgeReport.css';
+import styles from '../Badge/BadgeReport.module.css';
 import './BadgeSummaryPreview.css';
 
 function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
@@ -48,14 +48,14 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
         <ModalBody>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
-            <div className="desktop">
+            <div className={styles.desktop}>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {sortedBadges?.length === 0 && <div>No badges to show</div>}
                 {sortedBadges &&
                   sortedBadges.map(
                     (value, index) =>
                       value && (
-                        <div key={value._id} className="badge_image_md">
+                        <div key={value._id} className={styles.badge_image_md}>
                           <BadgeImage
                             personalBestMaxHrs={personalBestMaxHrs}
                             count={value.count}
@@ -70,13 +70,13 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
               </div>
             </div>
             {/* --- TABLET VERSION OF MODAL --- */}
-            <div className="tablet">
+            <div className={styles.tablet}>
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {sortedBadges &&
                   sortedBadges.map(
                     (value, index) =>
                       value && (
-                        <div key={value._id} className="badge_image_sm">
+                        <div key={value._id} className={styles.badge_image_sm}>
                           <BadgeImage
                             personalBestMaxHrs={personalBestMaxHrs}
                             count={value.count}
@@ -93,9 +93,9 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
           </div>
         </ModalBody>
         <ModalFooter>
-          <div className="badge_summary_preview_footer">
+          <div className={styles.badge_summary_preview_footer}>
             <ReactStrapButton
-              className="btn--dark-sea-green badge_summary_preview_button"
+              className={`${styles['btn--dark-sea-green']} ${styles.badge_summary_preview_button}`}
               onClick={toggle}
             >
               Close
