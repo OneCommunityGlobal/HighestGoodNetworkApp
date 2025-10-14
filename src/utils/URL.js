@@ -185,7 +185,7 @@ export const ENDPOINTS = {
     return queryString ? `${url}?${queryString}` : url;
   },
   
-  PROJECTS: () => `${APIEndpoint}/injuries/projects`,
+  INJURY_PROJECTS: () => `${APIEndpoint}/injuries/projects`,
 
   PRESETS: () => `${APIEndpoint}/rolePreset`,
   PRESETS_BY_ID: roleNameOrPresetId => `${APIEndpoint}/rolePreset/${roleNameOrPresetId}`,
