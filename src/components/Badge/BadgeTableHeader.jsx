@@ -24,15 +24,15 @@ function BadgeTableHeader({ darkMode }) {
           target="SortRankingInfo"
           style={{ backgroundColor: '#666', color: '#fff' }}
         >
-          <p className="badge_info_icon_text">
+          <p className={styles.badge_info_icon_text}>
             Sort the number by ascending or descending order. The lower the number (other than zero)
             the higher the badge ranking.
           </p>
-          <p className="badge_info_icon_text">
+          <p className={styles.badge_info_icon_text}>
             Note that 0 is treated as the largest number (thus the lowest ranking). When no number
             is specified for the ranking field, the default value is 0.
           </p>
-          <p className="badge_info_icon_text">
+          <p className={styles.badge_info_icon_text}>
             All badges of the same number in ranking sort alphabetically by their names.
           </p>
         </UncontrolledTooltip>

@@ -35,7 +35,7 @@ function AssignBadgePopup(props) {
     <div>
       <input
         type="text"
-        className={`form-control assign_badge_search_box mb-3 ${
+        className={`form-control ${styles.assign_badge_search_box} mb-3 ${
           darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
         }`}
         placeholder="Search Badge Name"
@@ -54,12 +54,12 @@ function AssignBadgePopup(props) {
                   target="SelectInfo"
                   className="bg-secondary text-light"
                 >
-                  <p className="badge_info_icon_text">
+                  <p className={styles.badge_info_icon_text}>
                     Check those boxes to select the badges you wish to assign a person. Click the
                     &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish
                     to add.
                   </p>
-                  <p className="badge_info_icon_text">
+                  <p className={styles.badge_info_icon_text}>
                     Want to assign multiple of the same badge to a person? Repeat the process!
                   </p>
                 </UncontrolledTooltip>

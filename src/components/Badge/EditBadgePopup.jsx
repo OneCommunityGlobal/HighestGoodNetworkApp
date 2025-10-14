@@ -248,8 +248,12 @@ function EditBadgePopup(props) {
               Type
             </Label>
             <i className="fa fa-info-circle ml-1" id="TypeInfo" />
-            <UncontrolledTooltip placement="right" target="TypeInfo" className="badgeTooltip">
-              <p className="badge_info_icon_text">
+            <UncontrolledTooltip
+              placement="right"
+              target="TypeInfo"
+              className={styles.badgeTooltip}
+            >
+              <p className={styles.badge_info_icon_text}>
                 Choosing a type is optional but generally the best thing to do. If no type is
                 chosen, the type will automatically be marked as &quot;Custom&quot;, the least cool
                 option of all as no autoassignment will happen.
@@ -276,8 +280,12 @@ function EditBadgePopup(props) {
                 Category
               </Label>
               <i className="fa fa-info-circle ml-1" id="CategoryInfo" />
-              <UncontrolledTooltip placement="right" target="CategoryInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">
+              <UncontrolledTooltip
+                placement="right"
+                target="CategoryInfo"
+                className={styles.badgeTooltip}
+              >
+                <p className={styles.badge_info_icon_text}>
                   Choosing a category is necessary if type is Total Hrs in Category in order to
                   autoassign the badge. If no category is chosen, the category will automatically be
                   marked as &quot;unspecified&quot;, the least cool option of all.
@@ -313,8 +321,12 @@ function EditBadgePopup(props) {
                 Hours
               </Label>
               <i className="fa fa-info-circle ml-1" id="TotalHrsInfo" />
-              <UncontrolledTooltip placement="right" target="TotalHrsInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">
+              <UncontrolledTooltip
+                placement="right"
+                target="TotalHrsInfo"
+                className={styles.badgeTooltip}
+              >
+                <p className={styles.badge_info_icon_text}>
                   Choosing a the amount of Hours necessary for .
                 </p>
               </UncontrolledTooltip>
@@ -339,8 +351,12 @@ function EditBadgePopup(props) {
                 Weeks
               </Label>
               <i className="fa fa-info-circle ml-1" id="WeeksInfo" />
-              <UncontrolledTooltip placement="right" target="WeeksInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">
+              <UncontrolledTooltip
+                placement="right"
+                target="WeeksInfo"
+                className={styles.badgeTooltip}
+              >
+                <p className={styles.badge_info_icon_text}>
                   Choosing a the amount of Weeks necessary for .
                 </p>
               </UncontrolledTooltip>
@@ -365,8 +381,12 @@ function EditBadgePopup(props) {
                 Months{' '}
               </Label>
               <i className="fa fa-info-circle ml-1" id="MonthsInfo" />
-              <UncontrolledTooltip placement="right" target="MonthsInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">
+              <UncontrolledTooltip
+                placement="right"
+                target="MonthsInfo"
+                className={styles.badgeTooltip}
+              >
+                <p className={styles.badge_info_icon_text}>
                   Choosing a the amount of Months necessary for .
                 </p>
               </UncontrolledTooltip>
@@ -391,8 +411,12 @@ function EditBadgePopup(props) {
                 Multiple{' '}
               </Label>
               <i className="fa fa-info-circle ml-1" id="MultipleInfo" />
-              <UncontrolledTooltip placement="right" target="MultipleInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">
+              <UncontrolledTooltip
+                placement="right"
+                target="MultipleInfo"
+                className={styles.badgeTooltip}
+              >
+                <p className={styles.badge_info_icon_text}>
                   Choosing a the amount of Multiple necessary for .
                 </p>
               </UncontrolledTooltip>
@@ -417,8 +441,12 @@ function EditBadgePopup(props) {
                 People
               </Label>
               <i className="fa fa-info-circle ml-1" id="PeopleInfo" />
-              <UncontrolledTooltip placement="right" target="PeopleInfo" className="badgeTooltip">
-                <p className="badge_info_icon_text">
+              <UncontrolledTooltip
+                placement="right"
+                target="PeopleInfo"
+                className={styles.badgeTooltip}
+              >
+                <p className={styles.badge_info_icon_text}>
                   Choosing a the amount of People necessary for .
                 </p>
               </UncontrolledTooltip>
@@ -442,19 +470,23 @@ function EditBadgePopup(props) {
               Ranking
             </Label>
             <i className="fa fa-info-circle ml-1" id="RankingInfo" />
-            <UncontrolledTooltip placement="right" target="RankingInfo" className="badgeTooltip">
-              <p className="badge_info_icon_text">
+            <UncontrolledTooltip
+              placement="right"
+              target="RankingInfo"
+              className={styles.badgeTooltip}
+            >
+              <p className={styles.badge_info_icon_text}>
                 Ranking number MUST be non-negative and whole number. Seriously, how could anything
                 be ranked -1.1? Also, the default value is &quot;0&quot;, which would be the lowest
                 rank, 1 though is the highest rank. Confused yet?
               </p>
-              <p className="badge_info_icon_text">
+              <p className={styles.badge_info_icon_text}>
                 Good news is, everything else is really simple! The lower the number (other than
                 zero) the higher the badge ranking and the higher a badge will show up on a
                 person&apos;s dashboard. Want to see a badge at the top of someone&apos;s list, make
                 it #1!
               </p>
-              <p className="badge_info_icon_text">
+              <p className={styles.badge_info_icon_text}>
                 All badges of the same number in ranking sort alphabetically by their names.
               </p>
             </UncontrolledTooltip>

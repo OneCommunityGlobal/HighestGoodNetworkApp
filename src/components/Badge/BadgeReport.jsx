@@ -25,7 +25,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '../../utils/permissions';
 import { changeBadgesByUserID } from '../../actions/badgeManagement';
-import './BadgeReport.module.css';
+import styles from './BadgeReport.module.css';
 import { getUserProfile } from '../../actions/userProfile';
 import BadgeImage from './BadgeImage';
 
@@ -369,7 +369,7 @@ function BadgeReport(props) {
 
   return (
     <div>
-      <div className="desktop">
+      <div className={styles.desktop}>
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
             <thead
@@ -393,7 +393,7 @@ function BadgeReport(props) {
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={index}>
-                    <td className="badge_image_sm">
+                    <td className={styles.badge_image_sm}>
                       {' '}
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
@@ -424,7 +424,7 @@ function BadgeReport(props) {
                           >
                             Dates
                           </DropdownToggle>
-                          <DropdownMenu className="badge_dropdown">
+                          <DropdownMenu className={styles.badge_dropdown}>
                             {value.earnedDate.map((date, i) => {
                               return <DropdownItem key={i}>{date}</DropdownItem>;
                             })}
@@ -507,7 +507,7 @@ function BadgeReport(props) {
           </Table>
         </div>
         <Button
-          className="btn--dark-sea-green float-right"
+          className={styles['btn--dark-sea-green'] + ' float-right'}
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           disabled={savingChanges}
           onClick={e => {
@@ -517,7 +517,7 @@ function BadgeReport(props) {
           Save Changes
         </Button>
         <Button
-          className="btn--dark-sea-green float-right"
+          className={styles['btn--dark-sea-green'] + ' float-right'}
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           onClick={pdfDocGenerator}
         >
@@ -525,7 +525,7 @@ function BadgeReport(props) {
         </Button>
         <Button
           disabled={numFeatured === 0}
-          className="btn--dark-sea-green float-right"
+          className={styles['btn--dark-sea-green'] + ' float-right'}
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           onClick={pdfFeaturedDocGenerator}
         >
@@ -549,7 +549,7 @@ function BadgeReport(props) {
           </ModalFooter>
         </Modal>
       </div>
-      <div className="tablet">
+      <div className={styles.tablet}>
         <div style={{ overflow: 'auto', height: '68vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
             <thead style={{ zIndex: '10' }}>
@@ -568,7 +568,7 @@ function BadgeReport(props) {
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={index}>
-                    <td className="badge_image_sm">
+                    <td className={styles.badge_image_sm}>
                       {' '}
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
@@ -603,7 +603,7 @@ function BadgeReport(props) {
                         >
                           Dates
                         </DropdownToggle>
-                        <DropdownMenu className="badge_dropdown">
+                        <DropdownMenu className={styles.badge_dropdown}>
                           {value.earnedDate.map((date, i) => (
                             <DropdownItem key={i}>{date}</DropdownItem>
                           ))}
@@ -718,7 +718,7 @@ function BadgeReport(props) {
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <Button
-            className="btn--dark-sea-green float-right"
+            className={styles['btn--dark-sea-green'] + ' float-right'}
             style={{ margin: 5 }}
             onClick={e => {
               if (props.isRecordBelongsToJaeAndUneditable) {
@@ -730,7 +730,7 @@ function BadgeReport(props) {
             <span>Save Changes</span>
           </Button>
           <Button
-            className="btn--dark-sea-green float-right"
+            className={styles['btn--dark-sea-green'] + ' float-right'}
             style={{ margin: 5 }}
             onClick={pdfDocGenerator}
           >
@@ -738,7 +738,7 @@ function BadgeReport(props) {
           </Button>
           <Button
             disabled={numFeatured === 0}
-            className="btn--dark-sea-green float-right"
+            className={styles['btn--dark-sea-green'] + ' float-right'}
             style={{ margin: 5 }}
             onClick={pdfFeaturedDocGenerator}
           >

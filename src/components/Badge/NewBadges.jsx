@@ -25,9 +25,7 @@ function NewBadges(props) {
       });
 
       return filteredList;
-    } catch (error) {
-      // console.log(error);
-    }
+    } catch (error) {}
   };
 
   const filteredBadges = filterBadges(props.badges);
@@ -45,13 +43,13 @@ function NewBadges(props) {
               color: props.darkMode ? '#FFF' : '#285739',
               marginBottom: 15,
             }}
-            className="responsive-font-size"
+            className={styles['responsive-font-size']}
           >
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
-          <div className={`new_badges ${props.darkMode ? 'text-light' : ''}`}>
+          <div className={`${styles.new_badges} ${props.darkMode ? 'text-light' : ''}`}>
             {filteredBadges.length === 0 ? (
-              <strong style={{ opacity: 0.7 }} className="responsive-font-size">
+              <strong style={{ opacity: 0.7 }} className={styles['responsive-font-size']}>
                 Get yourself a herd of new badges! New badges are earned at the close of each epic
                 week. Newest badges are placed here at the top for a week after you earn them so
                 everyone can bask in the awesomeness of your achievement(s)!
@@ -77,7 +75,7 @@ function NewBadges(props) {
         target="NewBadgeInfo"
         style={{ backgroundColor: '#666', color: '#fff' }}
       >
-        <p className="badge_info_icon_text">
+        <p className={styles.badge_info_icon_text}>
           Right on Superstar, if you&apos;ve got badges in this section, they are the ones
           you&apos;ve earned in JUST THE LAST WEEK! If you already earned a badge before, that badge
           will pop up here from the section below and you will see the count increased. How cool is

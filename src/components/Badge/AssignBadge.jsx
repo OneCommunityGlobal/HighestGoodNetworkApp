@@ -122,7 +122,7 @@ function AssignBadge(props) {
           style={{ fontWeight: 'bold', marginBottom: 10 }}
         >
           Search by Full Name
-          <span className="red-asterisk">* </span>
+          <span className={styles['red-asterisk']}>* </span>
           <i
             className="fa fa-info-circle ml-2"
             id="NameInfo"
@@ -137,11 +137,11 @@ function AssignBadge(props) {
               color: '#fff',
             }}
           >
-            <p className="badge_info_icon_text">
+            <p className={styles.badge_info_icon_text}>
               Start typing a name and a list of the active members (matching what you type) will be
               auto-generated. Then you........ CHOOSE ONE!
             </p>
-            <p className="badge_info_icon_text">
+            <p className={styles.badge_info_icon_text}>
               After selecting a person, click &quot;Assign Badge&quot; and choose one or multiple
               badges. Click &quot;confirm&quot; then &quot;submit&quot; and those badges will be
               assigned.
@@ -208,7 +208,7 @@ function AssignBadge(props) {
       )}
       <FormGroup className="mb-3">
         <Button
-          className="btn--dark-sea-green"
+          className={styles['btn--dark-sea-green']}
           onClick={toggle}
           style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
           disabled={!selectedUserId}
