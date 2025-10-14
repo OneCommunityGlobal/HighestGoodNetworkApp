@@ -1,7 +1,3 @@
-/** *******************************************************************************
- * Action: Student Tasks
- * Author: Assistant - 2025
- ******************************************************************************* */
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import * as types from '../constants/studentTasks';
@@ -80,17 +76,17 @@ export const fetchStudentTasks = () => {
         const taskMap = new Map(); // Use Map to deduplicate tasks by _id
 
         // Flatten the grouped structure to get individual tasks
-        Object.values(groupedTasks).forEach(subject => {
-          Object.values(subject.colorLevels).forEach(colorLevel => {
+        Object.entries(groupedTasks).forEach(([subjectKey, subjectData]) => {
+          Object.values(subjectData.colorLevels).forEach(colorLevel => {
             Object.values(colorLevel.activityGroups).forEach(activityGroup => {
               activityGroup.tasks.forEach(task => {
                 // Only add task if it hasn't been seen before (deduplication)
                 if (!taskMap.has(task._id)) {
                   taskMap.set(task._id, {
                     id: task._id, // Use _id as the primary id for React keys
-                    course_name: task.subject?.name || 'Unknown Subject',
+                    course_name: subjectData.subject?.name || subjectKey || 'Unknown Subject',
                     subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
-                    task_type: task.type || 'read-only',
+                    task_type: task.type || 'read',
                     logged_hours: task.loggedHours || 0,
                     suggested_total_hours: task.suggestedTotalHours || 0,
                     last_logged_date: task.completedAt || task.assignedAt,
@@ -177,9 +173,9 @@ export const markStudentTaskAsDone = (taskId) => {
         return;
       }
 
-      // Only read-only tasks can be marked as complete manually
-      if (task.task_type !== 'read' && task.task_type !== 'read-only') {
-        toast.error('Only read-only tasks can be marked as complete manually');
+      // Only read tasks can be marked as complete manually
+      if (task.task_type !== 'read') {
+        toast.error('Only read tasks can be marked as complete manually');
         return;
       }
 

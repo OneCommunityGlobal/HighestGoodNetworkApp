@@ -1,7 +1,3 @@
-/** *******************************************************************************
- * Reducer: Student Tasks
- * Author: Assistant - 2025
- ******************************************************************************* */
 import * as types from '../constants/studentTasks';
 
 const initialState = {

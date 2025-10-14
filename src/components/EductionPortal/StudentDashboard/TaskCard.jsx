@@ -12,9 +12,9 @@ const TaskCard = ({ task, onMarkAsDone }) => {
   const canMarkAsDone = () => {
     if (task.is_completed) return false;
 
-    // Only read-only tasks can be marked as complete manually
+    // Only read tasks can be marked as complete manually
     // Must have logged hours >= suggested hours
-    if (task.task_type === 'read' || task.task_type === 'read-only') {
+    if (task.task_type === 'read') {
       return task.logged_hours >= task.suggested_total_hours;
     }
 
@@ -56,8 +56,8 @@ const TaskCard = ({ task, onMarkAsDone }) => {
       return 'Task is already completed';
     }
 
-    if (task.task_type !== 'read' && task.task_type !== 'read-only') {
-      return `Cannot mark as done: Only read-only tasks can be completed manually (Current type: ${task.task_type})`;
+    if (task.task_type !== 'read') {
+      return `Cannot mark as done: Only read tasks can be completed manually (Current type: ${task.task_type})`;
     }
 
     if (task.logged_hours < task.suggested_total_hours) {
