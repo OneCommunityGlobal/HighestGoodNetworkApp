@@ -85,6 +85,8 @@ import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHom
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
+//mostwatedmaterials
+import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials.jsx';
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -147,6 +149,7 @@ import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 // Social Architecture
+
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
@@ -603,6 +606,12 @@ export default (
           path="/bmdashboard/timelog/:projectId"
           fallback
           component={BMTimeLogCard}
+        />
+
+        <BMProtectedRoute
+          path="/bmdashboard/mostwastedmaterials"
+          exact
+          component={MostWastedMaterials}
         />
 
         {/* Community Portal Routes */}
