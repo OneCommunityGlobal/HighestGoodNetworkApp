@@ -30,6 +30,7 @@
     "@tinymce/tinymce-react": "^6.1.0",
     "ajv": "^8.0.0",
     "ajv-keywords": "^5.1.0",
+    "antd": "^5.27.4",
     "assert": "^2.1.0",
     "axios": "^1.11.0",
     "axios-mock-adapter": "^1.22.0",
@@ -114,7 +115,8 @@
     "stream-browserify": "^3.0.0",
     "tinymce": "^7.2.0",
     "util": "^0.12.5",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "webpack": "^5.102.0"
   },
   "resolutions": {
     "react": "18.3.1",
@@ -133,6 +135,7 @@
     "start:local": "vite",
     "lint": "eslint \"**/*.{js,jsx}\"",
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
+    "lint:css": "stylelint \"**/*.{css,scss,sass}\"",
     "prepare": "husky install"
   },
   "browserslist": [
@@ -170,7 +173,7 @@
     "eslint-plugin-prettier": "^3.4.1",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-testing-library": "^7.6.0",
+    "eslint-plugin-testing-library": "^7.11.0",
     "eslint-plugin-vitest": "^0.5.4",
     "husky": "^7.0.4",
     "joi-browser": "^13.4.0",
@@ -188,6 +191,7 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
       "prettier --write"
-    ]
+    ],
+    "**/*.{css,scss,sass}": "stylelint"
   }
 }

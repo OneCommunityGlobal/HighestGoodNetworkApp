@@ -16,7 +16,7 @@ function LBLogin(props) {
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
 
-  const prevLocation = location.state?.from || { pathname: '/lbdashboard' };
+  const prevLocation = location?.state?.from || { pathname: '/lbdashboard' };
 
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessCPPortal) {
