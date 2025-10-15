@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
+import styles from './Slashdot.module.css';
+
 const HEADLINE_MIN = 12;
 const HEADLINE_MAX = 95;
 const SUMMARY_MIN = 80;
@@ -219,13 +221,15 @@ function SlashdotAutoPoster({ platform }) {
   };
 
   return (
-    <div className={classNames('slashdot-autoposter', { dark: darkMode })}>
-      <div className={classNames('slashdot-subtabs', { dark: darkMode })}>
+    <div className={classNames(styles['slashdot-autoposter'], { [styles.dark]: darkMode })}>
+      <div className={classNames(styles['slashdot-subtabs'], { [styles.dark]: darkMode })}>
         {subTabs.map(({ id, label }) => (
           <button
             key={id}
             type="button"
-            className={classNames('slashdot-subtab', { active: activeSubTab === id })}
+            className={classNames(styles['slashdot-subtab'], {
+              [styles.active]: activeSubTab === id,
+            })}
             onClick={() => setActiveSubTab(id)}
           >
             {label}
@@ -235,7 +239,7 @@ function SlashdotAutoPoster({ platform }) {
 
       {activeSubTab === 'make' ? (
         <>
-          <section className="slashdot-card">
+          <section className={styles['slashdot-card']}>
             <h3>Slashdot Auto-Poster</h3>
             <p>
               Slashdot submissions require five pieces: a strong headline, the source URL, a short
@@ -250,13 +254,17 @@ function SlashdotAutoPoster({ platform }) {
             </div>
           </section>
 
-          <div className="slashdot-grid">
-            <div className={classNames('slashdot-card', { invalid: highlightHeadline })}>
-              <div className="slashdot-field__header">
+          <div className={styles['slashdot-grid']}>
+            <div
+              className={classNames(styles['slashdot-card'], {
+                [styles.invalid]: highlightHeadline,
+              })}
+            >
+              <div className={styles['slashdot-field__header']}>
                 <label htmlFor="slashdot-headline">Headline *</label>
                 <span
-                  className={classNames('slashdot-field__meta', {
-                    invalid: highlightHeadline || (!trimmedHeadline && readyToCopy),
+                  className={classNames(styles['slashdot-field__meta'], {
+                    [styles.invalid]: highlightHeadline || (!trimmedHeadline && readyToCopy),
                   })}
                 >
                   {headline.trim().length}/{HEADLINE_MAX}
@@ -267,17 +275,17 @@ function SlashdotAutoPoster({ platform }) {
                 type="text"
                 value={headline}
                 onChange={e => setHeadline(e.target.value)}
-                className="slashdot-field__input"
+                className={styles['slashdot-field__input']}
                 placeholder="e.g. Open Source Volunteers Deliver Weekly Progress Platform"
               />
               {!trimmedHeadline && (
-                <p className="slashdot-field__hint">
+                <p className={styles['slashdot-field__hint']}>
                   Add a headline with at least {HEADLINE_MIN} characters and keep it below{' '}
                   {HEADLINE_MAX}.
                 </p>
               )}
               {highlightHeadline && (
-                <p className="slashdot-field__error">
+                <p className={styles['slashdot-field__error']}>
                   Aim for {HEADLINE_MIN}-{HEADLINE_MAX} characters so the headline fits Slashdot’s
                   front page.
                 </p>
@@ -300,8 +308,12 @@ function SlashdotAutoPoster({ platform }) {
               </div>
             </div>
 
-            <div className={classNames('slashdot-card', { invalid: highlightUrl })}>
-              <div className="slashdot-field__header">
+            <div
+              className={classNames(styles['slashdot-card'], {
+                [styles.invalid]: highlightUrl,
+              })}
+            >
+              <div className={styles['slashdot-field__header']}>
                 <label htmlFor="slashdot-url">Source URL *</label>
               </div>
               <input
@@ -309,14 +321,16 @@ function SlashdotAutoPoster({ platform }) {
                 type="url"
                 value={sourceUrl}
                 onChange={e => setSourceUrl(e.target.value)}
-                className="slashdot-field__input"
+                className={styles['slashdot-field__input']}
                 placeholder="https://"
               />
               {!trimmedUrl && (
-                <p className="slashdot-field__hint">Paste an article or project URL.</p>
+                <p className={styles['slashdot-field__hint']}>
+                  Paste the canonical article or project URL.
+                </p>
               )}
               {highlightUrl && (
-                <p className="slashdot-field__error">
+                <p className={styles['slashdot-field__error']}>
                   Slashdot only accepts fully qualified HTTP(S) links.
                 </p>
               )}
@@ -331,22 +345,30 @@ function SlashdotAutoPoster({ platform }) {
               </div>
             </div>
 
-            <div className={classNames('slashdot-card', { invalid: highlightDept })}>
-              <div className="slashdot-field__header">
+            <div
+              className={classNames(styles['slashdot-card'], {
+                [styles.invalid]: highlightDept,
+              })}
+            >
+              <div className={styles['slashdot-field__header']}>
                 <label htmlFor="slashdot-dept">Dept *</label>
-                <span className="slashdot-field__meta">short slug</span>
+                <span className={styles['slashdot-field__meta']}>short slug</span>
               </div>
               <input
                 id="slashdot-dept"
                 type="text"
                 value={dept}
                 onChange={e => setDept(e.target.value.toLowerCase())}
-                className="slashdot-field__input"
+                className={styles['slashdot-field__input']}
                 placeholder="e.g. volunteer-tech"
               />
-              {!trimmedDept && <p className="slashdot-field__hint"> Department label. </p>}
+              {!trimmedDept && (
+                <p className={styles['slashdot-field__hint']}>
+                  Set the playful department label Slashdot shows under the headline.
+                </p>
+              )}
               {highlightDept && (
-                <p className="slashdot-field__error">
+                <p className={styles['slashdot-field__error']}>
                   Use a short slug-style phrase with lowercase letters and dashes.
                 </p>
               )}
@@ -369,27 +391,32 @@ function SlashdotAutoPoster({ platform }) {
             </div>
 
             <div
-              className={classNames('slashdot-card', { invalid: !tagsValid && !!tagsText.trim() })}
+              className={classNames(styles['slashdot-card'], {
+                [styles.invalid]: !tagsValid && !!tagsText.trim(),
+              })}
             >
-              <div className="slashdot-field__header">
+              <div className={styles['slashdot-field__header']}>
                 <label htmlFor="slashdot-tags">Tags *</label>
-                <span className="slashdot-field__meta">comma separated</span>
+                <span className={styles['slashdot-field__meta']}>comma separated</span>
               </div>
               <textarea
                 id="slashdot-tags"
                 value={tagsText}
                 onChange={e => setTagsText(e.target.value)}
-                className="slashdot-field__input slashdot-field__textarea"
+                className={classNames(
+                  styles['slashdot-field__input'],
+                  styles['slashdot-field__textarea'],
+                )}
                 rows={2}
                 placeholder="open-source, volunteering, sustainability"
               />
-              <div className="slashdot-chips">
+              <div className={styles['slashdot-chips']}>
                 {tags.map(tag => (
-                  <span key={tag} className="slashdot-chip">
-                    <span className="slashdot-chip__label">{tag}</span>
+                  <span key={tag} className={styles['slashdot-chip']}>
+                    <span className={styles['slashdot-chip__label']}>{tag}</span>
                     <button
                       type="button"
-                      className="slashdot-chip__clear"
+                      className={styles['slashdot-chip__clear']}
                       onClick={() => removeTag(tag)}
                       aria-label={`Remove tag ${tag}`}
                     >
@@ -399,7 +426,7 @@ function SlashdotAutoPoster({ platform }) {
                 ))}
               </div>
               {!tagsValid && (
-                <p className="slashdot-field__hint">
+                <p className={styles['slashdot-field__hint']}>
                   Provide at least one descriptive tag separated by commas.
                 </p>
               )}
@@ -421,12 +448,16 @@ function SlashdotAutoPoster({ platform }) {
               </div>
             </div>
 
-            <div className={classNames('slashdot-card', { invalid: highlightSummary })}>
-              <div className="slashdot-field__header">
+            <div
+              className={classNames(styles['slashdot-card'], {
+                [styles.invalid]: highlightSummary,
+              })}
+            >
+              <div className={styles['slashdot-field__header']}>
                 <label htmlFor="slashdot-summary">Intro / Summary *</label>
                 <span
-                  className={classNames('slashdot-field__meta', {
-                    invalid: highlightSummary || (!trimmedIntro && readyToCopy),
+                  className={classNames(styles['slashdot-field__meta'], {
+                    [styles.invalid]: highlightSummary || (!trimmedIntro && readyToCopy),
                   })}
                 >
                   {intro.trim().length} characters
@@ -436,17 +467,20 @@ function SlashdotAutoPoster({ platform }) {
                 id="slashdot-summary"
                 value={intro}
                 onChange={e => setIntro(e.target.value)}
-                className="slashdot-field__input slashdot-field__textarea"
+                className={classNames(
+                  styles['slashdot-field__input'],
+                  styles['slashdot-field__textarea'],
+                )}
                 rows={5}
                 placeholder="Craft a 3-4 sentence summary that highlights why the story matters to Slashdot readers."
               />
               {!trimmedIntro && (
-                <p className="slashdot-field__hint">
+                <p className={styles['slashdot-field__hint']}>
                   Write a 2–3 sentence overview tailored for Slashdot readers.
                 </p>
               )}
               {highlightSummary && (
-                <p className="slashdot-field__error">
+                <p className={styles['slashdot-field__error']}>
                   Slashdot requires at least {SUMMARY_MIN} characters of summary text.
                 </p>
               )}
@@ -469,10 +503,10 @@ function SlashdotAutoPoster({ platform }) {
             </div>
           </div>
 
-          <section className="slashdot-card">
-            <div className="slashdot-preview__header">
+          <section className={styles['slashdot-card']}>
+            <div className={styles['slashdot-preview__header']}>
               <h4>Submission preview</h4>
-              <div className="slashdot-preview__actions">
+              <div className={styles['slashdot-preview__actions']}>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
@@ -497,9 +531,9 @@ function SlashdotAutoPoster({ platform }) {
                 </button>
               </div>
             </div>
-            <pre className="slashdot-preview__body">{preview}</pre>
+            <pre className={styles['slashdot-preview__body']}>{preview}</pre>
             {!readyToCopy && (
-              <p className="slashdot-preview__hint">
+              <p className={styles['slashdot-preview__hint']}>
                 Fill every required field to enable copying the complete draft. Slashdot’s form
                 mirrors this layout.
               </p>
@@ -507,19 +541,27 @@ function SlashdotAutoPoster({ platform }) {
           </section>
         </>
       ) : (
-        <section className="slashdot-card slashdot-card--scheduler">
+        <section
+          className={classNames(styles['slashdot-card'], styles['slashdot-card--scheduler'])}
+        >
           <h3>Schedule Slashdot Post</h3>
-          <p>Scheduled posts.</p>
+          <p>
+            Draft content captured from the composer. Scheduling controls will live here—edit the
+            copy below or switch back to Make Post for more changes.
+          </p>
           <label htmlFor="slashdot-schedule-content">Scheduled draft</label>
           <textarea
             id="slashdot-schedule-content"
             value={scheduledDraft}
             onChange={e => setScheduledDraft(e.target.value)}
-            className="slashdot-field__input slashdot-scheduler__textarea"
+            className={classNames(
+              styles['slashdot-field__input'],
+              styles['slashdot-scheduler__textarea'],
+            )}
             placeholder="Click “Schedule this post” in the composer to load content here."
             rows={8}
           />
-          <div className="slashdot-scheduler__actions">
+          <div className={styles['slashdot-scheduler__actions']}>
             <button
               type="button"
               style={buttonStyle('ghost', darkMode)}
