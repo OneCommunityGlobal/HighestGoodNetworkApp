@@ -6,7 +6,7 @@ import { updateInfoCollection, addInfoCollection } from '../../../actions/inform
 import { boxStyle, boxStyleDark } from '~/styles';
 import { toast } from 'react-toastify';
 import RichTextEditor from './RichTextEditor';
-import './RoleInfoModal.css';
+import styles from './RoleInfoModal.module.css';
 
 const RoleInfoModal = ({ info, auth, roleName}) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -107,7 +107,7 @@ const RoleInfoModal = ({ info, auth, roleName}) => {
                 <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} darkMode={darkMode}/> :
                 // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <div
-                  className={`role-info-content ${darkMode ? 'dark-mode' : ''}`}
+                  className={`${styles['role-info-content']} ${darkMode ? styles['dark-mode'] : ''}`}
                   style={{ paddingLeft: '20px' }}
                   dangerouslySetInnerHTML={{ __html: infoContentModal }}
                   onClick={() => setIsEditing(true)}
