@@ -190,6 +190,13 @@
   min-height: 250px;
 }
 
+.mapCard {
+  width: 100%;
+  min-height: 500px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
 .weeklyProjectSummaryDashboardSection {
   background: var(--section-bg);
   border-radius: 8px;
@@ -221,6 +228,15 @@
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
+}
+
+/* Adjust grid columns based on section size */
+.weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.weeklyProjectSummaryDashboardSection.small .weeklyProjectSummaryDashboardCategoryContent {
+  grid-template-columns: 1fr;
 }
 
 /* ---------------- DARK MODE VARIABLES ---------------- */
@@ -418,7 +434,7 @@
 
 .weeklyCardTitle {
   color: #000;
-  font-size: 24px;
+  font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
 }
 

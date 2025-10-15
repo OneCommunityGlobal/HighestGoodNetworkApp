@@ -58,6 +58,9 @@ const UserProfileModal = props => {
 
   const [adminLinkName, setAdminLinkName] = useState('');
   const [adminLinkURL, setAdminLinkURL] = useState('');
+  const [showCcModal, setShowCcModal] = useState(false);
+
+  const toggleCcModal = () => setShowCcModal(!showCcModal);
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -234,6 +237,23 @@ const UserProfileModal = props => {
 
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
+  
+  //Email CC for Blue Square Email
+  const [ccModalOpen, setCcModalOpen] = useState(false);
+  const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
+  const currentUser = allUsers.find(u => u._id === userProfile._id) || userProfile;
+  const [ccCount, setCcCount] = useState(currentUser?.infringementCCList?.length || 0);
+
+useEffect(() => {
+  setCcCount(currentUser?.infringementCCList?.length || 0);
+}, [currentUser?.infringementCCList?.length]);
+
+const handleCcListUpdate = () => {
+  setCcCount(currentUser?.infringementCCList?.length || 0);
+};
+  
+  const openCc  = () => setCcModalOpen(true);
+  const closeCc = () => setCcModalOpen(false);
 
   return (
     <>
@@ -343,8 +363,8 @@ const UserProfileModal = props => {
                         className="addButton"
                         onClick={() =>
                           dispatchAdminLinks({
-                            type: 'add',
-                            value: { Name: adminLinkName, Link: adminLinkURL },
+                          type: 'add',
+                          value: { Name: adminLinkName, Link: adminLinkURL },
                           })
                         }
                       >
@@ -370,9 +390,9 @@ const UserProfileModal = props => {
                         value={link.Name}
                         onChange={e =>
                           dispatchPersonalLinks({
-                            type: 'updateName',
-                            value: e.target.value,
-                            passedIndex: index,
+                          type: 'updateName',
+                          value: e.target.value,
+                          passedIndex: index,
                           })
                         }
                       />
@@ -381,9 +401,9 @@ const UserProfileModal = props => {
                         value={link.Link}
                         onChange={e =>
                           dispatchPersonalLinks({
-                            type: 'updateLink',
-                            value: e.target.value,
-                            passedIndex: index,
+                          type: 'updateLink',
+                          value: e.target.value,
+                          passedIndex: index,
                           })
                         }
                       />
@@ -420,8 +440,8 @@ const UserProfileModal = props => {
                       className="addButton"
                       onClick={() =>
                         dispatchPersonalLinks({
-                          type: 'add',
-                          value: { Name: linkName, Link: linkURL },
+                        type: 'add',
+                        value: { Name: linkName, Link: linkURL },
                         })
                       }
                     >
@@ -443,11 +463,11 @@ const UserProfileModal = props => {
 
             <FormGroup hidden={summaryFieldView}>
               <Label className={fontColor} for="report">Summary</Label>
-              <Input 
-                type="textarea" 
-                id="summary" 
-                onChange={handleChange} 
-                value={summary} 
+              <Input
+                type="textarea"
+                id="summary"
+                onChange={handleChange}
+                value={summary}
                 style={{ minHeight: '200px', overflow: 'hidden'}} 
                 onInput={e => adjustTextareaHeight(e.target)} 
               />
