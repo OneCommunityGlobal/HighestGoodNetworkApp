@@ -17,10 +17,14 @@ function DeleteBadgePopup({ open, setDeletePopup, deleteBadge, badgeId, badgeNam
 
   return (
     <Modal isOpen={open} toggle={closePopup} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+      <ModalHeader
+        data-testid="delete-badge-modal-header"
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={closePopup}
+      >
         Confirm Delete Badge
       </ModalHeader>
-      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <ModalBody data-testid="delete-badge-modal-body" className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div>
           <p>
             Hold up there Sparky, are you sure you want to delete this badge? Some things in life

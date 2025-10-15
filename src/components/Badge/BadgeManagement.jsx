@@ -7,6 +7,7 @@ import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableIn
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
+import styles from './Badge.module.css';
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;

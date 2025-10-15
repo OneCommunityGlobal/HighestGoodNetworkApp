@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+import styles from './Badge.module.css';
 import {
   Container,
   Button,
@@ -17,11 +17,9 @@ import { connect } from 'react-redux';
 import { boxStyle } from '~/styles';
 import { updateBadge, deleteBadge, closeAlert } from '../../actions/badgeManagement';
 import BadgeTableHeader from './BadgeTableHeader';
-import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
 import hasPermission from '../../utils/permissions';
-import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
@@ -163,7 +161,6 @@ function BadgeDevelopmentTable(props) {
   };
 
   const handleSortName = () => {
-    console.log('here sort name');
     setSortRankState('default');
     setSortNameState(prevState => {
       // change the icon
@@ -187,7 +184,6 @@ function BadgeDevelopmentTable(props) {
 
   const handleSortRank = () => {
     setSortNameState('default');
-    console.log('sort rank');
     setSortRankState(prevState => {
       // Change the icon state
       let newState = 'ascending';
@@ -222,6 +218,7 @@ function BadgeDevelopmentTable(props) {
           type="checkbox"
           id={badgeValue._id}
           name="reportable"
+          aria-label={badgeValue._id + (badgeValue.badgeName ? ' ' + badgeValue.badgeName : '')}
           checked={badgeValue.showReport || false}
           onChange={() => {
             const updatedValue = { ...badgeValue, showReport: !checkValue };
@@ -288,10 +285,10 @@ function BadgeDevelopmentTable(props) {
             <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
-                <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
+                <img src={value.imageUrl} id={`popover_${value._id}`} alt={value.badgeName} />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                   <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
-                    <CardImg className="badge_image_lg" src={value?.imageUrl} />
+                    <CardImg className={styles.badge_image_lg} src={value?.imageUrl} />
                     <CardBody>
                       <CardTitle
                         style={{
@@ -314,7 +311,7 @@ function BadgeDevelopmentTable(props) {
               <td className="d-xl-table-cell d-none">{detailsText(value)}</td>
               <td>{value.ranking || 0}</td>
               <td>
-                <span className="badgemanagement-actions-cell">
+                <span className={styles['badgemanagement-actions-cell']}>
                   <Button
                     outline
                     color="info"
@@ -325,7 +322,7 @@ function BadgeDevelopmentTable(props) {
                     Edit
                   </Button>{' '}
                 </span>
-                <span className="badgemanagement-actions-cell">
+                <span className={styles['badgemanagement-actions-cell']}>
                   <Button
                     outline
                     color="danger"
@@ -356,9 +353,9 @@ function BadgeDevelopmentTable(props) {
         className={darkMode ? 'text-light' : ''}
       >
         <ModalBody
-          className={`${darkMode ? 'bg-yinmn-blue' : `badge-message-background-${props.color}`} ${
-            props.color === 'success' ? 'border-success' : 'border-danger'
-          } border`}
+          className={`${
+            darkMode ? 'bg-yinmn-blue' : styles[`badge-message-background-${props.color}`]
+          } ${props.color === 'success' ? 'border-success' : 'border-danger'} border`}
         >
           <p
             className={`${
@@ -375,9 +372,9 @@ function BadgeDevelopmentTable(props) {
           </p>
         </ModalBody>
         <ModalFooter
-          className={`${darkMode ? 'bg-space-cadet' : `badge-message-background-${props.color}`} ${
-            props.color === 'success' ? 'border-success' : 'border-danger'
-          } border-top-0`}
+          className={`${
+            darkMode ? 'bg-space-cadet' : styles[`badge-message-background-${props.color}`]
+          } ${props.color === 'success' ? 'border-success' : 'border-danger'} border-top-0`}
         >
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK

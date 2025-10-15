@@ -64,11 +64,17 @@ describe('NewBadges component', () => {
     for (const [index, badge] of mockBadges.entries()) {
       fireEvent.mouseEnter(badgeImages[index]);
       await waitFor(() => {
+        // Check badge name is present
         expect(screen.getByText(text => text.includes(badge.badge.badgeName))).toBeInTheDocument();
-
-        expect(
-          screen.getByText(text => text.includes(badge.badge.description)),
-        ).toBeInTheDocument();
+      });
+      await waitFor(() => {
+        // Use getAllByText to avoid multiple matches error
+        const descElements = screen.getAllByText(text => text.includes(badge.badge.description));
+        expect(descElements.length).toBeGreaterThan(0);
+      });
+      await waitFor(() => {
+        const descElements = screen.getAllByText(text => text.includes(badge.badge.description));
+        expect(descElements.some(el => el.textContent === badge.badge.description)).toBe(true);
       });
     }
   });
@@ -149,7 +155,7 @@ describe('NewBadges component', () => {
         darkMode={false}
       />,
     );
-    const badgeImages = await screen.getAllByRole('img');
+    const badgeImages = screen.getAllByRole('img');
 
     expect(badgeImages).toHaveLength(3);
 
@@ -254,10 +260,10 @@ describe('NewBadges component', () => {
 
     for (const [index, badge] of sortedBadges.entries()) {
       fireEvent.mouseEnter(badgeImages[index]);
-
       await waitFor(() => {
         expect(screen.getByText(badge.badge.badgeName)).toBeInTheDocument();
-
+      });
+      await waitFor(() => {
         expect(screen.getByText(badge.badge.description)).toBeInTheDocument();
       });
     }
