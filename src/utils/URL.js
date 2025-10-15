@@ -143,6 +143,19 @@ export const ENDPOINTS = {
     `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
+  
+POPULARITY: (range, roles, start, end) => {
+  let url = `${APIEndpoint}/popularity?`;
+  if (range) url += `range=${range}&`;
+  if (roles && roles.length > 0) {
+    url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
+  }
+  if (start) url += `start=${encodeURIComponent(start)}&`;
+  if (end) url += `end=${encodeURIComponent(end)}&`;
+  return url.slice(0, -1); 
+},
+POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
+
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
