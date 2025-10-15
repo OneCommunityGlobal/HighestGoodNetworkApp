@@ -2,10 +2,229 @@
 .email-template-editor {
   width: 100%;
   margin: 0;
-  background-color: #f5f5f5;
-  min-height: 100vh;
-  padding: 1rem;
+  background: transparent;
+  padding: 0;
 }
+
+/* Light Mode */
+.email-template-management.light-mode .email-template-editor .editor-header h2,
+.email-template-management.light-mode .email-template-editor .form-label,
+.email-template-management.light-mode .email-template-editor .variables-section h5 {
+  color: #495057;
+}
+
+.email-template-management.light-mode .email-template-editor .form-text {
+  color: #6c757d;
+}
+
+/* Dark Mode */
+.email-template-management.dark-mode .email-template-editor .editor-header h2,
+.email-template-management.dark-mode .email-template-editor .form-label,
+.email-template-management.dark-mode .email-template-editor .variables-section h5 {
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .email-template-editor .form-text {
+  color: #9ca3af;
+}
+
+.email-template-management.dark-mode .email-template-editor .form-control,
+.email-template-management.dark-mode .email-template-editor .form-select {
+  background-color: #374151;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .email-template-editor .form-control:focus,
+.email-template-management.dark-mode .email-template-editor .form-select:focus {
+  background-color: #374151;
+  border-color: #60a5fa;
+  color: #e9ecef;
+  box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+}
+
+.email-template-management.dark-mode .email-template-editor .variables-section {
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item {
+  background-color: #374151;
+  border: 1px solid #4a5568;
+}
+
+/* Dark mode additional styling */
+.email-template-management.dark-mode .email-template-editor .invalid-feedback {
+  color: #f87171;
+}
+
+.email-template-management.dark-mode .email-template-editor .form-control.is-invalid {
+  border-color: #f87171;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item:hover {
+  border-color: #60a5fa;
+  background-color: #4a5568;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .form-control {
+  background-color: #4a5568;
+  border-color: #6b7280;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .form-control:focus {
+  background-color: #4a5568;
+  border-color: #60a5fa;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .btn {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .btn:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.email-template-management.dark-mode .email-template-editor .auto-save-status {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e9ecef;
+}
+
+/* Dark mode for Reactstrap components */
+.email-template-management.dark-mode .email-template-editor label,
+.email-template-management.dark-mode .email-template-editor .form-label,
+.email-template-management.dark-mode .email-template-editor .col-form-label {
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .text-muted {
+  color: #9ca3af !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .text-success {
+  color: #10b981 !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .text-danger {
+  color: #f87171 !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .small,
+.email-template-management.dark-mode .email-template-editor small {
+  color: #9ca3af !important;
+}
+
+/* Dark mode for variable section text */
+.email-template-management.dark-mode .email-template-editor .variables-section p {
+  color: #9ca3af !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variables-section .text-center {
+  color: #9ca3af !important;
+}
+
+/* Dark mode for list group items */
+.email-template-management.dark-mode .email-template-editor .list-group-item {
+  background-color: #374151 !important;
+  border-color: #4a5568 !important;
+  color: #e9ecef !important;
+}
+
+/* Dark mode for variable item content */
+.email-template-management.dark-mode .email-template-editor .variable-item strong {
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .text-muted {
+  color: #9ca3af !important;
+}
+
+/* Dark mode for validation error backgrounds */
+.email-template-management.dark-mode .email-template-editor .bg-light {
+  background-color: #374151 !important;
+  border: 1px solid #4a5568 !important;
+}
+
+/* Dark mode for any remaining paragraph text */
+.email-template-management.dark-mode .email-template-editor p {
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .text-center {
+  color: #9ca3af !important;
+}
+
+/* Enhanced dark mode for Template Variables block */
+.email-template-management.dark-mode .email-template-editor .variables-section {
+  background-color: #2d3748 !important;
+  border: 1px solid #4a5568 !important;
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variables-section h5 {
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variables-section .btn-outline-success {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variables-section .btn-outline-success:hover {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+  color: #ffffff !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variables-section .btn-outline-primary {
+  background-color: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variables-section .btn-outline-primary:hover {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+/* Dark mode for variable items */
+.email-template-management.dark-mode .email-template-editor .variable-item {
+  background-color: #374151 !important;
+  border: 1px solid #4a5568 !important;
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .fw-bold {
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .text-muted {
+  color: #9ca3af !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .badge {
+  background-color: #4a5568 !important;
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .badge-secondary {
+  background-color: #6b7280 !important;
+  color: #ffffff !important;
+}
+
+.email-template-management.dark-mode .email-template-editor .variable-item .badge-warning {
+  background-color: #f59e0b !important;
+  color: #000000 !important;
+}
+
+/* TinyMCE editor always stays in light mode */
 
 /* Auto-save status styling */
 .auto-save-status {
@@ -26,12 +245,9 @@
 
 /* Header styling */
 .email-template-editor .editor-header {
-  background-color: #ffffff;
-  border-radius: 0.5rem;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid #dee2e6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: transparent;
+  padding: 0 0 1rem 0;
+  margin-bottom: 1rem;
 }
 
 .email-template-editor .editor-header h2 {
@@ -54,10 +270,7 @@
 
 /* Form card styling */
 .email-template-editor .form-card {
-  border: 1px solid #dee2e6;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
   margin-bottom: 0;
   max-width: 100%;
   margin-left: auto;
@@ -66,7 +279,6 @@
 
 .email-template-editor .form-card .card-body {
   padding: 2rem;
-  background-color: #ffffff;
 }
 
 /* Form styling */
@@ -117,8 +329,6 @@
 
 /* Variables section styling */
 .email-template-editor .variables-section {
-  background-color: #f8f9fa;
-  border: 1px solid #dee2e6;
   border-radius: 0.5rem;
   padding: 1rem;
   margin-bottom: 1.5rem;
@@ -146,8 +356,6 @@
 
 /* Variable item styling */
 .email-template-editor .variable-item {
-  background-color: #ffffff;
-  border: 1px solid #dee2e6;
   border-radius: 0.375rem;
   padding: 0.75rem;
   margin-bottom: 0.75rem;

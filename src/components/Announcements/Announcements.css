@@ -60,14 +60,7 @@ button.send-button:hover {
   min-height: 500px;
 }
 
-.email-update-container {
-  padding: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: stretch;
-  box-sizing: border-box;
-  /* Ensures padding is included in width */
-}
+/* Email container styles moved to EmailPanel.css for better organization */
 
 .editor {
   flex: 1;
@@ -136,14 +129,6 @@ button.send-button:hover {
 
 /* Responsive design: Adjust the layout for smaller screens */
 @media (max-width: 800px) {
-  .email-update-container {
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    box-sizing: border-box;
-    /* Ensures padding is included in width */
-  }
-
   .editor {
     width: 100%;
     margin-right: 0;

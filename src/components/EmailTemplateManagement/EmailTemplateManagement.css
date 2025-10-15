@@ -1,20 +1,283 @@
+/* Email Template Management - Production Ready */
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .email-template-management {
   width: 100%;
-  min-height: 100vh;
-  background-color: #f5f5f5;
+  position: relative;
+  background: transparent;
+}
+
+/* Light Mode */
+.email-template-management.light-mode {
+  background: transparent;
+  color: #212529;
+}
+
+.email-template-management.light-mode .card {
+  background-color: #ffffff;
+  color: #212529;
+  border: 1px solid #e9ecef;
+}
+
+.email-template-management.light-mode .card-header {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+  color: #212529;
+}
+
+/* Dark Mode */
+.email-template-management.dark-mode {
+  background: transparent;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .card {
+  background-color: #2d3748;
+  color: #e9ecef;
+  border: 1px solid #4a5568;
+}
+
+.email-template-management.dark-mode .card-header {
+  background-color: #2d3748;
+  border-bottom: 1px solid #4a5568;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .table {
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .table th {
+  background-color: #374151;
+  border-bottom-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .table td {
+  border-bottom-color: #4a5568;
+}
+
+.email-template-management.dark-mode .table tbody tr:hover {
+  background-color: #374151;
+}
+
+.email-template-management.dark-mode .form-control,
+.email-template-management.dark-mode .form-select {
+  background-color: #374151;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .form-control:focus,
+.email-template-management.dark-mode .form-select:focus {
+  background-color: #374151;
+  border-color: #60a5fa;
+  color: #e9ecef;
+  box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+}
+
+/* Dark mode modals */
+.email-template-management.dark-mode .modal-content {
+  background-color: #2d3748;
+  border: 1px solid #4a5568;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .modal-header {
+  background-color: #2d3748;
+  border-bottom: 1px solid #4a5568;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .modal-footer {
+  background-color: #2d3748;
+  border-top: 1px solid #4a5568;
+}
+
+.email-template-management.dark-mode .modal-title {
+  color: #e9ecef;
+}
+
+/* Dark mode buttons */
+.email-template-management.dark-mode .btn-secondary {
+  background-color: #6b7280;
+  border-color: #6b7280;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .btn-secondary:hover {
+  background-color: #4b5563;
+  border-color: #4b5563;
+}
+
+/* Dark mode alerts */
+.email-template-management.dark-mode .alert-danger {
+  background-color: #7f1d1d;
+  color: #fecaca;
+  border: 1px solid #991b1b;
+}
+
+.email-template-management.dark-mode .alert-success {
+  background-color: #065f46;
+  color: #d1fae5;
+  border: 1px solid #047857;
+}
+
+.email-template-management.dark-mode .alert-info {
+  background-color: #1e3a8a;
+  color: #dbeafe;
+  border: 1px solid #1d4ed8;
+}
+
+.email-template-management.dark-mode .alert-warning {
+  background-color: #92400e;
+  color: #fef3c7;
+  border: 1px solid #d97706;
+}
+
+/* Comprehensive dark mode for all text elements */
+.email-template-management.dark-mode,
+.email-template-management.dark-mode * {
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .text-muted,
+.email-template-management.dark-mode .text-secondary {
+  color: #9ca3af !important;
+}
+
+.email-template-management.dark-mode .text-primary {
+  color: #60a5fa !important;
+}
+
+.email-template-management.dark-mode .text-success {
+  color: #10b981 !important;
+}
+
+.email-template-management.dark-mode .text-danger {
+  color: #f87171 !important;
+}
+
+.email-template-management.dark-mode .text-warning {
+  color: #f59e0b !important;
+}
+
+.email-template-management.dark-mode .text-info {
+  color: #06b6d4 !important;
+}
+
+.email-template-management.dark-mode .text-dark {
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .text-light {
+  color: #9ca3af !important;
+}
+
+/* Dark mode for all buttons */
+.email-template-management.dark-mode .btn-outline-secondary {
+  background-color: #6b7280;
+  border-color: #6b7280;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .btn-outline-secondary:hover {
+  background-color: #4b5563;
+  border-color: #4b5563;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .btn-outline-primary {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .btn-outline-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .btn-outline-success {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .btn-outline-success:hover {
+  background-color: #059669;
+  border-color: #059669;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .btn-outline-danger {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .btn-outline-danger:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: #ffffff;
+}
+
+/* Dark mode for badges */
+.email-template-management.dark-mode .badge {
+  background-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .badge-primary {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .badge-success {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .badge-danger {
+  background-color: #ef4444;
+  color: #ffffff;
+}
+
+.email-template-management.dark-mode .badge-warning {
+  background-color: #f59e0b;
+  color: #000000;
+}
+
+.email-template-management.dark-mode .badge-info {
+  background-color: #06b6d4;
+  color: #ffffff;
+}
+
+/* Dark mode for spinners */
+.email-template-management.dark-mode .spinner-border {
+  color: #60a5fa;
+}
+
+.email-template-management.dark-mode .spinner-grow {
+  color: #60a5fa;
 }
 
 /* Global styles for all email template components */
 .email-template-management .card {
-  border: none;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   border-radius: 0.5rem;
-}
-
-.email-template-management .card-header {
-  background-color: #ffffff;
-  border-bottom: 1px solid #dee2e6;
-  padding: 1.25rem 1.5rem;
 }
 
 .email-template-management .card-body {
@@ -180,7 +443,93 @@
   color: #0d6efd;
 }
 
+/* Error Display Styling */
+.email-template-management .alert {
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.email-template-management .alert-danger {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.email-template-management.dark-mode .alert-danger {
+  color: #f87171;
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.email-template-management .btn-close {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #000;
+  opacity: 0.5;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.email-template-management.dark-mode .btn-close {
+  color: #e9ecef;
+}
+
+.email-template-management .btn-close:hover {
+  opacity: 0.75;
+}
+
+/* Focus states for accessibility */
+.email-template-management .btn:focus,
+.email-template-management .form-control:focus,
+.email-template-management .form-select:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .email-template-management .btn {
+    border: 2px solid currentColor;
+  }
+  
+  .email-template-management .card {
+    border: 2px solid #000;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .email-template-management .btn,
+  .email-template-management .fade-in {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .email-template-management .btn:hover {
+    transform: none !important;
+  }
+}
+
+
 /* Responsive adjustments */
+@media (max-width: 992px) {
+  .email-template-management .card-header {
+    padding: 1.25rem 1rem;
+  }
+  
+  .email-template-management .card-body {
+    padding: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   .email-template-management .card-header {
     padding: 1rem;
@@ -208,6 +557,11 @@
     padding: 0.125rem 0.25rem;
     font-size: 0.75rem;
   }
+  
+  .email-template-management .alert {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+  }
 }
 
 @media (max-width: 576px) {
@@ -219,5 +573,33 @@
   .email-template-management .modal-body,
   .email-template-management .modal-footer {
     padding: 1rem;
+  }
+  
+  .email-template-management .alert {
+    padding: 0.5rem;
+    font-size: 0.8125rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .email-template-management .btn-close {
+    align-self: flex-end;
+    margin-top: -0.25rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .email-template-management {
+    background-color: white;
+  }
+  
+  .email-template-management .btn {
+    display: none;
+  }
+  
+  .email-template-management .modal {
+    display: none;
   }
 }

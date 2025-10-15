@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 import {
   Container,
@@ -7,7 +7,6 @@ import {
   Card,
   Table,
   Button,
-  InputGroup,
   Input,
   Badge,
   Alert,
@@ -24,7 +23,6 @@ import {
   FaSearch,
   FaPencilAlt,
   FaTags,
-  FaCheckCircle,
   FaExclamationTriangle,
 } from 'react-icons/fa';
 import {
@@ -69,16 +67,19 @@ const EmailTemplateList = ({
     }
   }, [error, clearEmailTemplateError]);
 
-  const handleSearch = e => {
-    setSearchTerm(e.target.value);
-  };
+  const handleSearch = useCallback(
+    e => {
+      setSearchTerm(e.target.value);
+    },
+    [setSearchTerm],
+  );
 
-  const handleDeleteClick = template => {
+  const handleDeleteClick = useCallback(template => {
     setTemplateToDelete(template);
     setShowDeleteModal(true);
-  };
+  }, []);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     if (templateToDelete) {
       try {
         await deleteEmailTemplate(templateToDelete._id);
@@ -88,14 +89,14 @@ const EmailTemplateList = ({
         // Error is handled by Redux action
       }
     }
-  };
+  }, [templateToDelete, deleteEmailTemplate]);
 
-  const handleDeleteCancel = () => {
+  const handleDeleteCancel = useCallback(() => {
     setShowDeleteModal(false);
     setTemplateToDelete(null);
-  };
+  }, []);
 
-  const formatDate = dateString => {
+  const formatDate = useCallback(dateString => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -103,25 +104,14 @@ const EmailTemplateList = ({
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
+  }, []);
 
-  const getVariableCount = variables => {
+  const getVariableCount = useCallback(variables => {
     return variables ? variables.length : 0;
-  };
+  }, []);
 
   return (
     <div className="email-template-list">
-      {/* Header */}
-      <div className="list-header">
-        <div className="d-flex justify-content-between align-items-center">
-          <h2>Email Templates</h2>
-          <Button color="primary" onClick={onCreateTemplate}>
-            <FaPlus className="me-2" />
-            Create Template
-          </Button>
-        </div>
-      </div>
-
       {/* Controls Section */}
       <div className="controls-section">
         <Row className="align-items-center">
@@ -137,9 +127,10 @@ const EmailTemplateList = ({
             </div>
           </Col>
           <Col md={6} className="d-flex align-items-center justify-content-end">
-            <div className="templates-count">
-              {totalCount} template{totalCount !== 1 ? 's' : ''} found
-            </div>
+            <Button color="primary" onClick={onCreateTemplate}>
+              <FaPlus className="me-2" />
+              Create Template
+            </Button>
           </Col>
         </Row>
       </div>

@@ -3,6 +3,20 @@
   width: 100%;
 }
 
+/* Dark mode support for IntegratedEmailSender */
+.email-update-container.dark-mode .email-sender,
+.email-template-management.dark-mode .email-sender {
+  background: transparent;
+  color: #e9ecef;
+}
+
+/* Dark mode skeleton loader */
+.email-update-container.dark-mode .skeleton-loader,
+.email-template-management.dark-mode .skeleton-loader {
+  background: linear-gradient(90deg, #4a5568 25%, #374151 50%, #4a5568 75%);
+  background-size: 200% 100%;
+}
+
 /* Skeleton Loading Animation */
 .skeleton-loader {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -40,6 +54,13 @@
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode segmented control */
+.email-update-container.dark-mode .segmented-control-container,
+.email-template-management.dark-mode .segmented-control-container {
+  background-color: #374151;
+  border-color: #4a5568;
 }
 
 .segmented-control-button {
@@ -87,6 +108,174 @@
 .segmented-control-button.active:hover {
   background-color: #0056b3;
   color: #ffffff;
+}
+
+/* Dark mode segmented control buttons */
+.email-update-container.dark-mode .segmented-control-button,
+.email-template-management.dark-mode .segmented-control-button {
+  background-color: #374151;
+  color: #9ca3af;
+  border-right-color: #4a5568;
+}
+
+.email-update-container.dark-mode .segmented-control-button:hover,
+.email-template-management.dark-mode .segmented-control-button:hover {
+  background-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .segmented-control-button.active,
+.email-template-management.dark-mode .segmented-control-button.active {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.email-update-container.dark-mode .segmented-control-button.active:hover,
+.email-template-management.dark-mode .segmented-control-button.active:hover {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+/* Dark mode for all form elements and cards */
+.email-update-container.dark-mode .email-sender .card,
+.email-template-management.dark-mode .email-sender .card {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .card-header,
+.email-template-management.dark-mode .email-sender .card-header {
+  background-color: #2d3748;
+  border-bottom-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .card-header h4,
+.email-template-management.dark-mode .email-sender .card-header h4 {
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .form-label,
+.email-template-management.dark-mode .email-sender .form-label {
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .form-control,
+.email-update-container.dark-mode .email-sender .form-select,
+.email-template-management.dark-mode .email-sender .form-control,
+.email-template-management.dark-mode .email-sender .form-select {
+  background-color: #374151;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .form-control:focus,
+.email-update-container.dark-mode .email-sender .form-select:focus,
+.email-template-management.dark-mode .email-sender .form-control:focus,
+.email-template-management.dark-mode .email-sender .form-select:focus {
+  background-color: #374151;
+  border-color: #60a5fa;
+  color: #e9ecef;
+  box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+}
+
+.email-update-container.dark-mode .email-sender .form-control.is-invalid,
+.email-template-management.dark-mode .email-sender .form-control.is-invalid {
+  border-color: #f87171;
+}
+
+/* Dark mode mode indicators */
+.email-update-container.dark-mode .email-sender .mode-indicator.template-mode,
+.email-template-management.dark-mode .email-sender .mode-indicator.template-mode {
+  background-color: #1e3a8a;
+  border-color: #3b82f6;
+  color: #dbeafe;
+}
+
+.email-update-container.dark-mode .email-sender .mode-indicator.custom-mode,
+.email-template-management.dark-mode .email-sender .mode-indicator.custom-mode {
+  background-color: #581c87;
+  border-color: #a855f7;
+  color: #e9d5ff;
+}
+
+/* Dark mode for Template Variables section */
+.email-update-container.dark-mode .email-sender .template-variables-section,
+.email-template-management.dark-mode .email-sender .template-variables-section {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .variables-header h6,
+.email-template-management.dark-mode .email-sender .variables-header h6 {
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .variables-header .text-muted,
+.email-template-management.dark-mode .email-sender .variables-header .text-muted {
+  color: #9ca3af !important;
+}
+
+.email-update-container.dark-mode .email-sender .variables-header .badge,
+.email-template-management.dark-mode .email-sender .variables-header .badge {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.email-update-container.dark-mode .email-sender .variables-table,
+.email-template-management.dark-mode .email-sender .variables-table {
+  background-color: #374151;
+  border-color: #4a5568;
+}
+
+.email-update-container.dark-mode .email-sender .variables-table .table,
+.email-template-management.dark-mode .email-sender .variables-table .table {
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .variables-table .table thead th,
+.email-template-management.dark-mode .email-sender .variables-table .table thead th {
+  background-color: #4a5568;
+  border-bottom-color: #6b7280;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .variables-table .table tbody td,
+.email-template-management.dark-mode .email-sender .variables-table .table tbody td {
+  border-bottom-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .variables-table .table tbody tr:hover,
+.email-template-management.dark-mode .email-sender .variables-table .table tbody tr:hover {
+  background-color: #4a5568;
+}
+
+.email-update-container.dark-mode .email-sender .variables-table .form-control,
+.email-template-management.dark-mode .email-sender .variables-table .form-control {
+  background-color: #2d3748;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-update-container.dark-mode .email-sender .variables-table .form-control:focus,
+.email-template-management.dark-mode .email-sender .variables-table .form-control:focus {
+  background-color: #2d3748;
+  border-color: #60a5fa;
+  color: #e9ecef;
+  box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+}
+
+.email-update-container.dark-mode .email-sender .variables-table .form-control.is-invalid,
+.email-template-management.dark-mode .email-sender .variables-table .form-control.is-invalid {
+  border-color: #f87171;
+}
+
+.email-update-container.dark-mode .email-sender .variables-table .invalid-feedback,
+.email-template-management.dark-mode .email-sender .variables-table .invalid-feedback {
+  color: #f87171;
 }
 
 
