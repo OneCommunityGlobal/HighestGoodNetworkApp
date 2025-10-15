@@ -744,7 +744,7 @@ const WeeklySummariesReport = props => {
     try {
       // Use the force refresh parameter
       const weekIndex = navItems.indexOf(activeTab);
-      const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
+      const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true&_=${Date.now()}`;
       // console.log(`Forcing refresh of report section from: ${url}`);
 
       const response = await axios.get(url);
