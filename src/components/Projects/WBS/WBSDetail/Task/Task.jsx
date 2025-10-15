@@ -40,8 +40,8 @@ function Task(props) {
   const names = props.resources.map(element => element.name);
   const colors_objs = assignColorsToInitials(names);
 
-  const startedDate = new Date(props.startedDatetime);
-  const dueDate = new Date(props.dueDatetime);
+  const startedDate = props.startedDatetime ? new Date(props.startedDatetime) : null;
+  const dueDate = props.dueDatetime ? new Date(props.dueDatetime) : null;
 
   // states from hooks
   const [modal, setModal] = useState(false);
@@ -337,11 +337,15 @@ function Task(props) {
               {parseFloat(props.estimatedHours).toFixed(2)}
             </td>
             <td className="desktop-view">
-              {startedDate.getFullYear() !== 1969 ? formatDate(startedDate) : null}
+              {startedDate ? 
+                `${startedDate.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}-${startedDate.getUTCDate().toString().padStart(2, '0')}-${startedDate.getUTCFullYear()}` 
+                : null}
               <br />
             </td>
             <td className="desktop-view">
-              {dueDate.getFullYear() !== 1969 ? formatDate(dueDate) : null}
+              {dueDate ? 
+                `${dueDate.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })}-${dueDate.getUTCDate().toString().padStart(2, '0')}-${dueDate.getUTCFullYear()}` 
+                : null}
             </td>
             <td className="desktop-view">
               {props.links.map((link, i) =>
@@ -404,6 +408,7 @@ function Task(props) {
               siblings={props.siblings}
               load={props.load}
               pageLoadTime={props.pageLoadTime}
+              tasks={props.tasks}
             />
           ) : null}
         </>

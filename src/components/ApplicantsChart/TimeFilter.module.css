@@ -1,0 +1,70 @@
+.TimeFilter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin: 20px auto;
+}
+
+.filterRow {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.darkLabel {
+  color: #fff;
+}
+
+.lightLabel {
+  color: #000;
+}
+
+.select {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: white;
+}
+
+.darkMode .select {
+  background-color: #1f2937;
+  color: white;
+  border-color: #374151;
+}
+
+.separator {
+  color: inherit;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 8px;
+}
+
+/* React DatePicker customization */
+.TimeFilter :global(.react-datepicker-wrapper) {
+  width: auto;
+}
+
+.TimeFilter :global(.react-datepicker__input-container input) {
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.darkMode :global(.react-datepicker__input-container input) {
+  background-color: #1f2937;
+  color: white;
+  border-color: #374151;
+}
