@@ -26,8 +26,7 @@ import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
 import hasPermission from '../../utils/permissions';
@@ -36,6 +35,7 @@ import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 import BadgeImage from './BadgeImage';
+import PropTypes from 'prop-types';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -743,7 +743,7 @@ function BadgeReport(props) {
               if (props.isRecordBelongsToJaeAndUneditable) {
                 alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
-              saveChanges(sortBadges, false);
+              saveChanges();
             }}
           >
             <span>Save Changes</span>
@@ -796,5 +796,26 @@ const mapDispatchToProps = dispatch => ({
   getUserProfile: userId => dispatch(getUserProfile(userId)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
+
+BadgeReport.propTypes = {
+  hasPermission: PropTypes.func.isRequired,
+  changeBadgesByUserID: PropTypes.func.isRequired,
+  getUserProfile: PropTypes.func.isRequired,
+
+  state: PropTypes.object.isRequired,
+  badges: PropTypes.arrayOf(PropTypes.object).isRequired, // array of badge objects
+  firstName: PropTypes.string.isRequired,
+  lastName: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
+  darkMode: PropTypes.bool,
+
+  setUserProfile: PropTypes.func.isRequired,
+  setOriginalUserProfile: PropTypes.func.isRequired,
+  handleSubmit: PropTypes.func.isRequired,
+  close: PropTypes.func.isRequired,
+  isUserSelf: PropTypes.bool,
+  personalBestMaxHrs: PropTypes.number,
+  isRecordBelongsToJaeAndUneditable: PropTypes.bool,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeReport);
