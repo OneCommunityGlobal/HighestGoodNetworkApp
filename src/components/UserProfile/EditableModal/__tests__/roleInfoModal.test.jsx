@@ -79,7 +79,7 @@ describe('RoleInfoModal component Test cases', () => {
       theme: themeMock,
     });
 
-    const { getByTitle, getByText } = render(
+    render(
       <Provider store={store}>
         <RoleInfoModal info={undefined} roleName="MentorInfo" />
       </Provider>
@@ -106,7 +106,7 @@ describe('RoleInfoModal component Test cases', () => {
       infoContent: '',
     };
     
-    const { getByTitle, getByText } = render(
+    render(
       <Provider store={store}>
         <RoleInfoModal info={info} roleName="MentorInfo" />
       </Provider>
