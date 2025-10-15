@@ -48,11 +48,127 @@ export const updateStudentTask = (taskId, updatedTask) => {
 };
 
 /**
+ * Transform a single task to flat format
+ * @param {Object} task - The task object
+ * @param {Object} subjectData - The subject data containing subject info
+ * @param {string} subjectKey - The subject key
+ * @returns {Object} Transformed task in flat format
+ */
+const transformTaskToFlatFormat = (task, subjectData, subjectKey) => {
+  return {
+    id: task._id, // Use _id as the primary id for React keys
+    course_name: subjectData.subject?.name || subjectKey || 'Unknown Subject',
+    subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
+    task_type: task.type || 'read',
+    logged_hours: task.loggedHours || 0,
+    suggested_total_hours: task.suggestedTotalHours || 0,
+    last_logged_date: task.completedAt || task.assignedAt,
+    created_at: task.assignedAt,
+    is_completed: task.status === 'completed' || task.status === 'graded',
+    has_upload: task.uploadUrls && task.uploadUrls.length > 0,
+    has_comments: task.feedback && task.feedback.length > 0,
+    status: task.status || 'assigned',
+    _id: task._id,
+    grade: task.grade,
+    feedback: task.feedback,
+    dueAt: task.dueAt,
+    lessonPlan: task.lessonPlan,
+    subject: task.subject,
+    atom: task.atom,
+    color_level: task.color_level,
+    difficulty_level: task.difficulty_level,
+    activity_group: task.activity_group,
+  };
+};
+
+/**
+ * Flatten grouped tasks structure to individual tasks array
+ * @param {Object} groupedTasks - The grouped tasks from API response
+ * @returns {Array} Array of flattened, deduplicated tasks
+ */
+const flattenGroupedTasks = (groupedTasks) => {
+  const taskMap = new Map(); // Use Map to deduplicate tasks by _id
+
+  // Flatten the grouped structure to get individual tasks
+  Object.entries(groupedTasks).forEach(([subjectKey, subjectData]) => {
+    Object.values(subjectData.colorLevels).forEach(colorLevel => {
+      Object.values(colorLevel.activityGroups).forEach(activityGroup => {
+        activityGroup.tasks.forEach(task => {
+          // Only add task if it hasn't been seen before (deduplication)
+          if (!taskMap.has(task._id)) {
+            const transformedTask = transformTaskToFlatFormat(task, subjectData, subjectKey);
+            taskMap.set(task._id, transformedTask);
+          }
+        });
+      });
+    });
+  });
+
+  // Convert Map values to array and add final deduplication as safety measure
+  const flattenedTasks = Array.from(taskMap.values());
+
+  // Final deduplication by _id as a safety measure
+  const uniqueTasks = flattenedTasks.filter((task, index, self) =>
+    index === self.findIndex(t => t._id === task._id)
+  );
+
+  return uniqueTasks;
+};
+
+/**
+ * Fetch tasks from the primary API endpoint
+ * @returns {Promise<Array>} Array of flattened tasks
+ */
+const fetchTasksFromPrimaryEndpoint = async () => {
+  console.log('Making API call to:', ENDPOINTS.STUDENT_TASKS());
+
+  const response = await httpService.get(ENDPOINTS.STUDENT_TASKS());
+  console.log('API response:', response.data);
+
+  // The API returns grouped tasks, we need to flatten them for our UI
+  const groupedTasks = response.data.tasks;
+  const uniqueTasks = flattenGroupedTasks(groupedTasks);
+
+  console.log(`Processed ${uniqueTasks.length} unique tasks from API response`);
+  return uniqueTasks;
+};
+
+/**
+ * Handle API error and try fallback options
+ * @param {Error} apiError - The API error
+ * @param {Function} dispatch - Redux dispatch function
+ * @returns {Promise<Array>} Array of tasks (from fallback or mock data)
+ */
+const handleApiError = async (apiError, dispatch) => {
+  console.error('Student tasks API error:', apiError);
+  console.error('Error response:', apiError.response?.data);
+  console.error('Error status:', apiError.response?.status);
+  console.error('Error config:', apiError.config);
+
+  // Try alternative endpoint if the first one fails
+  if (apiError.response?.status === 404) {
+    console.log('Trying alternative endpoint...');
+    try {
+      const altResponse = await httpService.post(`${ENDPOINTS.APIEndpoint()}/student-tasks`);
+      console.log('Alternative endpoint response:', altResponse.data);
+      return altResponse.data.tasks || [];
+    } catch (altError) {
+      console.error('Alternative endpoint also failed:', altError);
+    }
+  }
+
+  console.warn('Student tasks API not available, using mock data:', apiError.message);
+  toast.info('Using demo data. Student tasks API is not yet available.');
+  return mockTasks;
+};
+
+/**
  * Fetch all student tasks for the logged-in user
  */
 export const fetchStudentTasks = () => {
   return async (dispatch, getState) => {
     dispatch(setStudentTasksStart());
+
     try {
       const state = getState();
       const userId = state.auth.user.userid;
@@ -64,87 +180,11 @@ export const fetchStudentTasks = () => {
       }
 
       try {
-        // Try to use the student tasks endpoint
-        console.log('Making API call to:', ENDPOINTS.STUDENT_TASKS());
-
-        const response = await httpService.get(ENDPOINTS.STUDENT_TASKS());
-
-        console.log('API response:', response.data);
-
-        // The API returns grouped tasks, we need to flatten them for our UI
-        const groupedTasks = response.data.tasks;
-        const taskMap = new Map(); // Use Map to deduplicate tasks by _id
-
-        // Flatten the grouped structure to get individual tasks
-        Object.entries(groupedTasks).forEach(([subjectKey, subjectData]) => {
-          Object.values(subjectData.colorLevels).forEach(colorLevel => {
-            Object.values(colorLevel.activityGroups).forEach(activityGroup => {
-              activityGroup.tasks.forEach(task => {
-                // Only add task if it hasn't been seen before (deduplication)
-                if (!taskMap.has(task._id)) {
-                  taskMap.set(task._id, {
-                    id: task._id, // Use _id as the primary id for React keys
-                    course_name: subjectData.subject?.name || subjectKey || 'Unknown Subject',
-                    subtitle: task.lessonPlan?.title || task.atom?.name || 'No Description',
-                    task_type: task.type || 'read',
-                    logged_hours: task.loggedHours || 0,
-                    suggested_total_hours: task.suggestedTotalHours || 0,
-                    last_logged_date: task.completedAt || task.assignedAt,
-                    created_at: task.assignedAt,
-                    is_completed: task.status === 'completed' || task.status === 'graded',
-                    has_upload: task.uploadUrls && task.uploadUrls.length > 0,
-                    has_comments: task.feedback && task.feedback.length > 0,
-                    status: task.status || 'assigned',
-                    _id: task._id,
-                    grade: task.grade,
-                    feedback: task.feedback,
-                    dueAt: task.dueAt,
-                    lessonPlan: task.lessonPlan,
-                    subject: task.subject,
-                    atom: task.atom,
-                    color_level: task.color_level,
-                    difficulty_level: task.difficulty_level,
-                    activity_group: task.activity_group,
-                  });
-                }
-              });
-            });
-          });
-        });
-
-        // Convert Map values to array and add final deduplication as safety measure
-        const flattenedTasks = Array.from(taskMap.values());
-
-        // Final deduplication by _id as a safety measure
-        const uniqueTasks = flattenedTasks.filter((task, index, self) =>
-          index === self.findIndex(t => t._id === task._id)
-        );
-
-        console.log(`Processed ${uniqueTasks.length} unique tasks from API response (${flattenedTasks.length} before final deduplication)`);
-        dispatch(setStudentTasks(uniqueTasks));
+        const tasks = await fetchTasksFromPrimaryEndpoint();
+        dispatch(setStudentTasks(tasks));
       } catch (apiError) {
-        // If API is not available, use mock data
-        console.error('Student tasks API error:', apiError);
-        console.error('Error response:', apiError.response?.data);
-        console.error('Error status:', apiError.response?.status);
-        console.error('Error config:', apiError.config);
-
-        // Try alternative endpoint if the first one fails
-        if (apiError.response?.status === 404) {
-          console.log('Trying alternative endpoint...');
-          try {
-            const altResponse = await httpService.post(`${ENDPOINTS.APIEndpoint()}/student-tasks`);
-            console.log('Alternative endpoint response:', altResponse.data);
-            dispatch(setStudentTasks(altResponse.data.tasks || []));
-            return;
-          } catch (altError) {
-            console.error('Alternative endpoint also failed:', altError);
-          }
-        }
-
-        console.warn('Student tasks API not available, using mock data:', apiError.message);
-        dispatch(setStudentTasks(mockTasks));
-        toast.info('Using demo data. Student tasks API is not yet available.');
+        const fallbackTasks = await handleApiError(apiError, dispatch);
+        dispatch(setStudentTasks(fallbackTasks));
       }
     } catch (err) {
       console.error('Error fetching student tasks:', err);
@@ -152,6 +192,46 @@ export const fetchStudentTasks = () => {
       toast.error('Failed to fetch student tasks. Please try again later.');
     }
   };
+};
+
+/**
+ * Validate if a task can be marked as completed
+ * @param {Object} task - The task to validate
+ * @returns {Object} Validation result with valid flag and optional error message
+ */
+const validateTaskCompletion = (task) => {
+  if (task.is_completed) {
+    return { valid: false, errorMessage: 'Task is already completed' };
+  }
+
+  if (task.task_type !== 'read') {
+    return { valid: false, errorMessage: 'Only read tasks can be marked as complete manually' };
+  }
+
+  if (task.logged_hours < task.suggested_total_hours) {
+    return {
+      valid: false,
+      errorMessage: `Insufficient hours logged. Required: ${task.suggested_total_hours}, Logged: ${task.logged_hours}`
+    };
+  }
+
+  return { valid: true };
+};
+
+/**
+ * Call the mark-complete API endpoint
+ * @param {string} taskId - The task ID
+ * @param {string} userId - The user ID
+ * @returns {Promise<void>}
+ */
+const callMarkCompleteAPI = async (taskId, userId) => {
+  await httpService.post(`${ENDPOINTS.APIEndpoint()}/education-tasks/student/mark-complete`, {
+    taskId: taskId,
+    studentId: userId,
+    requestor: {
+      requestorId: userId
+    }
+  });
 };
 
 /**
@@ -168,52 +248,19 @@ export const markStudentTaskAsDone = (taskId) => {
       }
 
       // Validate task can be marked as done
-      if (task.is_completed) {
-        toast.warning('Task is already completed');
+      const validation = validateTaskCompletion(task);
+      if (!validation.valid) {
+        if (task.is_completed) {
+          toast.warning(validation.errorMessage);
+        } else {
+          toast.error(validation.errorMessage);
+        }
         return;
       }
-
-      // Only read tasks can be marked as complete manually
-      if (task.task_type !== 'read') {
-        toast.error('Only read tasks can be marked as complete manually');
-        return;
-      }
-
-      // Check if logged hours meet the requirement
-      if (task.logged_hours < task.suggested_total_hours) {
-        toast.error(`Insufficient hours logged. Required: ${task.suggested_total_hours}, Logged: ${task.logged_hours}`);
-        return;
-      }
-
-      // Update task status to Complete
-      const updatedTask = {
-        status: 'Complete',
-        taskName: task.course_name,
-        priority: task.priority || 'Medium',
-        resources: task.resources || [],
-        isAssigned: task.isAssigned || true,
-        hoursBest: task.hoursBest || task.suggested_total_hours,
-        hoursWorst: task.hoursWorst || task.suggested_total_hours,
-        hoursMost: task.hoursMost || task.suggested_total_hours,
-        estimatedHours: task.suggested_total_hours,
-        startedDatetime: task.startedDatetime || task.created_at,
-        dueDatetime: task.dueDatetime,
-        links: task.links || [],
-        whyInfo: task.whyInfo || '',
-        intentInfo: task.intentInfo || '',
-        endstateInfo: task.endstateInfo || '',
-        classification: task.classification || 'Task',
-      };
 
       try {
         // Call the student mark-complete API endpoint
-        await httpService.post(`${ENDPOINTS.APIEndpoint()}/education-tasks/student/mark-complete`, {
-          taskId: taskId,
-          studentId: state.auth.user.userid,
-          requestor: {
-            requestorId: state.auth.user.userid
-          }
-        });
+        await callMarkCompleteAPI(taskId, state.auth.user.userid);
 
         // Only update local state if API call succeeds
         dispatch(updateStudentTask(taskId, {
