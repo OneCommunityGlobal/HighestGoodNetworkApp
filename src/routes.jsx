@@ -144,6 +144,7 @@ import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowChar
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
@@ -279,6 +280,7 @@ export default (
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
+    <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <Route path="/logattendance" component={AttendanceNoShow} />
 
