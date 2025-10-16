@@ -97,6 +97,7 @@ export const ENDPOINTS = {
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
   TASK_UPDATE_STATUS: taskId => `${APIEndpoint}/task/updateStatus/${taskId}`,
+  TASK_CHANGE_LOGS: taskId => `${APIEndpoint}/task/${taskId}/changeLogs`,
   DELETE_CHILDREN: taskId => `${APIEndpoint}/task/delete/children/${taskId}`,
   GET_USER_BY_NAME: name => `${APIEndpoint}/userprofile/name/${name}`,
   FIX_TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
@@ -143,6 +144,19 @@ export const ENDPOINTS = {
     `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
+  
+POPULARITY: (range, roles, start, end) => {
+  let url = `${APIEndpoint}/popularity?`;
+  if (range) url += `range=${range}&`;
+  if (roles && roles.length > 0) {
+    url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
+  }
+  if (start) url += `start=${encodeURIComponent(start)}&`;
+  if (end) url += `end=${encodeURIComponent(end)}&`;
+  return url.slice(0, -1); 
+},
+POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
+
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
