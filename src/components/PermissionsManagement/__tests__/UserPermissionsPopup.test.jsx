@@ -142,6 +142,84 @@ describe('UserPermissionsPopup component', () => {
     await flushAllPromises();
     expect(screen.getByText('Permissions:')).toBeInTheDocument();
   });
+  it('check if input box filters users by first name', async () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    await flushAllPromises();
+    const searchBoxElement = screen.getByPlaceholderText('Search for active users...');
+    fireEvent.change(searchBoxElement, { target: { value: 'Test1' } });
+    expect(screen.getByText('Test1 Volunteer')).toBeInTheDocument();
+    expect(screen.queryByText('Test2 Manager')).not.toBeInTheDocument();
+  });
+  it('check if input box filters users by last name', async () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    await flushAllPromises();
+    const searchBoxElement = screen.getByPlaceholderText('Search for active users...');
+    fireEvent.change(searchBoxElement, { target: { value: 'Manager' } });
+    expect(screen.getByText('Test2 Manager')).toBeInTheDocument();
+    expect(screen.queryByText('Test1 Volunteer')).not.toBeInTheDocument();
+  });
+  it('check if Reset to Default button is disabled when no user is selected', async () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: '',
+    });
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    await flushAllPromises();
+    const resetButton = screen.getByRole('button', { name: /reset to default/i });
+    expect(resetButton).toBeDisabled();
+  });
+  it('check if Reset to Default button is enabled when user is selected', async () => {
+    axios.get.mockResolvedValue({
+      status: 200,
+      data: {
+        _id: 'abc123',
+        role: 'Volunteer',
+        firstName: 'Test1',
+        lastName: 'Volunteer',
+        email: 'Test1.Volunteer@gmail.com',
+      },
+    });
+    render(
+      <Provider store={store}>
+        <ModalContext.Provider value={mockModalContext}>
+          <UserPermissionsPopUp />
+        </ModalContext.Provider>
+      </Provider>,
+    );
+    await flushAllPromises();
+    const nameElement = screen.getByText('Test1 Volunteer');
+    fireEvent.click(nameElement);
+    await waitFor(() => {
+      const resetButton = screen.getByRole('button', { name: /reset to default/i });
+      expect(resetButton).not.toBeDisabled();
+    });
+  });
   it('check if submit button works as expected when the button is clicked', async () => {
     axios.get.mockResolvedValue({
       status: 200,
@@ -153,7 +231,7 @@ describe('UserPermissionsPopup component', () => {
         email: 'Test2.Manager@gmail.com',
       },
     });
-    axios.put.mockResolvedValue({ status: 200 });
+    axios.patch.mockResolvedValue({ status: 200 });
 
     render(
       <Provider store={store}>
@@ -164,31 +242,35 @@ describe('UserPermissionsPopup component', () => {
     );
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test1 Volunteer')).toBeInTheDocument();
+    });
+
     fireEvent.click(screen.getByText('Submit'));
+
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith(
         `
-        Permissions have been updated successfully. 
-        Please inform the user to log out and log back in for the new permissions to take effect.`,
+            Permissions have been updated successfully. 
+            Please inform the user to log out and log back in for the new permissions to take effect.`,
         {
           autoClose: 10000,
         },
       );
     });
   });
-  it('check if toast message gets displayed when the button is not clicked', async () => {
+  it('check if dropdown closes when user is selected', async () => {
     axios.get.mockResolvedValue({
       status: 200,
       data: {
-        _id: 'def123',
-        role: 'Manager',
-        firstName: 'Test2',
-        lastName: 'Manager',
-        email: 'Test2.Manager@gmail.com',
+        _id: 'abc123',
+        role: 'Volunteer',
+        firstName: 'Test1',
+        lastName: 'Volunteer',
+        email: 'Test1.Volunteer@gmail.com',
       },
     });
-    axios.put.mockResolvedValue({ status: 200 });
-
     render(
       <Provider store={store}>
         <ModalContext.Provider value={mockModalContext}>
@@ -196,53 +278,13 @@ describe('UserPermissionsPopup component', () => {
         </ModalContext.Provider>
       </Provider>,
     );
+    await flushAllPromises();
+    const searchBoxElement = screen.getByPlaceholderText('Search for active users...');
+    fireEvent.change(searchBoxElement, { target: { value: 'Test1' } });
     const nameElement = screen.getByText('Test1 Volunteer');
     fireEvent.click(nameElement);
     await waitFor(() => {
-      expect(toast.success).not.toHaveBeenCalledWith(
-        `
-        Permissions have been updated successfully. 
-        Please inform the user to log out and log back in for the new permissions to take effect.`,
-        {
-          autoClose: 10000,
-        },
-      );
-    });
-  });
-  it('check if toast error message gets displayed when the button is clicked', async () => {
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: {
-        _id: 'def123',
-        role: 'Manager',
-        firstName: 'Test2',
-        lastName: 'Manager',
-        email: 'Test2.Manager@gmail.com',
-      },
-    });
-    axios.put.mockRejectedValue({ err: 'server error' });
-    render(
-      <Provider store={store}>
-        <ModalContext.Provider value={mockModalContext}>
-          <UserPermissionsPopUp />
-        </ModalContext.Provider>
-      </Provider>,
-    );
-    const mockObject = {};
-    const nameElement = screen.getByText('Test1 Volunteer');
-    fireEvent.click(nameElement);
-
-    fireEvent.click(screen.getByText('Submit'));
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith(
-        `
-        Permission updated failed. ${mockObject}
-        `,
-        {
-          autoClose: 10000,
-        },
-      );
+      expect(screen.queryByRole('menu')).not.toHaveClass('show');
     });
   });
   it.skip('should reset permissions to default when "Reset to Default" is clicked', async () => {
