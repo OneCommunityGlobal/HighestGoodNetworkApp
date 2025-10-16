@@ -62,6 +62,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
+import TimestampsTab from './TimestampsTab';
 import Badge from '../Badge';
 import { ENDPOINTS } from '~/utils/URL';
 
@@ -337,7 +338,8 @@ const downloadPeriodPdf = () => {
     '#beforeLastWeek': 3,
     '#dateRange': 4,
     '#weeklySummaries': 5,
-    '#badgesearned': 6,
+    '#timestamps': 6,
+    '#badgesearned': 7,
   };
 
   const defaultTab = data => {
@@ -518,7 +520,7 @@ const generateAllTimeEntryItems = () => {
   };
 
   const changeTab = tab => {
-    if (tab === 6) {
+    if (tab === 7) {
       props.resetBadgeCount(displayUserId);
     }
 
@@ -559,7 +561,8 @@ const generateAllTimeEntryItems = () => {
     if (
       timeLogState.activeTab === 0 ||
       timeLogState.activeTab === 5 ||
-      timeLogState.activeTab === 6
+      timeLogState.activeTab === 6 ||
+      timeLogState.activeTab === 7
     ) {
       return null;
     }
@@ -1075,6 +1078,20 @@ return (
                         href="#"
                         to="#"
                       >
+                        Timestamps
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={`${classnames({ active: timeLogState.activeTab === 7 })} ${
+                          darkMode ? 'dark-mode' : ''
+                        }`}
+                        onClick={() => {
+                          changeTab(7);
+                        }}
+                        href="#"
+                        to="#"
+                      >
                         Badges
                         <span className="badge badge-pill badge-danger ml-2">
                           {props.badgeCount}
@@ -1146,7 +1163,8 @@ return (
                     )}
                     {timeLogState.activeTab === 0 ||
                     timeLogState.activeTab === 5 ||
-                    timeLogState.activeTab === 6 ? null : (
+                    timeLogState.activeTab === 6 ||
+                    timeLogState.activeTab === 7 ? null : (
                       <Form className="mb-2 responsive-font-size">
                         <FormGroup>
                           <Label
@@ -1181,7 +1199,8 @@ return (
 
                     {timeLogState.activeTab === 0 ||
                     timeLogState.activeTab === 5 ||
-                    timeLogState.activeTab === 6 ? null : (
+                    timeLogState.activeTab === 6 ||
+                    timeLogState.activeTab === 7 ? null : (
                       <EffortBar
                         activeTab={timeLogState.activeTab}
                         projectsOrTasksSelected={timeLogState.projectsOrTasksSelected}
@@ -1201,6 +1220,9 @@ return (
                       <WeeklySummaries userProfile={displayUserProfile} />
                     </TabPane>
                     <TabPane tabId={6}>
+                      <TimestampsTab userId={displayUserId} />
+                    </TabPane>
+                    <TabPane tabId={7}>
                       <Badge userId={displayUserId} role={authUser.role} />
                     </TabPane>
                   </TabContent>
