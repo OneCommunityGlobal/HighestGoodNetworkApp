@@ -52,7 +52,7 @@ const UserTeamsTable = props => {
     if (props.userProfile?.teamCode) {
       setTeamCode(props.userProfile.teamCode);
     }
-  }, [props.userProfile?.teamCode]);
+  }, [props.userProfile?.teamCode, props.userProfile?.teams]);
 
   const handleCodeChange = async (e, autoComplete) => {
     const validation = autoComplete ? e : e.target.value;
@@ -309,7 +309,7 @@ const UserTeamsTable = props => {
                             color="danger"
                             onClick={e => {
                               props.onDeleteClick(team._id);
-                            }}
+                                                          }}
                           >
                             Delete
                           </Button>
