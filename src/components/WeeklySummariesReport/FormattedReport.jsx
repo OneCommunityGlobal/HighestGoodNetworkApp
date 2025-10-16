@@ -226,7 +226,6 @@ function ReportDetails({
   getWeeklySummariesReport,
   isFinalWeek,
 }) {
-  const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary?.email, loggedInUserEmail);
 
@@ -259,8 +258,8 @@ function ReportDetails({
             isFinalWeek={isFinalWeek}
           />
         </ListGroupItem>
-        <Row className="flex-nowrap">
-          <Col xs="6" className="flex-grow-0">
+        <Row>
+          <Col md="6" xs="12" className="flex-grow-0">
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -305,10 +304,17 @@ function ReportDetails({
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
-
-          <Col xs="6">
-            {loadBadges && Array.isArray(summary?.badgeCollection) && summary.badgeCollection.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
+          <Col
+            xs="6"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              paddingTop: 0,
+            }}
+          >
+            {loadBadges && summary.badgeCollection?.length > 0 && (
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
             )}
           </Col>
         </Row>
@@ -326,14 +332,27 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
-  // SAFELY access weekly summaries
-  const ws = Array.isArray(summary?.weeklySummaries) ? summary.weeklySummaries : [];
-  const current = ws[weekIndex]; // may be undefined
-  const summaryText = current?.summary;
+  // Add safety check for weeklySummaries array and weekIndex
+  if (
+    !summary.weeklySummaries ||
+    !Array.isArray(summary.weeklySummaries) ||
+    weekIndex < 0 ||
+    weekIndex >= summary.weeklySummaries.length
+  ) {
+    return (
+      <p>
+        <b>Weekly Summary:</b> Not available for this week!
+      </p>
+    );
+  }
 
-  const defaultDate = moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week').format('YYYY-MMM-DD');
-  let summaryDateText = `Weekly Summary (${defaultDate}):`;
-
+  const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  let summaryDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MMM-DD');
+  let summaryDateText = `Weekly Summary (${summaryDate}):`;
   const summaryContent = (() => {
     if (summaryText) {
       const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
@@ -410,7 +429,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
     <>
       <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
-          <div style={{ width: '107px', paddingRight: '5px', position: 'relative' }}>
+          <div style={{ paddingRight: '5px', position: 'relative' }}>
             <Input
               id="codeInput"
               value={teamCode}
@@ -418,14 +437,18 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
                 if (e.target.value !== teamCode) handleCodeChange(e);
               }}
               placeholder="X-XXX"
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+              className={`${styles.weeklySummariesCodeInput} ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
           </div>
         ) : (
           <div style={{ paddingRight: '5px' }}>{teamCode === '' ? 'No assigned team code!' : teamCode}</div>
         )}
-        <b>Media URL:</b>
-        <MediaUrlLink summary={summary} />
+        <div>
+          <b>Media URL:</b>
+          <MediaUrlLink summary={summary} />
+        </div>
       </div>
       {hasError ? (
         <Alert className={styles.codeAlert} color="danger">
@@ -453,7 +476,7 @@ function MediaUrlLink({ summary }) {
       </a>
     );
   }
-  return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
+  return <span style={{ paddingLeft: '5px' }}>Not provided!</span>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
@@ -486,7 +509,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
         </div>
       )}
       {canEditSummaryCount ? (
-        <div className="pl-2" style={{ width: '150px' }}>
+        <div className={`pl-2 ${styles.weeklySummariesCodeInput}`}>
           <Input
             type="number"
             name="weeklySummaryCount"
@@ -582,7 +605,15 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 
   return (
     badgeThisWeek.length > 0 && (
-      <ListGroupItem className="row">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: '5px',
+          paddingTop: 0,
+        }}
+      >
         {badgeThisWeek.map((value, index) => (
           <div className={styles.badgeTd} key={`${weekIndex}_${summary?._id}_${index}`}>
             {value && value.imageUrl && value._id && (
@@ -610,7 +641,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
             )}
           </div>
         ))}
-      </ListGroupItem>
+      </div>
     )
   );
 }
@@ -686,8 +717,12 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
           <span>
             <b>&nbsp;&nbsp;{summary?.role !== 'Volunteer' && `(${summary?.role})`}</b>
           </span>
-          {summary?.role !== 'Volunteer' && (
-            <RoleInfoModal info={(allRoleInfo || []).find((item) => item?.infoName === `${summary?.role}Info`)} auth={auth} />
+          {summary.role !== 'Volunteer' && (
+            <RoleInfoModal
+              info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
+              auth={auth}
+              roleName={`${summary.role}Info`}
+            />
           )}
           {loadTrophies && showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
             <i

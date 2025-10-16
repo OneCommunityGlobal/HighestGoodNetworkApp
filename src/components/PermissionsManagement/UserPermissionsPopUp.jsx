@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { getAllUserProfile } from '~/actions/userManagement';
+import { getUserProfile } from '~/actions/userProfile';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -12,10 +13,11 @@ import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from '~/utils/constants';
+} from '../../utils/constants';
+import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
+
 import ReminderModal from './ReminderModal';
 
 function UserPermissionsPopUp({
@@ -31,6 +33,7 @@ function UserPermissionsPopUp({
   darkMode,
   getChangeLogs,
 }) {
+  const dispatch = useDispatch();
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -92,6 +95,7 @@ function UserPermissionsPopUp({
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
+        isAcknowledged: false, // Set to false when permissions change
       },
     };
 
@@ -110,6 +114,7 @@ function UserPermissionsPopUp({
         toggle();
         getAllUsers();
         getChangeLogs();
+        // No need to refresh profiles - the polling mechanism in PermissionWatcher will handle it
       })
       .catch(err => {
         const ERROR_MESSAGE = `
