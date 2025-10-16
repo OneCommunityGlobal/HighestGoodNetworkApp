@@ -31,38 +31,29 @@ export default function UserStateManager({
   const [loadingCat, setLoadingCat] = React.useState(false);
   const [error, setError] = React.useState("");
 
-  const api = React.useMemo(() => {
-    try {
-      const token =
-        (typeof localStorage !== "undefined" && localStorage.getItem("token")) ||
-        "";
-      const baseURL = `${API_BASE}/user-states`;
+const api = React.useMemo(() => {
+  try {
+    const token =
+      typeof localStorage !== "undefined" ? localStorage.getItem("token") : "";
 
-      // Preferred: use axios.create when available
-      if (axios && typeof axios.create === "function") {
-        return axios.create({
-          baseURL,
-          headers: {
-            "Content-Type": "application/json",
-            ...(token ? { Authorization: `${token}` } : {}),
-          },
-        });
-      }
-
-      // Fallback: use root axios if .create is missing but verbs exist
-      if (axios && typeof axios.get === "function") {
-        return axios;
-      }
-    } catch {}
-
-    // Final fallback: a no-op client so rendering never crashes in tests
+    return axios.create({
+      baseURL: `${process.env.REACT_APP_APIENDPOINT || ""}/user-states`,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+  } catch {
+    // fallback for test or non-browser environments
     return {
       get: async () => ({ data: { selections: [] } }),
       post: async () => ({ data: {} }),
       put: async () => ({ data: {} }),
       delete: async () => ({ data: {} }),
     };
-  }, []);
+  }
+}, []);
+
 
   
   React.useEffect(() => {

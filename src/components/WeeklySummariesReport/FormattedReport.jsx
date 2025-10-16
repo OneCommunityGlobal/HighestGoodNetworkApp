@@ -235,9 +235,9 @@ function ReportDetails({
   const isMeetCriteria =
     canSeeBioHighlight && (summary?.totalTangibleHrs || 0) > 80 && (summary?.daysInTeam || 0) > 60 && summary?.bioPosted !== 'posted';
 
-  useEffect(() => {
-    setFilteredBadges((badges || []).filter((b) => b?.showReport === true));
-  }, [badges]);
+  // useEffect(() => {
+  //   setFilteredBadges((badges || []).filter((b) => b?.showReport === true));
+  // }, [badges]);
 
   const dispatch = useDispatch();
   const initialSelected = Array.isArray(summary?.stateIndicators) ? summary.stateIndicators : [];
