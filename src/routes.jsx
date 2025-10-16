@@ -123,14 +123,9 @@ import TestEventRegistration from './components/EventRegistration/TestEventRegis
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantsAgeChart from './components/ApplicantsChart';
-import ApplicationTimeChartPage from './components/ApplicationTimeChart';
-import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
-import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 import ApplicantSourceDonutChart from './components/ApplicantSourceDonutChart/ApplicantSourceDonutChart';
 import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
-
-import WeeklySummaryPage from './components/VolunteerweeklysummaryBBC/WeeklySummaryPage';
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
