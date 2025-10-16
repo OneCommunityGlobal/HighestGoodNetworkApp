@@ -324,6 +324,7 @@ function ReportDetails({
 }
 
 function WeeklySummaryMessage({ summary, weekIndex }) {
+  const currentSummary = summary?.weeklySummaries?.[weekIndex] || null;
   if (!summary) {
     return (
       <p>
@@ -346,7 +347,8 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
-  const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  const summaryText = currentSummary?.summary;
   let summaryDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -357,8 +359,8 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     if (summaryText) {
       const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
-      const uploaded = current?.uploadDate
-        ? moment(current.uploadDate).tz('America/Los_Angeles').format('MMM-DD-YY')
+      const uploaded = currentSummary?.uploadDate
+        ? moment(currentSummary.uploadDate).tz('America/Los_Angeles').format('MMM-DD-YY')
         : null;
       if (uploaded) summaryDateText = `Summary Submitted On (${uploaded}):`;
 
@@ -652,7 +654,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
   const promised = summary?.promisedHoursByWeek?.[weekIndex] || 0;
 
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-  const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
+  const [trophyFollowedUp, setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
   const dispatch = useDispatch();
 
   const [modalOpen, setModalOpen] = useState(false);
