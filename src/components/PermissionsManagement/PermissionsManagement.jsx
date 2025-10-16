@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
-import './PermissionsManagement.css';
+import styles from './PermissionsManagement.module.css';
 import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { FaInfoCircle } from 'react-icons/fa'; // Importing react-icons for the info icon
@@ -113,9 +113,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
     >
       <div
         key={`${role}+permission`}
-        className={`permissions-management ${darkMode ? 'bg-yinmn-blue dark-box-shadow' : ''}`}
+        className={`${styles['permissions-management']} ${darkMode ? 'bg-yinmn-blue' : ''} ${
+          darkMode ? styles['dark-box-shadow'] : ''
+        }`}
       >
-        <h1 className="permissions-management__title">
+        <h1 className={styles['permissions-management__title']}>
           User Roles
           {/* Added description for the i icon of permissions management page */}
           <FaInfoCircle
@@ -144,22 +146,25 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
           />
           <ReactTooltip place="right" type="dark" effect="solid" html />
         </h1>
-        <div key={`${role}_header`} className="permissions-management__header">
+        <div key={`${role}_header`} className={styles['permissions-management__header']}>
           {canPutRole && (
-            <div key={`${role}_name`} className="role-name-container">
+            <div key={`${role}_name`} className={styles['role-name-container']}>
               {roleNames?.map(roleName => {
                 const roleNameLC = roleName.toLowerCase().replace(' ', '-');
                 return (
-                  <div key={roleNameLC} className={`role-name ${darkMode ? 'role-name-dark' : ''}`}>
+                  <div
+                    key={roleNameLC}
+                    className={`${styles['role-name']} ${darkMode ? styles['role-name-dark'] : ''}`}
+                  >
                     <button
                       onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                       key={roleName}
                       type="button"
-                      className={`role-btn ${darkMode ? 'text-light' : ''}`}
+                      className={`${styles['role-btn']} ${darkMode ? 'text-light' : ''}`}
                     >
                       {roleName}
                     </button>
-                    <div className="infos">
+                    <div className={styles.infos}>
                       <EditableInfoModal
                         role={role}
                         areaName={`${roleName} Info`}
@@ -176,10 +181,10 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
             </div>
           )}
           {(canPostRole || canManageUserPermissions) && (
-            <div className="buttons-container">
+            <div className={styles['buttons-container']}>
               {canPostRole && (
                 <Button
-                  className="permissions-management__button"
+                  className={styles['permissions-management__button']}
                   type="button"
                   color="success"
                   onClick={() => togglePopUpNewRole()}
@@ -191,7 +196,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
               {canManageUserPermissions && (
                 <Button
                   color="primary"
-                  className="permissions-management__button"
+                  className={styles['permissions-management__button']}
                   type="button"
                   onClick={() => {
                     togglePopUpUserPermissions();
@@ -204,11 +209,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
             </div>
           )}
         </div>
-        <div className="permissions-management--flex">
+        <div className={styles['permissions-management--flex']}>
           <Modal
             isOpen={isNewRolePopUpOpen}
             toggle={togglePopUpNewRole}
-            id="modal-content__new-role"
+            id={styles['modal-content__new-role']}
             className={darkMode ? 'dark-mode text-light' : ''}
           >
             <ModalHeader
@@ -219,7 +224,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
               Create New Role
             </ModalHeader>
             <ModalBody
-              id="modal-body_new-role--padding"
+              id={styles['modal-body_new-role--padding']}
               className={darkMode ? 'bg-yinmn-blue' : ''}
             >
               <CreateNewRolePopup
@@ -232,7 +237,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
           <Modal
             isOpen={isUserPermissionsOpen}
             toggle={togglePopUpUserPermissions}
-            id="modal-content__new-role"
+            id={styles['modal-content__new-role']}
             className={darkMode ? 'text-light dark-mode' : ''}
           >
             <ModalHeader
@@ -243,7 +248,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
               Manage User Permissions
             </ModalHeader>
             <ModalBody
-              id="modal-body_new-role--padding"
+              id={styles['modal-body_new-role--padding']}
               className={darkMode ? 'bg-yinmn-blue-light' : ''}
             >
               <UserPermissionsPopUp
@@ -258,9 +263,9 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
           </Modal>
         </div>
       </div>
-      {loading && <p className="loading-message">Loading...</p>}
+      {loading && <p className={styles['loading-message']}>Loading...</p>}
       {error && (
-        <p data-testid="error-message" className="error-message">
+        <p data-testid="error-message" className={styles['error-message']}>
           {error}
         </p>
       )}{' '}
