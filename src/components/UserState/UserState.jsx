@@ -8,23 +8,23 @@ export default function UserState({ selections = [], catalog = [] }) {
     return m;
   }, [catalog]);
 
-  const textColorFor = (hex) => {
-    if (!hex || typeof hex !== "string") return "#fff";
-    const h = hex.replace("#", "");
+  const textColorFor = hex => {
+    if (!hex || typeof hex !== 'string') return '#fff';
+    const h = hex.replace('#', '');
     const r = parseInt(h.substring(0, 2), 16);
     const g = parseInt(h.substring(2, 4), 16);
     const b = parseInt(h.substring(4, 6), 16);
     const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    return lum > 0.6 ? "#111" : "#fff";
+    return lum > 0.6 ? '#111' : '#fff';
   };
 
   const items = (selections || []).map(s => {
-    const key = typeof s === "string" ? s : s.key;
+    const key = typeof s === 'string' ? s : s.key;
     const cat = byKey.get(key);
     return {
       key,
       label: cat?.label ?? key,
-      color: cat?.color ?? "#34495e",
+      color: cat?.color ?? '#34495e',
     };
   });
 
@@ -37,7 +37,7 @@ export default function UserState({ selections = [], catalog = [] }) {
           style={{
             backgroundColor: it.color,
             color: textColorFor(it.color),
-            borderColor: it.color
+            borderColor: it.color,
           }}
           title={it.label}
         >

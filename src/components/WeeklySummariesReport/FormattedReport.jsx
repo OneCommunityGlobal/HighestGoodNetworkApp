@@ -64,8 +64,16 @@ const isLastWeekReport = (startDateStr, endDateStr) => {
   const summaryStart = new Date(startDateStr);
   const summaryEnd = new Date(endDateStr);
 
-  const weekStartLA = moment().tz('America/Los_Angeles').startOf('week').subtract(1, 'week').toDate();
-  const weekEndLA = moment().tz('America/Los_Angeles').endOf('week').subtract(1, 'week').toDate();
+  const weekStartLA = moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(1, 'week')
+    .toDate();
+  const weekEndLA = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(1, 'week')
+    .toDate();
 
   return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
 };
@@ -107,7 +115,7 @@ function FormattedReport({
   return (
     <>
       <ListGroup flush>
-        {summaries.map((summary) => {
+        {summaries.map(summary => {
           if (!summary) return null;
 
           const isFinalWeek =
@@ -153,9 +161,7 @@ function EmailsList({ summaries, auth }) {
   const role = auth?.user?.role;
   if (!(role === 'Administrator' || role === 'Owner')) return null;
 
-  const emails = (summaries || [])
-    .map((s) => s?.email)
-    .filter((e) => e !== undefined && e !== null);
+  const emails = (summaries || []).map(s => s?.email).filter(e => e !== undefined && e !== null);
 
   const handleEmailButtonClick = () => {
     const batchSize = 90;
@@ -175,9 +181,14 @@ function EmailsList({ summaries, auth }) {
     <>
       <div className="d-flex align-items-center">
         <h4>Emails</h4>
-        <Tooltip placement="top" isOpen={emailTooltipOpen} target="emailIcon" toggle={() => setEmailTooltipOpen((o) => !o)}>
-          Launch the email client, organizing the recipient email addresses into batches, each containing a maximum of 90
-          addresses.
+        <Tooltip
+          placement="top"
+          isOpen={emailTooltipOpen}
+          target="emailIcon"
+          toggle={() => setEmailTooltipOpen(o => !o)}
+        >
+          Launch the email client, organizing the recipient email addresses into batches, each
+          containing a maximum of 90 addresses.
         </Tooltip>
         <FontAwesomeIcon
           className="mx-2"
@@ -187,7 +198,12 @@ function EmailsList({ summaries, auth }) {
           style={{ color: '#0f8aa9', cursor: 'pointer' }}
           id="emailIcon"
         />
-        <Tooltip placement="top" isOpen={copyTooltipOpen} target="copytoclipboard" toggle={() => setCopyTooltipOpen((o) => !o)}>
+        <Tooltip
+          placement="top"
+          isOpen={copyTooltipOpen}
+          target="copytoclipboard"
+          toggle={() => setCopyTooltipOpen(o => !o)}
+        >
           Click to copy all emails.
         </Tooltip>
         <div id="copytoclipboard">
@@ -233,7 +249,10 @@ function ReportDetails({
   const promised = summary?.promisedHoursByWeek?.[weekIndex] || 0;
 
   const isMeetCriteria =
-    canSeeBioHighlight && (summary?.totalTangibleHrs || 0) > 80 && (summary?.daysInTeam || 0) > 60 && summary?.bioPosted !== 'posted';
+    canSeeBioHighlight &&
+    (summary?.totalTangibleHrs || 0) > 80 &&
+    (summary?.daysInTeam || 0) > 60 &&
+    summary?.bioPosted !== 'posted';
 
   // useEffect(() => {
   //   setFilteredBadges((badges || []).filter((b) => b?.showReport === true));
@@ -242,7 +261,8 @@ function ReportDetails({
   const dispatch = useDispatch();
   const initialSelected = Array.isArray(summary?.stateIndicators) ? summary.stateIndicators : [];
   const canEdit =
-    ['Owner', 'Administrator'].includes(auth?.user?.role) || dispatch(hasPermission('manageUserStateIndicator'));
+    ['Owner', 'Administrator'].includes(auth?.user?.role) ||
+    dispatch(hasPermission('manageUserStateIndicator'));
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -272,7 +292,12 @@ function ReportDetails({
 
             <ListGroupItem darkMode={darkMode}>
               <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
-                <Bio bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord} userId={summary?._id} bioPosted={summary?.bioPosted} summary={summary} />
+                <Bio
+                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
+                  userId={summary?._id}
+                  bioPosted={summary?.bioPosted}
+                  summary={summary}
+                />
               </div>
             </ListGroupItem>
 
@@ -286,7 +311,13 @@ function ReportDetails({
 
             <ListGroupItem darkMode={darkMode}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <p style={{ margin: 0, color: getTextColorForHoursLogged(hoursLogged, promised), fontWeight: 'bold' }}>
+                <p
+                  style={{
+                    margin: 0,
+                    color: getTextColorForHoursLogged(hoursLogged, promised),
+                    fontWeight: 'bold',
+                  }}
+                >
                   Hours logged: {hoursLogged.toFixed(2)} / {promised}
                 </p>
                 <div style={{ marginLeft: 'auto' }}>
@@ -360,7 +391,9 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
 
       const uploaded = currentSummary?.uploadDate
-        ? moment(currentSummary.uploadDate).tz('America/Los_Angeles').format('MMM-DD-YY')
+        ? moment(currentSummary.uploadDate)
+            .tz('America/Los_Angeles')
+            .format('MMM-DD-YY')
         : null;
       if (uploaded) summaryDateText = `Summary Submitted On (${uploaded}):`;
 
@@ -380,7 +413,10 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       );
     }
 
-    if (summary?.weeklySummaryOption === 'Not Required' || (!summary?.weeklySummaryOption && summary?.weeklySummaryNotReq)) {
+    if (
+      summary?.weeklySummaryOption === 'Not Required' ||
+      (!summary?.weeklySummaryOption && summary?.weeklySummaryNotReq)
+    ) {
       return <p style={{ color: textColors['Not Required'] }}>Not required for this user</p>;
     }
 
@@ -407,13 +443,17 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
     const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
     try {
       await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
-      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, { [userProfileSummary._id]: true });
+      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
+        [userProfileSummary._id]: true,
+      });
     } catch (err) {
-      alert(`An error occurred while attempting to save the new team code change to the profile.${err}`);
+      alert(
+        `An error occurred while attempting to save the new team code change to the profile.${err}`,
+      );
     }
   };
 
-  const handleCodeChange = (e) => {
+  const handleCodeChange = e => {
     const { value } = e.target;
     if (value.length <= 7) {
       const ok = fullCodeRegex.test(value);
@@ -435,16 +475,19 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
             <Input
               id="codeInput"
               value={teamCode}
-              onChange={(e) => {
+              onChange={e => {
                 if (e.target.value !== teamCode) handleCodeChange(e);
               }}
               placeholder="X-XXX"
-              className={`${styles.weeklySummariesCodeInput} ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-                }`}
+              className={`${styles.weeklySummariesCodeInput} ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
           </div>
         ) : (
-          <div style={{ paddingRight: '5px' }}>{teamCode === '' ? 'No assigned team code!' : teamCode}</div>
+          <div style={{ paddingRight: '5px' }}>
+            {teamCode === '' ? 'No assigned team code!' : teamCode}
+          </div>
         )}
         <div>
           <b>Media URL:</b>
@@ -463,13 +506,20 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
 function MediaUrlLink({ summary }) {
   if (summary?.mediaUrl) {
     return (
-      <a href={summary.mediaUrl} target="_blank" rel="noopener noreferrer" style={{ paddingLeft: '5px', color: '#007BFF' }}>
+      <a
+        href={summary.mediaUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ paddingLeft: '5px', color: '#007BFF' }}
+      >
         Open link to media files
       </a>
     );
   }
 
-  const link = Array.isArray(summary?.adminLinks) ? summary.adminLinks.find((item) => item?.Name === 'Media Folder') : null;
+  const link = Array.isArray(summary?.adminLinks)
+    ? summary.adminLinks.find(item => item?.Name === 'Media Folder')
+    : null;
   if (link) {
     return (
       <a href={link.Link} target="_blank" rel="noopener noreferrer" style={{ paddingLeft: '5px' }}>
@@ -482,18 +532,22 @@ function MediaUrlLink({ summary }) {
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
-  const [weeklySummariesCount, setWeeklySummariesCount] = useState(parseInt(summary?.weeklySummariesCount, 10) || 0);
+  const [weeklySummariesCount, setWeeklySummariesCount] = useState(
+    parseInt(summary?.weeklySummariesCount, 10) || 0,
+  );
 
   const handleOnChange = async (userProfileSummary, count) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
     try {
       await axios.patch(url, { key: 'weeklySummariesCount', value: count });
     } catch (err) {
-      alert('An error occurred while attempting to save the new weekly summaries count change to the profile.');
+      alert(
+        'An error occurred while attempting to save the new weekly summaries count change to the profile.',
+      );
     }
   };
 
-  const handleWeeklySummaryCountChange = (e) => {
+  const handleWeeklySummaryCountChange = e => {
     setWeeklySummariesCount(e.target.value);
     handleOnChange(summary, e.target.value);
   };
@@ -516,7 +570,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
             name="weeklySummaryCount"
             step="1"
             value={weeklySummariesCount}
-            onChange={(e) => handleWeeklySummaryCountChange(e)}
+            onChange={e => handleWeeklySummaryCountChange(e)}
             className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
             min="0"
           />
@@ -542,7 +596,8 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   const handleChangeBioPosted = async (id, status) => {
     const res = await dispatch(toggleUserBio(id, status));
-    if (res.status === 200) toast.success('You have changed the bio announcement status of this user.');
+    if (res.status === 200)
+      toast.success('You have changed the bio announcement status of this user.');
   };
 
   return (
@@ -554,7 +609,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
         <ToggleSwitch
           switchType="bio"
           state={bioStatus}
-          handleUserProfile={(bio) => {
+          handleUserProfile={bio => {
             setBioStatus(bio);
             handleChangeBioPosted(userId, bio);
           }}
@@ -566,7 +621,12 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
 function BioLabel({ bioPosted, summary }) {
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
-  const text = bioPosted === 'default' ? 'Not requested/posted' : bioPosted === 'posted' ? 'Posted' : 'Requested';
+  const text =
+    bioPosted === 'default'
+      ? 'Not requested/posted'
+      : bioPosted === 'posted'
+      ? 'Posted'
+      : 'Requested';
   return (
     <div>
       <b style={style}>Bio announcement: </b>
@@ -576,13 +636,21 @@ function BioLabel({ bioPosted, summary }) {
 }
 
 function WeeklyBadge({ summary, weekIndex, badges }) {
-  const badgeEndDate = moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week').format('YYYY-MM-DD');
-  const badgeStartDate = moment().tz('America/Los_Angeles').startOf('week').subtract(weekIndex, 'week').format('YYYY-MM-DD');
+  const badgeEndDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+  const badgeStartDate = moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
 
   const badgeIdThisWeek = [];
   const badgeThisWeek = [];
 
-  (summary?.badgeCollection || []).forEach((badge) => {
+  (summary?.badgeCollection || []).forEach(badge => {
     if (!badge) return;
     if (Array.isArray(badge.earnedDate)) {
       const earnedDate = moment(badge.earnedDate[badge.earnedDate.length - 1]);
@@ -598,8 +666,8 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   });
 
   if (badgeIdThisWeek.length > 0) {
-    badgeIdThisWeek.forEach((badgeId) => {
-      const found = (badges || []).find((b) => b?._id === badgeId);
+    badgeIdThisWeek.forEach(badgeId => {
+      const found = (badges || []).find(b => b?._id === badgeId);
       if (found) badgeThisWeek.push(found);
     });
   }
@@ -647,7 +715,15 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpecialColorDotClick, isFinalWeek }) {
+function Index({
+  summary,
+  weekIndex,
+  allRoleInfo,
+  auth,
+  loadTrophies,
+  handleSpecialColorDotClick,
+  isFinalWeek,
+}) {
   const colors = ['purple', 'green', 'navy'];
   const hoursLogged = (summary?.totalSeconds?.[weekIndex] || 0) / 3600;
   const promised = summary?.promisedHoursByWeek?.[weekIndex] || 0;
@@ -660,11 +736,11 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
 
   const trophyIconToggle = () => {
     if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
-      setModalOpen((prevState) => (prevState ? false : summary?._id));
+      setModalOpen(prevState => (prevState ? false : summary?._id));
     }
   };
 
-  const handleChangingTrophyIcon = async (newTrophyStatus) => {
+  const handleChangingTrophyIcon = async newTrophyStatus => {
     setModalOpen(false);
     await dispatch(postLeaderboardData(summary?._id, newTrophyStatus));
     setTrophyFollowedUp(newTrophyStatus);
@@ -673,26 +749,38 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
 
   const googleDocLink = Array.isArray(summary?.adminLinks)
     ? summary.adminLinks.reduce((targetLink, currentElement) => {
-      if (currentElement?.Name === 'Google Doc') targetLink = currentElement.Link;
-      return targetLink;
-    }, undefined)
+        if (currentElement?.Name === 'Google Doc') targetLink = currentElement.Link;
+        return targetLink;
+      }, undefined)
     : undefined;
 
-  const summarySubmissionDate = moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week').format('YYYY-MM-DD');
+  const summarySubmissionDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
 
   const durationSinceStarted = calculateDurationBetweenDates(
     summarySubmissionDate,
     summary?.startDate?.split('T')[0] || null,
   );
 
-  const handleIconContent = (duration) => {
+  const handleIconContent = duration => {
     if (duration.months >= 5.8 && duration.months <= 6.2) return '6M';
     if (duration.years >= 0.9) return `${Math.round(duration.years)}Y`;
     return null;
   };
 
-  const finalWeekStart = moment().tz('America/Los_Angeles').startOf('week').subtract(1, 'week').format('MMM D, YYYY');
-  const finalWeekEnd = moment().tz('America/Los_Angeles').endOf('week').subtract(1, 'week').format('MMM D, YYYY');
+  const finalWeekStart = moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(1, 'week')
+    .format('MMM D, YYYY');
+  const finalWeekEnd = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(1, 'week')
+    .format('MMM D, YYYY');
 
   return (
     <>
@@ -703,7 +791,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
         style={{
           color:
             currentDate.isSameOrAfter(moment(summary?.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-              currentDate.isBefore(moment(summary?.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+            currentDate.isBefore(moment(summary?.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
               : '#007BFF',
         }}
@@ -725,20 +813,23 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
               roleName={`${summary.role}Info`}
             />
           )}
-          {loadTrophies && showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
-            <i
-              className="fa fa-trophy"
-              style={{
-                marginLeft: '10px',
-                fontSize: '25px',
-                cursor: 'pointer',
-                color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
-              }}
-              onClick={trophyIconToggle}
-            >
-              <p style={{ fontSize: '10px', marginLeft: '5px' }}>{handleIconContent(durationSinceStarted)}</p>
-            </i>
-          )}
+          {loadTrophies &&
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
+              <i
+                className="fa fa-trophy"
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '25px',
+                  cursor: 'pointer',
+                  color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
+                }}
+                onClick={trophyIconToggle}
+              >
+                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                  {handleIconContent(durationSinceStarted)}
+                </p>
+              </i>
+            )}
           <Modal isOpen={modalOpen === summary?._id} toggle={trophyIconToggle}>
             <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
             <ModalBody>
@@ -757,7 +848,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
       </div>
 
       <div style={{ display: 'inline-block', marginLeft: '10px' }}>
-        {['purple', 'green', 'navy'].map((color) => (
+        {['purple', 'green', 'navy'].map(color => (
           <span
             key={color}
             onClick={() => handleSpecialColorDotClick(summary?._id, color)}

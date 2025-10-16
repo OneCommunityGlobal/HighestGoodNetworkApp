@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
-import styles from "./UserStateEdit.module.css";
+import React, { useEffect, useMemo, useState } from 'react';
+import axios from 'axios';
+import styles from './UserStateEdit.module.css';
 
-const DEFAULT_API = process.env.REACT_APP_APIENDPOINT || "";
+const DEFAULT_API = process.env.REACT_APP_APIENDPOINT || '';
 
 export default function UserStateEdit({
   open,
@@ -15,24 +15,22 @@ export default function UserStateEdit({
   apiBase = DEFAULT_API,
 }) {
   const [loading, setLoading] = useState(false);
-  const [saving, setSaving]   = useState(false);
-  const [error, setError]     = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   const [localCatalog, setLocalCatalog] = useState(catalogProp || []);
-  const [localSelKeys, setLocalSelKeys] = useState(
-    new Set((selectionsProp || []).map((s) => s.key))
-  );
+  const [localSelKeys, setLocalSelKeys] = useState(new Set((selectionsProp || []).map(s => s.key)));
 
   const [editingKey, setEditingKey] = useState(null);
-  const [editLabel,  setEditLabel]  = useState("");
-  const [newLabel,   setNewLabel]   = useState("");
+  const [editLabel, setEditLabel] = useState('');
+  const [newLabel, setNewLabel] = useState('');
 
   const api = useMemo(() => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     return axios.create({
       baseURL: `${apiBase}/user-states`,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: token,
       },
     });
@@ -41,18 +39,18 @@ export default function UserStateEdit({
   useEffect(() => {
     if (!open) return;
     setLocalCatalog(catalogProp || []);
-    setLocalSelKeys(new Set((selectionsProp || []).map((s) => s.key)));
+    setLocalSelKeys(new Set((selectionsProp || []).map(s => s.key)));
     setEditingKey(null);
-    setEditLabel("");
-    setNewLabel("");
-    setError("");
+    setEditLabel('');
+    setNewLabel('');
+    setError('');
   }, [open, catalogProp, selectionsProp]);
 
   useEffect(() => {
     let cancelled = false;
     if (!open) return;
 
-    const needCatalog   = !(Array.isArray(catalogProp)   && catalogProp.length);
+    const needCatalog = !(Array.isArray(catalogProp) && catalogProp.length);
     const needSelection = !(Array.isArray(selectionsProp) && selectionsProp.length);
 
     if (!needCatalog && !needSelection) return;
@@ -60,10 +58,10 @@ export default function UserStateEdit({
     (async () => {
       try {
         setLoading(true);
-        setError("");
+        setError('');
 
         const calls = [];
-        if (needCatalog)   calls.push(api.get("/catalog"));
+        if (needCatalog) calls.push(api.get('/catalog'));
         if (needSelection) calls.push(api.get(`/users/${userId}/state-indicators`));
 
         const [catalogRes, selRes] = await Promise.all([
@@ -73,23 +71,19 @@ export default function UserStateEdit({
 
         if (!cancelled) {
           if (catalogRes) {
-            const items = Array.isArray(catalogRes?.data?.items)
-              ? catalogRes.data.items
-              : [];
+            const items = Array.isArray(catalogRes?.data?.items) ? catalogRes.data.items : [];
             setLocalCatalog(items);
           }
           if (selRes) {
-            const keys = new Set(
-              (selRes?.data?.stateIndicators || []).map((k) => k)
-            );
+            const keys = new Set((selRes?.data?.stateIndicators || []).map(k => k));
             setLocalSelKeys(keys);
           }
         }
       } catch (e) {
         if (!cancelled) {
-          setError(e?.response?.data?.error || "Failed to load data");
+          setError(e?.response?.data?.error || 'Failed to load data');
         }
-        console.error("UserStateEdit: load failed", e?.response?.status, e?.message);
+        console.error('UserStateEdit: load failed', e?.response?.status, e?.message);
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -102,13 +96,13 @@ export default function UserStateEdit({
 
   const byKey = useMemo(() => {
     const map = new Map();
-    (localCatalog || []).forEach((o) => map.set(o.key, o));
+    (localCatalog || []).forEach(o => map.set(o.key, o));
     return map;
   }, [localCatalog]);
 
   if (!open) return null;
 
-  const toggleKey = (key) => {
+  const toggleKey = key => {
     const next = new Set(localSelKeys);
     next.has(key) ? next.delete(key) : next.add(key);
     setLocalSelKeys(next);
@@ -123,9 +117,9 @@ export default function UserStateEdit({
     setLocalCatalog(next);
   };
 
-  const startRename = (key) => {
+  const startRename = key => {
     setEditingKey(key);
-    setEditLabel(byKey.get(key)?.label ?? "");
+    setEditLabel(byKey.get(key)?.label ?? '');
   };
 
   const saveRename = async () => {
@@ -134,16 +128,14 @@ export default function UserStateEdit({
 
     try {
       setSaving(true);
-      setError("");
+      setError('');
       await api.patch(`/catalog/${encodeURIComponent(editingKey)}`, { label });
-      setLocalCatalog((prev) =>
-        prev.map((o) => (o.key === editingKey ? { ...o, label } : o))
-      );
+      setLocalCatalog(prev => prev.map(o => (o.key === editingKey ? { ...o, label } : o)));
       setEditingKey(null);
-      setEditLabel("");
+      setEditLabel('');
     } catch (e) {
-      setError(e?.response?.data?.error || "Rename failed");
-      console.error("PATCH /catalog/:key failed", e?.response?.status, e?.message);
+      setError(e?.response?.data?.error || 'Rename failed');
+      console.error('PATCH /catalog/:key failed', e?.response?.status, e?.message);
     } finally {
       setSaving(false);
     }
@@ -151,7 +143,7 @@ export default function UserStateEdit({
 
   const cancelRename = () => {
     setEditingKey(null);
-    setEditLabel("");
+    setEditLabel('');
   };
 
   const handleAdd = async () => {
@@ -160,39 +152,36 @@ export default function UserStateEdit({
 
     try {
       setSaving(true);
-      setError("");
+      setError('');
 
-      const { data } = await api.post("/catalog", { label }); 
+      const { data } = await api.post('/catalog', { label });
       const item = data?.item;
       if (item) {
-        setLocalCatalog((prev) => [...prev, item]);
-        setNewLabel("");
+        setLocalCatalog(prev => [...prev, item]);
+        setNewLabel('');
       }
     } catch (e) {
-      setError(e?.response?.data?.error || "Add failed");
-      console.error("POST /catalog failed", e?.response?.status, e?.message);
+      setError(e?.response?.data?.error || 'Add failed');
+      console.error('POST /catalog failed', e?.response?.status, e?.message);
     } finally {
       setSaving(false);
     }
   };
 
   const handleSaveAll = async () => {
-    const keys = new Set(localCatalog.map((c) => c.key));
-    const selectedKeys = Array.from(localSelKeys).filter((k) => keys.has(k));
+    const keys = new Set(localCatalog.map(c => c.key));
+    const selectedKeys = Array.from(localSelKeys).filter(k => keys.has(k));
 
     try {
       setSaving(true);
-      setError("");
+      setError('');
 
-      const { data } = await api.patch(
-        `/users/${userId}/state-indicators`,
-        { selectedKeys }
-      );
+      const { data } = await api.patch(`/users/${userId}/state-indicators`, { selectedKeys });
       onSaved && onSaved(data?.selections || [], localCatalog);
       onClose();
     } catch (e) {
-      setError(e?.response?.data?.error || "Save failed");
-      console.error("PATCH /users/:id/state-indicators failed", e?.response?.status, e?.message);
+      setError(e?.response?.data?.error || 'Save failed');
+      console.error('PATCH /users/:id/state-indicators failed', e?.response?.status, e?.message);
     } finally {
       setSaving(false);
     }
@@ -211,9 +200,9 @@ export default function UserStateEdit({
         <div className={styles.body}>
           <div className={styles.left}>
             <div className={styles.sectionTitle}>
-              Select states{" "}
+              Select states{' '}
               {loading && <span style={{ marginLeft: 8, opacity: 0.7 }}>(loading…)</span>}
-              {error && <span style={{ marginLeft: 8, color: "red" }}>— {error}</span>}
+              {error && <span style={{ marginLeft: 8, color: 'red' }}>— {error}</span>}
             </div>
 
             <ul className={styles.list}>
@@ -229,7 +218,7 @@ export default function UserStateEdit({
                       <input
                         className={styles.editInput}
                         value={editLabel}
-                        onChange={(e) => setEditLabel(e.target.value)}
+                        onChange={e => setEditLabel(e.target.value)}
                         maxLength={30}
                       />
                     ) : (
@@ -298,7 +287,7 @@ export default function UserStateEdit({
                 <input
                   className={styles.addInput}
                   value={newLabel}
-                  onChange={(e) => setNewLabel(e.target.value)}
+                  onChange={e => setNewLabel(e.target.value)}
                   placeholder="Enter Text"
                   maxLength={30}
                 />
@@ -307,7 +296,7 @@ export default function UserStateEdit({
                   onClick={handleAdd}
                   disabled={saving || !newLabel.trim()}
                 >
-                  {saving ? "Adding…" : "Add"}
+                  {saving ? 'Adding…' : 'Add'}
                 </button>
               </div>
             </div>
@@ -320,7 +309,7 @@ export default function UserStateEdit({
               Cancel
             </button>
             <button className={styles.primaryBtn} onClick={handleSaveAll} disabled={saving}>
-              {saving ? "Saving…" : "Save"}
+              {saving ? 'Saving…' : 'Save'}
             </button>
           </div>
         </div>
