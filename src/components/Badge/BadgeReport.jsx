@@ -39,6 +39,43 @@ import PropTypes from 'prop-types';
 
 pdfMake.vfs = pdfFonts.vfs;
 
+export async function imageToUri(url, callback) {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const baseImage = new Image();
+  baseImage.crossOrigin = 'anonymous';
+
+  // Fallback image URL or blank image data URL
+  // const fallbackImage =
+  //   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/4H6YwAAAABJRU5ErkJggg=='; // 1x1 transparent PNG
+
+  baseImage.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
+  baseImage.src = baseImage.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+
+  baseImage.onload = function handleImageLoad() {
+    canvas.width = baseImage.width;
+    canvas.height = baseImage.height;
+
+    ctx.drawImage(baseImage, 0, 0);
+    const uri = canvas.toDataURL('image/png');
+    callback(uri);
+
+    canvas.remove();
+  };
+
+  baseImage.onerror = function handleImageError() {
+    // Use fallback image on error
+    canvas.width = 1;
+    canvas.height = 1;
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, 0, 1, 1);
+    const uri = canvas.toDataURL('image/png');
+    callback(uri);
+
+    canvas.remove();
+  };
+}
+
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState([]);
   const [numFeatured, setNumFeatured] = useState(0);
@@ -53,43 +90,6 @@ function BadgeReport(props) {
 
   const canAssignBadges = props.hasPermission('assignBadges');
   const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
-
-  async function imageToUri(url, callback) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const baseImage = new Image();
-    baseImage.crossOrigin = 'anonymous';
-
-    // Fallback image URL or blank image data URL
-    const fallbackImage =
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/4H6YwAAAABJRU5ErkJggg=='; // 1x1 transparent PNG
-
-    baseImage.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
-    baseImage.src = baseImage.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
-
-    baseImage.onload = function handleImageLoad() {
-      canvas.width = baseImage.width;
-      canvas.height = baseImage.height;
-
-      ctx.drawImage(baseImage, 0, 0);
-      const uri = canvas.toDataURL('image/png');
-      callback(uri);
-
-      canvas.remove();
-    };
-
-    baseImage.onerror = function handleImageError() {
-      // Use fallback image on error
-      canvas.width = 1;
-      canvas.height = 1;
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, 1, 1);
-      const uri = canvas.toDataURL('image/png');
-      callback(uri);
-
-      canvas.remove();
-    };
-  }
 
   const FormatReportForPdf = async (badges, callback) => {
     try {
@@ -299,20 +299,22 @@ function BadgeReport(props) {
   };
 
   const featuredChange = (badge, index, e) => {
-    let newBadges = sortBadges.slice();
+    const newBadges = sortBadges.slice();
+
     if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
-      let count = 0;
       newBadges[index].featured = e.target.checked;
-      newBadges.forEach(badge => {
-        if (badge.featured) {
-          count++;
-        }
-      });
+
+      let count = 0;
+      for (const badge of newBadges) {
+        if (badge.featured) count++;
+      }
+
       setNumFeatured(count);
     } else {
       e.target.checked = false;
       toast.error('Unfortunately, you may only select five badges to be featured.');
     }
+
     setSortBadges(newBadges);
   };
 
