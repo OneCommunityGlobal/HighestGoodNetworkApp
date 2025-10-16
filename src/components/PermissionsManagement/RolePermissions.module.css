@@ -1,0 +1,156 @@
+.dark-mode {
+  background-color: #1a1a2e;
+  color: #ffffff;
+}
+
+.bg-space-cadet {
+  background-color: #16213e;
+}
+
+.bg-yinmn-blue {
+  background-color: #0f3460;
+}
+
+.text-light {
+  color: #ffffff !important;
+}
+
+.dark-mode .modal-content {
+  background-color: #1a1a2e;
+  border-color: #16213e;
+}
+
+.dark-mode .close {
+  color: #ffffff;
+}
+
+.dark-mode .modal-body p {
+  color: #fff !important;
+}
+
+.modal-info-content {
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+.modal-info-content ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.modal-info-content li {
+  margin: 0.5rem 0;
+}
+
+.modal-info-content p {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+}
+
+/* Header and Role Name Styles */
+.user-role-tab__h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.user-role-tab__h2 {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.user-role-tab__alert {
+  margin-bottom: 1rem;
+}
+
+.user-role-tab__name-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.name-container__role-name {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.name-container__btn_columns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-left: auto;
+  align-items: flex-end;
+}
+
+.name-container__btns {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* Button Styles */
+.btn_save {
+  white-space: nowrap;
+  min-width: 160px;
+  width: 160px;
+}
+
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
+.responsive-font-size {
+  font-size: 0.9rem;
+}
+
+/* Icon Styles */
+.user-role-tab__icon {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.edit-icon {
+  color: #007bff;
+}
+
+.edit-icon:hover {
+  color: #0056b3;
+}
+
+.warning-icon {
+  color: #ffc107;
+  margin-right: 0.5rem;
+}
+
+.user-role-tab__permissionList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.float-left {
+  float: left;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .user-role-tab__name-container {
+    flex-direction: column;
+  }
+
+  .name-container__btn_columns {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .name-container__btns {
+    flex-wrap: wrap;
+  }
+}

@@ -9,6 +9,7 @@ import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
 import { updateRole } from '../../actions/role';
 import { updatePresetById, deletePresetById } from '../../actions/rolePermissionPresets';
 import PermissionList from './PermissionList';
+import styles from './UserRoleTab.module.css';
 
 function Preset(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -104,7 +105,7 @@ function Preset(props) {
           <FontAwesomeIcon
             icon={faEdit}
             size="lg"
-            className="user-role-tab__icon edit-icon"
+            className={`${styles['user-role-tab__icon']} ${styles['edit-icon']}`}
             onClick={onEditIconClicked}
           />
           {editing && (

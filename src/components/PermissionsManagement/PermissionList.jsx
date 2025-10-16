@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 // eslint-disable-next-line import/no-cycle
 import PermissionListItem from './PermissionListItem';
 import permissionLabel from './PermissionsConst';
+import styles from './UserRoleTab.module.css';
 
 function PermissionList(props) {
   const {
@@ -27,7 +28,7 @@ function PermissionList(props) {
     setRemovedDefaultPermissions = () => {},
   } = props;
   return (
-    <div className="user-role-tab__permissionList" data-testid="permission-list">
+    <div className={styles['user-role-tab__permissionList']} data-testid="permission-list">
       {' '}
       <ul>
         {permissionsList.map(permission => (
