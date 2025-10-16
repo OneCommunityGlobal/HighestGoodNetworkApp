@@ -121,7 +121,7 @@ describe('UserPermissionsPopup component', () => {
       </Provider>,
     );
     await flushAllPromises();
-    const searchBoxElement = screen.getByPlaceholderText('Shows only ACTIVE users');
+    const searchBoxElement = screen.getByPlaceholderText('Search for active users...');
     fireEvent.change(searchBoxElement, { target: { value: 'Test' } });
     expect(screen.getByText('Test1 Volunteer')).toBeInTheDocument();
     expect(screen.getByText('Test2 Manager')).toBeInTheDocument();
