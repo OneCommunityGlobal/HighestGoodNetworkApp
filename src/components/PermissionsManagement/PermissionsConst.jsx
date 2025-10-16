@@ -68,6 +68,11 @@ export const permissionLabels = [
           'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible.',
       },
       {
+        label: 'See/Edit PR Team Dashboard',
+        key: 'accessPRTeamDashboard',
+        description: 'Gives access to the PR Team dashboard, including view and edit rights.',
+      },
+      {
         label: 'Edit Total Valid Weekly Summaries',
         key: 'totalValidWeeklySummaries',
         description: 'Gives permission to edit total valid weekly summaries count under reports',
@@ -165,12 +170,6 @@ export const permissionLabels = [
           'Gives the user permission to update the password of any user but Owner/Admin classes. ',
       },
       {
-        label: 'Reset / Change Password (Others)',
-        key: 'resetPassword',
-        description:
-          'Gives the user permission to Reset and/or Change the password of any user but Owner/Admin classes. ',
-      },
-      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
@@ -244,6 +243,12 @@ export const permissionLabels = [
         key: 'deleteWarningTracker',
         description: 'Gives user permission to delete a warning tracker from the system.',
       },
+      {
+        label: 'Blue Square Email Management',
+        key: 'resendBlueSquareAndSummaryEmails',
+        description:
+          'Gives the user permission to access Blue Square Email Management and resend infringement emails and weekly summary emails.',
+      },
     ],
   },
   {
@@ -273,6 +278,12 @@ export const permissionLabels = [
         key: 'deleteBadges',
         description:
           'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
+      },
+      {
+        label: 'Modify Badge Amount',
+        key: 'modifyBadgeAmount',
+        description:
+          'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
       },
       {
         label: 'Assign Badges',
@@ -595,6 +606,12 @@ export const permissionLabels = [
         key: 'seeUsersInDashboard',
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
+      {
+        label: 'Access HGN Skills Dashboard',
+        key: 'accessHgnSkillsDashboard',
+        description:
+          'Lets the user access the HGN skills dashboard, which provides insights into user skills and competencies.',
       },
     ],
   },

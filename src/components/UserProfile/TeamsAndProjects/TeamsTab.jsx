@@ -35,6 +35,12 @@ function TeamsTab(props) {
   const [removedTeams, setRemovedTeams] = useState([]);
 
   useEffect(() => {
+    if (typeof fetchTeamCodeAllUsers === 'function') {
+      fetchTeamCodeAllUsers();
+    }
+  }, []);
+
+  useEffect(() => {
     if (saved && removedTeams.length > 0) {
       removedTeams.forEach(teamId => {
         deleteTeamMember(teamId, userProfile._id);
@@ -59,6 +65,7 @@ function TeamsTab(props) {
       toast.success('Team Deleted successfully');
       onDeleteTeam(teamId);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error deleting team:', error);
       toast.error('Failed to delete team');
     }
@@ -72,6 +79,7 @@ function TeamsTab(props) {
       onAssignTeam(team);
       toast.success('Team assigned successfully');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error assigning team:', error);
       toast.error('Failed to assign team');
     }
