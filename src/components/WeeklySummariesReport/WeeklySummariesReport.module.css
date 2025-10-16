@@ -141,31 +141,7 @@
   display: flex;
   justify-content: flex-end;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 16px; /* spacing */
 }
-
-.colorRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.bulkDot {
-  display: inline-block;
-  width: 15px;
-  height: 15px;
-  border: 3px solid;
-  border-radius: 50%;
-  cursor: pointer;
-  background: transparent;
-  transition: background 0.2s ease;
-}
-
-.bulkDot.active {
-  background: currentColor;
-}
-
 .filterContainerTeamcode {
   display: flex;
   justify-content: space-between;
@@ -177,11 +153,7 @@
   display: flex;
   align-items: center;
 }
-.filterLabel {
-  font-size: 13px;   /* same as Filter by Special Colors */
-  font-weight: 500;
-  color: #333;
-}
+
 
 .marginRight {
   margin-right: 20px;
@@ -196,7 +168,29 @@
   color: red;
 }
 
-@media screen and (max-width: 544px) {
+/* @media screen and (max-width: 544px) {
+  .responsive-font-size {
+    font-size: 0.75rem !important;
+  }
+} */
+
+.mx-max-sm-0 {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+@media screen and (max-width: 576px) {
+  .responsiveFontSize {
+    font-size: 0.3rem !important;
+  }  
+
+  .px-max-sm-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+}
+/* @media screen and (max-width: 544px) {
   .responsiveFontSize {
     font-size: 0.75rem !important;
   }
@@ -221,7 +215,7 @@
   .switchToggleControl{
     width: 40px;
   }
-}
+} */
 
 @media (min-width: 482px) {
   .teamcodeWrapper {
