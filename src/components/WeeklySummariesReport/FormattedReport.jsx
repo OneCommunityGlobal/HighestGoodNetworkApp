@@ -439,9 +439,8 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange, darkMode 
                 if (e.target.value !== teamCode) handleCodeChange(e);
               }}
               placeholder="X-XXX"
-              className={`${styles.weeklySummariesCodeInput} ${
-                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
-              }`}
+              className={`${styles.weeklySummariesCodeInput} ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+                }`}
             />
           </div>
         ) : (
@@ -674,9 +673,9 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
 
   const googleDocLink = Array.isArray(summary?.adminLinks)
     ? summary.adminLinks.reduce((targetLink, currentElement) => {
-        if (currentElement?.Name === 'Google Doc') targetLink = currentElement.Link;
-        return targetLink;
-      }, undefined)
+      if (currentElement?.Name === 'Google Doc') targetLink = currentElement.Link;
+      return targetLink;
+    }, undefined)
     : undefined;
 
   const summarySubmissionDate = moment().tz('America/Los_Angeles').endOf('week').subtract(weekIndex, 'week').format('YYYY-MM-DD');
@@ -704,7 +703,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpec
         style={{
           color:
             currentDate.isSameOrAfter(moment(summary?.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-            currentDate.isBefore(moment(summary?.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              currentDate.isBefore(moment(summary?.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
               : '#007BFF',
         }}

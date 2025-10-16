@@ -29,7 +29,7 @@ import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
 import TaskChangeLogModal from './components/TaskChangeLogModal';
 import * as messages from '../../constants/followUpConstants';
-import UserStateManager from "~/components/UserState/UserStateManager";
+import UserStateManager from '~/components/UserState/UserStateManager';
 import { updateUserStateIndicators } from "../UserState/action";
 import {
   selectUserStateCatalog,
@@ -489,11 +489,11 @@ const TeamMemberTask = React.memo(
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                             <div style={{ marginTop: "29px", marginLeft: "-70px" }}>
                               <UserStateManager
-  userId={user.personId}
-  canEdit={canEdit}
-  user={user}
-  initialSelections={initialSelected}
-/>
+                                userId={user.personId}
+                                canEdit={canEdit}
+                                user={user}
+                                initialSelections={initialSelected}
+                              />
                             </div>
                           </td>
                         </tr>
@@ -509,15 +509,13 @@ const TeamMemberTask = React.memo(
                               return (
                                 <tr
                                   key={`${task._id}`}
-                                  className={`${styles['task-break']} ${
-                                    darkMode ? 'bg-yinmn-blue' : ''
-                                  }`}
+                                  className={`${styles['task-break']} ${darkMode ? 'bg-yinmn-blue' : ''
+                                    }`}
                                 >
                                   <td
                                     data-label="Task(s)"
-                                    className={`${styles['task-align']} ${
-                                      darkMode ? 'bg-yinmn-blue text-light' : ''
-                                    }`}
+                                    className={`${styles['task-align']} ${darkMode ? 'bg-yinmn-blue text-light' : ''
+                                      }`}
                                   >
                                     <div className={styles['team-member-tasks-content']}>
                                       <Link
@@ -598,9 +596,8 @@ const TeamMemberTask = React.memo(
                                   {task.hoursLogged != null && task.estimatedHours != null && (
                                     <td
                                       data-label="Progress"
-                                      className={`${styles['team-task-progress']} ${
-                                        darkMode ? 'bg-yinmn-blue text-light' : ''
-                                      }`}
+                                      className={`${styles['team-task-progress']} ${darkMode ? 'bg-yinmn-blue text-light' : ''
+                                        }`}
                                     >
                                       {isAllowedToSeeDeadlineCount && (
                                         <span
@@ -624,11 +621,10 @@ const TeamMemberTask = React.memo(
                                       <div className={styles['team-task-progress-container']}>
                                         <span
                                           data-testid={`times-${task.taskName}`}
-                                          className={`${darkMode ? 'text-light ' : ''} ${
-                                            canSeeFollowUpCheckButton
+                                          className={`${darkMode ? 'text-light ' : ''} ${canSeeFollowUpCheckButton
                                               ? styles['team-task-progress-time']
                                               : styles['team-task-progress-time-volunteers']
-                                          }`}
+                                            }`}
                                         >
                                           {`${parseFloat(
                                             task.hoursLogged.toFixed(2),
@@ -707,9 +703,8 @@ const TeamMemberTask = React.memo(
                       {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
                         <button
                           type="button"
-                          className={`${styles['expand-time-off-detail-button']} ${
-                            isTimeOffContentOpen ? styles.hidden : ''
-                          }`}
+                          className={`${styles['expand-time-off-detail-button']} ${isTimeOffContentOpen ? styles.hidden : ''
+                            }`}
                           onClick={() => setIsTimeOffContentOpen(true)}
                           aria-label="Expand time off detail"
                         >

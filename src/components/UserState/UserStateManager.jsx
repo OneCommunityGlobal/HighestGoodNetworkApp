@@ -42,7 +42,7 @@ export default function UserStateManager({ userId, canEdit, user, initialSelecti
       if (instance && typeof instance.get === 'function') {
         return instance;
       }
-    } catch {}
+    } catch { }
     return {
       get: async () => ({ data: { selections: [] } }),
       post: async () => ({ data: {} }),
