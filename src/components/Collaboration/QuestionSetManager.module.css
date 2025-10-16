@@ -12,6 +12,17 @@
   color: #333;
 }
 
+.error-message {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  border: 1px solid #f8bbd9;
+}
+
+
+
 .templateActions {
   display: flex;
   flex-wrap: wrap;
@@ -91,4 +102,50 @@
     flex-direction: column;
   }
 } 
+.questionSetManager.darkMode {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  color: #f1f1f1;
+  border-color: #333;
+}
 
+.questionSetManager.darkMode h3 {
+  color: #e0e0e0;
+}
+
+.questionSetManager.darkMode input,
+.questionSetManager.darkMode select {
+  background-color: #1C1C1C;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+.questionSetManager.darkMode input::placeholder {
+  color: #f1f1f1;
+}
+
+.questionSetManager.darkMode .saveTemplateButton,
+.questionSetManager.darkMode .loadTemplateButton,
+.questionSetManager.darkMode .appendTemplateButton,
+.questionSetManager.darkMode .deleteTemplateButton {
+  background-color: #333;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+.questionSetManager.darkMode .saveTemplateButton:hover,
+.questionSetManager.darkMode .loadTemplateButton:hover,
+.questionSetManager.darkMode .appendTemplateButton:hover {
+  background-color: #555;
+}
+
+.questionSetManager.darkMode .deleteTemplateButton {
+  background-color: #d32f2f;
+}
+
+.questionSetManager.darkMode .deleteTemplateButton:hover {
+  background-color: #b71c1c;
+}
+
+.questionSetManager.darkMode .errorMessage {
+  color: #ff6b6b;
+}
