@@ -7,7 +7,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
-import './UserRoleTab.css';
+import styles from './UserRoleTab.module.css';
 
 function PermissionListItem(props) {
   const {
@@ -172,7 +172,11 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li
+        className={`${styles['user-role-tab__permissions']}`}
+        key={permission}
+        data-testid={permission}
+      >
         <p
           style={{
             color: isCategory
@@ -189,12 +193,12 @@ function PermissionListItem(props) {
             fontSize: isCategory && '20px',
             textIndent: `${50 * depth}px`,
           }}
-          className="permission-label"
+          className={styles['permission-label']}
         >
           {label}
         </p>
-        <div className="icon-button-container">
-          <div className="infos">
+        <div className={styles['icon-button-container']}>
+          <div className={styles['infos']}>
             <i
               data-toggle="tooltip"
               data-placement="center"
@@ -211,7 +215,7 @@ function PermissionListItem(props) {
             <></>
           ) : isCategory ? (
             <Button
-              className="icon-button"
+              className={styles['icon-button']}
               color={
                 howManySubpermsInRole === 'All'
                   ? 'danger'
@@ -233,7 +237,7 @@ function PermissionListItem(props) {
             </Button>
           ) : (
             <Button
-              className="icon-button"
+              className={styles['icon-button']}
               color={hasThisPermission ? 'danger' : 'success'}
               onClick={() => {
                 togglePermission(permission);
@@ -259,7 +263,7 @@ function PermissionListItem(props) {
       </li>
       {isCategory ? (
         <li
-          className="user-role-tab__permissionList"
+          className={styles['user-role-tab__permissionList']}
           style={{
             display: 'flex',
             flexDirection: 'column',
@@ -284,14 +288,21 @@ function PermissionListItem(props) {
         isOpen={infoRoleModal}
         toggle={toggleInfoRoleModal}
         id="#modal2-body_new-role--padding"
-        className={darkMode ? 'text-light dark-mode' : ''}
+        className={darkMode ? `${styles['text-light']} ${styles['dark-mode']}` : ''}
       >
-        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+        <ModalHeader
+          toggle={toggleInfoRoleModal}
+          className={darkMode ? styles['bg-space-cadet'] : ''}
+        >
           Permission Info
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+        <ModalBody className={darkMode ? styles['bg-yinmn-blue'] : ''}>{modalContent}</ModalBody>
+        <ModalFooter className={darkMode ? styles['bg-yinmn-blue'] : ''}>
+          <Button
+            onClick={toggleInfoRoleModal}
+            color="secondary"
+            className={`${styles['float-left']}`}
+          >
             {' '}
             Ok{' '}
           </Button>

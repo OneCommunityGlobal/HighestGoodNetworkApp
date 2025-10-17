@@ -5,6 +5,7 @@ import { connect, useDispatch } from 'react-redux';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
+import styles from './PermissionsManagement.module.css';
 
 function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
@@ -12,20 +13,26 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   const [isValidRole, setIsValidRole] = useState(true);
   const [isNotDuplicateRole, setIsNotDuplicateRole] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const noSymbolsRegex = /^([a-zA-Z0-9 ]+)$/;
   const dispatch = useDispatch();
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     if (newRoleName.trim() === '') {
       toast.error('Please enter a role name');
+      setIsSubmitting(false);
     } else if (permissionsChecked.length === 0) {
       toast.error('Please select at least one permission');
+      setIsSubmitting(false);
     } else if (!isValidRole) {
       toast.error('Please enter a valid role name');
+      setIsSubmitting(false);
     } else if (!isNotDuplicateRole) {
       toast.error('Please enter a non duplicate role name');
+      setIsSubmitting(false);
     } else {
       const newRoleObject = {
         roleName: newRoleName,
@@ -38,6 +45,7 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
       } else {
         toast.error(`Error: ${response?.status || 'Unknown error'}`);
       }
+      setIsSubmitting(false);
       toggle();
     }
   };
@@ -80,46 +88,69 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   };
 
   return (
-    <Form id="createRole" onSubmit={handleSubmit}>
-      <FormGroup>
-        <Label className={darkMode ? 'text-light' : ''}>
-          Role Name<span className="red-asterisk">* </span>:
-        </Label>
-        <Input
-          placeholder="Please enter a new role name"
-          value={newRoleName}
-          onChange={handleRoleName}
-          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-        />
-        {isValidRole === false || isNotDuplicateRole === false ? (
-          <Alert className="createRole__alert" color="danger">
-            {errorMessage}
-          </Alert>
-        ) : null}
-      </FormGroup>
+    <>
+      {isSubmitting && (
+        <div className={`${styles['modal-loader-overlay']} ${darkMode ? styles['dark-mode'] : ''}`}>
+          <div className={styles['modal-loader-spinner']}>
+            <div className="spinner-border text-primary" role="status">
+              <span className="sr-only">Creating role...</span>
+            </div>
+            <p className={`${styles['modal-loader-text']} ${darkMode ? styles['text-light'] : ''}`}>
+              Creating role...
+            </p>
+          </div>
+        </div>
+      )}
+      <Form id="createRole" onSubmit={handleSubmit}>
+        <div className={styles['user-search-container']}>
+          <FormGroup>
+            <Label className={darkMode ? styles['text-light'] : ''}>
+              Role Name<span className="red-asterisk">* </span>:
+            </Label>
+            <Input
+              placeholder="Please enter a new role name"
+              value={newRoleName}
+              onChange={handleRoleName}
+              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+            />
+            {isValidRole === false || isNotDuplicateRole === false ? (
+              <Alert className={styles['createRole__alert']} color="danger">
+                {errorMessage}
+              </Alert>
+            ) : null}
+          </FormGroup>
+        </div>
 
-      <FormGroup>
-        <Label className={darkMode ? 'text-light' : ''}>
-          Permissions<span className="red-asterisk">* </span>:
-        </Label>
-        <PermissionList
-          rolePermissions={permissionsChecked}
-          editable
-          setPermissions={setPermissionsChecked}
-          darkMode={darkMode}
-        />
-      </FormGroup>
-      <Button
-        type="submit"
-        id="createRole"
-        color="primary"
-        size="lg"
-        block
-        style={darkMode ? boxStyleDark : boxStyle}
-      >
-        Create
-      </Button>
-    </Form>
+        <div className={styles['modal-permission-list-container']}>
+          <Label
+            className={`${styles['user-permissions-pop-up__title']} ${
+              darkMode ? styles['text-light'] : ''
+            }`}
+          >
+            Permissions<span className="red-asterisk">* </span>:
+          </Label>
+          <div style={{ flex: 1, overflow: 'auto' }}>
+            <PermissionList
+              rolePermissions={permissionsChecked}
+              editable
+              setPermissions={setPermissionsChecked}
+              darkMode={darkMode}
+            />
+          </div>
+        </div>
+
+        <Button
+          type="submit"
+          id="createRole"
+          color="primary"
+          size="lg"
+          block
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Create
+        </Button>
+      </Form>
+    </>
   );
 }
 
