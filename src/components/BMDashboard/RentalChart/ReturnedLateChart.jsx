@@ -15,6 +15,7 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { useSelector } from 'react-redux';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ChartDataLabels);
@@ -33,6 +34,8 @@ export default function ReturnedLateChart() {
   });
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [rawToolsData, setRawToolsData] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  console.log(darkMode, 'daa');
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -124,8 +127,10 @@ export default function ReturnedLateChart() {
     fetchData();
   }, [selectedProject, dateRange, selectedTools]);
 
-  const options = useMemo(
-    () => ({
+  const options = useMemo(() => {
+    const textColor = darkMode ? '#fff' : '#333';
+    const datalabelCOlor = darkMode ? '#fff' : '#111';
+    return {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
@@ -138,7 +143,7 @@ export default function ReturnedLateChart() {
           align: 'top',
           offset: 4,
           formatter: value => `${Number(value).toFixed(0)}%`,
-          color: '#111',
+          color: datalabelCOlor,
           font: { weight: 'bold' },
         },
         tooltip: {
@@ -156,7 +161,10 @@ export default function ReturnedLateChart() {
             display: true,
             text: 'Tool Name',
             font: { size: 16, weight: 'bold' },
-            color: '#333',
+            color: textColor,
+          },
+          ticks: {
+            color: textColor,
           },
         },
         y: {
@@ -165,15 +173,17 @@ export default function ReturnedLateChart() {
             display: true,
             text: 'Percent of tools returned late',
             font: { size: 16, weight: 'bold' },
-            color: '#333',
+            color: textColor,
           },
-          ticks: { callback: v => `${v}%` },
+          ticks: {
+            color: textColor,
+            callback: v => `${v}%`,
+          },
           max: Math.max(...(chartData.datasets[0]?.data || [0])) * 1.15,
         },
       },
-    }),
-    [chartData],
-  );
+    };
+  }, [chartData, darkMode]);
 
   const handleProjectChange = e => setSelectedProject(e.target.value);
   const handleStartDateChange = date =>
@@ -183,13 +193,17 @@ export default function ReturnedLateChart() {
       startDate: prev.startDate > date ? date : prev.startDate,
       endDate: date,
     }));
+  const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
 
   return (
-    <div className="returned-late-chart">
-      <h1>Percent of Tools Returned Late</h1>
+    <div className={`returned-late-chart ${isOxfordBlue} `}>
+      <h1 className={darkMode ? `text-white` : ``}>Percent of Tools Returned Late</h1>
       <div className="returned-late-filters">
         <div className="returned-late-filter-group">
-          <label htmlFor="project-select" className="returned-late-filter-label">
+          <label
+            htmlFor="project-select"
+            className={`returned-late-filter-label ${darkMode ? 'text-white' : ''}`}
+          >
             Project:
           </label>
           <select
@@ -207,7 +221,10 @@ export default function ReturnedLateChart() {
           </select>
         </div>
         <div className="returned-late-filter-group">
-          <label htmlFor="tools-select" className="returned-late-filter-label">
+          <label
+            htmlFor="tools-select"
+            className={`returned-late-filter-label ${darkMode ? 'text-white' : ''}`}
+          >
             Tools:
           </label>
           <div id="tools-select" className="returned-late-tools-select">
@@ -220,7 +237,10 @@ export default function ReturnedLateChart() {
           </div>
         </div>
         <div className="returned-late-filter-group">
-          <label htmlFor="start-date-picker" className="returned-late-filter-label">
+          <label
+            htmlFor="start-date-picker"
+            className={`returned-late-filter-label ${darkMode ? 'text-white' : ''}`}
+          >
             From:
           </label>
           <DatePicker
@@ -231,7 +251,10 @@ export default function ReturnedLateChart() {
           />
         </div>
         <div className="returned-late-filter-group">
-          <label htmlFor="end-date-picker" className="returned-late-filter-label">
+          <label
+            htmlFor="end-date-picker"
+            className={`returned-late-filter-label ${darkMode ? 'text-white' : ''}`}
+          >
             To:
           </label>
           <DatePicker
@@ -242,11 +265,17 @@ export default function ReturnedLateChart() {
           />
         </div>
       </div>
-      <div className="returned-late-chart-container">
-        {loading && <div className="returned-late-loading">Loading...</div>}
-        {error && <div className="returned-late-error">{error}</div>}
+      <div className="returned-late-chart-container text-white">
+        {loading && (
+          <div className={`returned-late-loading ${darkMode ? 'text-white' : ''}`}>Loading...</div>
+        )}
+        {error && (
+          <div className={`returned-late-error ${darkMode ? 'text-white' : ''}`}>{error}</div>
+        )}
         {!loading && !error && chartData.labels.length === 0 && (
-          <div className="returned-late-no-data">No data for selected filters</div>
+          <div className={`returned-late-no-data ${darkMode ? 'text-white' : ''}`}>
+            No data for selected filters
+          </div>
         )}
         {!loading && !error && chartData.labels.length > 0 && (
           <Bar ref={chartRef} data={chartData} options={options} />
