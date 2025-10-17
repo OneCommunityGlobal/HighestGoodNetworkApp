@@ -35,7 +35,6 @@ export default function ReturnedLateChart() {
   const [chartData, setChartData] = useState({ labels: [], datasets: [] });
   const [rawToolsData, setRawToolsData] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
-  console.log(darkMode, 'daa');
 
   useEffect(() => {
     const fetchInitial = async () => {

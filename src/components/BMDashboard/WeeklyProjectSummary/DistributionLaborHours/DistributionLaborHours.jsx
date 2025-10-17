@@ -120,6 +120,7 @@ export default function DistributionLaborHours() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
+                /* eslint-disable no-alert */
                 onClick={data => alert(`Drilldown for: ${data.name}`)}
               >
                 {filteredData.map((entry, index) => (
