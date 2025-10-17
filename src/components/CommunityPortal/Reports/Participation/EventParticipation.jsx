@@ -4,7 +4,7 @@ import { useRef, useState, useCallback } from 'react';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
-import './Participation.css';
+import styles from './Participation.module.css';
 
 function EventParticipation() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -18,8 +18,8 @@ function EventParticipation() {
 
     document.documentElement.setAttribute('data-exporting', 'true');
 
-    // Expand “More” so all visible items are included
-    const moreBtn = document.querySelector('.more-btn');
+    // Expand "More" so all visible items are included - use global class
+    const moreBtn = document.querySelector('.more-btn-global');
     const toggled = moreBtn && moreBtn.textContent?.toLowerCase().includes('more');
     if (toggled) moreBtn.click();
 
@@ -35,28 +35,34 @@ function EventParticipation() {
         document.title = prevTitle;
         setExporting(false);
       }, 100);
-    }, 50);
+    }, 500); // Increased timeout to ensure styles are applied
   }, [exporting]);
 
   return (
     <div
       ref={exportRef}
-      className={`participation-landing-page ${darkMode ? 'participation-landing-page-dark' : ''}`}
+      className={`participation-landing-page-global ${styles.participationLandingPage} ${
+        darkMode ? styles.participationLandingPageDark : ''
+      }`}
     >
       {/* Print-only page title header */}
-      <div className="print-only print-header">
-        <div className="print-header-title">Social And Recreational Management</div>
-        <div className="print-header-subtitle">Event Participation</div>
+      <div className={`${styles.printOnly} ${styles.printHeader}`}>
+        <div className={styles.printHeaderTitle}>Social And Recreational Management</div>
+        <div className={styles.printHeaderSubtitle}>Event Participation</div>
       </div>
 
-      <header className="landing-page-header-container avoid-break no-print-gap">
-        <h1 className={`landing-page-header ${darkMode ? 'landing-page-header-dark' : ''}`}>
+      <header
+        className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
+      >
+        <h1
+          className={`${styles.landingPageHeader} ${darkMode ? styles.landingPageHeaderDark : ''}`}
+        >
           Social And Recreational Management
         </h1>
         <button
-          className={`save-pdf-btn ${
-            darkMode ? 'save-pdf-btn-dark' : 'save-pdf-btn-light'
-          } no-print`}
+          className={`${styles.savePdfBtn} ${
+            darkMode ? styles.savePdfBtnDark : styles.savePdfBtnLight
+          } ${styles.noPrint}`}
           onClick={handleSaveAsPDF}
           disabled={exporting}
           aria-busy={exporting}
@@ -67,13 +73,15 @@ function EventParticipation() {
 
       <MyCases />
 
-      <div className="analytics-section">
+      <div className={styles.analyticsSection}>
         <DropOffTracking />
         <NoShowInsights />
       </div>
 
       {/* Print-only footer note */}
-      <div className="print-only print-footer">Generated from Event Participation</div>
+      <div className={`${styles.printOnly} ${styles.printFooter}`}>
+        Generated from Event Participation
+      </div>
     </div>
   );
 }
