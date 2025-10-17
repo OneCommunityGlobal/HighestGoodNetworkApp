@@ -1,0 +1,56 @@
+.issueChartEventContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tileRow {
+  display: flex; 
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 16px;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+
+.tile {
+  flex: 1;
+  background: #fff;
+  border-radius: 8px;
+  text-align: center;
+  padding: 16px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.tile h3 {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.tile p {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #007bff;
+  margin: 0;
+}
+
+.chartWrapper {
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
