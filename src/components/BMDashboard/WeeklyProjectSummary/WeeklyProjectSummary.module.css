@@ -88,13 +88,6 @@
 }
 
 /* ---------------- DASHBOARD ---------------- */
-.weeklyProjectSummaryDashboardContainer {
-  width: 95%;
-  margin: auto;
-  padding: 20px;
-  background: var(--bg-color);
-  color: var(--text-color);
-}
 
 .weeklyProjectSummaryDashboardGrid {
   display: grid;
@@ -284,15 +277,6 @@
   color: var(--text-color);
 }
 
-.weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
-}
-
-.weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
-}
-
-/* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important; /* Limit to 80% of viewport height */
   overflow-y: auto !important; /* Enable vertical scrolling */
@@ -315,11 +299,6 @@
 }
 
 /* Support for Firefox */
-.quantityOfMaterialsUsedChartTooltip {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
-}
-
 /* Additional adjustments for dark mode if needed */
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
@@ -409,16 +388,6 @@
 }
 
 /* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
-.projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1600px;
-  margin: auto;
-}
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
@@ -434,7 +403,7 @@
 
 .weeklyCardTitle {
   color: #000;
-  font-size: 24px;
+  font-size: clamp(14px, 1.4vw, 18px);
   font-weight: 600;
 }
 

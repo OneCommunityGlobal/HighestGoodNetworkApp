@@ -4,7 +4,7 @@ import './ReportCharts.css';
 import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
-import '../../../common/PieChart/PieChart.css';
+import '../../../common/PieChart/PieChart.module.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
 function TeamReportCharts({
