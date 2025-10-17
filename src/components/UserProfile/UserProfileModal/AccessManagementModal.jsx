@@ -353,7 +353,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_CREATE_ADD;
           payload = {
-            folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
+            folderName: `${userProfile.firstName} ${userProfile.lastName}`,
             teamFolderKey: selectedTeamFolder,
             targetUser: { targetUserId, email },
           };
@@ -528,7 +528,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
               {isDropbox && !teamFoldersLoading && selectedTeamFolder && isCredentialValid && (
                 <div className="text-info small mb-2">
                   <FontAwesomeIcon icon={faFolder} className="mr-1" />
-                  <strong>User folder name to be created:</strong> {userProfile?.firstName}{' '}
+                  <strong>User Folder Name:</strong> {userProfile?.firstName}{' '}
                   {userProfile?.lastName}
                 </div>
               )}
