@@ -37,22 +37,34 @@ const COLORS = {
 };
 
 export default function ProjectStatus() {
-  const token = localStorage.getItem('token') || null;
-
   const [from, setFrom] = useState(null);
   const [to, setTo] = useState(null);
   const [data, setData] = useState(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
 
+  // Secure token retrieval with error handling
+  const getToken = () => {
+    try {
+      return localStorage.getItem('token') || null;
+    } catch (e) {
+      console.warn('Failed to retrieve token from localStorage:', e);
+      return null;
+    }
+  };
+
   const load = async (opts = {}) => {
     setPending(true);
     setError('');
     try {
+      const token = getToken();
+      if (!token) {
+        throw new Error('Authentication token not found. Please log in again.');
+      }
       const res = await fetchProjectStatusSummary({ ...opts, token });
       setData(res);
     } catch (e) {
-      setError(e.message || 'Failed to load');
+      setError(e.message || 'Failed to load project status data');
     } finally {
       setPending(false);
     }
@@ -147,8 +159,25 @@ export default function ProjectStatus() {
           </div>
         </div>
 
+        {/* Loading State */}
+        {pending && (
+          <div className={styles.loading}>
+            <div className={styles.loadingText}>Loading project status...</div>
+          </div>
+        )}
+
+        {/* Error State */}
+        {error && (
+          <div className={styles.error}>
+            <div className={styles.errorText}>{error}</div>
+            <button className={`${styles.btn} ${styles.btnSecondary}`} onClick={() => load({})}>
+              Retry
+            </button>
+          </div>
+        )}
+
         {/* Chart + Legend */}
-        {!pending && !error && (
+        {!pending && !error && data && (
           <>
             <div className={styles.chartWrapper}>
               <Doughnut data={chartData} options={chartOptions} />
