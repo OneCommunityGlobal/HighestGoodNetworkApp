@@ -31,10 +31,7 @@ const badgeInitial = {
 export const badgeReducer = (state = badgeInitial, action) => {
   switch (action.type) {
     case GET_ALL_BADGE_DATA:
-      return {
-        ...state,
-        allBadgeData: action.allBadges || [],
-      };
+      return { ...state, allBadgeData: action.allBadges };
     case ADD_SELECT_BADGE:
       return {
         ...state,

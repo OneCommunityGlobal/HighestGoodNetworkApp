@@ -7,7 +7,7 @@ import { useDispatch, useSelector, connect } from 'react-redux';
 import { MultiSelect } from 'react-multi-select-component';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
-import styles from './style.module.css';
+import './style.css';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import axios from 'axios';
@@ -37,17 +37,17 @@ const TeamMemberTasks = React.memo(props => {
 
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
-  const [finishLoading, setFinishLoading] = useState(false);
-  const [clickedToShowModal, setClickedToShowModal] = useState(false);
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState('');
   const [tasks, setTasks] = useState();
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
+  const [clickedToShowModal, setClickedToShowModal] = useState(false);
   const [teamList, setTeamList] = useState([]);
   const [timeEntriesList, setTimeEntriesList] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
+  const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
@@ -85,6 +85,7 @@ const TeamMemberTasks = React.memo(props => {
     const url = ENDPOINTS.TASK_UPDATE(taskInfo.taskId);
     try {
       await axios.put(url, taskInfo.updatedTask);
+      toast.success('Task is successfully marked as done.');
     } catch (error) {
       toast.error('Failed to update task');
     }
@@ -498,11 +499,11 @@ const TeamMemberTasks = React.memo(props => {
   return (
     <div
       data-testid="team-member-tasks-container"
-      className={`container ${styles['team-member-tasks']} ${
+      className={`container team-member-tasks ${
         darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
       }`}
     >
-      <header className={styles['header-box']}>
+      <header className="header-box">
         <section className="d-flex flex-column">
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
 
@@ -510,13 +511,11 @@ const TeamMemberTasks = React.memo(props => {
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
-            <div className={styles['hours-btn-div']}>
+            <div className="hours-btn-div">
               <button
                 type="button"
                 data-testid="show-time-off-btn"
-                className={`m-1 ${styles['show-time-off-btn']} ${
-                  darkMode ? 'box-shadow-dark' : ''
-                }`}
+                className={`m-1 show-time-off-btn${darkMode ? ' box-shadow-dark' : ''}`}
                 style={{
                   backgroundColor: showWhoHasTimeOff ? '#17a2b8' : 'white',
                 }}
@@ -541,7 +540,7 @@ const TeamMemberTasks = React.memo(props => {
                 <button
                   key={days}
                   type="button"
-                  className={`m-1 responsive-btn-size ${styles['circle-border']} ${
+                  className={`m-1 responsive-btn-size circle-border ${
                     darkMode ? 'box-shadow-dark' : 'box-shadow-light'
                   }`}
                   title={`Timelogs submitted in the past ${days} days`}
@@ -564,7 +563,7 @@ const TeamMemberTasks = React.memo(props => {
                 </button>
               ))}
               <select
-                className={`m-1 mobile-view-select ${styles['circle-border']} ${
+                className={`m-1 mobile-view-select circle-border ${
                   darkMode ? 'box-shadow-dark' : ''
                 }`}
                 onChange={e => selectPeriod(e.target.value)}
@@ -679,7 +678,7 @@ const TeamMemberTasks = React.memo(props => {
           </Col>
         </Row>
       )}
-      <div className={styles['task_table-container']}>
+      <div className="task_table-container">
         <Table
           className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}
         >
@@ -690,31 +689,27 @@ const TeamMemberTasks = React.memo(props => {
             <tr>
               <th
                 colSpan={3}
-                className={`${styles['team-member-tasks-headers']} ${
-                  darkMode ? 'bg-space-cadet' : ''
-                }`}
+                className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
               >
                 <Table
                   borderless
                   data-testid="team-member-tasks-subtable"
-                  className={`${styles['team-member-tasks-subtable']} ${
-                    darkMode ? 'text-light' : ''
-                  }`}
+                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
                 >
                   <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
                       <th className={darkMode ? 'bg-space-cadet' : ''}>User Status</th>
                       <th
-                        className={`${styles['team-member-tasks-headers']} ${
-                          styles['team-member-tasks-user-name']
-                        } ${darkMode ? 'bg-space-cadet' : ''}`}
+                        className={`team-member-tasks-headers team-member-tasks-user-name ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
                       >
                         Team Member
                       </th>
                       <th
-                        className={`${styles['team-member-tasks-headers']} team-clocks ${
-                          styles['team-clocks-header']
-                        } ${darkMode ? 'bg-space-cadet' : ''}`}
+                        className={`team-member-tasks-headers team-clocks team-clocks-header ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
                       >
                         <FontAwesomeIcon
                           style={{ color: darkMode ? 'lightgray' : '' }}

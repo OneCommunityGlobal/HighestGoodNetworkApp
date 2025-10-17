@@ -33,7 +33,6 @@ import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
-import teamStyles from '../TeamMemberTasks/style.module.css';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
@@ -725,20 +724,18 @@ const onAssignProject = assignedProject => {
               },
             ];
             toast.success('Blue Square Added!');
-            const updatedInfringements = res.data.infringements;
-
             setOriginalUserProfile({
               ...originalUserProfile,
-              infringements: updatedInfringements,
+              infringements: newBlueSqrs,
             });
             setUserProfile({
               ...userProfile,
-              infringements: updatedInfringements,
+              infringements: newBlueSqrs,
             });
           })
           .catch(error => {
             // eslint-disable-next-line no-console
-            console.log('error in modifying bluesquare', error);
+            console.log('error in modifying bluequare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
@@ -1367,14 +1364,15 @@ const onAssignProject = assignedProject => {
             {canSeeReports && (
               <span className="mr-2">
                 <Link
-                  className={teamStyles["team-member-tasks-user-report-link"]}
+                  className="team-member-tasks-user-report-link"
+                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
                   to={`/peoplereport/${userProfile._id}`}
                   onClick={event => handleReportClick(event, userProfile._id)}
                 >
                   <img
                     src="/report_icon.png"
                     alt="reportsicon"
-                    className={teamStyles["team-member-tasks-user-report-link-image"]}
+                    className="team-member-tasks-user-report-link-image"
                   />
                 </Link>
               </span>
