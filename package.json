@@ -187,7 +187,6 @@
     "sass": "^1.86.3",
     "sass-loader": "^16.0.5",
     "stylelint": "^16.25.0",
-    "stylelint-config-prettier": "^9.0.5",
     "stylelint-config-standard": "^39.0.1",
     "typescript": "^4.8.4",
     "vite": "^6.3.5",

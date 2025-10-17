@@ -9,8 +9,7 @@ function MyCases() {
   const [expanded, setExpanded] = useState(false);
 
   const isExporting =
-    typeof document !== 'undefined' &&
-    document.documentElement.getAttribute('data-exporting') === 'true';
+    typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
 
   const filterEvents = events => {
     const now = new Date();
@@ -47,12 +46,11 @@ function MyCases() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const filteredEvents = filterEvents(mockEvents);
 
-  // When exporting, show ALL events without any limits
-  const visibleEvents = isExporting
-    ? filteredEvents
-    : expanded
-    ? filteredEvents.slice(0, 40)
-    : filteredEvents.slice(0, 10);
+  // Sonar: extract nested ternary into independent statement
+  let visibleEvents = filteredEvents;
+  if (!isExporting) {
+    visibleEvents = expanded ? filteredEvents.slice(0, 40) : filteredEvents.slice(0, 10);
+  }
 
   const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
 

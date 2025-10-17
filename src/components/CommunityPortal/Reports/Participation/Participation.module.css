@@ -479,7 +479,8 @@
   :global(body > *:not(#root)) { display: none !important; }
   :global(#root > *:not(.participation-landing-page-global)) { display: none !important; }
 
-  .participationLandingPage {
+  /* Sonar fix: avoid duplicate selector by scoping the print version */
+  :global(#root) .participationLandingPage {
     max-width: 100% !important;
     margin: 0 !important;
     background: white !important;
@@ -596,7 +597,8 @@
     background: white !important;
   }
   
-  :global(.case-card-global) {
+  /* Sonar fix: avoid duplicate selector by scoping this later rule */
+  :global(#root) .case-card-global {
     background: white !important;
     color: #333 !important;
     border: 1px solid #ddd !important;
@@ -654,22 +656,22 @@
   }
 
   /* Event badge colors for print */
-  :global(.event-badge-global[data-type='Yoga Class']) {
+  :global(.event-badge-global)[data-type='Yoga Class'] {
     background-color: #e9f7ef !important;
     color: #28a745 !important;
   }
 
-  :global(.event-badge-global[data-type='Cooking Workshop']) {
+  :global(.event-badge-global)[data-type='Cooking Workshop'] {
     background-color: #fdecea !important;
     color: #e74c3c !important;
   }
 
-  :global(.event-badge-global[data-type='Dance Class']) {
+  :global(.event-badge-global)[data-type='Dance Class'] {
     background-color: #fff5e6 !important;
     color: #f39c12 !important;
   }
 
-  :global(.event-badge-global[data-type='Fitness Bootcamp']) {
+  :global(.event-badge-global)[data-type='Fitness Bootcamp'] {
     background-color: #f5e6ff !important;
     color: #9b59b6 !important;
   }

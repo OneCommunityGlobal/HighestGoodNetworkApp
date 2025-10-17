@@ -12,26 +12,30 @@ function EventParticipation() {
   const [exporting, setExporting] = useState(false);
 
   const handleSaveAsPDF = useCallback(() => {
-    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    //if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (typeof globalThis.window === 'undefined' || typeof globalThis.document === 'undefined')
+      return;
     if (exporting) return;
     setExporting(true);
 
-    document.documentElement.setAttribute('data-exporting', 'true');
-
+    //document.documentElement.setAttribute('data-exporting', 'true');
+    document.documentElement.dataset.exporting = 'true';
     // Expand "More" so all visible items are included - use global class
     const moreBtn = document.querySelector('.more-btn-global');
-    const toggled = moreBtn && moreBtn.textContent?.toLowerCase().includes('more');
+    // const toggled = moreBtn && moreBtn.textContent?.toLowerCase().includes('more');
+    const toggled = moreBtn?.textContent?.toLowerCase().includes('more') ?? false;
     if (toggled) moreBtn.click();
 
     const prevTitle = document.title;
     document.title = 'event_participation';
 
     setTimeout(() => {
-      window.print();
-
+      //window.print();
+      globalThis.print();
       setTimeout(() => {
         if (toggled) moreBtn.click();
-        document.documentElement.removeAttribute('data-exporting');
+        //document.documentElement.removeAttribute('data-exporting');
+        delete document.documentElement.dataset.exporting;
         document.title = prevTitle;
         setExporting(false);
       }, 100);
