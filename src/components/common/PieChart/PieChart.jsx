@@ -4,7 +4,7 @@ import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
-import './PieChart.css';
+import styles from './PieChart.module.css';
 // import './UserProjectPieChart.css';
 
 export function PieChart({

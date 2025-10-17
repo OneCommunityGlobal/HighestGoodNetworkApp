@@ -5,11 +5,6 @@
   text-shadow: 1px 1px 3px rgba(0,0,0,0.25), 0 0 2px #fff;
 }
 /* Chart title stays white, but chart numbers/labels inside the donut graph are black for better contrast */
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper text,
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer .recharts-wrapper tspan {
-  fill: #000 !important;
-  color: #000 !important;
-}
 /* Chart and graph titles/text should be white in dark mode for visibility */
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer h3,
 .containerTotalOrgWrapper:global(.bg-oxford-blue) .componentContainer p,
@@ -279,56 +274,6 @@
 }
 
 /* Dark mode dropdown consistency */
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-toggle) {
-  background-color: #6f42c1 !important;
-  border-color: #6f42c1 !important;
-}
-
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-menu) {
-  background-color: #1c2541 !important;
-  border-color: #6f42c1 !important;
-}
-
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-item) {
-  background-color: #1c2541 !important;
-  color: #fff !important;
-}
-
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .reportHeaderActions :global(.dropdown-item):hover {
-  background-color: #6f42c1 !important;
-}
-
-/* Component containers - Clean borderless design */
-.componentContainer {
-  margin: 15px 0;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  border: 1.5px solid #e0e0e0;
-  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
-}
-
-.componentBorder {
-  border: 1.5px solid #e0e0e0;
-  border-radius: 10px;
-  box-shadow: 0 4px 16px rgba(37,99,235,0.10), 0 1.5px 4px rgba(0,0,0,0.08);
-  background-color: #fff;
-  overflow: hidden;
-}
-.containerTotalOrgWrapper:global(.bg-oxford-blue) .componentBorder {
-  background-color: #1c2541 !important;
-  border: 1.5px solid #2f4157 !important;
-  box-shadow: 0 4px 24px rgba(255,255,255,0.13), 0 1.5px 4px rgba(255,255,255,0.10) !important;
-}
-
-/* Grid layouts */
-.volunteerStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  width: 100%;
-  margin-top: 15px;
-}
 
 .componentPieChartLabel {
   font-size: 12px;
@@ -340,11 +285,6 @@
 
 .totalOrgChartTitle p {
   font-size: 1.8rem !important;
-  font-weight: bold;
-  text-align: center;
-  margin: 10px;
-  color: #333;
-  line-height: 1.3 !important;
 }
 
 /* Report Header Styles */

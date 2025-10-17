@@ -44,11 +44,9 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.1rem; 
-  padding: 1rem;
-  flex-flow: row wrap;
-  background-color: #9c0;
   padding: 20px;
   flex-flow: row nowrap;
+  background-color: #9c0;
   box-sizing: border-box;
   flex-wrap: wrap;
 }
@@ -133,9 +131,8 @@
 }
 .jobSearchForm input {
   margin-right: 10px;
-  padding: 5px;
+  padding: 8px;
   border: 1px solid #ccc;
-  border-radius: 4px;
   border-radius: 4px;
 }
 .jobPagination button,
@@ -148,8 +145,6 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: background-image 0.2s;
-}
-.jobSelect {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -239,6 +234,7 @@
   border-radius: 2px;
   cursor: pointer;
   font-size: 14px;
+  position: relative;
 }
 
 .jobNoResults h2 {
@@ -249,34 +245,10 @@
   color: #9c0;
 }
 
-.jobNavbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-  padding: 10px;
-  background-color: #9c0;
-}
-
 .jobSearchForm {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.jobSearchForm input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.jobSearchForm button {
-  padding: 6px 10px;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  position: relative;
 }
 
 .jobQuery {

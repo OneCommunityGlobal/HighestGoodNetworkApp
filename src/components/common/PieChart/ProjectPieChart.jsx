@@ -9,7 +9,7 @@ import {
   Label,
 } from 'recharts';
 import { CHART_RADIUS, CHART_SIZE } from './constants'; // use same numbers as the D3 chart
-import './UserProjectPieChart.css';
+import styles from './UserProjectPieChart.module.css';
 
 const BASE_COLORS = [
   '#3366CC',
