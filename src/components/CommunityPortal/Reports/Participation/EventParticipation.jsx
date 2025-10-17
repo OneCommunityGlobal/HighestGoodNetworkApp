@@ -12,17 +12,14 @@ function EventParticipation() {
   const [exporting, setExporting] = useState(false);
 
   const handleSaveAsPDF = useCallback(() => {
-    //if (typeof window === 'undefined' || typeof document === 'undefined') return;
-    if (typeof globalThis.window === 'undefined' || typeof globalThis.document === 'undefined')
-      return;
+    if (globalThis.window === undefined || globalThis.document === undefined) return;
     if (exporting) return;
     setExporting(true);
 
-    //document.documentElement.setAttribute('data-exporting', 'true');
     document.documentElement.dataset.exporting = 'true';
-    // Expand "More" so all visible items are included - use global class
+
+    // Expand "More" so all visible items are included
     const moreBtn = document.querySelector('.more-btn-global');
-    // const toggled = moreBtn && moreBtn.textContent?.toLowerCase().includes('more');
     const toggled = moreBtn?.textContent?.toLowerCase().includes('more') ?? false;
     if (toggled) moreBtn.click();
 
@@ -30,16 +27,16 @@ function EventParticipation() {
     document.title = 'event_participation';
 
     setTimeout(() => {
-      //window.print();
       globalThis.print();
+
       setTimeout(() => {
         if (toggled) moreBtn.click();
-        //document.documentElement.removeAttribute('data-exporting');
+
         delete document.documentElement.dataset.exporting;
         document.title = prevTitle;
         setExporting(false);
       }, 100);
-    }, 500); // Increased timeout to ensure styles are applied
+    }, 500);
   }, [exporting]);
 
   return (

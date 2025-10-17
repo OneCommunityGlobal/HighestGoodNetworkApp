@@ -597,7 +597,7 @@
     background: white !important;
   }
   
-  /* Sonar fix: avoid duplicate selector by scoping this later rule */
+  
   :global(#root) .case-card-global {
     background: white !important;
     color: #333 !important;
