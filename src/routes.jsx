@@ -747,13 +747,11 @@ export default (
           exact
           component={EventParticipation}
         />
-
         <CPProtectedRoute
           path="/communityportal/reports/resourceusage"
           exact
           component={ResourceUsage}
         />
-
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
