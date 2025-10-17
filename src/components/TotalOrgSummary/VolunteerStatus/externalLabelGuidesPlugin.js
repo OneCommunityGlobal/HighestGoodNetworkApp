@@ -60,6 +60,7 @@ const externalLabelGuidesPlugin = {
       sideMap: undefined,
       horizontalSpreadMap: undefined,
       verticalOffsetMap: undefined,
+      containmentPadding: 12,
       total:
         pluginOpts.total ??
         dataset.data.reduce((acc, val) => acc + (typeof val === 'number' ? val : 0), 0),
@@ -137,7 +138,26 @@ const externalLabelGuidesPlugin = {
         boxY = Math.max(minY, Math.min(boxY, maxY));
       }
 
-      const connectorX = direction > 0 ? boxX : boxX + boxWidth;
+      // Keep labels inside the drawable canvas horizontally to avoid clipping
+      const paddingX = Math.max(0, options.containmentPadding || 0);
+      if (chartArea) {
+        const minX = chartArea.left + paddingX;
+        const maxX = chartArea.right - boxWidth - paddingX;
+        if (minX <= maxX) {
+          boxX = Math.min(Math.max(boxX, minX), maxX);
+        }
+      } else if (chart?.width) {
+        const minX = paddingX;
+        const maxX = chart.width - boxWidth - paddingX;
+        if (minX <= maxX) {
+          boxX = Math.min(Math.max(boxX, minX), maxX);
+        }
+      }
+
+      const isRightOfCenter = boxX + boxWidth / 2 >= x;
+      const effectiveDirection = isRightOfCenter ? 1 : -1;
+
+      const connectorX = effectiveDirection > 0 ? boxX : boxX + boxWidth;
       const connectorY = Math.max(boxY + padding.y, Math.min(elbowY, boxY + boxHeight - padding.y));
 
       // Draw guide line
@@ -171,8 +191,8 @@ const externalLabelGuidesPlugin = {
       // Draw text
       ctx.fillStyle = options.lineColor;
       ctx.font = `${options.fontWeight} ${options.fontSize}px ${options.fontFamily}`;
-      ctx.textAlign = direction > 0 ? 'left' : 'right';
-      const textX = direction > 0 ? boxX + padding.x : boxX + boxWidth - padding.x;
+      ctx.textAlign = effectiveDirection > 0 ? 'left' : 'right';
+      const textX = effectiveDirection > 0 ? boxX + padding.x : boxX + boxWidth - padding.x;
       let textY = boxY + padding.y + options.lineHeight / 2;
 
       labelLines.forEach((line, lineIndex) => {

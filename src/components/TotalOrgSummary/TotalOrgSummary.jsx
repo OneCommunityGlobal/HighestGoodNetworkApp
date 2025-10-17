@@ -178,7 +178,7 @@ function TotalOrgSummary(props) {
 
       // 3. Replace Chart.js canvas elements with images in the live DOM.
       const chartCanvases = document.querySelectorAll(
-        '.volunteer-status-chart canvas, .mentor-status-chart canvas',
+        '[data-chart="volunteer-status"] canvas, [data-chart="mentor-status"] canvas',
       );
       const originalCanvases = [];
       chartCanvases.forEach(canvasElem => {
@@ -675,7 +675,11 @@ ${
             </Col>
             <Col lg={{ size: 6 }}>
               <div
-                className={clsx(styles.componentContainer, styles.componentBorder)}
+                className={clsx(
+                  styles.componentContainer,
+                  styles.componentBorder,
+                  styles.componentBorderLoose,
+                )}
                 data-pdf-block
               >
                 <div

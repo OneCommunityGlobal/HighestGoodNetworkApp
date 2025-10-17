@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement } from 'chart.js';
-import './VolunteerStatusPieChart.css';
+import styles from './VolunteerStatusPieChart.module.css';
 import externalLabelGuidesPlugin from './externalLabelGuidesPlugin';
 
 Chart.register(ArcElement);
@@ -68,15 +68,19 @@ function VolunteerStatusPieChart({
   const percentageChangeColor = percentageChange >= 0 ? 'green' : 'red';
 
   return (
-    <section className="volunteer-status-container" aria-label="Volunteer Status Overview">
-      <div className="volunteer-status-chart" role="img" aria-label="Volunteer Status Pie Chart">
+    <section className={styles.volunteerStatusContainer} aria-label="Volunteer Status Overview">
+      <div
+        className={styles.volunteerStatusChart}
+        data-chart="volunteer-status"
+        role="img"
+        aria-label="Volunteer Status Pie Chart"
+      >
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
-        <div className="volunteer-status-center">
-          <h2 className="volunteer-status-heading">TOTAL VOLUNTEERS*</h2>
-          <p className="volunteer-count">{totalVolunteers}</p>
+        <div className={styles.volunteerStatusCenter}>
+          <h2 className={styles.volunteerStatusHeading}>TOTAL VOLUNTEERS*</h2>
+          <p className={styles.volunteerCount}>{totalVolunteers}</p>
           {comparisonType !== 'No Comparison' && (
             <p
-              className="percentage-change"
               style={{ color: percentageChangeColor }}
               aria-label={`Percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
             >
@@ -87,11 +91,11 @@ function VolunteerStatusPieChart({
           )}
         </div>
       </div>
-      <div className="volunteer-status-labels">
+      <div className={styles.volunteerStatusLabels}>
         {volunteerData.map((item, index) => (
-          <div key={item.label} className="volunteer-status-label">
+          <div key={item.label} className={styles.volunteerStatusLabel}>
             <span
-              className="volunteer-status-color"
+              className={styles.volunteerStatusColor}
               style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
               aria-hidden="true"
             />

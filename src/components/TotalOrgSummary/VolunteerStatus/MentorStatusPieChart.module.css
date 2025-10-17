@@ -1,4 +1,4 @@
-.mentor-status-container {
+.mentorStatusContainer {
   margin-top: 24px;
   display: flex;
   flex-direction: column;
@@ -9,15 +9,15 @@
   gap: 12px;
 }
 
-.mentor-status-chart {
+.mentorStatusChart {
   position: relative;
-  width: 100%;
+  width: min(320px, 100%);
   max-width: 320px;
-  height: 320px;
+  aspect-ratio: 1 / 1;
   overflow: visible;
 }
 
-.mentor-status-center {
+.mentorStatusCenter {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -30,7 +30,7 @@
   gap: 6px;
 }
 
-.mentor-status-heading {
+.mentorStatusHeading {
   color: #828282;
   font-size: 1.2rem;
   letter-spacing: 0.5px;
@@ -40,7 +40,7 @@
   text-align: center;
 }
 
-.mentor-status-center .mentor-count {
+.mentorCount {
   color: #6c6c6c;
   font-size: 1.8rem;
   font-weight: 800;
@@ -48,20 +48,20 @@
   margin-top: -10px;
 }
 
-.mentor-status-center .mentor-percentage-change {
+.mentorPercentageChange {
   font-weight: 600;
 }
 
-.mentor-status-labels {
+.mentorStatusLabels {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 16px;
-  margin-top: 60px;
-  flex-wrap: nowrap;
+  margin-top: 28px;
+  flex-wrap: wrap;
 }
 
-.mentor-status-label {
+.mentorStatusLabel {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -69,23 +69,33 @@
   white-space: nowrap;
 }
 
-.mentor-status-color {
+.mentorStatusColor {
   display: inline-block;
   width: 12px;
   height: 12px;
   border-radius: 2px;
 }
 
-@media (max-width: 640px) {
-  .mentor-status-labels {
-    flex-wrap: wrap;
+:global(.bg-oxford-blue) .mentorStatusHeading {
+  color: #f1f5ff;
+}
+
+:global(.bg-oxford-blue) .mentorCount {
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .mentorStatusChart {
+    width: min(280px, 100%);
+  }
+
+  .mentorStatusLabels {
     gap: 12px;
   }
 }
 
 @media (min-width: 768px) {
-  .mentor-status-chart {
+  .mentorStatusChart {
     max-width: 280px;
-    height: 280px;
   }
 }

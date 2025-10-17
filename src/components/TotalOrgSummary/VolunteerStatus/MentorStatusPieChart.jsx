@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart, ArcElement } from 'chart.js';
-import './MentorStatusPieChart.css';
+import styles from './MentorStatusPieChart.module.css';
 import externalLabelGuidesPlugin from './externalLabelGuidesPlugin';
 
 Chart.register(ArcElement);
@@ -52,15 +52,20 @@ function MentorStatusPieChart({
   const percentageChangeColor = percentageChange >= 0 ? 'green' : 'red';
 
   return (
-    <section className="mentor-status-container" aria-label="Mentor Status Overview">
-      <div className="mentor-status-chart" role="img" aria-label="Mentor Status Pie Chart">
+    <section className={styles.mentorStatusContainer} aria-label="Mentor Status Overview">
+      <div
+        className={styles.mentorStatusChart}
+        data-chart="mentor-status"
+        role="img"
+        aria-label="Mentor Status Pie Chart"
+      >
         <Doughnut data={chartData} options={options} plugins={[externalLabelGuidesPlugin]} />
-        <div className="mentor-status-center">
-          <h2 className="mentor-status-heading">TOTAL MENTORS</h2>
-          <p className="mentor-count">{totalMentors}</p>
+        <div className={styles.mentorStatusCenter}>
+          <h2 className={styles.mentorStatusHeading}>TOTAL MENTORS</h2>
+          <p className={styles.mentorCount}>{totalMentors}</p>
           {comparisonType !== 'No Comparison' && (
             <p
-              className="mentor-percentage-change"
+              className={styles.mentorPercentageChange}
               style={{ color: percentageChangeColor }}
               aria-label={`Mentor percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
             >
@@ -71,11 +76,11 @@ function MentorStatusPieChart({
           )}
         </div>
       </div>
-      <div className="mentor-status-labels">
+      <div className={styles.mentorStatusLabels}>
         {mentorData.map((item, index) => (
-          <div key={item.label} className="mentor-status-label">
+          <div key={item.label} className={styles.mentorStatusLabel}>
             <span
-              className="mentor-status-color"
+              className={styles.mentorStatusColor}
               style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
               aria-hidden="true"
             />
