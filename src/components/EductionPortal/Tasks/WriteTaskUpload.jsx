@@ -1,14 +1,17 @@
-// src/components/EducationPortal/Tasks/WriteTaskUpload.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styles from './WriteTaskUpload.module.css';
 import UploadPanel from './UploadPanel';
+import CommentBox from './CommentBox';
+import CommentList from './CommentList';
+import { ToastContainer } from './Toast';
+import useToast from './useToast';
 
-/* ---------- Icons (unchanged) ---------- */
-const Icon = ({ name, className }) => {
+const Icon = ({ name, className, darkMode = false }) => {
   const common = { width: 24, height: 24, viewBox: '0 0 24 24', 'aria-hidden': true };
   const stroke = {
-    stroke: '#000',
+    stroke: darkMode ? '#e0e0e0' : '#000',
     strokeWidth: 2,
     fill: 'none',
     strokeLinecap: 'round',
@@ -120,12 +123,12 @@ const Icon = ({ name, className }) => {
       return null;
   }
 };
-const BellIcon = () => (
+const BellIcon = ({ darkMode = false }) => (
   <svg className={styles.bellIcon} width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
     <path
       d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14v-3a6 6 0 10-12 0v3a2 2 0 0 1-.6 1.4L4 17h5"
       fill="none"
-      stroke="#000"
+      stroke={darkMode ? '#e0e0e0' : '#000'}
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -133,42 +136,32 @@ const BellIcon = () => (
     <path
       d="M13.7 21a2 2 0 0 1-3.4 0"
       fill="none"
-      stroke="#000"
+      stroke={darkMode ? '#e0e0e0' : '#000'}
       strokeWidth="2"
       strokeLinecap="round"
     />
   </svg>
 );
 
-/* ---------- Name helpers (updated) ---------- */
-
-// Normalize to a clean first name.
-// Handles: "Welcome, Rishir", "RishirHello", "RishirHello M", camelCase, extra punctuation.
 function cleanName(raw) {
   let s = String(raw || '').trim();
 
-  // If it looks like "Welcome, XXX", take XXX
   const mWelcome = s.match(/Welcome,\s*([^\s,]+)/i);
   if (mWelcome) s = mWelcome[1];
 
-  // Start with a word-like token
   const word = s.match(/[A-Za-z][A-Za-z'-]*/);
   s = word ? word[0] : s;
 
-  // Remove trailing "Hello" artifacts (e.g., "RishirHello")
   s = s.replace(/Hello.*$/i, '');
 
-  // Split simple CamelCase "RishirHello" => "Rishir"
   const camel = s.match(/^([A-Z][a-z]+)(?=[A-Z][a-z]+)/);
   if (camel) s = camel[1];
 
-  // Final sanitization
   s = s.replace(/[^A-Za-z'-]/g, '').trim();
 
   return s || 'Student Name';
 }
 
-// Read name from URL state/query/localStorage if available
 function resolveUserName(location) {
   const st =
     location?.state?.user?.preferredName ||
@@ -220,15 +213,12 @@ function sniffDomWelcome() {
   return null;
 }
 
-/* ---------- Link helpers ---------- */
 const isValidUrl = v => /^https?:\/\/\S+/i.test(v?.trim() || '');
-
-/* ---------- Component ---------- */
 export default function WriteTaskUpload() {
   const { taskId } = useParams();
   const location = useLocation();
+  const darkMode = useSelector(state => state.theme?.darkMode);
 
-  // Name
   const [userName, setUserName] = useState('Student Name');
   useEffect(() => {
     let name = resolveUserName(location);
@@ -253,7 +243,44 @@ export default function WriteTaskUpload() {
   // Unified items (files + links)
   const [items, setItems] = useState([]);
 
-  // Files added from UploadPanel
+  const { toasts, removeToast, success, error } = useToast();
+
+  const getInitialComments = () => {
+    try {
+      const saved = localStorage.getItem(`task-comments-${taskId}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.map(comment => ({
+          ...comment,
+          createdAt: new Date(comment.createdAt),
+        }));
+      }
+    } catch (err) {
+      console.warn('Failed to load comments from localStorage:', err);
+    }
+
+    return [
+      {
+        id: 1,
+        content: 'Great work on this task! The approach you took is very thorough.',
+        author: 'Prof. Smith',
+        role: 'Educator',
+        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+        edited: false,
+      },
+      {
+        id: 2,
+        content: 'I have a question about the second part of the assignment. Can you clarify?',
+        author: userName,
+        role: 'Student',
+        createdAt: new Date(Date.now() - 30 * 60 * 1000),
+        edited: false,
+      },
+    ];
+  };
+
+  const [comments, setComments] = useState(getInitialComments);
+
   const handleAddFiles = newFiles => {
     setItems(cur => [
       ...cur,
@@ -299,56 +326,116 @@ export default function WriteTaskUpload() {
       .getElementById('upload-dropzone')
       ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
+  const handleCommentSubmit = content => {
+    try {
+      const newComment = {
+        id: Date.now(),
+        content,
+        author: userName,
+        role: 'Student',
+        createdAt: new Date(),
+        edited: false,
+      };
+
+      const updatedComments = [...comments, newComment];
+      setComments(updatedComments);
+
+      localStorage.setItem(`task-comments-${taskId}`, JSON.stringify(updatedComments));
+
+      success('Comment posted successfully!');
+    } catch (err) {
+      error('Failed to post comment. Please try again.');
+    }
+  };
+
+  const handleDeleteComment = commentId => {
+    try {
+      const updatedComments = comments.filter(comment => comment.id !== commentId);
+      setComments(updatedComments);
+
+      localStorage.setItem(`task-comments-${taskId}`, JSON.stringify(updatedComments));
+
+      success('Comment deleted successfully!');
+    } catch (err) {
+      error('Failed to delete comment. Please try again.');
+    }
+  };
+
   return (
-    <div className={styles.page}>
-      {/* LEFT RAIL */}
-      <aside className={styles.leftNav}>
-        <div className={styles.burger} aria-hidden />
+    <div className={`${styles.page} ${darkMode ? styles.pageDark : ''}`}>
+      <aside className={`${styles.leftNav} ${darkMode ? styles.leftNavDark : ''}`}>
+        <div className={`${styles.burger} ${darkMode ? styles.burgerDark : ''}`} aria-hidden />
         <nav className={styles.iconList}>
-          <button className={`${styles.iconBtn} ${styles.active}`} title="Home">
-            <Icon name="home" className={styles.svg} />
+          <button
+            className={`${styles.iconBtn} ${styles.active} ${darkMode ? styles.iconBtnDark : ''}`}
+            title="Home"
+          >
+            <Icon name="home" className={styles.svg} darkMode={darkMode} />
           </button>
-          <button className={styles.iconBtn} title="Stats">
-            <Icon name="stats" className={styles.svg} />
+          <button
+            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
+            title="Stats"
+          >
+            <Icon name="stats" className={styles.svg} darkMode={darkMode} />
           </button>
-          <button className={styles.iconBtn} title="Folder">
-            <Icon name="folder" className={styles.svg} />
+          <button
+            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
+            title="Folder"
+          >
+            <Icon name="folder" className={styles.svg} darkMode={darkMode} />
           </button>
-          <button className={styles.iconBtn} title="Star">
-            <Icon name="star" className={styles.svg} />
+          <button
+            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
+            title="Star"
+          >
+            <Icon name="star" className={styles.svg} darkMode={darkMode} />
           </button>
-          <button className={styles.iconBtn} title="Calendar">
-            <Icon name="calendar" className={styles.svg} />
+          <button
+            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
+            title="Calendar"
+          >
+            <Icon name="calendar" className={styles.svg} darkMode={darkMode} />
           </button>
-          <button className={styles.iconBtn} title="Write">
-            <Icon name="pen" className={styles.svg} />
+          <button
+            className={`${styles.iconBtn} ${darkMode ? styles.iconBtnDark : ''}`}
+            title="Write"
+          >
+            <Icon name="pen" className={styles.svg} darkMode={darkMode} />
           </button>
         </nav>
         <div className={styles.navFooter}>
-          <button className={styles.navAction} title="Settings">
-            <Icon name="settings" className={styles.svg} />
-            <span className={styles.navText}>Settings</span>
+          <button
+            className={`${styles.navAction} ${darkMode ? styles.navActionDark : ''}`}
+            title="Settings"
+          >
+            <Icon name="settings" className={styles.svg} darkMode={darkMode} />
+            <span className={`${styles.navText} ${darkMode ? styles.navTextDark : ''}`}>
+              Settings
+            </span>
           </button>
-          <button className={styles.navAction} title="Log out">
-            <Icon name="logout" className={styles.svg} />
-            <span className={styles.navText}>Log out</span>
+          <button
+            className={`${styles.navAction} ${darkMode ? styles.navActionDark : ''}`}
+            title="Log out"
+          >
+            <Icon name="logout" className={styles.svg} darkMode={darkMode} />
+            <span className={`${styles.navText} ${darkMode ? styles.navTextDark : ''}`}>
+              Log out
+            </span>
           </button>
         </div>
       </aside>
 
-      {/* MAIN */}
-      <main className={styles.main}>
-        <header className={styles.header}>
+      <main className={`${styles.main} ${darkMode ? styles.mainDark : ''}`}>
+        <header className={`${styles.header} ${darkMode ? styles.headerDark : ''}`}>
           <h1>
             Activity - <span style={{ fontWeight: 800 }}>1</span> : Technology, Art, Trades, Health
           </h1>
           <div className={styles.headerRight}>
             <span className={styles.welcome}>Welcome, {userName}</span>
-            <BellIcon />
+            <BellIcon darkMode={darkMode} />
           </div>
         </header>
 
-        {/* Chart */}
         <section className={styles.chart}>
           <div className={styles.chartCard}>
             <img
@@ -360,23 +447,26 @@ export default function WriteTaskUpload() {
           </div>
         </section>
 
-        {/* Two-column layout */}
         <section className={styles.formGrid}>
           <div className={styles.leftColumn}>
-            {/* Unit pills */}
             <section className={styles.unitWrap}>
               <div className={styles.pillRow}>
-                <div className={styles.pillInput}>{unitLabel}</div>
-                <div className={styles.pillInput}>{tradeLabel}</div>
+                <div className={`${styles.pillInput} ${darkMode ? styles.pillInputDark : ''}`}>
+                  {unitLabel}
+                </div>
+                <div className={`${styles.pillInput} ${darkMode ? styles.pillInputDark : ''}`}>
+                  {tradeLabel}
+                </div>
               </div>
             </section>
 
-            {/* Comment + side icons + link field */}
-            <div className={styles.longInputCard}>
+            <div className={`${styles.longInputCard} ${darkMode ? styles.longInputCardDark : ''}`}>
               <div className={styles.longCol}>
                 <textarea
                   ref={commentRef}
-                  className={`${styles.longTextArea} ${errComment ? styles.inputError : ''}`}
+                  className={`${styles.longTextArea} ${errComment ? styles.inputError : ''} ${
+                    darkMode ? styles.longTextAreaDark : ''
+                  }`}
                   placeholder="Trades related trade from the indigo section of the Arts and Trades Subject Page"
                   value={comment}
                   onChange={e => {
@@ -385,7 +475,6 @@ export default function WriteTaskUpload() {
                   }}
                 />
 
-                {/* Error area (red) between textarea and link input */}
                 {(errLink || errComment) && (
                   <div className={styles.fieldErrorGroup}>
                     {errLink && <div>{errLink}</div>}
@@ -397,7 +486,9 @@ export default function WriteTaskUpload() {
                   <input
                     ref={linkRef}
                     type="url"
-                    className={`${styles.linkInput} ${errLink ? styles.inputError : ''}`}
+                    className={`${styles.linkInput} ${errLink ? styles.inputError : ''} ${
+                      darkMode ? styles.linkInputDark : ''
+                    }`}
                     placeholder="Paste a link (include https://)"
                     value={linkUrl}
                     onChange={e => {
@@ -408,10 +499,9 @@ export default function WriteTaskUpload() {
                 )}
               </div>
 
-              {/* Side icon actions */}
               <div className={styles.sideBtns}>
                 <button
-                  className={styles.sideBtn}
+                  className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
                   aria-label="Insert link"
                   onClick={() => {
                     setShowLink(true);
@@ -419,39 +509,38 @@ export default function WriteTaskUpload() {
                   }}
                   title="Add a link"
                 >
-                  <Icon name="link" className={styles.svg} />
+                  <Icon name="link" className={styles.svg} darkMode={darkMode} />
                 </button>
 
                 <button
-                  className={styles.sideBtn}
+                  className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
                   aria-label="Comment"
                   onClick={() => commentRef.current?.focus()}
                   title="Add a comment"
                 >
-                  <Icon name="comment" className={styles.svg} />
+                  <Icon name="comment" className={styles.svg} darkMode={darkMode} />
                 </button>
 
                 <button
-                  className={styles.sideBtn}
+                  className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
                   aria-label="Submit link"
                   onClick={submitLink}
                   title="Upload link"
                 >
-                  <Icon name="upload" className={styles.svg} />
+                  <Icon name="upload" className={styles.svg} darkMode={darkMode} />
                 </button>
 
                 <button
-                  className={styles.sideBtn}
+                  className={`${styles.sideBtn} ${darkMode ? styles.sideBtnDark : ''}`}
                   aria-label="Go to file upload"
                   onClick={scrollToUpload}
                   title="Open file picker"
                 >
-                  <Icon name="folder-line" className={styles.svg} />
+                  <Icon name="folder-line" className={styles.svg} darkMode={darkMode} />
                 </button>
               </div>
             </div>
 
-            {/* File upload panel (drag & drop, browse, progress) */}
             <section className={styles.uploadSection}>
               <UploadPanel
                 id="upload-dropzone"
@@ -492,9 +581,22 @@ export default function WriteTaskUpload() {
                 </div>
               </div>
             )}
+
+            {/* Comments Section */}
+            <section className={styles.commentsSection}>
+              <h2 className={styles.commentsHeading}>Comments/Queries Section</h2>
+              <CommentBox
+                onSubmit={handleCommentSubmit}
+                placeholder="Please enter your comments/Queries here"
+              />
+              <CommentList
+                comments={comments}
+                onDeleteComment={handleDeleteComment}
+                currentUser={userName}
+              />
+            </section>
           </div>
 
-          {/* Progress card */}
           <aside className={styles.progressPane}>
             <div className={styles.progressCard}>
               <h3 className={styles.progressHeading}>Progress Bar</h3>
@@ -520,6 +622,9 @@ export default function WriteTaskUpload() {
           </aside>
         </section>
       </main>
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }
