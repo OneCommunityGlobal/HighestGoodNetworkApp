@@ -61,6 +61,7 @@ import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNew
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
+import IssueGraph from './components/BMDashboard/Issues/IssueGraph';
 
 import FaqSearch from './components/Faq/FaqSearch';
 import FaqManagement from './components/Faq/FaqManagement';
@@ -665,6 +666,7 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/issues/add/:projectId" component={Issue} />
         <BMProtectedRoute path="/bmdashboard/issuechart" component={IssueChart} />
+        <BMProtectedRoute path="/bmdashboard/issueGraph" component={IssueGraph} />
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
         <BMProtectedRoute path="/bmdashboard/issues/" component={IssueDashboard} />
         <BMProtectedRoute
