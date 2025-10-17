@@ -22,8 +22,6 @@ export default function LogItemCard({ row }) {
           <span className={styles.meta}>{date}</span>
         </div>
       </div>
-
-      {/* Pass the entire row to the details page via state */}
       <Link
         to={{
           pathname: `/educationportal/time-logs/${row.entity_id?.replace("time-log-", "") || row.log_id}`,
@@ -32,7 +30,7 @@ export default function LogItemCard({ row }) {
         className={styles.viewBtn}
       >
         <FaEye className={styles.eyeIcon} />
-         &nbsp; View
+        &nbsp; View
       </Link>
     </div>
   );

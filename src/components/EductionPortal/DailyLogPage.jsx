@@ -78,7 +78,6 @@ export default function DailyLogPage() {
     notes: "",
   });
 
-  // ---- stats
   const { totalMin, weekMin, weekCount, activeCourses } = useMemo(() => {
     const now = new Date();
     const weekAgo = new Date(now);
@@ -124,7 +123,7 @@ export default function DailyLogPage() {
         duration: newLog.duration,
         badge: newLog.badge,
         notes: newLog.notes,
-        link: `/time-logs/${id}`,  // "View" will navigate here
+        link: `/time-logs/${id}`,  
       },
       created_at: nowIso,
     };
