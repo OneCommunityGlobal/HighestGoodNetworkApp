@@ -74,7 +74,7 @@ const ExperienceDonutChart = () => {
       if (startDate) params.startDate = startDate.toISOString().split('T')[0];
       if (endDate) params.endDate = endDate.toISOString().split('T')[0];
       if (selectedRoles.length > 0) params.roles = selectedRoles.map(r => r.value).join(',');
-      const res = await axios.get(`${ApiEndpoint}/applicants/experience-breakdown`, {
+      const res = await axios.get(`${ApiEndpoint}/applicant-analytics/experience-breakdown`, {
         params,
       });
       setData(res.data);
@@ -93,7 +93,7 @@ const ExperienceDonutChart = () => {
 
   const fetchAllRoles = async () => {
     try {
-      const res = await axios.get(`${ApiEndpoint}/applicants/experience-roles`);
+      const res = await axios.get(`${ApiEndpoint}/applicant-analytics/experience-roles`);
       const options = res.data.map(role => ({ value: role, label: role }));
       setRoles(options);
     } catch (error) {
