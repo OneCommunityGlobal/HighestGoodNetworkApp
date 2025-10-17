@@ -10,9 +10,6 @@ import {
   CardImg,
   CardText,
   DropdownToggle,
-  Modal,
-  ModalBody,
-  ModalFooter,
   FormGroup,
   UncontrolledDropdown,
   UncontrolledPopover,
@@ -26,16 +23,17 @@ import htmlToPdfmake from 'html-to-pdfmake';
 import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { formatDate } from '~/utils/formatDate';
-import hasPermission from '../../utils/permissions';
-import { changeBadgesByUserID } from '../../actions/badgeManagement';
+import hasPermission from '../../../utils/permissions';
+import { changeBadgesByUserID } from '../../../actions/badgeManagement';
 import './BadgeReport.css';
-import { getUserProfile } from '../../actions/userProfile';
+import { getUserProfile } from '../../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
-import BadgeImage from './BadgeImage';
+import BadgeImage from '../BadgeImage';
 import PropTypes from 'prop-types';
+import DeleteBadgeModal from './DeleteBadgeModal';
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -157,55 +155,47 @@ function BadgeReport(props) {
   };
 
   const pdfDocGenerator = async () => {
-    let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
-    let badges = sortBadges.slice();
+    const currentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
+    const badges = sortBadges.slice();
+
     FormatReportForPdf(badges, formattedReport => {
-      const html = htmlToPdfmake(formattedReport, {
-        tableAutoSize: true,
-      });
-      let docDefinition = {
+      const html = htmlToPdfmake(formattedReport, { tableAutoSize: true });
+
+      const docDefinition = {
         content: [html],
-        pageBreakBefore: function(currentNode) {
-          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
-        },
+        pageBreakBefore: currentNode => currentNode.style?.includes('pdf-pagebreak-before'),
         styles: {
           'html-div': { margin: [0, 4, 0, 4] },
-          name: {
-            background: 'white',
-          },
+          name: { background: 'white' },
         },
       };
-      pdfMake.createPdf(docDefinition).download(`Badge-Report-${CurrentDate}`);
+      pdfMake.createPdf(docDefinition).download(`Badge-Report-${currentDate}`);
     });
   };
 
   const pdfFeaturedDocGenerator = async () => {
-    let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
-    let badges = sortBadges.slice();
-    badges = badges.filter(badge => {
-      if (badge.featured) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    const currentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
+    const featuredBadges = sortBadges.filter(badge => badge.featured);
 
-    FormatReportForPdf(badges, formattedReport => {
+    FormatReportForPdf(featuredBadges, formattedReport => {
       const html = htmlToPdfmake(formattedReport, { tableAutoSize: true });
-      let docDefinition = {
+
+      const docDefinition = {
         content: [html],
-        pageBreakBefore: function(currentNode) {
-          return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
-        },
+        pageBreakBefore: currentNode => currentNode.style?.includes('pdf-pagebreak-before'),
         styles: {
           'html-div': { margin: [0, 4, 0, 4] },
-          name: {
-            background: 'white',
-          },
+          name: { background: 'white' },
         },
       };
-      pdfMake.createPdf(docDefinition).download(`Featured-Badge-Report-${CurrentDate}`);
+      pdfMake.createPdf(docDefinition).download(`Featured-Badge-Report-${currentDate}`);
     });
+  };
+
+  const handlePDFOnClick = () => {
+    // Ensure pdfFeaturedDocGenerator function is correctly defined and imported
+    if (pdfDocGenerator) pdfDocGenerator();
+    else console.error('pdfDocGenerator is not defined');
   };
 
   useEffect(() => {
@@ -230,7 +220,6 @@ function BadgeReport(props) {
           if (badge.featured) {
             setNumFeatured(prev => prev + 1);
           }
-
           if (typeof newBadges[index] === 'string') {
             newBadges[index].lastModified = new Date(newBadges[index].lastModified);
           }
@@ -247,7 +236,7 @@ function BadgeReport(props) {
 
   const countChange = (badge, index, newValue) => {
     let copyOfExisitingBadges = [...sortBadges];
-    newValue = newValue === null || newValue === undefined ? -1 : parseInt(newValue);
+    newValue = newValue === null || newValue === undefined ? -1 : Number.parseInt(newValue);
     if (newValue < 0 || !copyOfExisitingBadges || copyOfExisitingBadges.length === 0) {
       toast.error(
         'Error: Invalid badge count or the badge does not exist in the badge records. Please refresh the page. If the problem persists, please contact the administrator.',
@@ -262,7 +251,7 @@ function BadgeReport(props) {
         handleDeleteBadge(badgePrevState);
         return;
       } else {
-        const badgeCountFromExistingRecord = parseInt(recordBeforeUpdate[0].count);
+        const badgeCountFromExistingRecord = Number.parseInt(recordBeforeUpdate[0].count);
         const currentDate = new Date(Date.now());
         const formattedDate = formatDate(currentDate);
 
@@ -308,13 +297,11 @@ function BadgeReport(props) {
       for (const badge of newBadges) {
         if (badge.featured) count++;
       }
-
       setNumFeatured(count);
     } else {
       e.target.checked = false;
       toast.error('Unfortunately, you may only select five badges to be featured.');
     }
-
     setSortBadges(newBadges);
   };
 
@@ -394,23 +381,23 @@ function BadgeReport(props) {
               </tr>
             </thead>
             <tbody>
-              {sortBadges && sortBadges.length ? (
+              {sortBadges?.length ? (
                 sortBadges.map((value, index) => (
-                  <tr key={index}>
+                  <tr key={value._id}>
                     <td className="badge_image_sm">
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <img src={value.badge.imageUrl} alt="Badge Image" id={'popover_' + index} />
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
                         count={value.count}
                         badgeData={value.badge}
                         index={index}
-                        key={index}
-                        cssSuffix={'_report'}
-                      />{' '}
+                        cssSuffix="_report"
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
+
+                    <UncontrolledPopover trigger="hover" target={'popover_' + index}>
                       <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                        <CardImg className="badge_image_lg" src={value.badge?.imageUrl} />
                         <CardBody>
                           <CardTitle
                             style={{
@@ -426,6 +413,7 @@ function BadgeReport(props) {
                         </CardBody>
                       </Card>
                     </UncontrolledPopover>
+
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified === 'string'
@@ -434,6 +422,7 @@ function BadgeReport(props) {
                             timeZone: 'America/Los_Angeles',
                           })}
                     </td>
+
                     <td style={{ display: 'flex', alignItems: 'center' }}>
                       <UncontrolledDropdown className="me-2" direction="down">
                         <DropdownToggle
@@ -445,14 +434,15 @@ function BadgeReport(props) {
                         </DropdownToggle>
                         <DropdownMenu className="badge_dropdown">
                           {value.earnedDate.map((date, i) => (
-                            <DropdownItem key={i}>{date}</DropdownItem>
+                            <DropdownItem key={`${date}-${i}`}>{date}</DropdownItem>
                           ))}
                         </DropdownMenu>
                       </UncontrolledDropdown>
-                      {value.hasBadgeDeletionImpact ? (
+
+                      {value.hasBadgeDeletionImpact && (
                         <>
                           <span id="mismatchExplainationTooltip" style={{ paddingLeft: '3px' }}>
-                            {'  '} *
+                            *
                           </span>
                           <UncontrolledTooltip
                             placement="bottom"
@@ -465,8 +455,9 @@ function BadgeReport(props) {
                             historical purposes.
                           </UncontrolledTooltip>
                         </>
-                      ) : null}
+                      )}
                     </td>
+
                     <td>
                       {canUpdateBadges ? (
                         <Input
@@ -475,25 +466,27 @@ function BadgeReport(props) {
                           min={0}
                           step={1}
                           onChange={e => countChange(value, index, e.target.value)}
-                        ></Input>
+                        />
                       ) : (
                         Math.round(value.count)
                       )}
                     </td>
-                    {canDeleteBadges ? (
+
+                    {canDeleteBadges && (
                       <td>
                         <button
                           type="button"
                           className="btn btn-outline-danger"
-                          onClick={() => handleDeleteBadge(sortBadges[index])}
+                          onClick={() => handleDeleteBadge(value)}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Delete
                         </button>
                       </td>
-                    ) : null}
+                    )}
+
                     <td style={{ textAlign: 'center' }}>
-                      <FormGroup check inline style={{ zIndex: '0' }}>
+                      <FormGroup check inline style={{ zIndex: 0 }}>
                         <Input
                           type="checkbox"
                           id={value.badge._id}
@@ -526,49 +519,26 @@ function BadgeReport(props) {
         <Button
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
-          onClick={() => {
-            // Ensure pdfDocGenerator function is correctly defined and imported
-            if (typeof pdfDocGenerator !== 'undefined') {
-              pdfDocGenerator();
-            } else {
-              console.error('pdfDocGenerator is not defined');
-            }
-          }}
+          onClick={handlePDFOnClick}
         >
           Export All Badges to PDF
         </Button>
         <Button
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
-          onClick={() => {
-            // Ensure pdfFeaturedDocGenerator function is correctly defined and imported
-            if (typeof pdfFeaturedDocGenerator !== 'undefined') {
-              pdfFeaturedDocGenerator();
-            } else {
-              console.error('pdfFeaturedDocGenerator is not defined');
-            }
-          }}
+          onClick={handlePDFOnClick}
         >
           Export Selected/Featured Badges to PDF
         </Button>
-        <Modal isOpen={showModal} className={darkMode ? 'text-light' : ''}>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-            <br />
-            <p>
-              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
-              until you click the &quot;Save Changes&quot; button below.
-            </p>
-          </ModalBody>
-          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button onClick={handleCancel} style={darkMode ? boxStyleDark : boxStyle}>
-              Cancel
-            </Button>
-            <Button color="danger" onClick={deleteBadge} style={darkMode ? boxStyleDark : boxStyle}>
-              Yes, Delete
-            </Button>
-          </ModalFooter>
-        </Modal>
+
+        <DeleteBadgeModal
+          isOpen={showModal}
+          onCancel={handleCancel}
+          onDelete={deleteBadge}
+          darkMode={darkMode}
+          boxStyle={boxStyle}
+          boxStyleDark={boxStyleDark}
+        />
       </div>
 
       <div className="tablet">
@@ -589,7 +559,7 @@ function BadgeReport(props) {
             <tbody>
               {sortBadges && sortBadges.length ? (
                 sortBadges.map((value, index) => (
-                  <tr key={index}>
+                  <tr key={value._id}>
                     <td className="badge_image_sm">
                       {' '}
                       <BadgeImage
@@ -597,7 +567,6 @@ function BadgeReport(props) {
                         count={value.count}
                         badgeData={value.badge}
                         index={index}
-                        key={index}
                         cssSuffix={'_report'}
                       />
                     </td>
@@ -627,7 +596,7 @@ function BadgeReport(props) {
                         </DropdownToggle>
                         <DropdownMenu className="badge_dropdown">
                           {value.earnedDate.map((date, i) => (
-                            <DropdownItem key={i}>{date}</DropdownItem>
+                            <DropdownItem key={`${date}-${i}`}>{date}</DropdownItem>
                           ))}
                         </DropdownMenu>
                       </UncontrolledDropdown>
@@ -766,24 +735,6 @@ function BadgeReport(props) {
             <span>Export Selected/Featured Badges to PDF</span>
           </Button>
         </div>
-        <Modal isOpen={showModal} className={darkMode ? 'text-light dark-mode' : ''}>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-          </ModalBody>
-          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>
-              Cancel
-            </Button>
-            <Button
-              color="danger"
-              onClick={() => deleteBadge()}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Yes, Delete
-            </Button>
-          </ModalFooter>
-          <ToastContainer />
-        </Modal>
       </div>
     </div>
   );
@@ -804,7 +755,6 @@ BadgeReport.propTypes = {
   changeBadgesByUserID: PropTypes.func.isRequired,
   getUserProfile: PropTypes.func.isRequired,
 
-  state: PropTypes.object.isRequired,
   badges: PropTypes.arrayOf(PropTypes.object).isRequired, // array of badge objects
   firstName: PropTypes.string.isRequired,
   lastName: PropTypes.string.isRequired,
