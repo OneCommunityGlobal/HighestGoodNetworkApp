@@ -51,7 +51,7 @@ jobs:
         node-version: 20
         cache: 'yarn'
     - name: Install Dependencies
-      run: yarn install --frozen-lockfile
+      run: yarn install --frozen-lockfile --ignore-platform
     - name: Run Unit Tests for Changed Files Only
       run: yarn run test:changed
     - name: Run Lint
