@@ -150,23 +150,27 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
   const renderCustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const { year, interval } = payload[0].payload;
+      const bgColor = darkMode ? '#222' : 'white';
+      const textColor = darkMode ? '#fff' : '#222';
+      const labelColor = darkMode ? '#90cdf4' : '#222';
       return (
         <div
           style={{
-            backgroundColor: 'white',
+            backgroundColor: bgColor,
+            color: textColor,
             border: '1px solid #ccc',
             minWidth: '180px',
             padding: '10px',
           }}
         >
-          <h6 style={{ color: 'black' }}>
+          <h6 style={{ color: labelColor }}>
             {interval === 'week' ? 'Week ' : ''}
             {label}
             {`, `}
             {year}
           </h6>
 
-          <h6 style={{ color: '#328D1B' }}>
+          <h6 style={{ color: darkMode ? '#90ee90' : '#328D1B' }}>
             {payload[0].value}
             {' hours'}
           </h6>

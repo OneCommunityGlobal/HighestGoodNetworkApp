@@ -126,7 +126,7 @@ const escapeHtml = s =>
 
 // Return the raw period entries respecting the same filter as the UI
 const getFilteredPeriodData = () => {
-  const data = Array.isArray(timeEntries?.period) ? [...timeEntries.period] : [];
+  const data = Array.isArray(timeEntries?.period) ? timeEntries.period.filter(entryBelongsToDisplayed) : [];
   if (!timeLogState.projectsOrTasksSelected?.length || timeLogState.projectsOrTasksSelected.includes('all')) {
     return data;
   }
@@ -323,6 +323,13 @@ const downloadPeriodPdf = () => {
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
+  const displayedId = displayUserId || displayUserProfile?._id;
+
+  const entryBelongsToDisplayed = (e) => {
+    const pid = e?.personId ?? e?.userId ?? e?.person?._id ?? e?.person?._id ?? e?.person?._id;
+    return String(pid) === String(displayedId);
+  };
+  
   const tabMapping = {
     '#tasks': 0,
     '#currentWeek': 1,
@@ -396,6 +403,7 @@ const generateAllTimeEntryItems = () => {
 
 
   const generateTimeEntries = (data, tab) => {
+    data = (Array.isArray(data) ? data : []).filter(entryBelongsToDisplayed);
     if (!timeLogState.projectsOrTasksSelected.includes('all')) {
       // eslint-disable-next-line no-param-reassign
       data = data.filter(
@@ -540,7 +548,9 @@ const generateAllTimeEntryItems = () => {
   };
 
   const calculateTotalTime = (data, isTangible) => {
-    const filteredData = data.filter(entry => entry.isTangible === isTangible);
+    const filteredData = (Array.isArray(data) ? data : [])
+    .filter(entryBelongsToDisplayed)
+    .filter(entry => entry.isTangible === isTangible);
     const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };

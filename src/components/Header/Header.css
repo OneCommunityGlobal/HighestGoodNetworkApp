@@ -168,11 +168,11 @@
   }
 }
 
-@media screen and (min-width: 1400px) and (max-width: 1700px) {
+/*@media screen and (min-width: 1400px) and (max-width: 1700px) {
   .owner-message {
     display: none;
   }
-}
+}*/
 
 @media screen and (max-width: 769px) {
   .responsive-spacing {

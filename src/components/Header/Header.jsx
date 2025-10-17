@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, React } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import { getUserProfileActionCreator } from '~/actions/userProfile';
 import { Link, useLocation, useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import {
@@ -49,6 +50,7 @@ import {
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
   PR_PROMOTIONS,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -77,7 +79,15 @@ export function Header(props) {
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
   const [isAckLoading, setIsAckLoading] = useState(false);
+  const [showPermissionBanner, setShowPermissionBanner] = useState(false);
   const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
+
+  // Show permission banner when user first logs in with isAcknowledged: false
+  useEffect(() => {
+    if (props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false) {
+      setShowPermissionBanner(true);
+    }
+  }, [props.auth.isAuthenticated, props.userProfile?.permissions?.isAcknowledged]);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -144,6 +154,9 @@ export function Header(props) {
     props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+  
+  // Blue Square Email Management
+  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -238,6 +251,8 @@ export function Header(props) {
         })
         .then(() => {
           setIsAckLoading(false);
+          // Hide the banner
+          setShowPermissionBanner(false);
           dispatch(getUserProfile(_id));
         });
     } catch (e) {
@@ -279,6 +294,9 @@ export function Header(props) {
       const newUserProfile = response?.data;
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
+      
+      // Load into Redux store for banner display, preserving the exact data we got
+      dispatch(getUserProfileActionCreator(newUserProfile));
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log('User Profile not loaded.', err);
@@ -484,7 +502,8 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
-                  canAccessPermissionsManagement) && (
+                  canAccessPermissionsManagement ||
+                  canAccessBlueSquareEmailManagement) && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
@@ -531,6 +550,15 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
                         PR Team Analytics
                       </DropdownItem>
+                      {canAccessBlueSquareEmailManagement && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bluesquare-email-management"
+                          className={fontColor}
+                        >
+                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                        </DropdownItem>
+                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
@@ -604,7 +632,7 @@ export function Header(props) {
         />
       )}
       <PermissionWatcher props={props} />
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
+      {props.auth.isAuthenticated && showPermissionBanner && (
         <PopUpBar
           firstName={viewingUser?.firstName || firstName}
           lastName={viewingUser?.lastName}
