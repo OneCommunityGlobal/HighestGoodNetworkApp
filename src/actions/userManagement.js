@@ -111,7 +111,6 @@ export const getAllUserProfile = () => {
   return async dispatch => {
     await dispatch(userProfilesFetchStartAction());
     if (!userProfilesPromise || typeof userProfilesPromise.then !== 'function') {
-      console.warn('getAllUserProfile: userProfilesPromise is invalid');
       return Promise.resolve([]);
     }
     return userProfilesPromise
