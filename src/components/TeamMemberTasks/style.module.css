@@ -133,9 +133,8 @@
 }
 
 .team-member-tasks-user-report-link .team-member-tasks-user-report-link-image {
-  width: 20px;
-  height: 20px;
-  margin: 0 0 5px 5px;
+  width: 22px;
+  height: 22px;
 }
 
 .deadlineCount {
@@ -455,11 +454,6 @@
   grid-column: 1 / span 3;
   grid-row: 2 / span 1;
   margin-top: 2px;
-}
-
-.task_table-container {
-  width: 100%;
-  overflow-y: hidden;
 }
 
 .hours-btn-div {
