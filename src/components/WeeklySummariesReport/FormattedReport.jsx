@@ -60,6 +60,12 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
+const teamColorMap = {
+  purple: 'Admin Team',
+  green: '20 Hour Team',
+  navy: '10 Hour Team',
+};
+
 const isLastWeekReport = (startDateStr, endDateStr) => {
   if (!startDateStr || !endDateStr) return false;
   const summaryStart = new Date(startDateStr);
@@ -300,6 +306,17 @@ function ReportDetails({
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
 
+  const promisedHours =
+    summary &&
+    Array.isArray(summary.promisedHoursByWeek) &&
+    summary.promisedHoursByWeek.length > weekIndex
+      ? summary.promisedHoursByWeek[weekIndex]
+      : 0;
+
+  useEffect(() => {
+    setFilteredBadges(badges.filter(badge => badge.showReport === true));
+  }, []);
+
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
@@ -346,14 +363,15 @@ function ReportDetails({
             <ListGroupItem darkMode={darkMode}>
               <p
                 style={{
-                  color: getTextColorForHoursLogged(
-                    hoursLogged,
-                    summary.promisedHoursByWeek[weekIndex],
-                  ),
+                  // color: getTextColorForHoursLogged(
+                  // hoursLogged,
+                  // summary.promisedHoursByWeek[weekIndex],
+                  color: getTextColorForHoursLogged(hoursLogged, promisedHours),
                   fontWeight: 'bold',
                 }}
               >
-                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                {/* Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]} */}
+                Hours logged: {hoursLogged.toFixed(2)} / {promisedHours}
               </p>
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -388,6 +406,11 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
+  const weeklySummaries = summary?.weeklySummaries || [];
+  const currentSummary = weeklySummaries[weekIndex];
+
+  // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  const summaryText = currentSummary?.summary;
   // Add safety check for weeklySummaries array and weekIndex
   if (
     !summary.weeklySummaries ||
@@ -402,7 +425,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
-  const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
+  // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
   let summaryDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -415,11 +438,13 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
         color: textColors[summary?.weeklySummaryOption] || textColors.Default,
       };
 
-      summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
-        .tz('America/Los_Angeles')
-        .format('MMM-DD-YY');
-      summaryDateText = `Summary Submitted On (${summaryDate}):`;
-
+      if (currentSummary?.uploadDate) {
+        // summaryDate = moment(summary.weeklySummaries[weekIndex]?.uploadDate)
+        summaryDate = moment(currentSummary.uploadDate)
+          .tz('America/Los_Angeles')
+          .format('MMM-DD-YY');
+        summaryDateText = `Summary Submitted On (${summaryDate}):`;
+      }
       return (
         <div style={style} className={styles.weeklySummaryReportContainer}>
           <div className={styles.weeklySummaryText}>{parse(summaryText)}</div>
@@ -785,6 +810,23 @@ function Index({
 
   const [modalOpen, setModalOpen] = useState(false);
 
+  // newly added
+  // const getMergedFilterColor = (summary, bulkSelectedColors) => {
+  //   // eslint-disable-next-line no-nested-ternary
+  //   const individual = Array.isArray(summary.filterColor)
+  //     ? summary.filterColor
+  //     : summary.filterColor
+  //     ? [summary.filterColor]
+  //     : [];
+
+  //   const bulk = Object.entries(bulkSelectedColors || {})
+  //     // eslint-disable-next-line no-unused-vars
+  //     .filter(([_, active]) => active)
+  //     .map(([color]) => color);
+
+  //   return [...new Set([...individual, ...bulk])];
+  // };
+
   const trophyIconToggle = () => {
     if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
       setModalOpen(prevState => (prevState ? false : summary._id));
@@ -921,7 +963,7 @@ function Index({
       </div>
 
       <div style={{ display: 'inline-block', marginLeft: '10px' }}>
-        {colors.map(color => (
+        {/* {colors.map(color => (
           <span
             key={color}
             onClick={() => handleSpecialColorDotClick(summary._id, color)}
@@ -936,9 +978,81 @@ function Index({
               cursor: 'pointer',
             }}
           />
+        ))} */}
+        {/* <p>{summary.filterColor}</p> */}
+        {(() => {
+          // eslint-disable-next-line no-console
+          // console.log(
+          //   'Rendering:',
+          //   summary.name || summary._id,
+          //   '→ filterColor:',
+          //   summary.filterColor,
+          // );
+          return null;
+        })()}
+
+        {colors.map(color => (
+          <span
+            key={color}
+            onClick={() => handleSpecialColorDotClick(summary._id, color)}
+            style={{
+              display: 'inline-block',
+              width: '15px',
+              height: '15px',
+              margin: '0 5px',
+              borderRadius: '50%',
+              // console.log('Rendering summary:', summary._id, summary.filterColor),
+              backgroundColor:
+                Array.isArray(summary.filterColor) && summary.filterColor.includes(color)
+                  ? color
+                  : 'transparent',
+              border: `3px solid ${color}`,
+              cursor: 'pointer',
+            }}
+          />
         ))}
       </div>
 
+      {Array.isArray(summary.filterColor) && summary.filterColor.length > 0 && (
+        <span style={{ marginLeft: '8px', fontSize: '0.85rem', color: '#555' }}>
+          (
+          {summary.filterColor
+            .map(color => teamColorMap[color])
+            .filter(Boolean)
+            .join(', ')}
+          )
+        </span>
+      )}
+
+      {Array.isArray(summary.promisedHoursByWeek) &&
+        summary.promisedHoursByWeek.length > weekIndex &&
+        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+          <i
+            className="fa fa-star"
+            title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
+            style={{
+              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+              fontSize: '55px',
+              marginLeft: '10px',
+              verticalAlign: 'middle',
+              position: 'relative',
+            }}
+          >
+            <span
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '10px',
+              }}
+            >
+              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+            </span>
+          </i>
+        )}
       {/* This conditional message ONLY on last week tab */}
       {/* {isFinalWeek && (
         <p style={{ color: '#8B0000', fontWeight: 'bold', marginTop: '5px' }}>
@@ -955,33 +1069,40 @@ function Index({
         </p>
       )}
 
-      {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
-        <i
-          className="fa fa-star"
-          title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
-          style={{
-            color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
-            fontSize: '55px',
-            marginLeft: '10px',
-            verticalAlign: 'middle',
-            position: 'relative',
-          }}
-        >
-          <span
+      {/* //newly added */}
+      {Array.isArray(summary.promisedHoursByWeek) &&
+        summary.promisedHoursByWeek.length > weekIndex &&
+        weekIndex !== null &&
+        weekIndex !== undefined &&
+        summary.promisedHoursByWeek[weekIndex] !== undefined &&
+        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
+          <i
+            className="fa fa-star"
+            title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
             style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              color: 'white',
-              fontWeight: 'bold',
-              fontSize: '10px',
+              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
+              fontSize: '55px',
+              marginLeft: '10px',
+              verticalAlign: 'middle',
+              position: 'relative',
             }}
           >
-            +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
-          </span>
-        </i>
-      )}
+            <span
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '10px',
+              }}
+            >
+              {/* +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}% */}
+              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+            </span>
+          </i>
+        )}
     </>
   );
 }
