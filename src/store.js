@@ -7,6 +7,7 @@ import { userPreferencesReducer } from './reducers/listBidDashboard/userPreferen
 import { messagingReducer } from './reducers/listBidDashboard/messagingReducer';
 import { weeklyProjectSummaryReducer } from '~/reducers/bmdashboard/weeklyProjectSummaryReducer';
 import { localReducers, sessionReducers } from './reducers';
+import userStateReducer from '~/components/UserState/reducer';
 
 const middleware = [thunk];
 const initialState = {};
@@ -20,6 +21,7 @@ export const rootReducers = combineReducers({
   weeklyProjectSummary: weeklyProjectSummaryReducer,
   ...localReducers,
   ...sessionReducers,
+  userState: userStateReducer,
 });
 
 const persistConfig = {

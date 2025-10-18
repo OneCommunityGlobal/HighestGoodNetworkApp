@@ -29,8 +29,19 @@ import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
 import TaskChangeLogModal from './components/TaskChangeLogModal';
 import * as messages from '../../constants/followUpConstants';
+import UserStateManager from '~/components/UserState/UserStateManager';
+import { updateUserStateIndicators } from '../UserState/action';
+import { selectUserStateCatalog, selectUserStateForUser } from '../UserState/reducer';
+import axios from 'axios';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
+
+const initialCatalog = [
+  { key: 'closing-out', label: '❌ Closing Out', color: 'red' },
+  { key: 'new-dev', label: '🖥️ New Developer', color: 'blue' },
+  { key: 'pr-review-team', label: '👾 PR Review Team', color: 'purple' },
+  { key: 'developer', label: '🖥️✅ Developer', color: 'green' },
+];
 
 const TeamMemberTask = React.memo(
   ({
@@ -60,7 +71,7 @@ const TeamMemberTask = React.memo(
     const manager = 'Manager';
     const adm = 'Administrator';
     const owner = 'Owner';
-
+    const API_BASE = process.env.REACT_APP_APIENDPOINT;
     const handleDashboardAccess = () => {
       // null checks
       if (!user || !userRole || !user.role) {
@@ -221,6 +232,43 @@ const TeamMemberTask = React.memo(
       }
       return messages.MOUSE_OVER_TEXT_OVER_90;
     };
+
+    // user state
+    const catalogFromStore = useSelector(selectUserStateCatalog);
+    // const effectiveCatalog = catalogFromStore?.length ? catalogFromStore : initialCatalog;
+    const selectedFromSlice = useSelector(s => selectUserStateForUser(s, user.personId));
+    const initialSelected =
+      Array.isArray(selectedFromSlice) && selectedFromSlice.length
+        ? selectedFromSlice
+        : user.stateIndicators || [];
+    const canEdit =
+      ['Owner', 'Administrator'].includes(userRole) ||
+      dispatch(hasPermission('manageUserStateIndicator'));
+
+    const [catalogFromApi, setCatalog] = useState(null);
+    //   React.useEffect(() => {
+    //   let cancelled = false;
+    //   (async () => {
+    //     try {
+    //       const token = localStorage.getItem("token");
+    //       const { data } = await axios.get(`${API_BASE}/user-states/catalog`, {
+    //         headers: {
+    //           Accept: "application/json",
+    //           // ...(token ? { Authorization: token } : {}),
+    //         },
+    //       });
+    //       if (!cancelled) setCatalog(Array.isArray(data?.items) ? data.items : []);
+    //     } catch (e) {
+    //       console.error("catalog fetch failed", e?.response?.status, e?.message);
+    //       if (!cancelled) setCatalog([]); // fall back
+    //     }
+    //   })();
+    //   return () => { cancelled = true; };
+    // }, []);
+    const effectiveCatalog =
+      (catalogFromApi && catalogFromApi.length && catalogFromApi) ||
+      (catalogFromStore && catalogFromStore.length && catalogFromStore) ||
+      initialCatalog;
 
     return (
       <tr
@@ -436,6 +484,14 @@ const TeamMemberTask = React.memo(
                               {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
                             </font>{' '}
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
+                            <div style={{ marginTop: '29px', marginLeft: '-70px' }}>
+                              <UserStateManager
+                                userId={user.personId}
+                                canEdit={canEdit}
+                                user={user}
+                                initialSelections={initialSelected}
+                              />
+                            </div>
                           </td>
                         </tr>
                       </tbody>
