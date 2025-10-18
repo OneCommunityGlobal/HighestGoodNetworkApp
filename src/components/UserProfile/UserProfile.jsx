@@ -33,6 +33,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
+import teamStyles from '../TeamMemberTasks/style.module.css';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
@@ -1366,15 +1367,14 @@ const onAssignProject = assignedProject => {
             {canSeeReports && (
               <span className="mr-2">
                 <Link
-                  className="team-member-tasks-user-report-link"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                  className={teamStyles["team-member-tasks-user-report-link"]}
                   to={`/peoplereport/${userProfile._id}`}
                   onClick={event => handleReportClick(event, userProfile._id)}
                 >
                   <img
                     src="/report_icon.png"
                     alt="reportsicon"
-                    className="team-member-tasks-user-report-link-image"
+                    className={teamStyles["team-member-tasks-user-report-link-image"]}
                   />
                 </Link>
               </span>
