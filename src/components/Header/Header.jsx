@@ -334,24 +334,30 @@ export function Header(props) {
     <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        <div
-          className="timer-message-section"
-          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
-            <div className="owner-message">
-              <OwnerMessage />
-            </div>
-          )}
-        </div>
-        <NavbarToggler onClick={toggle} />
-        {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links d-flex" navbar>
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ width: '100%' }}
+        <div className="d-flex justify-content-between align-items-center w-100 p-3">
+          {/* Left Component - Timer */}
+          <div className="left-section">
+            {isAuthenticated && <Timer darkMode={darkMode} />}
+          </div>
+
+          {/* Center Component - Owner Message */}
+          <div className="center-section text-center flex-grow-1">
+            {isAuthenticated && (
+              <div className="owner-message">
+                <OwnerMessage />
+              </div>
+            )}
+          </div>
+
+          {/* Right Component - Navigation */}
+          <div className="right-section">
+            <NavbarToggler onClick={toggle} />
+            {isAuthenticated && (
+              <Collapse isOpen={isOpen} navbar>
+                <Nav className="nav-links d-flex" navbar>
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ width: '100%' }}
               >
                 {canUpdateTask && (
                   <NavItem className="responsive-spacing">
@@ -582,6 +588,8 @@ export function Header(props) {
             </Nav>
           </Collapse>
         )}
+          </div>
+        </div>
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
