@@ -86,6 +86,14 @@
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
+.popover__title {
+  text-align: center;
+}
+
+.popover__title p {
+  margin: 0.3em 0;
+}
+
 /* Profile Image Modal - Suggested Profile Links Grid */
 .suggestedProfileLinks {
   display: grid;
