@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./ProjectManagerEducatorView.module.css";
+import NotificationComposer from "./ProjectManagerNotification";
 
 const mockEducators = [
   {
@@ -112,6 +113,11 @@ function EducatorRow({ educator }) {
 
 export default function ProjectManagerEducatorView() {
   const [educators, setEducators] = React.useState([]);
+  const [filtered, setFiltered] = React.useState([]);
+  const [query, setQuery] = React.useState("");
+  const [showComposer, setShowComposer] = React.useState(false);
+  const [lastSentInfo, setLastSentInfo] = React.useState(null);
+
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
 
@@ -120,6 +126,7 @@ export default function ProjectManagerEducatorView() {
       try {
         const data = await fetchEducators();
         setEducators(data);
+        setFiltered(data);
       } catch (e) {
         setError("Failed to load educators");
       } finally {
@@ -128,6 +135,35 @@ export default function ProjectManagerEducatorView() {
     })();
   }, []);
 
+  React.useEffect(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) {
+      setFiltered(educators);
+    } else {
+      setFiltered(
+        educators.filter(
+          (e) =>
+            e.name.toLowerCase().includes(q) ||
+            e.subject.toLowerCase().includes(q)
+        )
+      );
+    }
+  }, [query, educators]);
+
+  function handleOpenComposer() {
+    setShowComposer(true);
+  }
+  function handleCloseComposer() {
+    setShowComposer(false);
+  }
+  function handleSent(payload) {
+    setLastSentInfo({
+      educatorCount: payload.educatorIds.length,
+      timestamp: new Date().toISOString(),
+    });
+    setShowComposer(false);
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.breadcrumb}>
@@ -135,12 +171,34 @@ export default function ProjectManagerEducatorView() {
         <span className={styles.sep}>/</span>
         <span>Project Manager</span>
       </div>
+
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Project Manager Dashboard</h1>
-          <p className={styles.subtitle}>View educators and their assigned students</p>
+        </div>
+        <div className={styles.toolbar}>
+          <input
+            type="text"
+            placeholder="Search educators by name or subject"
+            className={styles.searchInput}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="Search educators"
+          />
+          <button className={styles.primaryBtn} onClick={handleOpenComposer}>
+            New Announcement
+          </button>
         </div>
       </div>
+
+      {lastSentInfo && (
+        <div className={styles.successBanner} role="status">
+          Sent to {lastSentInfo.educatorCount} educator
+          {lastSentInfo.educatorCount === 1 ? "" : "s"} at{" "}
+          {new Date(lastSentInfo.timestamp).toLocaleTimeString()}
+        </div>
+      )}
+
       <section className={styles.card} aria-label="Educators">
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Educators</h2>
@@ -148,18 +206,26 @@ export default function ProjectManagerEducatorView() {
         <div className={styles.cardBody}>
           {loading && <div className={styles.loadingText}>Loading…</div>}
           {error && <div className={styles.errorText}>{error}</div>}
-          {!loading && !error && educators.length === 0 && (
-            <div className={styles.emptyText}>No educators found.</div>
+          {!loading && !error && filtered.length === 0 && (
+            <div className={styles.emptyText}>No educators match your search.</div>
           )}
-          {!loading && !error && educators.length > 0 && (
+          {!loading && !error && filtered.length > 0 && (
             <div role="list" aria-label="Educator list">
-              {educators.map((e) => (
+              {filtered.map((e) => (
                 <EducatorRow key={e.id} educator={e} />
               ))}
             </div>
           )}
         </div>
       </section>
+
+      {showComposer && (
+        <NotificationComposer
+          educators={educators}
+          onClose={handleCloseComposer}
+          onSent={handleSent}
+        />
+      )}
     </div>
   );
 }
