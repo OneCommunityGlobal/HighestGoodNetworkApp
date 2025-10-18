@@ -7,6 +7,7 @@ import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import styles from '../Collaboration/JobDetailsLink.module.css';
 import { de } from 'date-fns/locale';
+import JobApplyLink from './JobApplyLink';
 
 function JobDetailsLink() {
   const { givenId } = useParams();
@@ -54,6 +55,18 @@ function JobDetailsLink() {
     }
   };
 
+  const handleApplyNow = e => {
+    console.log('handleApplyNow clicked');
+    //const templateId = jobsDetailById.applyLink.split('templates/')[1];
+    //console.log(templateId);
+    //window.location.href = `/JobApplyLink/${templateId}`;
+    console.log(jobsDetailById.applyLink);
+    const formId = jobsDetailById.applyLink.split('jobforms/')[1];
+    console.log(formId);
+    window.location.href = `/JobApplyLink/${formId}`;
+
+    //JobApplyLink/templateId;
+  };
   const getJobDetailsById = async id => {
     setLoading(true);
 
@@ -102,7 +115,50 @@ function JobDetailsLink() {
             {`Job Details for Category: ${jobsDetailById.category},
            Position: ${jobsDetailById.title}`}
           </h2>
-          <div className={styles['job-details-card']}>{jobsDetailById.description}</div>
+          <img
+            src={`${jobsDetailById.imageUrl}`}
+            onError={e => {
+              e.target.onerror = null;
+              e.target.src = 'https://img.icons8.com/cotton/200/working-with-a-laptop--v1.png';
+            }}
+            alt={jobsDetailById.title || 'Job Position'}
+            loading="lazy"
+            className={styles['job-details-image']}
+          />
+          {['description', 'skills', 'requirements', 'projects', 'whoareyou', 'whoweare'].map(
+            key =>
+              jobsDetailById[key] && (
+                <div
+                  key={key}
+                  className={styles['job-details-card']}
+                  dangerouslySetInnerHTML={{ __html: jobsDetailById[key] }}
+                />
+              ),
+          )}
+          ;
+          {/*<div
+            className={styles['job-details-card']}
+            dangerouslySetInnerHTML={{ __html: jobsDetailById.skills }}
+          />
+          <div
+            className={styles['job-details-card']}
+            dangerouslySetInnerHTML={{ __html: jobsDetailById.requirements }}
+          />
+          <div
+            className={styles['job-details-card']}
+            dangerouslySetInnerHTML={{ __html: jobsDetailById.projects }}
+          />
+          <div
+            className={styles['job-details-card']}
+            dangerouslySetInnerHTML={{ __html: jobsDetailById.whoareyou }}
+          />
+          <div
+            className={styles['job-details-card']}
+            dangerouslySetInnerHTML={{ __html: jobsDetailById.whoweare }}
+          /> */}
+          <button type="button" className="btn-primary" onClick={handleApplyNow}>
+            Apply Now
+          </button>
         </div>
       ) : null}
     </div>

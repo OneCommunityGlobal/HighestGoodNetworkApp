@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styles from './JobAdsCreation.module.css';
 import { toast } from 'react-toastify';
-
+import { Editor } from '@tinymce/tinymce-react';
 import { ENDPOINTS } from '../../utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
 import { isValidDropboxImageUrl, isValidUrl } from '../../utils/checkValidURL';
@@ -12,6 +12,16 @@ import getWordCount from '../../utils/getWordCount';
 function JobAdsCreation() {
   const [loading, setLoading] = useState('');
   //  const formFields = ['imageUrl', 'location', 'applyLink', 'jobDetailsLink'];
+  const textareaFields = [
+    { key: 'description', display: 'Description' },
+    { key: 'requirements', display: 'Requirements' },
+    { key: 'skills', display: 'Skills' },
+    { key: 'projects', display: 'Projects' },
+    { key: 'whoareyou', display: 'Who are you' },
+    // apply: '',
+    { key: 'whoweare', display: 'Who are we' },
+  ];
+
   const formFields = [
     { key: 'imageUrl', display: 'Image Url' },
     { key: 'location', display: 'Location' },
@@ -22,6 +32,15 @@ function JobAdsCreation() {
   const initialState = {
     title: '',
     category: '',
+    /* new fields */
+    // about: '',
+    requirements: '',
+    skills: '',
+    projects: '',
+    whoareyou: '',
+    // apply: '',
+    whoweare: '',
+    /* newly */
     description: '',
     imageUrl: '',
     location: 'remote',
@@ -38,6 +57,51 @@ function JobAdsCreation() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const textareaRef = useRef(null);
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    //    placeholder: 'Description (10-word minimum) and reference link',
+    // advlist
+    plugins: 'autolink autoresize lists link help wordcount preview ',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | forecolor backcolor |\
+                      help | preview ',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 180,
+    max_height: 600,
+    width: 700,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    // images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+
+  const TINY_MCE_INIT_OPTIONS_MEDIA = {
+    license_key: 'gpl',
+    menubar: false,
+    //    placeholder: 'Description (10-word minimum) and reference link',
+    // advlist
+    plugins: 'autolink autoresize lists link help wordcount preview media',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | forecolor backcolor |\
+                      help | preview | media',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 180,
+    max_height: 600,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    // images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
 
   const submitJobAds = async () => {
     setLoading(true);
@@ -142,6 +206,8 @@ function JobAdsCreation() {
 
   const handleSubmit = event => {
     event.preventDefault();
+    console.log('formData');
+    console.log(formData);
     if (!formData.category) {
       setErrors({ category: 'Category is required' });
       toast.error('Category is required');
@@ -166,6 +232,103 @@ function JobAdsCreation() {
     if (descriptionWordCount < 30) {
       setErrors({ description: 'Description must be at least 30 characters long' });
       toast.error('Description must be at least 30 characters long');
+      textareaRef.current?.focus();
+      return;
+    }
+
+    /* if (!formData.about) {
+      setErrors({ about: 'About is required' });
+      toast.error('About is required');
+      return;
+    }
+    //
+    const aboutWordCount = getWordCount(formData.about);
+    // eslint-disable-next-line no-console
+    console.log(`word count ${aboutWordCount}`);
+
+    if (aboutWordCount < 30) {
+      setErrors({ about: 'About must be at least 30 words long' });
+      toast.error('About must be at least 30 words long');
+      textareaRef.current?.focus();
+      return;
+    } */
+    if (!formData.requirements) {
+      setErrors({ requirements: 'Requirements is required' });
+      toast.error('Requirements is required');
+      return;
+    }
+    //
+    const requirementsWordCount = getWordCount(formData.requirements);
+    // eslint-disable-next-line no-console
+    console.log(`word count ${requirementsWordCount}`);
+
+    if (requirementsWordCount < 30) {
+      setErrors({ requirements: 'Requirements must be at least 30 words long' });
+      toast.error('Requirements must be at least 30 words long');
+      textareaRef.current?.focus();
+      return;
+    }
+    if (!formData.skills) {
+      setErrors({ skills: 'Skills is required' });
+      toast.error('Skills is required');
+      return;
+    }
+    //
+    const skillsWordCount = getWordCount(formData.skills);
+    // eslint-disable-next-line no-console
+    console.log(`word count ${skillsWordCount}`);
+
+    if (skillsWordCount < 30) {
+      setErrors({ skills: 'Skills must be at least 30 words long' });
+      toast.error('Skills must be at least 30 words long');
+      textareaRef.current?.focus();
+      return;
+    }
+    if (!formData.projects) {
+      setErrors({ projects: 'Projects is required' });
+      toast.error('Projects is required');
+      return;
+    }
+    //
+    const projectsWordCount = getWordCount(formData.projects);
+    // eslint-disable-next-line no-console
+    console.log(`word count ${projectsWordCount}`);
+
+    if (projectsWordCount < 1) {
+      setErrors({ projects: 'Projects must be at least 1 word long' });
+      toast.error('Projects must be at least 1 word long');
+      textareaRef.current?.focus();
+      return;
+    }
+    if (!formData.whoareyou) {
+      setErrors({ whoareyou: 'Who are you is required' });
+      toast.error('Who are you is required');
+      return;
+    }
+    //
+    const whoareyouWordCount = getWordCount(formData.whoareyou);
+    // eslint-disable-next-line no-console
+    console.log(`word count ${whoareyouWordCount}`);
+
+    if (whoareyouWordCount < 30) {
+      setErrors({ whoareyou: 'Who are you must be at least 30 words long' });
+      toast.error('Who are you must be at least 30 words long');
+      textareaRef.current?.focus();
+      return;
+    }
+    if (!formData.whoweare) {
+      setErrors({ whoweare: 'Who we are is required' });
+      toast.error('Who we are is required');
+      return;
+    }
+    //
+    const whoweareWordCount = getWordCount(formData.whoweare);
+    // eslint-disable-next-line no-console
+    console.log(`word count ${whoweareWordCount}`);
+
+    if (whoweareWordCount < 30) {
+      setErrors({ whoweare: 'Who we are must be at least 30 words long' });
+      toast.error('Who we are must be at least 30 words long');
       textareaRef.current?.focus();
       return;
     }
@@ -304,85 +467,87 @@ function JobAdsCreation() {
 
       <form className={styles['user-collaboration-container']} onSubmit={handleSubmit}>
         <div className={styles['input-error']}>
-          <div className={styles['input-item']}>
-            <label className={styles['input-label']} htmlFor="category">
-              Category
-            </label>
-            <select
-              className={styles['jobAds-input']}
-              id="category"
-              value={formData.category}
-              onChange={handleChange}
-              name="category"
-            >
-              <option value="">Select from Categories</option>
-              {categories.map(specificCategory => (
-                <option key={specificCategory} value={specificCategory}>
-                  {specificCategory}
-                </option>
-              ))}
-            </select>
-          </div>
+          <label className={styles['input-label']} htmlFor="category">
+            Category
+          </label>
+          <select
+            className={styles['jobAds-input']}
+            id="category"
+            value={formData.category}
+            onChange={handleChange}
+            name="category"
+          >
+            <option value="">Select from Categories</option>
+            {categories.map(specificCategory => (
+              <option key={specificCategory} value={specificCategory}>
+                {specificCategory}
+              </option>
+            ))}
+          </select>
           {!errors.category ? null : <div className={styles.error}>{errors.category}</div>}
         </div>
 
         <div className={styles['input-error']}>
-          <div className={styles['input-item']}>
-            <label className={styles['input-label']} htmlFor="title">
-              Title
-            </label>
-            <select
-              className={styles['jobAds-input']}
-              value={formData.title}
-              name="title"
-              id="title"
-              onChange={handleChange}
-            >
-              <option value="">Select from Positions</option>
-              {positions.map(specificPosition => (
-                <option key={specificPosition} value={specificPosition}>
-                  {specificPosition}
-                </option>
-              ))}
-            </select>
-          </div>
+          <label className={styles['input-label']} htmlFor="title">
+            Title
+          </label>
+          <select
+            className={styles['jobAds-input']}
+            value={formData.title}
+            name="title"
+            id="title"
+            onChange={handleChange}
+          >
+            <option value="">Select from Positions</option>
+            {positions.map(specificPosition => (
+              <option key={specificPosition} value={specificPosition}>
+                {specificPosition}
+              </option>
+            ))}
+          </select>
           {!errors.title ? null : <div className={styles.error}>{errors.title}</div>}
         </div>
-
-        <div className={styles['input-error']}>
-          <div className={styles['input-item']}>
-            <label className={styles['input-label']} htmlFor="description">
-              Description
-            </label>
-            <textarea
-              className={styles['jobAds-input']}
-              value={formData.description}
-              id="description"
-              placeholder="Enter the description"
-              onChange={handleChange}
-              name="description"
-              ref={textareaRef}
-            />
-          </div>
-          {!errors.description ? null : <div className={styles.error}>{errors.description}</div>}
-        </div>
-
-        {formFields.map((field, display, idx) => (
+        {textareaFields.map((field, display, idx) => (
           <div className={styles['input-error']} key={field.key}>
-            <div className={styles['input-item']}>
-              <label className={styles['input-label']} htmlFor={field.key}>
-                {field.display}
-              </label>
-              <input
+            <label className={styles['input-label']} htmlFor={field.key}>
+              {field.display}
+            </label>
+            {/*<textarea
                 className={styles['jobAds-input']}
-                id={field.key}
                 value={formData[field.key] || ''}
+                id={field.key}
                 placeholder={`Enter the ${field.display}`}
                 onChange={handleChange}
                 name={field.key}
-                disabled={idx === 1}
-              />
-            </div>
+                ref={textareaRef}
+                rows={15}
+              />*/}
+            <Editor
+              className={styles['jobAds-input']}
+              tinymceScriptSrc="/tinymce/tinymce.min.js"
+              init={field.key === 'whoweare' ? TINY_MCE_INIT_OPTIONS_MEDIA : TINY_MCE_INIT_OPTIONS}
+              id={field.key}
+              value={formData[field.key] || ''}
+              onEditorChange={newVal => setFormData(prev => ({ ...prev, [field.key]: newVal }))}
+            />
+            {!errors[field.key] ? null : <div className={styles.error}>{errors[field.key]}</div>}
+          </div>
+        ))}
+        {formFields.map((field, display, idx) => (
+          <div className={styles['input-error']} key={field.key}>
+            <label className={styles['input-label']} htmlFor={field.key}>
+              {field.display}
+            </label>
+            <input
+              className={styles['jobAds-input']}
+              id={field.key}
+              value={formData[field.key] || ''}
+              placeholder={`Enter the ${field.display}`}
+              onChange={handleChange}
+              name={field.key}
+              disabled={idx === 1}
+            />
+
             {errors[field.key] && <div className={styles.error}>{errors[field.key]}</div>}
           </div>
         ))}
@@ -404,7 +569,8 @@ function JobAdsCreation() {
           </div>
           {errors.jobDetailsLink && <div className={styles.error}>{errors.jobDetailsLink}</div>}
         </div>
-*/}
+
+{/*
         <div className={styles['input-error']}>
           <div className={styles['input-item']}>
             <label className={styles['input-label']} htmlFor="applyLink">
@@ -429,33 +595,30 @@ function JobAdsCreation() {
           </div>
           {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
         </div>
-        {/*}     <div className={styles['input-error']}>
-          <div className={styles['input-item']}>
-            <label className={styles['input-label']} htmlFor="applyLinktest2">
-              Apply Link test2
-            </label>
-            <select
-              className={styles['jobAds-input']}
-              id="applyLinktest2"
-              value={formData.applyLinktest2}
-              onChange={handleChange}
-              name="applyLinktest2"
-            >
-              <option value="">Select from job forms</option>
-              {jobFormsAll.map(({ _id, title }) => {
-                return (
-                  <option key={_id} value={`${ENDPOINTS.APIEndpoint()}/jobforms/${_id}`}>
-                    {title}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          {!errors.applyLinktest2 ? null : (
-            <div className={styles.error}>{errors.applyLinktest2}</div>
-          )}
+   */}
+        <div className={styles['input-error']}>
+          <label className={styles['input-label']} htmlFor="applyLinktest2">
+            Apply Link
+          </label>
+          <select
+            className={styles['jobAds-input']}
+            id="applyLink"
+            value={formData.applyLink}
+            onChange={handleChange}
+            name="applyLink"
+          >
+            <option value="">Select from job forms</option>
+            {jobFormsAll.map(({ _id, title }) => {
+              return (
+                <option key={_id} value={`${ENDPOINTS.APIEndpoint()}/jobforms/${_id}`}>
+                  {title}
+                </option>
+              );
+            })}
+          </select>
+          {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
         </div>
-*/}
+
         <div className={styles['jobAds-creation-button-group']}>
           <button type="submit" className={`${styles['submit-button']} btn-primary`}>
             Submit

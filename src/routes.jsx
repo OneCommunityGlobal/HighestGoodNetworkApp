@@ -65,6 +65,7 @@ import Collaboration from './components/Collaboration';
 import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
 import JobAdsCreation from './components/Collaboration/JobAdsCreation';
 import JobDetailsLink from './components/Collaboration/JobDetailsLink';
+import JobApplyLink from './components/Collaboration/JobApplyLink';
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
 import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
@@ -220,6 +221,8 @@ const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuil
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
 const JobAdsCreationBuilder = lazy(() => import('./components/Collaboration/JobAdsCreation'));
 const JobDetailsLinkBuilder = lazy(() => import('./components/Collaboration/JobDetailsLink'));
+const JobApplyLinkBuilder = lazy(() => import('./components/Collaboration/JobApplyLink'));
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -656,6 +659,7 @@ export default (
         <Route path="/collaboration" component={Collaboration} />
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <Route path="/jobDetailsLink/:givenId" component={JobDetailsLink} />
+        <Route path="/jobApplyLink/:formId" component={JobApplyLink} />
         <ProtectedRoute path="/jobAdsCreation" component={JobAdsCreation} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
