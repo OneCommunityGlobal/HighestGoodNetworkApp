@@ -1,5 +1,5 @@
 /* eslint-disable react/function-component-definition */
-import React, { useState, useReducer } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -15,11 +15,13 @@ import {
   Spinner,
 } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../Header/DarkMode.css'
+import styles from '../../Header/DarkMode.module.css'
 import hasPermission from '~/utils/permissions';
 import { connect, useSelector } from 'react-redux';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import WarningModal from '../../Warnings/modals/WarningModal';
+import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
+import CcUserList from './CCUserList';
 
 const UserProfileModal = props => {
   const {
@@ -228,7 +230,7 @@ const UserProfileModal = props => {
       } else {
         setAddButton(true);
       }
-    }
+  }
 
   const adjustTextareaHeight = (textarea) => {
     textarea.style.height = 'auto';
@@ -288,7 +290,7 @@ const handleCcListUpdate = () => {
         />
       )}
 
-      <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
+      <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? `text-light ${styles['dark-mode']}` : ''}>
         <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>
           {modalTitle} {showWarningSpinner && <Spinner color="primary" width="300px" />}{' '}
         </ModalHeader>
@@ -513,6 +515,7 @@ const handleCcListUpdate = () => {
                 ) : (
                   <p>{blueSquare[0]?.description}</p>
                 )}
+                <CcUserList users={blueSquare[0]?.ccdUsers} />
               </FormGroup>
             </>
           )}
@@ -536,6 +539,7 @@ const handleCcListUpdate = () => {
                   Summary
                 </Label>
                 <p className={fontColor}>{blueSquare[0]?.description}</p>
+                <CcUserList users={blueSquare[0]?.ccdUsers} />
               </FormGroup>
             </>
           )}
@@ -548,152 +552,197 @@ const handleCcListUpdate = () => {
         </ModalBody>
 
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          {type === 'addBlueSquare' && (
-            <Button
-              color="danger"
-              id="addBlueSquare"
-              disabled={addButton}
-              onClick={() => {
-                modifyBlueSquares('', dateStamp, summary, 'add');
+          <div className="d-flex w-100 align-items-center">
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <Button
+                color="secondary"
+                onClick={openCc}
+                style={boxStyling}
+                className="mr-2"
+              >
+                CC List
+              </Button>
+              {ccCount > 0 && (
+                <span
+                style={{
+                position: 'absolute',
+                top: '-10px',
+                right: '-3px',
+                backgroundColor: '#28a745', // green
+                color: 'white',
+                borderRadius: '50%',
+                padding: '2px 6px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
               }}
-              style={boxStyling}
-            >
-              Submit
-            </Button>
-          )}
+              >
+                {ccCount}
+                </span>
+              )}
+            </div>
 
-          {type === 'modBlueSquare' && (
-            <>
-              {specialWarnings?.map(warning => (
-                <OverlayTrigger
-                  key={warning.abbreviation}
-                  placement="top"
-                  delay={{ show: 100, hide: 100 }}
-                  overlay={
-                    <Popover id="popover-basic">
-                      <Popover.Title as="h4" className="popover__title">
-                        <p>Remove Blue Square </p>
-                        {warning.abbreviation === 'RBS4NS' ? (
-                          <p>for No Summary</p>
-                        ) : (
-                          <p>for Hours Close Enough</p>
-                        )}{' '}
-                      </Popover.Title>
-                      <Popover.Content>
-                        {warning.abbreviation === 'RBS4NS'
-                          ? 'Issues a warning if no summary was submitted'
-                          : 'Issues a warning if hours were close enough (above 85% of the weekly hours commitment)'}
-                      </Popover.Content>
-                    </Popover>
-                  }
+            <div className="ml-auto d-flex align-items-center" style={{ gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'flex-end', width: '80%' }}>
+              {type === 'addBlueSquare' && (
+                <Button
+                  color="danger"
+                  id="addBlueSquare"
+                  disabled={addButton}
+                  onClick={() => {
+                    modifyBlueSquares('', dateStamp, summary, 'add');
+                  }}
+                  style={boxStyling}
                 >
-                  <Button
-                    color="warning"
-                    onClick={e => {
-                      handleToggleLogWarning(warning);
-                    }}
-                    name={warning.abbreviation}
-                    style={boxStyling}
-                  >
-                    {warning.abbreviation}
-                  </Button>
-                </OverlayTrigger>
-              ))}
-              {
-                <OverlayTrigger
-                  placement="top"
-                  delay={{ show: 100, hide: 100 }}
-                  overlay={
-                    <Popover>
-                      <Popover.Title as="h4" className="popover__title">
-                        Removes Blue Square for both Hours Close Enough and No Summary
-                      </Popover.Title>
-                      <Popover.Content>
-                        Logs both hours and no summary being completed
-                      </Popover.Content>
-                    </Popover>
-                  }
-                >
-                  <Button
-                    color="warning"
-                    name="both"
-                    disabled={!specialWarnings?.some(warn => warn.warnings.length >= 2)}
-                    onClick={e => {
-                      handleToggleLogWarning('both');
-                    }}
-                    style={boxStyling}
-                  >
-                    Both
-                  </Button>
-                </OverlayTrigger>
-              }
+                  Submit
+                </Button>
+              )}
 
-              {canEditInfringements && (
+              {type === 'modBlueSquare' && (
+                <>
+                  {canEditInfringements && (
+                    <Button
+                      color="info"
+                      onClick={() => {
+                        modifyBlueSquares(id, dateStamp, summary, 'update');
+                      }}
+                      style={{ ...boxStyling, width: '25%' }}
+                    >
+                      Update
+                    </Button>
+                  )}
+                  {canDeleteInfringements && (
+                    <Button
+                      color="danger"
+                      onClick={() => {
+                        modifyBlueSquares(id, dateStamp, summary, 'delete');
+                      }}
+                      style={{ ...boxStyling, width: '25%' }}
+                    >
+                      Delete
+                    </Button>
+                  )}
+                  {/* Add */}
+                  <Button color="primary" onClick={closeModal} style={{ ...boxStyling, width: '25%' }}>
+                    Cancel
+                  </Button>
+                  {specialWarnings?.map(warning => (
+                    <OverlayTrigger
+                      key={warning.abbreviation}
+                      placement="top"
+                      delay={{ show: 100, hide: 100 }}
+                      overlay={
+                        <Popover id="popover-basic">
+                          <Popover.Title as="h4" className="popover__title">
+                            <p>Remove Blue Square </p>
+                            {warning.abbreviation === 'RBS4NS' ? (
+                              <p>for No Summary</p>
+                            ) : (
+                              <p>for Hours Close Enough</p>
+                            )}{' '}
+                          </Popover.Title>
+                          <Popover.Content>
+                            {warning.abbreviation === 'RBS4NS'
+                              ? 'Issues a warning if no summary was submitted'
+                              : 'Issues a warning if hours were close enough (above 85% of the weekly hours commitment)'}
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <Button
+                        color="warning"
+                        onClick={e => {
+                          handleToggleLogWarning(warning);
+                        }}
+                        name={warning.abbreviation}
+                        style={{ ...boxStyling, width: '25%' }}
+                      >
+                        {warning.abbreviation}
+                      </Button>
+                    </OverlayTrigger>
+                  ))}
+                  {
+                    <OverlayTrigger
+                      placement="top"
+                      delay={{ show: 100, hide: 100 }}
+                      overlay={
+                        <Popover>
+                          <Popover.Title as="h4" className="popover__title">
+                            Removes Blue Square for both Hours Close Enough and No Summary
+                          </Popover.Title>
+                          <Popover.Content>
+                            Logs both hours and no summary being completed
+                          </Popover.Content>
+                        </Popover>
+                      }
+                    >
+                      <Button
+                        color="warning"
+                        name="both"
+                        disabled={!specialWarnings?.some(warn => warn.warnings.length >= 2)}
+                        onClick={e => {
+                          handleToggleLogWarning('both');
+                        }}
+                        style={{ ...boxStyling, width: '25%' }}
+                      >
+                        Both
+                      </Button>
+                    </OverlayTrigger>
+                  }
+                </>
+              )}
+
+              {type === 'updateLink' && (
                 <Button
                   color="info"
                   onClick={() => {
-                    modifyBlueSquares(id, dateStamp, summary, 'update');
+                    updateLink(personalLinks, adminLinks);
                   }}
-                  style={boxStyling}
                 >
                   Update
                 </Button>
               )}
-              {canDeleteInfringements && (
-                <Button
-                  color="danger"
-                  onClick={() => {
-                    modifyBlueSquares(id, dateStamp, summary, 'delete');
-                  }}
-                  style={boxStyling}
-                >
-                  Delete
-                </Button>
+
+              {type === 'image' && (
+                <>
+                  <Button color="primary" onClick={closeModal} style={boxStyling}>
+                    {' '}
+                    Close{' '}
+                  </Button>
+                  <Button
+                    color="info"
+                    onClick={() => {
+                      window.open('https://picresize.com/');
+                    }}
+                    style={boxStyling}
+                  >
+                    {' '}
+                    Resize{' '}
+                  </Button>
+                </>
               )}
-            </>
-          )}
 
-          {type === 'updateLink' && (
-            <Button
-              color="info"
-              onClick={() => {
-                updateLink(personalLinks, adminLinks);
-              }}
-            >
-              Update
-            </Button>
-          )}
-
-          {type === 'image' && (
-            <>
-              <Button color="primary" onClick={closeModal} style={boxStyling}>
-                {' '}
-                Close{' '}
-              </Button>
-              <Button
-                color="info"
-                onClick={() => {
-                  window.open('https://picresize.com/');
-                }}
-                style={boxStyling}
-              >
-                {' '}
-                Resize{' '}
-              </Button>
-            </>
-          )}
-
-          {type === 'save' ? (
-            <Button color="primary" onClick={closeModal} style={boxStyling}>
-              Close
-            </Button>
-          ) : (
-            <Button color="primary" onClick={closeModal} style={boxStyling}>
-              Cancel
-            </Button>
-          )}
+              {type === 'save' ? (
+                <Button color="primary" onClick={closeModal} style={boxStyling}>
+                  Close
+                </Button>
+              ) : type !== 'modBlueSquare' ? (
+                <Button color="primary" onClick={closeModal} style={boxStyling}>
+                  Cancel
+                </Button>
+              ) : (
+                ''
+              )}
+            </div>
+          </div>
         </ModalFooter>
       </Modal>
+      <BlueSquareEmailCCPopup
+      isOpen={ccModalOpen}
+      onClose={closeCc}
+      darkMode={darkMode}
+      userId={userProfile._id}
+      onCcListUpdate={handleCcListUpdate}
+      />
     </>
   );
 };
