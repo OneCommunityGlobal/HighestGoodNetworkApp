@@ -3,6 +3,10 @@ body {
   /* font-family: 'Lato', sans-serif; */
 }
 
+.teams__tr {
+  text-align: start;
+}
+
 .test-pic {
   height: 2rem;
 }
@@ -25,7 +29,7 @@ body {
 }
 
 
-.people-report-time-log-block h3 {
+.peopleReportTimeLogBlock h3 {
   color: #fff;
 }
 
@@ -163,11 +167,11 @@ body {
   margin-top: 20px;
 }
 
-.BadgeSummaryPreviewDiv {
+.badgeSummaryPreviewDiv {
   padding-left: 1%;
 }
 
-.BadgeSummaryDiv {
+.badgeSummaryDiv {
   padding-right: 1%;
 }
 
@@ -183,7 +187,7 @@ body {
 
 /*Table css starts*/
 
-.intro_date {
+.introDate {
   margin: 16px 0px 16px 0px;
   display: flex;
 }
@@ -193,7 +197,7 @@ body {
 }
 
 @media (max-width: 850px) {
-  .intro_date {
+  .introDate {
     margin: 16px 0px 16px 0px;
     display: flex;
     justify-content: center;
@@ -201,14 +205,14 @@ body {
 
 }
 
-.intro_date div {
+.introDate div {
   display: inline-flex;
   vertical-align: top;
   font-family: 'Open Sans', sans-serif;
   line-height: 28px;
 }
 
-.people-report-time-logs-wrapper {
+.peopleReportTimeLogsWrapper {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
@@ -217,13 +221,13 @@ body {
 }
 
 
-.people-report-time-log-block {
+.peopleReportTimeLogBlock {
   height: auto;
   min-width: 180px;
 }
 
 @media (min-width: 850px) {
-  .people-report-time-logs-wrapper {
+  .peopleReportTimeLogsWrapper {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -234,7 +238,7 @@ body {
 }
 
 @media (min-width: 850px) and (max-width: 1249px) {
-  .people-report-time-logs-wrapper>* {
+  .peopleReportTimeLogsWrapper >* {
     /* display: flex; */
     flex-wrap: wrap;
     justify-content: space-between;
@@ -243,7 +247,7 @@ body {
 }
 
 @media (min-width: 275px) and (max-width: 435px) {
-  .people-report-time-logs-wrapper>* {
+  .peopleReportTimeLogsWrapper >* {
     margin-top: 25px;
     /* display: flex; */
     flex-wrap: wrap;
@@ -252,12 +256,12 @@ body {
   }
 }
 
-.Infringementcontainer {
+.infringementContainer {
   display: flex;
   justify-content: center;
 }
 
-.InfringementcontainerInner {
+.infringementContainerInner {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -270,7 +274,7 @@ body {
   align-items: center;
 }
 
-.container-people-wrapper {
+.containerPeopleWrapper {
   min-height: 100%;
   max-width: 100vw;
   display: flex;
@@ -283,51 +287,51 @@ body {
 }
 
 
-.report-stats a {
+.reportStats a {
   text-decoration: none;
   font-weight: 600;
 }
 
-.report-stats a:hover {
+.reportStats a:hover {
   text-decoration: underline;
 }
 
-.report-stats p {
+.reportStats p {
   margin: 0.5rem 0;
   text-align: center;
 }
 
 /* Dark mode text improvements */
-.text-light.report-stats {
+.textLight.reportStats {
   color: #f8f9fa;
 }
 
-.text-light.report-stats a {
+.textLight.reportStats a {
   color: #f8f9fa;
 }
 
-.text-light.report-stats p {
+.textLight.reportStats p {
   color: #e9ecef;
 }
 
-.text-light .stats {
+.textLight .stats {
   color: #e9ecef;
 }
 
-.text-light .stats h4 {
+.textLight .stats h4 {
   color: #f8f9fa;
 }
 
-.text-light .stats p {
+.textLight .stats p {
   color: #adb5bd;
 }
 
-.text-light .rehireable {
+.textLight .rehireable {
   color: #e9ecef;
 }
 
 @media (max-width: 1100px) {
-  .mobile-people-table {
+  .mobilePeopleTable {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -335,12 +339,12 @@ body {
   }
 }
 
-.order-column {
+.orderColumn {
   order: 1;
 }
 
 @media (max-width: 981px) {
-  .order-column {
+  .orderColumn {
     order: -1;
     flex: 0 0 100%;
     max-width: 100%;
@@ -348,17 +352,7 @@ body {
 
 }
 
-/* .people-report-flex-layout {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: space-between;
-  width: 100%;
-  gap: 20px;
-   flex-wrap: nowrap;
-  height: 100%;
-} */
-.people-report-flex-layout {
+.peopleReportFlexLayout {
   display: flex;
   flex-wrap: nowrap; 
   align-items: flex-start;
@@ -367,7 +361,7 @@ body {
   width: 100%;
 }
 
-.people-report-wrapper {
+.peopleReportWrapper {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
@@ -375,14 +369,14 @@ body {
   padding: 24px 32px;
 }
 
-.people-report-left {
+.peopleReportLeft {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 100%;
 }
 
-.people-report-right {
+.peopleReportRight {
   width: 23vw;
   display: flex;
   flex-direction: column;
@@ -392,13 +386,13 @@ body {
   overflow: hidden;
 }
 
-.people-report-profile-wrapper {
+.peopleReportProfileWrapper {
   position: relative;
   margin-top: 2.3em; 
   width: 100%;
 }
 
-.report-stats {
+.reportStats {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -407,46 +401,57 @@ body {
   padding: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  height: 620px;
 }
 
-.bg-oxford-blue {
+@media (max-width: 1260px) {
+  .reportStats {
+    height: 740px;
+  }
+}
+
+.bgOxfordBlue {
   background-color: #0b1d3a !important;
 }
 
-.bg-yinmn-blue {
+.bgYinmnBlue {
   background-color: #2c3e50 !important;
 }
 
-.text-light {
+.textLight {
   color: #ffffff !important;
 }
 
+.fontWeightBold {
+  font-weight: 600 !important; /* or 700 if you prefer */
+}
+
 @media (max-width: 960px) {
-  .people-report-flex-layout {
+  .peopleReportFlexLayout {
     flex-direction: column;
     flex-wrap: wrap;
   }
 
-  .people-report-left,
-  .people-report-right {
+  .peopleReportLeft,
+  .peopleReportRight {
     width: 100% !important;
   }
 
-  .people-report-right {
+  .peopleReportRight {
     margin-top: 1rem;
     height: auto !important; /* override the 140vh */
   }
 }
 
 @media (max-width: 960px) {
-  .people-report-time-logs-wrapper {
+  .peopleReportTimeLogsWrapper {
     flex-direction: column;
     align-items: center; 
     gap: 1rem;
     width: 100%;
   }
 
-  .people-report-time-log-block {
+  .peopleReportTimeLogBlock {
     width: 40% !important;     
     height: 110px;
     display: flex;
@@ -459,15 +464,15 @@ body {
     margin: 0;
   }
 
-  .people-report-time-log-block h3,
-  .people-report-time-log-block p {
+  .peopleReportTimeLogBlock h3,
+  .peopleReportTimeLogBlock p {
     margin: 0;
     padding: 4px 0;
     text-align: center;
     color: white !important;
   }
 
-  .people-report-time-log-block > div {
+  .peopleReportTimeLogBlock > div {
     width: 100%;
     height: 100%;
     display: flex;
