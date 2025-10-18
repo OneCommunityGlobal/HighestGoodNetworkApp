@@ -152,6 +152,7 @@ import UtilizationChart from './components/BMDashboard/UtilizationChart/Utilizat
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
+import BrowseLessonPlan from './components/EductionPortal/BrowseLessonPlan/BrowseLessonPlan';
 import EPDashboard from './components/EductionPortal';
 
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
@@ -734,6 +735,11 @@ export default (
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
+        <EPProtectedRoute
+          path="/educationportal/lesson-library"
+          exact
+          component={BrowseLessonPlan}
+        />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
