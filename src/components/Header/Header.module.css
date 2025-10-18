@@ -67,7 +67,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  white-space: nowrap;
+  overflow: visible;
 }
 
 .redBackGroupHeader {
@@ -90,11 +90,6 @@
 .owner-message {
   margin-right: 1rem;
   
-}
-
-.navbar {
-  z-index: 100;
-  overflow: visible;
 }
 
 .nav-links {
@@ -230,5 +225,84 @@
     height: 24px !important;
     transform: scale(1) !important;
     vertical-align: middle !important;
+  }
+}
+
+/* Conservative Three Section Header Layout - Prevents icon overlap */
+.left-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 0 0 auto;
+  min-width: fit-content;
+}
+
+.center-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  text-align: center;
+  min-width: 200px; /* Ensure minimum visibility */
+  overflow: hidden; /* Handle text overflow gracefully */
+}
+
+.right-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  min-width: fit-content;
+}
+
+/* Responsive behavior - prevent icon overlap on smaller screens */
+@media (max-width: 1200px) {
+  .left-section,
+  .center-section,
+  .right-section {
+    flex-wrap: nowrap;
+  }
+  
+  /* Ensure right section (navigation/icons) stays on the right */
+  .right-section {
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+  }
+  
+  /* Give center section minimum space but allow some compression */
+  .center-section {
+    flex-shrink: 0.5;
+    min-width: 150px; /* Minimum width to stay visible */
+    margin: 0 0.5rem; /* Add some breathing room */
+  }
+  
+  /* Keep left section stable but allow some compression */
+  .left-section {
+    flex-shrink: 0.5;
+    margin-right: 0.5rem;
+  }
+}
+
+/* Medium screens - better balance */
+@media (max-width: 900px) {
+  .center-section {
+    min-width: 120px; /* Still visible but more compressed */
+    font-size: 0.9rem; /* Slightly smaller text */
+  }
+}
+
+/* Mobile specific - stack vertically to prevent overlap */
+@media (max-width: 768px) {
+  .navbar .d-flex {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+  
+  .left-section,
+  .center-section,
+  .right-section {
+    width: 100% !important;
+    justify-content: center !important;
   }
 }
