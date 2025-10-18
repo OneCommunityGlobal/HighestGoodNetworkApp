@@ -1,0 +1,112 @@
+.container {
+  padding: 16px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #222;
+  background: #fff;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.newButton {
+  background: #0078d4;
+  color: #fff;
+  border: 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.newButton:hover {
+  background: #0066b3;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #fafafa;
+  border: 1px solid #f2f2f2;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.itemName {
+  font-weight: 600;
+  font-size: 14px;
+  color: #111;
+}
+
+.count {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.editButton {
+  background: transparent;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.editButton:hover {
+  background: #f5f5f5;
+}
+
+.empty {
+  color: #666;
+  padding: 12px;
+  text-align: center;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+  .newButton, .editButton {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+  .item {
+    padding: 10px 8px;
+  }
+}
