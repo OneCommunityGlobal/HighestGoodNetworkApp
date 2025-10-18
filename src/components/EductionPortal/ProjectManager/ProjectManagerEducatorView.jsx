@@ -37,7 +37,6 @@ async function fetchEducators() {
   await new Promise((r) => setTimeout(r, 250));
   return mockEducators.map(({ students, ...rest }) => rest);
 }
-
 async function fetchStudentsByEducator(educatorId) {
   await new Promise((r) => setTimeout(r, 200));
   const edu = mockEducators.find((e) => e.id === educatorId);
@@ -60,28 +59,45 @@ function StudentCard({ s }) {
   );
 }
 
-function EducatorRow({ educator }) {
-  const [open, setOpen] = React.useState(false);
+function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
   const [loading, setLoading] = React.useState(false);
   const [students, setStudents] = React.useState([]);
+  const [loaded, setLoaded] = React.useState(false);
 
-  async function toggle() {
-    if (!open && students.length === 0) {
+  async function ensureLoaded() {
+    if (!loaded) {
       setLoading(true);
       const data = await fetchStudentsByEducator(educator.id);
       setStudents(data);
       setLoading(false);
+      setLoaded(true);
     }
-    setOpen((v) => !v);
   }
+
+  async function handleToggle() {
+    if (!isExpanded) await ensureLoaded();
+    onToggle(educator.id);
+  }
+
+  const filteredStudents = React.useMemo(() => {
+    const q = studentQuery.trim().toLowerCase();
+    if (!q) return students;
+    return students.filter((s) => s.name.toLowerCase().includes(q));
+  }, [studentQuery, students]);
 
   return (
     <div className={styles.row}>
       <button
         type="button"
         className={styles.rowHeader}
-        onClick={toggle}
-        aria-expanded={open}
+        onClick={handleToggle}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handleToggle();
+          }
+        }}
+        aria-expanded={isExpanded}
         aria-controls={`students-${educator.id}`}
       >
         <div className={styles.rowHeaderLeft}>
@@ -90,17 +106,21 @@ function EducatorRow({ educator }) {
         </div>
         <div className={styles.rowHeaderRight}>
           <span className={styles.badge}>{educator.studentCount} students</span>
-          <span className={styles.toggleText}>{open ? "Hide" : "View"}</span>
+          <span className={styles.toggleText}>{isExpanded ? "Hide" : "View"}</span>
         </div>
       </button>
 
-      {open && (
+      {isExpanded && (
         <div id={`students-${educator.id}`} className={styles.studentsWrap}>
           {loading ? (
             <div className={styles.loadingText}>Loading students…</div>
+          ) : filteredStudents.length === 0 ? (
+            <div className={styles.emptyText}>
+              {studentQuery ? "No students match this search." : "No students found."}
+            </div>
           ) : (
             <div className={styles.students}>
-              {students.map((s) => (
+              {filteredStudents.map((s) => (
                 <StudentCard key={s.id} s={s} />
               ))}
             </div>
@@ -115,11 +135,20 @@ export default function ProjectManagerEducatorView() {
   const [educators, setEducators] = React.useState([]);
   const [filtered, setFiltered] = React.useState([]);
   const [query, setQuery] = React.useState("");
+  const [subject, setSubject] = React.useState("All");
+  const [studentQuery, setStudentQuery] = React.useState("");
+  const [expandedIds, setExpandedIds] = React.useState(new Set());
+
   const [showComposer, setShowComposer] = React.useState(false);
   const [lastSentInfo, setLastSentInfo] = React.useState(null);
 
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
+
+  const subjects = React.useMemo(() => {
+    const s = new Set(mockEducators.map((e) => e.subject));
+    return ["All", ...Array.from(s).sort()];
+  }, []);
 
   React.useEffect(() => {
     (async () => {
@@ -137,18 +166,31 @@ export default function ProjectManagerEducatorView() {
 
   React.useEffect(() => {
     const q = query.trim().toLowerCase();
-    if (!q) {
-      setFiltered(educators);
-    } else {
-      setFiltered(
-        educators.filter(
-          (e) =>
-            e.name.toLowerCase().includes(q) ||
-            e.subject.toLowerCase().includes(q)
-        )
-      );
-    }
-  }, [query, educators]);
+    setFiltered(
+      educators.filter((e) => {
+        const matchText =
+          e.name.toLowerCase().includes(q) || e.subject.toLowerCase().includes(q);
+        const matchSubject = subject === "All" || e.subject === subject;
+        return matchText && matchSubject;
+      })
+    );
+  }, [query, subject, educators]);
+
+  function toggleExpanded(id) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function expandAll() {
+    setExpandedIds(new Set(filtered.map((e) => e.id)));
+  }
+  function collapseAll() {
+    setExpandedIds(new Set());
+  }
 
   function handleOpenComposer() {
     setShowComposer(true);
@@ -175,16 +217,47 @@ export default function ProjectManagerEducatorView() {
       <div className={styles.header}>
         <div>
           <h1 className={styles.title}>Project Manager Dashboard</h1>
+          <p className={styles.subtitle}>View educators and their assigned students</p>
         </div>
+
         <div className={styles.toolbar}>
           <input
             type="text"
-            placeholder="Search educators by name or subject"
+            placeholder="Search educators (name/subject)"
             className={styles.searchInput}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             aria-label="Search educators"
           />
+
+          <select
+            className={styles.select}
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            aria-label="Filter by subject"
+          >
+            {subjects.map((subj) => (
+              <option key={subj} value={subj}>
+                {subj}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="text"
+            placeholder="Search students inside rows"
+            className={styles.searchInput}
+            value={studentQuery}
+            onChange={(e) => setStudentQuery(e.target.value)}
+            aria-label="Search students"
+          />
+
+          <button className={styles.ghostBtn} onClick={expandAll}>
+            Expand all
+          </button>
+          <button className={styles.ghostBtn} onClick={collapseAll}>
+            Collapse all
+          </button>
           <button className={styles.primaryBtn} onClick={handleOpenComposer}>
             New Announcement
           </button>
@@ -199,6 +272,7 @@ export default function ProjectManagerEducatorView() {
         </div>
       )}
 
+      {/* List */}
       <section className={styles.card} aria-label="Educators">
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Educators</h2>
@@ -212,7 +286,13 @@ export default function ProjectManagerEducatorView() {
           {!loading && !error && filtered.length > 0 && (
             <div role="list" aria-label="Educator list">
               {filtered.map((e) => (
-                <EducatorRow key={e.id} educator={e} />
+                <EducatorRow
+                  key={e.id}
+                  educator={e}
+                  isExpanded={expandedIds.has(e.id)}
+                  onToggle={toggleExpanded}
+                  studentQuery={studentQuery}
+                />
               ))}
             </div>
           )}

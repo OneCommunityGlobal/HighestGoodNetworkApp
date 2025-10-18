@@ -253,3 +253,30 @@
   border-radius: 10px;
   font-size: 0.95rem;
 }
+
+.select {
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: #fff;
+  font: inherit;
+  outline: none;
+}
+
+.select:focus {
+  border-color: var(--primary, #4f46e5);
+  box-shadow: 0 0 0 3px var(--primary-100, #eef2ff);
+}
+
+.ghostBtn {
+  background: transparent;
+  color: var(--text, #111827);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.ghostBtn:hover {
+  background: #f9fafb;
+}
