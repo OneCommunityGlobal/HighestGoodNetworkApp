@@ -9,8 +9,8 @@ import {
   Alert,
   Spinner,
 } from 'reactstrap';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,13 +20,17 @@ import MembersAutoComplete from './MembersAutoComplete';
 
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
-import styles from './ToggleSwitch/ToggleSwitch.module.scss';
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
-  const [isChecked, setIsChecked] = useState(1); // 0 = false, 1 = true, 2 = all
-  const [checkedStatus, setCheckedStatus] = useState('Active'); // 0 = false, 1 = true, 2 = all
+
+  const [filterMode, setFilterMode] = useState('active'); // 'active' | 'all' | 'inactive'
+  const nextLabelFor = m => (m === 'active' ? 'See All' : m === 'all' ? 'Inactive' : 'Active');
+  const colorForMode = m =>
+    m === 'inactive' ? '#ccc' : m === 'active' ? 'limegreen' : 'dodgerblue';
+  const textColorForMode = m => (m === 'inactive' ? 'black' : 'white');
+
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
@@ -34,41 +38,25 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
-  const trackColor = isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue';
+  const [infoModal, setInfoModal] = useState(false);
+
+  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const validation = props.members.teamMembers || props.members;
 
   const closeDeletedPopup = () => {
     setDeletedPopup(!deletedPopup);
   };
-
 
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
   };
 
-  const handleToggle = (event) => {
-    setIsChecked(parseInt(event.target.value));
-    setCheckedStatus(
-      parseInt(event.target.value) == 0
-        ? 'Inactive'
-        : parseInt(event.target.value) == 1
-        ? 'Active'
-        : 'See All',
-    );
-  };
-
-  const [infoModal, setInfoModal] = useState(false);
-
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-
-  const validation = props.members.teamMembers || props.members;
-
   const closePopup = () => {
     setMemberList([]);
     props.onClose();
     setSortOrder(0);
-    setIsChecked(1);
-    setCheckedStatus('Active');
+    setFilterMode('active');
   };
   const onAddUser = () => {
     if (selectedUser) {
@@ -92,8 +80,13 @@ export const TeamMembersPopup = React.memo(props => {
     setDuplicateUserAlert(false);
   };
 
+  const applyStatusFilter = (list, mode) => {
+    if (mode === 'active') return list.filter(u => u.isActive);
+    if (mode === 'inactive') return list.filter(u => !u.isActive);
+    return list; // 'all'
+  };
+
   const sortByPermission = useCallback((a, b) => {
-    // Sort by index
     const rolesPermission = [
       'owner',
       'administrator',
@@ -113,7 +106,7 @@ export const TeamMembersPopup = React.memo(props => {
   }, []);
 
   /**
-   * The function to sort the memberlist
+   * Sort the member list
    * @param {-1 | 0 | 1} [sort = 0]
    * -1: ascending order by date
    * 0: alphabetized order by name
@@ -133,10 +126,10 @@ export const TeamMembersPopup = React.memo(props => {
       sortedList = Object.keys(groupByPermissionList)
         .sort(sortByPermission)
         .map(key => groupByPermissionList[key])
-        .map(list => list.toSorted(sortByAlpha))
+        .map(list => [...list].sort(sortByAlpha))
         .flat();
     } else {
-      const sortByDateList = validation.toSorted((a, b) => {
+      const sortByDateList = [...validation].sort((a, b) => {
         return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
       });
 
@@ -151,7 +144,7 @@ export const TeamMembersPopup = React.memo(props => {
       );
 
       dataList.forEach(item => {
-        sortedList.push(...item.toSorted(sortByAlpha));
+        sortedList.push(...[...item].sort(sortByAlpha));
       });
     }
     setMemberList(sortedList);
@@ -212,7 +205,7 @@ export const TeamMembersPopup = React.memo(props => {
 
   const emptyState = (
     <tr>
-      <td colSpan={6} className="empty-data-message">
+      <td colSpan={canAssignTeamToUsers ? 6 : 5} className="empty-data-message">
         There are no users on this team.
       </td>
     </tr>
@@ -225,6 +218,7 @@ export const TeamMembersPopup = React.memo(props => {
       <Modal
         isOpen={props.open}
         toggle={closePopup}
+        /* eslint-disable-next-line jsx-a11y/no-autofocus */
         autoFocus={false}
         size="lg"
         className={`${darkMode ? 'dark-mode text-light' : ''} ${
@@ -270,46 +264,72 @@ export const TeamMembersPopup = React.memo(props => {
             className={`table table-bordered table-responsive-xlg ${
               darkMode ? 'dark-mode text-light' : ''
             }`}
+            style={{ tableLayout: 'fixed' }}
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                <button
-                  onClick={() => {
-                    const newStatus = (isChecked + 1) % 3;
-                    setIsChecked(newStatus);
-                    setCheckedStatus(
-                      newStatus === 0 ? 'Inactive' : newStatus === 1 ? 'Active' : 'See All'
-                    );
-                  }}
+                <th
                   style={{
-                    backgroundColor:
-                      isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue',
-                    color: isChecked === 0 ? 'black' : 'white', // 🔁 Dynamic text color
-                    border: 'none',
-                    padding: '6px 12px',
-                    borderRadius: '5px',
-                    fontWeight: 'bold',
-                    cursor: 'pointer',
-                    width: '100px',
-                    minWidth: '100px',
+                    width: 120,
                     textAlign: 'center',
-                    whiteSpace: 'nowrap',
+                    background: darkMode ? '#1f2a44' : '#e9f2ff',
+                    verticalAlign: 'middle',
                   }}
                 >
-                  {checkedStatus}
-                </button>
-              </th>
-                <th class="def-width">#</th>
-                <th class="def-width">User Name</th>
-                <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFilterMode(m =>
+                        m === 'active' ? 'all' : m === 'all' ? 'inactive' : 'active',
+                      );
+                    }}
+                    style={{
+                      backgroundColor: colorForMode(filterMode),
+                      color: textColorForMode(filterMode),
+                      border: 'none',
+                      padding: '6px 12px',
+                      borderRadius: '5px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer',
+                      minWidth: 90,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {nextLabelFor(filterMode)}
+                  </button>
+                </th>
+
+                <th
+                  className="def-width"
+                  style={{ width: 56, textAlign: 'center', verticalAlign: 'middle' }}
+                >
+                  #
+                </th>
+
+                <th
+                  className="def-width"
+                  style={{ minWidth: 220, textAlign: 'center', verticalAlign: 'middle' }}
+                >
+                  User Name
+                </th>
+
+                <th
+                  style={{
+                    width: 120,
+                    cursor: 'pointer',
+                    textAlign: 'center',
+                    verticalAlign: 'middle',
+                  }}
+                  onClick={toggleOrder}
+                >
                   Date Added{' '}
                   <FontAwesomeIcon
                     icon={icons[sortOrder].icon}
                     className={icons[sortOrder].className}
                   />
                 </th>
-                <th>
+
+                <th style={{ width: 110, textAlign: 'center', verticalAlign: 'middle' }}>
                   See All{' '}
                   <i
                     data-toggle="tooltip"
@@ -322,73 +342,99 @@ export const TeamMembersPopup = React.memo(props => {
                   />
                 </th>
                 {canAssignTeamToUsers && (
-                  <th aria-label="Assign Team to Users">
+                  <th
+                    style={{ width: 120, textAlign: 'center', verticalAlign: 'middle' }}
+                    aria-label="Assign Team to Users"
+                  >
                     <span style={{ display: 'none' }}>Assign Team to Users</span>
                   </th>
                 )}
               </tr>
             </thead>
             <tbody>
-            {props.fetching ?
-                 <tr><td align='center' colSpan={6}><Spinner  color={`${darkMode ? 'light' : 'dark'}`} animation="border" size="sm" /></td></tr> :
-                 !memberList.length ?
-                   emptyState :
-                   ((Array.isArray(props.members.teamMembers) &&
-                     props.members.teamMembers.length > 0) ||
-                     (typeof props.members.fetching === 'boolean' &&
-                       !props.members.fetching &&
-                       props.members.teamMembers) ||
-                     (Array.isArray(props.members) && props.members.length > 0)) &&
-                   memberList.toSorted().map((user, index) => {
-                     return (
-                       <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
-                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                           <div className={user.isActive ? 'isActive' : 'isNotActive'}>
-                             <i className="fa fa-circle" aria-hidden="true" />
-                           </div>
-                         </td>
-                         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>{index + 1}</td>
-                         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                           {returnUserRole(user) ? (
-                             <b>
-                               {user.firstName} {user.lastName} ({user.role})
-                             </b>
-                           ) : (
-                             <span>
-                               {user.firstName} {user.lastName} ({user.role})
-                             </span>
-                           )}{' '}
-                           {hasVisibilityIconPermission && !user.isVisible && (  // Invisibility icon from 'Cillian'
-                             <i className="fa fa-eye-slash" title="User is invisible" />
-                           )}
-                         </td>
-                         {/* <td>{user}</td> */}
-                         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                          {moment(user.addDateTime).format('MMM-DD-YY')}
-                          </td>
-                         <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                           <ToggleSwitch
-                             key={`${props.selectedTeamName}-${user._id}`}
-                             switchType="limit-visibility"
-                             userId={user._id}
-                             choice={memberVisibility[user._id]}
-                             UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
-                           />
-                         </td>
-                         {canAssignTeamToUsers && (
-                           <td style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}>
-                             <Button
-                               color="danger"
-                               onClick={() => handleDelete(user._id)}
-                               style={darkMode ? boxStyleDark : boxStyle}
-                             >
-                               Delete
-                             </Button>
-                           </td>
-                         )}
-                       </tr>
-                     );
-                   })}
+              {(() => {
+                if (props.fetching) {
+                  return (
+                    <tr>
+                      <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
+                        <Spinner
+                          color={`${darkMode ? 'light' : 'dark'}`}
+                          animation="border"
+                          size="sm"
+                        />
+                      </td>
+                    </tr>
+                  );
+                }
+
+                const visibleList = applyStatusFilter(memberList, filterMode);
+                if (!visibleList.length) {
+                  return emptyState;
+                }
+
+                return visibleList.map((user, index) => (
+                  <tr key={`${props.selectedTeamName}-${user._id}`}>
+                    <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                      <div className={user.isActive ? 'isActive' : 'isNotActive'}>
+                        <i className="fa fa-circle" aria-hidden="true" />
+                      </div>
+                    </td>
+                    <td
+                      className="def-width"
+                      style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                    >
+                      {index + 1}
+                    </td>
+                    <td
+                      className="def-width"
+                      style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                    >
+                      {returnUserRole(user) ? (
+                        <b>
+                          {user.firstName} {user.lastName} ({user.role})
+                        </b>
+                      ) : (
+                        <span>
+                          {user.firstName} {user.lastName} ({user.role})
+                        </span>
+                      )}{' '}
+                      {hasVisibilityIconPermission && !user.isVisible && (
+                        <i className="fa fa-eye-slash" title="User is invisible" />
+                      )}
+                    </td>
+                    <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                      {moment(user.addDateTime).format('MMM-DD-YY')}
+                    </td>
+                    <td
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        height: '100%',
+                      }}
+                    >
+                      <ToggleSwitch
+                        key={`${props.selectedTeamName}-${user._id}`}
+                        switchType="limit-visibility"
+                        userId={user._id}
+                        choice={memberVisibility[user._id]}
+                        UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
+                      />
+                    </td>
+                    {canAssignTeamToUsers && (
+                      <td style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}>
+                        <Button
+                          color="danger"
+                          onClick={() => handleDelete(user._id)}
+                          style={darkMode ? boxStyleDark : boxStyle}
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    )}
+                  </tr>
+                ));
+              })()}
             </tbody>
           </table>
         </ModalBody>
@@ -411,14 +457,16 @@ export const TeamMembersPopup = React.memo(props => {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p>
-            Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are
-            one drop, together we are an ocean.” Through the action you just took, this ocean is now
-            one drop smaller.
+            Team member successfully deleted! Ryunosuke Satoro famously said, &ldquo;Individually we
+            are one drop, together we are an ocean.&rdquo; Through the action you just took, this
+            ocean is now one drop smaller.
           </p>
         </ModalBody>
       </Modal>
     </Container>
   );
 });
+
+TeamMembersPopup.displayName = 'TeamMembersPopup';
 
 export default connect(null, { hasPermission })(TeamMembersPopup);

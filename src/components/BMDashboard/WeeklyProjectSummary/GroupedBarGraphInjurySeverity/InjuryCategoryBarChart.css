@@ -1,0 +1,55 @@
+.injury-chart-container {
+  padding: 1rem;
+}
+
+.injury-chart-title {
+  color: #666666;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.injury-chart-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* ------------------- DARK MODE STYLES ------------------- */
+.darkMode .injury-chart-title {
+  color: white;
+}
+
+.darkMode .injury-chart-label {
+  color: white;
+}
+
+.darkMode .injury-select__control {
+  background-color: #2b3e59 !important;
+  color: white !important;
+  border-color: #555 !important;
+}
+
+.darkMode .injury-select__single-value,
+.darkMode .injury-select__multi-value__label,
+.darkMode .injury-select__input-container {
+  color: white !important;
+}
+
+.darkMode .injury-select__menu {
+  background-color: #2b3e59 !important;
+  color: white !important;
+}
+
+.darkMode .injury-select__option:hover {
+  color: black !important;
+}
+
+.darkMode .react-datepicker__input-container input {
+  background-color: #2b3e59 !important;
+  color: white !important;
+  border: 1px solid #555;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
