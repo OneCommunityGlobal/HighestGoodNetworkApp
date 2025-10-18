@@ -33,7 +33,6 @@ const Name = props => {
   } = props;
 
   const { firstName, lastName } = userProfile;
-
   if (canEdit) {
     return (
       <>
@@ -44,7 +43,11 @@ const Name = props => {
               type="text"
               name="firstName"
               id="firstName"
+
+              data-testid='firstName'
+
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+
               value={firstName}
               // className={styleProfile.profileText}
               onChange={e => {
@@ -86,6 +89,7 @@ const Name = props => {
               type="text"
               name="lastName"
               id="lastName"
+              data-testid='lastName'
               value={lastName}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               // className={styleProfile.profileText}
@@ -137,9 +141,8 @@ const Name = props => {
   );
 };
 
-const Title = props => {
+  const Title = props => {
   const { userProfile, setUserProfile, canEdit, desktopDisplay, darkMode } = props;
-
   const { jobTitle } = userProfile;
 
   if (canEdit) {
@@ -152,6 +155,7 @@ const Title = props => {
               type="text"
               name="title"
               id="jobTitle"
+              data-testid="jobTitle"
               value={jobTitle}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
@@ -191,6 +195,7 @@ const Title = props => {
     </>
   );
 };
+
 
 const Email = props => {
   const {
@@ -246,6 +251,7 @@ const Email = props => {
             </div>
             <ToggleSwitch
               switchType="email"
+              id="emailPrivacy"
               state={privacySettings?.email}
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
@@ -253,9 +259,28 @@ const Email = props => {
 
             <ToggleSwitch
               switchType="email-subcription"
-              state={emailSubscriptions ? emailSubscriptions : false}
+
+              id="emailSubscription"
+              state={emailSubscriptions? emailSubscriptions : false}
+
+              // state={emailSubscriptions ? emailSubscriptions : false}
+
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
+            />
+
+            <Input
+              type="email"
+              name="email"
+              id="email"
+              data-testid="email"
+              value={email}
+              onChange={e => {
+                setUserProfile({ ...userProfile, email: e.target.value });
+                setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
+              }}
+              placeholder="Email"
+              invalid={!formValid.email}
             />
 
             <FormFeedback>Email is not Valid</FormFeedback>
@@ -275,7 +300,7 @@ const Email = props => {
   );
 };
 
-const formatPhoneNumber = str => {
+export const formatPhoneNumber = str => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -305,15 +330,9 @@ const formatPhoneNumber = str => {
   // Unconventional
   return str;
 };
-const Phone = props => {
-  const {
-    userProfile,
-    setUserProfile,
-    handleUserProfile,
-    canEdit,
-    desktopDisplay,
-    darkMode,
-  } = props;
+
+export const Phone = props => {
+  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay ,darkMode} = props;
   const { phoneNumber, privacySettings } = userProfile;
   const phoneInputWrapperRef = useRef(null);
   if (canEdit) {
@@ -321,11 +340,19 @@ const Phone = props => {
       <>
         <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
-          <div style={{ position: 'relative' }} ref={phoneInputWrapperRef}>
+            <ToggleSwitch
+              switchType="phone"
+              id="phone"
+              state={privacySettings?.phoneNumber}
+              handleUserProfile={handleUserProfile}
+              darkMode={darkMode}
+            />
             <PhoneInput
               buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
               inputClass={`phone-input-style ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               country={'us'}
+              data-testid="ph-input-style"
+              id="ph-input-style"
               value={phoneNumber}
               onChange={phoneNumber => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
@@ -352,7 +379,6 @@ const Phone = props => {
                 zIndex: 2,
               }}
             />
-          </div>
             <ToggleSwitch
               switchType="phone"
               state={privacySettings?.phoneNumber}
@@ -377,9 +403,8 @@ const Phone = props => {
   );
 };
 
-const TimeZoneDifference = props => {
+export const TimeZoneDifference = props => {
   const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay, darkMode } = props;
-
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -666,6 +691,7 @@ const BasicInformationTab = props => {
               type="text"
               name="collaborationPreference"
               id="collaborationPreference"
+              data-testid="collaborationPreference"
               value={userProfile.collaborationPreference}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
@@ -702,7 +728,7 @@ const BasicInformationTab = props => {
               name="role"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
             >
-              {roles.map(({ roleName }) => {
+              {roles.map(( roleName ) => {
                 if (roleName === 'Owner') return;
                 return (
                   <option key={roleName} value={roleName}>
@@ -751,6 +777,7 @@ const BasicInformationTab = props => {
               <Row className="ml-0">
                 <Col className="p-0">
                   <Input
+                    data-testid="location"
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
                     className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
@@ -771,7 +798,7 @@ const BasicInformationTab = props => {
             </Col>
           ) : (
             <Col className="cols">
-              <Input onChange={handleLocation} value={userProfile.location.userProvided || ''} />
+              <Input data-testid="location" onChange={handleLocation} value={userProfile.location.userProvided || ''} />
               <div>
                 <Button
                   color="secondary"
