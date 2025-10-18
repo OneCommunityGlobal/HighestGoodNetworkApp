@@ -20,27 +20,16 @@ import { ENDPOINTS } from '~/utils/URL';
 
 export const ALERT_DELAY = process.env.NODE_ENV === 'test' ? 0 : 6000;
 
-const getAllBadges = allBadges => {
-  const action = {
-    type: GET_ALL_BADGE_DATA,
-    allBadges,
-  };  
-  return action;
-};
+const getAllBadges = allBadges => ({
+  type: GET_ALL_BADGE_DATA,
+  allBadges,
+});
 
-export const fetchAllBadges = (forceRefresh = false) => {
+export const fetchAllBadges = () => {
   return async dispatch => {
     try {
-      // Check the endpoint
-      const baseUrl = ENDPOINTS.BADGE();
-      const url = forceRefresh ? `${baseUrl}?t=${Date.now()}` : baseUrl;
-      
-      const response = await axios.get(url);
-      
-      const actionResult = getAllBadges(response.data);
-      
-      dispatch(actionResult);
-            
+      const response = await axios.get(ENDPOINTS.BADGE());
+      dispatch(getAllBadges(response.data));
       return response.status;
     } catch (err) {
       return err.response?.status || 500;
