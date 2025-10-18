@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './issueGraph.module.css';
 import {
   BarChart,
@@ -13,46 +13,116 @@ import {
 } from 'recharts';
 
 function IssueGraph() {
-  const [summary] = useState({
+  const [summary, setSummary] = useState({
     total: 120,
     newThisWeek: 45,
     resolved: 25,
     avgResolution: 20,
   });
-  const [weeks, setWeeks] = useState(8);
-  const [startDate, setStartDate] = useState(new Date());
-  const [endDate, setEndDate] = useState(new Date());
 
-  //mock data for chart
-  const graphData = useMemo(() => {
-    const data = [];
-    for (let i = 1; i <= weeks; i++) {
-      data.push({
-        week: `Week ${i}`,
+  const [weeks, setWeeks] = useState(8);
+  const [graphData, setGraphData] = useState([]);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [useManualDate, setUseManualDate] = useState(false);
+
+  const formatDate = date => date.toISOString().split('T')[0];
+
+  // Today and 12 weeks ago
+  const today = new Date();
+  const maxEndDate = formatDate(today);
+  const minStartDate = formatDate(new Date(today.getTime() - 12 * 7 * 24 * 60 * 60 * 1000));
+  const maxStartDate = endDate ? endDate : maxEndDate;
+  const minEndDate = startDate || minStartDate;
+
+  // mock data temp
+  const fetchData = ({ weeks, startDate, endDate }) => {
+    console.log('Fetching data with:', { weeks, startDate, endDate });
+
+    if (weeks && !startDate && !endDate) {
+      //week ffilter
+      const data = Array.from({ length: weeks }, (_, i) => ({
+        week: `Week ${i + 1}`,
         created: Math.floor(Math.random() * 50) + 10,
         resolved: Math.floor(Math.random() * 40) + 5,
-      });
+      }));
+      setGraphData(data);
+    } else if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+
+      // Calculate number of weeks between start and end
+      const diffInTime = end.getTime() - start.getTime();
+      const diffInWeeks = Math.max(1, Math.ceil(diffInTime / (7 * 24 * 60 * 60 * 1000)));
+
+      const data = Array.from({ length: diffInWeeks }, (_, i) => ({
+        week: `Week ${i + 1}`,
+        created: Math.floor(Math.random() * 50) + 10,
+        resolved: Math.floor(Math.random() * 40) + 5,
+      }));
+
+      setGraphData(data);
     }
-    return data;
-  }, [weeks]);
+  };
+
+  useEffect(() => {
+    fetchData({ weeks });
+  }, []);
+
+  const handleWeeksChange = value => {
+    setWeeks(value);
+    setUseManualDate(false);
+    setStartDate('');
+    setEndDate('');
+    fetchData({ weeks: value });
+  };
+
+  const handleGoClick = () => {
+    if (startDate && endDate && new Date(startDate) <= new Date(endDate)) {
+      setUseManualDate(true);
+      fetchData({ startDate, endDate });
+    }
+  };
 
   return (
     <div className={styles.issueGraphEventContainer}>
-      {/* Filter */}
       <div className={styles.filterRow}>
-        <div>
+        <div className={styles.filterGroup}>
           <label htmlFor="start-date">Start Date:</label>
-          <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+          <input
+            id="start-date"
+            type="date"
+            value={startDate}
+            onChange={e => setStartDate(e.target.value)}
+            min={minStartDate}
+            max={maxStartDate}
+          />
         </div>
 
-        <div>
+        <div className={styles.filterGroup}>
           <label htmlFor="end-date">End Date:</label>
-          <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+          <div className={styles.inputWithButton}>
+            <input
+              id="end-date"
+              type="date"
+              value={endDate}
+              onChange={e => setEndDate(e.target.value)}
+              min={minEndDate}
+              max={maxEndDate}
+            />
+            <button className={styles.goButton} onClick={handleGoClick}>
+              Go
+            </button>
+          </div>
         </div>
 
-        <div>
+        <div className={styles.filterGroup}>
           <label htmlFor="weeks-select">Weeks:</label>
-          <select value={weeks} onChange={e => setWeeks(Number(e.target.value))}>
+          <select
+            id="weeks-select"
+            value={weeks}
+            onChange={e => handleWeeksChange(Number(e.target.value))}
+          >
             <option value={4}>Last 4 Weeks</option>
             <option value={8}>Last 8 Weeks</option>
             <option value={12}>Last 12 Weeks</option>
@@ -60,7 +130,10 @@ function IssueGraph() {
         </div>
       </div>
 
-      {/* tiless section */}
+      {startDate && endDate && new Date(startDate) > new Date(endDate) && (
+        <p style={{ color: 'red' }}>Start date cannot be after end date.</p>
+      )}
+
       <div className={styles.tileRow}>
         <div className={styles.tile}>
           <h3>Total Issues</h3>
@@ -79,8 +152,7 @@ function IssueGraph() {
           <p>{summary.avgResolution} days</p>
         </div>
       </div>
-
-      {/* charts sections */}
+      {/* charts */}
       <div className={styles.graphWrapper}>
         <h2>Issues Created vs. Resolved</h2>
         <ResponsiveContainer width="100%" height={400}>
