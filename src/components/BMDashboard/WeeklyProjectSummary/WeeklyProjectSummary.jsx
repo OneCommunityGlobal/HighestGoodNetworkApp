@@ -474,18 +474,30 @@ function WeeklyProjectSummary() {
   };
 
   return (
-    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div
+      className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? 'dark-mode' : ''} ${
+        darkMode ? 'bg-oxford-blue' : ''
+      }`}
+    >
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
-      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+      <div
+        className={`${styles.weeklyProjectSummaryDashboardContainer} ${
+          darkMode ? 'bg-space-cadet' : ''
+        }`}
+      >
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
           {sections.map(({ title, key, className, content }) => (
             <div
               key={key}
-              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
+              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]} ${
+                darkMode ? 'bg-yinmn-blue' : ''
+              }`}
             >
               <button
                 type="button"
-                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+                className={`${styles.weeklyProjectSummaryDashboardCategoryTitle} ${
+                  darkMode ? 'bg-space-cadet' : ''
+                }`}
                 onClick={() => toggleSection(key)}
               >
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
