@@ -101,9 +101,7 @@
   width: 30px !important;
   height: 30px !important;
   margin: 0em 0.2em !important;
-  width: auto;
   border-radius: 5px;
-  margin: 0;
 }
 .warnings__descriptions__title {
   text-transform: capitalize;
