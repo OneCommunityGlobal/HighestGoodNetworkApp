@@ -3,12 +3,12 @@
   height: fit-content;
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
-.close-button {
+/*
   position: absolute;
   top: 0;
   left: 0;
   padding: 12px;
-}
+} */
 /* Timer Message Section */
 .timer-message-section {
   display: flex;
@@ -20,22 +20,43 @@
 }
 
 .card-content {
-  padding: 5px;
+  padding: 15px;
   padding-left: 40px;
-  padding-right: 30px;
+  padding-right: 40px; /* Match left padding for balance */
   white-space: pre-line;
   color: white;
   font-size: medium;
+  line-height: 1.4;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0; /* Remove all margins */
 }
 
 .headerCard {
-  margin-left: 35px;
-  margin-right: 50px;
+  margin-left: 0; /* Remove left margin */
+  margin-right: 0; /* Remove right margin */
+  /* Use full viewport width */
+  width: 100vw;
+  max-width: 100vw;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  /* Ensure card extends to full width */
+  left: 0;
+  right: 0;
 }
 
 .card-wrapper {
   padding-top: 1rem;
   padding-bottom: 1rem;
+  /* Ensure wrapper uses full width */
+  width: 100%;
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+  box-sizing: border-box;
 }
 
 .navbar {
@@ -147,11 +168,11 @@
   }
 }
 
-@media screen and (min-width: 1400px) and (max-width: 1700px) {
+/*@media screen and (min-width: 1400px) and (max-width: 1700px) {
   .owner-message {
     display: none;
   }
-}
+}*/
 
 @media screen and (max-width: 769px) {
   .responsive-spacing {

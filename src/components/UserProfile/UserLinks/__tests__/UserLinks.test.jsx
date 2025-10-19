@@ -47,7 +47,7 @@ describe("Test suite for UserLinks components", () => {
     const hyperLinkObj = screen.getByTestId("testHyperLink");
     expect(hyperLinkObj).toBeInTheDocument();
 
-    let linkObj = screen.queryByTestId("testLink");
+    const linkObj = screen.queryByTestId("testLink");
     expect(linkObj).not.toBeInTheDocument();
   });
 

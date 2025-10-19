@@ -401,7 +401,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
               >
                 <img
                   src={config.icon}
-                  alt={config.name + ' icon'}
+                  alt={`${config.name  } icon`}
                   style={{ width: 32, height: 32, objectFit: 'contain' }}
                 />
               </span>

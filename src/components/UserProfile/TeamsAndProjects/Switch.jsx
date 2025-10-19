@@ -1,4 +1,5 @@
 import "./Switch.css"
+
 const Switch = ({ isOn, handleToggle}) => {
   return (
     <div className='switch-container'>

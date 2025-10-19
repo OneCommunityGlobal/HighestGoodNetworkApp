@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { getAllUserProfile } from '~/actions/userManagement';
+import { getUserProfile } from '~/actions/userProfile';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
@@ -32,6 +33,7 @@ function UserPermissionsPopUp({
   darkMode,
   getChangeLogs,
 }) {
+  const dispatch = useDispatch();
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -93,6 +95,7 @@ function UserPermissionsPopUp({
       permissions: {
         frontPermissions: userPermissions,
         removedDefaultPermissions: userRemovedDefaultPermissions,
+        isAcknowledged: false, // Set to false when permissions change
       },
     };
 
@@ -111,6 +114,7 @@ function UserPermissionsPopUp({
         toggle();
         getAllUsers();
         getChangeLogs();
+        // No need to refresh profiles - the polling mechanism in PermissionWatcher will handle it
       })
       .catch(err => {
         const ERROR_MESSAGE = `

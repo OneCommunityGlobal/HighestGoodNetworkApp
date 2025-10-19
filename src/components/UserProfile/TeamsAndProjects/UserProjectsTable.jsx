@@ -191,7 +191,7 @@ const UserProjectsTable = React.memo(props => {
                               className="btn btn-outline-info"
                               style={darkMode ? {} : boxStyle}
                             >
-                              <i className="fa fa-tasks" aria-hidden="true"></i>
+                              <i className="fa fa-tasks" aria-hidden="true" />
                             </button>
                           </Link>
 

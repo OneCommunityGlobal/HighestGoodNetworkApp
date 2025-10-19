@@ -123,7 +123,7 @@ const WeeklySummaryOptions = props => {
   ];
 
   const handleOnChange = e => {
-    let temp = { ...props.userProfile };
+    const temp = { ...props.userProfile };
     temp.weeklySummaryOption = e.target.value;
     if (e.target.value === 'Not Required') {
       temp.weeklySummaryNotReq = true;
@@ -286,7 +286,7 @@ const ViewTab = props => {
   }, [hoursByCategory]);
 
   const calculateTotalHrsForPeriod = timeEntries => {
-    let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
+    const hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
     if (timeEntries.length < 1) return hours;
 
     for (let i = 0; i < timeEntries.length; i++) {
@@ -479,7 +479,7 @@ const ViewTab = props => {
             userHistory={userProfile.weeklycommittedHoursHistory}
           />
           <span className="history-icon">
-            <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal}></i>
+            <i className="fa fa-history" aria-hidden="true" onClick={toggleHistoryModal} />
           </span>
         </Col>
       </Row>
@@ -539,7 +539,7 @@ const ViewTab = props => {
       </Row>
       {props?.userProfile?.hoursByCategory
         ? Object.keys(userProfile.hoursByCategory).map(key => (
-          <React.Fragment key={'hours-by-category-' + key}>
+          <React.Fragment key={`hours-by-category-${  key}`}>
             <Row className="volunteering-time-row">
               <Col md="6">
                 <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>

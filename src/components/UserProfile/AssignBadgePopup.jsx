@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { Table, Button, UncontrolledTooltip } from 'reactstrap';
-import { connect } from 'react-redux';
 import axios from 'axios';
-import AssignTableRow from '../Badge/AssignTableRow';
-import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
-import { ENDPOINTS } from '~/utils/URL';
-import { boxStyle, boxStyleDark } from '../../styles';
+import { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
+import { Button, Table, UncontrolledTooltip } from 'reactstrap';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
+import { ENDPOINTS } from '~/utils/URL';
+import { addSelectBadge, assignBadgesByUserID, clearNameAndSelected } from '../../actions/badgeManagement';
+import { boxStyle, boxStyleDark } from '../../styles';
+import AssignTableRow from '../Badge/AssignTableRow';
 
 function AssignBadgePopup(props) {
   const {darkMode} = props;
@@ -53,7 +53,9 @@ function AssignBadgePopup(props) {
     try {
       const response = await axios.get(ENDPOINTS.BADGE());
       setBadgeList(response.data);
-    } catch (error) {}
+    } catch (error) {
+      // eslint-disable-next-line no-console
+    }
   };
 
  const filterBadges = (allBadges = []) => {
@@ -64,7 +66,7 @@ function AssignBadgePopup(props) {
    );
  };
 
-  let filteredBadges = filterBadges(badgeList);
+  const filteredBadges = filterBadges(badgeList);
 
   const addExistBadges = () => {
     if (props.userProfile && props.userProfile.badgeCollection) {
@@ -76,7 +78,7 @@ function AssignBadgePopup(props) {
     return [];
   };
 
-  let existBadges = addExistBadges();
+  const existBadges = addExistBadges();
 
 
 

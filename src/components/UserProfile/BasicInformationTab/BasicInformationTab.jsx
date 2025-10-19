@@ -410,10 +410,10 @@ const TimeZoneDifference = props => {
       }
     };
 
-    let date = new Date();
+    const date = new Date();
     const offset = getOffsetBetweenTimezonesForDate(date, viewingTimeZone, yourLocalTimeZone);
     const offsetInHours = offset / 3600000;
-    setSignedOffset(offsetInHours > 0 ? '+' + offsetInHours : '' + offsetInHours);
+    setSignedOffset(offsetInHours > 0 ? `+${  offsetInHours}` : `${  offsetInHours}`);
   }, [isUserSelf, setErrorOccurred, errorOccurred, viewingTimeZone, yourLocalTimeZone]);
 
   if (!isUserSelf) {
@@ -854,7 +854,7 @@ const BasicInformationTab = props => {
         >
           <Label style={{ margin: '0' }} className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
             {userProfile.endDate
-              ? 'End Date ' + userProfile.endDate.substring(0, 10)
+              ? `End Date ${  userProfile.endDate.substring(0, 10)}`
               : 'End Date ' + 'N/A'}
           </Label>
         </Col>
@@ -885,7 +885,7 @@ const BasicInformationTab = props => {
         <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
           <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
             {userProfile.endDate
-              ? 'End Date ' + userProfile.endDate.substring(0, 10)
+              ? `End Date ${  userProfile.endDate.substring(0, 10)}`
               : 'End Date ' + 'N/A'}
           </Label>
           {canEdit && canEditEndDate && !desktopDisplay && (
@@ -955,7 +955,7 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+                ? `Paused until ${  formatDateLocal(userProfile.reactivationDate)}`
                 : 'Inactive'}
             </Label>
             &nbsp;
@@ -980,7 +980,7 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+                  ? `Paused until ${  formatDateLocal(userProfile.reactivationDate)}`
                   : 'Inactive'}
               </Label>
               &nbsp;
@@ -1011,32 +1011,32 @@ const BasicInformationTab = props => {
           <>
             <Row>
               {nameComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row>
               {titleComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row>
               {emailComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row>
               {phoneComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row>
               {videoCallPreferenceComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row style={{ marginBottom: '10px' }}>{roleComponent}</Row>
             <Row style={{  marginBottom: '10px' }}>
               {locationComponent}
-              <Col md="1"></Col>
+              <Col md="1" />
             </Row>
             <Row style={{ marginTop: '15px', marginBottom: '10px' }}>
               {timeZoneComponent}
-              <Col md="1"></Col>
+              <Col md="1" />
             </Row>
             <Row>{timeZoneDifferenceComponent}</Row>
             <Row className='custom-row' style={{ marginBottom: '10px' }}>{statusComponent}</Row>

@@ -126,7 +126,7 @@ function AddNewTitleModal({
     ? teamsData
     : (teamsData && Array.isArray(teamsData.allTeams) ? teamsData.allTeams : []);
 
-  let existTeamCodes = new Set(
+  const existTeamCodes = new Set(
     (Array.isArray(teamsData?.allTeamCode?.distinctTeamCodes)
       ? teamsData.allTeamCode.distinctTeamCodes
       : [])
