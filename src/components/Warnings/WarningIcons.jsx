@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useDispatch } from 'react-redux';
 import hasPermission from '../../utils/permissions';
 import WarningIcon from './WarningIcon';
+import styles from './Warnings.module.css';
 
 function WarningIcons({
   handleWarningIconClicked,
@@ -22,7 +23,7 @@ function WarningIcons({
   const canDeleteWarning = dispatch(hasPermission('deleteWarning'));
 
   return (
-    <div className="warning-icons">
+    <div className={`${styles['warning-icons']}`}>
       {filledWarnings.slice(0, 8).map(warning => {
         if (warning) {
           return (

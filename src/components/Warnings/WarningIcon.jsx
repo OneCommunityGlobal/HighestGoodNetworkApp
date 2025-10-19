@@ -7,6 +7,7 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
+import styles from './Warnings.module.css';
 
 const colors = {
   blue: 'blue',
@@ -84,7 +85,7 @@ function WarningIcon({
   );
 
   return (
-    <div className="warning-icon">
+    <div className={`${styles['warning-icon']}`}>
       {dateAssigned ? (
         <OverlayTrigger placement="top" delay={{ show: 100, hide: 250 }} overlay={popover}>
           {renderIcon}

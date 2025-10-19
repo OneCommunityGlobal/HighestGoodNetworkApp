@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux';
 import hasPermission from '../../../utils/permissions';
 import WarningIcons from '../WarningIcons';
 import getOrdinal from '../../../utils/getOrdinal';
-import '../Warnings.css';
+import styles from '../Warnings.module.css';
 
 function WarningModal({
   setToggleModal,
@@ -79,7 +79,7 @@ function WarningModal({
         size={`${issueBothWarnings ? 'lg' : 'md'}`}
       >
         {userProfileHeader ? (
-          <ModalHeader className="modal__header--center">
+          <ModalHeader className={`${styles['modal__header--center']}`}>
             {times + ordinal} Occurance - Choose an action{' '}
           </ModalHeader>
         ) : (
@@ -99,9 +99,12 @@ function WarningModal({
           </p>
           {numberOfWarnings >= 3 && (
             <>
-              <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
+              <p className={`${styles['warning__body--bold']} ${styles['warning__body--margin']}`}>
+                {' '}
+                Please Note:
+              </p>
               <p>
-                <span className="warning__body--bold">{username}</span> has received{' '}
+                <span className={`${styles['warning__body--bold']}`}>{username}</span> has received{' '}
                 {numberOfWarnings} warnings, so by default they should get a blue square. If it has
                 been a while since their last warning, you may issue another warning instead.
               </p>
@@ -109,11 +112,11 @@ function WarningModal({
           )}
           <p>
             Issue a warning and the dot color will be:{' '}
-            <span className="warning__body--bold">Yellow</span>
+            <span className={`${styles['warning__body--bold']}`}>Yellow</span>
           </p>
           <p>
             Issue a blue square and the dot color will be:{' '}
-            <span className="warning__body--bold">Red</span>
+            <span className={`${styles['warning__body--bold']}`}>Red</span>
           </p>
           {issueBothWarnings && (
             <div>
@@ -238,13 +241,13 @@ function WarningModal({
                 flexDirection: 'column',
               }}
             >
-              <p className="warning__modal__track__record">Current Track Record</p>
+              <p className={styles.warning__modal__track__record}>Current Track Record</p>
               <WarningIcons warnings={warning.warnings} userProfileModal />
             </div>
           )}
         </ModalBody>
 
-        <ModalFooter className="warning-modal-footer">
+        <ModalFooter className={`${styles['warning-modal-footer']}`}>
           {issueBothWarnings ? (
             <>
               <Button
@@ -275,7 +278,7 @@ function WarningModal({
                   setToggleModal(false);
                 }}
                 color="warning"
-                className="warning__modal__footer__btn"
+                className={styles.warning__modal__footer__btn}
                 disabled={!canIssueTrackingWarnings}
               >
                 Issue Warning
@@ -288,7 +291,7 @@ function WarningModal({
                   setToggleModal(false);
                 }}
                 color="primary"
-                className="warning__modal__footer__btn"
+                className={styles.warning__modal__footer__btn}
                 disabled={!canIssueBlueSquare}
               >
                 Issue Blue Square
@@ -296,7 +299,7 @@ function WarningModal({
               <Button
                 onClick={() => setToggleModal(false)}
                 color="danger"
-                className="warning__modal__footer__btn cancel__btn "
+                className={`${styles.warning__modal__footer__btn} cancel__btn`}
               >
                 Cancel
               </Button>

@@ -21,7 +21,7 @@ import {
   editWarningDescription,
 } from '../../../actions/warnings';
 
-import '../Warnings.css';
+import styles from '../Warnings.module.css';
 import reorder from '../reorder.svg';
 /**
  *
@@ -86,17 +86,17 @@ function WarningTrackerModal({
         <Popover id="details">
           <Popover.Title as="h4">Information</Popover.Title>
           <Popover.Content>
-            <p className="modal__information">
+            <p className={styles.modal__information}>
               Pressing the "+" button will allow you to activate the warning tracker.
             </p>
-            <p className="modal__information">
+            <p className={styles.modal__information}>
               Pressing the "-" button will allow you to deactivate the warning tracker.
             </p>
-            <p className="modal__information">
+            <p className={styles.modal__information}>
               Pressing the "x" button will allow you to delete the warning tracker. This will also
               delete all assoicated warnings for every user (be careful doing this!).
             </p>
-            <p className="modal__information">
+            <p className={styles.modal__information}>
               Pressing the "Add New Warning Tracker" button will allow you to add a new warning to
               the list.
             </p>
@@ -221,12 +221,12 @@ function WarningTrackerModal({
           <p>Are you sure you want to delete this warning? </p>
           <p>
             Deleteing this warning will delete all associated data tied to it from{' '}
-            <span className="modal__warning__users--bold">All Users</span>.
+            <span className={`${styles['modal__warning__users--bold']}`}>All Users</span>.
           </p>
-          <p className="modal__warning__deletion">Warning Title: {warningTitle}</p>
+          <p className={styles.modal__warning__deletion}>Warning Title: {warningTitle}</p>
         </ModalBody>
 
-        <ModalFooter className="modal__footer--centered">
+        <ModalFooter className={`${styles['modal__footer--centered']}`}>
           <Button onClick={() => setToggleDeleteModal(false)} color="danger">
             No, I changed my mind!
           </Button>
@@ -252,7 +252,7 @@ function WarningTrackerModal({
     <Modal
       isOpen={toggleWarningTrackerModal}
       toggle={() => setToggleWarningTrackerModal(false)}
-      className="warnings__tracker__modal"
+      className={styles.warnings__tracker__modal}
     >
       <ModalHeader className="modal__header">
         Current Warning Descriptions
@@ -275,19 +275,19 @@ function WarningTrackerModal({
         </OverlayTrigger>
       </ModalHeader>
       {error && (
-        <Alert key="error" variant="danger" color="danger" className="alert__container">
+        <Alert key="error" variant="danger" color="danger" className={styles.alert__container}>
           {error}
         </Alert>
       )}
       {warningWasEdited && (
-        <Alert key="success" variant="success" color="success" className="alert__container">
+        <Alert key="success" variant="success" color="success" className={styles.alert__container}>
           Warning was succesfully edited!
         </Alert>
       )}
       <ModalBody>
         {warningDescriptions.map((warning, index) => (
-          <div className="warnings__descriptions" key={warning._id}>
-            <img src={reorder} alt="reorder" className="warning__reorder" />
+          <div className={styles.warnings__descriptions} key={warning._id}>
+            <img src={reorder} alt="reorder" className={styles.warning__reorder} />
             {warning.activeWarning ? (
               <OverlayTrigger
                 placement="top"
@@ -296,7 +296,7 @@ function WarningTrackerModal({
               >
                 <Button
                   color="warning"
-                  className="warning__descriptions__btn"
+                  className={styles.warning__descriptions__btn}
                   onClick={() => handleDeactivate(warning._id)}
                   disabled={!canDeactivateWarningTracker}
                 >
@@ -311,7 +311,7 @@ function WarningTrackerModal({
               >
                 <Button
                   color="success"
-                  className="warning__descriptions__btn"
+                  className={styles.warning__descriptions__btn}
                   onClick={() => handleDeactivate(warning._id)}
                   disabled={!canReactivateWarningTracker}
                 >
@@ -322,7 +322,7 @@ function WarningTrackerModal({
 
             <Button
               color="danger"
-              className="warning__descriptions__btn"
+              className={styles.warning__descriptions__btn}
               onClick={() => handleTriggerDeleteWarningDescription(warning)}
               disabled={!canDeleteWarningTracker}
             >
@@ -335,14 +335,14 @@ function WarningTrackerModal({
               value={warning.warningTitle}
               disabled={warning?.disabled || warning.isPermanent}
               placeholder="warning title"
-              className={`warnings__descriptions__title ${
-                warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
+              className={`${styles.warnings__descriptions__title} ${
+                warning.activeWarning ? '' : styles['warnings__descriptions__title--gray']
               }`}
             />
           </div>
         ))}
         {warningEdited && (
-          <div className="btn__container">
+          <div className={styles.btn__container}>
             <Button onClick={handleSaveEditedWarning} color="success">
               Save
             </Button>
@@ -352,10 +352,10 @@ function WarningTrackerModal({
           </div>
         )}
 
-        <div className="btn__container">
+        <div className={styles.btn__container}>
           {!toggeleWarningInput && (
             <Button
-              className="add__btn"
+              className={styles.add__btn}
               color="primary"
               onClick={() => setToggeleWarningInput(true)}
               disabled={!canAddWarningTracker}
@@ -365,23 +365,26 @@ function WarningTrackerModal({
           )}
 
           {toggeleWarningInput && (
-            <form className="warning__form" onSubmit={e => handleAddNewWarning(e, newWarning)}>
-              <h5 className="warning__form__title">New Warning Tracker</h5>
+            <form
+              className={styles.warning__form}
+              onSubmit={e => handleAddNewWarning(e, newWarning)}
+            >
+              <h5 className={styles.warning__form__title}>New Warning Tracker</h5>
 
-              <label htmlFor="warning" className="warning__title">
+              <label htmlFor="warning" className={styles.warning__title}>
                 Warning Tracker Title
               </label>
               <input
                 type="text"
                 id="warning"
                 required
-                className="warning__input"
+                className={styles.warning__input}
                 value={newWarning}
                 onChange={e => setNewWarning(e.target.value)}
               />
 
               <div>
-                <label htmlFor="isPermanent" className="warning__permanent">
+                <label htmlFor="isPermanent" className={styles.warning__permanent}>
                   Is Permanent?
                 </label>
                 <input
@@ -392,7 +395,7 @@ function WarningTrackerModal({
                   value={isPermanent}
                 />
               </div>
-              <div className="warning__form__btns">
+              <div className={styles.warning__form__btns}>
                 <Button
                   color="danger"
                   onClick={() => {
@@ -402,7 +405,7 @@ function WarningTrackerModal({
                 >
                   Cancel
                 </Button>
-                <Button color="primary" type="submit" className="form__btn__add">
+                <Button color="primary" type="submit" className={styles.form__btn__add}>
                   Add
                 </Button>
               </div>

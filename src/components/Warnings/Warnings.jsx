@@ -9,7 +9,7 @@ import {
 } from '../../actions/warnings';
 import WarningTrackerModal from './modals/WarningTrackerModal';
 import WarningIcons from './WarningIcons';
-import './Warnings.css';
+import styles from './Warnings.module.css';
 import WarningModal from './modals/WarningModal';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
@@ -109,8 +109,8 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   const warnings = !toggle
     ? null
     : usersWarnings.map(warning => (
-        <div className="warning-item-container" key={warning.title}>
-          <div className="warning-wrapper">
+        <div className={`${styles['warning-item-container']}`} key={warning.title}>
+          <div className={`${styles['warning-wrapper']}`}>
             <WarningIcons
               warnings={warning.warnings}
               warningText={warning.title}
@@ -118,18 +118,18 @@ export default function Warning({ personId, username, userRole, displayUser }) {
               handleShowWarningModal={handleShowWarningModal}
               numberOfWarnings={warning.warnings.length}
             />
-            <p className="warning-text"> {warning.title}</p>
+            <p className={`${styles['warning-text']}`}> {warning.title}</p>
           </div>
         </div>
       ));
 
   return (
     isAllowedToTracking && (
-      <div className="warnings-container">
-        <div className="button__container">
+      <div className={`${styles['warnings-container']}`}>
+        <div className={styles.button__container}>
           {canViewTrackerButton && (
             <Button
-              className="btn btn-warning warning-btn tracking__btn"
+              className={`btn btn-warning warning-btn ${styles.tracking__btn}`}
               size="sm"
               onClick={handleToggle}
             >
@@ -169,8 +169,8 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           />
         )}
 
-        <div className="warning-wrapper"> {warnings}</div>
-        <div className="error-container">
+        <div className={`${styles['warning-wrapper']}`}> {warnings}</div>
+        <div className={`${styles['error-container']}`}>
           {error && (
             <Alert key="warning" variant="warning">
               {error.error}
