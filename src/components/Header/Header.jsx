@@ -376,33 +376,33 @@ export function Header(props) {
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
-      <Navbar className="py-3 navbar" color="dark" dark expand="md">
+    <div className={`${styles.headerWrapper}${darkMode ? ` ${styles.darkMode}` : ''}`} data-testid="header">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && 
         (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
         
         <div className="d-flex justify-content-between align-items-center w-100 p-3">
           {/* Left Component - Timer */}
-          <div className="left-section">
+          <div className={styles.leftSection}>
             {isAuthenticated && <Timer darkMode={darkMode} />}
           </div>
 
           {/* Center Component - Owner Message */}
-          <div className="center-section text-center flex-grow-1">
+          <div className={`${styles.centerSection} text-center flex-grow-1`}>
             {isAuthenticated && (
-              <div className="owner-message">
+              <div className={styles.ownerMessage}>
                 <OwnerMessage />
               </div>
             )}
           </div>
 
           {/* Right Component - Navigation */}
-          <div className="right-section">
+          <div className={styles.rightSection}>
             <NavbarToggler onClick={toggle} />
             {isAuthenticated && (
               <Collapse isOpen={isOpen} navbar>
-                <Nav className="nav-links d-flex" navbar>
+                <Nav className={`${styles.navLinks} d-flex`} navbar>
                   <div
                     className="d-flex justify-content-center align-items-center"
                     style={{ width: '100%' }}
