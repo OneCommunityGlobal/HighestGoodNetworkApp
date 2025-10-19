@@ -27,6 +27,8 @@ import GoogleDocIcon from '../common/GoogleDocIcon';
 import TaskChangeLogModal from './components/TaskChangeLogModal';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
+import ReviewButton from './ReviewButton';
+import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
