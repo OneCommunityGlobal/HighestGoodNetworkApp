@@ -266,7 +266,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
       )}{' '}
       {/* Add data-testid for testing */}
       {changeLogs?.length > 0 && (
-        <PermissionChangeLogTable changeLogs={changeLogs} darkMode={darkMode} />
+        <PermissionChangeLogTable
+          changeLogs={changeLogs}
+          darkMode={darkMode}
+          roleNamesToHighlight={roleNames}
+        />
       )}
       <br />
       <br />

@@ -21,6 +21,10 @@
   color: white;
 }
 
+.darkMode .injury-chart-label {
+  color: white;
+}
+
 .darkMode .injury-select__control {
   background-color: #2b3e59 !important;
   color: white !important;
@@ -36,6 +40,10 @@
 .darkMode .injury-select__menu {
   background-color: #2b3e59 !important;
   color: white !important;
+}
+
+.darkMode .injury-select__option:hover {
+  color: black !important;
 }
 
 .darkMode .react-datepicker__input-container input {
