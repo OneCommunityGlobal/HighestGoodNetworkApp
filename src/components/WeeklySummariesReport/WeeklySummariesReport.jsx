@@ -1793,6 +1793,10 @@ const WeeklySummariesReport = props => {
           <Select
             isMulti
             placeholder="Select range..."
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
             options={[
               { value: '0', label: '0' },
               { value: '0-10', label: '0-10' },
@@ -1800,6 +1804,22 @@ const WeeklySummariesReport = props => {
               { value: '20-40', label: '20-40' },
               { value: '>40', label: '>40' },
             ]}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
+            closeMenuOnSelect={false}
+            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              menuList: base => ({
+                ...base,
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }),
+              option: (base, state) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: state.isFocused ? '#eee' : 'white',
+              }),
+            }}
             value={state.selectedLoggedHoursRange}
             onChange={selectedOption =>
               setState({ ...state, selectedLoggedHoursRange: selectedOption })
