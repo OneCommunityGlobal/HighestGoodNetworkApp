@@ -3,7 +3,7 @@ import { connect, useDispatch } from 'react-redux';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import { NavItem } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import { setCurrentWishListItem } from 'reducers/lbdashboard/wishListItemReducer';
+import { setCurrentWishListItem } from '~/reducers/listBidDashboard/wishListItemReducer';
 import Header from '../Header';
 
 function WishList(props) {

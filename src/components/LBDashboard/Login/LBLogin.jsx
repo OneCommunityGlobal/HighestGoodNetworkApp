@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 import { Form, FormGroup, Input, Label, Button, FormFeedback } from 'reactstrap';
-import Joi from 'joi';
-import { loginBMUser } from 'actions/authActions';
+import Joi from 'joi-browser';
+import { loginBMUser } from '~/actions/authActions';
 import styles from './Login.module.css';
 import logo from '../../../assets/images/logo2.png';
 
@@ -16,7 +16,7 @@ function LBLogin(props) {
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
 
-  const prevLocation = location.state?.from || { pathname: '/lbdashboard' };
+  const prevLocation = location?.state?.from || { pathname: '/lbdashboard' };
 
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessCPPortal) {

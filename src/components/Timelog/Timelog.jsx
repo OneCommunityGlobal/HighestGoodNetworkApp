@@ -3,6 +3,9 @@
 /* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
+import pdfMake from 'pdfmake/build/pdfmake';
+import 'pdfmake/build/vfs_fonts';
+import htmlToPdfmake from 'html-to-pdfmake';
 import {
   Container,
   Row,
@@ -32,19 +35,19 @@ import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
-import ActiveCell from 'components/UserManagement/ActiveCell';
-import ProfileNavDot from 'components/UserManagement/ProfileNavDot';
-import TeamMemberTasks from 'components/TeamMemberTasks';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import ActiveCell from '~/components/UserManagement/ActiveCell';
+import ProfileNavDot from '~/components/UserManagement/ProfileNavDot';
+import TeamMemberTasks from '~/components/TeamMemberTasks';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDate } from '~/utils/formatDate';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { cantUpdateDevAdminDetails } from '~/utils/permissions';
 import axios from 'axios';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
+} from '~/utils/constants';
 import PropTypes from 'prop-types';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
@@ -60,7 +63,7 @@ import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
 import Badge from '../Badge';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
 // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
@@ -77,6 +80,7 @@ const startOfWeek = offset => {
 const endOfWeek = offset => {
   return moment()
     .tz('America/Los_Angeles')
+    .endOf('week')
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DD');
 };
@@ -84,6 +88,162 @@ const endOfWeek = offset => {
 function Timelog(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const location = useLocation();
+
+  const normalizeNotes = (raw) => {
+    if (!raw) return '';
+    let s = String(raw);
+  
+    // Temporary line-break markers
+    s = s.replace(/<br\s*\/?>/gi, '\n')
+         .replace(/<\/p>\s*<p>/gi, '\n')
+         .replace(/<\/?p[^>]*>/gi, '');
+  
+    // Strip remaining tags
+    s = s.replace(/<\/?[^>]+>/g, '');
+  
+    // Decode entities using the browser
+    const txt = document.createElement('textarea');
+    txt.innerHTML = s;
+    s = txt.value;
+  
+    // Linkify URLs
+    s = s.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1">$1</a>');
+  
+    // Convert newlines back to <br> for pdfmake line breaks
+    s = s.replace(/\n/g, '<br/>');
+  
+    return s;
+  };
+
+  // Escape minimal HTML to keep pdf clean
+const escapeHtml = s =>
+  String(s ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+
+// Return the raw period entries respecting the same filter as the UI
+const getFilteredPeriodData = () => {
+  const data = Array.isArray(timeEntries?.period) ? timeEntries.period.filter(entryBelongsToDisplayed) : [];
+  if (!timeLogState.projectsOrTasksSelected?.length || timeLogState.projectsOrTasksSelected.includes('all')) {
+    return data;
+  }
+  return data.filter(entry =>
+    timeLogState.projectsOrTasksSelected.includes(entry.projectId) ||
+    timeLogState.projectsOrTasksSelected.includes(entry.taskId)
+  );
+};
+
+// Build simple HTML table string (easy for html-to-pdfmake)
+const formatPeriodHtml = (rows) => {
+  const title =
+    `<h1 style="margin:0 0 12px 0; font-size:22px;">Time Log Report</h1>
+     <div style="margin: 0 0 4px 0;"><b>Range:</b> ${formatDate(timeLogState.fromDate)} – ${formatDate(timeLogState.toDate)}</div>
+     <div style="margin: 0 0 12px 0;"><b>User:</b> ${escapeHtml(displayUserProfile?.firstName)} ${escapeHtml(displayUserProfile?.lastName)}</div>`;
+
+     const thead =
+  `<thead>
+     <tr>
+       <th style="padding:6px;border:1px solid #ddd; width: 10%;">Date</th>
+       <th style="padding:6px;border:1px solid #ddd; width: 15%;">Project</th>
+       <th style="padding:6px;border:1px solid #ddd; width: 10%;">Task</th>
+       <th style="padding:6px;border:1px solid #ddd; width: 10%;">Tangible</th>
+       <th style="padding:6px;border:1px solid #ddd; width: 10%;">Time (h:m)</th>
+       <th style="padding:6px;border:1px solid #ddd; width: 45%;">Notes</th>
+     </tr>
+   </thead>`;
+
+
+  const tbody = rows.map((e, i) => {
+    console.log(e)
+    const dateStr = e.dateOfWork ? formatDate(e.dateOfWork) : '';
+    const proj = escapeHtml(e.projectName || '');
+    const task = escapeHtml(e.taskName || '');
+    const tangible = e.isTangible ? 'Yes' : 'No';
+    const hrs = Number(e.hours ?? 0);
+    const mins = Number(e.minutes ?? 0);
+    const notesHtml = normalizeNotes(e.notes || '');
+
+    // subtle zebra striping
+    const rowBg = i % 2 === 0 ? 'background:#ffffff;' : 'background:#fafafa;';
+
+    return `<tr>
+  <td style="padding:6px;border:1px solid #ddd; width: 10%;">${dateStr}</td>
+  <td style="padding:6px;border:1px solid #ddd; width: 15%;">${proj}</td>
+  <td style="padding:6px;border:1px solid #ddd; width: 10%;">${task}</td>
+  <td style="padding:6px;border:1px solid #ddd; width: 10%;">${tangible}</td>
+  <td style="padding:6px;border:1px solid #ddd; width: 10%;">${hrs}:${mins.toString().padStart(2, '0')}</td>
+  <td style="padding:6px;border:1px solid #ddd; width: 45%;">${notesHtml}</td>
+</tr>`;
+  }).join('');
+
+  const table =
+    `<table style="width:100%; border-collapse:collapse; font-size:11px; margin-top:8px;">
+       ${thead}
+       <tbody>${tbody}</tbody>
+     </table>`;
+
+  // Totals footer
+  const summarize = rows => rows.reduce((acc, e) => {
+    const t = Number(e.hours || 0) + Number(e.minutes || 0) / 60;
+    return { total: acc.total + t, tangible: acc.tangible + (e.isTangible ? t : 0) };
+  }, { total: 0, tangible: 0 });
+
+  const { total, tangible } = summarize(rows);
+
+  const footer =
+    `<div style="margin-top:12px; font-size:12px;">
+       <b>Total Tangible Hours:</b> ${tangible.toFixed(2)}
+       &nbsp;&nbsp;|&nbsp;&nbsp;
+       <b>Total Hours:</b> ${total.toFixed(2)}
+     </div>`;
+
+  return `${title}${table}${footer}`;
+};
+
+
+const downloadPeriodPdf = () => {
+  const rows = getFilteredPeriodData();
+  if (!rows.length) {
+    alert('No time entries found for this date range/filter.');
+    return;
+  }
+  const html = formatPeriodHtml(rows);
+  const content = htmlToPdfmake(html, { tableAutoSize: true });
+
+  const generatedAt = moment().tz('America/Los_Angeles').format('YYYY-MM-DD HH:mm z');
+
+  const docDefinition = {
+    content: [content],
+    // Add a clean page header/footer for all pages
+    header: (currentPage) => ({
+      text: currentPage === 1 ? '' : 'Time Log Report',
+      alignment: 'right',
+      margin: [24, 12, 24, 0],
+      fontSize: 9,
+      color: '#666',
+    }),
+    footer: (currentPage, pageCount) => ({
+      columns: [
+        { text: `Generated ${generatedAt}`, alignment: 'left', margin: [24, 0, 0, 12], fontSize: 8, color: '#888' },
+        { text: `Page ${currentPage} of ${pageCount}`, alignment: 'right', margin: [0, 0, 24, 12], fontSize: 8, color: '#888' },
+      ],
+    }),
+    pageMargins: [24, 36, 24, 42],
+    defaultStyle: { fontSize: 10, lineHeight: 1.2 },
+    styles: {
+      'html-h1': { fontSize: 22, bold: true, margin: [0, 0, 8, 6] },
+      'html-h3': { fontSize: 14, bold: true, margin: [0, 0, 6, 6] },
+      'html-a': { color: '#1d4ed8' }, // link color
+    },
+  };
+
+  const fileName = `Timelog_${formatDate(timeLogState.fromDate)}_to_${formatDate(timeLogState.toDate)}.pdf`;
+  pdfMake.createPdf(docDefinition).download(fileName);
+};
+
 
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
@@ -163,6 +323,13 @@ function Timelog(props) {
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
+  const displayedId = displayUserId || displayUserProfile?._id;
+
+  const entryBelongsToDisplayed = (e) => {
+    const pid = e?.personId ?? e?.userId ?? e?.person?._id ?? e?.person?._id ?? e?.person?._id;
+    return String(pid) === String(displayedId);
+  };
+  
   const tabMapping = {
     '#tasks': 0,
     '#currentWeek': 1,
@@ -183,17 +350,20 @@ function Timelog(props) {
     Accounts assigned with tasks with no wbs return and empty array.
     Accounts assigned with tasks with wbs return an array with that wbs data.
     The problem: even after unassigning tasks the array keeps the wbs data.
-    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks. */
+    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
-    // if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if (role === 'Volunteer' && userHaveTask.length > 0) {
-      tab = 0;
-    } else if (role === 'Volunteer' && userHaveTask.length === 0) {
-      tab = 1;
-    } else {
-      tab = null;
-    }
+    // That breaks this feature. Necessary to check if this array should keep data or be reset when unassigning tasks.
 
+// if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
+if (role === 'Volunteer' && userHaveTask.length > 0) {
+  tab = 0;
+} else if (role === 'Volunteer' && userHaveTask.length === 0) {
+  tab = 1;
+} else {
+  tab = null;
+}
+
+ 
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
     if (!props.isDashboard) {
       tab = 1;
@@ -208,9 +378,32 @@ function Timelog(props) {
     return tab;
   };
 
-  /* ---------------- methods -------------- */
+  useEffect(() => {
+    if (initialTab != null && !location.hash) {
+      changeTab(initialTab);
+    }
+  }, [initialTab, location.hash]); // This effect will run whenever the hash changes
+
+/* ---------------- methods -------------- */
+const updateTimeEntryItems = () => {
+  const allTimeEntryItems = generateAllTimeEntryItems();
+  setCurrentWeekEntries(allTimeEntryItems[0]);
+  setLastWeekEntries(allTimeEntryItems[1]);
+  setBeforeLastEntries(allTimeEntryItems[2]);
+  setPeriodEntries(allTimeEntryItems[3]);
+};
+
+const generateAllTimeEntryItems = () => {
+  const currentWeekEntries = generateTimeEntries(timeEntries.weeks[0], 0);
+  const lastWeekEntries = generateTimeEntries(timeEntries.weeks[1], 1);
+  const beforeLastEntries = generateTimeEntries(timeEntries.weeks[2], 2);
+  const periodEntries = generateTimeEntries(timeEntries.period, 3);
+  return [currentWeekEntries, lastWeekEntries, beforeLastEntries, periodEntries];
+};
+
 
   const generateTimeEntries = (data, tab) => {
+    data = (Array.isArray(data) ? data : []).filter(entryBelongsToDisplayed);
     if (!timeLogState.projectsOrTasksSelected.includes('all')) {
       // eslint-disable-next-line no-param-reassign
       data = data.filter(
@@ -240,22 +433,6 @@ function Timelog(props) {
     ));
   };
 
-  const generateAllTimeEntryItems = () => {
-    const currentWeekEntry = generateTimeEntries(timeEntries.weeks[0], 0);
-    const lastWeekEntry = generateTimeEntries(timeEntries.weeks[1], 1);
-    const beforeLastEntry = generateTimeEntries(timeEntries.weeks[2], 2);
-    const periodEntry = generateTimeEntries(timeEntries.period, 3);
-    return [currentWeekEntry, lastWeekEntry, beforeLastEntry, periodEntry];
-  };
-
-  const updateTimeEntryItems = () => {
-    const allTimeEntryItems = generateAllTimeEntryItems();
-    setCurrentWeekEntries(allTimeEntryItems[0]);
-    setLastWeekEntries(allTimeEntryItems[1]);
-    setBeforeLastEntries(allTimeEntryItems[2]);
-    setPeriodEntries(allTimeEntryItems[3]);
-  };
-
   const loadAsyncData = async uid => {
     // load the timelog data
     setTimeLogState({ ...timeLogState, isTimeEntriesLoading: true });
@@ -275,9 +452,21 @@ function Timelog(props) {
       const res = await axios.get(url);
 
       const data = res.data.length > 0 ? res.data : [];
-      const defaultTabValue = defaultTab(data);
-      setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
-      setInitialTab(defaultTabValue);
+      const mappedHash = tabMapping[location.hash];
+
+      if (mappedHash !== undefined) {
+        // If the URL has a known hash, open that tab immediately
+        setTimeLogState(s => ({
+          ...s,
+          isTimeEntriesLoading: false,
+          activeTab: mappedHash,
+        }));
+        setInitialTab(null); // so the initialTab effect won’t override
+      } else {
+        // No hash → fall back to your existing default logic
+        setTimeLogState(s => ({ ...s, isTimeEntriesLoading: false }));
+        setInitialTab(defaultTab(data));
+      }
     } catch (e) {
       console.log(e);
     }
@@ -334,22 +523,15 @@ function Timelog(props) {
     }
 
     // Clear the hash to trigger the useEffect on hash change
-    if (location.hash) {
-      window.location.hash = '';
-    }
+    // if (location.hash) {
+    //   window.location.hash = '';
+    // }
 
     setTimeLogState({
       ...timeLogState,
       activeTab: tab,
     });
   };
-
-  useEffect(() => {
-    const tab = tabMapping[location.hash];
-    if (tab !== undefined) {
-      changeTab(tab);
-    }
-  }, [location.hash]); // This effect will run whenever the hash changes
 
   const handleInputChange = e => {
     setTimeLogState({ ...timeLogState, [e.target.name]: e.target.value });
@@ -366,7 +548,9 @@ function Timelog(props) {
   };
 
   const calculateTotalTime = (data, isTangible) => {
-    const filteredData = data.filter(entry => entry.isTangible === isTangible);
+    const filteredData = (Array.isArray(data) ? data : [])
+    .filter(entryBelongsToDisplayed)
+    .filter(entry => entry.isTangible === isTangible);
     const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };
@@ -381,17 +565,19 @@ function Timelog(props) {
     }
     if (timeLogState.activeTab === 4) {
       return (
-        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
-          Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
-          <b>{formatDate(timeLogState.toDate)}</b>
-        </p>
+        <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+  Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
+  <b>{formatDate(timeLogState.toDate)}</b>
+</p>
+
       );
     }
     return (
-      <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
-        Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
-        <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
-      </p>
+      <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+  Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
+  <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
+</p>
+
     );
   };
 
@@ -505,6 +691,13 @@ function Timelog(props) {
 
   /* ---------------- useEffects -------------- */
 
+  useEffect(() => {
+    const mapped = tabMapping[location.hash];
+    if (mapped !== undefined) {
+      setTimeLogState(s => ({ ...s, activeTab: mapped }));
+    }
+  }, [location.hash]);
+
   // Update user ID if it changes in the URL
   useEffect(() => {
     if (urlId) {
@@ -512,27 +705,24 @@ function Timelog(props) {
     }
   }, [urlId]);
 
-/**
-   * made a change here to reset the user viewing to current user and not the displayed user id we were testing
-   * component reloads when we click the x icon to close the current viewing
-  */
+  /**
+     * made a change here to reset the user viewing to current user and not the displayed user id we were testing
+     * component reloads when we click the x icon to close the current viewing
+    */
 
-useEffect(() => {
-  // Reset displayUserId when switching btw users
-  const newUserId = getUserId();
-  if (displayUserId !== newUserId) {
-    setDisplayUserId(newUserId);
-    loadAsyncData(newUserId); // Reload data for the prev viewing user
-  }
-}, [userprofileId, viewingUser]);
+  useEffect(() => {
+    // Reset displayUserId when switching btw users
+    const newUserId = getUserId();
+    if (displayUserId !== newUserId) {
+      setDisplayUserId(newUserId);
+      loadAsyncData(newUserId); // Reload data for the prev viewing user
+    }
+  }, [userprofileId, viewingUser]);
 
   useEffect(() => {
     props.getBadgeCount(displayUserId);
   }, [displayUserId, props]);
 
-  useEffect(() => {
-    changeTab(initialTab);
-  }, [initialTab]);
 
   useEffect(() => {
     // Build the time log after new data is loaded
@@ -566,11 +756,12 @@ useEffect(() => {
     return {};
   };
 
-  return (
-    <div
-      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
-      style={containerStyle()}
-    >
+return (
+  <div
+    className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
+    style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}
+  >
+
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
@@ -940,6 +1131,16 @@ useEffect(() => {
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search
+                        </Button>
+                        <Button
+                          color="secondary"
+                          onClick={downloadPeriodPdf}
+                          className="ml-2"
+                          style={darkMode ? boxStyleDark : boxStyle}
+                          disabled={!Array.isArray(timeEntries?.period) || timeEntries.period.length === 0}
+                          title="Download the filtered results as a PDF"
+                        >
+                          Download as PDF
                         </Button>
                       </Form>
                     )}
