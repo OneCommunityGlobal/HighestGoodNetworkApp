@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useRef , useMemo } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
+import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, useInput } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
-import dateFnsParse from 'date-fns/parse';
-import { isValid } from 'date-fns';
 import { boxStyle, boxStyleDark } from '~/styles';
 
 import { addNewTask, replicateTask } from '../../../../../actions/task';
-import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
+import { faPlusCircle, faMinusCircle, faClone } from '@fortawesome/free-solid-svg-icons';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   START_DATE_ERROR_MESSAGE,
   END_DATE_ERROR_MESSAGE,
@@ -23,79 +22,39 @@ import './AddTaskModal.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { getProjectDetail } from '../../../../../actions/project';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { set } from 'lodash';
 
-/** small v8 DateInput - manual control without useInput **/
+const FORMAT = 'MM/dd/yy';
+
+
+/** small v8 DateInput: uses useInput + DayPicker under the hood **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
-  const FORMAT = 'MM/dd/yy';
-  const [isOpen, setIsOpen] = React.useState(false);
-  
-  // Parse the value properly - it could be in MM/dd/yy format or empty
-  let selectedDate;
-  if (value) {
-    try {
-      if (value.includes('T')) {
-        // ISO format
-        selectedDate = new Date(value);
-      } else {
-        // MM/dd/yy format
-        selectedDate = dateFnsParse(value, FORMAT, new Date());
-      }
-      // Validate the parsed date
-      if (!isValid(selectedDate)) {
-        selectedDate = undefined;
-      }
-    } catch (error) {
-      selectedDate = undefined;
-    }
-  }
-
-  const handleDaySelect = (date) => {
-    if (date) {
+  const { inputProps, dayPickerProps, show, toggle } = useInput({
+    mode: 'single',
+    selected: value ? new Date(value) : undefined,
+    onDayChange(date) {
       // format back to your MM/dd/yy
       const f = dateFnsFormat(date, FORMAT);
       onChange(f);
-      setIsOpen(false);
-    }
-  };
+      toggle(false);
+    },
+  });
 
   return (
     <div style={{ position: 'relative' }}>
       <input
+        {...inputProps}
         id={id}
         aria-label={ariaLabel}
         placeholder={placeholder}
-        value={value || ''}
-        onFocus={() => !disabled && setIsOpen(true)}
+        onFocus={() => !disabled && toggle(true)}
         readOnly
         disabled={disabled}
-        className="form-control"
-        style={{ 
-          cursor: disabled ? 'default' : 'pointer',
-          backgroundColor: disabled ? '#e9ecef' : 'white',
-          opacity: 1
-        }}
+        className="form-control" /* or whatever styling you need */
       />
-      {isOpen && !disabled && (
-        <div style={{ position: 'absolute', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
-          <DayPicker 
-            mode="single"
-            selected={selectedDate}
-            onSelect={handleDaySelect}
-          />
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            style={{ 
-              width: '100%', 
-              padding: '8px', 
-              border: 'none', 
-              borderTop: '1px solid #ddd',
-              background: '#f5f5f5',
-              cursor: 'pointer'
-            }}
-          >
-            Close
-          </button>
+      {show && !disabled && (
+        <div style={{ position: 'absolute', zIndex: 10 }}>
+          <DayPicker {...dayPickerProps} />
         </div>
       )}
     </div>
@@ -202,14 +161,13 @@ const defaultCategory = useMemo(() => {
   const [endstateInfo, setEndstateInfo] = useState('');
   const [startDateError, setStartDateError] = useState(false);
   const [endDateError, setEndDateError] = useState(false);
-  const [startDateFormatError, setStartDateFormatError] = useState(false);
-  const [endDateFormatError, setEndDateFormatError] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [newTaskNum, setNewTaskNum] = useState('1');
   const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
+  const [showReplicate, setShowReplicateConfirm] = useState(false);
   const priorityRef = useRef(null);
 
   const categoryOptions = [
@@ -223,7 +181,7 @@ const defaultCategory = useMemo(() => {
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
   ];
-  const FORMAT = 'MM/dd/yy';
+//  const FORMAT = 'MM/dd/yy';
 
   /*
    * -------------------------------- functions --------------------------------
@@ -285,37 +243,6 @@ const defaultCategory = useMemo(() => {
 
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
 
-  const parseDate = (str, format, locale) => {
-    // Allow empty string for partial typing
-    if (!str || str.trim() === '') return undefined;
-    
-    try {
-      const parsed = dateFnsParse(str, format, new Date(), { locale });
-      if (isValid(parsed)) {
-        return parsed;
-      }
-    } catch (error) {
-      // Return undefined for invalid dates while typing
-    }
-    return undefined;
-  };
-
-  const validateDateFormat = (dateString) => {
-    if (!dateString || dateString.trim() === '') return true;
-    
-    // Check if it matches the expected format pattern MM/dd/yy
-    const formatRegex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/\d{2}$/;
-    if (!formatRegex.test(dateString)) return false;
-    
-    // Check if it's a valid date
-    try {
-      const parsed = dateFnsParse(dateString, FORMAT, new Date());
-      return isValid(parsed);
-    } catch (error) {
-      return false;
-    }
-  };
-
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
@@ -348,24 +275,16 @@ const defaultCategory = useMemo(() => {
     }
   }, [hoursBest, hoursWorst, hoursMost, hoursEstimate]);
 
-  const changeDateStart = (value) => {
-    setStartedDate(value);
-    
-    // Validate format
-    const isValidFormat = validateDateFormat(value);
-    setStartDateFormatError(!isValidFormat);
+  const changeDateStart = startDate => {
+    setStartedDate(startDate);
   };
 
-  const changeDateEnd = (value) => {
-    if (!startedDate && value) {
+  const changeDateEnd = dueDate => {
+    if (!startedDate) {
       const newDate = dateFnsFormat(new Date(), FORMAT);
       setStartedDate(newDate);
     }
-    setDueDate(value);
-    
-    // Validate format
-    const isValidFormat = validateDateFormat(value);
-    setEndDateFormatError(!isValidFormat);
+    setDueDate(dueDate);
   };
 
   useEffect(() => {
@@ -378,27 +297,14 @@ const defaultCategory = useMemo(() => {
     }
   }, [startedDate, dueDate]);
 
-  // Validate date formats when dates change
-  useEffect(() => {
-    if (startedDate) {
-      const isValidFormat = validateDateFormat(startedDate);
-      setStartDateFormatError(!isValidFormat);
-    } else {
-      setStartDateFormatError(false);
-    }
-  }, [startedDate]);
-
-  useEffect(() => {
-    if (dueDate) {
-      const isValidFormat = validateDateFormat(dueDate);
-      setEndDateFormatError(!isValidFormat);
-    } else {
-      setEndDateFormatError(false);
-    }
-  }, [dueDate]);
+//  const addLink = () => {
+//    setLinks([...links, link]);
+//   setLink('');
+//  };
 
   const addLink = () => {
-    setLinks([...links, link]);
+    if (!link?.trim()) return;
+    setLinks([...links, link.trim()]);
     setLink('');
   };
 
@@ -425,8 +331,6 @@ const defaultCategory = useMemo(() => {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
-    setStartDateFormatError(false);
-    setEndDateFormatError(false);
     setHasNegativeHours(false);
   };
 
@@ -454,7 +358,7 @@ const defaultCategory = useMemo(() => {
     setEndstateInfo(copiedTask.endstateInfo);
   };
 
-  const handleReplicate = async () => {
+{/*  const handleReplicate = async () => {
     if (!copiedTask) {
       console.warn('No task copied to replicate');
       return;
@@ -489,6 +393,50 @@ const defaultCategory = useMemo(() => {
       setIsLoading(false);
     }
   };
+*/}
+const handleReplicate = async () => {
+  if (!copiedTask) {
+    console.warn('No task copied to replicate');
+    return;
+  }
+  if (!resourceItems?.length) {
+    console.warn('Select at least one Resource to replicate to');
+    return;
+  }
+
+  const ok = window.confirm(
+    "This doesn't divide work—it duplicates it. Everyone gets the full task. Continue?"
+  );
+  if (!ok) return;
+
+  try {
+    setIsLoading(true);
+
+    // replicate to the *selected* people under Resources
+    const resourceUserIds = resourceItems.map(r => r.userID).filter(Boolean);
+
+    // backend permission checker expects this shape
+    const requestor = {
+      requestorId: props.authUser?.userid,
+      role: props.authUser?.role,
+    };
+
+    await props.replicateTask({
+      taskId: copiedTask._id,          // source/original task
+      resourceUserIds,                 // targets
+      includeAttachments: true,
+      requestor,
+    });
+
+    toggle();
+    props.load();
+    console.log('Task replicated successfully');
+  } catch (error) {
+    console.error('Error replicating task:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const addNewTask = async () => {
     setIsLoading(true);
@@ -555,8 +503,6 @@ const defaultCategory = useMemo(() => {
       setDueDate('');
       setStartDateError(false);
       setEndDateError(false);
-      setStartDateFormatError(false);
-      setEndDateFormatError(false);
     }
   }, [modal]);
 
@@ -1045,9 +991,6 @@ const defaultCategory = useMemo(() => {
                       onChange={changeDateStart}
                       disabled={false} // always enabled here
                     />
-                    <div className="warning text-danger">
-                      {startDateFormatError && 'Please enter date in MM/dd/yy format'}
-                    </div>
                     <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
                 </span>
@@ -1071,9 +1014,6 @@ const defaultCategory = useMemo(() => {
                     onChange={changeDateEnd}
                     disabled={false}
                   />
-                  <div className="warning text-danger">
-                    {endDateFormatError && 'Please enter date in MM/dd/yy format'}
-                  </div>
                   <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
               </div>
@@ -1090,8 +1030,6 @@ const defaultCategory = useMemo(() => {
               isLoading ||
               startDateError ||
               endDateError ||
-              startDateFormatError ||
-              endDateFormatError ||
               hasNegativeHours
             }
             style={darkMode ? boxStyleDark : boxStyle}

@@ -1,12 +1,13 @@
 import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 
 export async function replicateTask({
   taskId,
   resourceUserIds,
   includeAttachments = true,
-  requestor,
+  requestor, // { requestorId, role }
 }) {
-  const { data } = await axios.post(`/api/task/replicate/${taskId}`, {
+  const { data } = await axios.post(ENDPOINTS.TASK_REPLICATE(taskId), {
     requestor,
     resourceUserIds,
     includeAttachments,
