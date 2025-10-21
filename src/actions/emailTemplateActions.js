@@ -28,19 +28,35 @@ export const EMAIL_TEMPLATE_ACTIONS = {
   SEND_EMAIL_ERROR: 'SEND_EMAIL_ERROR',
 
   SET_SEARCH_TERM: 'SET_SEARCH_TERM',
+  SET_PAGINATION: 'SET_PAGINATION',
+  SET_FILTERS: 'SET_FILTERS',
   CLEAR_EMAIL_TEMPLATE_ERROR: 'CLEAR_EMAIL_TEMPLATE_ERROR',
   CLEAR_CURRENT_TEMPLATE: 'CLEAR_CURRENT_TEMPLATE',
 };
 
 // Action Creators
 
-// Fetch all email templates
-export const fetchEmailTemplates = (search = '') => async dispatch => {
+// Fetch all email templates with pagination and sorting
+export const fetchEmailTemplates = ({
+  search = '',
+  page = 1,
+  limit,
+  sortBy = 'created_at',
+  sortOrder = 'desc',
+  fields,
+  includeVariables,
+} = {}) => async dispatch => {
   try {
     dispatch({ type: EMAIL_TEMPLATE_ACTIONS.FETCH_EMAIL_TEMPLATES_START });
 
     const params = new URLSearchParams();
     if (search) params.append('search', search);
+    if (page) params.append('page', page.toString());
+    if (limit) params.append('limit', limit.toString());
+    if (sortBy) params.append('sortBy', sortBy);
+    if (sortOrder) params.append('sortOrder', sortOrder);
+    if (fields) params.append('fields', fields);
+    if (includeVariables) params.append('includeVariables', includeVariables);
 
     const response = await axios.get(`${ENDPOINTS.EMAIL_TEMPLATES}?${params.toString()}`);
 
@@ -179,6 +195,18 @@ export const sendEmailWithTemplate = (id, emailData) => async dispatch => {
 export const setSearchTerm = searchTerm => ({
   type: EMAIL_TEMPLATE_ACTIONS.SET_SEARCH_TERM,
   payload: searchTerm,
+});
+
+// Set pagination
+export const setPagination = pagination => ({
+  type: EMAIL_TEMPLATE_ACTIONS.SET_PAGINATION,
+  payload: pagination,
+});
+
+// Set filters
+export const setFilters = filters => ({
+  type: EMAIL_TEMPLATE_ACTIONS.SET_FILTERS,
+  payload: filters,
 });
 
 // Clear error

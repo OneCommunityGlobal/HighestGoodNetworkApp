@@ -280,6 +280,52 @@
   border-radius: 0.5rem;
 }
 
+/* Page title styling */
+.email-template-management .page-title-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.email-template-management .page-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Dark mode support for page titles */
+.email-template-management.dark-mode .page-title {
+  color: #f9fafb;
+}
+
+.email-template-management .back-button {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 500;
+  transition: all 0.15s ease-in-out;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+}
+
+.email-template-management .back-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode back button */
+.email-template-management.dark-mode .back-button {
+  background-color: #374151;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.email-template-management.dark-mode .back-button:hover {
+  background-color: #4a5568;
+  border-color: #6b7280;
+  color: #ffffff;
+}
+
 .email-template-management .card-body {
   padding: 1.5rem;
 }
@@ -340,7 +386,9 @@
 .email-template-management .form-select {
   border-radius: 0.375rem;
   border: 1px solid #ced4da;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
 .email-template-management .form-control:focus,
@@ -499,7 +547,7 @@
   .email-template-management .btn {
     border: 2px solid currentColor;
   }
-  
+
   .email-template-management .card {
     border: 2px solid #000;
   }
@@ -512,19 +560,18 @@
     transition: none !important;
     animation: none !important;
   }
-  
+
   .email-template-management .btn:hover {
     transform: none !important;
   }
 }
-
 
 /* Responsive adjustments */
 @media (max-width: 992px) {
   .email-template-management .card-header {
     padding: 1.25rem 1rem;
   }
-  
+
   .email-template-management .card-body {
     padding: 1.25rem;
   }
@@ -536,45 +583,87 @@
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .email-template-management .card-header > div {
     margin-top: 1rem;
   }
-  
+
   .email-template-management .card-header .btn {
     margin-bottom: 0.5rem;
   }
-  
+
   .email-template-management .card-body {
     padding: 1rem;
   }
-  
+
   .email-template-management .table {
     font-size: 0.875rem;
   }
-  
+
   .email-template-management .btn-sm {
     padding: 0.125rem 0.25rem;
     font-size: 0.75rem;
   }
-  
+
   .email-template-management .alert {
     padding: 0.75rem;
     font-size: 0.875rem;
   }
 }
 
+/* Enhanced Error Handling Styles */
+.email-template-management .error-boundary-container {
+  padding: 2rem;
+  text-align: center;
+}
+
+.email-template-management .error-boundary-container .alert {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.email-template-management .skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode error handling */
+.email-template-management.dark-mode .error-boundary-container {
+  background-color: #1a1a1a;
+  border-radius: 0.5rem;
+}
+
+.email-template-management.dark-mode .skeleton-loader {
+  background: linear-gradient(90deg, #2d3748 25%, #4a5568 50%, #2d3748 75%);
+  background-size: 200% 100%;
+}
+
 @media (max-width: 576px) {
+  .email-template-management .page-title {
+    font-size: 1.5rem;
+  }
+
   .email-template-management .modal-dialog {
     margin: 0.5rem;
   }
-  
+
   .email-template-management .modal-header,
   .email-template-management .modal-body,
   .email-template-management .modal-footer {
     padding: 1rem;
   }
-  
+
   .email-template-management .alert {
     padding: 0.5rem;
     font-size: 0.8125rem;
@@ -582,7 +671,7 @@
     align-items: flex-start;
     gap: 0.5rem;
   }
-  
+
   .email-template-management .btn-close {
     align-self: flex-end;
     margin-top: -0.25rem;
@@ -594,11 +683,11 @@
   .email-template-management {
     background-color: white;
   }
-  
+
   .email-template-management .btn {
     display: none;
   }
-  
+
   .email-template-management .modal {
     display: none;
   }

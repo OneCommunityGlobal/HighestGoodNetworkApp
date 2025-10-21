@@ -12,7 +12,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('EmailTemplateManagement Error:', error, errorInfo);
+    console.error('EmailManagement Error:', error, errorInfo);
   }
 
   render() {

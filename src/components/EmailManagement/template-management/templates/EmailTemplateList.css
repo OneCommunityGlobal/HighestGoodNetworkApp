@@ -55,8 +55,12 @@
   color: #e9ecef !important;
 }
 
-.email-template-management.dark-mode .email-template-list .template-subject {
-  color: #9ca3af !important;
+.email-template-management.dark-mode .email-template-list .created-by {
+  color: #e9ecef !important;
+}
+
+.email-template-management.dark-mode .email-template-list .updated-by {
+  color: #e9ecef !important;
 }
 
 .email-template-management.dark-mode .email-template-list .date-text {
@@ -195,23 +199,58 @@
 /* Controls section styling */
 .email-template-list .controls-section {
   background: transparent;
-  padding: 0 0 1rem 0;
-  margin-bottom: 1rem;
+  padding: 0;
+  margin-bottom: 0.75rem;
+  width: 100%;
+}
+
+.email-template-list .controls-section .row {
+  width: 100%;
+  margin: 0;
 }
 
 .email-template-list .search-container {
   position: relative;
+  width: 100%;
+}
+
+.email-template-list .sort-container {
+  width: 200px;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.email-template-list .create-button-container {
+  width: 100%;
+  padding-right: 0;
+  margin-right: 0;
+}
+
+.email-template-list .create-button-container .btn {
+  margin-right: 0;
+  width: auto;
+  min-width: 140px;
+}
+
+.email-template-list .search-container .form-control,
+.email-template-list .sort-container .form-control {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #ced4da;
+  font-size: 0.875rem;
+  transition:
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  height: 2.5rem;
+  min-height: 2.5rem;
 }
 
 .email-template-list .search-container .form-control {
   padding-left: 2.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid #ced4da;
-  font-size: 0.875rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-.email-template-list .search-container .form-control:focus {
+.email-template-list .search-container .form-control:focus,
+.email-template-list .sort-container .form-control:focus {
   border-color: #86b7fe;
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
@@ -223,6 +262,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: #6c757d;
+  font-size: 0.875rem;
   z-index: 10;
 }
 
@@ -261,7 +301,7 @@
 
 .email-template-list .table {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
 }
 
 .email-template-list .table thead th {
@@ -269,16 +309,16 @@
   border-bottom: 2px solid #dee2e6;
   color: #495057;
   font-weight: 600;
-  padding: 1.25rem 1rem;
+  padding: 0.75rem 1rem;
   vertical-align: middle;
   border-top: none;
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .email-template-list .table tbody td {
-  padding: 1.25rem 1rem;
+  padding: 0.75rem 1rem;
   vertical-align: middle;
   border-top: 1px solid #f1f3f4;
   border-bottom: 1px solid #f1f3f4;
@@ -299,11 +339,19 @@
   font-size: 0.95rem;
 }
 
-.email-template-list .template-subject {
-  color: #6c757d;
-  font-size: 0.8125rem;
+.email-template-list .created-by {
+  color: #495057;
+  font-size: 0.875rem;
+  font-weight: 500;
   margin: 0;
-  font-style: italic;
+  line-height: 1.3;
+}
+
+.email-template-list .updated-by {
+  color: #495057;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
   line-height: 1.3;
 }
 
@@ -351,17 +399,20 @@
 /* Action buttons styling */
 .email-template-list .action-buttons {
   display: flex;
-  gap: 0.375rem;
+  gap: 0.75rem;
   align-items: center;
   justify-content: center;
+  margin: 0;
+  padding: 0;
 }
 
 .email-template-list .action-buttons .btn {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  font-size: 0.9rem;
-  border-radius: 0.5rem;
+  margin: 0;
+  font-size: 0.8rem;
+  border-radius: 0.375rem;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
   border: none;
@@ -384,7 +435,7 @@
 
 /* Preview button - Purple */
 .email-template-list .action-buttons .btn-outline-info,
-.email-template-list .action-buttons button[color="outline-info"],
+.email-template-list .action-buttons button[color='outline-info'],
 .email-template-list .action-buttons button.btn-outline-info {
   background-color: #6f42c1 !important;
   color: #ffffff !important;
@@ -392,7 +443,7 @@
 }
 
 .email-template-list .action-buttons .btn-outline-info:hover,
-.email-template-list .action-buttons button[color="outline-info"]:hover,
+.email-template-list .action-buttons button[color='outline-info']:hover,
 .email-template-list .action-buttons button.btn-outline-info:hover {
   background-color: #5a32a3 !important;
   border-color: #5a32a3 !important;
@@ -402,7 +453,7 @@
 
 /* Edit button - Orange */
 .email-template-list .action-buttons .btn-outline-primary,
-.email-template-list .action-buttons button[color="outline-primary"],
+.email-template-list .action-buttons button[color='outline-primary'],
 .email-template-list .action-buttons button.btn-outline-primary {
   background-color: #fd7e14 !important;
   color: #ffffff !important;
@@ -410,7 +461,7 @@
 }
 
 .email-template-list .action-buttons .btn-outline-primary:hover,
-.email-template-list .action-buttons button[color="outline-primary"]:hover,
+.email-template-list .action-buttons button[color='outline-primary']:hover,
 .email-template-list .action-buttons button.btn-outline-primary:hover {
   background-color: #e8650e !important;
   border-color: #e8650e !important;
@@ -420,7 +471,7 @@
 
 /* Send button - Teal */
 .email-template-list .action-buttons .btn-outline-success,
-.email-template-list .action-buttons button[color="outline-success"],
+.email-template-list .action-buttons button[color='outline-success'],
 .email-template-list .action-buttons button.btn-outline-success {
   background-color: #20c997 !important;
   color: #ffffff !important;
@@ -428,7 +479,7 @@
 }
 
 .email-template-list .action-buttons .btn-outline-success:hover,
-.email-template-list .action-buttons button[color="outline-success"]:hover,
+.email-template-list .action-buttons button[color='outline-success']:hover,
 .email-template-list .action-buttons button.btn-outline-success:hover {
   background-color: #1aa179 !important;
   border-color: #1aa179 !important;
@@ -438,7 +489,7 @@
 
 /* Delete button - Red */
 .email-template-list .action-buttons .btn-outline-danger,
-.email-template-list .action-buttons button[color="outline-danger"],
+.email-template-list .action-buttons button[color='outline-danger'],
 .email-template-list .action-buttons button.btn-outline-danger {
   background-color: #dc3545 !important;
   color: #ffffff !important;
@@ -446,10 +497,50 @@
 }
 
 .email-template-list .action-buttons .btn-outline-danger:hover,
-.email-template-list .action-buttons button[color="outline-danger"]:hover,
+.email-template-list .action-buttons button[color='outline-danger']:hover,
 .email-template-list .action-buttons button.btn-outline-danger:hover {
   background-color: #c82333 !important;
   border-color: #c82333 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3) !important;
+}
+
+/* Enhanced action button styling for new classes */
+.email-template-list .action-btn.preview-btn {
+  background-color: #17a2b8 !important;
+  border-color: #17a2b8 !important;
+  color: #ffffff !important;
+}
+
+.email-template-list .action-btn.preview-btn:hover {
+  background-color: #138496 !important;
+  border-color: #117a8b !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3) !important;
+}
+
+.email-template-list .action-btn.edit-btn {
+  background-color: #fd7e14 !important;
+  border-color: #fd7e14 !important;
+  color: #ffffff !important;
+}
+
+.email-template-list .action-btn.edit-btn:hover {
+  background-color: #e8690b !important;
+  border-color: #dc5f00 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(253, 126, 20, 0.3) !important;
+}
+
+.email-template-list .action-btn.delete-btn {
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+  color: #ffffff !important;
+}
+
+.email-template-list .action-btn.delete-btn:hover {
+  background-color: #c82333 !important;
+  border-color: #bd2130 !important;
   color: #ffffff !important;
   box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3) !important;
 }
@@ -503,13 +594,12 @@
   color: #842029;
 }
 
-
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .email-template-list .btn {
     border: 2px solid currentColor !important;
   }
-  
+
   .email-template-list .table {
     border: 2px solid #000;
   }
@@ -521,12 +611,12 @@
   .email-template-list .table tbody tr {
     transition: none !important;
   }
-  
+
   .email-template-list .btn:hover,
   .email-template-list .table tbody tr:hover {
     transform: none !important;
   }
-  
+
   .skeleton-loader {
     animation: none !important;
   }
@@ -544,26 +634,26 @@
   .email-template-list {
     padding: 1rem 0.5rem;
   }
-  
+
   .email-template-list .list-header {
     text-align: center;
   }
-  
+
   .email-template-list .list-header .d-flex {
     flex-direction: column;
     gap: 1rem;
     align-items: center;
   }
-  
+
   .email-template-list .controls-section .row {
     gap: 1rem;
   }
-  
+
   .email-template-list .controls-section .col-md-6,
   .email-template-list .controls-section .col-md-3 {
     margin-bottom: 1rem;
   }
-  
+
   .email-template-list .table {
     font-size: 0.8125rem;
   }
@@ -574,44 +664,48 @@
   .email-template-list .controls-section {
     padding: 0 0 1rem 0;
   }
-  
+
   .email-template-list .table-responsive {
     border-radius: 0.5rem;
   }
-  
+
   .email-template-list .table thead th,
   .email-template-list .table tbody td {
     padding: 0.75rem 0.5rem;
     font-size: 0.75rem;
   }
-  
+
   .email-template-list .action-buttons {
     flex-wrap: wrap;
-    gap: 0.25rem;
+    gap: 0.5rem;
   }
-  
+
   .email-template-list .action-buttons .btn {
     width: 32px;
     height: 32px;
     font-size: 0.75rem;
     padding: 0;
   }
-  
+
   .email-template-list .filter-buttons .btn-group {
     width: 100%;
   }
-  
+
   .email-template-list .filter-buttons .btn {
     flex: 1;
     font-size: 0.75rem;
     padding: 0.375rem 0.5rem;
   }
-  
+
   .email-template-list .template-name {
     font-size: 0.8125rem;
   }
-  
-  .email-template-list .template-subject {
+
+  .email-template-list .created-by {
+    font-size: 0.75rem;
+  }
+
+  .email-template-list .updated-by {
     font-size: 0.75rem;
   }
 }
@@ -620,45 +714,49 @@
   .email-template-list {
     padding: 0.5rem;
   }
-  
+
   .email-template-list .list-header,
   .email-template-list .controls-section {
     padding: 0 0 0.75rem 0;
   }
-  
+
   .email-template-list .templates-table {
     font-size: 0.6875rem;
   }
-  
+
   .email-template-list .table thead th,
   .email-template-list .table tbody td {
     padding: 0.5rem 0.25rem;
   }
-  
+
   .email-template-list .template-name {
     font-size: 0.75rem;
   }
-  
-  .email-template-list .template-subject {
+
+  .email-template-list .created-by {
     font-size: 0.6875rem;
   }
-  
+
+  .email-template-list .updated-by {
+    font-size: 0.6875rem;
+  }
+
   .email-template-list .variables-count,
   .email-template-list .status-badge {
     font-size: 0.625rem;
     padding: 0.1875rem 0.375rem;
   }
-  
+
   .email-template-list .date-text {
     font-size: 0.6875rem;
   }
-  
+
   .email-template-list .action-buttons .btn {
     width: 28px;
     height: 28px;
     font-size: 0.6875rem;
   }
-  
+
   .email-template-list .search-container .form-control {
     font-size: 0.8125rem;
     padding: 0.5rem 0.75rem 0.5rem 2rem;
@@ -670,33 +768,234 @@
   .email-template-list .list-header h2 {
     font-size: 1.25rem;
   }
-  
+
   .email-template-list .controls-section {
     padding: 0 0 0.5rem 0;
   }
-  
+
   .email-template-list .templates-count {
     font-size: 0.75rem;
   }
-  
+
   .email-template-list .empty-state,
   .email-template-list .loading-state {
     padding: 2rem 1rem;
   }
 }
 
+/* Pagination styles */
+.email-template-list .pagination-controls {
+  padding: 1rem 0;
+  border-top: 1px solid #dee2e6;
+  margin-top: 1rem;
+}
+
+.email-template-list .pagination-info {
+  font-size: 0.875rem;
+}
+
+.email-template-list .pagination-buttons {
+  align-items: center;
+}
+
+.email-template-list .pagination-buttons .btn {
+  min-width: 80px;
+}
+
+/* Dark mode pagination */
+.email-template-management.dark-mode .email-template-list .pagination-controls {
+  border-top-color: #495057;
+}
+
+.email-template-management.dark-mode .email-template-list .pagination-info {
+  color: #adb5bd;
+}
+
 /* Print styles */
+/* Responsive controls layout */
+@media (max-width: 991px) {
+  .email-template-list .controls-section .row {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .email-template-list .search-container,
+  .email-template-list .sort-container,
+  .email-template-list .create-button-container {
+    width: 100%;
+  }
+
+  .email-template-list .create-button-container {
+    justify-content: center !important;
+  }
+
+  .email-template-list .controls-section .d-flex.gap-3 {
+    flex-direction: column;
+    gap: 0.75rem !important;
+  }
+
+  .email-template-list .search-container {
+    flex: none !important;
+    width: 100% !important;
+  }
+
+  .email-template-list .sort-container {
+    width: 100% !important;
+    flex-shrink: 1 !important;
+    margin-left: 0 !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .email-template-list .search-container .form-control,
+  .email-template-list .sort-container .form-control {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+  }
+
+  .email-template-list .search-container .form-control {
+    padding-left: 2.5rem;
+  }
+
+  .email-template-list .create-button-container .btn {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 575px) {
+  .email-template-list .controls-section {
+    padding: 0;
+  }
+
+  .email-template-list .search-container .form-control,
+  .email-template-list .sort-container .form-control {
+    font-size: 0.8125rem;
+    padding: 0.5rem 0.75rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+  }
+
+  .email-template-list .search-container .form-control {
+    padding-left: 2.5rem;
+  }
+
+  .email-template-list .create-button-container .btn {
+    font-size: 0.8125rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Responsive table column visibility */
+@media (max-width: 1199px) {
+  .email-template-list .table .d-none.d-xl-table-cell {
+    display: none !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .email-template-list .table .d-none.d-lg-table-cell {
+    display: none !important;
+  }
+
+  .email-template-list .pagination-controls {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .email-template-list .pagination-buttons {
+    justify-content: center;
+    gap: 0.75rem !important;
+  }
+
+  .email-template-list .pagination-text {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .email-template-list .table .d-none.d-md-table-cell {
+    display: none !important;
+  }
+}
+
 @media print {
   .email-template-list {
     background-color: white;
   }
-  
+
   .email-template-list .action-buttons,
   .email-template-list .controls-section {
     display: none;
   }
-  
+
   .email-template-list .table {
     border: 1px solid #000;
   }
+}
+
+/* Enhanced Error Handling Styles */
+.email-template-list .error-boundary {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+}
+
+.email-template-list .error-boundary .alert {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+}
+
+.email-template-list .skeleton-loader {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Dark mode error handling */
+.email-template-list.dark .error-boundary {
+  background-color: #2d3748;
+  border-color: #4a5568;
+}
+
+.email-template-list.dark .skeleton-loader {
+  background: linear-gradient(90deg, #2d3748 25%, #4a5568 50%, #2d3748 75%);
+  background-size: 200% 100%;
+}
+
+/* Pagination Controls Styling */
+.email-template-list .pagination-controls {
+  padding: 1rem 0;
+}
+
+.email-template-list .pagination-buttons {
+  gap: 1rem !important;
+}
+
+.email-template-list .pagination-text {
+  font-weight: 500;
+  color: #374151;
+  white-space: nowrap;
+}
+
+/* Dark mode pagination */
+
+.email-template-list.dark .pagination-text {
+  color: #d1d5db;
 }

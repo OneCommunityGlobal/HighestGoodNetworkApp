@@ -9,6 +9,17 @@ const initialState = {
   totalCount: 0,
   sendingEmail: false,
   emailSent: false,
+  pagination: {
+    currentPage: 1,
+    totalPages: 1,
+    limit: null,
+    hasNextPage: false,
+    hasPrevPage: false,
+  },
+  filters: {
+    sortBy: 'created_at',
+    sortOrder: 'desc',
+  },
 };
 
 const emailTemplateReducer = (state = initialState, action) => {
@@ -26,7 +37,8 @@ const emailTemplateReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         templates: action.payload.templates,
-        totalCount: action.payload.count,
+        totalCount: action.payload.pagination.totalCount,
+        pagination: action.payload.pagination,
         error: null,
       };
 
@@ -166,6 +178,24 @@ const emailTemplateReducer = (state = initialState, action) => {
       return {
         ...state,
         searchTerm: action.payload,
+      };
+
+    case EMAIL_TEMPLATE_ACTIONS.SET_PAGINATION:
+      return {
+        ...state,
+        pagination: {
+          ...state.pagination,
+          ...action.payload,
+        },
+      };
+
+    case EMAIL_TEMPLATE_ACTIONS.SET_FILTERS:
+      return {
+        ...state,
+        filters: {
+          ...state.filters,
+          ...action.payload,
+        },
       };
 
     // Clear error
