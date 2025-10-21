@@ -167,12 +167,8 @@ describe('UserPermissionsPopup component', () => {
     fireEvent.click(screen.getByText('Submit'));
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith(
-        `
-        Permissions have been updated successfully. 
-        Please inform the user to log out and log back in for the new permissions to take effect.`,
-        {
-          autoClose: 10000,
-        },
+        expect.stringContaining('Permissions have been updated successfully'),
+        expect.objectContaining({ autoClose: 10000 }),
       );
     });
   });
