@@ -8,10 +8,40 @@ const DocumentReviewPage = () => {
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [collaborativeFeedback, setCollaborativeFeedback] = useState('');
+  const [privateNotes, setPrivateNotes] = useState('');
+  const [marksGiven, setMarksGiven] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState('');
+  const [autoSaveTimer, setAutoSaveTimer] = useState(null);
 
   useEffect(() => {
     fetchSubmission();
   }, [submissionId]);
+
+  useEffect(() => {
+    if (submission) {
+      setCollaborativeFeedback(submission.feedback.collaborative || '');
+      setPrivateNotes(submission.feedback.privateNotes || '');
+      setMarksGiven(submission.grading.marksGiven || '');
+    }
+  }, [submission]);
+
+  useEffect(() => {
+    if (autoSaveTimer) {
+      clearTimeout(autoSaveTimer);
+    }
+
+    const timer = setTimeout(() => {
+      if (submission && (collaborativeFeedback || privateNotes || marksGiven)) {
+        handleAutoSave();
+      }
+    }, 2000);
+
+    setAutoSaveTimer(timer);
+
+    return () => clearTimeout(timer);
+  }, [collaborativeFeedback, privateNotes, marksGiven]);
 
   const fetchSubmission = async () => {
     try {
@@ -21,7 +51,7 @@ const DocumentReviewPage = () => {
         `http://localhost:4500/api/educationportal/educator/review/${submissionId}`,
         {
           headers: {
-            Authorization: `${token}`,
+            Authorization: token,
           },
         },
       );
@@ -30,6 +60,54 @@ const DocumentReviewPage = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to fetch submission');
       setLoading(false);
+    }
+  };
+
+  const handleAutoSave = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `http://localhost:4500/api/educationportal/educator/review/${submissionId}/progress`,
+        {
+          collaborativeFeedback,
+          privateNotes,
+          marksGiven: marksGiven ? parseInt(marksGiven, 10) : undefined,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      setSaveMessage('Auto-saved');
+      setTimeout(() => setSaveMessage(''), 2000);
+    } catch (err) {}
+  };
+
+  const handleSaveProgress = async () => {
+    try {
+      setIsSaving(true);
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `http://localhost:4500/api/educationportal/educator/review/${submissionId}/progress`,
+        {
+          collaborativeFeedback,
+          privateNotes,
+          marksGiven: marksGiven ? parseInt(marksGiven, 10) : undefined,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+      setSaveMessage('Progress saved successfully!');
+      setTimeout(() => setSaveMessage(''), 3000);
+      setIsSaving(false);
+    } catch (err) {
+      setSaveMessage('Failed to save progress');
+      setTimeout(() => setSaveMessage(''), 3000);
+      setIsSaving(false);
     }
   };
 
@@ -93,10 +171,18 @@ const DocumentReviewPage = () => {
     );
   };
 
+  const calculateGradePercentage = () => {
+    if (!marksGiven || !submission.grading.totalMarks) return null;
+    return ((parseInt(marksGiven, 10) / submission.grading.totalMarks) * 100).toFixed(1);
+  };
+
+  const gradePercentage = calculateGradePercentage();
+
   return (
     <div className={styles.documentReviewContainer}>
       <div className={styles.reviewHeader}>
         <h2>Review Submission</h2>
+        {saveMessage && <div className={styles.saveNotification}>{saveMessage}</div>}
       </div>
 
       <div className={styles.reviewContent}>
@@ -148,7 +234,68 @@ const DocumentReviewPage = () => {
         <div className={styles.rightPane}>
           <div className={styles.feedbackPanel}>
             <h3>Review & Feedback</h3>
-            <p>Feedback section coming in Session 2...</p>
+
+            {gradePercentage && (
+              <div className={styles.gradeDisplay}>
+                <div className={styles.gradeCircle}>
+                  <span className={styles.gradePercentage}>{gradePercentage}%</span>
+                  <span className={styles.gradeText}>
+                    {marksGiven} / {submission.grading.totalMarks}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            <div className={styles.feedbackSection}>
+              <label htmlFor="collabFeedback" className={styles.feedbackLabel}>
+                Collaborative Feedback
+                <span className={styles.labelHint}>(Visible to student)</span>
+              </label>
+              <textarea
+                id="collabFeedback"
+                className={styles.feedbackTextarea}
+                value={collaborativeFeedback}
+                onChange={e => setCollaborativeFeedback(e.target.value)}
+                placeholder="Enter feedback that will be shared with the student..."
+                rows={6}
+              />
+            </div>
+
+            <div className={styles.feedbackSection}>
+              <label htmlFor="privateNotes" className={styles.feedbackLabel}>
+                Private Notes
+                <span className={styles.labelHint}>(Only visible to educators)</span>
+              </label>
+              <textarea
+                id="privateNotes"
+                className={styles.feedbackTextarea}
+                value={privateNotes}
+                onChange={e => setPrivateNotes(e.target.value)}
+                placeholder="Enter private notes for internal use..."
+                rows={4}
+              />
+            </div>
+
+            <div className={styles.feedbackSection}>
+              <label htmlFor="marksGiven" className={styles.feedbackLabel}>
+                Marks Given
+                <span className={styles.labelHint}>(Out of {submission.grading.totalMarks})</span>
+              </label>
+              <input
+                id="marksGiven"
+                type="number"
+                className={styles.marksInput}
+                value={marksGiven}
+                onChange={e => setMarksGiven(e.target.value)}
+                placeholder="Enter marks..."
+                min="0"
+                max={submission.grading.totalMarks}
+              />
+            </div>
+
+            <button className={styles.saveButton} onClick={handleSaveProgress} disabled={isSaving}>
+              {isSaving ? 'Saving...' : 'Save Progress'}
+            </button>
           </div>
         </div>
       </div>

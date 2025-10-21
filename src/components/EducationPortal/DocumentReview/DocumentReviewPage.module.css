@@ -10,12 +10,35 @@
   border-radius: 8px;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .reviewHeader h2 {
   margin: 0;
   color: #333;
   font-size: 24px;
+}
+
+.saveNotification {
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border-radius: 4px;
+  font-size: 14px;
+  animation: slideIn 0.3s ease-in-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .reviewContent {
@@ -157,6 +180,113 @@
 
 .feedbackPanel {
   min-height: 400px;
+}
+
+.gradeDisplay {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gradeCircle {
+  background: white;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.gradePercentage {
+  font-size: 32px;
+  font-weight: 700;
+  color: #667eea;
+  line-height: 1;
+}
+
+.gradeText {
+  font-size: 14px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.feedbackSection {
+  margin-bottom: 20px;
+}
+
+.feedbackLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
+}
+
+.labelHint {
+  font-weight: 400;
+  color: #666;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.feedbackTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+
+.feedbackTextarea:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.marksInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.marksInput:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.saveButton {
+  width: 100%;
+  padding: 12px 24px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+
+.saveButton:hover:not(:disabled) {
+  background-color: #1565c0;
+}
+
+.saveButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .reviewLoading,
