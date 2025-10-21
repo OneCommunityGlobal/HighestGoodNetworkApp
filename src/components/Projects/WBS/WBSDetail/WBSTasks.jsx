@@ -195,6 +195,16 @@ function WBSTasks(props) {
           >
             {openAll ? 'Fold All' : 'Unfold All'}
           </Button>
+          <Button
+            color="info"
+            size="sm"
+            className="ml-2"
+            onClick={() => setShowImport(!showImport)}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={isLoading}
+          >
+            <i className="fa fa-upload" aria-hidden="true" /> {showImport ? 'Hide Import' : 'Import Tasks'}
+          </Button>
           <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />
           {/* </span> */}
         </div>
