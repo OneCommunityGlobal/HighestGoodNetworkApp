@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef , useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
@@ -910,6 +911,53 @@ useEffect(() => {
     </>
   );
 }
+
+// PropTypes validation
+AddTaskModal.propTypes = {
+  copiedTask: PropTypes.object,
+  allMembers: PropTypes.array,
+  allProjects: PropTypes.shape({
+    projects: PropTypes.array,
+    fetched: PropTypes.bool,
+    fetching: PropTypes.bool,
+  }),
+  error: PropTypes.string,
+  darkMode: PropTypes.bool,
+  tasks: PropTypes.array,
+  fetchAllProjects: PropTypes.func.isRequired,
+  addNewTask: PropTypes.func.isRequired,
+  fetchAllMembers: PropTypes.func.isRequired,
+  projectId: PropTypes.string,
+  taskId: PropTypes.string,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      projectId: PropTypes.string,
+      wbsId: PropTypes.string,
+    }),
+  }),
+};
+
+// Default props
+AddTaskModal.defaultProps = {
+  copiedTask: null,
+  allMembers: [],
+  allProjects: {
+    projects: [],
+    fetched: false,
+    fetching: false,
+  },
+  error: null,
+  darkMode: false,
+  tasks: [],
+  projectId: '',
+  taskId: '',
+  match: {
+    params: {
+      projectId: '',
+      wbsId: '',
+    },
+  },
+};
 
 const mapStateToProps = state => ({
   copiedTask: state.tasks.copiedTask,

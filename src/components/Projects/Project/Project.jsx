@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { ARCHIVE } from './../../../languages/en/ui';
 import './../projects.css';
 import { Link } from 'react-router-dom';
@@ -13,7 +14,7 @@ import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 const Project = props => {
   const { darkMode, index } = props;
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName = '', isActive = false, isArchived = false, _id: projectId } = projectData || {};
+  const { projectName = '', isActive = false, _id: projectId } = projectData || {};
   const [displayName, setDisplayName] = useState(projectName);
   const [category, setCategory] = useState(
     props.projectData?.category || props.category || 'Unspecified',
@@ -213,5 +214,38 @@ const Project = props => {
       </>
   );
 };
+
+// PropTypes validation
+Project.propTypes = {
+  darkMode: PropTypes.bool,
+  index: PropTypes.number.isRequired,
+  projectData: PropTypes.shape({
+    projectName: PropTypes.string,
+    isActive: PropTypes.bool,
+    isArchived: PropTypes.bool,
+    _id: PropTypes.string,
+    category: PropTypes.string,
+  }),
+  category: PropTypes.string,
+  onUpdateProject: PropTypes.func,
+  modifyProject: PropTypes.func,
+  hasPermission: PropTypes.func.isRequired,
+  onClickProjectStatusBtn: PropTypes.func,
+  onClickArchiveBtn: PropTypes.func,
+  projectId: PropTypes.string,
+};
+
+// Default props
+Project.defaultProps = {
+  darkMode: false,
+  projectData: null,
+  category: 'Unspecified',
+  onUpdateProject: null,
+  modifyProject: null,
+  onClickProjectStatusBtn: () => {},
+  onClickArchiveBtn: () => {},
+  projectId: '',
+};
+
 const mapStateToProps = state => state;
 export default connect(mapStateToProps, { hasPermission, modifyProject })(Project);
