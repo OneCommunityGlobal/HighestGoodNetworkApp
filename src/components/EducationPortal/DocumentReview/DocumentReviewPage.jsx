@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import styles from './DocumentReviewPage.module.css';
@@ -13,7 +13,8 @@ const DocumentReviewPage = () => {
   const [marksGiven, setMarksGiven] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
-  const [autoSaveTimer, setAutoSaveTimer] = useState(null);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const autoSaveTimerRef = useRef(null);
 
   useEffect(() => {
     fetchSubmission();
@@ -24,12 +25,16 @@ const DocumentReviewPage = () => {
       setCollaborativeFeedback(submission.feedback.collaborative || '');
       setPrivateNotes(submission.feedback.privateNotes || '');
       setMarksGiven(submission.grading.marksGiven || '');
+      setIsInitialLoad(false);
     }
   }, [submission]);
 
   useEffect(() => {
-    if (autoSaveTimer) {
-      clearTimeout(autoSaveTimer);
+    if (autoSaveTimerRef.current) {
+      clearTimeout(autoSaveTimerRef.current);
+    }
+    if (isInitialLoad) {
+      return;
     }
 
     const timer = setTimeout(() => {
@@ -38,10 +43,10 @@ const DocumentReviewPage = () => {
       }
     }, 2000);
 
-    setAutoSaveTimer(timer);
+    autoSaveTimerRef.current = timer;
 
     return () => clearTimeout(timer);
-  }, [collaborativeFeedback, privateNotes, marksGiven]);
+  }, [collaborativeFeedback, privateNotes, marksGiven, isInitialLoad]);
 
   const fetchSubmission = async () => {
     try {
@@ -81,7 +86,9 @@ const DocumentReviewPage = () => {
       );
       setSaveMessage('Auto-saved');
       setTimeout(() => setSaveMessage(''), 2000);
-    } catch (err) {}
+    } catch (err) {
+      logService.logError(err);
+    }
   };
 
   const handleSaveProgress = async () => {
@@ -148,7 +155,7 @@ const DocumentReviewPage = () => {
   };
 
   const renderFileViewer = () => {
-    const fileUrl = submission.submission.uploadedFiles[0];
+    const fileUrl = submission.submission.uploadedFiles?.[0];
 
     if (!fileUrl) {
       return <div className={styles.noFile}>No file uploaded</div>;
