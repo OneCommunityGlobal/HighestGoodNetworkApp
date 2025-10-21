@@ -16,7 +16,7 @@ import {
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
-
+import CircularProgress from '@mui/material/CircularProgress';
 import ReminderModal from './ReminderModal';
 
 function UserPermissionsPopUp({
@@ -41,6 +41,7 @@ function UserPermissionsPopUp({
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
   const [toastShown, setToastShown] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -73,6 +74,7 @@ function UserPermissionsPopUp({
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
+    setisLoading(true);
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
       if (actualUserProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
@@ -101,7 +103,7 @@ function UserPermissionsPopUp({
       .then(() => {
         if (!toastShown) {
           const SUCCESS_MESSAGE = `
-        Permissions have been updated successfully. 
+        Permissions have been updated successfully.
         Please inform the user to log out and log back in for the new permissions to take effect.`;
           toast.success(SUCCESS_MESSAGE, {
             autoClose: 10000,
@@ -111,6 +113,7 @@ function UserPermissionsPopUp({
         toggle();
         getAllUsers();
         getChangeLogs();
+        setisLoading(false);
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -129,6 +132,13 @@ function UserPermissionsPopUp({
       setToastShown(false);
     }
   }, [modalStatus]);
+
+  const formatSearchInput = text => {
+    return text
+      .toLowerCase()
+      .replace(/\s+/g, '')
+      .trim();
+  };
 
   return (
     <>
@@ -207,11 +217,10 @@ function UserPermissionsPopUp({
                 // eslint-disable-next-line array-callback-return, consistent-return
                 .filter(user => {
                   if (
-                    user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    `${user.firstName} ${user.lastName}`
-                      .toLowerCase()
-                      .includes(searchText.toLowerCase())
+                    formatSearchInput(user.firstName).includes(formatSearchInput(searchText)) ||
+                    formatSearchInput(user.lastName).includes(formatSearchInput(searchText)) ||
+                    //prettier-ignore
+                    formatSearchInput(`${user.firstName} ${user.lastName}`).includes(formatSearchInput(searchText))
                   ) {
                     if (user.isActive) {
                       return user;
@@ -271,7 +280,7 @@ function UserPermissionsPopUp({
           block
           style={{ ...boxStyle, marginTop: '1rem' }}
         >
-          Submit
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Submit'}
         </Button>
       </Form>
     </>
