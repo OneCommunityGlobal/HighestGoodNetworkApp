@@ -22,16 +22,20 @@ import './AddTaskModal.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { getProjectDetail } from '../../../../../actions/project';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { set } from 'lodash';
+import parse from 'date-fns/parse';
+import isBefore from 'date-fns/isBefore';
 
 const FORMAT = 'MM/dd/yy';
 
+const uniqByUserId = (list = []) =>
+  Array.from(new Map(list.map(r => [String(r.userID), r])).values());
 
+const parseMMDDYY = (s) => (s ? parse(s, 'MM/dd/yy', new Date()) : undefined);
 /** small v8 DateInput: uses useInput + DayPicker under the hood **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
   const { inputProps, dayPickerProps, show, toggle } = useInput({
     mode: 'single',
-    selected: value ? new Date(value) : undefined,
+    selected: value ? parse(value, FORMAT, new Date()) : undefined,
     onDayChange(date) {
       // format back to your MM/dd/yy
       const f = dateFnsFormat(date, FORMAT);
@@ -167,7 +171,7 @@ const defaultCategory = useMemo(() => {
   const [newTaskNum, setNewTaskNum] = useState('1');
   const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
-  const [showReplicate, setShowReplicateConfirm] = useState(false);
+  // const [showReplicate, setShowReplicateConfirm] = useState(false);
   const priorityRef = useRef(null);
 
   const categoryOptions = [
@@ -189,6 +193,7 @@ const defaultCategory = useMemo(() => {
   const toggle = () => setModal(!modal);
 
   const openModal = () => {
+    clear(); // reset assignees, dates, etc. before each open
     if (!props.isOpen && props.setIsOpen) props.setIsOpen(true);
     toggle();
   };
@@ -288,7 +293,9 @@ const defaultCategory = useMemo(() => {
   };
 
   useEffect(() => {
-    if (dueDate && dueDate < startedDate) {
+    const start = parseMMDDYY(startedDate);
+    const end = parseMMDDYY(dueDate);
+    if (start && end && isBefore(end, start)) {
       setEndDateError(true);
       setStartDateError(true);
     } else {
@@ -335,6 +342,7 @@ const defaultCategory = useMemo(() => {
   };
 
   const paste = () => {
+    if (!copiedTask) return;
     setTaskName(copiedTask.taskName);
 
     setPriority(copiedTask.priority);
@@ -358,81 +366,92 @@ const defaultCategory = useMemo(() => {
     setEndstateInfo(copiedTask.endstateInfo);
   };
 
-{/*  const handleReplicate = async () => {
-    if (!copiedTask) {
-      console.warn('No task copied to replicate');
-      return;
-    }
+const buildTaskFromForm = () => ({
+  taskName,
+  wbsId: props.wbsId,
+  num: newTaskNum,
+  level: props.taskId ? props.level + 1 : 1,
+  priority,
+  resources: uniqByUserId(resourceItems),
+  isAssigned: assigned,
+  status,
+  hoursBest: parseFloat(hoursBest),
+  hoursWorst: parseFloat(hoursWorst),
+  hoursMost: parseFloat(hoursMost),
+  estimatedHours: parseFloat(hoursEstimate),
+  //startedDatetime: startedDate,
+  //dueDatetime: dueDate,
+  startedDatetime: parseMMDDYY(startedDate),
+  dueDatetime: parseMMDDYY(dueDate),
+  links,
+  category,
+  parentId1: props.level === 1 ? props.taskId : props.parentId1,
+  parentId2: props.level === 2 ? props.taskId : props.parentId2,
+  parentId3: props.level === 3 ? props.taskId : props.parentId3,
+  mother: props.taskId,
+  position: 0,
+  isActive: true,
+  whyInfo,
+  intentInfo,
+  endstateInfo,
+});
 
-    try {
-      setIsLoading(true);
-      
-      // Extract user IDs from the copied task resources
-      const resourceUserIds = copiedTask.resources?.map(resource => resource.userId || resource._id) || [];
-      
-      // Get the current user ID from auth state
-      const requestor = props.authUser?.userid || 'current-user';
-      
-      await props.replicateTask({
-        taskId: copiedTask._id,
-        resourceUserIds,
-        includeAttachments: true,
-        requestor,
-      });
-
-      // Optionally close the modal and refresh the task list
-      toggle();
-      props.load();
-      
-      // Show success message or handle success
-      console.log('Task replicated successfully');
-    } catch (error) {
-      console.error('Error replicating task:', error);
-      // You might want to show an error message to the user here
-    } finally {
-      setIsLoading(false);
-    }
-  };
-*/}
 const handleReplicate = async () => {
-  if (!copiedTask) {
-    console.warn('No task copied to replicate');
-    return;
-  }
   if (!resourceItems?.length) {
-    console.warn('Select at least one Resource to replicate to');
+    toast.info('Select at least one Resource to replicate to');
     return;
   }
 
-  const ok = window.confirm(
-    "This doesn't divide work—it duplicates it. Everyone gets the full task. Continue?"
-  );
-  if (!ok) return;
+  if (!window.confirm("This doesn't divide work—it duplicates it. Everyone gets the full task. Continue?")) {
+    return;
+  }
 
   try {
     setIsLoading(true);
 
-    // replicate to the *selected* people under Resources
-    const resourceUserIds = resourceItems.map(r => r.userID).filter(Boolean);
+    // 1) Figure out the base task to replicate from
+    let baseTaskId = copiedTask?._id;
+    if (!baseTaskId) {
+      if (!taskName?.trim()) {
+        toast.info('Enter a Task Name (or copy a task) before replicating.');
+        return;
+      }
+      // IMPORTANT: create the base task UNASSIGNED
+      const created = await props.addNewTask(
+        { ...buildTaskFromForm(), resources: [], isAssigned: false },
+        props.wbsId,
+        props.pageLoadTime
+      );
+      if (!created?._id) throw new Error('Failed to create the base task before replication.');
+      baseTaskId = created._id;
+    }
 
-    // backend permission checker expects this shape
+    // 2) Replicate ONCE PER PERSON so each clone is owned only by that person
     const requestor = {
       requestorId: props.authUser?.userid,
       role: props.authUser?.role,
     };
 
-    await props.replicateTask({
-      taskId: copiedTask._id,          // source/original task
-      resourceUserIds,                 // targets
-      includeAttachments: true,
-      requestor,
-    });
+    // const targetIds = resourceItems.map(r => r.userID).filter(Boolean);
+    const targetIds = Array.from(
+      new Set(resourceItems.map(r => r.userID).filter(Boolean))
+    );
+    for (const uid of targetIds) {
+      await props.replicateTask({
+        taskId: baseTaskId,
+        resourceUserIds: [uid],       // single-target replication
+        includeAttachments: true,
+        requestor,
+      });
+    }
 
+    toast.success('Task replicated to selected resources');
+    clear();
     toggle();
     props.load();
-    console.log('Task replicated successfully');
-  } catch (error) {
-    console.error('Error replicating task:', error);
+  } catch (err) {
+    console.error('Error replicating task:', err);
+    toast.error('Error replicating task');
   } finally {
     setIsLoading(false);
   }
@@ -440,13 +459,13 @@ const handleReplicate = async () => {
 
   const addNewTask = async () => {
     setIsLoading(true);
-    const newTask = {
+{/*    const newTask = {
       taskName,
       wbsId: props.wbsId,
       num: newTaskNum,
       level: props.taskId ? props.level + 1 : 1,
       priority,
-      resources: resourceItems,
+      resources: uniqByUserId(resourceItems),
       isAssigned: assigned,
       status,
       hoursBest: parseFloat(hoursBest),
@@ -466,8 +485,10 @@ const handleReplicate = async () => {
       whyInfo,
       intentInfo,
       endstateInfo,
-    };
+    };*/}
+    const newTask = buildTaskFromForm();
     await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
+    clear();
     toggle();
     setIsLoading(false);
     props.load();
@@ -624,20 +645,20 @@ const handleReplicate = async () => {
 
               <div className="add_new_task_form-group">
                 <div className="add_new_task_form-input_area">
-                  <button
-                    type="button"
-                    className="btn btn-info btn-sm"
-                    onClick={handleReplicate}
-                    disabled={!copiedTask || isLoading}
-                    style={darkMode ? boxStyleDark : boxStyle}
-                  >
-                    {isLoading ? 'Replicating...' : 'Replicate'}
-                  </button>
-                  {!copiedTask && (
-                    <small className={`ml-2 ${fontColor}`}>
-                      Copy a task first to enable replication
-                    </small>
-                  )}
+                <button
+                  type="button"
+                  className="btn btn-info btn-sm"
+                  onClick={handleReplicate}
+                  disabled={isLoading || resourceItems.length === 0}
+                  data-tip={
+                    resourceItems.length === 0
+                    ? 'Select at least one Resource'
+                    : "Duplicate this task to each selected person"
+                  }
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  {isLoading ? 'Replicating…' : 'Replicate'}
+                </button>
                 </div>
               </div>
 
