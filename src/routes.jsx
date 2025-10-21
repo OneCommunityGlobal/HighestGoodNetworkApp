@@ -151,8 +151,8 @@ import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLe
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
-import EPLogin from './components/EductionPortal/Login';
-import EPDashboard from './components/EductionPortal';
+import EPLogin from './components/EducationPortal/Login';
+import EPDashboard from './components/EducationPortal';
 
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
@@ -165,7 +165,8 @@ import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 
-import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
+import WriteTaskUpload from './components/EducationPortal/Tasks/WriteTaskUpload';
+import DocumentReviewPage from './components/EducationPortal/DocumentReview/DocumentReviewPage';
 
 import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
@@ -735,6 +736,11 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/educator/review/:submissionId"
+          exact
+          component={DocumentReviewPage}
+        />{' '}
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
         <CPProtectedRoute

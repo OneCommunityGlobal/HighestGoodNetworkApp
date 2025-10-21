@@ -1,0 +1,204 @@
+.documentReviewContainer {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+.reviewHeader {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reviewHeader h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.reviewContent {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 20px;
+  align-items: start;
+}
+
+.leftPane {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.studentInfoCard,
+.assignmentInfoCard,
+.documentViewerCard,
+.feedbackPanel {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.studentInfoCard h3,
+.assignmentInfoCard h3,
+.documentViewerCard h3,
+.feedbackPanel h3 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 18px;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoRow .label {
+  font-weight: 600;
+  color: #666;
+}
+
+.infoRow .value {
+  color: #333;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusBadge.submitted {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.statusBadge.inReview {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.statusBadge.graded {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.statusBadge.changesRequested {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+.viewerContainer {
+  margin-top: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #fafafa;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pdfViewer,
+.imageViewer {
+  width: 100%;
+  height: 600px;
+  border: none;
+}
+
+.imageViewer {
+  object-fit: contain;
+}
+
+.linkViewer {
+  padding: 40px;
+  text-align: center;
+}
+
+.linkViewer a {
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #1976d2;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background-color 0.3s;
+}
+
+.linkViewer a:hover {
+  background-color: #1565c0;
+}
+
+.noFile {
+  padding: 40px;
+  text-align: center;
+  color: #999;
+  font-style: italic;
+}
+
+.rightPane {
+  position: sticky;
+  top: 20px;
+}
+
+.feedbackPanel {
+  min-height: 400px;
+}
+
+.reviewLoading,
+.reviewError {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 40px;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1976d2;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.reviewError h3 {
+  color: #d32f2f;
+  margin-bottom: 10px;
+}
+
+.reviewError p {
+  color: #666;
+}
+
+@media (max-width: 1024px) {
+  .reviewContent {
+    grid-template-columns: 1fr;
+  }
+
+  .rightPane {
+    position: relative;
+    top: 0;
+  }
+}
