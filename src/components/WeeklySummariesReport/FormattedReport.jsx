@@ -398,6 +398,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   const weeklySummaries = summary?.weeklySummaries || [];
   const currentSummary = weeklySummaries[weekIndex];
 
+  // Keeping this block commented intentionally for future reference —
   // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
   const summaryText = currentSummary?.summary;
   // Add safety check for weeklySummaries array and weekIndex
@@ -413,7 +414,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
       </p>
     );
   }
-
+  // Keeping this block commented intentionally for future reference —
   // const summaryText = summary?.weeklySummaries[weekIndex]?.summary;
   let summaryDate = moment()
     .tz('America/Los_Angeles')
@@ -808,6 +809,7 @@ function Index({
   //     ? [summary.filterColor]
   //     : [];
 
+  // Keeping this block commented intentionally for future reference —
   //   const bulk = Object.entries(bulkSelectedColors || {})
   //     // eslint-disable-next-line no-unused-vars
   //     .filter(([_, active]) => active)
@@ -1100,6 +1102,18 @@ FormattedReport.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
   weekIndex: PropTypes.number.isRequired,
+
+  // Adding these to clarify structure for Sonar:
+  summary: PropTypes.shape({
+    _id: PropTypes.string,
+    filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+    weeklySummaries: PropTypes.arrayOf(
+      PropTypes.shape({
+        summary: PropTypes.string,
+      }),
+    ),
+  }),
 };
 
 export default FormattedReport;
