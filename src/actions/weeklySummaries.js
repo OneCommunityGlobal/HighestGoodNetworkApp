@@ -171,12 +171,14 @@ export const getWeeklySummariesReport = (weekIndex = null) => {
       let url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
       
       const timestamp = `ts=${Date.now()}`;
-      if (weekIndex !== null) {
-        const separator = url.includes('?') ? '&' : '?';
-        url = `${url}${separator}week=${weekIndex}&${timestamp}`;
-      } else {
+      const separator = url.includes('?') ? '&' : '?';
+
+      if (weekIndex === null) {
         const separator = url.includes('?') ? '&' : '?';
         url = `${url}${separator}${timestamp}`;
+      } else {
+        const separator = url.includes('?') ? '&' : '?';
+        url = `${url}${separator}week=${weekIndex}&${timestamp}`;
       }
       
       const response = await axios.get(url, {
