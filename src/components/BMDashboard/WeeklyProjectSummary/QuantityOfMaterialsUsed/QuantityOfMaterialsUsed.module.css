@@ -206,11 +206,10 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   height: 25px;
   font-size: 10px;
   width: 125px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color, #ccc);
   border-radius: 4px;
   text-align: center;
   padding: 2px 6px;
-  background-color: white;
   background-color: var(--card-bg);
   color: var(--text-color);
   transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
@@ -224,7 +223,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 .quantityOfMaterialsUsedCard .customSelect_menu {
   background-color: var(--card-bg) !important;
   color: var(--text-color) !important;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color, #ccc);
 }
 
 /* Dropdown Options (List items) */
@@ -262,7 +261,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   flex-wrap: wrap;
   margin-top: 3px;
   font-size: 8px;
-  color: #555;
+  color: var(--text-secondary, #555);
   width: 100%;
   text-align: center;
   column-gap: 2px;
@@ -386,7 +385,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 }
 
 .quantityModalCloseButton {
-  background: #333;
+  background: var(--button-secondary-bg, #333);
   color: #fff;
   padding: 5px 10px;
   border-radius: 5px;
@@ -396,18 +395,19 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   transition: background 0.2s ease;
 }
 .quantityModalCloseButton:hover {
-  background: #555;
+  background: var(--button-secondary-hover, #555);
 }
 
 .quantityModalSubheading {
   margin-top: 15px;
   font-weight: bold;
   font-size: 14px;
+  color: var(--text-color);
 }
 
 .quantityModalTimeline {
   font-size: 13px;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--border-subtle, #ddd);
   margin-top: 8px;
   padding-top: 8px;
 }
@@ -416,7 +416,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   display: flex;
   justify-content: space-between;
   padding: 2px 0;
-  border-bottom: 1px dashed #ddd;
+  border-bottom: 1px dashed var(--border-subtle, #ddd);
 }
 
 .timelineDate {
@@ -425,7 +425,7 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
 
 .timelineQty {
   font-weight: bold;
-  color: #007bff;
+  color: var(--accent-color, #007bff);
 }
 
 @keyframes modalFadeIn {
