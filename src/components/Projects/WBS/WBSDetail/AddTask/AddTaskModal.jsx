@@ -9,8 +9,10 @@ import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
 import { isValid } from 'date-fns';
 import { boxStyle, boxStyleDark } from '~/styles';
-import { addNewTask } from '../../../../../actions/task';
-import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
+import { addNewTask , replicateTasks } from '../../../../../actions/task';
+
+import { faPlusCircle, faMinusCircle , faClone } from '@fortawesome/free-solid-svg-icons';
+
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   START_DATE_ERROR_MESSAGE,
   END_DATE_ERROR_MESSAGE,
@@ -209,6 +211,8 @@ const defaultCategory = useMemo(() => {
   const [newTaskNum, setNewTaskNum] = useState('1');
   const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
+  const [showReplicateConfirm, setShowReplicateConfirm] = useState(false);
+  const [isReplicating, setIsReplicating] = useState(false);
   const priorityRef = useRef(null);
 
   const categoryOptions = [
@@ -488,6 +492,69 @@ const defaultCategory = useMemo(() => {
     props.load();
   };
 
+  const handleReplicate = async () => {
+    try {
+      setIsReplicating(true);
+  
+      const wbsId = props.wbsId;
+      if (!wbsId) {
+        alert('Missing WBS id.');
+        return;
+      }
+      if (!taskName?.trim()) {
+        alert('Please enter a Task Name before replicating.');
+        return;
+      }
+      if (!resourceItems?.length) {
+        alert('Please add at least one Resource.');
+        return;
+      }
+      if (hasNegativeHours || hoursWarning || startDateError || endDateError || startDateFormatError || endDateFormatError) {
+        alert('Fix validation errors before replicating.');
+        return;
+      }
+  
+      const resourceIds = resourceItems.map(r => r.userID).filter(Boolean);
+  
+      const baseTask = {
+        taskName: taskName.trim(),
+        priority,
+        isAssigned: true,
+        status: status === 'Started' ? 'Active' : status,
+        hoursBest: Number(hoursBest || 0),
+        hoursMost: Number(hoursMost || 0),
+        hoursWorst: Number(hoursWorst || 0),
+        hoursLogged: 0,
+        estimatedHours: Number(hoursEstimate || 0),
+        startedDatetime: startedDate || '',
+        dueDatetime: dueDate || '',
+        links,
+        category,
+        whyInfo,
+        intentInfo,
+        endstateInfo,
+        mother: props.taskId || null, // replicate as subtask if modal opened under a parent
+      };
+  
+      const res = await props.replicateTasks(wbsId, baseTask, resourceIds);
+      const created = res?.created?.length || 0;
+      const skipped = res?.skipped?.length || 0;
+  
+      if (created > 0) {
+        alert(`Replicated to ${created} user(s).${skipped ? ` Skipped ${skipped}.` : ''}`);
+      } else {
+        alert(`Nothing replicated.${skipped ? ` Skipped ${skipped}.` : ''}`);
+      }
+  
+      setShowReplicateConfirm(false);
+      if (typeof props.load === 'function') props.load();
+    } catch (e) {
+      alert(`Replication failed: ${e?.message || 'Unknown error'}`);
+    } finally {
+      setIsReplicating(false);
+    }
+  };
+
   /*
    * -------------------------------- useEffects --------------------------------
    */
@@ -636,6 +703,19 @@ const defaultCategory = useMemo(() => {
                   inputTestId="resource-input"
                   projectId={props.projectId}
                 />
+                <div className="mt-2">
+                  <button
+                    type="button"
+                    className="btn btn-link p-0"
+                    onClick={() => setShowReplicateConfirm(true)}
+                    data-tip="Replicate Task: Clicking this button will replicate this task and add it to all the individuals chosen as Resources. Hours and all other details will be copied (not divided) for all people."
+                    aria-label="Replicate Task"
+                    disabled={!resourceItems?.length || isReplicating}
+                  >
+                    <FontAwesomeIcon icon={faClone} />
+                    <span className="ms-1">RT</span>
+                  </button>
+                </div>
                 </div>
               </div>
 
@@ -1024,6 +1104,22 @@ const defaultCategory = useMemo(() => {
             </div>
           </div>
         </ModalBody>
+        <Modal isOpen={showReplicateConfirm} toggle={() => setShowReplicateConfirm(false)}>
+          <ModalHeader toggle={() => setShowReplicateConfirm(false)}>
+            Whoa, steady there, hero! 🦸
+          </ModalHeader>
+          <ModalBody>
+            This doesn’t divide work—it duplicates it. Everyone gets the full deal. Are you sure you want to hit replicate?
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={() => setShowReplicateConfirm(false)}>
+              NO, take me back! 🛑
+            </Button>
+            <Button color="primary" onClick={handleReplicate} disabled={isReplicating}>
+              {isReplicating ? 'Replicating…' : 'YES, make it so! 💪'}
+            </Button>
+          </ModalFooter>
+        </Modal>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             color="primary"
@@ -1071,6 +1167,7 @@ const mapDispatchToProps = {
   addNewTask,
   fetchAllMembers,
   getProjectDetail,
+  replicateTasks,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);

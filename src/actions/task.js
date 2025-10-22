@@ -345,3 +345,19 @@ export const copyTask = taskId => {
     await dispatch(saveTmpTask(taskId));
   };
 };
+
+export const replicateTasks = (wbsId, baseTask, resourceIds) => async (dispatch, getState) => {
+  try {
+    const requestorId = selectUserId(getState()); 
+    const payload = {
+      requestor: { requestorId },
+      baseTask,
+      resourceIds,
+    };
+    const { data } = await axios.post(ENDPOINTS.TASKS_REPLICATE(wbsId), payload);
+    return data;
+  } catch (err) {
+    toast.error('Failed to replicate tasks');
+    throw err;
+  }
+};
