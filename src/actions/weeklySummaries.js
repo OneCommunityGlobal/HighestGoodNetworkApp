@@ -174,7 +174,6 @@ export const getWeeklySummariesReport = (weekIndex = null) => {
       const separator = url.includes('?') ? '&' : '?';
 
       if (weekIndex === null) {
-        const separator = url.includes('?') ? '&' : '?';
         url = `${url}${separator}${timestamp}`;
       } else {
         const separator = url.includes('?') ? '&' : '?';
