@@ -306,17 +306,6 @@ function ReportDetails({
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
 
-  const promisedHours =
-    summary &&
-    Array.isArray(summary.promisedHoursByWeek) &&
-    summary.promisedHoursByWeek.length > weekIndex
-      ? summary.promisedHoursByWeek[weekIndex]
-      : 0;
-
-  useEffect(() => {
-    setFilteredBadges(badges.filter(badge => badge.showReport === true));
-  }, []);
-
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
@@ -363,15 +352,15 @@ function ReportDetails({
             <ListGroupItem darkMode={darkMode}>
               <p
                 style={{
-                  // color: getTextColorForHoursLogged(
-                  // hoursLogged,
-                  // summary.promisedHoursByWeek[weekIndex],
-                  color: getTextColorForHoursLogged(hoursLogged, promisedHours),
+                  color: getTextColorForHoursLogged(
+                    hoursLogged,
+                    summary.promisedHoursByWeek[weekIndex],
+                  ),
                   fontWeight: 'bold',
                 }}
               >
                 {/* Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]} */}
-                Hours logged: {hoursLogged.toFixed(2)} / {promisedHours}
+                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
               </p>
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
