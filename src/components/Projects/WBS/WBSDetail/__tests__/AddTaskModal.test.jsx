@@ -1,3 +1,4 @@
+/*
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
@@ -22,7 +23,9 @@ vi.mock('@tinymce/tinymce-react', () => ({
 
 // Mock Redux actions
 vi.mock('../../../../../actions/task', () => ({
-  addNewTask: vi.fn(),
+  //addNewTask: vi.fn(),
+  addNewTask: vi.fn(() => ({ type: 'ADD_NEW_TASK_TEST_DUMMY' })),
+  replicateTask: vi.fn(() => ({ type: 'REPLICATE_TASK_TEST_DUMMY' })),
 }));
 
 vi.mock('../../../../../actions/projectMembers', () => ({
@@ -285,3 +288,249 @@ describe('AddTaskModal', () => {
     expect(endstateEditor.value).toBe('Endstate is a fully functional task.');
   });
 });
+*/
+
+import React from 'react';
+import { render, fireEvent, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import { configureStore } from 'redux-mock-store';
+//import '@testing-library/jest-dom/extend-expect';
+//import AddTaskModal from '../AddTask/AddTaskModal';
+import '@testing-library/jest-dom';
+
+/* ---------- Mocks (one per module path) ---------- */
+
+// TinyMCE as a textarea
+vi.mock('@tinymce/tinymce-react', () => ({
+  Editor: ({ value, onEditorChange }) => (
+    <textarea
+      aria-label="Mock Editor"
+      value={value}
+      onChange={e => onEditorChange(e.target.value)}
+    />
+  ),
+}));
+
+// Actions: task
+vi.mock('../../../../../actions/task', () => ({
+  addNewTask: vi.fn(() => ({ type: 'ADD_NEW_TASK_TEST_DUMMY' })),
+  replicateTasks: vi.fn(() => ({ type: 'REPLICATE_TASK_TEST_DUMMY' })),
+}));
+
+// Actions: project members
+vi.mock('../../../../../actions/projectMembers', () => ({
+  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
+  findProjectMembers: vi.fn(() => ({ type: 'FIND_PROJECT_MEMBERS_TEST_DUMMY' })),
+}));
+
+// If AddTaskModal imports getProjectDetail from actions/project, uncomment:
+// vi.mock('../../../../../actions/project', () => ({
+//   getProjectDetail: vi.fn(() => ({ type: 'GET_PROJECT_DETAIL_TEST_DUMMY' })),
+// }));
+
+/* ---------- Store ---------- */
+
+const mockStore = configureStore();
+const initialState = {
+  tasks: {
+    taskItems: [],
+    copiedTask: {}, // keep empty so Replicate stays disabled
+    error: null,
+  },
+  projectMembers: {
+    members: [],
+    allMembers: [],
+  },
+  resources: {
+    availableResources: [],
+    selectedResources: [],
+  },
+  allProjects: {
+    projects: [],
+  },
+  projectById: null,
+  theme: {
+    darkMode: false,
+  },
+  auth: {
+    user: { userid: 'u-123' }, // required by mapStateToProps
+  },
+};
+
+describe('AddTaskModal', () => {
+  let store;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    store = mockStore(initialState);
+  });
+
+  test('renders AddTaskModal and shows modal when toggle is triggered', () => {
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByText('Add Task'));
+    expect(screen.getByText('Add New Task')).toBeInTheDocument();
+  });
+
+  test('handles input changes for Task Name', () => {
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByText('Add Task'));
+
+    const input = screen.getByLabelText('Task Name');
+    fireEvent.change(input, { target: { value: 'New Important Task' } });
+    expect(input.value).toBe('New Important Task');
+  });
+
+  test('renders Priority select element and updates value on change', () => {
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByText('Add Task'));
+
+    const prioritySelect = screen.getByLabelText('Priority');
+    expect(prioritySelect).toBeInTheDocument();
+    expect(prioritySelect).toHaveAttribute('id', 'priority');
+    expect(prioritySelect.value).toBe('Primary');
+
+    fireEvent.change(prioritySelect, { target: { value: 'Secondary' } });
+    expect(prioritySelect.value).toBe('Secondary');
+  });
+
+  test('adds and removes links', () => {
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByText('Add Task'));
+
+    const linkInput = screen.getByPlaceholderText('Link');
+    fireEvent.change(linkInput, { target: { value: 'https://example.com' } });
+    fireEvent.click(screen.getByLabelText('Add Link'));
+    expect(screen.getByText('https://example.com')).toBeInTheDocument();
+
+    const deleteButton = screen.getByLabelText('Delete link https://example.com');
+    fireEvent.click(deleteButton);
+    expect(screen.queryByText('https://example.com')).not.toBeInTheDocument();
+  });
+
+  // Date inputs are readOnly via react-day-picker; just assert presence
+  test('renders Start Date and End Date inputs', () => {
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByText('Add Task'));
+    expect(screen.getByText(/Start Date/i)).toBeInTheDocument();
+    expect(screen.getByText(/End Date/i)).toBeInTheDocument();
+  });
+
+  test('renders Assigned radio buttons and handles selection', () => {
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByText('Add Task'));
+
+    const yesRadio = screen.getByLabelText('Yes');
+    const noRadio = screen.getByLabelText('No');
+    expect(yesRadio).toBeInTheDocument();
+    expect(noRadio).toBeInTheDocument();
+
+    // initial state: "No"
+    expect(noRadio).toBeChecked();
+    expect(yesRadio).not.toBeChecked();
+
+    fireEvent.click(yesRadio);
+    expect(yesRadio).toBeChecked();
+    expect(noRadio).not.toBeChecked();
+
+    fireEvent.click(noRadio);
+    expect(noRadio).toBeChecked();
+    expect(yesRadio).not.toBeChecked();
+  });
+
+  test('renders Hours inputs and validates their behavior', () => {
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByText('Add Task'));
+
+    const bestCaseInput = screen.getByLabelText('Best-case hours');
+    const worstCaseInput = screen.getByLabelText('Worst-case hours');
+    const mostCaseInput = screen.getByLabelText('Most-case hours');
+    const estimatedInput = screen.getByLabelText('Estimated hours');
+
+    expect(bestCaseInput).toBeInTheDocument();
+    expect(worstCaseInput).toBeInTheDocument();
+    expect(mostCaseInput).toBeInTheDocument();
+    expect(estimatedInput).toBeInTheDocument();
+
+    fireEvent.change(bestCaseInput, { target: { value: '10' } });
+    expect(bestCaseInput.value).toBe('10');
+
+    fireEvent.change(worstCaseInput, { target: { value: '50' } });
+    expect(worstCaseInput.value).toBe('50');
+
+    fireEvent.change(mostCaseInput, { target: { value: '30' } });
+    expect(mostCaseInput.value).toBe('30');
+
+    fireEvent.change(estimatedInput, { target: { value: '20' } });
+    expect(estimatedInput.value).toBe('20');
+
+    fireEvent.blur(bestCaseInput);
+    fireEvent.blur(worstCaseInput);
+
+    const warningMessage = screen.queryByText(/must be|must range|higher than/i);
+    expect(warningMessage).not.toBeInTheDocument(); // tweak if your logic expects one
+  });
+
+  test('renders Category select and text editors, allows interactions', () => {
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>,
+    );
+
+    fireEvent.click(screen.getByText('Add Task'));
+
+    const categorySelect = screen.getByLabelText('Category');
+    expect(categorySelect).toBeInTheDocument();
+    fireEvent.change(categorySelect, { target: { value: 'Housing' } });
+    expect(categorySelect.value).toBe('Housing');
+
+    const editors = screen.getAllByLabelText('Mock Editor');
+    expect(editors.length).toBeGreaterThanOrEqual(3);
+
+    fireEvent.change(editors[0], { target: { value: 'This task is critical.' } });
+    expect(editors[0].value).toBe('This task is critical.');
+
+    fireEvent.change(editors[1], { target: { value: 'Design should focus on accessibility.' } });
+    expect(editors[1].value).toBe('Design should focus on accessibility.');
+
+    fireEvent.change(editors[2], { target: { value: 'Endstate is a fully functional task.' } });
+    expect(editors[2].value).toBe('Endstate is a fully functional task.');
+  });
+});
+
+import AddTaskModal from '../AddTask/AddTaskModal';
