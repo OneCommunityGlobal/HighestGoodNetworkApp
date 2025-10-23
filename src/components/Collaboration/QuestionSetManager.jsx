@@ -7,7 +7,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import styles from './QuestionSetManager.module.css';
 import QuestionEditModal from './QuestionEditModal';
 
-function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode }) {
+function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
   const [templates, setTemplates] = useState([]);
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -339,7 +339,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
   };
 
   return (
-    <div className={`${styles.questionSetManager} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.questionSetManager}>
       <h3>Question Set Templates</h3>
       {error && <div className={styles.errorMessage}>{error}</div>}
       <div className={styles.templateActions}>
