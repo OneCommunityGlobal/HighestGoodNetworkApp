@@ -18,7 +18,8 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
 
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
-import './AddTaskModal.css';
+//import './AddTaskModal.css';
+import styles from './AddTaskModal.module.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { getProjectDetail } from '../../../../../actions/project';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -209,6 +210,8 @@ const defaultCategory = useMemo(() => {
   const [newTaskNum, setNewTaskNum] = useState('1');
   const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
+  const [showReplicateConfirm, setShowReplicateConfirm] = useState(false);
+  const [isReplicating, setIsReplicating] = useState(false);
   const priorityRef = useRef(null);
 
   const categoryOptions = [
@@ -222,6 +225,84 @@ const defaultCategory = useMemo(() => {
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
   ];
+
+  const bumpNumAtLevel = (numStr, levelIdxZeroBased, bumpBy) => {
+    try {
+      const segs = String(numStr || '1').split('.').map(s => parseInt(s || '0', 10));
+      const idx = Math.max(0, Math.min(levelIdxZeroBased, segs.length - 1));
+      segs[idx] = (isNaN(segs[idx]) ? 0 : segs[idx]) + bumpBy;
+      return segs.join('.');
+    } catch {
+      const base = parseInt(numStr, 10) || 1;
+      return String(base + bumpBy);
+    }
+  };
+
+  const openReplicateConfirm = () => {
+    if (!resourceItems?.length) {
+      window?.toast?.error?.('Select at least one Resource to replicate to.') || alert('Select at least one Resource to replicate to.');
+      return;
+    }
+    if (!taskName?.trim()) {
+      window?.toast?.error?.('Task Name is required to replicate.') || alert('Task Name is required to replicate.');
+      return;
+    }
+    if (hoursWarning || hasNegativeHours || startDateError || endDateError || startDateFormatError || endDateFormatError) {
+      window?.toast?.error?.('Fix validation errors before replicating.') || alert('Fix validation errors before replicating.');
+      return;
+    }
+    setShowReplicateConfirm(true);
+  };
+
+  const doReplicate = async () => {
+    setIsReplicating(true);
+    try {
+      // Base WBS num & level behavior mirrors your Save flow
+      const baseNum = newTaskNum || '1';
+      const levelIdxZeroBased = (props.taskId ? (props.level + 1) : 1) - 1;
+  
+      for (let i = 0; i < resourceItems.length; i += 1) {
+        const singleResource = [resourceItems[i]];
+        const replicated = {
+          taskName,
+          wbsId: props.wbsId,
+          num: bumpNumAtLevel(baseNum, levelIdxZeroBased, i), // sequential for this batch
+          level: props.taskId ? props.level + 1 : 1,
+          priority,
+          resources: singleResource,            // ← individual task
+          isAssigned: true,                     // ← individually assigned
+          status,
+          hoursBest: parseFloat(hoursBest),
+          hoursWorst: parseFloat(hoursWorst),
+          hoursMost: parseFloat(hoursMost),
+          estimatedHours: parseFloat(hoursEstimate), // full hours, not divided
+          startedDatetime: startedDate,
+          dueDatetime: dueDate,
+          links,
+          category,
+          parentId1: props.level === 1 ? props.taskId : props.parentId1,
+          parentId2: props.level === 2 ? props.taskId : props.parentId2,
+          parentId3: props.level === 3 ? props.taskId : props.parentId3,
+          mother: props.taskId,
+          position: 0,
+          isActive: true,
+          whyInfo,
+          intentInfo,
+          endstateInfo,
+        };
+        // eslint-disable-next-line no-await-in-loop
+        await props.addNewTask(replicated, props.wbsId, props.pageLoadTime);
+      }
+      setShowReplicateConfirm(false);
+      props.load?.(); // refresh once after batch
+      window?.toast?.success?.(`Replicated to ${resourceItems.length} ${resourceItems.length === 1 ? 'person' : 'people'}.`);
+    } catch (e) {
+      window?.toast?.error?.('Replication failed.');
+    } finally {
+      setIsReplicating(false);
+    }
+  };
+
   const FORMAT = 'MM/dd/yy';
 
   /*
@@ -636,6 +717,27 @@ const defaultCategory = useMemo(() => {
                   inputTestId="resource-input"
                   projectId={props.projectId}
                 />
+                {/* [RT] Replicate control */}
+                <div className={styles['replicate-control']}>
+                  <button
+                    type="button"
+                    className={styles['replicate-btn']}
+                    onClick={openReplicateConfirm}
+                    data-tip
+                    data-for="replicateTip"
+                    disabled={!resourceItems?.length || isLoading || isReplicating}
+                    aria-label="Replicate Task"
+                    title="Replicate Task"
+                  >
+                    <span style={{ fontWeight: 700 }}>RT</span>
+                  </button>
+                  <span className={`${fontColor}`} style={{ fontSize: '0.9rem' }}>
+                    (Create an individual copy for each selected person)
+                  </span>
+                </div>
+                <ReactTooltip id="replicateTip" effect="solid" place="top">
+                  Replicate Task: Clicking this button will replicate this task and add it to all the individuals chosen as Resources. Hours and all other details will be copied (not divided) for all people.
+                </ReactTooltip>
                 </div>
               </div>
 
@@ -748,7 +850,7 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="bestCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
                     >
                       Best-case
                     </label>
@@ -760,7 +862,7 @@ const defaultCategory = useMemo(() => {
                       onChange={handleBestHoursChange}
                       onBlur={handleBestHoursBlur}
                       id="bestCaseInput"
-                      className="hours-input"
+                      className={styles['hours-input']}
                       aria-label="Best-case hours"
                     />
                   </div>
@@ -770,7 +872,7 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="worstCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
                     >
                       Worst-case
                     </label>
@@ -782,7 +884,7 @@ const defaultCategory = useMemo(() => {
                       onChange={handleWorstHoursChange}
                       onBlur={handleWorstHoursBlur}
                       id="worstCaseInput"
-                      className="hours-input"
+                      className={styles['hours-input']}
                       aria-label="Worst-case hours"
                     />
                   </div>
@@ -794,7 +896,8 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="mostCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
+                      
                     >
                       Most-case
                     </label>
@@ -806,7 +909,7 @@ const defaultCategory = useMemo(() => {
                       onChange={handleMostHoursChange}
                       onBlur={handleMostHoursBlur}
                       id="mostCaseInput"
-                      className="hours-input"
+                      className={styles['hours-input']}
                       aria-label="Most-case hours"
                     />
                   </div>
@@ -818,7 +921,7 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="estimatedInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
                     >
                       Estimated
                     </label>
@@ -829,7 +932,7 @@ const defaultCategory = useMemo(() => {
                       value={hoursEstimate}
                       onChange={handleEstimateHoursChange}
                       id="estimatedInput"
-                      className="hours-input"
+                      className={styles['hours-input']}
                       aria-label="Estimated hours"
                     />
                   </div>
@@ -975,9 +1078,9 @@ const defaultCategory = useMemo(() => {
                   />
                 </div>
               </div>
-              <div className="d-flex border add-modal-dt">
+              <div className={`d-flex border ${styles['add-modal-dt']}`}>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
+                <span scope="col" className={`${styles['form-date']} p-1 ${fontColor}`}>Start Date</span>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <span scope="col" className="border-left p-1">
                   <div>
@@ -996,10 +1099,10 @@ const defaultCategory = useMemo(() => {
                   </div>
                 </span>
               </div>
-              <div className="d-flex border align-items-center  add-modal-dt">
+              <div className={`d-flex border align-items-center ${styles['add-modal-dt']}`}>
                 <label
                   htmlFor="end-date-input"
-                  className={`form-date p-1 ${fontColor}`}
+                  className={`${styles['form-date']} p-1 ${fontColor}`}
                   // eslint-disable-next-line jsx-a11y/scope
                   scope="col"
                 >
@@ -1042,6 +1145,29 @@ const defaultCategory = useMemo(() => {
           >
             {isLoading ? 'Adding Task...' : 'Save'}
           </Button>
+          {/* [RT] Confirmation modal */}
+          <Modal isOpen={showReplicateConfirm} toggle={() => setShowReplicateConfirm(false)}>
+            <ModalHeader toggle={() => setShowReplicateConfirm(false)}>
+              Confirm Replication
+            </ModalHeader>
+            <ModalBody>
+              <div style={{ whiteSpace: 'pre-wrap' }}>
+                <strong>Whoa, steady there, hero! 🦸</strong>
+                {'\n'}
+                This doesn’t divide work—it duplicates it. Everyone gets the full deal.
+                {'\n'}
+                Are you sure you want to hit replicate?
+              </div>
+            </ModalBody>
+            <ModalFooter>
+              <button className="btn btn-outline-danger" onClick={() => setShowReplicateConfirm(false)}>
+                NO, take me back! 🛑
+              </button>
+              <button className="btn btn-primary" onClick={doReplicate} disabled={isReplicating}>
+                {isReplicating ? 'Processing…' : 'YES, make it so! 💪'}
+              </button>
+            </ModalFooter>
+          </Modal>
         </ModalFooter>
       </Modal>
       <Button

@@ -21,14 +21,14 @@ vi.mock('@tinymce/tinymce-react', () => ({
 }));
 
 // Mock Redux actions
-vi.mock('../../../../../actions/task', () => ({
-  addNewTask: vi.fn(),
-}));
+//vi.mock('../../../../../actions/task', () => ({
+//  addNewTask: vi.fn(),
+//}));
 
-vi.mock('../../../../../actions/projectMembers', () => ({
+//vi.mock('../../../../../actions/projectMembers', () => ({
   // Return a plain action so redux-mock-store accepts it
-  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
-}));
+  //fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
+//}));
 
 vi.mock('../../../../../actions/projectMembers', () => ({
   fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
@@ -283,5 +283,23 @@ describe('AddTaskModal', () => {
     const endstateEditor = editors[2];
     fireEvent.change(endstateEditor, { target: { value: 'Endstate is a fully functional task.' } });
     expect(endstateEditor.value).toBe('Endstate is a fully functional task.');
+  });
+
+  test('renders RT button when modal is open', () => {
+    const mockStore = configureStore([]);
+    const store = mockStore(initialState);
+  
+    render(
+      <Provider store={store}>
+        <AddTaskModal />
+      </Provider>
+    );
+  
+    // Open the modal
+    fireEvent.click(screen.getByText('Add Task'));
+  
+    // The RT button should be present (disabled until a resource is selected)
+    const rtBtn = screen.getByLabelText('Replicate Task');
+    expect(rtBtn).toBeInTheDocument();
   });
 });

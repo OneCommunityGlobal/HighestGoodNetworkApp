@@ -1,0 +1,45 @@
+.hours-label {
+  font-weight: normal;
+  width: 75px;
+}
+.hours-input {
+  width: 20%;
+  padding: 3px 6px !important;
+}
+.form-date {
+  width: 30%;
+}
+
+.add-modal-dt .DayPickerInput{
+  position: relative;
+}
+
+.add-modal-dt .DayPickerInput-OverlayWrapper{
+  position: absolute;
+  bottom: 21em; 
+  left: -4.75em;
+  z-index: 9999; 
+}
+
+.replicate-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.replicate-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid #ced4da;
+  background: #f8f9fa;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.replicate-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
