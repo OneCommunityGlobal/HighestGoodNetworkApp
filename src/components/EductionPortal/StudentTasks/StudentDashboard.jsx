@@ -1,16 +1,15 @@
-// src/components/EductionPortal/StudentTasks/StudentDashboard.jsx
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Sidebar from './StudentSidebar';
 import styles from './StudentDashboard.module.css';
 
+const LIFE_CARD_IDS = ['lc-a', 'lc-b', 'lc-c', 'lc-d', 'lc-e', 'lc-f'];
+
 export default function StudentDashboard() {
   const history = useHistory();
-  // 👇 use global dark mode from Redux
   const darkMode = useSelector(state => state.theme?.darkMode);
 
-  // Mock preview tasks (swap for real data later)
   const tasks = [
     {
       id: 1,
@@ -47,16 +46,15 @@ export default function StudentDashboard() {
     <div className={`${styles.pageLayout} ${darkMode ? styles.pageLayoutDark : ''}`}>
       <Sidebar active="home" />
       <div className={`${styles.content} ${darkMode ? styles.contentDark : ''}`}>
-        {/* Header */}
         <div className={styles.headerRow}>
           <h1 className={styles.title}>Dashboard</h1>
           <div className={styles.welcomeArea}>
             <span className={styles.welcomeLabel}>Welcome, Student Name</span>
             <div className={styles.icons}>
-              <span className={styles.icon} aria-hidden>
+              <span className={styles.icon} aria-hidden="true">
                 👤
               </span>
-              <span className={styles.icon} aria-hidden>
+              <span className={styles.icon} aria-hidden="true">
                 🔔
               </span>
             </div>
@@ -65,12 +63,10 @@ export default function StudentDashboard() {
         <hr className={styles.divider} />
 
         <div className={styles.mainGrid}>
-          {/* Left: Visual placeholder */}
           <section className={styles.visualArea} aria-label="Knowledge map">
             <div className={styles.visualPlaceholder} />
           </section>
 
-          {/* Right: To Do preview */}
           <aside className={styles.todoPanel} aria-label="To Do">
             <div className={styles.todoHeaderRow}>
               <h2 className={styles.todoTitle}>To Do</h2>
@@ -98,10 +94,10 @@ export default function StudentDashboard() {
                       <div className={styles.todoSub}>{t.subtitle}</div>
                     </div>
                     <div className={styles.todoRight}>
-                      <div className={styles.progressTrack}>
+                      <div className={styles.progressTrack} aria-hidden="true">
                         <div className={styles.progressFill} style={{ width: `${t.progress}%` }} />
                       </div>
-                      <span className={styles.chev} aria-hidden>
+                      <span className={styles.chev} aria-hidden="true">
                         →
                       </span>
                     </div>
@@ -110,7 +106,6 @@ export default function StudentDashboard() {
               ))}
             </ul>
 
-            {/* Teaching Strategies */}
             <div className={styles.block}>
               <h3 className={styles.blockTitle}>Teaching Strategies</h3>
               <hr className={styles.blockDivider} />
@@ -121,31 +116,29 @@ export default function StudentDashboard() {
                   'Curious Copycat',
                   'Existential Smart Exploration',
                   'Freedom Learning',
-                ].map((s, i) => (
-                  <li key={i} className={styles.strategyItem}>
+                ].map(s => (
+                  <li key={s} className={styles.strategyItem}>
                     {s}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Life Strategies */}
             <div className={styles.block}>
               <h3 className={styles.blockTitle}>Life Strategies</h3>
               <hr className={styles.blockDivider} />
               <div className={styles.lifeGrid}>
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className={styles.lifeCard} />
+                {LIFE_CARD_IDS.map(id => (
+                  <div key={id} className={styles.lifeCard} />
                 ))}
               </div>
             </div>
           </aside>
         </div>
 
-        {/* Subject chips row */}
         <div className={styles.subjectChips}>
-          {subjects.map((s, i) => (
-            <span key={i} className={styles.chip}>
+          {subjects.map(s => (
+            <span key={s} className={styles.chip}>
               {s}
             </span>
           ))}

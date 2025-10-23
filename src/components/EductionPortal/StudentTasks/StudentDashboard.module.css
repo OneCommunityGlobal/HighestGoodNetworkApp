@@ -60,72 +60,24 @@
 
 /* Responsive */
 @media (max-width:1100px){ .mainGrid{ grid-template-columns:1fr; } .todoPanel{ order:2; } .visualArea{ order:1; min-height:280px; } }
-/* ===========================
-   DARK MODE (class-based)
-   Usage: add styles.contentDark to the same element that has styles.content
-=========================== */
 
-.contentDark {
-  background-color: #0b1220;
-  color: #ffffff;
-}
-
-/* Header text + divider */
-.contentDark .title,
-.contentDark .welcomeArea { color: #e57eeb; }
-.contentDark .divider { border-top-color: #1f2937; }
-
-/* Panels + placeholder */
-.contentDark .todoPanel,
-.contentDark .visualArea {
-  background-color: #0f172a;
-  border-color: #1f2937;
-  color: #e5e7eb;
-}
-
-/* To-Do preview items */
-.contentDark .todoBtn {
-  background-color: #0b1220;
-  border-color: #1f2937;
-  color: #e5e7eb;
-}
-.contentDark .todoBtn:hover { background-color: #0f172a; }
-.contentDark .todoTitle { color: #e5e7eb; }
-.contentDark .todoName { color: #e5e7eb; }
-.contentDark .todoSub { color: #94a3b8; }
-
-/* Progress track */
-.contentDark .progressTrack { background-color: #1f2937; }
-.contentDark .progressFill { background-color: #9ca3af; }
-
-/* Teaching/Life blocks */
-.contentDark .blockTitle { color: #e5e7eb; }
-.contentDark .blockDivider { border-top-color: #1f2937; }
-contentDark .strategyItem { color: #e5e7eb; } /* (typo guard) */
-.contentDark .strategyItem { color: #e5e7eb; }
-.contentDark .lifeCard {
-  background-color: #0b1220;
-  border-color: #1f2937;
-}
-
-/* Subject chips */
-.contentDark .chip {
-  background-color: #111827;
-  border-color: #1f2937;
-  color: #cbd5e1;
-}
-/* Dark mode: "View all tasks" button */
-.contentDark .viewAllBtn {
-  color: #e5e7eb;
-  background: #0f172a;
-  border: 1px solid #334155;
-}
-
-.contentDark .viewAllBtn:hover {
-  background: #111827;
-  border-color: #475569;
-}
-/* Dark mode background for the whole dashboard page wrapper */
-.pageLayoutDark {
-  background: #0b1220; /* same tone used on StudentTasks/TaskDetails */
-}
+/* Dark mode */
+.contentDark { background-color:#0b1220; color:#ffffff; }
+.contentDark .title, .contentDark .welcomeArea { color:#e57eeb; }
+.contentDark .divider { border-top-color:#1f2937; }
+.contentDark .todoPanel, .contentDark .visualArea { background-color:#0f172a; border-color:#1f2937; color:#e5e7eb; }
+.contentDark .todoBtn { background-color:#0b1220; border-color:#1f2937; color:#e5e7eb; }
+.contentDark .todoBtn:hover { background-color:#0f172a; }
+.contentDark .todoTitle { color:#e5e7eb; }
+.contentDark .todoName { color:#e5e7eb; }
+.contentDark .todoSub { color:#94a3b8; }
+.contentDark .progressTrack { background-color:#1f2937; }
+.contentDark .progressFill { background-color:#9ca3af; }
+.contentDark .blockTitle { color:#e5e7eb; }
+.contentDark .blockDivider { border-top-color:#1f2937; }
+.contentDark .strategyItem { color:#e5e7eb; }
+.contentDark .lifeCard { background-color:#0b1220; border-color:#1f2937; }
+.contentDark .chip { background-color:#111827; border-color:#1f2937; color:#cbd5e1; }
+.contentDark .viewAllBtn { color:#e5e7eb; background:#0f172a; border:1px solid #334155; }
+.contentDark .viewAllBtn:hover { background:#111827; border-color:#475569; }
+.pageLayoutDark { background:#0b1220; }
