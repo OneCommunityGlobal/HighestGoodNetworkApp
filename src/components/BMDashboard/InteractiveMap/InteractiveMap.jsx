@@ -8,7 +8,8 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import './InteractiveMap.css';
+//import './InteractiveMap.css';
+import styles from './InteractiveMap.module.css';
 
 function MapThemeUpdater({ darkMode }) {
   const map = useMap();
