@@ -11,6 +11,12 @@
   overflow: hidden;
 }
 
+.darkSeaGreenBtn {
+  background-color: #c9d6c6 !important;
+  border-color: #225163 !important;
+  color: #225163 !important;
+}
+
 .team-member-task-review-button {
   margin-top: 15px;
 }
