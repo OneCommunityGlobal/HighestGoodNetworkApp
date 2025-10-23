@@ -8,6 +8,7 @@ import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import styles from '../styles/UserSkillsProfile.module.css';
 import jwtDecode from 'jwt-decode';
+import { ENDPOINTS } from '~/utils/URL';
 
 function UserSkillsProfile() {
   const { userId: routeUserId } = useParams();
@@ -34,14 +35,11 @@ function UserSkillsProfile() {
           throw new Error('User ID not found in token.');
         }
 
-        const response = await axios.get(
-          `http://localhost:4500/api/skills/profile/${effectiveUserId}`,
-          {
-            headers: {
-              Authorization: `${token}`,
-            },
+        const response = await axios.get(ENDPOINTS.SKILLS_PROFILE(effectiveUserId), {
+          headers: {
+            Authorization: `${token}`,
           },
-        );
+        });
         // console.log('Profile Data:', response.data);
 
         const { data } = response;
