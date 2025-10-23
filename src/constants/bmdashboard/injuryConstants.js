@@ -1,2 +1,0 @@
-export const GET_INJURY_SEVERITY = 'GET_INJURY_SEVERITY';
-export const GET_ERRORS = 'GET_ERRORS';
