@@ -3,6 +3,8 @@ import { connect, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   Form,
   FormGroup,
@@ -452,9 +454,11 @@ const IntegratedEmailSender = ({
 
       try {
         await sendEmailWithTemplate(selectedTemplate._id, emailData);
-        toast.success(`Email sent successfully using template "${selectedTemplate.name}"`);
-        setShowSuccessMessage(true);
-        setTimeout(() => setShowSuccessMessage(false), 5000);
+        const recipientCount =
+          emailDistribution === 'broadcast'
+            ? 'all subscribers'
+            : `${recipientList.length} recipient(s)`;
+        toast.success(`Email sent successfully to ${recipientCount}`);
         resetAllStates();
       } catch (error) {
         toast.error(`Failed to send email: ${error.message || 'Unknown error'}`);
@@ -471,45 +475,35 @@ const IntegratedEmailSender = ({
       try {
         if (emailDistribution === 'broadcast') {
           // Use existing broadcast functionality for custom emails
-          const response = await fetch('/api/send-emails/broadcast-emails', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
+          const response = await axios.post(ENDPOINTS.BROADCAST_EMAILS, {
+            subject: customSubject,
+            html: customContent,
+            requestor: {
+              requestorId: 'current-user', // You might want to get this from auth context
+              role: 'admin',
+              permissions: ['sendEmailToAll'],
             },
-            body: JSON.stringify({
-              requestor: 'current-user', // You might want to get this from auth context
-              subject: customSubject,
-              html: customContent,
-            }),
           });
-
-          if (!response.ok) {
-            throw new Error('Failed to send broadcast email');
-          }
         } else {
           // Use existing send email functionality for specific recipients
-          const response = await fetch('/api/send-emails/send-emails', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
+          const response = await axios.post(ENDPOINTS.POST_EMAILS, {
+            to: recipientList,
+            subject: customSubject,
+            html: customContent,
+            requestor: {
+              requestorId: 'current-user', // You might want to get this from auth context
+              role: 'admin',
+              permissions: ['sendEmails'],
             },
-            body: JSON.stringify({
-              requestor: 'current-user', // You might want to get this from auth context
-              to: recipientList,
-              subject: customSubject,
-              html: customContent,
-            }),
           });
-
-          if (!response.ok) {
-            throw new Error('Failed to send email');
-          }
         }
 
         // Show success message
-        toast.success(`Email sent successfully to ${recipientList.length} recipient(s)`);
-        setShowSuccessMessage(true);
-        setTimeout(() => setShowSuccessMessage(false), 5000);
+        const recipientCount =
+          emailDistribution === 'broadcast'
+            ? 'all subscribers'
+            : `${recipientList.length} recipient(s)`;
+        toast.success(`Email sent successfully to ${recipientCount}`);
         resetAllStates();
       } catch (error) {
         toast.error(`Failed to send email: ${error.message || 'Unknown error'}`);
@@ -612,23 +606,6 @@ const IntegratedEmailSender = ({
             )}
           </div>
         </div>
-        {/* Success Alert */}
-        {showSuccessMessage && (
-          <Alert color="success" className="d-flex align-items-center">
-            <FaCheckCircle className="me-2" />
-            <div>
-              <strong>Email sent successfully!</strong>
-              <br />
-              <small>
-                {emailDistribution === 'broadcast'
-                  ? 'Broadcasted to all subscribed users'
-                  : `Sent to ${recipientList.length} recipient${
-                      recipientList.length !== 1 ? 's' : ''
-                    }`}
-              </small>
-            </div>
-          </Alert>
-        )}
 
         {/* Enhanced Error Alert */}
         {(error || apiError) && (
