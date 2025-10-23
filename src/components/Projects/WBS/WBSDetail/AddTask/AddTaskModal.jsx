@@ -18,7 +18,6 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
 
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
-//import './AddTaskModal.css';
 import styles from './AddTaskModal.module.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { getProjectDetail } from '../../../../../actions/project';
