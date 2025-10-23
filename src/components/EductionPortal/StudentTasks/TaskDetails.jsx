@@ -1,4 +1,3 @@
-// src/components/EductionPortal/StudentTasks/TaskDetails.jsx
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams, useLocation } from 'react-router-dom';
@@ -11,10 +10,8 @@ const TaskDetails = () => {
   const location = useLocation();
   const darkMode = useSelector(state => state.theme?.darkMode);
 
-  // 1) Prefer the task passed via route state (from TaskCard)
   const clickedTask = location.state?.task;
 
-  // 2) Fallback: lightweight mock map by id (so direct URL works)
   const fallbackTask = useMemo(() => {
     const mocks = {
       '1': {
@@ -44,7 +41,6 @@ const TaskDetails = () => {
 
   const task = clickedTask ?? fallbackTask;
 
-  // Mock chart data (static for now; could come from `task` later)
   const chartData = [
     { name: 'Unit 1: Social Sciences Paper Draft', value: 40 },
     { name: 'Unit 2: Values Integration', value: 30 },
@@ -59,16 +55,13 @@ const TaskDetails = () => {
       <Sidebar />
 
       <div className={`${styles.content} ${darkMode ? styles.contentDark : ''}`}>
-        {/* HEADER */}
         <header className={styles.header}>
           <h2 className={styles.title}>{task.title}</h2>
           <p className={styles.subtitle}>{task.subtitle}</p>
           <hr className={styles.divider} />
         </header>
 
-        {/* MAIN SECTION */}
         <div className={styles.mainSection}>
-          {/* Left: Radial Chart */}
           <div className={styles.chartSection}>
             <ResponsiveContainer width={420} height={420}>
               <PieChart>
@@ -83,10 +76,10 @@ const TaskDetails = () => {
                   paddingAngle={1}
                   label={({ name, value }) => `${name} (${value}%)`}
                 >
-                  {chartData.map((entry, index) => (
+                  {chartData.map(entry => (
                     <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
+                      key={`cell-${entry.name}`}
+                      fill={COLORS[chartData.indexOf(entry) % COLORS.length]}
                       stroke="#fff"
                     />
                   ))}
@@ -102,7 +95,6 @@ const TaskDetails = () => {
             </ResponsiveContainer>
           </div>
 
-          {/* Right: Progress summary */}
           <div
             className={`${styles.progressSection} ${darkMode ? styles.progressSectionDark : ''}`}
           >
@@ -126,7 +118,6 @@ const TaskDetails = () => {
           </div>
         </div>
 
-        {/* BOTTOM SECTION */}
         <div className={styles.bottomSection}>
           <div className={styles.dropdownSection}>
             <div className={styles.dropdownGroup}>
