@@ -227,27 +227,27 @@ const defaultCategory = useMemo(() => {
 
   const bumpNumAtLevel = (numStr, levelIdxZeroBased, bumpBy) => {
     try {
-      const segs = String(numStr || '1').split('.').map(s => parseInt(s || '0', 10));
+      const segs = String(numStr || '1').split('.').map(s => Number.parseInt(s || '0', 10));
       const idx = Math.max(0, Math.min(levelIdxZeroBased, segs.length - 1));
-      segs[idx] = (isNaN(segs[idx]) ? 0 : segs[idx]) + bumpBy;
+      segs[idx] = (Number.isNaN(segs[idx]) ? 0 : segs[idx]) + bumpBy;
       return segs.join('.');
     } catch {
-      const base = parseInt(numStr, 10) || 1;
+      const base = Number.parseInt(numStr, 10) || 1;
       return String(base + bumpBy);
     }
   };
 
   const openReplicateConfirm = () => {
     if (!resourceItems?.length) {
-      window?.toast?.error?.('Select at least one Resource to replicate to.') || alert('Select at least one Resource to replicate to.');
+      globalThis?.toast?.error?.('Select at least one Resource to replicate to.') || alert('Select at least one Resource to replicate to.');
       return;
     }
     if (!taskName?.trim()) {
-      window?.toast?.error?.('Task Name is required to replicate.') || alert('Task Name is required to replicate.');
+      globalThis?.toast?.error?.('Task Name is required to replicate.') || alert('Task Name is required to replicate.');
       return;
     }
     if (hoursWarning || hasNegativeHours || startDateError || endDateError || startDateFormatError || endDateFormatError) {
-      window?.toast?.error?.('Fix validation errors before replicating.') || alert('Fix validation errors before replicating.');
+      globalThis?.toast?.error?.('Fix validation errors before replicating.') || alert('Fix validation errors before replicating.');
       return;
     }
     setShowReplicateConfirm(true);
