@@ -175,7 +175,7 @@ describe('AddTeamPopup component', () => {
       screen.getByText('Oops, this team does not exist! Create it if you want it.'),
     ).toBeInTheDocument();
   });
-  it.skip('check searched value results', async () => {
+  it('check searched value results', async () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
