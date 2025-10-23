@@ -166,10 +166,10 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       const teams = response.data.data || [];
       setGithubTeams(teams);
       
-      // Automatically select the default team if it exists
-      const defaultTeam = teams.find(team => team.isDefault);
-      if (defaultTeam) {
-        setSelectedGithubTeams([defaultTeam]);
+      // Automatically select ALL default teams
+      const defaultTeams = teams.filter(team => team.isDefault);
+      if (defaultTeams.length > 0) {
+        setSelectedGithubTeams(defaultTeams);
       }
     } catch (error) {
       // console.error('Error fetching GitHub teams:', error);
