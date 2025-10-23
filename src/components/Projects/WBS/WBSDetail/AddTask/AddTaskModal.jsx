@@ -256,7 +256,6 @@ const defaultCategory = useMemo(() => {
   const doReplicate = async () => {
     setIsReplicating(true);
     try {
-      // Base WBS num & level behavior mirrors your Save flow
       const baseNum = newTaskNum || '1';
       const levelIdxZeroBased = (props.taskId ? (props.level + 1) : 1) - 1;
   
@@ -265,16 +264,16 @@ const defaultCategory = useMemo(() => {
         const replicated = {
           taskName,
           wbsId: props.wbsId,
-          num: bumpNumAtLevel(baseNum, levelIdxZeroBased, i), // sequential for this batch
+          num: bumpNumAtLevel(baseNum, levelIdxZeroBased, i),
           level: props.taskId ? props.level + 1 : 1,
           priority,
-          resources: singleResource,            // ← individual task
-          isAssigned: true,                     // ← individually assigned
+          resources: singleResource,           
+          isAssigned: true,                    
           status,
           hoursBest: parseFloat(hoursBest),
           hoursWorst: parseFloat(hoursWorst),
           hoursMost: parseFloat(hoursMost),
-          estimatedHours: parseFloat(hoursEstimate), // full hours, not divided
+          estimatedHours: parseFloat(hoursEstimate), 
           startedDatetime: startedDate,
           dueDatetime: dueDate,
           links,
@@ -293,10 +292,10 @@ const defaultCategory = useMemo(() => {
         await props.addNewTask(replicated, props.wbsId, props.pageLoadTime);
       }
       setShowReplicateConfirm(false);
-      props.load?.(); // refresh once after batch
-      window?.toast?.success?.(`Replicated to ${resourceItems.length} ${resourceItems.length === 1 ? 'person' : 'people'}.`);
+      props.load?.(); 
+      globalThis?.toast?.success?.(`Replicated to ${resourceItems.length} ${resourceItems.length === 1 ? 'person' : 'people'}.`);
     } catch (e) {
-      window?.toast?.error?.('Replication failed.');
+      globalThis?.toast?.error?.('Replication failed.');
     } finally {
       setIsReplicating(false);
     }
@@ -628,6 +627,9 @@ const defaultCategory = useMemo(() => {
   }, [defaultCategory]);
   
   const fontColor = darkMode ? 'text-light' : '';
+
+  const closeConfirm = useCallback(() => setShowReplicateConfirm(false), []);
+  const confirmLabel = isReplicating ? 'Processing…' : 'YES, make it so! 💪';
 
   return (
     <>
@@ -1144,26 +1146,25 @@ const defaultCategory = useMemo(() => {
           >
             {isLoading ? 'Adding Task...' : 'Save'}
           </Button>
+          
           {/* [RT] Confirmation modal */}
-          <Modal isOpen={showReplicateConfirm} toggle={() => setShowReplicateConfirm(false)}>
-            <ModalHeader toggle={() => setShowReplicateConfirm(false)}>
-              Confirm Replication
-            </ModalHeader>
+          <Modal isOpen={showReplicateConfirm} toggle={closeConfirm}>
+            <ModalHeader toggle={closeConfirm}>Confirm Replication</ModalHeader>
+
             <ModalBody>
-              <div style={{ whiteSpace: 'pre-wrap' }}>
-                <strong>Whoa, steady there, hero! 🦸</strong>
-                {'\n'}
-                This doesn’t divide work—it duplicates it. Everyone gets the full deal.
-                {'\n'}
+              <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>
+                <strong>Whoa, steady there, hero! 🦸</strong><br />
+                This doesn’t divide work—it duplicates it. Everyone gets the full deal.<br />
                 Are you sure you want to hit replicate?
-              </div>
+              </p>
             </ModalBody>
+
             <ModalFooter>
-              <button className="btn btn-outline-danger" onClick={() => setShowReplicateConfirm(false)}>
+              <button className="btn btn-outline-danger" onClick={closeConfirm}>
                 NO, take me back! 🛑
               </button>
               <button className="btn btn-primary" onClick={doReplicate} disabled={isReplicating}>
-                {isReplicating ? 'Processing…' : 'YES, make it so! 💪'}
+                {confirmLabel}
               </button>
             </ModalFooter>
           </Modal>
