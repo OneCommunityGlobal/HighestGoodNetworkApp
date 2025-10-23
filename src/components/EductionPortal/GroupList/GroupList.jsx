@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import styles from './GroupList.module.css';
 import GroupEditorModal from './GroupEditorModal.jsx';
 
@@ -22,6 +22,27 @@ function saveGroups(list) {
   } catch (e) {}
 }
 
+const GroupItem = React.memo(function GroupItem({ group, onEdit }) {
+  return (
+    <li className={styles.item}>
+      <div className={styles.itemInfo}>
+        <div className={styles.itemName}>{group.name || 'Untitled'}</div>
+        <div className={styles.count}>{(group.members || []).length} students</div>
+      </div>
+
+      <div className={styles.actions}>
+        <button
+          className={styles.editButton}
+          onClick={() => onEdit(group)}
+          aria-label={`Edit ${group.name || 'group'}`}
+        >
+          Edit
+        </button>
+      </div>
+    </li>
+  );
+});
+
 export default function GroupList() {
   const [groups, setGroups] = useState(() => loadGroups());
   const [learners] = useState(() => (Array.isArray(learnersSeed) ? learnersSeed : []));
@@ -32,60 +53,65 @@ export default function GroupList() {
     setGroups(loadGroups());
   }, []);
 
-  const openNew = () => {
+  const openNew = useCallback(() => {
     setEditing(null);
     setShowModal(true);
-  };
+  }, []);
 
-  const openEdit = g => {
+  const openEdit = useCallback(g => {
     setEditing(g);
     setShowModal(true);
-  };
+  }, []);
 
-  const handleSave = group => {
-    let next;
-    if (group.id) {
-      next = groups.map(g => (g.id === group.id ? group : g));
-    } else {
-      const id = 'g' + Date.now();
-      next = [...groups, { ...group, id }];
-    }
-    setGroups(next);
-    saveGroups(next);
+  const handleSave = useCallback(group => {
+    setGroups(prev => {
+      let next;
+      if (group.id) {
+        next = prev.map(g => (g.id === group.id ? group : g));
+      } else {
+        const id = 'g' + Date.now();
+        next = [...prev, { ...group, id }];
+      }
+      saveGroups(next);
+      return next;
+    });
     setShowModal(false);
-  };
+  }, []);
 
-  const handleDelete = id => {
-    const next = groups.filter(g => g.id !== id);
-    setGroups(next);
-    saveGroups(next);
+  const handleDelete = useCallback(id => {
+    setGroups(prev => {
+      const next = prev.filter(g => g.id !== id);
+      saveGroups(next);
+      return next;
+    });
     setShowModal(false);
-  };
+  }, []);
+
+  const totalGroups = useMemo(() => groups.length, [groups]);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h2 className={styles.title}>Student Groups</h2>
-        <button className={styles.newButton} onClick={openNew}>
-          New Group
-        </button>
-      </div>
+    <section className={styles.container} aria-labelledby="groups-heading">
+      <header className={styles.header}>
+        <div>
+          <h2 id="groups-heading" className={styles.title}>
+            Student Groups
+          </h2>
+          <div className={styles.subtitle}>{totalGroups} groups</div>
+        </div>
 
-      <ul className={styles.list}>
-        {groups.length === 0 && <li className={styles.empty}>No groups yet</li>}
-        {groups.map(g => (
-          <li key={g.id} className={styles.item}>
-            <div className={styles.itemInfo}>
-              <div className={styles.itemName}>{g.name}</div>
-              <div className={styles.count}>{(g.members || []).length} students</div>
-            </div>
-            <div className={styles.actions}>
-              <button className={styles.editButton} onClick={() => openEdit(g)}>
-                Edit
-              </button>
-            </div>
-          </li>
-        ))}
+        <div>
+          <button className={styles.newButton} onClick={openNew}>
+            + New Group
+          </button>
+        </div>
+      </header>
+
+      <ul className={styles.list} aria-live="polite">
+        {groups.length === 0 ? (
+          <li className={styles.empty}>No groups yet. Create your first group.</li>
+        ) : (
+          groups.map(g => <GroupItem key={g.id} group={g} onEdit={openEdit} />)
+        )}
       </ul>
 
       {showModal && (
@@ -97,6 +123,6 @@ export default function GroupList() {
           onDelete={handleDelete}
         />
       )}
-    </div>
+    </section>
   );
 }

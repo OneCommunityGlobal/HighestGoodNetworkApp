@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './GroupList.module.css';
 
 export default function GroupEditorModal({
@@ -12,31 +12,77 @@ export default function GroupEditorModal({
   const [members, setMembers] = useState(
     Array.isArray(group?.members) ? group.members.slice() : [],
   );
+  const modalRef = useRef(null);
+  const firstInputRef = useRef(null);
 
   useEffect(() => {
     setName(group?.name || '');
     setMembers(Array.isArray(group?.members) ? group.members.slice() : []);
   }, [group]);
 
-  const toggleMember = id => {
-    setMembers(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
-  };
+  // focus management + close on ESC + prevent background scroll
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const previousActive = document.activeElement;
 
-  const save = () => {
+    const onKey = e => {
+      if (e.key === 'Escape') onClose();
+      // basic tab trap
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll(
+          'a[href], button:not([disabled]), textarea, input, select',
+        );
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', onKey);
+    // focus the input
+    setTimeout(() => firstInputRef.current && firstInputRef.current.focus(), 0);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener('keydown', onKey);
+      previousActive && previousActive.focus();
+    };
+  }, [onClose]);
+
+  const toggleMember = useCallback(id => {
+    setMembers(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
+  }, []);
+
+  const save = useCallback(() => {
     const payload = { ...(group || {}), name: (name || 'Untitled Group').trim(), members };
     onSave(payload);
-  };
+  }, [group, name, members, onSave]);
 
-  const remove = () => {
+  const remove = useCallback(() => {
     if (group?.id) onDelete(group.id);
     else onClose();
-  };
+  }, [group, onDelete, onClose]);
 
   return (
-    <div className={styles.overlay}>
-      <div className={styles.modal}>
+    <div
+      className={styles.overlay}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="group-modal-title"
+    >
+      <div className={styles.modal} ref={modalRef}>
         <div className={styles.head}>
-          <h3 className={styles.title}>{group ? 'Edit Group' : 'New Group'}</h3>
+          <h3 id="group-modal-title" className={styles.modalTitle}>
+            {group ? 'Edit Group' : 'New Group'}
+          </h3>
           <button className={styles.closeButton} onClick={onClose} aria-label="Close">
             ×
           </button>
@@ -45,7 +91,14 @@ export default function GroupEditorModal({
         <div className={styles.body}>
           <label className={styles.field}>
             <div className={styles.fieldLabel}>Name</div>
-            <input className={styles.input} value={name} onChange={e => setName(e.target.value)} />
+            <input
+              ref={firstInputRef}
+              className={styles.input}
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="Group name"
+              aria-label="Group name"
+            />
           </label>
 
           <div className={styles.membersSection}>
