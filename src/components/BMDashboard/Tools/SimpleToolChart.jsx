@@ -13,7 +13,7 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 
-// Sample data
+// ---------- Sample Data ----------
 const toolsData = [
   {
     project: 'Project A',
@@ -53,16 +53,15 @@ const toolsData = [
   },
 ];
 
-// Get unique projects
+// ---------- Projects Dropdown ----------
 const projects = ['All Projects', ...new Set(toolsData.map(item => item.project))];
 
-// Custom date picker component
+// ---------- Date Range Picker ----------
 function DateRangePicker({ dateRange, setDateRange }) {
   const [isOpen, setIsOpen] = useState(false);
   const [tempRange, setTempRange] = useState(dateRange);
   const pickerRef = useRef(null);
 
-  // Close the date picker when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
       if (pickerRef.current && !pickerRef.current.contains(event.target)) {
@@ -70,9 +69,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleStartDateChange = e => {
@@ -145,77 +142,46 @@ function DateRangePicker({ dateRange, setDateRange }) {
         >
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label
-                htmlFor="start-date"
-                style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  marginBottom: '4px',
-                }}
-              >
-                Start Date
-              </label>
+              <label htmlFor="startDate">Start Date</label>
               <input
+                id="startDate"
                 type="date"
+                value={tempRange.from ? format(tempRange.from, 'yyyy-MM-dd') : ''}
+                onChange={handleStartDateChange}
                 style={{
                   width: '100%',
                   padding: '8px 12px',
                   border: '1px solid #d1d5db',
                   borderRadius: '6px',
                 }}
-                value={tempRange.from ? format(tempRange.from, 'yyyy-MM-dd') : ''}
-                onChange={handleStartDateChange}
               />
             </div>
             <div>
-              <label
-                htmlFor="end-date"
-                style={{
-                  display: 'block',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  marginBottom: '4px',
-                }}
-              >
-                End Date
-              </label>
+              <label htmlFor="endDate">End Date</label>
               <input
+                id="endDate"
                 type="date"
+                value={tempRange.to ? format(tempRange.to, 'yyyy-MM-dd') : ''}
+                onChange={handleEndDateChange}
                 style={{
                   width: '100%',
                   padding: '8px 12px',
                   border: '1px solid #d1d5db',
                   borderRadius: '6px',
                 }}
-                value={tempRange.to ? format(tempRange.to, 'yyyy-MM-dd') : ''}
-                onChange={handleEndDateChange}
               />
             </div>
           </div>
-          <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'flex-end' }}>
+          <div style={{ marginTop: '16px', textAlign: 'right' }}>
             <button
-              type="button"
+              onClick={applyDateRange}
               style={{
                 padding: '8px 16px',
                 backgroundColor: '#3b82f6',
                 color: 'white',
-                borderRadius: '6px',
                 border: 'none',
+                borderRadius: '6px',
                 cursor: 'pointer',
-              }}
-              onClick={applyDateRange}
-              onMouseOver={e => {
-                e.target.style.backgroundColor = '#2563eb';
-              }}
-              onMouseOut={e => {
-                e.target.style.backgroundColor = '#3b82f6';
-              }}
-              onFocus={e => {
-                e.target.style.backgroundColor = '#2563eb';
-              }}
-              onBlur={e => {
-                e.target.style.backgroundColor = '#3b82f6';
               }}
             >
               Apply
@@ -227,6 +193,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
   );
 }
 
+// ---------- Main Chart Component ----------
 export default function SimpleToolChart() {
   const [selectedProject, setSelectedProject] = useState('All Projects');
   const [dateRange, setDateRange] = useState({
@@ -234,11 +201,10 @@ export default function SimpleToolChart() {
     to: new Date(2023, 11, 31),
   });
 
-  // Filter and process data based on selected project and date range
   const filteredData = useMemo(() => {
     let filtered = [...toolsData];
 
-    // Filter by date
+    // Date filtering
     if (dateRange.from && dateRange.to) {
       filtered = filtered.filter(item => {
         const itemDate = new Date(item.date);
@@ -246,21 +212,17 @@ export default function SimpleToolChart() {
       });
     }
 
-    // Filter by project
+    // Project filtering
     if (selectedProject !== 'All Projects') {
       filtered = filtered.filter(item => item.project === selectedProject);
     }
 
-    // Combine and average tool data across filtered projects
+    // Combine and average data
     const toolMap = {};
-
     filtered.forEach(project => {
       project.tools.forEach(tool => {
         if (!toolMap[tool.name]) {
-          toolMap[tool.name] = {
-            count: 1,
-            total: tool.replacedPercentage,
-          };
+          toolMap[tool.name] = { count: 1, total: tool.replacedPercentage };
         } else {
           toolMap[tool.name].count += 1;
           toolMap[tool.name].total += tool.replacedPercentage;
@@ -268,92 +230,51 @@ export default function SimpleToolChart() {
       });
     });
 
-    // Calculate averages and format for chart
-    const result = Object.keys(toolMap).map(toolName => ({
-      name: toolName,
-      replacedPercentage: Math.round(toolMap[toolName].total / toolMap[toolName].count),
-    }));
-
-    // Sort by replaced percentage (highest first)
-    return result.sort((a, b) => b.replacedPercentage - a.replacedPercentage);
+    return Object.keys(toolMap)
+      .map(name => ({
+        name,
+        replacedPercentage: Math.round(toolMap[name].total / toolMap[name].count),
+      }))
+      .sort((a, b) => b.replacedPercentage - a.replacedPercentage);
   }, [selectedProject, dateRange]);
 
   return (
-    <div
-      style={{
-        width: '100%',
-        padding: '24px',
-        backgroundColor: 'white',
-        borderRadius: '8px',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-      }}
-    >
-      <h2
-        style={{
-          fontSize: '24px',
-          fontWeight: 'bold',
-          textAlign: 'center',
-          marginBottom: '24px',
-        }}
-      >
+    <div style={{ padding: '24px', backgroundColor: 'white', borderRadius: '8px' }}>
+      <h2 style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
         Tools Most Susceptible to Breakdown
       </h2>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px',
-          justifyContent: 'space-between',
-          marginBottom: '24px',
-        }}
-      >
-        {/* Project Filter */}
-        <div style={{ width: '100%' }}>
-          <label
-            htmlFor="project-filter"
-            style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}
-          >
-            Project
-          </label>
+      {/* Filters */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', margin: '16px 0' }}>
+        <div>
+          <label htmlFor="projectSelect">Project</label>
           <select
-            style={{
-              width: '100%',
-              padding: '8px 16px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              backgroundColor: 'white',
-            }}
+            id="projectSelect"
             value={selectedProject}
             onChange={e => setSelectedProject(e.target.value)}
+            style={{
+              width: '100%',
+              padding: '8px',
+              borderRadius: '6px',
+              border: '1px solid #d1d5db',
+            }}
           >
             {projects.map(project => (
-              <option key={project} value={project}>
-                {project}
-              </option>
+              <option key={project}>{project}</option>
             ))}
           </select>
         </div>
 
-        {/* Date Range Filter */}
-        <div style={{ width: '100%' }}>
-          <label
-            htmlFor="date-filter"
-            style={{ display: 'block', fontSize: '14px', fontWeight: '500', marginBottom: '4px' }}
-          >
-            Date Range
-          </label>
-          <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
+        <div>
+          <label htmlFor="dateRangePicker">Date Range</label>
+          <div id="dateRangePicker">
+            <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
+          </div>
         </div>
       </div>
 
       {/* Chart */}
-      <div
-        style={{
-          height: '400px',
-          marginTop: '24px',
-        }}
-      >
+      <div style={{ height: '400px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             layout="vertical"
@@ -361,18 +282,14 @@ export default function SimpleToolChart() {
             margin={{ top: 20, right: 50, left: 70, bottom: 20 }}
           >
             <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-            <XAxis type="number" domain={[0, 100]} tickCount={6} unit="%" />
+            <XAxis type="number" domain={[0, 100]} unit="%" />
             <YAxis type="category" dataKey="name" tick={{ fontSize: 14 }} />
-            <Tooltip
-              formatter={value => [`${value}%`, 'Replaced Percentage']}
-              cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
-            />
+            <Tooltip formatter={value => [`${value}%`, 'Replaced Percentage']} />
             <Bar dataKey="replacedPercentage" fill="#3b82f6" radius={[0, 4, 4, 0]}>
               <LabelList
                 dataKey="replacedPercentage"
                 position="right"
-                formatter={value => `${value}%`}
-                style={{ fill: '#374151', fontWeight: 500 }}
+                content={({ value }) => <text fill="#374151" fontWeight="500">{`${value}%`}</text>}
               />
             </Bar>
           </BarChart>
@@ -380,15 +297,7 @@ export default function SimpleToolChart() {
       </div>
 
       {filteredData.length === 0 && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '200px',
-            color: '#6b7280',
-          }}
-        >
+        <div style={{ textAlign: 'center', marginTop: '32px', color: '#6b7280' }}>
           No data available for the selected filters
         </div>
       )}

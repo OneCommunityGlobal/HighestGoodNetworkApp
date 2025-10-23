@@ -169,6 +169,8 @@ import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 
 import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
+
+import SimpleToolChart from './components/BMDashboard/Tools/SimpleToolChart';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -296,7 +298,7 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
-    {/* <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} /> */}
+
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <Route path="/logattendance" component={AttendanceNoShow} />
     <>
@@ -579,6 +581,7 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
         <Route path="/LessonsLearntChart" component={LessonsLearntChart} />
         <Route path="/UtilizationChart" component={UtilizationChart} />
+        <Route path="/mostsusceptibletoolschart" component={SimpleToolChart} />
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
           fallback
