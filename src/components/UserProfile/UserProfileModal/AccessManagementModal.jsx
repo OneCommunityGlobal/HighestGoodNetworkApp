@@ -163,7 +163,14 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       const response = await axios.post(`${ENDPOINTS.APIEndpoint()}/github/teams`, {
         requestor: { role: userProfile.role }
       });
-      setGithubTeams(response.data.data || []);
+      const teams = response.data.data || [];
+      setGithubTeams(teams);
+      
+      // Automatically select the default team if it exists
+      const defaultTeam = teams.find(team => team.isDefault);
+      if (defaultTeam) {
+        setSelectedGithubTeams([defaultTeam]);
+      }
     } catch (error) {
       // console.error('Error fetching GitHub teams:', error);
       toast.error('Failed to fetch GitHub teams');
@@ -629,6 +636,9 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                               onClick={() => handleGithubTeamToggle(team)}
                             >
                               {team.name}
+                              {team.isDefault && (
+                                <span className={styles.defaultBadge}>Default</span>
+                              )}
                               {team.privacy === 'secret' && (
                                 <FontAwesomeIcon icon={faLock} className={styles.ml2} />
                               )}
@@ -636,6 +646,11 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                             {team.description && (
                               <div className={styles.chipTooltip}>
                                 {team.description}
+                                {team.isDefault && (
+                                  <div className={styles.defaultTooltip}>
+                                    This team is selected by default
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>

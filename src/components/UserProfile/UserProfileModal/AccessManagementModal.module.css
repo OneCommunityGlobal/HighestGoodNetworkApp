@@ -884,6 +884,36 @@
     border-top-color: #1a1a1a;
 }
 
+/* Default team styles - keep chip same as others, only change tag color */
+.accessManagementModal .defaultBadge {
+    background-color: #ff6b35;
+    color: #ffffff;
+    font-size: 0.65rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-left: 4px;
+    font-weight: 500;
+}
+
+.accessManagementModal .defaultTooltip {
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid #555;
+    font-size: 0.7rem;
+    color: #ff6b35;
+    font-weight: 500;
+}
+
+/* Dark mode default team styles */
+.accessManagementModal.darkMode .defaultBadge {
+    background-color: #ff8c42;
+    color: #ffffff;
+}
+
+.accessManagementModal.darkMode .defaultTooltip {
+    border-top-color: #666;
+    color: #ff8c42;
+}
 
 /* Enhanced UX Styles */
 .accessManagementModal .selectionHeader {
