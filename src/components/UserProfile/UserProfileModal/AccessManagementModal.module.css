@@ -775,9 +775,8 @@
     padding: 8px 12px;
     border-radius: 6px;
     font-size: 0.75rem;
-    white-space: nowrap;
-    max-width: 250px;
     white-space: normal;
+    max-width: 250px;
     text-align: center;
     z-index: 1000;
     opacity: 0;
