@@ -503,7 +503,11 @@ function WeeklyProjectSummary() {
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                <div
+                  className={`${styles.weeklyProjectSummaryDashboardCategoryContent} ${
+                    darkMode ? 'bg-yinmn-blue' : ''
+                  }`}
+                >
                   {content}
                 </div>
               )}
