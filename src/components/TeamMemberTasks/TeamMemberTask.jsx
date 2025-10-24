@@ -13,7 +13,7 @@ import { Table, Progress, Modal, ModalHeader, ModalFooter, ModalBody } from 'rea
 
 import { Link } from 'react-router-dom';
 import hasPermission from '~/utils/permissions';
-import styles from './style.module.css';
+import './style.css';
 import { getUserProfile } from '~/actions/userProfile.js';
 import { toast } from 'react-toastify';
 import Warning from '~/components/Warnings/Warnings';
@@ -27,7 +27,6 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
-import TaskChangeLogModal from './components/TaskChangeLogModal';
 import * as messages from '../../constants/followUpConstants';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
@@ -128,8 +127,6 @@ const TeamMemberTask = React.memo(
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
-    const [showChangeLogModal, setShowChangeLogModal] = useState(false);
-    const [selectedTaskForChangeLog, setSelectedTaskForChangeLog] = useState(null);
 
     const completedTasks = user.tasks.filter(task =>
       task.resources?.some(resource => resource.userID === user.personId && resource.completedTask),
@@ -175,26 +172,7 @@ const TeamMemberTask = React.memo(
       }
     };
 
-    const handleOpenTaskChangeLog = task => {
-      setSelectedTaskForChangeLog(task);
-      setShowChangeLogModal(true);
-    };
-
-    const handleCloseTaskChangeLog = () => {
-      setShowChangeLogModal(false);
-      setSelectedTaskForChangeLog(null);
-    };
-
-    /** 
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    };
-    */
+    /**    const handleReportClick = (event, to) => {      if (event.metaKey || event.ctrlKey || event.button === 1) {        return;      }      event.preventDefault(); // prevent full reload    };    */
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -223,24 +201,20 @@ const TeamMemberTask = React.memo(
     };
 
     return (
-      <tr
-        ref={ref}
-        className={`${styles['table-row']} ${darkMode ? 'bg-yinmn-blue' : ''}`}
-        key={user.personId}
-      >
-        <td className={styles['remove-padding']} colSpan={6}>
-          <div className={styles['row-content']}>
+      <tr ref={ref} className={`table-row ${darkMode ? 'bg-yinmn-blue' : ''}`} key={user.personId}>
+        <td className="remove-padding" colSpan={6}>
+          <div className="row-content">
             {isTimeOffContentOpen && (
-              <div className={styles['taking-time-off-content-div']}>
+              <div className="taking-time-off-content-div">
                 <div>
-                  <span className={styles['taking-time-off-content-text']}>
+                  <span className="taking-time-off-content-text">
                     {onTimeOff
                       ? `${user.name} Is Not Available this Week`
                       : `${user.name} Is Not Available Next Week`}
                   </span>
                   <button
                     type="button"
-                    className={styles['taking-time-off-content-btn']}
+                    className="taking-time-off-content-btn"
                     onClick={() => {
                       const request = onTimeOff
                         ? { ...onTimeOff, onVacation: true, name: user.name }
@@ -252,7 +226,7 @@ const TeamMemberTask = React.memo(
                   </button>
                 </div>
                 <button
-                  className={styles['compress-time-off-detail-button']}
+                  className="compress-time-off-detail-button"
                   onClick={() => {
                     setIsTimeOffContentOpen(false);
                   }}
@@ -263,15 +237,15 @@ const TeamMemberTask = React.memo(
                 </button>
               </div>
             )}
-            <Table className={styles['no-bottom-margin']}>
+            <Table className="no-bottom-margin">
               <tbody>
                 <tr className="remove-child-borders">
                   {/* green if member has met committed hours for the week, red if not */}
                   <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
-                      <div className={styles['member-links-wrapper']}>
-                        <div className={styles['committed-hours-circle']}>
-                          <div className={styles['icon-row']}>
+                      <div className="member-links-wrapper">
+                        <div className="committed-hours-circle">
+                          <div className="icon-row">
                             <div
                               role="button"
                               tabIndex={0}
@@ -295,7 +269,7 @@ const TeamMemberTask = React.memo(
 
                             <Link
                               to={`/timelog/${user.personId}#currentWeek`}
-                              className={styles['timelog-info']}
+                              className="timelog-info"
                             >
                               <i
                                 className="fa fa-clock-o"
@@ -320,7 +294,7 @@ const TeamMemberTask = React.memo(
                         </div>
                       </div>
                       {canUpdateTask && teamRoles && (
-                        <div className={styles['name-wrapper']}>
+                        <div className="name-wrapper">
                           {['Manager', 'Assistant Manager', 'Mentor'].map(role => {
                             const seenIds = new Set();
                             const uniqueRoleMembers = (teamRoles[role] || []).filter(elm => {
@@ -338,15 +312,12 @@ const TeamMemberTask = React.memo(
                                 <a
                                   key={`${role}-${elm.id}-${elm.name}`}
                                   title={`${role} : ${name}`}
-                                  className={styles.name}
+                                  className="name"
                                   href={`/userprofile/${elm.id}`}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
-                                  <span
-                                    className={styles['name-initial']}
-                                    style={{ backgroundColor: bg }}
-                                  >
+                                  <span className="name-initial" style={{ backgroundColor: bg }}>
                                     {initials}{' '}
                                   </span>
                                 </a>
@@ -358,16 +329,16 @@ const TeamMemberTask = React.memo(
                     </div>
                   </td>
                   <td colSpan={2} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
-                    <Table borderless className={styles['team-member-tasks-subtable']}>
+                    <Table borderless className="team-member-tasks-subtable">
                       <tbody>
                         <tr
                           style={{
                             width: '500px',
                           }}
                         >
-                          <td className={styles['team-member-tasks-user-name']}>
+                          <td className="team-member-tasks-user-name">
                             <Link
-                              className={styles['team-member-tasks-user-name-link']}
+                              className="team-member-tasks-user-name-link"
                               to={`/userprofile/${user.personId}`}
                               style={{
                                 color:
@@ -396,19 +367,19 @@ const TeamMemberTask = React.memo(
 
                             {canSeeReports && (
                               <Link
-                                className={styles['team-member-tasks-user-report-link']}
+                                className="team-member-tasks-user-report-link"
                                 to={`/peoplereport/${user?.personId}`}
                               >
                                 <img
                                   src="/report_icon.png"
                                   alt="reportsicon"
-                                  className={styles['team-member-tasks-user-report-link-image']}
+                                  className="team-member-tasks-user-report-link-image"
                                 />
                               </Link>
                             )}
                             {canSeeReports && (
                               <Link to={`/peoplereport/${user?.personId}`}>
-                                <span className={styles['team-member-tasks-number']}>
+                                <span className="team-member-tasks-number">
                                   {completedTasks.length}
                                 </span>
                               </Link>
@@ -425,9 +396,9 @@ const TeamMemberTask = React.memo(
                           </td>
                           <td
                             data-label="Time"
-                            className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
+                            className={`team-clocks ${darkMode ? 'text-light' : ''}`}
                           >
-                            <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
+                            <u className={darkMode ? 'dashboard-team-clocks' : ''}>
                               {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
                             </u>{' '}
                             /
@@ -442,27 +413,25 @@ const TeamMemberTask = React.memo(
                     </Table>
                   </td>
                   <td colSpan={3} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
-                    <div className={styles['grid-container']}>
-                      <Table borderless className={styles['team-member-tasks-subtable']}>
+                    <div className="grid-container">
+                      <Table borderless className="team-member-tasks-subtable">
                         <tbody>
                           {user.tasks &&
                             activeTasks.slice(0, numTasksToShow).map(task => {
                               return (
                                 <tr
                                   key={`${task._id}`}
-                                  className={`${styles['task-break']} ${
-                                    darkMode ? 'bg-yinmn-blue' : ''
-                                  }`}
+                                  className={`task-break ${darkMode ? 'bg-yinmn-blue' : ''}`}
                                 >
                                   <td
                                     data-label="Task(s)"
-                                    className={`${styles['task-align']} ${
+                                    className={`task-align  ${
                                       darkMode ? 'bg-yinmn-blue text-light' : ''
                                     }`}
                                   >
-                                    <div className={styles['team-member-tasks-content']}>
+                                    <div className="team-member-tasks-content">
                                       <Link
-                                        className={styles['team-member-tasks-content-link']}
+                                        className="team-member-tasks-content-link"
                                         to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                                         data-testid={`${task.taskName}`}
                                         style={{ color: darkMode ? '#339CFF' : undefined }}
@@ -474,7 +443,7 @@ const TeamMemberTask = React.memo(
                                         message="Task Copied!"
                                       />
                                     </div>
-                                    <div className={styles['team-member-tasks-icons']}>
+                                    <div className="team-member-tasks-icons">
                                       {task.taskNotifications.length > 0 &&
                                       task.taskNotifications.some(
                                         notification =>
@@ -484,7 +453,7 @@ const TeamMemberTask = React.memo(
                                           ) && notification.userId === user.personId,
                                       ) ? (
                                         <FontAwesomeIcon
-                                          className={styles['team-member-tasks-bell']}
+                                          className="team-member-tasks-bell"
                                           title="Task Info Changes"
                                           icon={faBell}
                                           onClick={() => {
@@ -503,7 +472,7 @@ const TeamMemberTask = React.memo(
                                       ) : null}
                                       {isAllowedToResolveTasks && (
                                         <FontAwesomeIcon
-                                          className={styles['team-member-tasks-done']}
+                                          className="team-member-tasks-done"
                                           icon={faCheckCircle}
                                           title="Mark as Done"
                                           onClick={() => {
@@ -515,7 +484,7 @@ const TeamMemberTask = React.memo(
                                       )}
                                       {(canUpdateTask || canDeleteTask) && (
                                         <FontAwesomeIcon
-                                          className={styles['team-member-task-remove']}
+                                          className="team-member-task-remove"
                                           icon={faTimesCircle}
                                           title="Remove User from Task"
                                           onClick={() => {
@@ -527,7 +496,7 @@ const TeamMemberTask = React.memo(
                                       )}
                                       <TeamMemberTaskIconsInfo />
                                     </div>
-                                    <div className={styles['team-member-task-review-button']}>
+                                    <div className="team-member-task-review-button">
                                       <ReviewButton
                                         user={user}
                                         userId={userId}
@@ -539,36 +508,26 @@ const TeamMemberTask = React.memo(
                                   {task.hoursLogged != null && task.estimatedHours != null && (
                                     <td
                                       data-label="Progress"
-                                      className={`${styles['team-task-progress']} ${
+                                      className={`team-task-progress  ${
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
                                       {isAllowedToSeeDeadlineCount && (
                                         <span
-                                          className={styles['deadlineCount']}
-                                          title="Click to view task change history"
+                                          className="deadlineCount"
+                                          title="Deadline Follow-up Count"
                                           data-testid={`deadline-${task.taskName}`}
-                                          onClick={() => handleOpenTaskChangeLog(task)}
-                                          onKeyDown={e => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                              e.preventDefault();
-                                              handleOpenTaskChangeLog(task);
-                                            }
-                                          }}
-                                          role="button"
-                                          tabIndex={0}
-                                          style={{ cursor: 'pointer' }}
                                         >
                                           {taskCounts[task._id] ?? task.deadlineCount ?? 0}
                                         </span>
                                       )}
-                                      <div className={styles['team-task-progress-container']}>
+                                      <div className="team-task-progress-container">
                                         <span
                                           data-testid={`times-${task.taskName}`}
                                           className={`${darkMode ? 'text-light ' : ''} ${
                                             canSeeFollowUpCheckButton
-                                              ? styles['team-task-progress-time']
-                                              : styles['team-task-progress-time-volunteers']
+                                              ? 'team-task-progress-time'
+                                              : 'team-task-progress-time-volunteers'
                                           }`}
                                         >
                                           {`${parseFloat(
@@ -595,7 +554,7 @@ const TeamMemberTask = React.memo(
                                             task.hoursLogged,
                                             task.estimatedHours,
                                           )}
-                                          className={styles['team-task-progress-bar']}
+                                          className="team-task-progress-bar"
                                         />
                                       </div>
                                     </td>
@@ -604,8 +563,8 @@ const TeamMemberTask = React.memo(
                               );
                             })}
                           {canTruncate && (
-                            <tr key="truncate-button-row" className={styles['task-break']}>
-                              <td className={styles['task-align']}>
+                            <tr key="truncate-button-row" className="task-break">
+                              <td className="task-align">
                                 <button
                                   type="button"
                                   onClick={handleTruncateTasksButtonClick}
@@ -648,8 +607,8 @@ const TeamMemberTask = React.memo(
                       {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
                         <button
                           type="button"
-                          className={`${styles['expand-time-off-detail-button']} ${
-                            isTimeOffContentOpen ? styles.hidden : ''
+                          className={`expand-time-off-detail-button ${
+                            isTimeOffContentOpen ? 'hidden' : ''
                           }`}
                           onClick={() => setIsTimeOffContentOpen(true)}
                           aria-label="Expand time off detail"
@@ -664,15 +623,6 @@ const TeamMemberTask = React.memo(
             </Table>
           </div>
         </td>
-        {/* Task Change Log Modal */}
-        {selectedTaskForChangeLog && (
-          <TaskChangeLogModal
-            isOpen={showChangeLogModal}
-            toggle={handleCloseTaskChangeLog}
-            task={selectedTaskForChangeLog}
-            darkMode={darkMode}
-          />
-        )}
       </tr>
     );
   },
