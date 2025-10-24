@@ -185,17 +185,6 @@ const TeamMemberTask = React.memo(
       setSelectedTaskForChangeLog(null);
     };
 
-    /** 
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    };
-    */
-
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
     };

@@ -1,6 +1,6 @@
 /* Announcements/Announcements.jsx */
 import { useState } from 'react';
-import './Announcements.css';
+import './Announcements.module.css';
 import { useSelector } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
