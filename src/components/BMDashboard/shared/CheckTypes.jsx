@@ -31,14 +31,8 @@ function CheckTypes({ type }) {
   };
 
   // Filter the data based on the search query
-  const normalizeString = str =>
-    str
-      .trim()
-      .replace(/\s+/g, '')
-      .toLowerCase();
-
   const filteredBuildingInvTypes = buildingInvTypes.filter(item =>
-    normalizeString(item.name).includes(normalizeString(searchQuery)),
+    item.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Sorting function for name column

@@ -26,6 +26,7 @@ function WBSTasks(props) {
   const projectName = useSelector(state => state.projectById?.projectName || '');
 
   // states from hooks
+  const [showImport, setShowImport] = useState(false);
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
@@ -153,7 +154,7 @@ function WBSTasks(props) {
             />
           ) : null}
 
-          {!isLoading ? (
+          {!isLoading && showImport ? (
             <ImportTask
               wbsId={wbsId}
               projectId={projectId}
