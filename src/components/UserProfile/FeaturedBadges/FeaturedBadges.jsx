@@ -7,7 +7,7 @@ const FeaturedBadges = props => {
   const filterBadges = allBadges => {
     if (!Array.isArray(allBadges)) return [];
 
-    let filteredList = allBadges.filter(badge => badge && badge.badge);
+    const filteredList = allBadges.filter(badge => badge && badge.badge);
 
     filteredList.sort((a, b) => {
       const featuredA = a.featured ?? false;

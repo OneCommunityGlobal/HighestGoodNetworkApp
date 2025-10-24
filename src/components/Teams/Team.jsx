@@ -33,7 +33,7 @@ export function Team(props) {
           aria-label={`Change status for team ${props.name}`}
         >
           <div className={props.active ? 'isActive' : 'isNotActive'}>
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </div>
         </button>
       </td>

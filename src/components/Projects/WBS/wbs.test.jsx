@@ -34,7 +34,7 @@ vi.mock('./WBSItem/WBSItem', () => ({
     <tr data-testid={`wbs-item-${index}`}>
       <td>{index}</td>
       <td>{name}</td>
-      <td></td>
+      <td />
     </tr>
   ),
 }));

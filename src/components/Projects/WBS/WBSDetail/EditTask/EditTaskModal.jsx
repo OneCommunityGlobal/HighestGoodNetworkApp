@@ -1,27 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { connect } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '~/languages/en/messages';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
+import { Editor } from '@tinymce/tinymce-react';
+import axios from 'axios';
+import { isValid } from 'date-fns';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
 import parseISO from 'date-fns/parseISO';
-import { isValid } from 'date-fns';
-import { updateTask } from '~/actions/task';
-import { Editor } from '@tinymce/tinymce-react';
-import hasPermission from '~/utils/permissions';
-import axios from 'axios';
-import { ENDPOINTS } from '~/utils/URL';
-import { boxStyle, boxStyleDark } from '~/styles';
+import React, { useEffect, useState } from 'react';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
-import UserSearch from './UserSearch';
-import UserTag from './UserTag';
-import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
+import ReactTooltip from 'react-tooltip';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { updateTask } from '~/actions/task';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '~/languages/en/messages';
+import { boxStyle, boxStyleDark } from '~/styles';
+import hasPermission from '~/utils/permissions';
+import { ENDPOINTS } from '~/utils/URL';
 import '../../../../Header/DarkMode.css';
-import '../wbs.css';
 import TagsSearch from '../components/TagsSearch';
+import '../wbs.css';
+import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 
 
 /** tiny reusable v8 DateInput - manual control without useInput **/

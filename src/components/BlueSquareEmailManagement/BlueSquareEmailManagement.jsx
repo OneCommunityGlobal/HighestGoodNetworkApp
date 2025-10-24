@@ -108,7 +108,7 @@ const BlueSquareEmailManagement = ({
               >
                 {isLoading ? (
                   <>
-                    <i className="fas fa-spinner fa-spin me-2"></i>
+                    <i className="fas fa-spinner fa-spin me-2" />
                     Processing...
                   </>
                 ) : (
@@ -126,7 +126,7 @@ const BlueSquareEmailManagement = ({
           >
             <div className="card-body d-flex flex-column">
               <h5 className={`card-title mb-3 ${darkMode ? 'text-light' : ''}`}>
-                <i className="fas fa-chart-bar text-info me-2"></i>
+                <i className="fas fa-chart-bar text-info me-2" />
                 Resend Weekly Summary Email
               </h5>
               <p className={`card-text mb-3 flex-grow-1 ${darkMode ? 'text-light' : ''}`}>
@@ -141,12 +141,12 @@ const BlueSquareEmailManagement = ({
               >
                 {isLoading ? (
                   <>
-                    <i className="fas fa-spinner fa-spin me-2"></i>
+                    <i className="fas fa-spinner fa-spin me-2" />
                     Processing...
                   </>
                 ) : (
                   <>
-                    <i className="fas fa-file-alt me-2"></i>
+                    <i className="fas fa-file-alt me-2" />
                     Resend Weekly Summary Email
                   </>
                 )}
@@ -187,7 +187,7 @@ const BlueSquareEmailManagement = ({
       {/* Weekly Summary Email Confirmation Modal */}
       <Modal isOpen={weeklySummaryModalOpen} toggle={() => setWeeklySummaryModalOpen(false)}>
         <ModalHeader toggle={() => setWeeklySummaryModalOpen(false)}>
-          <i className="fas fa-chart-bar text-info me-2"></i>
+          <i className="fas fa-chart-bar text-info me-2" />
           Confirm Weekly Summary Email Resend
         </ModalHeader>
         <ModalBody>
@@ -209,7 +209,7 @@ const BlueSquareEmailManagement = ({
             Cancel
           </button>
           <button className="btn btn-info" onClick={handleWeeklySummaryResend}>
-            <i className="fas fa-file-alt me-2"></i>
+            <i className="fas fa-file-alt me-2" />
             Resend Summary
           </button>
         </ModalFooter>

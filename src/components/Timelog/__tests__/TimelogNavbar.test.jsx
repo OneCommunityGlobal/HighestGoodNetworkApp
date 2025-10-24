@@ -8,6 +8,7 @@ import TimelogNavbar from '../TimelogNavbar';
 import { renderWithRouterMatch } from '../../../__tests__/utils';
 // eslint-disable-next-line no-unused-vars
 import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../../../__tests__/mockStates';
+
 const mockStore = configureStore();
 
 describe('TimelogNavbar', () => {

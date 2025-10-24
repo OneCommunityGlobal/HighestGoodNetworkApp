@@ -3,16 +3,16 @@
  * Author: Henry Ng - 02/03/20
  * Display member of the members list
  ********************************************************************************/
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
-import { importTask } from './../../../../../actions/task';
-import readXlsxFile from 'read-excel-file';
-import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
 import parse from 'html-react-parser';
+import { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { Alert, Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import readXlsxFile from 'read-excel-file';
 import { boxStyle, boxStyleDark } from '~/styles';
-import '../../../../Header/DarkMode.css'
+import '../../../../Header/DarkMode.css';
+import { getPopupById } from './../../../../../actions/popupEditorAction';
+import { importTask } from './../../../../../actions/task';
+import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
 
 const ImportTask = props => {
   /*
@@ -88,7 +88,7 @@ const ImportTask = props => {
 
   const newTask = (num, taskName, level, rowArr, i) => {
     const resourcesNames = parseResources(rowArr[9], members, i);
-    let newTask = {
+    const newTask = {
       taskName: taskName,
       wbsId: String(props.wbsId),
       num: String(num),

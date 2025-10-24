@@ -1,5 +1,6 @@
 // Badges.test.jsx
 import { vi } from 'vitest';
+
 vi.mock('react', async importOriginal => {
   const React = await importOriginal();
   return {

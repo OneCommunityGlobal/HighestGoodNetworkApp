@@ -40,13 +40,13 @@ function TriStateToggleSwitch({ pos, onChange }) {
       {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
       <div className="knob-area">
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div onClick={() => handleClick('posted')}></div>
+        <div onClick={() => handleClick('posted')} />
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div onClick={() => handleClick('default')}></div>
+        <div onClick={() => handleClick('default')} />
         {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */}
-        <div onClick={() => handleClick('requested')}></div>  
+        <div onClick={() => handleClick('requested')} />  
       </div>
-      <div className={`knob ${position}`}></div>
+      <div className={`knob ${position}`} />
     </div>
   );
 }

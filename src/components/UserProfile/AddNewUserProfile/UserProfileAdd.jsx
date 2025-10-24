@@ -1,49 +1,49 @@
-import React, { Component, useState } from 'react';
+import { get } from 'lodash';
+import { Component } from 'react';
+import { connect } from 'react-redux';
 import { StickyContainer } from 'react-sticky';
+import { toast } from 'react-toastify';
 import {
-  Container,
-  Row,
+  Button,
   Col,
-  Input,
+  Container,
+  Form,
   FormFeedback,
   FormGroup,
-  Form,
+  Input,
   Label,
-  Button,
-  TabPane,
+  Row,
   TabContent,
+  TabPane,
 } from 'reactstrap';
 import CommonInput from '~/components/common/Input';
 import DuplicateNamePopup from '~/components/UserManagement/DuplicateNamePopup';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-import './UserProfileAdd.scss';
-import { createUser } from '../../../services/userProfileService';
-import { toast } from 'react-toastify';
-import TeamsTab from '../TeamsAndProjects/TeamsTab';
-import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
-import { connect } from 'react-redux';
-import { get } from 'lodash';
-import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
+  addTeamMember,
+  deleteTeamMember,
   getAllUserTeams,
   updateTeam,
-  deleteTeamMember,
-  addTeamMember,
 } from '../../../actions/allTeamsAction';
+import { clearUserProfile, getUserProfile } from '../../../actions/userProfile';
+import { createUser } from '../../../services/userProfileService';
+import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
+import TeamsTab from '../TeamsAndProjects/TeamsTab';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+import './UserProfileAdd.scss';
 
 import { fetchAllProjects } from '~/actions/projects';
 
-import PhoneInput from 'react-phone-input-2';
-import 'react-phone-input-2/lib/style.css';
-import TimeZoneDropDown from '../TimeZoneDropDown';
-import hasPermission from '~/utils/permissions';
-import { boxStyle, boxStyleDark } from '~/styles';
-import WeeklySummaryOptions from './WeeklySummaryOptions';
+import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
-import axios from 'axios';
+import hasPermission from '~/utils/permissions';
 import { ENDPOINTS } from '~/utils/URL';
+import TimeZoneDropDown from '../TimeZoneDropDown';
+import WeeklySummaryOptions from './WeeklySummaryOptions';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
@@ -805,7 +805,7 @@ class UserProfileAdd extends Component {
   };
 
   checkIfDuplicate = (firstName, lastName) => {
-    let { userProfiles } = this.state.userProfiles;
+    const { userProfiles } = this.state.userProfiles;
 
     const duplicates = userProfiles.filter(user => {
       return (
@@ -819,7 +819,7 @@ class UserProfileAdd extends Component {
   };
 
   createUserProfile = () => {
-    let that = this;
+    const that = this;
     const {
       firstName,
       email,
@@ -1177,7 +1177,7 @@ class UserProfileAdd extends Component {
           },
         });
         break;
-      case 'weeklyCommittedHours':
+      case 'weeklyCommittedHours': {
         let val = Number(event.target.value);
         if (val > 168) {
           val = 168
@@ -1199,6 +1199,7 @@ class UserProfileAdd extends Component {
           },
         });
         break;
+      }
       case 'weeklySummaryOption':
         this.setState({
           userProfile: {

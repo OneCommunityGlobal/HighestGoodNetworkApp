@@ -159,7 +159,7 @@ const AddProject = (props) => {
           borderWidth: '1px',
         }}
       >
-        <i className="fa fa-plus" aria-hidden="true"></i> Add New Project
+        <i className="fa fa-plus" aria-hidden="true" /> Add New Project
       </button>
 
       {successMessage && (
