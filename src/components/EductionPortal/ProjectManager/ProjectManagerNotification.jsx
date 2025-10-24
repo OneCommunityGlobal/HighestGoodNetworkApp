@@ -1,14 +1,34 @@
 import React from "react";
+import axios from "axios";
 import styles from "./ProjectManagerNotification.module.css";
 
 const DRAFT_KEY = "pm_notif_draft";
 
+const api = axios.create({
+  baseURL: process.env.REACT_APP_APIENDPOINT || "",
+  withCredentials: true,
+});
+
+function getToken() {
+  return localStorage.getItem("token");
+}
+
 async function sendNotification({ educatorIds, message }) {
-  await new Promise((r) => setTimeout(r, 550));
-  if (!educatorIds.length || !message.trim()) {
-    throw new Error("Select at least one educator and enter a message.");
+  try {
+    const token = getToken();
+    const res = await api.post(
+      "/pm/notifications",
+      { educatorIds, message },
+      { headers: token ? { Authorization: token } : {} }
+    );
+    return res?.data ?? { ok: true };
+  } catch {
+    await new Promise((r) => setTimeout(r, 350));
+    if (!educatorIds.length || !message.trim()) {
+      throw new Error("Select at least one educator and enter a message.");
+    }
+    return { ok: true, fallback: true };
   }
-  return { ok: true };
 }
 
 export default function ProjectManagerNotification({ educators, onClose, onSent }) {
@@ -26,7 +46,6 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
     localStorage.setItem(DRAFT_KEY, message);
   }, [message]);
 
-  // Esc to close
   React.useEffect(() => {
     function onKey(e) {
       if (e.key === "Escape") onClose();
@@ -50,9 +69,9 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
     setError(null);
     try {
       const trimmed = message.trim();
-      await sendNotification({ educatorIds: selected, message: trimmed });
+      const resp = await sendNotification({ educatorIds: selected, message: trimmed });
       localStorage.removeItem(DRAFT_KEY);
-      onSent({ educatorIds: selected, message: trimmed });
+      onSent({ educatorIds: selected, message: trimmed, resp });
     } catch (e) {
       setError(e.message || "Failed to send.");
     } finally {

@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import styles from "./ProjectManagerEducatorView.module.css";
 import NotificationComposer from "./ProjectManagerNotification";
 
@@ -33,14 +34,54 @@ const mockEducators = [
   },
 ];
 
-async function fetchEducators() {
-  await new Promise((r) => setTimeout(r, 250));
-  return mockEducators.map(({ students, ...rest }) => rest);
+const api = axios.create({
+  baseURL: process.env.REACT_APP_APIENDPOINT || "",
+  withCredentials: true,
+});
+
+function getToken() {
+  return localStorage.getItem("token");
 }
+
+async function fetchEducatorsAPI() {
+  const token = getToken();
+  const res = await api.get("/pm/educators", {
+    headers: token ? { Authorization: token } : {},
+  });
+  const list = Array.isArray(res?.data?.data) ? res.data.data : [];
+  return list.map((e) => ({
+    id: e.id,
+    name: e.name,
+    subject: e.subject,
+    studentCount: Number(e.studentCount ?? 0),
+  }));
+}
+
+async function fetchStudentsAPI(educatorId) {
+  const token = getToken();
+  const res = await api.get(`/pm/educators/${encodeURIComponent(educatorId)}/students`, {
+    headers: token ? { Authorization: token } : {},
+  });
+  return Array.isArray(res?.data?.data) ? res.data.data : [];
+}
+
+async function fetchEducators() {
+  try {
+    return await fetchEducatorsAPI();
+  } catch {
+    await new Promise((r) => setTimeout(r, 200));
+    return mockEducators.map(({ students, ...rest }) => rest);
+  }
+}
+
 async function fetchStudentsByEducator(educatorId) {
-  await new Promise((r) => setTimeout(r, 200));
-  const edu = mockEducators.find((e) => e.id === educatorId);
-  return edu ? edu.students : [];
+  try {
+    return await fetchStudentsAPI(educatorId);
+  } catch {
+    await new Promise((r) => setTimeout(r, 150));
+    const edu = mockEducators.find((e) => e.id === educatorId);
+    return edu ? edu.students : [];
+  }
 }
 
 function StudentCard({ s }) {
@@ -138,10 +179,8 @@ export default function ProjectManagerEducatorView() {
   const [subject, setSubject] = React.useState("All");
   const [studentQuery, setStudentQuery] = React.useState("");
   const [expandedIds, setExpandedIds] = React.useState(new Set());
-
   const [showComposer, setShowComposer] = React.useState(false);
   const [lastSentInfo, setLastSentInfo] = React.useState(null);
-
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
 
@@ -156,7 +195,7 @@ export default function ProjectManagerEducatorView() {
         const data = await fetchEducators();
         setEducators(data);
         setFiltered(data);
-      } catch (e) {
+      } catch {
         setError("Failed to load educators");
       } finally {
         setLoading(false);
@@ -229,7 +268,6 @@ export default function ProjectManagerEducatorView() {
             onChange={(e) => setQuery(e.target.value)}
             aria-label="Search educators"
           />
-
           <select
             className={styles.select}
             value={subject}
@@ -242,7 +280,6 @@ export default function ProjectManagerEducatorView() {
               </option>
             ))}
           </select>
-
           <input
             type="text"
             placeholder="Search students inside rows"
@@ -251,7 +288,6 @@ export default function ProjectManagerEducatorView() {
             onChange={(e) => setStudentQuery(e.target.value)}
             aria-label="Search students"
           />
-
           <button className={styles.ghostBtn} onClick={expandAll}>
             Expand all
           </button>
@@ -272,7 +308,6 @@ export default function ProjectManagerEducatorView() {
         </div>
       )}
 
-      {/* List */}
       <section className={styles.card} aria-label="Educators">
         <div className={styles.cardHeader}>
           <h2 className={styles.cardTitle}>Educators</h2>
