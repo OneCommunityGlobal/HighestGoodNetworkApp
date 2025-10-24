@@ -2,12 +2,13 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
 import { useHistory, useLocation } from 'react-router-dom';
-import { FaPaperPlane, FaCog } from 'react-icons/fa';
+import { FaPaperPlane, FaCog, FaChartLine } from 'react-icons/fa';
 import {
   EmailTemplateManager,
   IntegratedEmailSender,
   ErrorBoundary,
 } from '../../../EmailManagement';
+import EmailBatchDashboard from '../../../EmailManagement/batch-dashboard/EmailBatchDashboard';
 import './EmailPanel.css';
 
 export default function EmailPanel({ title, initialEmail }) {
@@ -23,6 +24,7 @@ export default function EmailPanel({ title, initialEmail }) {
     const path = location.pathname;
     if (path.includes('/templates')) return 'templates';
     if (path.includes('/sender')) return 'sender';
+    if (path.includes('/batches')) return 'batches';
     return 'dashboard';
   }, [location.pathname]);
 
@@ -36,6 +38,8 @@ export default function EmailPanel({ title, initialEmail }) {
           history.push('/announcements/email/templates');
         } else if (view === 'sender') {
           history.push('/announcements/email/sender');
+        } else if (view === 'batches') {
+          history.push('/announcements/email/batches');
         } else {
           history.push('/announcements/email');
         }
@@ -87,8 +91,8 @@ export default function EmailPanel({ title, initialEmail }) {
             className="dashboard-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '2rem',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+              gap: '1.5rem',
               marginBottom: '2rem',
             }}
           >
@@ -153,6 +157,37 @@ export default function EmailPanel({ title, initialEmail }) {
                 Create, edit, and manage email templates for your communications
               </p>
             </button>
+
+            {/* Email Batch Dashboard Card */}
+            <button
+              className="platform-card"
+              type="button"
+              style={{
+                border: `2px solid ${darkMode ? '#2b3b50' : '#ddd'}`,
+                borderRadius: '8px',
+                padding: '2rem',
+                backgroundColor: darkMode ? '#1a2332' : '#f8f9fa',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}
+              onClick={() => handleViewChange('batches')}
+              onMouseEnter={e => {
+                e.target.style.borderColor = '#6f42c1';
+                e.target.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={e => {
+                e.target.style.borderColor = darkMode ? '#2b3b50' : '#ddd';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              <FaChartLine style={{ fontSize: '3rem', color: '#6f42c1', marginBottom: '1rem' }} />
+              <h3 style={{ color: darkMode ? '#fff' : '#000', marginBottom: '1rem' }}>
+                Batch Dashboard
+              </h3>
+              <p style={{ color: darkMode ? '#ccc' : '#666' }}>
+                Monitor and manage email batches with real-time tracking and analytics
+              </p>
+            </button>
           </div>
         </div>
       );
@@ -198,6 +233,25 @@ export default function EmailPanel({ title, initialEmail }) {
         >
           <ErrorBoundary>
             <EmailTemplateManager key="templates" />
+          </ErrorBoundary>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentView === 'batches') {
+    return (
+      <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
+        {navigationError && <ErrorDisplay error={navigationError} />}
+        <div
+          className="email-content-area"
+          role="tabpanel"
+          aria-labelledby="email-batches-tab"
+          id="email-batches-panel"
+          aria-live="polite"
+        >
+          <ErrorBoundary>
+            <EmailBatchDashboard key="batches" />
           </ErrorBoundary>
         </div>
       </div>

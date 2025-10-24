@@ -478,6 +478,7 @@ const IntegratedEmailSender = ({
           const response = await axios.post(ENDPOINTS.BROADCAST_EMAILS, {
             subject: customSubject,
             html: customContent,
+            useBatch: true, // Enable batch system
             requestor: {
               requestorId: 'current-user', // You might want to get this from auth context
               role: 'admin',
@@ -490,6 +491,7 @@ const IntegratedEmailSender = ({
             to: recipientList,
             subject: customSubject,
             html: customContent,
+            useBatch: true, // Enable batch system
             requestor: {
               requestorId: 'current-user', // You might want to get this from auth context
               role: 'admin',

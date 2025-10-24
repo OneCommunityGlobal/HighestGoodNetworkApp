@@ -30,6 +30,7 @@ export const sendEmail = (
         html,
         fromName,
         fromEmail,
+        useBatch: true, // Enable batch system
         requestor, // Add proper requestor for permission checking
       });
 
@@ -74,6 +75,7 @@ export const broadcastEmailsToAll = (
         html,
         fromName,
         fromEmail,
+        useBatch: true, // Enable batch system
         requestor, // Add proper requestor for permission checking
       });
 

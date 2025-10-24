@@ -515,6 +515,12 @@ export default (
           routePermissions={RoutePermissions.announcements}
         />
         <ProtectedRoute
+          path="/announcements/email/batches"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
           path="/announcements/x"
           exact
           component={Announcements}
