@@ -26,9 +26,9 @@ export default function IssuesBreakdownChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const rootStyles = getComputedStyle(document.body);
-  const textColor = rootStyles.getPropertyValue('--text-color') || '#666';
+  const textColor = darkMode ? '#ffffff' : '#000000ff';
   const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');
-  const tooltipBg = rootStyles.getPropertyValue('--section-bg') || '#fff';
+  const tooltipBg = darkMode ? '#3a506b' : '#fff';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,19 +78,21 @@ export default function IssuesBreakdownChart() {
         </div>
       </div>
 
-      <div className={styles.chartContainer}>
+      <div className={`${styles.chartContainer} ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         <ResponsiveContainer>
           <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
             <XAxis dataKey="projectName" tick={{ fill: textColor }} />
             <YAxis allowDecimals={false} tick={{ fill: textColor }} />
             <Tooltip
+              cursor={{ fill: darkMode ? 'rgba(28, 37, 65, .25)' : 'rgba(145, 140, 140, 0.25)' }}
               contentStyle={{
                 backgroundColor: tooltipBg,
                 border: 'none',
                 borderRadius: '8px',
                 color: textColor,
               }}
+              labelStyle={{ color: textColor }}
             />
             <Bar dataKey="equipmentIssues" name="Equipment Issues" fill={COLORS.equipmentIssues}>
               <LabelList dataKey="equipmentIssues" position="top" fill={textColor} />
