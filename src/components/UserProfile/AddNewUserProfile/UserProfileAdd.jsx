@@ -236,467 +236,458 @@ class UserProfileAdd extends Component {
           onClose={this.props.closePopup}
           createUserProfile={this.createUserProfile}
         />
-        <Container className={`emp-profile add-new-user ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <Row>
-            <Col md="12">
-              <Form>
+        <Container className={`emp-profile ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+        
+          <Form>
+            <Row className="user-add-row">
+              <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
+              </Col>
+              <Col md="3">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="firstName"
+                    id="firstName"
+                    value={firstName}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="First Name"
+                    invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  {this.state.formSubmitted && this.state.formErrors.firstName && (
+                    <FormFeedback className={fontWeight}>
+                      {this.state.formErrors.firstName}
+                    </FormFeedback>
+                  )}
+                </FormGroup>
+              </Col>
+              <Col md="3">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="lastName"
+                    id="lastName"
+                    value={lastName}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Last Name"
+                    invalid={this.state.formSubmitted && (!!this.state.formErrors.lastName || lastName.length < 2)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  {this.state.formSubmitted && this.state.formErrors.lastName && (
+                    <FormFeedback className={fontWeight}>
+                      {this.state.formErrors.lastName}
+                    </FormFeedback>
+                  )}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
+                <Label className={fontColor}>Job Title <span style={{ color: 'red' }}>*</span> </Label>
+              </Col>
+              <Col md={{ size: 6 }}>
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="jobTitle"
+                    id="jobTitle"
+                    value={jobTitle}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Job Title"
+                    invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  {this.state.formSubmitted && this.state.formErrors.jobTitle && (
+                    <FormFeedback className={fontWeight}>
+                      {this.state.formErrors.jobTitle}
+                    </FormFeedback>)}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                <Label className={fontColor}>Email <span style={{ color: 'red' }}>*</span> </Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Email"
+                    invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  {this.state.formSubmitted && this.state.formErrors.email && (
+                    <FormFeedback className={fontWeight}>
+                      {this.state.formErrors.email}
+                    </FormFeedback>)}
+                  <ToggleSwitch
+                    switchType="email"
+                    state={this.state.userProfile.privacySettings?.email}
+                    handleUserProfile={this.handleUserProfile}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                <Label className={fontColor}>Phone <span style={{ color: 'red' }}>*</span> </Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <PhoneInput
+                    country="US"
+                    regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+                    limitMaxLength="true"
+                    value={phoneNumber}
+                    onChange={phone => this.phoneChange(phone)}
+                  />
+                  {phoneNumberEntered && this.state.formSubmitted && (
+                    <div className={`required-user-field ${fontWeight}`}>
+                      {this.state.formErrors.phoneNumber}
+                    </div>
+                  )}
+                  <ToggleSwitch
+                    switchType="phone"
+                    state={this.state.userProfile.privacySettings?.phoneNumber}
+                    handleUserProfile={this.handleUserProfile}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Weekly Committed Hours <span style={{ color: 'red' }}>*</span></Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="number"
+                    name="weeklyCommittedHours"
+                    min={0}
+                    max={168}
+                    id="weeklyCommittedHours"
+                    value={this.state.userProfile.weeklyCommittedHours}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    onKeyDown={event => {
+                      if (event.key === 'Backspace' || event.key === 'Delete') {
+                        this.setState({
+                          userProfile: {
+                            ...this.state.userProfile,
+                            [event.target.id]: "",
+                          },
+                          formValid: {
+                            ...this.state.formValid,
+                            [event.target.id]: false,
+                          },
+                          formErrors: {
+                            ...this.state.formErrors,
+                            weeklyCommittedHours: 'Committed hours can not be empty',
+                          },
+                        });
+                      }
+                    }}
+                    placeholder="Weekly Committed Hours"
+                    invalid={
+                      this.state.formValid.weeklyCommittedHours === undefined
+                        ? false
+                        : !this.state.formValid.weeklyCommittedHours
+                    }
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                  <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                <Label className={fontColor}>Role</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="select"
+                    name="role"
+                    id="role"
+                    defaultValue="Volunteer"
+                    onChange={(e) => this.handleUserProfile(e)}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  >
+                    {this.props.role.roles.map(({ roleName }, index) => {
+                      if (roleName === 'Owner') return;
+                      return (
+                        <option value={roleName} key={index}>
+                          {roleName}
+                        </option>
+                      );
+                    })}
+                    {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
+                  </Input>
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Default Password</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <CommonInput
+                    type="password"
+                    name="defaultPassword"
+                    id="defaultPassword"
+                    value={DEFAULT_PASSWORD}
+                    disabled
+                    readOnly
+                    
+                    className="d-flex justify-start items-start"
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            {(role === 'Administrator' || role === 'Owner') && (
+              <>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
-                  </Col>
-                  <Col md="3">
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="firstName"
-                        id="firstName"
-                        value={firstName}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="First Name"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                      {this.state.formSubmitted && this.state.formErrors.firstName && (
-                        <FormFeedback className={fontWeight}>
-                          {this.state.formErrors.firstName}
-                        </FormFeedback>
-                      )}
-                    </FormGroup>
-                  </Col>
-                  <Col md="3">
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="lastName"
-                        id="lastName"
-                        value={lastName}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Last Name"
-                        invalid={this.state.formSubmitted && (!!this.state.formErrors.lastName || lastName.length < 2)}
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                      {this.state.formSubmitted && this.state.formErrors.lastName && (
-                        <FormFeedback className={fontWeight}>
-                          {this.state.formErrors.lastName}
-                        </FormFeedback>
-                      )}
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Job Title <span style={{ color: 'red' }}>*</span> </Label>
-                  </Col>
-                  <Col md={{ size: 6 }}>
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="jobTitle"
-                        id="jobTitle"
-                        value={jobTitle}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Job Title"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                      {this.state.formSubmitted && this.state.formErrors.jobTitle && (
-                        <FormFeedback className={fontWeight}>
-                          {this.state.formErrors.jobTitle}
-                        </FormFeedback>)}
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Email <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>Actual Email</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Input
-                        type="email"
-                        name="email"
-                        id="email"
-                        value={email}
+                        type="actualEmail"
+                        name="actualEmail"
+                        id="actualEmail"
+                        value={actualEmail}
                         onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Email"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
+                        placeholder="Actual Email"
+                        invalid={!!this.state.formErrors.actualEmail}
                         className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                       />
-                      {this.state.formSubmitted && this.state.formErrors.email && (
-                        <FormFeedback className={fontWeight}>
-                          {this.state.formErrors.email}
-                        </FormFeedback>)}
-                      <ToggleSwitch
-                        switchType="email"
-                        state={this.state.userProfile.privacySettings?.email}
-                        handleUserProfile={this.handleUserProfile}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Phone <span style={{ color: 'red' }}>*</span> </Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <PhoneInput
-                        country="US"
-                        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
-                        limitMaxLength="true"
-                        value={phoneNumber}
-                        onChange={phone => this.phoneChange(phone)}
-                      />
-                      {phoneNumberEntered && this.state.formSubmitted && (
-                        <div className={`required-user-field ${fontWeight}`}>
-                          {this.state.formErrors.phoneNumber}
-                        </div>
-                      )}
-                      <ToggleSwitch
-                        switchType="phone"
-                        state={this.state.userProfile.privacySettings?.phoneNumber}
-                        handleUserProfile={this.handleUserProfile}
-                      />
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Weekly Committed Hours <span style={{ color: 'red' }}>*</span></Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="number"
-                        name="weeklyCommittedHours"
-                        min={0}
-                        max={168}
-                        id="weeklyCommittedHours"
-                        value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        onKeyDown={event => {
-                          if (event.key === 'Backspace' || event.key === 'Delete') {
-                            this.setState({
-                              userProfile: {
-                                ...this.state.userProfile,
-                                [event.target.id]: "",
-                              },
-                              formValid: {
-                                ...this.state.formValid,
-                                [event.target.id]: false,
-                              },
-                              formErrors: {
-                                ...this.state.formErrors,
-                                weeklyCommittedHours: 'Committed hours can not be empty',
-                              },
-                            });
-                          }
-                        }}
-                        placeholder="Weekly Committed Hours"
-                        invalid={
-                          this.state.formValid.weeklyCommittedHours === undefined
-                            ? false
-                            : !this.state.formValid.weeklyCommittedHours
-                        }
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Role</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="select"
-                        name="role"
-                        id="role"
-                        defaultValue="Volunteer"
-                        onChange={(e) => this.handleUserProfile(e)}
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      >
-                        {this.props.role.roles.map(({ roleName }, index) => {
-                          if (roleName === 'Owner') return;
-                          return (
-                            <option value={roleName} key={index}>
-                              {roleName}
-                            </option>
-                          );
-                        })}
-                        {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
-                      </Input>
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Default Password</Label>
+                    <Label className={fontColor}>Actual Password</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <CommonInput
                         type="password"
-                        name="defaultPassword"
-                        id="defaultPassword"
-                        value={DEFAULT_PASSWORD}
-                        disabled
-                        readOnly
-                        
+                        name="actualPassword"
+                        id="actualPassword"
+                        value={actualPassword}
+                        onChange={(e) => this.handleUserProfile(e)}
+                        placeholder="Actual Password"
+                        invalid={!!this.state.formErrors.actualPassword}
                         className="d-flex justify-start items-start"
                       />
                     </FormGroup>
                   </Col>
                 </Row>
-                {(role === 'Administrator' || role === 'Owner') && (
-                  <>
-                    <Row className="user-add-row">
-                      <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Actual Email</Label>
-                      </Col>
-                      <Col md="6">
-                        <FormGroup>
-                          <Input
-                            type="actualEmail"
-                            name="actualEmail"
-                            id="actualEmail"
-                            value={actualEmail}
-                            onChange={(e) => this.handleUserProfile(e)}
-                            placeholder="Actual Email"
-                            invalid={!!this.state.formErrors.actualEmail}
-                            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                          />
-                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row className="user-add-row">
-                      <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Actual Password</Label>
-                      </Col>
-                      <Col md="6">
-                        <FormGroup>
-                          <CommonInput
-                            type="password"
-                            name="actualPassword"
-                            id="actualPassword"
-                            value={actualPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
-                            placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword}
-                            className="d-flex justify-start items-start"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                    <Row className="user-add-row">
-                      <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Confirm Actual Password</Label>
-                      </Col>
-                      <Col md="6">
-                        <FormGroup>
-                          <CommonInput
-                            type="password"
-                            name="actualConfirmedPassword"
-                            id="actualConfirmedPassword"
-                            value={actualConfirmedPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
-                            placeholder="Confirm Actual Password"
-                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
-                            className="d-flex justify-start items-start"
-                          />
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </>
-                )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
-                  </Col>
-                  <Col md="6">
-                    <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Video Call Preference</Label>
+                    <Label className={fontColor}>Confirm Actual Password</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
-                      <Input
-                        type="text"
-                        name="collaborationPreference"
-                        id="collaborationPreference"
-                        value={this.state.userProfile.collaborationPreference}
+                      <CommonInput
+                        type="password"
+                        name="actualConfirmedPassword"
+                        id="actualConfirmedPassword"
+                        value={actualConfirmedPassword}
                         onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Skype, Zoom, etc."
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                        placeholder="Confirm Actual Password"
+                        invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                        className="d-flex justify-start items-start"
                       />
                     </FormGroup>
                   </Col>
                 </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Admin Document</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="googleDoc"
-                        id="googleDoc"
-                        value={this.state.userProfile.googleDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="Google Doc"
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Link to Media Files</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <Input
-                        type="text"
-                        name="dropboxDoc"
-                        id="dropboxDoc"
-                        value={this.state.userProfile.dropboxDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        placeholder="DropBox Folder"
-                        className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Location</Label>
-                  </Col>
-                  <Col md="6">
-                    <Row>
-                      <Col md="6">
-                        <Input id="location" onChange={this.handleLocation} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}/>
-                      </Col>
-                      <Col md="6">
-                        <div className="w-100 pt-1 mb-2 mx-auto">
-                          <Button
-                            color="secondary"
-                            block
-                            size="sm"
-                            onClick={this.onClickGetTimeZone}
-                            style={darkMode ? {} : boxStyle}
-                          >
-                            Get Time Zone
-                          </Button>
-                        </div>
-                      </Col>
-                    </Row>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Time Zone</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <TimeZoneDropDown
-                        filter={this.state.timeZoneFilter}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        selected={'America/Los_Angeles'}
-                        id="timeZone"
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row className="user-add-row">
-                  <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Start Date</Label>
-                  </Col>
-                  <Col md="6">
-                    <FormGroup>
-                      <div className="date-picker-item">
-                        <DatePicker
-                          selected={this.state.userProfile.startDate}
-                          minDate={new Date()}
-                          onChange={date =>
-                            this.setState({
-                              userProfile: {
-                                ...this.state.userProfile,
-                                startDate: date == '' || date == null ? new Date() : date,
-                              },
-                            })
-                          }
-                          className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
-                        />
-                      </div>
-                    </FormGroup>
-                  </Col>
-                </Row>
-              </Form>
-            </Col>
-          </Row>
-          <Row>
-            <Col md="12">
-              <TabContent id="myTabContent" className={darkMode ? 'bg-yinmn-blue border-0' : ''}>
-                <TabPane>
-                  <ProjectsTab
-                    userProjects={this.state.projects}
-                    projectsData={this.props ? this.props.allProjects.projects : []}
-                    onAssignProject={this.onAssignProject}
-                    onDeleteProject={this.onDeleteProject}
-                    isUserAdmin={true}
-                    role={this.props.auth.user.role}
-                    edit
-                    darkMode={darkMode}
+              </>
+            )}
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
+              </Col>
+              <Col md="6">
+                <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Video Call Preference</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="collaborationPreference"
+                    id="collaborationPreference"
+                    value={this.state.userProfile.collaborationPreference}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Skype, Zoom, etc."
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
-                </TabPane>
-                <TabPane>
-                  <TeamsTab
-                    userTeams={this.state.teams}
-                    teamsData={this.props ? this.props.allTeams.allTeamsData : []}
-                    onAssignTeam={this.onAssignTeam}
-                    onAssignTeamCode={this.onAssignTeamCode}
-                    onDeleteTeam={this.onDeleteTeam}
-                    isUserAdmin={true}
-                    role={this.props.auth.user.role}
-                    teamCode={this.state.teamCode}
-                    canEditTeamCode={true}
-                    codeValid={this.state.codeValid}
-                    setCodeValid={this.setCodeValid}
-                    edit
-                    darkMode={darkMode}
-                    inputAutoComplete={this.state.inputAutoComplete}
-                    inputAutoStatus={this.state.inputAutoStatus}
-                    isLoading={this.state.isLoading}
-                    fetchTeamCodeAllUsers={this.fetchTeamCodeAllUsers}
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Admin Document</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="googleDoc"
+                    id="googleDoc"
+                    value={this.state.userProfile.googleDoc}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="Google Doc"
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
-                </TabPane>
-              </TabContent>
-            </Col>
-          </Row>
-          <Row>
-            {/* <Col></Col> */}
-            <Col md="12">
-              <div className="w-50 pt-4 mx-auto">
-                <Button
-                  color="primary"
-                  block
-                  size="lg"
-                  data-testid="create-userProfile"
-                  onClick={() => this.createUserProfile(true)}
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Create
-                </Button>
-              </div>
-            </Col>
-          </Row>
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Link to Media Files</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <Input
+                    type="text"
+                    name="dropboxDoc"
+                    id="dropboxDoc"
+                    value={this.state.userProfile.dropboxDoc}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    placeholder="DropBox Folder"
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
+                <Label className={fontColor}>Location</Label>
+              </Col>
+              <Col md="6">
+                <Row>
+                  <Col lg="6" md="12">
+                    <Input id="location" onChange={this.handleLocation} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}/>
+                  </Col>
+                  <Col lg="6" md="12">
+                    <div className="w-100 pt-1 mb-2 mx-auto">
+                      <Button
+                        color="secondary"
+                        block
+                        size="sm"
+                        onClick={this.onClickGetTimeZone}
+                        style={darkMode ? {} : boxStyle}
+                      >
+                        Get Time Zone
+                      </Button>
+                    </div>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
+                <Label className={fontColor}>Time Zone</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <TimeZoneDropDown
+                    filter={this.state.timeZoneFilter}
+                    onChange={(e) => this.handleUserProfile(e)}
+                    selected={'America/Los_Angeles'}
+                    id="timeZone"
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row className="user-add-row">
+              <Col md={{ size: 4 }} className="text-md-right my-2">
+                <Label className={fontColor}>Start Date</Label>
+              </Col>
+              <Col md="6">
+                <FormGroup>
+                  <div className="date-picker-item">
+                    <DatePicker
+                      selected={this.state.userProfile.startDate}
+                      minDate={new Date()}
+                      onChange={date =>
+                        this.setState({
+                          userProfile: {
+                            ...this.state.userProfile,
+                            startDate: date == '' || date == null ? new Date() : date,
+                          },
+                        })
+                      }
+                      className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+            </Row>
+          </Form>
+       
+          <TabContent id="myTabContent" className={darkMode ? 'bg-yinmn-blue border-0' : ''}>
+            <TabPane>
+              <ProjectsTab
+                userProjects={this.state.projects}
+                projectsData={this.props ? this.props.allProjects.projects : []}
+                onAssignProject={this.onAssignProject}
+                onDeleteProject={this.onDeleteProject}
+                isUserAdmin={true}
+                role={this.props.auth.user.role}
+                edit
+                darkMode={darkMode}
+              />
+            </TabPane>
+            <TabPane>
+              <TeamsTab
+                userTeams={this.state.teams}
+                teamsData={this.props ? this.props.allTeams.allTeamsData : []}
+                onAssignTeam={this.onAssignTeam}
+                onAssignTeamCode={this.onAssignTeamCode}
+                onDeleteTeam={this.onDeleteTeam}
+                isUserAdmin={true}
+                role={this.props.auth.user.role}
+                teamCode={this.state.teamCode}
+                canEditTeamCode={true}
+                codeValid={this.state.codeValid}
+                setCodeValid={this.setCodeValid}
+                edit
+                darkMode={darkMode}
+                inputAutoComplete={this.state.inputAutoComplete}
+                inputAutoStatus={this.state.inputAutoStatus}
+                isLoading={this.state.isLoading}
+                fetchTeamCodeAllUsers={this.fetchTeamCodeAllUsers}
+              />
+            </TabPane>
+          </TabContent>
+      
+          <div className="w-50 pt-4 mx-auto">
+            <Button
+              color="primary"
+              block
+              size="lg"
+              data-testid="create-userProfile"
+              onClick={() => this.createUserProfile(false)}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Create
+            </Button>
+          </div>
+        
         </Container>
       </StickyContainer>
     );
