@@ -758,7 +758,7 @@ const generateAllTimeEntryItems = () => {
 
 return (
   <div
-    className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
+    className={`container-timelog-wrapper mb-5 ${darkMode ? 'bg-oxford-blue' : ''}`}
     style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}
   >
 
@@ -773,7 +773,7 @@ return (
           <br />
         </Container>
       ) : (
-        <Container style={{ textAlign: 'right', minWidth: '100%' }}>
+        <Container style={{ textAlign: 'right'}}>
           {props.isDashboard ? null : (
             <EditableInfoModal
               areaName="DashboardTimelog"

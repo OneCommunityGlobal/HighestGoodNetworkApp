@@ -185,17 +185,6 @@ const TeamMemberTask = React.memo(
       setSelectedTaskForChangeLog(null);
     };
 
-    /** 
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    };
-    */
-
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
     };
@@ -383,13 +372,15 @@ const TeamMemberTask = React.memo(
                               }}
                             >{`${user.name}`}</Link>
 
-                            {user.role !== 'Volunteer' && (
+                            {user.role !== 'Volunteer' ? (
                               <div
                                 className="user-role"
                                 style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                               >
                                 {user.role}
                               </div>
+                            ) : (
+                              <div></div>
                             )}
 
                             {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
@@ -575,16 +566,7 @@ const TeamMemberTask = React.memo(
                                             task.hoursLogged.toFixed(2),
                                           )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                         </span>
-                                        {canSeeFollowUpCheckButton && (
-                                          <>
-                                            <FollowupCheckButton
-                                              moseoverText={followUpMouseoverText(task)}
-                                              user={user}
-                                              task={task}
-                                            />
-                                            <FollowUpInfoModal />
-                                          </>
-                                        )}
+
                                         <Progress
                                           color={getProgressColor(
                                             task.hoursLogged,
@@ -598,6 +580,16 @@ const TeamMemberTask = React.memo(
                                           className={styles['team-task-progress-bar']}
                                         />
                                       </div>
+                                      {canSeeFollowUpCheckButton && (
+                                        <div className="my-2">
+                                          <FollowupCheckButton
+                                            moseoverText={followUpMouseoverText(task)}
+                                            user={user}
+                                            task={task}
+                                          />
+                                          <FollowUpInfoModal />
+                                        </div>
+                                      )}
                                     </td>
                                   )}
                                 </tr>
