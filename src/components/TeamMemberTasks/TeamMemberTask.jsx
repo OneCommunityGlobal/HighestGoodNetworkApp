@@ -591,25 +591,6 @@ const TeamMemberTask = React.memo(
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
-                                      {isAllowedToSeeDeadlineCount && (
-                                        <span
-                                          className={styles['deadlineCount']}
-                                          title="Click to view task change history"
-                                          data-testid={`deadline-${task.taskName}`}
-                                          onClick={() => handleOpenTaskChangeLog(task)}
-                                          onKeyDown={e => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                              e.preventDefault();
-                                              handleOpenTaskChangeLog(task);
-                                            }
-                                          }}
-                                          role="button"
-                                          tabIndex={0}
-                                          style={{ cursor: 'pointer' }}
-                                        >
-                                          {taskCounts[task._id] ?? task.deadlineCount ?? 0}
-                                        </span>
-                                      )}
                                       <div className={styles['team-task-progress-container']}>
                                         <span
                                           data-testid={`times-${task.taskName}`}
@@ -625,14 +606,38 @@ const TeamMemberTask = React.memo(
                                         </span>
                                         {canSeeFollowUpCheckButton && (
                                           <>
-                                            <FollowupCheckButton
-                                              moseoverText={followUpMouseoverText(task)}
-                                              user={user}
-                                              task={task}
-                                            />
+                                            {/* Wrap checkbox + badge so we can pin the badge to the checkbox */}
+                                            <span className={styles.followupWrap}>
+                                              <FollowupCheckButton
+                                                moseoverText={followUpMouseoverText(task)}
+                                                user={user}
+                                                task={task}
+                                              />
+
+                                              {isAllowedToSeeDeadlineCount && (
+                                                <span
+                                                  className={styles.deadlinePill}
+                                                  title="Click to view task change history"
+                                                  data-testid={`deadline-${task.taskName}`}
+                                                  onClick={() => handleOpenTaskChangeLog(task)}
+                                                  onKeyDown={e => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                      e.preventDefault();
+                                                      handleOpenTaskChangeLog(task);
+                                                    }
+                                                  }}
+                                                  role="button"
+                                                  tabIndex={0}
+                                                >
+                                                  {taskCounts[task._id] ?? task.deadlineCount ?? 0}
+                                                </span>
+                                              )}
+                                            </span>
+
                                             <FollowUpInfoModal />
                                           </>
                                         )}
+
                                         <Progress
                                           color={getProgressColor(
                                             task.hoursLogged,
