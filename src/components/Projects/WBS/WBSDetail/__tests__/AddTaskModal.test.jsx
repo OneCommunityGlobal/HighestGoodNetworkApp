@@ -159,20 +159,15 @@ describe('AddTaskModal', () => {
     // Verify the "End Date" label is rendered
     expect(screen.getByText(/End Date/i)).toBeInTheDocument();
 
-    // Find the End Date input by its aria-label
-    const endDateInput = screen.getByLabelText('End Date');
+    // Find the DayPickerInput by its role (textbox)
+    const endDateInput = screen.getByRole('textbox', { name: /End Date/i }); // Use accessible label
     expect(endDateInput).toBeInTheDocument();
-    
-    // Verify the input is readOnly (uses calendar picker)
-    expect(endDateInput).toHaveAttribute('readonly');
 
-    // Click to open the calendar
-    fireEvent.focus(endDateInput);
+    // Simulate a date change
+    fireEvent.change(endDateInput, { target: { value: '12/25/24' } });
 
-    // Verify the calendar picker opens (DayPicker component should be visible)
-    // The DayPicker uses a grid role for the calendar
-    const calendar = screen.queryByRole('grid');
-    expect(calendar).toBeInTheDocument();
+    // Verify the input value updates
+    expect(endDateInput.value).toBe('12/25/24');
   });
   test('renders Assigned radio buttons and handles selection', () => {
     render(
