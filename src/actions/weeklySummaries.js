@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../utils/URL';
 import { getUserProfileActionCreator } from './userProfile';
 
 /**
@@ -112,3 +112,18 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
     }
   };
 };
+
+/**
+ *  update the userprofile with summary submission time
+ * @param {String} userId 
+ * @param {Number} activeTab 
+ */
+export const updateWeeklySummarySubmissionDate = async(userId,activeTab)=>{
+    const url = ENDPOINTS.USER_PROFILE_WEEKLYSUMMARY_SUBMISSION_DATE(userId);
+    try {
+      const response = await axios.put(url,{activeTab});
+      return response.status;
+    } catch (error) {
+      return error.response?.status || 500;
+    }
+}

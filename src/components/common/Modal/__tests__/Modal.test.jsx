@@ -2,7 +2,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import '@testing-library/jest-dom';
 import ModalExample from '../Modal';
 
@@ -25,7 +25,7 @@ describe('ModalExample Component', () => {
   });
 
   it('closes when close button is clicked', () => {
-    const closeModalMock = vi.fn();
+    const closeModalMock = jest.fn();
     render(
       <Provider store={store}>
         <ModalExample
@@ -80,7 +80,7 @@ describe('ModalExample Component', () => {
   });
 
   it('calls setInactiveModal when "Set inactive" button is clicked', () => {
-    const setInactiveModalMock = vi.fn();
+    const setInactiveModalMock = jest.fn();
     render(
       <Provider store={store}>
         <ModalExample
@@ -98,7 +98,7 @@ describe('ModalExample Component', () => {
   });
 
   it('calls confirmModal when confirm button is clicked', () => {
-    const confirmModalMock = vi.fn();
+    const confirmModalMock = jest.fn();
     render(
       <Provider store={store}>
         <ModalExample

@@ -29,7 +29,7 @@ import {
   deleteTimeOffRequestThunk,
 } from '../../actions/timeOffRequestAction';
 
-const LogTimeOffPopUpComponent = (props) => {
+const LogTimeOffPopUp = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -577,8 +577,5 @@ const LogTimeOffPopUpComponent = (props) => {
       </ModalFooter>
     </Modal>
   );
-};
-
-const LogTimeOffPopUp = React.memo(LogTimeOffPopUpComponent);
-LogTimeOffPopUp.displayName = 'LogTimeOffPopUp';
+});
 export default LogTimeOffPopUp;

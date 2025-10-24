@@ -1,17 +1,17 @@
 import axios from 'axios';
 import { getProjectDetail, setProjectDetail } from '../project';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 import { GET_PROJECT_BY_ID } from '../../constants/project';
 
-vi.mock('axios');
+jest.mock('axios');
 
 describe('getProjectDetail action creator', () => {
-  const mockDispatch = vi.fn();
+  const mockDispatch = jest.fn();
   const projectId = '12345';
   const mockProjectData = { id: projectId, name: 'Test Project' };
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('should dispatch setProjectDetail when API call is successful', async () => {

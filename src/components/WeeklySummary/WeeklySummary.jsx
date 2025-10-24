@@ -48,6 +48,7 @@ import DueDateTime from './DueDateTime';
 import {
   getWeeklySummaries as getUserWeeklySummaries,
   updateWeeklySummaries,
+  updateWeeklySummarySubmissionDate,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
 // import WriteItForMeModal from './WriteForMeModal';
@@ -646,16 +647,18 @@ export class WeeklySummary extends Component {
   mainSaveHandler = async (closeAfterSave, isMove = false) => {
     const toastIdOnSave = 'toast-on-save';
     const errors = this.validate();
-
     this.setState({ errors: errors });
     if (Object.keys(errors).length > 0) {
       this.setState({ moveConfirm: false });
       return false;
     }
-
     const result = await this.handleChangeInSummary(isMove);
-
+    const { displayUserId, currentUser } = this.props;
     if (result === 200 || result?.status === 200) {
+      updateWeeklySummarySubmissionDate(
+        displayUserId || currentUser.userid,
+        Number(this.state.activeTab),
+      );
       await this.handleSaveSuccess(toastIdOnSave);
       if (closeAfterSave) {
         this.handleClose();

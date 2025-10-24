@@ -6,12 +6,10 @@ import './VolunteerStatusPieChart.css';
 
 Chart.register(ArcElement);
 
-function VolunteerStatusPieChart({
-  data: { totalVolunteers, percentageChange, data: volunteerData },
-  comparisonType,
-}) {
-  // Debug: Log the data used for the chart
-  // console.log('VolunteerStatusPieChart data:', { volunteerData, totalVolunteers });
+function VolunteerStatusPieChart(props) {
+  const { totalVolunteers, percentageChange, data: volunteerData } = props.data;
+  const { comparisonType } = props;
+
   const chartData = {
     labels: volunteerData.map(item => item.label),
     datasets: [
@@ -26,19 +24,15 @@ function VolunteerStatusPieChart({
   const options = {
     plugins: {
       datalabels: {
-        color: '#000',
+        color: '#fff',
         font: {
-          size: 20,
+          size: 16,
           weight: 'bolder',
-          lineHeight: 1.8,
         },
-        formatter: function(value, context) {
+        formatter: value => {
           const percentage = ((value / totalVolunteers) * 100).toFixed(0);
-          // Show value and percent as two lines for clarity
-          return [`${value}`, `(${percentage}%)`];
+          return `${value}\n(${percentage}%)`;
         },
-        display: true,
-        offset: 0,
         align: 'center',
         anchor: 'center',
       },

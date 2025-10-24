@@ -88,21 +88,12 @@ function ResourceMonitoring() {
               <div style={{ textAlign: 'left' }}>
                 <div className="resource-title" style={{ fontSize: '1rem', fontWeight: '500' }}>
                   {resource.title}
-                  <button
-                    type="button"
-                    aria-label={`Toggle ${resource.title}`}
+                  <span
+                    style={{ fontSize: '0.8rem', cursor: 'pointer', marginLeft: '5px' }}
                     onClick={() => handleArrowClick(index)}
-                    style={{
-                      fontSize: '0.8rem',
-                      cursor: 'pointer',
-                      background: 'none',
-                      border: 'none',
-                      marginLeft: '5px',
-                      padding: 0,
-                    }}
                   >
                     ↗
-                  </button>
+                  </span>
                 </div>
                 <div
                   className="resource-value"

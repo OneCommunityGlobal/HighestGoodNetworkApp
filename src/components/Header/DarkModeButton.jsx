@@ -56,18 +56,10 @@ function DarkModeButton() {
         {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       </Tooltip>
       <div
-        role="button"
-        tabIndex={0}
+        type="button"
         className={`dark-mode-button ${darkMode ? 'dark-mode' : ''}`}
         onClick={toggleDarkMode}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            toggleDarkMode();
-          }
-        }}
         id="darkModeTooltip"
-        style={{ cursor: 'pointer', border: 'none', background: 'none', padding: 0 }}
       >
         {darkMode ? (
           <div className="darkModeSliderContainer">

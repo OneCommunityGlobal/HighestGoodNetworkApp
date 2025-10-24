@@ -1,21 +1,19 @@
-
-
 import { getLeaderboardData, getOrgData } from '../leaderBoardData';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 import httpService from '../../services/httpService';
 import {
   getOrgData as getOrgDataActionCreator,
   getLeaderBoardData as getLeaderBoardDataActionCreator,
 } from '../../constants/leaderBoardData';
 
-vi.mock('../../services/httpService');
+jest.mock('../../services/httpService');
 
 describe('leaderBoardActions', () => {
   let dispatch;
 
   beforeEach(() => {
-    dispatch = vi.fn(); // Mock the dispatch function
-    vi.clearAllMocks(); // Clear mocks before each test
+    dispatch = jest.fn(); // Mock the dispatch function
+    jest.clearAllMocks(); // Clear mocks before each test
   });
 
   describe('getLeaderboardData', () => {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../utils/URL';
 
 import {
   RECEIVE_ALL_USER_TEAMS,
@@ -183,14 +183,10 @@ export const updateTeam = (teamName, teamId, isActive, teamCode) => {
   return async dispatch => {
     try {
       const updateTeamResponse = await axios.put(url, requestData);
-      if (updateTeamResponse.status === 200) {
-        // Use the actual response data from the backend
-        const updatedTeam = updateTeamResponse.data;
-        dispatch(updateTeamAction(teamId, updatedTeam.isActive, updatedTeam.teamName, updatedTeam.teamCode));
-      }
+      dispatch(updateTeamAction(teamId, isActive, teamName, teamCode));
       return updateTeamResponse;
     } catch (error) {
-      return error.response?.data?.error || error.message;
+      return error.response.data.error;
     }
   };
 };

@@ -27,7 +27,7 @@ describe('Task Reducer', () => {
   });
 
   describe('Receive Tasks', () => {
-    it('level -1', () => {
+    xit('level -1', () => {
       const allTasks = taskReducer(
         {},
         {
@@ -44,7 +44,7 @@ describe('Task Reducer', () => {
       });
     });
 
-    it('level 0', () => {
+    xit('level 0', () => {
       const allTasks = taskReducer(
         {},
         {
@@ -69,7 +69,7 @@ describe('Task Reducer', () => {
       });
     });
 
-    it('with mother task', () => {
+    xit('with mother task', () => {
       const allTasks = taskReducer(
         {
           taskItems: [

@@ -3,10 +3,9 @@ import thunk from 'redux-thunk';
 import axios from 'axios';
 import * as actions from '../../constants/allUsersTimeEntries';
 import { getAllUsersTimeEntries } from '../allUsersTimeEntries';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 
-
-vi.mock('axios');
+jest.mock('axios');
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -20,7 +19,7 @@ describe('getAllUsersTimeEntries actions', () => {
 
   beforeEach(() => {
     store = mockStore({});
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('dispatches FETCH_ALL_USERS_TIME_ENTRIES_SUCCESS on successful API call', async () => {

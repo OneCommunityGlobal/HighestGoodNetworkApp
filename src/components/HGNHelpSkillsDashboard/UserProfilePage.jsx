@@ -24,9 +24,8 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 import styles from './style/UserCard.module.css';
-import pageStyles from './style/UserProfilePage.module.css';
 
 // Sample data for skills
 const mockSkillsData = {
@@ -202,32 +201,67 @@ const mockSkillsData = {
 function CustomTooltip({ active, payload }) {
   if (active && payload && payload.length) {
     return (
-      <div className={pageStyles.customTooltip}>
-        <p className={pageStyles.tooltipTitle}>{payload[0].payload.name}</p>
-        <p className={pageStyles.tooltipScore}>
+      <div
+        className="custom-tooltip"
+        style={{
+          backgroundColor: '#ffffff',
+          border: '1px solid #ddd',
+          borderRadius: '8px',
+          padding: '6px 8px',
+          fontSize: '12px',
+          boxShadow: '0px 0px 6px rgba(0,0,0,0.1)',
+          maxWidth: '180px',
+          whiteSpace: 'normal',
+          wordWrap: 'break-word',
+        }}
+      >
+        <p style={{ margin: '0 0 4px 0', fontWeight: 'bold' }}>{payload[0].payload.name}</p>
+        <p style={{ margin: '0 0 4px 0' }}>
           Score:{' '}
-          <span className={payload[0].value < 5 ? pageStyles.scoreLow : pageStyles.scoreHigh}>
+          <span
+            style={{
+              color: payload[0].value < 5 ? '#dc3545' : '#28a745',
+              fontWeight: 'bold',
+            }}
+          >
             {payload[0].value}
           </span>
         </p>
-        <p className={pageStyles.tooltipQuestion}>{payload[0].payload.question}</p>
+        <p style={{ margin: 0 }}>{payload[0].payload.question}</p>
       </div>
     );
   }
+
   return null;
 }
 
 function SkillItem({ item }) {
   return (
-    <div id={`tooltip-${item.id}`} className={pageStyles.skillItem}>
+    <div
+      id={`tooltip-${item.id}`}
+      className="score-item"
+      style={{
+        position: 'relative',
+        padding: '15px 10px',
+        height: '100%',
+        textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       <div
-        className={`${pageStyles.scoreValue} ${
-          item.score < 5 ? pageStyles.scoreLow : pageStyles.scoreHigh
-        }`}
+        style={{
+          fontSize: '24px',
+          fontWeight: 'bold',
+          color: item.score < 5 ? '#dc3545' : '#28a745',
+          marginBottom: '8px',
+        }}
       >
         {item.score}
       </div>
-      <div className={pageStyles.scoreName}>{item.name}</div>
+      <div style={{ fontSize: '14px', fontWeight: 'bold' }}>{item.name}</div>
       <UncontrolledTooltip placement="top" target={`tooltip-${item.id}`}>
         {item.question}
       </UncontrolledTooltip>
@@ -284,12 +318,19 @@ function SkillsTabbedSection({ skillsData }) {
 
   return (
     <Card>
-      <CardBody className={pageStyles.cardBody}>
+      <CardBody style={{ padding: '1rem' }}>
         <h5 className="mb-3">Skills</h5>
         <Row style={{ minHeight: '400px' }}>
-          {/* Tabs */}
-          <Col md={2} className={pageStyles.tabColumn}>
-            <Nav vertical pills className={pageStyles.tabNav}>
+          {/* Tabs column */}
+          <Col
+            md={2}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+            }}
+          >
+            <Nav vertical pills>
               {[
                 'Dashboard',
                 'Frontend',
@@ -297,12 +338,19 @@ function SkillsTabbedSection({ skillsData }) {
                 'Deployment & DevOps',
                 'Software Practices',
               ].map(tab => (
-                <NavItem key={tab} className={pageStyles.navItem}>
+                <NavItem key={tab} style={{ marginBottom: '15px' }}>
                   <NavLink
-                    className={`${pageStyles.tabLink} ${
-                      activeTab === tab ? pageStyles.tabLinkActive : ''
-                    }`}
+                    className={classnames({ active: activeTab === tab })}
                     onClick={() => toggle(tab)}
+                    style={{
+                      backgroundColor: activeTab === tab ? '#e3f2fd' : '#f1f1f1',
+                      color: activeTab === tab ? '#007bff' : '#555',
+                      fontWeight: '500',
+                      textAlign: 'center',
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      padding: '10px',
+                    }}
                   >
                     {tab}
                   </NavLink>
@@ -311,11 +359,11 @@ function SkillsTabbedSection({ skillsData }) {
             </Nav>
           </Col>
 
-          {/* Content */}
-          <Col md={10} className={pageStyles.tabContentCol}>
+          {/* Content column */}
+          <Col md={10} style={{ overflowY: 'auto' }}>
             <TabContent activeTab={activeTab}>
               <TabPane tabId="Dashboard">
-                <div className={pageStyles.chartWrapper}>{renderRadarChart()}</div>
+                <div style={{ height: '350px', overflow: 'hidden' }}>{renderRadarChart()}</div>
               </TabPane>
               <TabPane tabId="Frontend">{renderScoreItems(skillsData.Frontend)}</TabPane>
               <TabPane tabId="Backend">{renderScoreItems(skillsData.Backend)}</TabPane>
@@ -362,9 +410,9 @@ function UserProfilePage() {
   // if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className={pageStyles.userProfilePage}>
+    <div className="user-profile-page">
       {/* This is a placeholder for the other parts of the user profile */}
-      <div className={pageStyles.userInfoSection}>
+      <div className="user-info-section mb-4">
         <div>User Profile Page Placeholder</div>
       </div>
 

@@ -1,27 +1,27 @@
-import React, { Fragment, useEffect, useState, useCallback } from 'react';
+import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { fetchTeamMembersTask, deleteTaskNotification } from '~/actions/task';
-import { useDispatch, useSelector, connect } from 'react-redux';
-import { MultiSelect } from 'react-multi-select-component';
-import SkeletonLoading from '../common/SkeletonLoading';
-import { TaskDifferenceModal } from './components/TaskDifferenceModal';
-import styles from './style.module.css';
-import TaskCompletedModal from './components/TaskCompletedModal';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import axios from 'axios';
 import moment from 'moment';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useDispatch, useSelector, connect } from 'react-redux';
+import { toast } from 'react-toastify';
+import { MultiSelect } from 'react-multi-select-component';
+import { FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { ENDPOINTS } from '../../utils/URL';
+import { fetchTeamMembersTask, deleteTaskNotification } from '../../actions/task';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import SkeletonLoading from '../common/SkeletonLoading';
+import { TaskDifferenceModal } from './components/TaskDifferenceModal';
+import './style.css';
+import TaskCompletedModal from './components/TaskCompletedModal';
 import TeamMemberTask from './TeamMemberTask';
 import TimeEntry from '../Timelog/TimeEntry';
-import { hrsFilterBtnColorMap } from '~/constants/colors';
-import { toast } from 'react-toastify';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
 import { fetchTeamMembersTaskSuccess } from './actions';
-
-import { ENDPOINTS } from '~/utils/URL';
-import { FaCalendarAlt, FaClock } from 'react-icons/fa';
+import { hrsFilterBtnColorMap } from '../../constants/colors';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
@@ -37,17 +37,17 @@ const TeamMemberTasks = React.memo(props => {
 
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
-  const [finishLoading, setFinishLoading] = useState(false);
-  const [clickedToShowModal, setClickedToShowModal] = useState(false);
   const [currentTask, setCurrentTask] = useState();
   const [currentUserId, setCurrentUserId] = useState('');
   const [tasks, setTasks] = useState();
   const [updatedTasks, setUpdatedTasks] = useState([]);
   const [showMarkAsDoneModal, setMarkAsDoneModal] = useState(false);
+  const [clickedToShowModal, setClickedToShowModal] = useState(false);
   const [teamList, setTeamList] = useState([]);
   const [timeEntriesList, setTimeEntriesList] = useState([]);
   const [selectedPeriod, setSelectedPeriod] = useState('');
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
+  const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
@@ -61,6 +61,7 @@ const TeamMemberTasks = React.memo(props => {
 
   const [teamRoles, setTeamRoles] = useState();
   const [usersSelectedTeam] = useState([]);
+  const [, setLoading] = useState(false);
   const [, setInnerWidth] = useState();
   const [controlUseEfffect] = useState(false);
 
@@ -85,6 +86,7 @@ const TeamMemberTasks = React.memo(props => {
     const url = ENDPOINTS.TASK_UPDATE(taskInfo.taskId);
     try {
       await axios.put(url, taskInfo.updatedTask);
+      toast.success('Task is successfully marked as done.');
     } catch (error) {
       toast.error('Failed to update task');
     }
@@ -282,6 +284,7 @@ const TeamMemberTasks = React.memo(props => {
   const renderTeamsList = async team => {
     if (!team) {
       if (usersWithTasks.length > 0) {
+        setLoading(true);
         // sort all users by their name
 
         usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
@@ -294,7 +297,11 @@ const TeamMemberTasks = React.memo(props => {
           // conditional variable for moving current user up front.
           usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
         }
-        setTeamList([...usersWithTasks]);
+
+        setTimeout(() => {
+          setLoading(false);
+          setTeamList([...usersWithTasks]);
+        }, 3000);
       }
     } else {
       if (selectedTeamNames.length > 0 || selectedCodes.length > 0 || selectedColors.length > 0) {
@@ -302,8 +309,11 @@ const TeamMemberTasks = React.memo(props => {
         setSelectedCodes([]);
         setSelectedColors([]);
       }
+
+      setLoading(true);
       const usersTask = usersWithTasks.filter(item => filteredUserTeamIds.includes(item.personId));
       setTeamList(usersTask);
+      setLoading(false);
     }
   };
 
@@ -414,6 +424,7 @@ const TeamMemberTasks = React.memo(props => {
   useEffect(() => {
     // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
     const initialFetching = async () => {
+      dispatch(fetchTeamMembersTaskSuccess({ usersWithTasks: [] }));
       await dispatch(fetchTeamMembersTask(displayUser._id));
     };
     initialFetching();
@@ -426,7 +437,7 @@ const TeamMemberTasks = React.memo(props => {
   }, [currentUserId]);
 
   useEffect(() => {
-    if (usersWithTasks.length > 0) {
+    if (!isLoading) {
       renderTeamsList(
         !controlUseEfffect || usersSelectedTeam.length === 0 ? null : usersSelectedTeam,
       );
@@ -497,12 +508,11 @@ const TeamMemberTasks = React.memo(props => {
   };
   return (
     <div
-      data-testid="team-member-tasks-container"
-      className={`container ${styles['team-member-tasks']} ${
+      className={`container team-member-tasks ${
         darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
       }`}
     >
-      <header className={styles['header-box']}>
+      <header className="header-box">
         <section className="d-flex flex-column">
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
 
@@ -510,13 +520,10 @@ const TeamMemberTasks = React.memo(props => {
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
-            <div className={styles['hours-btn-div']}>
+            <div className="hours-btn-div">
               <button
                 type="button"
-                data-testid="show-time-off-btn"
-                className={`m-1 ${styles['show-time-off-btn']} ${
-                  darkMode ? 'box-shadow-dark' : ''
-                }`}
+                className={`m-1 show-time-off-btn${darkMode ? ' box-shadow-dark' : ''}`}
                 style={{
                   backgroundColor: showWhoHasTimeOff ? '#17a2b8' : 'white',
                 }}
@@ -524,7 +531,6 @@ const TeamMemberTasks = React.memo(props => {
                 aria-label="Toggle time off view"
               >
                 <FaCalendarAlt
-                  data-testid="time-off-calendar-icon"
                   className="show-time-off-calender-svg"
                   fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
                   size="20px"
@@ -533,7 +539,6 @@ const TeamMemberTasks = React.memo(props => {
                   size="12px"
                   fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
                   className="show-time-off-icon"
-                  data-testid="show-time-off-icon"
                 />
               </button>
 
@@ -541,7 +546,7 @@ const TeamMemberTasks = React.memo(props => {
                 <button
                   key={days}
                   type="button"
-                  className={`m-1 responsive-btn-size ${styles['circle-border']} ${
+                  className={`m-1 responsive-btn-size circle-border ${
                     darkMode ? 'box-shadow-dark' : 'box-shadow-light'
                   }`}
                   title={`Timelogs submitted in the past ${days} days`}
@@ -564,7 +569,7 @@ const TeamMemberTasks = React.memo(props => {
                 </button>
               ))}
               <select
-                className={`m-1 mobile-view-select ${styles['circle-border']} ${
+                className={`m-1 mobile-view-select circle-border ${
                   darkMode ? 'box-shadow-dark' : ''
                 }`}
                 onChange={e => selectPeriod(e.target.value)}
@@ -606,10 +611,7 @@ const TeamMemberTasks = React.memo(props => {
             </div>
           </section>
         ) : (
-          <SkeletonLoading
-            template="TimelogFilter"
-            data-testid="skeleton-loading-team-member-tasks-header"
-          />
+          <SkeletonLoading template="TimelogFilter" />
         )}
       </header>
       <TaskDifferenceModal
@@ -679,7 +681,7 @@ const TeamMemberTasks = React.memo(props => {
           </Col>
         </Row>
       )}
-      <div className={styles['task_table-container']}>
+      <div className="task_table-container">
         <Table
           className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}
         >
@@ -690,31 +692,26 @@ const TeamMemberTasks = React.memo(props => {
             <tr>
               <th
                 colSpan={3}
-                className={`${styles['team-member-tasks-headers']} ${
-                  darkMode ? 'bg-space-cadet' : ''
-                }`}
+                className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
               >
                 <Table
                   borderless
-                  data-testid="team-member-tasks-subtable"
-                  className={`${styles['team-member-tasks-subtable']} ${
-                    darkMode ? 'text-light' : ''
-                  }`}
+                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
                 >
                   <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
                       <th className={darkMode ? 'bg-space-cadet' : ''}>User Status</th>
                       <th
-                        className={`${styles['team-member-tasks-headers']} ${
-                          styles['team-member-tasks-user-name']
-                        } ${darkMode ? 'bg-space-cadet' : ''}`}
+                        className={`team-member-tasks-headers team-member-tasks-user-name ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
                       >
                         Team Member
                       </th>
                       <th
-                        className={`${styles['team-member-tasks-headers']} team-clocks ${
-                          styles['team-clocks-header']
-                        } ${darkMode ? 'bg-space-cadet' : ''}`}
+                        className={`team-member-tasks-headers team-clocks team-clocks-header ${
+                          darkMode ? 'bg-space-cadet' : ''
+                        }`}
                       >
                         <FontAwesomeIcon
                           style={{ color: darkMode ? 'lightgray' : '' }}
@@ -762,11 +759,8 @@ const TeamMemberTasks = React.memo(props => {
             </tr>
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-            {teamList.length === 0 ? (
-              <SkeletonLoading
-                template="TeamMemberTasks"
-                data-testid="skeleton-loading-team-member-tasks-row"
-              />
+            {isLoading && usersWithTasks.length === 0 ? (
+              <SkeletonLoading template="TeamMemberTasks" />
             ) : (
               teamList
                 .filter(user => filterByUserFeatures(user))
@@ -825,7 +819,7 @@ const TeamMemberTasks = React.memo(props => {
                         timeEntriesList
                           .filter(timeEntry => timeEntry.personId === user.personId)
                           .map(timeEntry => (
-                            <tr className="table-row" data-testid="table-row" key={timeEntry._id}>
+                            <tr className="table-row" key={timeEntry._id}>
                               <td colSpan={6} style={{ padding: 0 }}>
                                 <TimeEntry
                                   from="TaskTab"
@@ -856,7 +850,5 @@ const mapStateToProps = state => ({
   usersWithTimeEntries: state.teamMemberTasks.usersWithTimeEntries,
   darkMode: state.theme.darkMode,
 });
-
-TeamMemberTasks.displayName = 'TeamMemberTasks';
 
 export default connect(mapStateToProps, null)(TeamMemberTasks);

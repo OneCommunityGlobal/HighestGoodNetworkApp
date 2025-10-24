@@ -1,5 +1,6 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Row, Col, Button } from 'reactstrap';
-import { useStore, useDispatch } from 'react-redux';
+import { useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import {
   resourcesToString,
@@ -17,7 +18,8 @@ import { rejectTaskEditSuggestionHTTP } from '../service';
 import { rejectTaskEditSuggestionSuccess } from '../actions';
 import { fetchTaskEditSuggestions } from '../thunks';
 
-export default function TaskEditSuggestionsModal({
+// eslint-disable-next-line import/prefer-default-export
+export function TaskEditSuggestionsModal({
   isTaskEditSuggestionModalOpen,
   taskEditSuggestion,
   handleToggleTaskEditSuggestionModal,

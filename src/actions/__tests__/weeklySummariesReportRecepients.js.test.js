@@ -1,8 +1,6 @@
 import axios from 'axios'; // Import axios for making HTTP requests
 import configureMockStore from 'redux-mock-store'; // Import redux-mock-store for creating a mock store
 import thunk from 'redux-thunk'; // Import redux-thunk for handling asynchronous actions
-
-
 import * as actions from '../../constants/weeklySummariesReport'; // Import the action type constants
 import {
   authorizeWeeklySummaries,
@@ -14,14 +12,14 @@ import {
   deleteSummaryRecipient,
   getSummaryRecipients,
 } from '../weeklySummariesReportRecepients'; // Import the action creators
-import { ENDPOINTS } from '~/utils/URL'; // Import the endpoints
+import { ENDPOINTS } from '../../utils/URL'; // Import the endpoints
 
 // Mock axios to control its behavior in tests
-vi.mock('axios');
+jest.mock('axios');
 
 // Mock console.log to suppress log messages during testing
 beforeAll(() => {
-  vi.spyOn(console, 'log').mockImplementation(() => { });
+  jest.spyOn(console, 'log').mockImplementation(() => {});
 });
 
 // Define middlewares to be used in the mock store

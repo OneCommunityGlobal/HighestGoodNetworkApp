@@ -1,7 +1,8 @@
-import moment from 'moment';
+import * as moment from 'moment';
 import { Container, FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { postConsumableUpdate } from '../../../actions/bmdashboard/consumableActions';
 import styles from './UpdateConsumable.module.css';

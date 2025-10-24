@@ -1,22 +1,17 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Button, Col, Tooltip , NavItem, UncontrolledTooltip } from 'reactstrap';
+import { Button, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
-// import styles from './UserProjectsTable.css';
-import { boxStyle, boxStyleDark } from '~/styles';
-import { useLocation , Link } from 'react-router-dom';
+import styles from './UserProjectsTable.css';
+import { boxStyle, boxStyleDark } from 'styles';
+import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { NavItem, UncontrolledTooltip } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
-
-// eslint-disable-next-line react/display-name
 const UserProjectsTable = React.memo(props => {
   const {darkMode} = props;
-  const ensureArray = (value, fallback = []) => {
-    if (Array.isArray(value)) return value;
-    if (value === null || value === undefined) return fallback;
-    return fallback;
-  };
 
   const [tooltipOpen, setTooltip] = useState(false);
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
@@ -25,8 +20,8 @@ const UserProjectsTable = React.memo(props => {
   const canDeleteTasks = props.hasPermission('deleteTask')
   const canPostTask = props.hasPermission('postTask');
 
-  const userProjects = ensureArray(props.userProjectsById);
-  const userTasks = ensureArray(props.userTasks);
+  const userProjects = props.userProjectsById;
+  const userTasks = props.userTasks;
   const [actualType, setActualType] = useState('active');
 
   const location = useLocation();
@@ -45,7 +40,7 @@ const UserProjectsTable = React.memo(props => {
   }, [userTasks]);
 
   const tasksByProject = userProjects?.map(project => {
-    const tasks = sortedTasksByNumber?.filter(task => task.projectId?.includes(project.projectId));
+    const tasks = sortedTasksByNumber?.filter(task => task.projectId.includes(project._id));
     return { ...project, tasks };
   });
 
@@ -54,7 +49,7 @@ const UserProjectsTable = React.memo(props => {
       if (sortedTasksByNumber) {
         return userProjects?.map(project => {
           const filteredTasks = sortedTasksByNumber.filter(task => {
-            const isTaskForProject = task.projectId?.includes(project.projectId);
+            const isTaskForProject = task.projectId.includes(project._id);
             const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
     
             if (isTaskForProject) {
@@ -103,7 +98,7 @@ const UserProjectsTable = React.memo(props => {
 
   //For updating tasks visually but not saving until user clicks save changes
   const deleteTasksTemporarily = (project_id) => {
-    setFilteredTasks(filteredTasks?.filter(project => project.projectId !== project_id ));
+    setFilteredTasks(filteredTasks?.filter(project => project._id !== project_id ));
   }
 
   useEffect(()=>{
@@ -179,14 +174,14 @@ const UserProjectsTable = React.memo(props => {
               <tbody>
                 {props.userProjectsById.length > 0 ? (
                   tasksByProject?.map((project, index) => (
-                    <tr key={project.projectId} className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <tr key={project._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
                       <td className="taskName">{project.projectName}</td>
                       {props.role && canPostTask && (
                         <td className='table-cell'>
-                          <Link to={`/project/wbs/${project.projectId}`}>
+                          <Link to={`/project/wbs/${project._id}`}>
                             <button
-                              id={`wbs-tooltip-${project.projectId}`}
+                              id={`wbs-tooltip-${project._id}`}
                               type="button"
                               className="btn btn-outline-info"
                               style={darkMode ? {} : boxStyle}
@@ -197,7 +192,7 @@ const UserProjectsTable = React.memo(props => {
 
                           <UncontrolledTooltip
                             placement="left"
-                            target={`wbs-tooltip-${project.projectId}`}
+                            target={`wbs-tooltip-${project._id}`}
                             delay={{ show: 250, hide: 100 }} // Optional: smoother UX
                           >
                             Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
@@ -210,8 +205,8 @@ const UserProjectsTable = React.memo(props => {
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClick(project.projectId);
-                              deleteTasksTemporarily(project.projectId);
+                              props.onDeleteClicK(project._id);
+                              deleteTasksTemporarily(project._id);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
@@ -381,7 +376,7 @@ const UserProjectsTable = React.memo(props => {
               <tbody>
                 {props.userProjectsById.length > 0 ? (
                   tasksByProject?.map((project, index) => (
-                    <tr key={project.projectId}>
+                    <tr key={project._id}>
                       <td>{index + 1}</td>
                       <td className="taskName">{`${project.projectName}`}</td>
                       {props.edit && props.role && canDeleteProjects && (
@@ -390,8 +385,8 @@ const UserProjectsTable = React.memo(props => {
                             color="danger"
                             disabled={!canUpdateTask}
                             onClick={e => {
-                              props.onDeleteClick(project.projectId);
-                              deleteTasksTemporarily(project.projectId);
+                              props.onDeleteClicK(project._id);
+                              deleteTasksTemporarily(project._id);
                             }}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >

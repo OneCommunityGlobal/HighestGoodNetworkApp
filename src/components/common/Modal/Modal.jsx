@@ -11,8 +11,8 @@ import {
   InputGroupText,
   Input,
 } from 'reactstrap';
-import parse from 'html-react-parser';
-import { boxStyle, boxStyleDark } from '~/styles';
+import ReactHtmlParser from 'react-html-parser';
+import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css';
 
 // eslint-disable-next-line react/function-component-definition
@@ -51,7 +51,7 @@ const ModalExample = props => {
   };
 
   const buttonDisabled = !(linkName && linkURL);
-  const parsedMessage = typeof modalMessage === 'string' ? parse(modalMessage) : null;
+
   if (type) {
     // console.log('Type of Modal is ', type, linkName, linkURL, buttonDisabled);
   }
@@ -72,6 +72,7 @@ const ModalExample = props => {
               <Input id="linkName" placeholder="Name of the link" onChange={handleChange} />
             </InputGroup>
             <br />
+
             <InputGroup>
               <InputGroupAddon addonType="prepend">
                 <InputGroupText style={{ width: '80px' }}>Link URL</InputGroupText>
@@ -80,7 +81,7 @@ const ModalExample = props => {
             </InputGroup>
           </>
         ) : (
-          parsedMessage
+          ReactHtmlParser(modalMessage)
         )}
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>

@@ -6,7 +6,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
-import { boxStyle } from '~/styles';
+import { boxStyle } from 'styles';
 
 const FoundUser = props => {
   const {darkMode} = props;
@@ -21,24 +21,19 @@ const FoundUser = props => {
         </td>
         <td className="foundUsers__email">{props.email}</td>
         <td className="foundUsers__assign">
-          {props.assigned ? (
-            <span className="text-success">Assigned</span>
-          ) : (
+          {props.assigned ? null : (
             <button
               className="btn btn-outline-primary btn-sm"
               type="button"
-              onClick={async e => {
-                await props.assignProject(
+              onClick={e =>
+                props.assignProject(
                   props.projectId,
                   props.uid,
                   'Assign',
                   props.firstName,
                   props.lastName,
-                  props.isActive,
-                );
-                // Optionally, trigger a refresh or update local state if needed
-                // e.g., props.onAssigned && props.onAssigned(props.uid);
-              }}
+                )
+              }
               style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-plus" aria-hidden="true"></i>

@@ -1,8 +1,6 @@
 import axios from 'axios'; // Import axios for making HTTP requests
 import configureMockStore from 'redux-mock-store'; // Import redux-mock-store for creating a mock store
 import thunk from 'redux-thunk'; // Import redux-thunk for handling asynchronous actions
-
-
 import * as types from '../../constants/BluequareEmailBccConstants'; // Import the action type constants
 import {
   setBlueSquareEmailAssignement,
@@ -10,7 +8,7 @@ import {
 } from '../blueSquareEmailBCCAction'; // Import the action creator
 
 // Mock axios to control its behavior in tests
-vi.mock('axios');
+jest.mock('axios');
 
 // Define middlewares to be used in the mock store
 const middlewares = [thunk];

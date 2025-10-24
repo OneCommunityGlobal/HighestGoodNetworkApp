@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { fetchBMLessons } from 'actions/bmdashboard/lessonsAction';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { fetchBMLessons } from '~/actions/bmdashboard/lessonsAction';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from 'utils/URL';
 import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
 import styles from './LessonListForm.module.css';
@@ -341,17 +341,16 @@ function LessonList(props) {
                 {showDropdown && inputValue && (
                   <div className={`${styles.tagDropdown}`}>
                     {getFilteredTags().map(tag => (
-                      <button
+                      <div
                         key={tag}
-                        type="button"
-                        className={styles.tagDropdownItem}
+                        className={`${styles.tagDropdownItem}`}
                         onClick={() => {
                           addTag(tag);
                           setShowDropdown(false);
                         }}
                       >
                         {tag}
-                      </button>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -386,14 +385,13 @@ function LessonList(props) {
                 {showDeleteDropdown && deleteValue && (
                   <div className={`${styles.tagDropdown}`}>
                     {getFilteredTagsToDelete().map(tag => (
-                      <button
+                      <div
                         key={tag}
-                        type="button"
-                        className={styles.tagDropdownItem}
+                        className={`${styles.tagDropdownItem}`}
                         onClick={() => addDeleteTag(tag)}
                       >
                         {tag}
-                      </button>
+                      </div>
                     ))}
                   </div>
                 )}

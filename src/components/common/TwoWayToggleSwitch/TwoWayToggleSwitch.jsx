@@ -10,11 +10,7 @@ function TwoWayToggleSwitch({ isOn, handleToggle }) {
         id="toggle-switch-new"
         type="checkbox"
       />
-      <label
-        className="toggle-switch-label"
-        htmlFor="toggle-switch-new"
-        aria-label="Toggle setting"
-      >
+      <label className="toggle-switch-label" htmlFor="toggle-switch-new">
         <span className="toggle-switch-inner" />
         <span className="toggle-switch-switch" />
       </label>

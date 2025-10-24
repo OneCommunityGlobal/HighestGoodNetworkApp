@@ -39,7 +39,6 @@ class UserProfileEdit extends Component {
   state = {
     showWarning: false,
     isLoading: true,
-    isSavingImage: false,
     formValid: {
       firstName: true,
       lastName: true,
@@ -288,78 +287,54 @@ class UserProfileEdit extends Component {
 
   handleImageUpload = async e => {
     e.preventDefault();
-  
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-  
-    // Normalize and validate type
-    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+
+    const file = e.target.files[0];
+
+    const allowedTypesString = 'image/png,image/jpeg, image/jpg';
+    const allowedTypes = allowedTypesString.split(',');
+    let isValid = true;
+    let imageUploadError = '';
     if (!allowedTypes.includes(file.type)) {
-      const imageUploadError = `File type must be ${allowedTypes.join(', ')}.`;
+      imageUploadError = `File type must be ${allowedTypesString}.`;
+      isValid = false;
+
       return this.setState({
         type: 'image',
         imageUploadError,
-        isValid: false,
+        isValid,
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
       });
     }
-  
-    // Validate size (<= 50KB)
     const filesizeKB = file.size / 1024;
     if (filesizeKB > 50) {
-      const imageUploadError =
-        'The file you are trying to upload exceeds the maximum size of 50KB. ' +
-        'Choose a different file or use an online image compressor.';
+      imageUploadError = `\nThe file you are trying to upload exceeds the maximum size of 50KB. You can either 
+														choose a different file, or use an online file compressor.`;
+      isValid = false;
+
       return this.setState({
         type: 'image',
         imageUploadError,
-        isValid: false,
+        isValid,
         showModal: true,
         modalTitle: 'Profile Pic Error',
         modalMessage: imageUploadError,
       });
     }
-  
+
     const reader = new FileReader();
-  
-    reader.onloadend = () => {
-      const base64 = reader.result;
-  
-      // 1) Optimistically update local state so the preview updates immediately
-      this.setState(
-        prev => ({
-          imageUploadError: '',
-          isSavingImage: true,
-          userProfile: {
-            ...prev.userProfile,
-            profilePic: base64,
-          },
-        }),
-        // 2) Then persist to the server right away (auto-save)
-        async () => {
-          try {
-            await this.props.updateUserProfile(this.state.userProfile);
-            // (Optional) toast/modal success
-            // this.setState({ showModal: true, modalTitle: 'Profile Photo', modalMessage: 'Updated!' });
-          } catch (err) {
-            // If save fails, you can revert or just show an error
-            this.setState({
-              showModal: true,
-              modalTitle: 'Profile Photo',
-              modalMessage: 'Failed to save profile photo. Please try again.',
-              type: 'message',
-            });
-          } finally {
-            this.setState({ isSavingImage: false });
-          }
-        }
-      );
-    };
-  
     reader.readAsDataURL(file);
-  };  
+    reader.onloadend = () => {
+      this.setState({
+        imageUploadError: '',
+        userProfile: {
+          ...this.state.userProfile,
+          profilePic: reader.result,
+        },
+      });
+    };
+  };
 
   handleTeam = (type, newTeam) => {
     const { userProfile } = this.state;
@@ -655,41 +630,24 @@ class UserProfileEdit extends Component {
           <Container className="emp-profile">
             <Row>
               <Col md="4" id="profileContainer">
-              <div className="profile-img" style={{ position: 'relative' }}>
-                <Image
-                  src={profilePic || '/defaultprofilepic.png'}
-                  alt="Profile Picture"
-                  roundedCircle
-                  className="profilePicture"
-                />
-                {this.state.isSavingImage && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: 'rgba(255,255,255,0.6)',
-                      borderRadius: '50%',
-                    }}
-                  >
-                    <Loading />
-                  </div>
-                )}
-                <div className="file btn btn-lg btn-primary">
-                  Change Photo
-                  <Input
-                    type="file"
-                    name="newProfilePic"
-                    id="newProfilePic"
-                    onChange={this.handleImageUpload}
-                    accept="image/png,image/jpeg,image/jpg"
-                    disabled={this.state.isSavingImage}
+                <div className="profile-img">
+                  <Image
+                    src={profilePic || '/defaultprofilepic.png'}
+                    alt="Profile Picture"
+                    roundedCircle
+                    className="profilePicture"
                   />
+                  <div className="file btn btn-lg btn-primary">
+                    Change Photo
+                    <Input
+                      type="file"
+                      name="newProfilePic"
+                      id="newProfilePic"
+                      onChange={this.handleImageUpload}
+                      accept="image/png,image/jpeg, image/jpg"
+                    />
+                  </div>
                 </div>
-              </div>
-
               </Col>
               <Col md="8">
                 <div className="profile-head">

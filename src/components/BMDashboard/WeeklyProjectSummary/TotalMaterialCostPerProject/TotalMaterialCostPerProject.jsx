@@ -13,10 +13,11 @@ import {
 import { Bar } from 'react-chartjs-2';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import styles from './TotalMaterialCostPerProject.module.css';
-import { ENDPOINTS } from '~/utils/URL';
-import Loading from '~/components/common/Loading';
+import './TotalMaterialCostPerProject.css';
+import { ENDPOINTS } from 'utils/URL';
+import Loading from 'components/common/Loading';
 
+// Register required components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const allDemoProjects = [
@@ -47,7 +48,6 @@ function TotalMaterialCostPerProject() {
   const [projectCosts, setProjectCosts] = useState({});
   const [selectedProjects, setSelectedProjects] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
-
   const textColor = darkMode ? '#ffffff' : '#666';
 
   const options = {
@@ -58,15 +58,20 @@ function TotalMaterialCostPerProject() {
         position: 'top',
         labels: { color: textColor },
       },
-      title: { display: false },
+      title: {
+        display: false,
+      },
     },
     scales: {
       x: {
         grid: { display: false },
         ticks: {
           color: textColor,
-          font: { size: 11 },
+          font: {
+            size: 11,
+          },
           callback(val) {
+            // eslint-disable-next-line react/no-this-in-sfc
             const label = this.getLabelForValue(val);
             return label.length > 20 ? `${label.slice(0, 20)}…` : label;
           },
@@ -74,7 +79,9 @@ function TotalMaterialCostPerProject() {
       },
       y: {
         grid: { color: '#ccc' },
-        ticks: { color: textColor },
+        ticks: {
+          color: textColor,
+        },
       },
     },
   };
@@ -109,6 +116,7 @@ function TotalMaterialCostPerProject() {
         setProjectCosts(projectCostsData);
       } catch (error) {
         toast.error(`Error fetching data: ${error.message}`);
+        // Fall back to mock data if API is unavailable
         toast.error('Using mock data as fallback');
         setSelectedProjects(allDemoProjects);
         setAllProjects(allDemoProjects);
@@ -120,8 +128,8 @@ function TotalMaterialCostPerProject() {
     fetchData();
   }, []);
 
-  const data = useMemo(
-    () => ({
+  const data = useMemo(() => {
+    return {
       labels: selectedProjects.map(p => p.label),
       datasets: [
         {
@@ -131,84 +139,14 @@ function TotalMaterialCostPerProject() {
           borderRadius: 10,
         },
       ],
-    }),
-    [selectedProjects, projectCosts],
-  );
-
-  const selectStyles = useMemo(
-    () => ({
-      control: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        borderColor: darkMode ? '#375071' : '#ccc',
-        color: darkMode ? '#fff' : '#232323',
-        minHeight: 38,
-        boxShadow: 'none',
-        borderRadius: 8,
-      }),
-      menu: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        fontSize: 12,
-        zIndex: 10001,
-        borderRadius: 8,
-        marginTop: 2,
-        color: darkMode ? '#fff' : '#232323',
-      }),
-      menuList: base => ({
-        ...base,
-        maxHeight: 400,
-        overflowY: 'auto',
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        color: darkMode ? '#fff' : '#232323',
-        padding: 0,
-      }),
-      option: (base, state) => ({
-        ...base,
-        backgroundColor: state.isSelected
-          ? '#0d55b3'
-          : state.isFocused
-          ? '#0d55b3'
-          : darkMode
-          ? '#22272e'
-          : '#fff',
-        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
-        fontSize: 13,
-        padding: '10px 16px',
-        cursor: 'pointer',
-      }),
-      multiValue: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
-        borderRadius: 6,
-        fontSize: 12,
-        marginRight: 4,
-      }),
-      multiValueLabel: base => ({
-        ...base,
-        color: darkMode ? '#fff' : '#333',
-        fontSize: 12,
-        padding: '2px 6px',
-      }),
-      multiValueRemove: base => ({
-        ...base,
-        color: darkMode ? '#fff' : '#333',
-        ':hover': {
-          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
-          color: '#fff',
-        },
-        borderRadius: 4,
-        padding: 2,
-      }),
-    }),
-    [darkMode],
-  );
+    };
+  }, [selectedProjects, projectCosts]);
 
   return (
-    <div>
-      <div className={styles.totalMaterialCostPerProjectChartTitle}>
+    <div className={`total-material-cost-per-project ${darkMode ? 'dark-mode' : ''}`}>
+      <h2 className="total-material-cost-per-project-chart-title">
         Total Material Cost Per Project
-      </div>
+      </h2>
       {dataLoaded ? (
         <>
           <div data-testid="select-projects-dropdown">
@@ -218,11 +156,8 @@ function TotalMaterialCostPerProject() {
               options={allProjects}
               value={selectedProjects}
               onChange={setSelectedProjects}
+              className="material-cost-per-project-dropdown basic-multi-select"
               classNamePrefix="select"
-              className={styles.selectValueContainer}
-              styles={selectStyles}
-              menuPortalTarget={document.body}
-              menuPosition="fixed"
               defaultValue={allProjects}
               placeholder="Select Projects"
               closeMenuOnSelect={false}

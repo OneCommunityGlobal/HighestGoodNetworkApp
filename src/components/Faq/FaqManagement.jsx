@@ -119,22 +119,12 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
               borderRadius: '5px',
             }}
           >
-            <button
-              type="button"
+            <span
               onClick={() => openFaqDetailInNewTab(faq._id)}
-              style={{
-                background: 'none',
-                border: 'none',
-                padding: 0,
-                margin: 0,
-                color: '#007bff',
-                textDecoration: 'underline',
-                cursor: 'pointer',
-                font: 'inherit',
-              }}
+              style={{ color: '#007bff', textDecoration: 'underline', cursor: 'pointer' }}
             >
               {faq.question}
-            </button>
+            </span>
             <p>{faq.answer}</p>
             <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
               <Button color="primary" onClick={() => handleEditClick(faq)}>

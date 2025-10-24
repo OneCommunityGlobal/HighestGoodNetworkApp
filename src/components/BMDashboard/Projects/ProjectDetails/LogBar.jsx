@@ -25,8 +25,8 @@ function LogBar(props) {
       ],
     },
     team: {
-      name: ['Create New Team', 'Edit Existing Team', 'Log Issue', 'View Issues'],
-      url: ['/teams', '/teams', `/bmdashboard/issues/add/${projectId}`, '/bmdashboard/issues/'],
+      name: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
+      url: ['/teams', '/teams', '/bmdashboard/issues/add'],
     },
   };
 
@@ -56,7 +56,7 @@ function LogBar(props) {
                     </Button>
                   </Link>
                 ) : (
-                  <Link to={`/bmdashboard/issues/add/${projectId}`}>
+                  <Link to="/bmdashboard/issues/add">
                     <Button type="button" className="button button--maroon">
                       Log Issue
                     </Button>

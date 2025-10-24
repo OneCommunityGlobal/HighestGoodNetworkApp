@@ -2,8 +2,6 @@ import configureMockStore from 'redux-mock-store'; // Import mock store configur
 import thunk from 'redux-thunk'; // Import thunk middleware
 import jwtDecode from 'jwt-decode'; // Import jwtDecode
 import axios from 'axios'; // Import axios
-
-
 import httpService from '../../services/httpService'; // Import httpService
 import {
   loginUser, // Import loginUser action
@@ -15,16 +13,13 @@ import {
 } from '../authActions'; // Import actions from authActions
 import { SET_CURRENT_USER, SET_HEADER_DATA } from '../../constants/auth'; // Import constants
 
-
 const middlewares = [thunk]; // Define middlewares
 const mockStore = configureMockStore(middlewares); // Create mock store with middlewares
 
-vi.mock('jwt-decode', () => ({
-  default: vi.fn(),
-}));
+jest.mock('jwt-decode', () => jest.fn()); // Mock jwtDecode
 
-vi.mock('../../services/httpService'); // Mock httpService
-vi.mock('axios'); // Mock axios
+jest.mock('../../services/httpService'); // Mock httpService
+jest.mock('axios'); // Mock axios
 
 describe('authActions', () => {
   it('creates SET_CURRENT_USER when loginUser is successful', async () => {

@@ -25,7 +25,7 @@ const Input = ({ label, name, error, className, type, invalid, textColor, ...res
   };
 
   return (
-    <div data-testid="form-group" className={`form-group ${className || ''}`}>
+    <div className={`form-group ${className || ''}`}>
       <label htmlFor={name} className={darkmode ? darkmodeText : ''}>
         {label}
       </label>

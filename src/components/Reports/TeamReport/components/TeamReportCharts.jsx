@@ -1,8 +1,7 @@
-/* eslint-disable testing-library/no-node-access */
+// eslint-disable-next-line no-unused-vars
 import { React, useEffect } from 'react';
 import './ReportCharts.css';
-import * as d3 from 'd3';
-
+import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
 import '../../../common/PieChart/PieChart.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
@@ -12,7 +11,7 @@ function TeamReportCharts({
   pieChartId,
   teamWeeklyCommittedHours,
   totalTeamWeeklyWorkedHours,
-  darkMode,
+  darkMode
 }) {
   const totalHoursAvailable = teamWeeklyCommittedHours - totalTeamWeeklyWorkedHours;
 
@@ -76,11 +75,7 @@ function TeamReportCharts({
         >
           <div className="team-report-chart-info">
             <div className="pie-chart-wrapper mobile-pie-chart">
-              <div
-                id={`pie-chart-container-${pieChartId}`}
-                className="pie-chart"
-                data-testid={`pie-chart-container-${pieChartId}`}
-              />
+              <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
               <div className="pie-chart-info-detail">
                 <div className="pie-chart-info-detail-title">
                   <h5 className={darkMode ? 'text-light' : ''}>Name</h5>

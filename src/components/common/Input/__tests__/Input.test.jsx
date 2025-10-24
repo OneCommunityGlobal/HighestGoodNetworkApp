@@ -1,12 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import Input from '../Input';
 
 describe('Input Component', () => {
-  const mockStore = configureMockStore([]);
+  const mockStore = configureStore([]);
   const initialState = {
     theme: { darkMode: false },
   };
@@ -38,7 +39,8 @@ describe('Input Component', () => {
         <Input label="Test Label" name="testName" className="additional-class" />
       </Provider>,
     );
-    expect(screen.getByTestId('form-group')).toHaveClass('form-group additional-class');
+    const divElement = container.querySelector('.form-group');
+    expect(divElement).toHaveClass('form-group additional-class');
   });
 
   // 4. Error Display Test
@@ -55,7 +57,7 @@ describe('Input Component', () => {
 
   // 5. Event Handling Test
   it('calls onChange handler when changed', () => {
-    const handleChange = vi.fn();
+    const handleChange = jest.fn();
     render(
       <Provider store={store}>
         <Input label="Test Label" name="testName" onChange={handleChange} />

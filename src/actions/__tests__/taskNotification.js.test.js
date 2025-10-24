@@ -1,11 +1,9 @@
 import axios from 'axios'; // Import axios for mocking
 import { toast } from 'react-toastify';
-
-
 import { createOrUpdateTaskNotificationHTTP } from '../taskNotification'; // Import the function to be tested
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 // Import the endpoints
-vi.mock('axios'); // Mock axios
+jest.mock('axios'); // Mock axios
 describe('createOrUpdateTaskNotificationHTTP', () => {
   it('should post the correct payload to the endpoint', async () => {
     const taskId = '123'; // Define a sample taskId
@@ -23,7 +21,7 @@ describe('createOrUpdateTaskNotificationHTTP', () => {
     const userIds = ['user1', 'user2'];
     const errorMessage = 'Network Error';
     axios.post.mockRejectedValue(new Error(errorMessage));
-    toast.info = vi.fn();
+    toast.info = jest.fn();
     await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
     expect(toast.info).toHaveBeenCalledWith(
       `Error on create or update task notification with error: Error: ${errorMessage}`,

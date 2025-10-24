@@ -92,12 +92,9 @@ function IssueCharts() {
 
       <div className="filters-container">
         <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
-            Date Range:
-          </label>
+          <label className="issue-chart-label">Date Range:</label>
           <div className="date-range-picker">
             <DatePicker
-              id="start-date"
               selected={startDate}
               onChange={date => setStartDate(date)}
               selectsStart
@@ -125,11 +122,8 @@ function IssueCharts() {
         </div>
 
         <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
-            Projects:
-          </label>
+          <label className="issue-chart-label">Projects:</label>
           <Select
-            id="start-date"
             isMulti
             options={projectOptions}
             onChange={handleProjectChange}

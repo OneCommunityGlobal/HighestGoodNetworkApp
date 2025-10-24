@@ -11,17 +11,15 @@ function StarRating({ id, rating, onChange }) {
         const starValue = index + 1;
 
         return (
-          <button
+          <span
             key={`star-${id}-${starValue}`}
-            type="button"
             className={`star ${starValue <= (hover || rating) ? 'filled' : 'empty'}`}
             onClick={() => onChange(starValue)}
             onMouseEnter={() => setHover(starValue)}
             onMouseLeave={() => setHover(0)}
-            aria-label={`Rate ${starValue} star${starValue > 1 ? 's' : ''}`}
           >
             ★
-          </button>
+          </span>
         );
       })}
     </div>

@@ -11,7 +11,15 @@ describe('TinyMCEEditor Component', () => {
   };
 
   it('renders without crashing', async () => {
-    render(<TinyMCEEditor {...mockProps} />);
+    render(
+      <TinyMCEEditor
+        label="Test Label"
+        name="testName"
+        className="custom-class"
+        error=""
+        value=""
+      />,
+    );
 
     await waitFor(() => {
       expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
@@ -19,43 +27,88 @@ describe('TinyMCEEditor Component', () => {
   });
 
   it('displays the correct label', async () => {
-    render(<TinyMCEEditor {...mockProps} />);
+    render(
+      <TinyMCEEditor
+        label="Test Label"
+        name="testName"
+        className="custom-class"
+        error=""
+        value=""
+      />,
+    );
 
     expect(await screen.findByText(mockProps.label)).toBeInTheDocument();
   });
 
   it('renders the TinyMCE editor', async () => {
-    render(<TinyMCEEditor {...mockProps} />);
-    const input = await screen.findByLabelText(mockProps.label);
-    expect(input).toBeInTheDocument();
+    render(
+      <TinyMCEEditor
+        label="Test Label"
+        name="testName"
+        className="custom-class"
+        error=""
+        value=""
+      />,
+    );
+
+    await waitFor(() => {
+      const editorTextarea = document.getElementById(mockProps.name);
+      expect(editorTextarea).toBeInTheDocument();
+    });
   });
 
   it('displays an error message when error prop is provided', async () => {
-    render(<TinyMCEEditor {...mockProps} error="Error Message" />);
+    render(
+      <TinyMCEEditor
+        label="Test Label"
+        name="testName"
+        className="custom-class"
+        error="Error Message"
+        value=""
+      />,
+    );
 
     expect(await screen.findByText('Error Message')).toBeInTheDocument();
   });
 
   it('applies custom class name to the wrapper', async () => {
-    render(<TinyMCEEditor {...mockProps} />);
-    const wrapper = await screen.findByLabelText(mockProps.label);
-    // eslint-disable-next-line testing-library/no-node-access
-    expect(wrapper.closest(`.${mockProps.className}`)).toBeInTheDocument();
+    render(
+      <TinyMCEEditor
+        label="Test Label"
+        name="testName"
+        className="custom-class"
+        error=""
+        value=""
+      />,
+    );
+
+    await waitFor(() => {
+      const wrapper = document.querySelector(`.${mockProps.className}`);
+      expect(wrapper).toBeInTheDocument();
+    });
   });
 
   it('should render the component with empty props', () => {
-    const emptyProps = {
+    const thismockProps = {
       label: '',
       name: '',
       className: '',
       error: '',
       value: '',
     };
-    render(<TinyMCEEditor {...emptyProps} />);
+    render(
+      <TinyMCEEditor
+        label={thismockProps.label}
+        name={thismockProps.name}
+        className={thismockProps.className}
+        error={thismockProps.error}
+        value={thismockProps.value}
+      />,
+    );
   });
 
   it('should render the component with long label or name props', async () => {
-    const longProps = {
+    const longlabelmockProps = {
       label: 'This is a long label that might be longer than expected',
       name: 'ThisIsALongNameThatMightBeLongerThanExpected',
       className: 'custom-class',
@@ -63,19 +116,51 @@ describe('TinyMCEEditor Component', () => {
       value: '',
     };
 
-    render(<TinyMCEEditor {...longProps} />);
+    render(
+      <TinyMCEEditor
+        label={longlabelmockProps.label}
+        name={longlabelmockProps.name}
+        className={longlabelmockProps.className}
+        error={longlabelmockProps.error}
+        value={longlabelmockProps.value}
+      />,
+    );
+
     expect(await screen.findByText('Error Message')).toBeInTheDocument();
-    expect(screen.getByLabelText(longProps.label)).toHaveAttribute('id', longProps.name);
+    expect(screen.getByLabelText(longlabelmockProps.label)).toHaveAttribute(
+      'id',
+      longlabelmockProps.name,
+    );
   });
 
-  it('should render the component with different config props', async () => {
+  it('should render the component with different config props', () => {
+    const differebtmockProps = {
+      label: 'Test Label',
+      name: 'testName',
+      className: 'custom-class',
+      error: '',
+      value: '',
+    };
+
     const config = {
       plugins: 'autolink link image lists print preview',
       toolbar: 'undo redo | bold italic | alignleft aligncenter alignright',
     };
 
-    render(<TinyMCEEditor {...mockProps} config={config} />);
-    const editorInput = await screen.findByLabelText(mockProps.label);
-    expect(editorInput).toBeInTheDocument();
+    render(
+      <TinyMCEEditor
+        label={differebtmockProps.label}
+        name={differebtmockProps.name}
+        className={differebtmockProps.className}
+        error={differebtmockProps.error}
+        value={differebtmockProps.value}
+        config={config}
+      />,
+    );
+
+    const editorTextarea = document.getElementById(mockProps.name);
+    expect(editorTextarea).toBeInTheDocument();
+    expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
+    expect(editorTextarea).toBeInTheDocument();
   });
 });

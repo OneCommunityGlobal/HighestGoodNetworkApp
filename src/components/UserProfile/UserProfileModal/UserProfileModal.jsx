@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from 'react';
+import React, { useState, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -12,12 +12,10 @@ import {
   Card,
   Col,
 } from 'reactstrap';
-import { boxStyle, boxStyleDark } from '~/styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
-import hasPermission from '~/utils/permissions';
+import hasPermission from 'utils/permissions';
 import { connect, useSelector } from 'react-redux';
-import BlueSquareEmailCCPopup from '../BlueSquareEmailCCPopup';
-import CcUserList from './CCUserList';
 
 const UserProfileModal = props => {
   const {
@@ -51,9 +49,6 @@ const UserProfileModal = props => {
 
   const [adminLinkName, setAdminLinkName] = useState('');
   const [adminLinkURL, setAdminLinkURL] = useState('');
-  const [showCcModal, setShowCcModal] = useState(false);
-
-  const toggleCcModal = () => setShowCcModal(!showCcModal);
 
   const getCurrentDate = () => {
     const today = new Date();
@@ -169,26 +164,8 @@ const UserProfileModal = props => {
 
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
-  
-  //Email CC for Blue Square Email
-  const [ccModalOpen, setCcModalOpen] = useState(false);
-  const allUsers = useSelector(state => state.allUserProfiles?.userProfiles) || [];
-  const currentUser = allUsers.find(u => u._id === userProfile._id) || userProfile;
-  const [ccCount, setCcCount] = useState(currentUser?.infringementCCList?.length || 0);
-
-useEffect(() => {
-  setCcCount(currentUser?.infringementCCList?.length || 0);
-}, [currentUser?.infringementCCList?.length]);
-
-const handleCcListUpdate = () => {
-  setCcCount(currentUser?.infringementCCList?.length || 0);
-};
-  
-  const openCc  = () => setCcModalOpen(true);
-  const closeCc = () => setCcModalOpen(false);
 
   return (
-    <>
     <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
       <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -210,9 +187,9 @@ const handleCcListUpdate = () => {
                           value={link.Name}
                           onChange={e =>
                             dispatchAdminLinks({
-                            type: 'updateName',
-                            value: e.target.value,
-                            passedIndex: index,
+                              type: 'updateName',
+                              value: e.target.value,
+                              passedIndex: index,
                             })
                           }
                         />
@@ -221,9 +198,9 @@ const handleCcListUpdate = () => {
                           value={link.Link}
                           onChange={e =>
                             dispatchAdminLinks({
-                            type: 'updateLink',
-                            value: e.target.value,
-                            passedIndex: index,
+                              type: 'updateLink',
+                              value: e.target.value,
+                              passedIndex: index,
                             })
                           }
                         />
@@ -258,8 +235,8 @@ const handleCcListUpdate = () => {
                         className="addButton"
                         onClick={() =>
                           dispatchAdminLinks({
-                          type: 'add',
-                          value: { Name: adminLinkName, Link: adminLinkURL },
+                            type: 'add',
+                            value: { Name: adminLinkName, Link: adminLinkURL },
                           })
                         }
                       >
@@ -285,9 +262,9 @@ const handleCcListUpdate = () => {
                         value={link.Name}
                         onChange={e =>
                           dispatchPersonalLinks({
-                          type: 'updateName',
-                          value: e.target.value,
-                          passedIndex: index,
+                            type: 'updateName',
+                            value: e.target.value,
+                            passedIndex: index,
                           })
                         }
                       />
@@ -296,9 +273,9 @@ const handleCcListUpdate = () => {
                         value={link.Link}
                         onChange={e =>
                           dispatchPersonalLinks({
-                          type: 'updateLink',
-                          value: e.target.value,
-                          passedIndex: index,
+                            type: 'updateLink',
+                            value: e.target.value,
+                            passedIndex: index,
                           })
                         }
                       />
@@ -335,8 +312,8 @@ const handleCcListUpdate = () => {
                       className="addButton"
                       onClick={() =>
                         dispatchPersonalLinks({
-                        type: 'add',
-                        value: { Name: linkName, Link: linkURL },
+                          type: 'add',
+                          value: { Name: linkName, Link: linkURL },
                         })
                       }
                     >
@@ -358,11 +335,11 @@ const handleCcListUpdate = () => {
 
             <FormGroup hidden={summaryFieldView}>
               <Label className={fontColor} for="report">Summary</Label>
-              <Input
-                type="textarea"
-                id="summary"
-                onChange={handleChange}
-                value={summary}
+              <Input 
+                type="textarea" 
+                id="summary" 
+                onChange={handleChange} 
+                value={summary} 
                 style={{ minHeight: '200px', overflow: 'hidden'}} 
                 onInput={e => adjustTextareaHeight(e.target)} 
               />
@@ -375,7 +352,7 @@ const handleCcListUpdate = () => {
             <FormGroup>
               <Label className={fontColor} for="date">Date:</Label>
               {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
-                : <span> {blueSquare[0]?.date}</span>}
+              : <span> {blueSquare[0]?.date}</span>}
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
@@ -385,53 +362,15 @@ const handleCcListUpdate = () => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
-              {canEditInfringements ? <Input
-                type="textarea"
-                id="summary"
-                onChange={handleChange}
-                value={summary}
+              {canEditInfringements ? <Input 
+                type="textarea" 
+                id="summary" 
+                onChange={handleChange} 
+                value={summary} 
                 style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
               :<p>{blueSquare[0]?.description}</p>}
-              {/* {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
-              <div style={{ marginTop: '10px' }}>
-                <small
-                  style={{
-                    display: 'block',
-                    color: '#6c757d',
-                    fontSize: '0.85rem',
-                    fontWeight: 500,
-                    marginBottom: '4px',
-                  }}
-                  >
-                    CC’d Users:
-                </small>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '6px',
-                  }}
-                >
-                  {blueSquare[0].ccdUsers.map((u, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      backgroundColor: '#e9ecef',
-                      borderRadius: '16px',
-                      padding: '6px 12px',
-                      fontSize: '0.85rem',
-                      color: '#343a40',
-                    }}
-                  >
-                    {u.firstName} {u.lastName} &lt;{u.email}&gt;
-                  </span>
-                  ))}
-                </div>
-              </div>
-              )} */}
-              <CcUserList users={blueSquare[0]?.ccdUsers} />
             </FormGroup>
           </>
         )}
@@ -440,7 +379,7 @@ const handleCcListUpdate = () => {
           <>
             <FormGroup>
               <Label className={fontColor} for="date">
-                Date:
+                Date: 
                 <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
@@ -453,44 +392,6 @@ const handleCcListUpdate = () => {
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
-              {/* {Array.isArray(blueSquare[0]?.ccdUsers) && blueSquare[0]?.ccdUsers.length > 0 && (
-              <div style={{ marginTop: '10px' }}>
-                <small
-                  style={{
-                    display: 'block',
-                    color: '#6c757d',
-                    fontSize: '0.85rem',
-                    fontWeight: 500,
-                    marginBottom: '4px',
-                  }}
-                  >
-                    CC’d Users:
-                </small>
-                <div
-                  style={{
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    gap: '6px',
-                  }}
-                >
-                  {blueSquare[0].ccdUsers.map((u, i) => (
-                  <span
-                    key={i}
-                    style={{
-                      backgroundColor: '#e9ecef',
-                      borderRadius: '16px',
-                      padding: '6px 12px',
-                      fontSize: '0.85rem',
-                      color: '#343a40',
-                    }}
-                  >
-                    {u.firstName} {u.lastName} &lt;{u.email}&gt;
-                  </span>
-                  ))}
-                </div>
-              </div>
-              )} */}
-              <CcUserList users={blueSquare[0]?.ccdUsers} />
             </FormGroup>
           </>
         )}
@@ -503,129 +404,88 @@ const handleCcListUpdate = () => {
       </ModalBody>
 
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <div className="d-flex w-100 align-items-center">
-          <div style={{ position: 'relative', display: 'inline-block' }}>
-            <Button
-              color="secondary"
-              onClick={openCc}
-              style={boxStyling}
-              className="mr-2"
-            >
-              CC List
-            </Button>
-            {ccCount > 0 && (
-              <span
-              style={{
-              position: 'absolute',
-              top: '-10px',
-              right: '-3px',
-              backgroundColor: '#28a745', // green
-              color: 'white',
-              borderRadius: '50%',
-              padding: '2px 6px',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+        {type === 'addBlueSquare' && (
+          <Button
+            color="danger"
+            id="addBlueSquare"
+            disabled={addButton}
+            onClick={() => {
+              modifyBlueSquares('', dateStamp, summary, 'add');
             }}
-            >
-              {ccCount}
-              </span>
-            )}
-          </div>
+            style={boxStyling}
+          >
+            Submit
+          </Button>
+        )}
 
-            <div className="ml-auto d-flex align-items-center" style={{ gap: '0.5rem', flexWrap: 'wrap' }}>
-            {type === 'addBlueSquare' && (
-              <Button
-                color="danger"
-                id="addBlueSquare"
-                disabled={addButton}
-                onClick={() => {
-                  modifyBlueSquares('', dateStamp, summary, 'add');
-                }}
-                style={boxStyling}
-              >
-                Submit
-              </Button>
-            )}
-
-            {type === 'modBlueSquare' && (
-              <>
-                {canEditInfringements &&
-                  <Button
-                    color="info"
-                    onClick={() => {
-                      modifyBlueSquares(id, dateStamp, summary, 'update');
-                }}
-                    style={boxStyling}
-                  >
-                    Update
-              </Button>
-              }
-                {canDeleteInfringements &&
-                  <Button
-                    color="danger"
-                    onClick={() => {
-                      modifyBlueSquares(id, dateStamp, summary, 'delete');
-                }}
-                    style={boxStyling}
-                  >
-                    Delete
-              </Button>
-            }
-              </>
-            )}
-
-            {type === 'updateLink' && (
+        {type === 'modBlueSquare' && (
+            <>
+            {canEditInfringements && 
               <Button
                 color="info"
                 onClick={() => {
-                  updateLink(personalLinks, adminLinks);
-            }}
+                  modifyBlueSquares(id, dateStamp, summary, 'update');
+                }}
+                style={boxStyling}
               >
                 Update
               </Button>
-            )}
+              }
+            {canDeleteInfringements &&
+              <Button
+                color="danger"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'delete');
+                }}
+                style={boxStyling}
+              >
+                Delete
+              </Button>
+            }
+          </>
+        )}
 
-            {type === 'image' && (
-              <>
-                <Button color="primary" onClick={closeModal} style={boxStyling}>
-                  {' '}
-                  Close{' '}
-                </Button>
-                <Button
-                  color="info"
-                  onClick={() => {
-                    window.open('https://picresize.com/');
+        {type === 'updateLink' && (
+          <Button
+            color="info"
+            onClick={() => {
+              updateLink(personalLinks, adminLinks);
+            }}
+          >
+            Update
+          </Button>
+        )}
+
+        {type === 'image' && (
+          <>
+            <Button color="primary" onClick={closeModal} style={boxStyling}>
+              {' '}
+              Close{' '}
+            </Button>
+            <Button
+              color="info"
+              onClick={() => {
+                window.open('https://picresize.com/');
               }}
-                  style={boxStyling}
-                >
-                  {' '}
-                  Resize{' '}
-                </Button>
-              </>
-            )}
+              style={boxStyling}
+            >
+              {' '}
+              Resize{' '}
+            </Button>
+          </>
+        )}
 
-            {type === 'save' ? (
-              <Button color="primary" onClick={closeModal} style={boxStyling}>
-                Close
-              </Button>
-            ) : (
-              <Button color="primary" onClick={closeModal} style={boxStyling}>
-                Cancel
-              </Button>
-            )}
-          </div>
-        </div>
+        {type === 'save' ? (
+          <Button color="primary" onClick={closeModal} style={boxStyling}>
+            Close
+          </Button>
+        ) : (
+          <Button color="primary" onClick={closeModal} style={boxStyling}>
+            Cancel
+          </Button>
+        )}
       </ModalFooter>
     </Modal>
-    <BlueSquareEmailCCPopup
-    isOpen={ccModalOpen}
-    onClose={closeCc}
-    darkMode={darkMode}
-    userId={userProfile._id}
-    onCcListUpdate={handleCcListUpdate}
-    />
-  </>
   );
 };
 

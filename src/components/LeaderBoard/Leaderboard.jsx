@@ -16,7 +16,6 @@ import {
   DropdownItem,
   Spinner,
   Input,
-  Tooltip,
 } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
@@ -25,21 +24,23 @@ import {
   assignStarDotColors,
   showStar,
   viewZeroHouraMembers,
-} from '~/utils/leaderboardPermissions';
-import { calculateDurationBetweenDates, showTrophyIcon } from '~/utils/anniversaryPermissions';
-import hasPermission from '~/utils/permissions';
-// import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
+} from 'utils/leaderboardPermissions';
+import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
+import hasPermission from 'utils/permissions';
+// import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import { toast } from 'react-toastify';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
-import { boxStyle } from '~/styles';
+import { Tooltip } from 'reactstrap';
+import { boxStyle } from 'styles';
 import axios from 'axios';
-import { getUserProfile } from '~/actions/userProfile';
-import { useDispatch, useSelector } from 'react-redux';
+import { getUserProfile } from 'actions/userProfile';
+import { useDispatch } from 'react-redux';
 import { boxStyleDark } from '../../styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -315,37 +316,6 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
-  const manager = 'Manager';
-  const adm = 'Administrator';
-  const owner = 'Owner';
-
-  const handleDashboardAccess = item => {
-    // check the logged in user is manager and if the dashboard is admin and owner
-    if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
-      // check the logged in user is admin and if dashboard is owner
-      toast.error("Oops! You don't have the permission to access this user's dashboard!");
-    } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
-      toast.error("Oops! You don't have the permission to access this user's dashboard!");
-    }
-    // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
-    else if (
-      loggedInUser.role !== manager &&
-      loggedInUser.role !== adm &&
-      loggedInUser.role !== owner
-    ) {
-      if ([manager, adm, owner].includes(item.role)) {
-        // prevent access
-        toast.error("Oops! You don't have the permission to access this user's dashboard!");
-      } else {
-        // allow access to the painel
-        dashboardToggle(item);
-      }
-    } else {
-      // allow access to the painel
-      dashboardToggle(item);
-    }
-  };
-
   // For Monthly and yearly anniversaries
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -581,6 +551,7 @@ function LeaderBoard({
                       onChange={e => handleInputSearchTeams(e)}
                       style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
                       placeholder="Search teams"
+                      autoFocus
                       value={refInput.current}
                     />
                   </div>
@@ -685,7 +656,6 @@ function LeaderBoard({
               />
             </div>
             <Table
-              data-testid="dark-mode-table"
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
@@ -801,9 +771,7 @@ function LeaderBoard({
                         .reduce((total, user) => total + parseFloat(user.totaltime), 0)
                         .toFixed(2)}{' '}
                       of{' '}
-                      {filteredUsers
-                        .reduce((total, user) => total + (user.weeklycommittedHours || 0), 0)
-                        .toFixed(2)}
+                      {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
                     </span>
                   </td>
                   <td aria-label="Placeholder" />
@@ -838,14 +806,14 @@ function LeaderBoard({
                             </ModalHeader>
                             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <p className={darkMode ? 'text-light' : ''}>
-                                Are you sure you wish to view the dashboard for {item.name}?
+                                Are you sure you wish to view this {item.name} dashboard?
                               </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <Button color="primary" onClick={() => showDashboard(item)}>
+                              <Button variant="primary" onClick={() => showDashboard(item)}>
                                 Ok
-                              </Button>
-                              <Button color="danger" onClick={dashboardToggle}>
+                              </Button>{' '}
+                              <Button variant="secondary" onClick={dashboardToggle}>
                                 Cancel
                               </Button>
                             </ModalFooter>
@@ -865,11 +833,11 @@ function LeaderBoard({
                             role="button"
                             tabIndex={0}
                             onClick={() => {
-                              handleDashboardAccess(item);
+                              dashboardToggle(item);
                             }}
                             onKeyDown={e => {
                               if (e.key === 'Enter') {
-                                handleDashboardAccess(item);
+                                dashboardToggle(item);
                               }
                             }}
                           >
@@ -1058,7 +1026,7 @@ function LeaderBoard({
                       </td>
                       <td className="align-middle" aria-label="Description or purpose of the cell">
                         <Link
-                          to={`/timelog/${item.personId}#currentWeek`}
+                          to={`/timelog/${item.personId}`}
                           title={`TangibleEffort: ${item.tangibletime} hours`}
                         >
                           <Progress value={item.barprogress} color={item.barcolor} />

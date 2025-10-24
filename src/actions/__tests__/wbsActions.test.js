@@ -1,6 +1,4 @@
 import axios from 'axios';
-
-
 import * as types from '../../constants/WBS';
 import {
   addNewWBS,
@@ -13,21 +11,21 @@ import {
   setWBSError,
 } from '../wbs';
 
-vi.mock('axios');
+jest.mock('axios');
 
 describe('WBS Action Creators', () => {
   beforeEach(() => {
-    vi.spyOn(console, 'log').mockImplementation(() => { });
+    jest.spyOn(console, 'log').mockImplementation(() => {});
   });
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     // eslint-disable-next-line no-console
     console.log.mockRestore();
   });
 
   describe('addNewWBS', () => {
     it('should dispatch postNewWBS with correct payload on successful API call', async () => {
-      const mockDispatch = vi.fn();
+      const mockDispatch = jest.fn();
       const mockResponse = { data: { _id: 'test-id' }, status: 200 };
       axios.post.mockResolvedValueOnce(mockResponse);
 
@@ -47,7 +45,7 @@ describe('WBS Action Creators', () => {
     });
 
     it('should dispatch postNewWBS with status 400 on API error', async () => {
-      const mockDispatch = vi.fn();
+      const mockDispatch = jest.fn();
       axios.post.mockRejectedValueOnce(new Error('Network Error'));
 
       const thunk = addNewWBS('Test WBS', 'test-project-id');
@@ -68,7 +66,7 @@ describe('WBS Action Creators', () => {
 
   describe('deleteWbs', () => {
     it('should dispatch removeWBS on successful API call', async () => {
-      const mockDispatch = vi.fn();
+      const mockDispatch = jest.fn();
       axios.delete.mockResolvedValueOnce();
       axios.post.mockResolvedValueOnce();
 
@@ -79,7 +77,7 @@ describe('WBS Action Creators', () => {
     });
 
     it('should dispatch setWBSError on API error in axios.post', async () => {
-      const mockDispatch = vi.fn();
+      const mockDispatch = jest.fn();
       const mockError = new Error('Network Error');
 
       axios.post.mockRejectedValueOnce(mockError);
@@ -97,7 +95,7 @@ describe('WBS Action Creators', () => {
     });
 
     it('should dispatch setWBSError on axios.delete failure', async () => {
-      const mockDispatch = vi.fn();
+      const mockDispatch = jest.fn();
       const mockError = new Error('Delete Error');
       axios.post.mockResolvedValueOnce({});
       axios.delete.mockRejectedValueOnce(mockError);
@@ -112,7 +110,7 @@ describe('WBS Action Creators', () => {
 
   describe('fetchAllWBS', () => {
     it('should dispatch setWBS with data on successful API call', async () => {
-      const mockDispatch = vi.fn();
+      const mockDispatch = jest.fn();
       const mockResponse = { data: [{ _id: 'test-id', wbsName: 'Test WBS' }] };
       axios.get.mockResolvedValueOnce(mockResponse);
 
@@ -124,7 +122,7 @@ describe('WBS Action Creators', () => {
     });
 
     it('should dispatch setWBSStart but not setWBSError on API error', async () => {
-      const mockDispatch = vi.fn();
+      const mockDispatch = jest.fn();
       const mockError = new Error('Fetch Error');
       axios.get.mockRejectedValueOnce(mockError);
 
@@ -135,7 +133,7 @@ describe('WBS Action Creators', () => {
     });
 
     it('should dispatch setWBSError when axios.get promise fails', async () => {
-      const mockDispatch = vi.fn();
+      const mockDispatch = jest.fn();
       const mockError = new Error('Fetch Error');
 
       axios.get.mockReturnValueOnce(Promise.reject(mockError));

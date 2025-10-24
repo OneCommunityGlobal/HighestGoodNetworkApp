@@ -1,28 +1,23 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
-
-
 import * as actions from '../followUpActions';
 import * as types from '../../constants/followUpConstants';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 
-vi.mock('axios');
-vi.mock('react-toastify', () => ({
+jest.mock('axios');
+jest.mock('react-toastify', () => ({
   toast: {
-    error: vi.fn(),
+    error: jest.fn(),
   },
 }));
-beforeEach(() => {
-  vi.clearAllMocks();
-  toast.error.mockClear();
-});
+
 describe('followUpActions', () => {
   describe('fetchAllFollowUps', () => {
     it('should dispatch FETCH_ALL_FOLLOWUPS on successful API call', async () => {
       const mockData = [{ id: 1, name: 'Follow-up 1' }];
       axios.get.mockResolvedValueOnce({ status: 200, data: mockData });
 
-      const dispatch = vi.fn();
+      const dispatch = jest.fn();
       await actions.fetchAllFollowUps()(dispatch);
 
       expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.GET_ALL_FOLLOWUPS());
@@ -37,7 +32,7 @@ describe('followUpActions', () => {
       const mockError = new Error('Network Error');
       axios.get.mockRejectedValueOnce(mockError);
 
-      const dispatch = vi.fn();
+      const dispatch = jest.fn();
       await actions.fetchAllFollowUps()(dispatch);
 
       expect(dispatch).toHaveBeenCalledWith({
@@ -57,7 +52,7 @@ describe('followUpActions', () => {
 
       axios.post.mockResolvedValueOnce({ status: 200, data: mockResponse });
 
-      const dispatch = vi.fn();
+      const dispatch = jest.fn();
       await actions.setUserFollowUp(userId, taskId, updateData)(dispatch);
 
       expect(axios.post).toHaveBeenCalledWith(
@@ -79,7 +74,7 @@ describe('followUpActions', () => {
 
       axios.post.mockRejectedValueOnce(mockError);
 
-      const dispatch = vi.fn();
+      const dispatch = jest.fn();
       await actions.setUserFollowUp(userId, taskId, updateData)(dispatch);
 
       expect(dispatch).toHaveBeenCalledWith({

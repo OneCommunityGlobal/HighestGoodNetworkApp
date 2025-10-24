@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Col, Container, Form, FormGroup, Input, Label, Button, CardBody, Card } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { toast } from 'react-toastify';
 import Select from 'react-select';
 import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';

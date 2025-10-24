@@ -16,8 +16,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
-  margin-bottom: 50px;
 }
 
 .blue-square-stats-pie-chart .legend rect {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button, Badge } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Joi from 'joi-browser';
+import Joi from 'joi';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
@@ -277,26 +277,13 @@ export default function CreateNewTeam() {
           )}
         </FormGroup>
         <div>
-          {assignedMembers.length > 0 && (
-            <p className={styles.label}>Currently Assigned Members:</p>
-          )}
+          {assignedMembers.length > 0 && <label>Currently Assigned Members:</label>}
           <div className={`${styles.badgeContainer}`}>
             {assignedMembers.map((member, index) => {
               return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Badge key={index} pill color="info" className="mr-2">
-                  {member}
-                  <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => handleRemoveMember(member)}
-                    onKeyDown={e =>
-                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(member)
-                    }
-                    aria-label={`Remove member ${member}`}
-                  >
-                    X
-                  </span>
+                  {member} <span onClick={() => handleRemoveMember(member)}>X</span>
                 </Badge>
               );
             })}
@@ -330,9 +317,7 @@ export default function CreateNewTeam() {
         </FormGroup>
 
         <div>
-          {assignedTasks.length > 0 && (
-            <label htmlFor="assigned-tasks">Currently Assigned Tasks:</label>
-          )}
+          {assignedTasks.length > 0 && <label>Currently Assigned Tasks:</label>}
           <div className={`${styles.badgeContainer}`}>
             {assignedTasks.map((task, index) => {
               return (
@@ -340,13 +325,11 @@ export default function CreateNewTeam() {
                 <Badge key={index} pill color="info" className="mr-2">
                   {task}{' '}
                   <span
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => handleRemoveMember(member)}
-                    onKeyDown={e =>
-                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(member)
-                    }
-                    aria-label={`Remove member ${member}`}
+                    onClick={() => handleRemoveTask(task)}
+                    style={{
+                      cursor: 'pointer',
+                      paddingLeft: '5px',
+                    }}
                   >
                     X
                   </span>

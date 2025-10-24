@@ -7,7 +7,7 @@ import { ENDPOINTS } from '../../utils/URL';
 import { UserStatus } from '../../utils/enums';
 
 // Mock axios
-vi.mock('axios');
+jest.mock('axios');
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -17,7 +17,7 @@ describe('User Management Actions', () => {
   
   beforeEach(() => {
     store = mockStore({});
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('getAllUserProfile', () => {

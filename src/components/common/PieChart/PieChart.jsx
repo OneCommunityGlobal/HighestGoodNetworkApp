@@ -1,11 +1,9 @@
-/* eslint-disable testing-library/no-node-access */
+/* eslint-disable no-restricted-globals */
 import { useEffect, useState, useMemo } from 'react';
-import * as d3 from 'd3';
-
+import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
-import './PieChart.css';
-// import './UserProjectPieChart.css';
+import './UserProjectPieChart.css';
 
 export function PieChart({
   tasksData = [], // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
@@ -79,7 +77,7 @@ export function PieChart({
           ? `${displayValue.toFixed(2)}% of ${calculateTotalHours(projectsData, tasksData).toFixed(
               2,
             )}`
-          : `${totalValue.toFixed(2)} Hrs`,
+          : totalValue.toFixed(2),
       );
 
     svg
@@ -200,7 +198,7 @@ export function PieChart({
             <thead>
               <tr>
                 <th>Color</th>
-                <th>Task Name</th>
+                <th>Project Name</th>
                 <th>Hours</th>
               </tr>
             </thead>
@@ -221,9 +219,8 @@ export function PieChart({
           </table>
         </div>
 
-        <div className="data-total-value" style={{ marginTop: 8 }}>
-          <strong className={`strong-text ${darkMode ? 'text-light' : ''}`}>Total Hours:</strong>{' '}
-          {totalHours.toFixed(2)}
+        <div className="data-total-value">
+          <strong>Total Hours:</strong> {totalHours.toFixed(2)}
         </div>
       </div>
     </div>

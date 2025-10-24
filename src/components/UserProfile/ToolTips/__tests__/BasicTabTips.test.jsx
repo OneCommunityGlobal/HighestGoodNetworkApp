@@ -1,17 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { shallow } from 'enzyme';
 import MockNavLink from '../MockData/MockNavLink'; // mock component
 import BasicTabTips from '../BasicTabTips';
-
-// Mock reactstrap Tooltip component to avoid issues in test environment
-vi.mock('reactstrap', () => ({
-  Tooltip: ({ children, isOpen, target, toggle, ...props }) =>
-    isOpen ? (
-      <div data-testid={`tooltip-${target}`} className="tooltip" {...props}>
-        {children}
-      </div>
-    ) : null,
-}));
 
 /** ****************************TESTS PRE-REQUISITE************************************ */
 let clickedLinkId = null;
@@ -19,9 +10,8 @@ let clickedLinkId = null;
 const handleNavLinkClick = id => {
   clickedLinkId = id;
 };
-
 const mockComponentWithNavLink = () => {
-  return render(
+  render(
     <div>
       <MockNavLink id="info-email" onClickHandler={handleNavLinkClick}>
         Email
@@ -40,8 +30,9 @@ const mockComponentWithNavLink = () => {
   );
 };
 
+// shallow rendering
 const mockComponentWithoutNavLink = () => {
-  return render(<BasicTabTips />);
+  return shallow(<BasicTabTips />);
 };
 
 /** ****************************TESTS CASES************************************ */
@@ -51,74 +42,111 @@ const tooltipPhone = 'Your Phone Number';
 const tooltipTitle = 'Your Preferred Title';
 
 describe('TabToolTip Component Tests', () => {
+  let mountedComponent;
   beforeEach(() => {
-    clickedLinkId = null;
-    vi.clearAllMocks();
+    mountedComponent = mockComponentWithoutNavLink();
   });
 
   it('Test case 1: Renders without crashing', () => {
-    const { getByTestId } = mockComponentWithoutNavLink();
-    // eslint-disable-next-line testing-library/prefer-screen-queries
-    expect(getByTestId('test-basictabtips')).toBeInTheDocument();
+    expect(mountedComponent.find('[data-testid="test-basictabtips"]')).toHaveLength(1);
   });
 
-  it('Test case 2: Renders with correct structure', () => {
-    const { container } = mockComponentWithoutNavLink();
-    // Check if the root div exists
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-    expect(container.querySelector('div[data-testid="test-basictabtips"]')).toBeInTheDocument();
+  it('Test case 2 : Renders with  4 tool tips wrapped within a div', () => {
+    const tooltipcount = mountedComponent.find('Tooltip');
+    expect(tooltipcount.length).toBe(4);
+
+    const divCount = mountedComponent.find('div');
+    expect(divCount.length).toBe(1);
+  });
+  it('Test case 3 : Displays expected text in tooltips', () => {
+    const tooltips = mountedComponent.find('Tooltip');
+
+    tooltips.forEach((tooltip, index) => {
+      const tooltipProps = tooltip.props();
+      switch (index) {
+        case 0:
+          expect(tooltipProps.children).toContain(tooltipName);
+          break;
+        case 1:
+          expect(tooltipProps.children).toContain(tooltipEmail);
+          break;
+        case 2:
+          expect(tooltipProps.children).toContain(tooltipPhone);
+          break;
+        case 3:
+          expect(tooltipProps.children).toContain(tooltipTitle);
+          break;
+        default:
+          break;
+      }
+    });
   });
 
-  it('Test case 3: Contains tooltip components with the correct targets', () => {
-    // We can check the source code for tooltip content
-    const sourceCode = BasicTabTips.toString();
-    expect(sourceCode).toContain(tooltipName);
-    expect(sourceCode).toContain(tooltipEmail);
-    expect(sourceCode).toContain(tooltipPhone);
-    expect(sourceCode).toContain(tooltipTitle);
-  });
-
-  it('Test case 4: Assert that the tooltip is not initially visible', () => {
+  it('Test case 4 : Assert that the tooltip is not initially visible or present', () => {
     mockComponentWithNavLink();
-
-    // Check that none of the tooltips are visible initially
-    expect(screen.queryByText(tooltipName)).not.toBeInTheDocument();
-    expect(screen.queryByText(tooltipEmail)).not.toBeInTheDocument();
-    expect(screen.queryByText(tooltipPhone)).not.toBeInTheDocument();
-    expect(screen.queryByText(tooltipTitle)).not.toBeInTheDocument();
+    let contactTooltip = screen.queryByText(tooltipName);
+    expect(contactTooltip).toBeNull();
+    contactTooltip = screen.queryByText(tooltipEmail);
+    expect(contactTooltip).toBeNull();
+    contactTooltip = screen.queryByText(tooltipPhone);
+    expect(contactTooltip).toBeNull();
+    contactTooltip = screen.queryByText(tooltipTitle);
+    expect(contactTooltip).toBeNull();
   });
-
-  it('Test case 5: Assert clicking Email component sets the correct ID', async () => {
+  it('Test case 5 : Assert only the tooltip for Email  is visible after clicking the Email component ', () => {
     mockComponentWithNavLink();
     const emailComp = screen.getByText('Email');
-    await userEvent.click(emailComp);
+    userEvent.click(emailComp); // Simulate a click using userEvent
 
-    // Check if the clicked link ID matches
+    // After the click, check if the clicked link ID matches the expected tooltip target ID
     expect(clickedLinkId).toBe('info-email');
-  });
 
-  // Similar tests for other tooltip interactions
-  it('Test case 6: Assert clicking Phone component sets the correct ID', async () => {
+    // Now assert the presence of the expected tool tip and other tool tip shouldnt be visible
+    expect(screen.queryByText(tooltipEmail)).toBeInTheDocument();
+    expect(screen.queryByText(tooltipName)).toBeNull();
+    expect(screen.queryByText(tooltipTitle)).toBeNull();
+    expect(screen.queryByText(tooltipPhone)).toBeNull();
+  });
+  it('Test case 6 : Assert only the tooltip for phone  is visible after clicking the phone component ', () => {
     mockComponentWithNavLink();
     const phoneComp = screen.getByText('Phone');
-    await userEvent.click(phoneComp);
+    userEvent.click(phoneComp); // Simulate a click using userEvent
 
+    // After the click, check if the clicked link ID matches the expected tooltip target ID
     expect(clickedLinkId).toBe('info-phone');
-  });
 
-  it('Test case 7: Assert clicking Title component sets the correct ID', async () => {
+    // Now assert the presence of the expected tool tip and other tool tip shouldnt be visible
+    expect(screen.queryByText(tooltipPhone)).toBeInTheDocument();
+    expect(screen.queryByText(tooltipName)).toBeNull();
+    expect(screen.queryByText(tooltipTitle)).toBeNull();
+    expect(screen.queryByText(tooltipEmail)).toBeNull();
+  });
+  it('Test case 7 : Assert only the tooltip for title  is visible after clicking the title component ', () => {
     mockComponentWithNavLink();
     const titleComp = screen.getByText('Title');
-    await userEvent.click(titleComp);
+    userEvent.click(titleComp); // Simulate a click using userEvent
 
+    // After the click, check if the clicked link ID matches the expected tooltip target ID
     expect(clickedLinkId).toBe('info-title');
-  });
 
-  it('Test case 8: Assert clicking Name component sets the correct ID', async () => {
+    // Now assert the presence of the expected tool tip and other tool tip shouldnt be visible
+    expect(screen.queryByText(tooltipTitle)).toBeInTheDocument();
+    expect(screen.queryByText(tooltipName)).toBeNull();
+    expect(screen.queryByText(tooltipEmail)).toBeNull();
+    expect(screen.queryByText(tooltipPhone)).toBeNull();
+  });
+  it('Test case 8 : Assert only the tooltip for Name  is visible after clicking the Name component ', () => {
     mockComponentWithNavLink();
     const nameComp = screen.getByText('Name');
-    await userEvent.click(nameComp);
+    userEvent.click(nameComp); // Simulate a click using userEvent
 
+    // After the click, check if the clicked link ID matches the expected tooltip target ID
     expect(clickedLinkId).toBe('info-name');
+
+    // Now assert the presence of the expected tool tip and other tool tip shouldnt be visible
+    expect(screen.queryByText(tooltipName)).toBeInTheDocument();
+    expect(screen.queryByText(tooltipEmail)).toBeNull();
+    expect(screen.queryByText(tooltipTitle)).toBeNull();
+    expect(screen.queryByText(tooltipPhone)).toBeNull();
   });
 });

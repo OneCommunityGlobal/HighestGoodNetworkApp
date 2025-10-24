@@ -155,8 +155,7 @@ function PaidLaborCostDatePicker({
     <div ref={wrapperRef} className={`paid-labor-cost-custom-date-range-picker ${className}`}>
       {/* Input + Info */}
       <div className="paid-labor-cost-input-wrapper">
-        <button
-          type="button"
+        <div
           className="paid-labor-cost-date-range-input"
           onClick={e => {
             e.stopPropagation();
@@ -165,7 +164,7 @@ function PaidLaborCostDatePicker({
         >
           <div className="paid-labor-cost-date-range-text">{formatDisplayDate()}</div>
           <div className="paid-labor-cost-date-range-icon">📅</div>
-        </button>
+        </div>
         <div
           className="paid-labor-cost-info-wrapper"
           onMouseEnter={() => setShowInfo(true)}
@@ -198,7 +197,6 @@ function PaidLaborCostDatePicker({
       {isOpen && (
         <div
           className="paid-labor-cost-date-range-calendar"
-          role="presentation"
           onMouseLeave={handleMouseLeave}
           onClick={e => e.stopPropagation()}
         >
@@ -234,8 +232,7 @@ function PaidLaborCostDatePicker({
               const disabled = isDisabled(date);
 
               return (
-                <button
-                  type="button"
+                <div
                   key={uuidv4()}
                   className={[
                     'paid-labor-cost-day',
@@ -249,10 +246,9 @@ function PaidLaborCostDatePicker({
                     .join(' ')}
                   onClick={() => handleDateClick(date)}
                   onMouseEnter={() => handleMouseEnter(date)}
-                  disabled={disabled}
                 >
                   {date.getDate()}
-                </button>
+                </div>
               );
             })}
           </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { boxStyle, boxStyleDark } from '~/styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -18,7 +18,7 @@ import {
 // const membersList = [{ id: 1, firstName: "onecommunityglobal", lastName: '', email: "onecommunityglobal@gmail.com" },
 // { id: 2, firstName: "onecommunityhospitality", lastName: '', email: "onecommunityhospitality@gmail.com" }]
 
-const WeeklySummaryRecipientsPopupComponent = props => {
+const WeeklySummaryRecipientsPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
@@ -113,6 +113,7 @@ const WeeklySummaryRecipientsPopupComponent = props => {
       <Modal
         isOpen={open}
         toggle={closePopup}
+        autoFocus={false}
         size="lg"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
@@ -211,7 +212,5 @@ const WeeklySummaryRecipientsPopupComponent = props => {
       </Modal>
     </Container>
   );
-};
-const WeeklySummaryRecipientsPopup = React.memo(WeeklySummaryRecipientsPopupComponent);
-WeeklySummaryRecipientsPopup.displayName = 'WeeklySummaryRecipientsPopup';
+});
 export default WeeklySummaryRecipientsPopup;

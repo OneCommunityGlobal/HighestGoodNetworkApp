@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import styles from './QuestionFieldActions.module.css';
+import './QuestionFieldActions.css';
 
 function QuestionFieldActions({
   field,
@@ -13,19 +13,19 @@ function QuestionFieldActions({
   onVisibilityChange,
 }) {
   return (
-    <div className={styles.fieldControls}>
+    <div className="field-controls">
       <input
         type="checkbox"
         id={`form-div-checkbox-${index}`}
         checked={visible}
         onChange={onVisibilityChange}
-        className={styles.visibilityCheckbox}
+        className="visibility-checkbox"
       />
-      <div className={styles.fieldActions}>
+      <div className="field-actions">
         <button
           type="button"
           onClick={() => onEdit(field, index)}
-          className={styles.editButton}
+          className="edit-button"
           title="Edit this question"
         >
           Edit
@@ -34,7 +34,7 @@ function QuestionFieldActions({
         <button
           type="button"
           onClick={() => onClone(field, index)}
-          className={styles.cloneButton}
+          className="clone-button"
           title="Clone this question"
         >
           Clone
@@ -42,7 +42,7 @@ function QuestionFieldActions({
         <button
           type="button"
           onClick={() => onMove(index, 'up')}
-          className={styles.moveButton}
+          className="move-button"
           disabled={index === 0}
           title="Move up"
         >
@@ -51,7 +51,7 @@ function QuestionFieldActions({
         <button
           type="button"
           onClick={() => onMove(index, 'down')}
-          className={styles.moveButton}
+          className="move-button"
           disabled={index === totalFields - 1}
           title="Move down"
         >
@@ -60,7 +60,7 @@ function QuestionFieldActions({
         <button
           type="button"
           onClick={() => onDelete(index)}
-          className={styles.deleteButton}
+          className="delete-button"
           title="Delete question"
         >
           ×

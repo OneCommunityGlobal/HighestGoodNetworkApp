@@ -1,6 +1,8 @@
+import { getFormState } from 'actions/formActions';
+
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addQuestion, resetFormState, getFormState } from '~/actions/formActions';
+import { addQuestion, resetFormState } from 'actions/formActions';
 import QuestionMaker from './Components/QuestionMaker';
 
 export default function FormEditor() {

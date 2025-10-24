@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
 import parse from 'html-react-parser';
 import './Timelog.css';
-import { getUserProfile, updateUserProfile } from '~/actions/userProfile';
-import hasPermission from '~/utils/permissions';
+import { getUserProfile, updateUserProfile } from 'actions/userProfile';
+import hasPermission from 'utils/permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';
 import { updateWeeklySummaries } from '../../actions/weeklySummaries';
-import WeeklySummary from '../WeeklySummary/WeeklySummary';
 
-function WeeklySummaries({ userProfile, onEditSummary }) {
+function WeeklySummaries({ userProfile }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // Initialize state variables for editing and original summaries
@@ -25,9 +24,6 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
   const [LoadingHandleSave, setLoadingHandleSave] = useState(null);
 
   const [wordCount, setWordCount] = useState(0);
-
-  const [showModal, setShowModal] = useState(false);
-  const [modalTab, setModalTab] = useState('1');
 
   const dispatch = useDispatch();
   const canEdit = dispatch(hasPermission('putUserProfile'));
@@ -101,19 +97,6 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
     }
   };
 
-  const handleEditSummary = (tabIndex) => {
-    // Map the tab index to the correct tab number
-    const tabNumber = String(tabIndex + 1);
-    setModalTab(tabNumber);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    // Refresh the user profile to get updated summaries
-    dispatch(getUserProfile(userProfile._id));
-  };
-
   // Images are not allowed while editing weekly summaries
   const customImageUploadHandler = () =>
     new Promise((_, reject) => {
@@ -124,7 +107,7 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     menubar: false,
-    plugins: 'advlist autolink autoresize lists link charmap table help wordcount',
+    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
     toolbar:
       'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
     branding: false,
@@ -185,7 +168,7 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
       );
     }
     if (summary) {
-      // Display the summary without edit button for users without edit permissions
+      // Display the summary with an "Edit" button
       return (
         <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
@@ -193,20 +176,13 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
         </div>
       );
     }
-    // Display a message when there's no summary with an edit button (always show edit button for missing summaries)
+    // Display a message when there's no summary
     return (
       <div>
         <h3>{title}</h3>
         <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           {userProfile.firstName} {userProfile.lastName} did not submit a summary.
         </p>
-        <button 
-          type="button" 
-          className="button edit-button" 
-          onClick={() => handleEditSummary(index)}
-        >
-          Edit
-        </button>
       </div>
     );
   };
@@ -216,18 +192,6 @@ function WeeklySummaries({ userProfile, onEditSummary }) {
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
       {renderSummary("The week before last's summary", userProfile.weeklySummaries[2]?.summary, 2)}
-      
-      {showModal && (
-        <WeeklySummary
-          isModal={true}
-          displayUserId={userProfile._id}
-          setPopup={handleCloseModal}
-          userRole={userProfile.role}
-          isNotAllowedToEdit={false}
-          darkMode={darkMode}
-          initialActiveTab={modalTab}
-        />
-      )}
     </div>
   );
 }

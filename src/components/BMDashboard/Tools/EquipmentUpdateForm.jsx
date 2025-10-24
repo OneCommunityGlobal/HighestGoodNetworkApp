@@ -18,10 +18,12 @@ export default function EquipmentUpdateForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [isFormValid, setIsFormValid] = useState(false);
   const dispatch = useDispatch();
+
   // Fetch dropdown data
   const projects = useSelector(state => state.bmProjects || []);
   const tools = useSelector(state => state.bmTools.toolslist || []);
   const equipments = useSelector(state => state.bmEquipments.equipmentslist || []);
+
   useEffect(() => {
     dispatch(fetchBMProjects());
     dispatch(fetchTools());
@@ -44,15 +46,7 @@ export default function EquipmentUpdateForm() {
         .map(equip => ({ id: equip.itemType._id, name: equip.itemType.name })),
     [equipments],
   );
-  const uniqueToolList = useMemo(
-    () => [...new Map(toolList.map(item => [item.id, item])).values()],
-    [toolList],
-  );
 
-  const uniqueEquipmentList = useMemo(
-    () => [...new Map(equipmentList.map(item => [item.id, item])).values()],
-    [equipmentList],
-  );
   // Update form validity
   useEffect(() => {
     const { project, toolOrEquipment, name, number } = formData;
@@ -107,11 +101,9 @@ export default function EquipmentUpdateForm() {
             value={formData.project}
             onChange={handleChange}
           >
-            <option key="" value="">
-              Select Project
-            </option>
+            <option value="">Select Project</option>
             {projects.map(proj => (
-              <option key={proj._id} value={proj._id}>
+              <option key={proj.id} value={proj.id}>
                 {proj.name}
               </option>
             ))}
@@ -130,15 +122,9 @@ export default function EquipmentUpdateForm() {
             value={formData.toolOrEquipment}
             onChange={handleChange}
           >
-            <option key="empty" value="">
-              Select Tool/Equipment
-            </option>
-            <option key="Tool" value="Tool">
-              Tool
-            </option>
-            <option key="Equipment" value="Equipment">
-              Equipment
-            </option>
+            <option value="">Select Tool/Equipment</option>
+            <option value="Tool">Tool</option>
+            <option value="Equipment">Equipment</option>
           </Input>
           {!formData.toolOrEquipment && <div className="toolFormError">This field is required</div>}
         </FormGroup>
@@ -157,13 +143,13 @@ export default function EquipmentUpdateForm() {
           >
             <option value="">Select Name</option>
             {formData.toolOrEquipment === 'Tool' &&
-              uniqueToolList.map(item => (
+              toolList.map(item => (
                 <option key={item.id} value={item.name}>
                   {item.name}
                 </option>
               ))}
             {formData.toolOrEquipment === 'Equipment' &&
-              uniqueEquipmentList.map(item => (
+              equipmentList.map(item => (
                 <option key={item.id} value={item.name}>
                   {item.name}
                 </option>

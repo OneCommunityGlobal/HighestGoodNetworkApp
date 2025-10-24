@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
-import styles from './QuestionSetManager.module.css';
+import './QuestionSetManager.css';
 import QuestionEditModal from './QuestionEditModal';
 
-function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode }) {
+function QuestionSetManager({ formFields, setFormFields, onImportQuestions }) {
   const [templates, setTemplates] = useState([]);
   const [templateName, setTemplateName] = useState('');
   const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -339,11 +339,11 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
   };
 
   return (
-    <div className={`${styles.questionSetManager} ${darkMode ? styles.darkMode : ''}`}>
+    <div className="question-set-manager">
       <h3>Question Set Templates</h3>
-      {error && <div className={styles.errorMessage}>{error}</div>}
-      <div className={styles.templateActions}>
-        <div className={styles.saveTemplate}>
+      {error && <div className="error-message">{error}</div>}
+      <div className="template-actions">
+        <div className="save-template">
           <input
             type="text"
             placeholder="Template Name"
@@ -354,13 +354,13 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           <button
             type="button"
             onClick={saveTemplate}
-            className={styles.saveTemplateButton}
+            className="save-template-button"
             disabled={isLoading}
           >
             {isLoading ? 'Saving...' : 'Save Current set'}
           </button>
         </div>
-        <div className={styles.loadTemplate}>
+        <div className="load-template">
           <select
             value={selectedTemplate}
             onChange={e => setSelectedTemplate(e.target.value)}
@@ -376,7 +376,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           <button
             type="button"
             onClick={loadTemplate}
-            className={styles.loadTemplateButton}
+            className="load-template-button"
             disabled={isLoading || !selectedTemplate}
           >
             {isLoading ? 'Loading...' : 'Clone with Template'}
@@ -384,7 +384,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           <button
             type="button"
             onClick={appendTemplate}
-            className={styles.appendTemplateButton}
+            className="append-template-button"
             disabled={isLoading || !selectedTemplate}
           >
             {isLoading ? 'Appending...' : 'Append Template'}
@@ -392,7 +392,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           <button
             type="button"
             onClick={deleteTemplate}
-            className={styles.deleteTemplateButton}
+            className="delete-template-button"
             disabled={isLoading || !selectedTemplate}
           >
             {isLoading ? 'Deleting...' : 'Delete Template'}

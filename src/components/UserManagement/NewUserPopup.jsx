@@ -10,7 +10,7 @@ import '../Header/DarkMode.css';
 /**
  * Modal popup to show the user profile in create mode
  */
-const NewUserPopupComponent = (props) => {
+const NewUserPopup = React.memo(props => {
   const closePopup = () => {
     props.onUserPopupClose();
   };
@@ -108,15 +108,12 @@ const NewUserPopupComponent = (props) => {
       </Modal>
     </>
   );
-};
+});
 
 const mapStateToProps = state => ({
   role: state.userProfile.role, // Map 'role' from Redux state to 'role' prop
   darkMode: state.theme.darkMode,
   loading: state.infoCollections?.loading,
 });
-
-const NewUserPopup = React.memo(NewUserPopupComponent);
-NewUserPopup.displayName = 'NewUserPopup';
 
 export default connect(mapStateToProps)(NewUserPopup);

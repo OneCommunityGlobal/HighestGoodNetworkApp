@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo, React } from 'react';
-import { ENDPOINTS } from '~/utils/URL';
+import { useState, useEffect, useMemo } from 'react';
+import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from '~/actions/weeklySummaries';
-import { Link, useLocation, useHistory } from 'react-router-dom';
+import { getWeeklySummaries } from 'actions/weeklySummaries';
+import { Link, useLocation } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -22,8 +23,8 @@ import {
   Button,
   Card,
 } from 'reactstrap';
-import PopUpBar from '~/components/PopUpBar';
-import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
+import PopUpBar from 'components/PopUpBar';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
@@ -48,8 +49,6 @@ import {
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
-  PR_PROMOTIONS,
-  BLUE_SQUARE_EMAIL_MANAGEMENT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -64,7 +63,6 @@ import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
 import PermissionWatcher from '../Auth/PermissionWatcher';
-import DisplayBox from '../PRPromotions/DisplayBox';
 
 export function Header(props) {
   const location = useLocation();
@@ -77,8 +75,6 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
-  const [isAckLoading, setIsAckLoading] = useState(false);
-  const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -145,9 +141,6 @@ export function Header(props) {
     props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
-  
-  // Blue Square Email Management
-  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -225,30 +218,6 @@ export function Header(props) {
     setLogoutPopup(true);
   };
 
-  const handlePermissionChangeAck = async () => {
-    // handle setting the ack true
-    try {
-      setIsAckLoading(true);
-      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
-      axios
-        .put(ENDPOINTS.USER_PROFILE(_id), {
-          // req fields for updation
-          firstName: name,
-          lastName,
-          personalLinks,
-          adminLinks,
-
-          isAcknowledged: true,
-        })
-        .then(() => {
-          setIsAckLoading(false);
-          dispatch(getUserProfile(_id));
-        });
-    } catch (e) {
-      // console.log('update ack', e);
-    }
-  };
-
   const removeViewingUser = () => {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
@@ -280,7 +249,7 @@ export function Header(props) {
     if (!userId || hasProfileLoaded) return;
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response?.data;
+      const newUserProfile = response.data;
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
@@ -336,13 +305,11 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
-  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'))
   return (
-    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
+    <div className={`header-wrapper ${darkMode ? ' dark-mode' : ''}`}>
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        {showPromotionsPopup && 
-        (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
         <div
           className="timer-message-section"
           style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
@@ -377,7 +344,7 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/timelog#currentWeek">
+                  <NavLink tag={Link} to="/timelog">
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
@@ -467,9 +434,6 @@ export function Header(props) {
                       >
                         {TOTAL_CONSTRUCTION_SUMMARY}
                       </DropdownItem>
-                      <DropdownItem onClick={() => setShowPromotionsPopup(true)} className={fontColor}>
-                        {PR_PROMOTIONS}
-                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
@@ -480,7 +444,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <BellNotification userId={displayUserId} />
+                  <BellNotification userId={displayUserId}/>
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -488,8 +452,7 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
-                  canAccessPermissionsManagement ||
-                  canAccessBlueSquareEmailManagement) && (
+                  canAccessPermissionsManagement) && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
@@ -532,19 +495,6 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
-                      <DropdownItem divider />
-                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
-                        PR Team Analytics
-                      </DropdownItem>
-                      {canAccessBlueSquareEmailManagement && (
-                        <DropdownItem
-                          tag={Link}
-                          to="/bluesquare-email-management"
-                          className={fontColor}
-                        >
-                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
-                        </DropdownItem>
-                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
@@ -559,7 +509,7 @@ export function Header(props) {
                         backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
                         backgroundSize: 'contain',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
+                        backgroundRepeat: 'no-repeat'
                       }}
                       className="dashboardimg"
                     />
@@ -615,19 +565,9 @@ export function Header(props) {
           lastName={viewingUser.lastName}
           message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-        />
+          />
       )}
-      <PermissionWatcher props={props} />
-      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
-        <PopUpBar
-          firstName={viewingUser?.firstName || firstName}
-          lastName={viewingUser?.lastName}
-          message="Heads Up, there were permission changes made to this account"
-          onClickClose={handlePermissionChangeAck}
-          textColor="black_text"
-          isLoading={isAckLoading}
-        />
-      )}
+      <PermissionWatcher props={props}/>
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
           <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
@@ -648,7 +588,7 @@ export function Header(props) {
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className="headerCard">
+          <Card color="primary" className='headerCard'>
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>

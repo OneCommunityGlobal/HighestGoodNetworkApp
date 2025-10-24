@@ -108,11 +108,9 @@ function WishListItem(props) {
               </div>
               <div className="item__bidding">
                 <label htmlFor="name">
-                  Name:
                   <input type="text" name="name" id="name" placeholder="Name" />
                 </label>
                 <label htmlFor="bidding">
-                  Bidding Price:
                   <input type="number" name="bidding" id="bidding" placeholder="Bidding Price" />
                 </label>
               </div>

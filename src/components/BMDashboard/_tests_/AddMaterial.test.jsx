@@ -1,28 +1,27 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { toast } from 'react-toastify';
 import AddMaterial from '../AddMaterial/AddMaterial';
 import * as invTypeActions from '../../../actions/bmdashboard/invTypeActions';
 import * as invUnitActions from '../../../actions/bmdashboard/invUnitActions';
 
 // Mock dependencies
-vi.mock('react-toastify', () => ({
-  __esModule: true,
+jest.mock('react-toastify', () => ({
   toast: {
-    error: vi.fn(),
-    success: vi.fn(),
+    error: jest.fn(),
+    success: jest.fn(),
   },
 }));
 
-vi.mock('../../../actions/bmdashboard/invTypeActions');
-vi.mock('../../../actions/bmdashboard/invUnitActions');
+jest.mock('../../../actions/bmdashboard/invTypeActions');
+jest.mock('../../../actions/bmdashboard/invUnitActions');
 
-vi.mock('../../common/DragAndDrop/DragAndDrop', () => ({
-  __esModule: true,
-  default: function MockDragAndDrop({ updateUploadedFiles }) {
+jest.mock('../../common/DragAndDrop/DragAndDrop', () => {
+  return function MockDragAndDrop({ updateUploadedFiles }) {
     return (
       <input
         data-testid="drag-and-drop"
@@ -33,12 +32,11 @@ vi.mock('../../common/DragAndDrop/DragAndDrop', () => ({
         }}
       />
     );
-  },
-}));
+  };
+});
 
-vi.mock('react-phone-input-2', () => ({
-  __esModule: true,
-  default: function MockPhoneInput(props) {
+jest.mock('react-phone-input-2', () => {
+  return function MockPhoneInput(props) {
     return (
       <input
         data-testid="phone-input"
@@ -47,25 +45,25 @@ vi.mock('react-phone-input-2', () => ({
         placeholder="Phone number"
       />
     );
-  },
-}));
+  };
+});
 
 // Mock URL.createObjectURL and revokeObjectURL
-global.URL.createObjectURL = vi.fn(() => 'mocked-url');
-global.URL.revokeObjectURL = vi.fn();
+global.URL.createObjectURL = jest.fn(() => 'mocked-url');
+global.URL.revokeObjectURL = jest.fn();
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation(query => ({
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
   })),
 });
 
@@ -102,7 +100,7 @@ describe('AddMaterial', () => {
   beforeEach(() => {
     store = mockStore(initialState);
     history = createMemoryHistory();
-    mockDispatch = vi.fn();
+    mockDispatch = jest.fn();
     store.dispatch = mockDispatch;
 
     // Mock action creators
@@ -115,7 +113,7 @@ describe('AddMaterial', () => {
     });
     invUnitActions.fetchInvUnits.mockReturnValue({ type: 'FETCH_INV_UNITS' });
 
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   const renderComponent = (storeState = initialState) => {

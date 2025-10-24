@@ -1,7 +1,5 @@
 import { Component } from 'react';
 import ReportTableSearchPanel from '../ReportTableSearchPanel';
-import { boxStyle, boxStyleDark } from '~/styles';
-import { Button } from 'reactstrap';
 
 class ReportFilter extends Component {
   constructor(props) {
@@ -34,7 +32,6 @@ class ReportFilter extends Component {
   }
 
   render() {
-    const { darkMode } = this.props;
     return (
       <div>
         <div>
@@ -42,7 +39,6 @@ class ReportFilter extends Component {
             Select a Filter
           </button>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <input
             name="radio"
@@ -80,14 +76,6 @@ class ReportFilter extends Component {
             onChange={this.setTenHourFilter}
           />
           10+ hours
-        </div>
-        <Button
-            onClick={() => window.location.reload()}
-            color="danger"
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Clear All
-        </Button>
         </div>
         <div className="mt-4">
           <ReportTableSearchPanel

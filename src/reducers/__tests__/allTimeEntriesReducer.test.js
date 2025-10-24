@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-named-as-default
 import allTimeEntriesReducer from '../allTimeEntriesReducer'; // Adjust the path as necessary
 
 describe('allTimeEntriesReducer', () => {

@@ -1,17 +1,15 @@
 import axios from 'axios';
-
-
 import { updatePassword, forcePasswordUpdate } from '../updatePassword';
 import { GET_ERRORS } from '../../constants/errors';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 
-vi.mock('axios');
+jest.mock('axios');
 
 describe('Password Actions', () => {
   let mockDispatch;
 
   beforeEach(() => {
-    mockDispatch = vi.fn();
+    mockDispatch = jest.fn();
     axios.patch.mockClear();
   });
 

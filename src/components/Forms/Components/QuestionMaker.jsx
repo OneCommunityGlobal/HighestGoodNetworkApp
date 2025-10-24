@@ -1,4 +1,4 @@
-import { updateQuestion, deleteQuestion } from '~/actions/formActions';
+import { updateQuestion, deleteQuestion } from 'actions/formActions';
 import { useDispatch } from 'react-redux';
 import OptionMaker from './OptionMaker';
 import RichTextEditor from './RichTextEditor';
@@ -98,10 +98,7 @@ export default function QuestionMaker({ data }) {
             />
           </div>
           <div>
-            <input type="checkbox" id="required" name="required" />
-            <label htmlFor="required" className="form-check-label">
-              Required
-            </label>
+            <label className="form-check-label">Required</label>
           </div>
         </div>
       </div>

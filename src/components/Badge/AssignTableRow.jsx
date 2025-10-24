@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
+import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
-function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
-  // Pull selected badges from Redux if prop is not passed
-  const storeBadges = useSelector(state => state.badge.selectedBadges);
-  const existBadges = propExistBadges ?? storeBadges;
-
+function AssignTableRow({ badge, index, existBadges }) {
   const [isOpen, setOpen] = useState(false);
   const [isSelect, setSelect] = useState(false);
   const dispatch = useDispatch();
@@ -20,9 +17,9 @@ function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
     } else {
       setSelect(false);
     }
-  }, [existBadges, badge._id, dispatch]);
+  }, []);
 
-  const toggle = () => setOpen(prev => !prev);
+  const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 
   const handleCheckBoxChange = e => {
     const isChecked = e.target.checked;

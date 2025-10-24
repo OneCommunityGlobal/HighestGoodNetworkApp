@@ -45,10 +45,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   if (isError) {
     return (
       <main className={`${styles.itemsListContainer}`}>
-        <h2>
-          {itemType}
-          {' List'}
-        </h2>
+        <h2>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
@@ -61,7 +58,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
         <span>
           {items && (
             <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
+              <label>Time:</label>
               <DatePicker
                 selected={selectedTime}
                 onChange={date => setSelectedTime(date)}
@@ -70,7 +67,6 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 timeIntervals={15}
                 dateFormat="yyyy-MM-dd HH:mm:ss"
                 placeholderText="Select date and time"
-                inputId="itemListTime" // This is the key line
               />
               <SelectForm
                 items={items}
@@ -140,6 +136,10 @@ ItemListView.propTypes = {
       key: PropTypes.string.isRequired,
     }),
   ).isRequired,
+};
+
+ItemListView.defaultProps = {
+  errors: {},
 };
 
 ItemListView.defaultProps = {

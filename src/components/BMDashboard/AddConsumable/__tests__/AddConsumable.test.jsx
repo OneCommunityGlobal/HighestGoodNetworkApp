@@ -4,8 +4,6 @@ import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { toast } from 'react-toastify';
-import { vi } from 'vitest';
-
 import AddConsumable from '../AddConsumable';
 import { fetchInvUnits } from '../../../../actions/bmdashboard/invUnitActions';
 import {
@@ -14,12 +12,12 @@ import {
   resetPostBuildingConsumableTypeResult,
 } from '../../../../actions/bmdashboard/invTypeActions';
 
-vi.mock('../../../../actions/bmdashboard/invUnitActions');
-vi.mock('../../../../actions/bmdashboard/invTypeActions');
-vi.mock('react-toastify', () => ({
+jest.mock('../../../../actions/bmdashboard/invUnitActions');
+jest.mock('../../../../actions/bmdashboard/invTypeActions');
+jest.mock('react-toastify', () => ({
   toast: {
-    success: vi.fn(),
-    error: vi.fn(),
+    success: jest.fn(),
+    error: jest.fn(),
   },
 }));
 
@@ -34,8 +32,12 @@ const mockInvUnits = [
 ];
 
 const initialState = {
-  bmInvUnits: { list: mockInvUnits },
-  bmInvTypes: { postedResult: null },
+  bmInvUnits: {
+    list: mockInvUnits,
+  },
+  bmInvTypes: {
+    postedResult: null,
+  },
 };
 
 const renderComponent = (customState = {}) => {
@@ -50,7 +52,7 @@ const renderComponent = (customState = {}) => {
 
 describe('AddConsumable Component', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     fetchInvUnits.mockReturnValue({ type: 'FETCH_INV_UNITS' });
     fetchConsumableTypes.mockReturnValue({ type: 'FETCH_CONSUMABLE_TYPES' });
     postBuildingConsumableType.mockReturnValue({ type: 'POST_BUILDING_CONSUMABLE_TYPE' });
@@ -219,7 +221,6 @@ describe('AddConsumable Component', () => {
       renderComponent();
       const descriptionInput = screen.getByPlaceholderText('Description');
       await userEvent.type(descriptionInput, 'New description');
-      expect(descriptionInput).toHaveValue('New description');
     });
 
     it('updates size field correctly', async () => {

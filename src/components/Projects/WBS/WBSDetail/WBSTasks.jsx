@@ -3,10 +3,15 @@ import { connect, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
-import hasPermission from '~/utils/permissions';
-import { boxStyle, boxStyleDark } from '~/styles';
-import { getProjectDetail } from '~/actions/project';
-import { fetchAllTasks, emptyTaskItems, updateNumList, deleteTask } from '../../../../actions/task';
+import hasPermission from 'utils/permissions';
+import { boxStyle, boxStyleDark } from 'styles';
+import { getProjectDetail } from 'actions/project';
+import {
+  fetchAllTasks,
+  emptyTaskItems,
+  updateNumList,
+  deleteTask,
+} from '../../../../actions/task';
 import { fetchAllMembers } from '../../../../actions/projectMembers.js';
 import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
@@ -26,6 +31,7 @@ function WBSTasks(props) {
   const projectName = useSelector(state => state.projectById?.projectName || '');
 
   // states from hooks
+  const [showImport, setShowImport] = useState(false);
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
@@ -153,7 +159,7 @@ function WBSTasks(props) {
             />
           ) : null}
 
-          {!isLoading ? (
+          {!isLoading && showImport ? (
             <ImportTask
               wbsId={wbsId}
               projectId={projectId}

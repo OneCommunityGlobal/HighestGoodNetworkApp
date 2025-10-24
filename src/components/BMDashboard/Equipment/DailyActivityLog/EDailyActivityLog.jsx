@@ -3,13 +3,13 @@ import { connect, useDispatch, useSelector } from 'react-redux';
 import { Button, ButtonGroup, Table } from 'reactstrap';
 import Select from 'react-select';
 
-import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
 import {
   fetchAllEquipments,
   updateMultipleEquipmentLogs,
-} from '~/actions/bmdashboard/equipmentActions';
-import { getHeaderData } from '~/actions/authActions';
-import { getUserProfile } from '~/actions/userProfile';
+} from 'actions/bmdashboard/equipmentActions';
+import { getHeaderData } from 'actions/authActions';
+import { getUserProfile } from 'actions/userProfile';
 
 const TODAY = new Date().toISOString().split('T')[0];
 
@@ -148,12 +148,9 @@ function EDailyActivityLog(props) {
         {/* header */}
         <div className="row mb-3">
           <div className="col-md-3">
-            <label className="form-label fw-bold" htmlFor="date">
-              Date
-            </label>
+            <label className="form-label fw-bold">Date</label>
             <input
               type="date"
-              id="date"
               className="form-control"
               value={date}
               onChange={e => setDate(e.target.value)}
@@ -161,11 +158,8 @@ function EDailyActivityLog(props) {
           </div>
 
           <div className="col-md-5">
-            <label className="form-label fw-bold" htmlFor="project-select">
-              Project
-            </label>
+            <label className="form-label fw-bold">Project</label>
             <Select
-              inputId="project-select" // associate label via inputId for react-select
               value={selectedProject}
               onChange={setSelectedProject}
               options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
@@ -176,10 +170,8 @@ function EDailyActivityLog(props) {
           </div>
 
           <div className="col-md-4">
-            <p className="form-label fw-bold" id="log-type-label">
-              Log Type
-            </p>
-            <ButtonGroup className="d-block" aria-labelledby="log-type-label">
+            <label className="form-label fw-bold">Log&nbsp;Type</label>
+            <ButtonGroup className="d-block">
               <Button
                 color={logType === 'check-in' ? 'primary' : 'secondary'}
                 onClick={() => flipLogType('check-in')}

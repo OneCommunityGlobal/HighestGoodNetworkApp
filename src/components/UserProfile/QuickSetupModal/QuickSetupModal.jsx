@@ -37,7 +37,6 @@ function QuickSetupModal(props) {
       .then(res => {
         setTitles(res.data);
       })
-      // eslint-disable-next-line no-console
       .catch(err => console.log(err));
   }, [editModal, refreshTrigger]);
 
@@ -49,24 +48,21 @@ function QuickSetupModal(props) {
       const sortedData = response.data.sort((a, b) => a.order - b.order);
       setTitles(sortedData);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
 
- useEffect(() => {
-  if (props.fetchTeamCodeAllUsers) {
-    props.fetchTeamCodeAllUsers()
-      .then((fetchedCodes) => {
-        if (fetchedCodes?.length) {
-          const formatted = fetchedCodes.map(code => ({ value: code }));
-          setQSTTeamCodes(formatted);
-        }
-      })
-      // eslint-disable-next-line no-console
-      .catch((err) => console.error('Failed to fetch team codes:', err));
-  }
-}, [stateTeamCodes.length, props.teamsData && props.teamsData.allTeamCode]);
+  useEffect(()=>{
+    let teamCodes = [];
+    if(stateTeamCodes.length) {
+      teamCodes = [...stateTeamCodes];
+    }else if (props.teamsData?.allTeams) {
+      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
+        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      }
+    }
+    setQSTTeamCodes(teamCodes);
+  },[stateTeamCodes.length])
 
 
   return (

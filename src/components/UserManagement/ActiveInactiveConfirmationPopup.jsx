@@ -7,7 +7,7 @@ import '../Header/DarkMode.css';
 /**
  * Modal popup to show the user profile to confirm activation/deactivtion
  */
-const ActiveInactiveConfirmationPopupComponent = (props) => {
+const ActiveInactiveConfirmationPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const closePopup = () => {
@@ -41,8 +41,6 @@ const ActiveInactiveConfirmationPopupComponent = (props) => {
       </ModalFooter>
     </Modal>
   );
-};
+});
 
-const ActiveInactiveConfirmationPopup = React.memo(ActiveInactiveConfirmationPopupComponent);
-ActiveInactiveConfirmationPopup.displayName = "ActiveInactiveConfirmationPopup";
 export default ActiveInactiveConfirmationPopup;

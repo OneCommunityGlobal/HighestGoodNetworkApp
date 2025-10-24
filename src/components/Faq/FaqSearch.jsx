@@ -103,8 +103,7 @@ function FaqSearch() {
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {suggestions.map(faq => (
             <li key={faq._id} style={{ marginBottom: '10px' }}>
-              <button
-                type="button"
+              <div
                 onClick={() => toggleFAQ(faq._id)}
                 style={{
                   padding: '10px',
@@ -116,15 +115,11 @@ function FaqSearch() {
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  width: '100%',
-                  textAlign: 'left',
                 }}
-                aria-expanded={expandedFAQ === faq._id}
-                aria-controls={`faq-answer-${faq._id}`}
               >
                 <strong>{faq.question}</strong>
                 {expandedFAQ === faq._id ? <FaChevronUp /> : <FaChevronDown />}
-              </button>
+              </div>
               {expandedFAQ === faq._id && (
                 <div
                   style={{

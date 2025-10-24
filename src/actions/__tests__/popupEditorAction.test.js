@@ -1,11 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import axios from 'axios';
 import * as actions from '../popupEditorAction';
 import * as types from '../../constants/popupEditorConstants';
 
-vi.mock('axios');
+jest.mock('axios');
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -15,7 +14,7 @@ describe('Popup Editor Actions', () => {
 
   beforeEach(() => {
     store = mockStore({});
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   it('should dispatch RECEIVE_POPUP on successful fetchAllPopupEditor', async () => {
@@ -31,8 +30,12 @@ describe('Popup Editor Actions', () => {
 
   it('should dispatch FETCH_POPUP_ERROR on failed fetchAllPopupEditor', async () => {
     axios.get.mockRejectedValue(new Error('Fetch failed'));
+  
     await store.dispatch(actions.fetchAllPopupEditor());
-    await new Promise(process.nextTick);
+  
+    // Wait a tick to allow the .catch to run
+    await new Promise(resolve => { setImmediate(resolve); });
+  
     expect(store.getActions()).toEqual([
       { type: types.FETCH_POPUP_ERROR, err: undefined },
     ]);

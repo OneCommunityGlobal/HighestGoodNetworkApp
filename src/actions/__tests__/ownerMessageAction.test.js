@@ -1,6 +1,4 @@
 import axios from 'axios';
-
-
 import {
   getOwnerMessage,
   updateOwnerMessage,
@@ -8,15 +6,15 @@ import {
   updateOwnerMessageAction,
 } from '../ownerMessageAction';
 import * as types from '../../constants/ownerMessageConstants';
-import { ENDPOINTS } from '~/utils/URL';
+import { ENDPOINTS } from '../../utils/URL';
 
-vi.mock('axios');
+jest.mock('axios');
 
-const mockDispatch = vi.fn();
+const mockDispatch = jest.fn();
 
 describe('ownerMessageActions', () => {
   afterEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
   });
 
   describe('getOwnerMessage', () => {

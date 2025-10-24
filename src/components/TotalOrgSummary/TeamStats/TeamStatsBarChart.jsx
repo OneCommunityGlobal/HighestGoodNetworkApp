@@ -1,5 +1,3 @@
-// ...existing code...
-import CustomTooltip from '../../CustomTooltip';
 import {
   BarChart,
   Bar,
@@ -62,7 +60,7 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
             className="team-stats-y-axis"
             tick={{ fill: darkMode ? 'white' : '#666' }}
           />
-          <Tooltip content={props => <CustomTooltip {...props} yAxisLabel={yAxisLabel} />} />
+          <Tooltip />
           <Bar dataKey="value" fill="#1B6DDF">
             {data.map((_, index) => (
               <Cell key={`cell-${data[index].value}`} fill={data[index].color} />

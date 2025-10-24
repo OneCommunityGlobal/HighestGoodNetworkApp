@@ -18,7 +18,7 @@ describe("AddProject component", () => {
 
   beforeEach(() => {
     store = mockStore(initialState);
-    store.dispatch = vi.fn();
+    store.dispatch = jest.fn();
   });
 
   const renderComponent = (props = {}) => {
@@ -33,12 +33,12 @@ describe("AddProject component", () => {
   };
 
 //helper function
-const typeIntoInput = async ({ input }) => {
+const typeIntoInput = ({ input }) => {
   const inputField = screen.getByRole('textbox');
 
   if (input) {
-    await userEvent.type(inputField, input);
-    await userEvent.type(inputField, input);
+    userEvent.type(inputField, input);
+    userEvent.type(inputField, input);
   }
 
   return {
@@ -52,35 +52,35 @@ const typeIntoInput = async ({ input }) => {
     expect(screen.getByText("Add New Project")).toBeInTheDocument();
   })
 
-  test("opens modal on button click", async () => {
+  test("opens modal on button click", () => {
     renderComponent();
-    await userEvent.click(screen.getByText("Add New Project"));
+    userEvent.click(screen.getByText("Add New Project"));
     expect(screen.getByText("Add New Project", { selector: 'h5' })).toBeInTheDocument();
   });
 
-  test("category select updates correctly", async () => {
+  test("category select updates correctly", () => {
     renderComponent();
-    await userEvent.click(screen.getByText("Add New Project"));
+    userEvent.click(screen.getByText("Add New Project"));
     const select = screen.getByLabelText("Select Category");
-    await userEvent.selectOptions(select, "Food");
+    userEvent.selectOptions(select, "Food");
     expect(select).toHaveValue("Food");
   });
 
-  test("WBS input and list work correctly", async () => {
+  test("WBS input and list work correctly", () => {
     renderComponent();
-    await userEvent.click(screen.getByText("Add New Project"));
+    userEvent.click(screen.getByText("Add New Project"));
     const input = screen.getByPlaceholderText("Enter WBS name");
-    await userEvent.type(input, "WBS 1");
-    await userEvent.click(screen.getByText("Add WBS"));
+    userEvent.type(input, "WBS 1");
+    userEvent.click(screen.getByText("Add WBS"));
     expect(screen.getByText("WBS 1")).toBeInTheDocument();
   });
 
   test("adds project on form submission", async () => {
     renderComponent();
-    await userEvent.click(screen.getByText("Add New Project"));
-    await userEvent.type(screen.getByLabelText("Project Name"), "Test Project");
-    await userEvent.selectOptions(screen.getByLabelText("Select Category"), "Food");
-    await userEvent.click(screen.getByText("Add Project"));
+    userEvent.click(screen.getByText("Add New Project"));
+    userEvent.type(screen.getByLabelText("Project Name"), "Test Project");
+    userEvent.selectOptions(screen.getByLabelText("Select Category"), "Food");
+    userEvent.click(screen.getByText("Add Project"));
     
     await waitFor(() => {
       expect(store.dispatch).toHaveBeenCalledWith(expect.any(Function));
@@ -92,7 +92,7 @@ const typeIntoInput = async ({ input }) => {
   
 //   //mock the onAddNewProject function
 
-//   const mockAddNewProject = vi.fn();
+//   const mockAddNewProject = jest.fn();
 
 //   beforeEach(() => {
 //     render(<AddProject onAddNewProject={mockAddNewProject} />)
