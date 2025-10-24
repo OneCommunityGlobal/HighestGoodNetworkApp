@@ -425,7 +425,6 @@ export class WeeklySummariesReport extends Component {
 
       const isMeetCriteria =
         summary.totalTangibleHrs > 80 &&
-        summary.daysInTeam > 60 &&
         summary.weeklySummariesCount >= 8 &&
         summary.bioPosted !== 'posted';
 

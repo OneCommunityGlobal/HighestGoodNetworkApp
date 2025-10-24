@@ -17,7 +17,8 @@ function BioFunction(props) {
 
   const [bioStatus, setBioStatus] = useState(bioPosted);
 
-  const isMeetCriteria = totalTangibleHrs > 80 && daysInTeam > 60 && bioPosted !== 'posted';
+  const isMeetCriteria =
+    totalTangibleHrs > 80 && summary?.weeklySummariesCount >= 8 && bioPosted !== 'posted';
   const style = {
     color: textColors[summary?.weeklySummaryOption] || textColors.Default,
   };
