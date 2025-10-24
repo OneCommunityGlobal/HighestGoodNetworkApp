@@ -372,13 +372,15 @@ const TeamMemberTask = React.memo(
                               }}
                             >{`${user.name}`}</Link>
 
-                            {user.role !== 'Volunteer' && (
+                            {user.role !== 'Volunteer' ? (
                               <div
                                 className="user-role"
                                 style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                               >
                                 {user.role}
                               </div>
+                            ) : (
+                              <div></div>
                             )}
 
                             {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
@@ -564,16 +566,7 @@ const TeamMemberTask = React.memo(
                                             task.hoursLogged.toFixed(2),
                                           )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                         </span>
-                                        {canSeeFollowUpCheckButton && (
-                                          <>
-                                            <FollowupCheckButton
-                                              moseoverText={followUpMouseoverText(task)}
-                                              user={user}
-                                              task={task}
-                                            />
-                                            <FollowUpInfoModal />
-                                          </>
-                                        )}
+
                                         <Progress
                                           color={getProgressColor(
                                             task.hoursLogged,
@@ -587,6 +580,16 @@ const TeamMemberTask = React.memo(
                                           className={styles['team-task-progress-bar']}
                                         />
                                       </div>
+                                      {canSeeFollowUpCheckButton && (
+                                        <div className="my-2">
+                                          <FollowupCheckButton
+                                            moseoverText={followUpMouseoverText(task)}
+                                            user={user}
+                                            task={task}
+                                          />
+                                          <FollowUpInfoModal />
+                                        </div>
+                                      )}
                                     </td>
                                   )}
                                 </tr>

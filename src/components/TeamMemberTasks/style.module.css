@@ -21,9 +21,8 @@
 }
 
 .task_table-container {
-  overflow-x: auto;
-  overflow-y: hidden;
-  max-width: 100%;
+  overflow: auto;
+  position: relative;
 }
 
 .task_table-container table {
@@ -429,7 +428,7 @@
   grid-template-columns: 1fr repeat(2, auto);
   grid-template-rows: repeat(2, auto);
   column-gap: 10px;
-  margin-left: -20px;
+  /* margin-left: -20px; */
 }
 
 .team-task-progress-time {
@@ -453,8 +452,9 @@
 .team-task-progress-bar {
   grid-column: 1 / span 3;
   grid-row: 2 / span 1;
-  margin-top: 2px;
+  margin-top: 5px;
 }
+
 
 .hours-btn-div {
   display: flex;
@@ -534,7 +534,7 @@
   color: #fff !important;
 }
 
-@media (max-width: 1240px) and (min-width: 992px) {
+@media (max-width: 1240px) and (min-width: 768px) {
   .header-box {
     flex-direction: column;
   }
@@ -584,6 +584,9 @@
   .task-table {
     max-height: 900px;
   }
+  .header-box {
+    flex-direction: column;
+  }
 }
 
 @media only screen and (max-width: 768px) {
@@ -612,15 +615,15 @@
   }
 
   .team-member-tasks .table,
-  .team-member-tasks .table tbody,
-  .team-member-tasks .table tr,
-  .team-member-tasks .table td {
+  .team-member-tasks tbody,
+  .team-member-tasks tr,
+  .team-member-tasks td {
     display: block;
     width: 100%;
     text-align: left !important;
   }
 
-  .team-member-tasks .table td::before {
+  .team-member-tasks td::before {
     content: attr(data-label);
     font-size: 17px;
     font-weight: 500;

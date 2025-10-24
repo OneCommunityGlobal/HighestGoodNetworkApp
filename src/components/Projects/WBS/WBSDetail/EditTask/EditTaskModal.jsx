@@ -20,7 +20,7 @@ import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css';
-import '../wbs.css';
+import '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
 
@@ -164,7 +164,7 @@ function EditTaskModal(props) {
                         styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
                         subscript superscript charmap  | help',
     branding: false,
-    min_height: 180,
+    min_height: 280,
     max_height: 300,
     autoresize_bottom_margin: 1,
     skin: darkMode ? 'oxide-dark' : 'oxide',
@@ -851,7 +851,7 @@ function EditTaskModal(props) {
                   </div>
                 </td>
               </tr>
-              <tr>
+              <tr className='text-break'>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <td id="edit-modal-td" scope="col">
                   Links
@@ -1084,7 +1084,7 @@ function EditTaskModal(props) {
       <div className="task-action-buttons d-flex" />
       {canUpdateTask && (
         <Button
-          className="mr-2 controlBtn"
+          className="mx-2 controlBtn"
           color="primary"
           size="sm"
           onClick={e => handleModalShow('Edit')}

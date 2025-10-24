@@ -151,12 +151,13 @@ const AddProject = (props) => {
     <div>
       <button
         type="button"
-        className="btn btn-outline-success"
+        className="btn btn-outline-success m-2"
         onClick={toggleModal}
         style={{
           borderColor: '#8ec233',
           color: '#8ec233',
           borderWidth: '1px',
+          marginBottom: '10px'
         }}
       >
         <i className="fa fa-plus" aria-hidden="true"></i> Add New Project

@@ -283,9 +283,9 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container py-3 border border-secondary rounded" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
+        <div className="container py-3 mb-5 border border-secondary rounded" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
           {fetching || !fetched ? <Loading align="center" /> : null}
-          <div className="d-flex justify-content-center align-items-center">
+          <div className="d-flex align-items-center flex-wrap w-100">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
             <EditableInfoModal
               areaName="projectsInfoModal"
@@ -300,7 +300,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
         </div>
 
         <SearchProjectByPerson onSearch={handleSearchName} />
-
+        <div style={{ overflowX: 'auto', overflowY: 'auto',  maxHeight: '500px' }}>
         <table className="table table-bordered table-responsive-sm">
           <thead>
             <ProjectTableHeader
@@ -315,6 +315,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
         </table>
+        </div>
       </div>
 
       <ModalTemplate
