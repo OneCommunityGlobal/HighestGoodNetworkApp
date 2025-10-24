@@ -34,7 +34,7 @@ function ExperienceDonutChart() {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
-      const url = 'http://localhost:4500/api/experience-breakdown';
+      const url = `${process.env.REACT_APP_APIENDPOINT}/experience-breakdown`;
       const params = {};
 
       if (filterStartDate && filterEndDate) {
@@ -44,6 +44,7 @@ function ExperienceDonutChart() {
         params.roles = filterRoles.join(',');
       }
 
+      // const response = await axios.get(url, { params });
       const response = await axios.get(url, {
         headers: { Authorization: token },
         params,
