@@ -2,12 +2,16 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 16px;
+  background-color: var(--bg-color, #ffffff);
+  color: var(--text-color, #000000);
+  min-height: 100vh;
 }
 
 .dashboardTitle {
   font-size: 1.875rem;
   font-weight: bold;
   margin-bottom: 24px;
+  color: var(--title-color, #000000);
 }
 
 .gridContainer {
@@ -28,9 +32,9 @@
 }
 
 .filterCard {
-  background: white;
+  background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0,0,0,0.1));
   padding: 16px;
 }
 
@@ -38,10 +42,11 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 4px;
+  color: var(--title-color, #000000);
 }
 
 .filterCardDesc {
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
   font-size: 0.875rem;
 }
 
@@ -61,14 +66,21 @@
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
+  color: var(--label-color, #000000);
 }
 
 .selectInput {
   width: 100%;
   padding: 8px;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color, #d1d5db);
   border-radius: 6px;
   outline: none;
+  background-color: var(--input-bg, #ffffff);
+  color: var(--text-color, #000000);
+}
+
+.selectInput:focus {
+  border-color: var(--focus-border-color, #3b82f6);
 }
 
 .checkboxGroup {
@@ -86,12 +98,13 @@
 .checkboxLabel {
   font-size: 0.875rem;
   cursor: pointer;
+  color: var(--text-color, #000000);
 }
 
 .increaseCard {
-  background: white;
+  background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0,0,0,0.1));
   padding: 16px;
 }
 
@@ -99,6 +112,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 8px;
+  color: var(--title-color, #000000);
 }
 
 .increaseTrendRow {
@@ -127,22 +141,24 @@
 .increaseText {
   margin-left: 8px;
   font-size: 0.875rem;
+  color: var(--text-color, #000000);
 }
 
 .chartPanel {
-  background: white;
+  background: var(--card-bg, white);
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow, 0 4px 6px -1px rgba(0,0,0,0.1));
   padding: 16px;
 }
 
 .chartPanelTitle {
   font-size: 1.25rem;
   font-weight: 600;
+  color: var(--title-color, #000000);
 }
 
 .chartPanelDesc {
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
   font-size: 0.875rem;
 }
 
@@ -169,6 +185,16 @@
   margin-bottom: 8px;
 }
 
+.loadingText {
+  color: var(--text-color, #000000);
+  margin: 0;
+}
+
+.noDataText {
+  color: var(--text-secondary, #6b7280);
+  margin: 0;
+}
+
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
@@ -176,7 +202,7 @@
 
 .materialBreakdown {
   margin-top: 24px;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color, #e5e7eb);
   padding-top: 16px;
 }
 
@@ -184,6 +210,7 @@
   font-size: 1.125rem;
   font-weight: 500;
   margin-bottom: 12px;
+  color: var(--title-color, #000000);
 }
 
 .materialBreakdownGrid {
@@ -198,7 +225,7 @@
   gap: 12px;
   padding: 12px;
   border-radius: 6px;
-  background: #f9fafb;
+  background: var(--breakdown-item-bg, #f9fafb);
 }
 
 .materialBreakdownDot {
@@ -209,15 +236,32 @@
 
 .materialBreakdownName {
   font-weight: 500;
+  color: var(--text-color, #000000);
 }
 
 .materialBreakdownValue {
   font-size: 1.5rem;
   font-weight: bold;
+  color: var(--text-color, #000000);
 }
 
 .materialBreakdownUnit {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-secondary, #6b7280);
   font-weight: normal;
+}
+
+/* ============ DARK MODE ============ */
+.dashboardWrapper.darkMode {
+  --bg-color: #1b2a41;
+  --text-color: #ffffff;
+  --title-color: #ffffff;
+  --text-secondary: #e0e0e0;
+  --card-bg: #2b3e59;
+  --input-bg: #3a506b;
+  --border-color: #4a5a77;
+  --focus-border-color: #e8a71c;
+  --label-color: #e0e0e0;
+  --shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.1);
+  --breakdown-item-bg: #3a506b;
 }
