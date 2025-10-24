@@ -348,7 +348,7 @@ const WeeklySummariesReport = props => {
       // Shallow copy and sort
       let summariesCopy = [...summaries];
       summariesCopy = alphabetize(summariesCopy);
-      summariesCopy = summariesCopy.filter(summary => summary?.isActive !== false);
+      //summariesCopy = summariesCopy.filter(summary => summary?.isActive !== false);
       // Add new key of promised hours by week
       summariesCopy = summariesCopy.map(summary => {
         const promisedHoursByWeek = weekDates.map(weekDate =>
@@ -613,9 +613,11 @@ const WeeklySummariesReport = props => {
         //     return false; // Skip inactive members unless their summary is from last week
         //   }
         // }
-        if (summary?.isActive === false && !isLastWeekReport(summary.startDate, summary.endDate)) {
-          return false;
+        // If this user has an endDate, only include them when you're on their final week tab
+        if (summary.endDate) {
+          if (summary.finalWeekIndex !== weekIndex) return false;
         }
+
         const isMeetCriteria =
           summary.totalTangibleHrs > 80 &&
           summary.daysInTeam > 60 &&
