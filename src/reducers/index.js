@@ -60,6 +60,7 @@ import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
 import { bmTimeLoggerReducer } from './bmdashboard/timeLoggerReducer';
 import bmInjuryReducer from './bmdashboard/injuryReducer';
+import issueGraphReducer from './bmdashboard/issueGraphReducer';
 
 import dashboardReducer from './dashboardReducer';
 import { timeOffRequestsReducer } from './timeOffRequestReducer';
@@ -152,7 +153,7 @@ const localReducers = {
 
   // lbdashboard
   wishlistItem: wishListReducer,
-
+  issueGraph: issueGraphReducer,
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,

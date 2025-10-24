@@ -303,7 +303,7 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
   BM_ISSUES_BARGRAPH_SUMMARY: `${APIEndpoint}/issues/summary`,
-  BM_ISSUES_BARGRAPH_TREND: `${APIEndpoint}/issues/trend`,
+  BM_ISSUES_BARGRAPH_TREND: `${APIEndpoint}/issues/trends`,
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;

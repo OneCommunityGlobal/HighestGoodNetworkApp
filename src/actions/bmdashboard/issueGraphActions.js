@@ -9,12 +9,17 @@ import {
 } from '../../constants/bmdashboard/issueGraphConstants';
 import { ENDPOINTS } from '../../utils/URL';
 
-export const fetchIssueSummary = () => async dispatch => {
+export const fetchIssueSummary = (params = {}) => async dispatch => {
   try{
     dispatch({ type: FETCH_ISSUES_SUMMARY_REQUEST });
-
-    const { data } = await axios.get(ENDPOINTS.BM_ISSUES_BARGRAPH_SUMMARY);
-    dispatch({ type: FETCH_ISSUES_SUMMARY_SUCCESS, payload: data });
+    const { data } = await axios.get(ENDPOINTS.BM_ISSUES_BARGRAPH_SUMMARY, { params });
+    const normalizedData = data.data ? {
+      total: data.data.totalIssues,
+      newThisWeek: data.data.newIssues,
+      resolved: data.data.resolvedIssues,
+      avgResolution: data.data.averageResolutionTimeDays,
+    } : {};
+    dispatch({ type: FETCH_ISSUES_SUMMARY_SUCCESS, payload: normalizedData });
   }catch(error){
     dispatch({
       type: FETCH_ISSUES_SUMMARY_FAILURE,
@@ -23,12 +28,12 @@ export const fetchIssueSummary = () => async dispatch => {
   }
 }
 
-export const fetchIssueTrend = () => async dispatch => {
+export const fetchIssueTrend = (params = {}) => async dispatch => {
   try{
     dispatch({ type: FETCH_ISSUES_TREND_REQUEST });
-
-    const { data } = await axios.get(ENDPOINTS.BM_ISSUES_BARGRAPH_TREND);
-    dispatch({ type: FETCH_ISSUES_TREND_SUCCESS, payload: data });
+    const { data } = await axios.get(ENDPOINTS.BM_ISSUES_BARGRAPH_TREND, { params });
+    const trendData = data.data || [];
+    dispatch({ type: FETCH_ISSUES_TREND_SUCCESS, payload: trendData });
   }catch(error){
     dispatch({
       type: FETCH_ISSUES_TREND_FAILURE,
