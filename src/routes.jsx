@@ -684,6 +684,11 @@ export default (
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
         <CPProtectedRoute path="/communityportal/database/design" exact component={EventList} />
         <CPProtectedRoute
+          path="/communityportal/ActivityAttendance"
+          exact
+          component={ActivityAttendance}
+        />
+        <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
           component={Feedbackform}
         />
