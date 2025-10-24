@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './issueGraph.module.css';
 import {
   BarChart,
@@ -11,77 +12,52 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
+import { fetchIssueSummary, fetchIssueTrend } from '../../../actions/bmdashboard/issueGraphActions';
 
 function IssueGraph() {
-  const [summary, setSummary] = useState({
-    total: 120,
-    newThisWeek: 45,
-    resolved: 25,
-    avgResolution: 20,
-  });
+  const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const { loading, issueSummary, issueTrend, error } = useSelector(state => state.issueGraph);
 
   const [weeks, setWeeks] = useState(8);
   const [graphData, setGraphData] = useState([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [useManualDate, setUseManualDate] = useState(false);
 
-  const formatDate = date => date.toISOString().split('T')[0];
-
-  // Today and 12 weeks ago
   const today = new Date();
-  const maxEndDate = formatDate(today);
-  const minStartDate = formatDate(new Date(today.getTime() - 12 * 7 * 24 * 60 * 60 * 1000));
+  const formattedDate = date => date.toISOString().split('T')[0];
+  const maxEndDate = formattedDate(today);
+  const minStartDate = formattedDate(new Date(today.getTime() - 12 * 7 * 24 * 60 * 60 * 1000));
   const maxStartDate = endDate ? endDate : maxEndDate;
-  const minEndDate = startDate || minStartDate;
-
-  // mock data temp
-  const fetchData = ({ weeks, startDate, endDate }) => {
-    console.log('Fetching data with:', { weeks, startDate, endDate });
-
-    if (weeks && !startDate && !endDate) {
-      //week ffilter
-      const data = Array.from({ length: weeks }, (_, i) => ({
-        week: `Week ${i + 1}`,
-        created: Math.floor(Math.random() * 50) + 10,
-        resolved: Math.floor(Math.random() * 40) + 5,
-      }));
-      setGraphData(data);
-    } else if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-
-      // Calculate number of weeks between start and end
-      const diffInTime = end.getTime() - start.getTime();
-      const diffInWeeks = Math.max(1, Math.ceil(diffInTime / (7 * 24 * 60 * 60 * 1000)));
-
-      const data = Array.from({ length: diffInWeeks }, (_, i) => ({
-        week: `Week ${i + 1}`,
-        created: Math.floor(Math.random() * 50) + 10,
-        resolved: Math.floor(Math.random() * 40) + 5,
-      }));
-
-      setGraphData(data);
-    }
-  };
+  const minEndDate = startDate ? startDate : minStartDate;
 
   useEffect(() => {
-    fetchData({ weeks });
-  }, []);
+    dispatch(fetchIssueSummary({ weeks }));
+    dispatch(fetchIssueTrend({ weeks }));
+  }, [dispatch, weeks]);
 
-  const handleWeeksChange = value => {
-    setWeeks(value);
-    setUseManualDate(false);
+  useEffect(() => {
+    if (issueTrend && Array.isArray(issueTrend)) {
+      const sortedData = [...issueTrend].sort((a, b) => new Date(a.week) - new Date(b.week));
+      setGraphData(sortedData);
+    }
+  }, [issueTrend]);
+
+  const handleWeeksChange = e => {
+    const val = Number(e.target.value);
+    setWeeks(val);
     setStartDate('');
     setEndDate('');
-    fetchData({ weeks: value });
   };
 
   const handleGoClick = () => {
-    if (startDate && endDate && new Date(startDate) <= new Date(endDate)) {
-      setUseManualDate(true);
-      fetchData({ startDate, endDate });
+    if (!startDate || !endDate) return;
+    if (new Date(startDate) > new Date(endDate)) {
+      alert('Start date must be before end date');
+      return;
     }
+    dispatch(fetchIssueTrend({ start: startDate, end: endDate }));
+    dispatch(fetchIssueSummary({ start: startDate, end: endDate }));
   };
 
   return (
@@ -118,11 +94,7 @@ function IssueGraph() {
 
         <div className={styles.filterGroup}>
           <label htmlFor="weeks-select">Weeks:</label>
-          <select
-            id="weeks-select"
-            value={weeks}
-            onChange={e => handleWeeksChange(Number(e.target.value))}
-          >
+          <select id="weeks-select" value={weeks} onChange={handleWeeksChange}>
             <option value={4}>Last 4 Weeks</option>
             <option value={8}>Last 8 Weeks</option>
             <option value={12}>Last 12 Weeks</option>
@@ -133,43 +105,49 @@ function IssueGraph() {
       {startDate && endDate && new Date(startDate) > new Date(endDate) && (
         <p style={{ color: 'red' }}>Start date cannot be after end date.</p>
       )}
-
-      <div className={styles.tileRow}>
-        <div className={styles.tile}>
-          <h3>Total Issues</h3>
-          <p>{summary.total}</p>
+      {/* issue tiles */}
+      {issueSummary && (
+        <div className={styles.tileRow}>
+          <div className={styles.tile}>
+            <h3>Total Issues</h3>
+            <p>{issueSummary.total}</p>
+          </div>
+          <div className={styles.tile}>
+            <h3>New Issues This Week</h3>
+            <p>{issueSummary.newThisWeek}</p>
+          </div>
+          <div className={styles.tile}>
+            <h3>Resolved Issues</h3>
+            <p>{issueSummary.resolved}</p>
+          </div>
+          <div className={styles.tile}>
+            <h3>Avg. Resolution Time</h3>
+            <p>{issueSummary.avgResolution} days</p>
+          </div>
         </div>
-        <div className={styles.tile}>
-          <h3>New Issues This Week</h3>
-          <p>{summary.newThisWeek}</p>
-        </div>
-        <div className={styles.tile}>
-          <h3>Resolved Issues</h3>
-          <p>{summary.resolved}</p>
-        </div>
-        <div className={styles.tile}>
-          <h3>Avg. Resolution Time</h3>
-          <p>{summary.avgResolution} days</p>
-        </div>
-      </div>
+      )}
       {/* charts */}
       <div className={styles.graphWrapper}>
         <h2>Issues Created vs. Resolved</h2>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={graphData} margin={{ top: 20, right: 20, left: 0, bottom: 30 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="week" />
-            <YAxis />
-            <Tooltip />
-            <Legend verticalAlign="bottom" height={36} />
-            <Bar dataKey="created" fill="#007bff" name="Created Issues">
-              <LabelList dataKey="created" position="top" />
-            </Bar>
-            <Bar dataKey="resolved" fill="#28a745" name="Resolved Issues">
-              <LabelList dataKey="resolved" position="top" />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        {loading && <p>Loading...</p>}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {graphData.length > 0 && (
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={graphData} margin={{ top: 20, right: 20, left: 0, bottom: 30 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" />
+              <YAxis />
+              <Tooltip />
+              <Legend verticalAlign="bottom" height={36} />
+              <Bar dataKey="created" fill="#007bff" name="Created Issues">
+                <LabelList dataKey="created" position="top" />
+              </Bar>
+              <Bar dataKey="resolved" fill="#28a745" name="Resolved Issues">
+                <LabelList dataKey="resolved" position="top" />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );

@@ -405,7 +405,7 @@ export const ENDPOINTS = {
   BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
   BM_ISSUES_BARGRAPH_SUMMARY: `${APIEndpoint}/issues/summary`,
-  BM_ISSUES_BARGRAPH_TREND: `${APIEndpoint}/issues/trend`,
+  BM_ISSUES_BARGRAPH_TREND: `${APIEndpoint}/issues/trends`,
   BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
   BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
 
