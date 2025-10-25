@@ -17,6 +17,34 @@ const DemandOverTime = ({
     setTimeout(() => setData(generateDummyData()), 300);
   }, [compareType, metric, dateRange]);
 
+  function randomInt(min, max) {
+    const range = max - min + 1;
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      // use 32-bit when range is large, 8-bit otherwise
+      if (range <= 256) {
+        const arr = new Uint8Array(1);
+        const limit = 256 - (256 % range);
+        let r;
+        do {
+          crypto.getRandomValues(arr);
+          r = arr[0];
+        } while (r >= limit);
+        return min + (r % range);
+      } else {
+        const arr = new Uint32Array(1);
+        const MAX = 0x100000000; // 2^32
+        const limit = MAX - (MAX % range);
+        let r;
+        do {
+          crypto.getRandomValues(arr);
+          r = arr[0];
+        } while (r >= limit);
+        return min + (r % range);
+      }
+    }
+    return Math.floor(Math.random() * range) + min;
+  }
+
   const generateDummyData = () => {
     const items =
       compareType === 'villages'
@@ -35,7 +63,7 @@ const DemandOverTime = ({
       name: item,
       data: months.map(month => ({
         month,
-        value: Math.floor(Math.random() * 100) + 20,
+        value: randomInt(20, 119),
       })),
     }));
   };
