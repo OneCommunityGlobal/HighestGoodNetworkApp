@@ -14,6 +14,7 @@ import Logout from './components/Logout/Logout';
 import ForgotPassword from './components/Login/ForgotPassword';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import UpdatePassword from './components/UpdatePassword';
+import MemberList from './components/QuestionnaireDashboard/MemberList';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 
 import SetupProfile from './components/SetupProfile/SetupProfile';
@@ -828,7 +829,6 @@ export default (
           exact
           component={ReviewersStackedBarChart}
         />
-
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
