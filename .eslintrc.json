@@ -22,3 +22,17 @@
     "sourceType": "module"
   }
 }
+{
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          "*.css",
+          "!*.module.css",
+          "!index.css"
+        ]
+      }
+    ]
+  }
+}

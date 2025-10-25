@@ -170,12 +170,6 @@ export const permissionLabels = [
           'Gives the user permission to update the password of any user but Owner/Admin classes. ',
       },
       {
-        label: 'Reset / Change Password (Others)',
-        key: 'resetPassword',
-        description:
-          'Gives the user permission to Reset and/or Change the password of any user but Owner/Admin classes. ',
-      },
-      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
@@ -202,6 +196,12 @@ export const permissionLabels = [
         label: 'Tracking Management',
         key: 'setTrackingManagement',
         description: 'Gives the user permission to interact with the edit warnings list modal.',
+      },
+      {
+        label: 'HGN People +/- Setup',
+        key: 'manageHGNAccessSetup',
+        description:
+          'Gives the user permission to access the HGN Add Access button on user profile pages to add/remove user access to GitHub, Dropbox, Slack, and Sentry.',
       },
     ],
   },
@@ -248,6 +248,12 @@ export const permissionLabels = [
         label: 'Delete a Warning Tracker',
         key: 'deleteWarningTracker',
         description: 'Gives user permission to delete a warning tracker from the system.',
+      },
+      {
+        label: 'Blue Square Email Management',
+        key: 'resendBlueSquareAndSummaryEmails',
+        description:
+          'Gives the user permission to access Blue Square Email Management and resend infringement emails and weekly summary emails.',
       },
     ],
   },
