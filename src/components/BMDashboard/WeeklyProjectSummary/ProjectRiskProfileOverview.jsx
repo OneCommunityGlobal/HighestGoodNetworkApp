@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   BarChart,
   Bar,
@@ -28,6 +28,78 @@ export default function ProjectRiskProfileOverview() {
 
   const allSpanRef = useRef(null);
   const dateSpanRef = useRef(null);
+
+  const tooltipBg = darkMode ? '#3a506b' : '#fff';
+  const textColor = darkMode ? '#ffffff' : '#000000ff';
+
+  const selectStyles = useMemo(
+    () => ({
+      control: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        borderColor: darkMode ? '#375071' : '#ccc',
+        color: darkMode ? '#fff' : '#232323',
+        minHeight: 38,
+        boxShadow: 'none',
+        borderRadius: 8,
+      }),
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        fontSize: 12,
+        zIndex: 10001,
+        borderRadius: 8,
+        marginTop: 2,
+        color: darkMode ? '#fff' : '#232323',
+      }),
+      menuList: base => ({
+        ...base,
+        maxHeight: 400,
+        overflowY: 'auto',
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        color: darkMode ? '#fff' : '#232323',
+        padding: 0,
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected
+          ? '#0d55b3'
+          : state.isFocused
+          ? '#0d55b3'
+          : darkMode
+          ? '#22272e'
+          : '#fff',
+        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
+        fontSize: 13,
+        padding: '10px 16px',
+        cursor: 'pointer',
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
+        borderRadius: 6,
+        fontSize: 12,
+        marginRight: 4,
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        fontSize: 12,
+        padding: '2px 6px',
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        ':hover': {
+          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
+          color: '#fff',
+        },
+        borderRadius: 4,
+        padding: 2,
+      }),
+    }),
+    [darkMode],
+  );
 
   useEffect(() => {
     async function fetchData() {
@@ -104,6 +176,7 @@ export default function ProjectRiskProfileOverview() {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  styles={selectStyles}
                 />
               </div>
             )}
@@ -132,6 +205,7 @@ export default function ProjectRiskProfileOverview() {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  styles={selectStyles}
                 />
               </div>
             )}
@@ -151,9 +225,18 @@ export default function ProjectRiskProfileOverview() {
             barGap={8}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="projectName" />
-            <YAxis />
-            <Tooltip />
+            <XAxis dataKey="projectName" tick={{ fill: textColor }} />
+            <YAxis tick={{ fill: textColor }} />
+            <Tooltip
+              cursor={{ fill: darkMode ? 'rgba(28, 37, 65, .25)' : 'rgba(145, 140, 140, 0.25)' }}
+              contentStyle={{
+                backgroundColor: tooltipBg,
+                border: 'none',
+                borderRadius: '8px',
+                color: textColor,
+              }}
+              labelStyle={{ color: textColor }}
+            />
             <Legend />
             <Bar dataKey="predictedCostOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4" />
             <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" />
