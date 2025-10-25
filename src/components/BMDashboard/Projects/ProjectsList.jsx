@@ -35,7 +35,11 @@ function ProjectsList() {
           : base.boxShadow
         : base.boxShadow,
       '&:hover': {
-        borderColor: darkMode ? '#5a7a9b' : base['&:hover'].borderColor,
+        borderColor: darkMode
+          ? '#5a7a9b'
+          : base['&:hover']
+          ? base['&:hover'].borderColor
+          : base.borderColor,
       },
     }),
     menu: base => ({
@@ -58,7 +62,11 @@ function ProjectsList() {
         backgroundColor,
         color: darkMode ? '#e0e0e0' : base.color,
         '&:hover': {
-          backgroundColor: darkMode ? '#3a506b' : base['&:hover'].backgroundColor,
+          backgroundColor: darkMode
+            ? '#3a506b'
+            : base['&:hover']
+            ? base['&:hover'].backgroundColor
+            : base.backgroundColor,
         },
       };
     },
@@ -74,8 +82,8 @@ function ProjectsList() {
       ...base,
       color: darkMode ? '#ffffff' : base.color,
       '&:hover': {
-        backgroundColor: darkMode ? '#5a7a9b' : base['&:hover'].backgroundColor,
-        color: darkMode ? '#ffffff' : base['&:hover'].color,
+        backgroundColor: darkMode ? '#5a7a9b' : '#e9ecef',
+        color: darkMode ? '#ffffff' : '#495057',
       },
     }),
     placeholder: base => ({
