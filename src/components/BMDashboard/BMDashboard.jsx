@@ -5,18 +5,19 @@ import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import BMError from './shared/BMError';
-import './BMDashboard.css';
+import './BMDashboard.module.css';
 
 export function BMDashboard() {
   const [isError, setIsError] = useState(false);
 
   const dispatch = useDispatch();
-  const errors = useSelector(state => state.errors);
+  const errors = useSelector(state => state.errors || {});
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
 
   // fetch projects data on pageload
   useEffect(() => {
     dispatch(fetchBMProjects());
-  }, []);
+  }, [dispatch]);
 
   // trigger an error state if there is an errors object
   useEffect(() => {
@@ -26,11 +27,17 @@ export function BMDashboard() {
   }, [errors]);
 
   return (
-    <Container className="justify-content-center align-items-center">
-      <header className="bm-dashboard__header">
-        <h1>Building and Inventory Management Dashboard</h1>
+    <Container
+      className={`justify-content-center align-items-center bm-dashboard-container ${
+        darkMode ? 'bm-dashboard-dark' : ''
+      }`}
+    >
+      <header className={`bm-dashboard__header ${darkMode ? 'bm-dashboard__header-dark' : ''}`}>
+        <h1 className={darkMode ? 'text-light' : ''}>
+          Building and Inventory Management Dashboard
+        </h1>
       </header>
-      <main>
+      <main className={darkMode ? 'bm-dashboard-main-dark' : ''}>
         {isError ? (
           <BMError errors={errors} />
         ) : (
