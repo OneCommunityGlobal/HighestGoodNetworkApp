@@ -15,6 +15,7 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   START_DATE_ERROR_MESSAGE,
   END_DATE_ERROR_MESSAGE,
 } from '../../../../../languages/en/messages';
+import clsx from 'clsx';
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import styles from './AddTaskModal.module.css';
@@ -710,44 +711,49 @@ const defaultCategory = useMemo(() => {
               </div>
 
               <div className="add_new_task_form-group">
-                <label htmlFor="resource-input" className={`add_new_task_form-label`}>
-                  Resources
-                </label>
-                <div className="add_new_task_form-input_area">
-                <TagsSearch
-                  key={`tags-${props.projectId}-${activeMembers.length}`}
-                  placeholder="Add resources"
-                  members={activeMembers}
-                  addResources={addResources}
-                  removeResource={removeResource}
-                  resourceItems={resourceItems}
-                  disableInput={false}
-                  inputTestId="resource-input"
-                  projectId={props.projectId}
-                />
-                {/* [RT] Replicate control */}
-                <div className={styles['replicate-control']}>
-                  <button
-                    type="button"
-                    className={styles['replicate-btn']}
-                    onClick={openReplicateConfirm}
-                    data-tip
-                    data-for="replicateTip"
-                    disabled={!resourceItems?.length || isLoading || isReplicating}
-                    aria-label="Replicate Task"
-                    title="Replicate Task"
-                  >
-                    <span style={{ fontWeight: 700 }}>RT</span>
-                  </button>
-                  <span style={{ fontSize: '0.9rem' }}>
-                    (Create an individual copy for each selected person)
-                  </span>
-                </div>
-                <ReactTooltip id="replicateTip" effect="solid" place="top">
-                  Replicate Task: Clicking this button will replicate this task and add it to all the individuals chosen as Resources. Hours and all other details will be copied (not divided) for all people.
-                </ReactTooltip>
-                </div>
-              </div>
+  <label htmlFor="resource-input" className={`add_new_task_form-label`}>
+    Resources
+  </label>
+
+  <div className="add_new_task_form-input_area">
+    <div className={styles.resourceRow}>
+      <div className={styles.tagsWrapper}>
+        <TagsSearch
+          key={`tags-${props.projectId}-${activeMembers.length}`}
+          placeholder="Add resources"
+          members={activeMembers}
+          addResources={addResources}
+          removeResource={removeResource}
+          resourceItems={resourceItems}
+          disableInput={false}
+          inputTestId="resource-input"
+          projectId={props.projectId}
+        />
+      </div>
+
+      <div className={clsx(styles['replicate-control'], styles.replicateInline)}>
+        <button
+          type="button"
+          className={styles['replicate-btn']}
+          onClick={openReplicateConfirm}
+          data-tip
+          data-for="replicateTip"
+          disabled={!resourceItems?.length || isLoading || isReplicating}
+          aria-label="Replicate Task"
+          title="Replicate Task"
+        >
+          <span style={{ fontWeight: 700 }}>RT</span>
+        </button>
+      </div>
+    </div>
+
+    <ReactTooltip id="replicateTip" effect="solid" place="top">
+      Replicate Task: Clicking this button will replicate this task and add it to all the
+      individuals chosen as Resources. Hours and all other details will be copied (not divided)
+      for all people.
+    </ReactTooltip>
+  </div>
+</div>
 
               <div className="add_new_task_form-group">
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
@@ -1154,7 +1160,12 @@ const defaultCategory = useMemo(() => {
           </Button>
           
           {/* [RT] Confirmation modal */}
-          <Modal isOpen={showReplicateConfirm} toggle={closeConfirm}>
+          <Modal isOpen={showReplicateConfirm} 
+            toggle={closeConfirm} 
+            lassName={clsx(darkMode && 'text-light dark-mode')}
+            contentClassName={clsx(darkMode && styles.confirmContentDark)}
+            backdropClassName={clsx(darkMode && styles.confirmBackdropDark)}
+            >
             <ModalHeader toggle={closeConfirm}>Confirm Replication</ModalHeader>
 
             <ModalBody>
