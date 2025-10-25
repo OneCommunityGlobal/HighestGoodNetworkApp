@@ -42,7 +42,7 @@ const DemandOverTime = ({
         return min + (r % range);
       }
     }
-    return Math.floor(Math.random() * range) + min;
+    return 0;
   }
 
   const generateDummyData = () => {
