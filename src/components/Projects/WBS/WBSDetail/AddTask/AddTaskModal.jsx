@@ -15,7 +15,6 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   START_DATE_ERROR_MESSAGE,
   END_DATE_ERROR_MESSAGE,
 } from '../../../../../languages/en/messages';
-
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import styles from './AddTaskModal.module.css';
@@ -454,6 +453,16 @@ const defaultCategory = useMemo(() => {
       setEndDateError(false);
       setStartDateError(false);
     }
+    if (!startedDate || !dueDate) {
+      setStartDateError(false);
+      setEndDateError(false);
+      return;
+    }
+    const s = dateFnsParse(startedDate, FORMAT, new Date());
+    const d = dateFnsParse(dueDate,   FORMAT, new Date());
+    const bad = isValid(s) && isValid(d) ? d.getTime() < s.getTime() : false;
+    setStartDateError(bad);
+    setEndDateError(bad);
   }, [startedDate, dueDate]);
 
   // Validate date formats when dates change
@@ -626,8 +635,6 @@ const defaultCategory = useMemo(() => {
     setCategory(defaultCategory);
   }, [defaultCategory]);
   
-  const fontColor = darkMode ? 'text-light' : '';
-
   const closeConfirm = useCallback(() => setShowReplicateConfirm(false), []);
   const confirmLabel = isReplicating ? 'Processing…' : 'YES, make it so! 💪';
 
@@ -664,14 +671,14 @@ const defaultCategory = useMemo(() => {
           <div className="table table-bordered responsive">
             <div>
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`} data-tip="WBS ID">
+                <span className={`add_new_task_form-label`} data-tip="WBS ID">
                   WBS #
                 </span>
 
-                <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
+                <span className={`add_new_task_form-input_area`}>{newTaskNum}</span>
               </div>
               <div className="add_new_task_form-group">
-                <label htmlFor="taskNameInput" className={`add_new_task_form-label ${fontColor}`}>
+                <label htmlFor="taskNameInput" className={`add_new_task_form-label`}>
                   Task Name
                 </label>
                 <span className="add_new_task_form-input_area">
@@ -686,7 +693,7 @@ const defaultCategory = useMemo(() => {
               </div>
 
               <div className="add_new_task_form-group">
-                <label htmlFor="priority" className={`add_new_task_form-label ${fontColor}`}>
+                <label htmlFor="priority" className={`add_new_task_form-label`}>
                   Priority
                 </label>
                 <span className="add_new_task_form-input_area">
@@ -703,7 +710,7 @@ const defaultCategory = useMemo(() => {
               </div>
 
               <div className="add_new_task_form-group">
-                <label htmlFor="resource-input" className={`add_new_task_form-label ${fontColor}`}>
+                <label htmlFor="resource-input" className={`add_new_task_form-label`}>
                   Resources
                 </label>
                 <div className="add_new_task_form-input_area">
@@ -732,7 +739,7 @@ const defaultCategory = useMemo(() => {
                   >
                     <span style={{ fontWeight: 700 }}>RT</span>
                   </button>
-                  <span className={`${fontColor}`} style={{ fontSize: '0.9rem' }}>
+                  <span style={{ fontSize: '0.9rem' }}>
                     (Create an individual copy for each selected person)
                   </span>
                 </div>
@@ -744,7 +751,7 @@ const defaultCategory = useMemo(() => {
 
               <div className="add_new_task_form-group">
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`add_new_task_form-label ${fontColor}`}>Assigned</label>
+                <label className={`add_new_task_form-label`}>Assigned</label>
                 <div className="add_new_task_form-input_area">
                   <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
@@ -757,7 +764,7 @@ const defaultCategory = useMemo(() => {
                         checked={assigned === true}
                         onChange={() => setAssigned(true)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-yes">
+                      <label className={`form-check-label`} htmlFor="assigned-yes">
                         Yes
                       </label>
                     </div>
@@ -771,7 +778,7 @@ const defaultCategory = useMemo(() => {
                         checked={assigned === false}
                         onChange={() => setAssigned(false)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-no">
+                      <label className={`form-check-label`} htmlFor="assigned-no">
                         No
                       </label>
                     </div>
@@ -780,7 +787,7 @@ const defaultCategory = useMemo(() => {
               </div>
 
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Status</span>
+                <span className={`add_new_task_form-label`}>Status</span>
                 <span className="add_new_task_form-input_area">
                   <div className="d-flex align-items-center flex-wrap">
                     <span className="form-check form-check-inline mr-5">
@@ -793,7 +800,7 @@ const defaultCategory = useMemo(() => {
                         checked={status === 'Active' || status === 'Started'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="active">
+                      <label className={`form-check-label`} htmlFor="active">
                         Active
                       </label>
                     </span>
@@ -807,7 +814,7 @@ const defaultCategory = useMemo(() => {
                         checked={status === 'Not Started'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="notStarted">
+                      <label className={`form-check-label`} htmlFor="notStarted">
                         Not Started
                       </label>
                     </span>
@@ -823,7 +830,7 @@ const defaultCategory = useMemo(() => {
                         checked={status === 'Paused'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="paused">
+                      <label className={`form-check-label`} htmlFor="paused">
                         Paused
                       </label>
                     </span>
@@ -837,7 +844,7 @@ const defaultCategory = useMemo(() => {
                         checked={status === 'Complete'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="complete">
+                      <label className={`form-check-label`} htmlFor="complete">
                         Complete
                       </label>
                     </span>
@@ -846,12 +853,12 @@ const defaultCategory = useMemo(() => {
               </div>
               <div className="add_new_task_form-group">
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`add_new_task_form-label ${fontColor}`}>Hours</label>
+                <label className={`add_new_task_form-label`}>Hours</label>
                 <div className="add_new_task_form-input_area">
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="bestCaseInput"
-                      className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles['hours-label']} text-nowrap align-self-center`}
                     >
                       Best-case
                     </label>
@@ -873,7 +880,7 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="worstCaseInput"
-                      className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles['hours-label']} text-nowrap align-self-center`}
                     >
                       Worst-case
                     </label>
@@ -897,8 +904,7 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="mostCaseInput"
-                      className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
-                      
+                      className={`${styles['hours-label']} text-nowrap align-self-center`}
                     >
                       Most-case
                     </label>
@@ -922,7 +928,7 @@ const defaultCategory = useMemo(() => {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="estimatedInput"
-                      className={`${styles['hours-label']} text-nowrap align-self-center ${fontColor}`}
+                      className={`${styles['hours-label']} text-nowrap align-self-center`}
                     >
                       Estimated
                     </label>
@@ -944,7 +950,7 @@ const defaultCategory = useMemo(() => {
               </div>
 
               <div className="add_new_task_form-group">
-                <label htmlFor="linkInput" className={`add_new_task_form-label ${fontColor}`}>
+                <label htmlFor="linkInput" className={`add_new_task_form-label`}>
                   Links
                 </label>
                 <span className="add_new_task_form-input_area">
@@ -1019,7 +1025,7 @@ const defaultCategory = useMemo(() => {
               </div>
 
               <div className="d-flex border align-items-center">
-                <label htmlFor="category-select" className={`add_new_task_form-label ${fontColor}`}>
+                <label htmlFor="category-select" className={`add_new_task_form-label`}>
                   Category
                 </label>
                 <span className="add_new_task_form-input_area">
@@ -1038,7 +1044,7 @@ const defaultCategory = useMemo(() => {
                 </span>
               </div>
               <div>
-                <div className={`border p-1 ${fontColor}`} aria-labelledby="why-task-label">
+                <div className={`border p-1`} aria-labelledby="why-task-label">
                   <div id="why-task-label">Why this Task is Important</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -1052,7 +1058,7 @@ const defaultCategory = useMemo(() => {
                 </div>
               </div>
               <div>
-                <div className={`border p-1 ${fontColor}`} aria-labelledby="design-intent-label">
+                <div className={`border p-1`} aria-labelledby="design-intent-label">
                   <div id="design-intent-label">Design Intent</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -1066,7 +1072,7 @@ const defaultCategory = useMemo(() => {
                 </div>
               </div>
               <div>
-                <div className={`border p-1 ${fontColor}`} aria-labelledby="endstate-label">
+                <div className={`border p-1`} aria-labelledby="endstate-label">
                   <div id="endstate-label">Endstate</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -1081,7 +1087,7 @@ const defaultCategory = useMemo(() => {
               </div>
               <div className={`d-flex border ${styles['add-modal-dt']}`}>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
-                <span scope="col" className={`${styles['form-date']} p-1 ${fontColor}`}>Start Date</span>
+                <span scope="col" className={`${styles['form-date']} p-1`}>Start Date</span>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <span scope="col" className="border-left p-1">
                   <div>
@@ -1103,7 +1109,7 @@ const defaultCategory = useMemo(() => {
               <div className={`d-flex border align-items-center ${styles['add-modal-dt']}`}>
                 <label
                   htmlFor="end-date-input"
-                  className={`${styles['form-date']} p-1 ${fontColor}`}
+                  className={`${styles['form-date']} p-1`}
                   // eslint-disable-next-line jsx-a11y/scope
                   scope="col"
                 >

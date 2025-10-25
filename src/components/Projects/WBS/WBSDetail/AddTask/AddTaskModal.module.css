@@ -43,3 +43,9 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+:global(.dark-mode) :global(.add_new_task_form-label),
+:global(.dark-mode) :global(.add_new_task_form-input_area),
+:global(.dark-mode) :global(.warning) {
+  color: var(--text-light); 
+}
