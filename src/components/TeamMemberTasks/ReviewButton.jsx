@@ -398,11 +398,11 @@ function ReviewButton({ user, task, updateTask }) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle
-              className={`${styles['btn--dark-sea-green']} ${styles.reviewBtn}`}
+              className={`${styles.darkSeaGreenBtn} ${styles.reviewBtn}`}
               caret
               style={darkMode ? boxStyleDark : boxStyle}
             >
-              Work Submitted and Awaiting Review
+              Ready for Review
             </DropdownToggle>
             <DropdownMenu
               className={`${styles['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
@@ -439,7 +439,7 @@ function ReviewButton({ user, task, updateTask }) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle
-              className={`${styles['btn--dark-sea-green']} ${styles.reviewBtn}`}
+              className={`${styles.darkSeaGreenBtn} ${styles.reviewBtn}`}
               caret
               style={darkMode ? boxStyleDark : boxStyle}
             >
