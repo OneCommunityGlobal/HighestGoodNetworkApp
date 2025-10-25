@@ -307,9 +307,14 @@ function Timer({ authUser, darkMode, isPopout }) {
    * at the same time.
    */
   useEffect(() => {
-    // Exclude heartbeat message
+    // Exclude heartbeat message and timelog event messages
     if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
       isWSOpenRef.current = 0;
+      return;
+    }
+
+    // Ignore TIMELOG_EVENT messages - they're for the timestamps tab, not the timer
+    if (lastJsonMessage && lastJsonMessage.type === 'TIMELOG_EVENT') {
       return;
     }
 
