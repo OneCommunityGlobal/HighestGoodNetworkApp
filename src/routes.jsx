@@ -150,6 +150,7 @@ import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChar
 
 
 import RescheduleEvent from './components/CommunityPortal/Activities/RescheduleEvent';
+import ReschedulePoll from './components/CommunityPortal/Activities/ReschedulePoll';
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
@@ -695,7 +696,7 @@ export default (
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
         <CPProtectedRoute path="/communityportal/activities/:activityId/manage" component={RescheduleEvent} routePermissions={['rescheduleEvent']}/>
-
+        <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll}/>
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
         <CPProtectedRoute

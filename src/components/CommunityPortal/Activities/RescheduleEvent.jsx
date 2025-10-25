@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './RescheduleEvent.module.css';
@@ -16,20 +16,21 @@ function RescheduleEvent({ activity }) {
 
   const darkMode = useSelector((state) => state.theme?.darkMode);
 
-  // UI
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(true); // open modal on load
   const [confirmStep, setConfirmStep] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // In-progress pickers
-  const [selectedDate, setSelectedDate] = useState(null); // single date
-  const [selectedTime, setSelectedTime] = useState('');   // dropdown time for that date
-  const [reason, setReason] = useState('');               // optional
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState('');
+  const [reason, setReason] = useState('');
 
-  // Final poll options (max 5): { dateISO, dateLabel, timeSlot }
   const [options, setOptions] = useState([]);
 
-  const openModal = () => setShowModal(true);
+  useEffect(() => {
+    // Automatically scroll to modal top when it opens
+    if (showModal) window.scrollTo(0, 0);
+  }, [showModal]);
+
   const closeModal = () => {
     setShowModal(false);
     setConfirmStep(false);
@@ -89,7 +90,6 @@ function RescheduleEvent({ activity }) {
   };
 
   const parse12to24 = (label) => {
-    // "09:00 AM" → "09:00"
     const [time, ap] = label.split(' ');
     let [h, m] = time.split(':').map(Number);
     if (ap === 'PM' && h !== 12) h += 12;
@@ -97,64 +97,56 @@ function RescheduleEvent({ activity }) {
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   };
 
-const handleCreateAndNotify = async () => {
-  try {
-    setLoading(true);
+  const handleCreateAndNotify = async () => {
+    try {
+      setLoading(true);
 
-    const beOptions = options.map((opt) => {
-      const [startLabel, endLabel] = opt.timeSlot.split(' - ');
-      return {
-        dateISO: opt.dateISO,
-        start: parse12to24(startLabel),
-        end: parse12to24(endLabel),
-      };
-    });
+      const beOptions = options.map((opt) => {
+        const [startLabel, endLabel] = opt.timeSlot.split(' - ');
+        return {
+          dateISO: opt.dateISO,
+          start: parse12to24(startLabel),
+          end: parse12to24(endLabel),
+        };
+      });
 
-    const token = localStorage.getItem('token');
-    const res = await fetch(`${ApiEndpoint}/communityportal/activities/${eventInfo._id}/reschedule/notify`, {
-      method: 'POST',
-      headers: {Authorization: token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        options: beOptions,
-        reason: reason || '',
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      }),
-    });
+      const token = localStorage.getItem('token');
+      const res = await fetch(
+        `${ApiEndpoint}/communityportal/activities/${eventInfo._id}/reschedule/notify`,
+        {
+          method: 'POST',
+          headers: { Authorization: token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            options: beOptions,
+            reason: reason || '',
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          }),
+        }
+      );
 
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || `HTTP ${res.status}`);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || `HTTP ${res.status}`);
+      }
+
+      const json = await res.json();
+      alert(`Notification sent to ${json.notified} participants.`);
+      closeModal();
+    } catch (e) {
+      alert(`Error: ${e.message}`);
+    } finally {
+      setLoading(false);
     }
-
-    const json = await res.json();
-    alert(`Notification sent to ${json.notified} participants.`);
-    closeModal();
-  } catch (e) {
-    alert(`Error: ${e.message}`);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
-  const canContinue = options.length >= 1;
+  };
 
   return (
     <div className={`${styles.reschedulePage} ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
       <div style={{ position: 'absolute', top: 16, left: 16, opacity: 0.9 }}>
-        <div><strong>{eventInfo.name}</strong></div>
+        <div><strong>{eventInfo.name || 'Event'}</strong></div>
         <div className="muted">{eventInfo.location}</div>
       </div>
 
-      <button
-        type="button"
-        onClick={openModal}
-        className={`${styles.rescheduleButton} ${darkMode ? styles.btnDarkMode : ''}`}
-        aria-label="Initiate rescheduling"
-      >
-        Reschedule
-      </button>
-
+      {/* Modal opens automatically — no button shown */}
       {showModal && (
         <div
           className={`${styles.modalBackdrop} ${darkMode ? styles.modalBackdropDark : ''}`}
@@ -181,11 +173,10 @@ const handleCreateAndNotify = async () => {
                 <div className={styles.modalBody}>
                   <div className={`${styles.eventContainer} ${darkMode ? styles.eventContainerDark : ''}`}>
                     <div className={styles.eventDetails}>
-                      <p><strong>{eventInfo.name}</strong></p>
+                      <p><strong>{eventInfo.name || 'Event'}</strong></p>
                       <p>{eventInfo.location}</p>
                       <p>{eventInfo.link}</p>
 
-                      {/* Time dropdown for the currently selected date */}
                       <label className={styles.fieldLabel} htmlFor="timeSelect">
                         Time (for selected date)
                       </label>
@@ -201,7 +192,6 @@ const handleCreateAndNotify = async () => {
                         ))}
                       </select>
 
-                      {/* Add button */}
                       <div style={{ marginTop: 8 }}>
                         <button
                           type="button"
@@ -216,7 +206,6 @@ const handleCreateAndNotify = async () => {
                         </span>
                       </div>
 
-                      {/* Optional reason */}
                       <label className={styles.fieldLabel} htmlFor="reasonInput" style={{ marginTop: 12 }}>
                         Reason (optional)
                       </label>
@@ -231,7 +220,6 @@ const handleCreateAndNotify = async () => {
                       />
                       <div className={styles.charCount}>{reason.length}/500</div>
 
-                      {/* Options list */}
                       {options.length > 0 && (
                         <div style={{ marginTop: 12 }}>
                           <p className={styles.fieldLabel}>Options in poll</p>
@@ -266,7 +254,6 @@ const handleCreateAndNotify = async () => {
                     </div>
                   </div>
 
-                  {/* Calendar */}
                   <div className={styles.datepickerContainer}>
                     <p className={styles.rescheduleText}>Pick a date, then choose a time and click Add option</p>
                     <DatePicker
@@ -284,7 +271,7 @@ const handleCreateAndNotify = async () => {
                     type="button"
                     className={`${styles.primaryBtn} ${darkMode ? styles.btnDarkMode : ''}`}
                     onClick={() => setConfirmStep(true)}
-                    disabled={!canContinue}
+                    disabled={options.length === 0}
                   >
                     Continue
                   </button>
