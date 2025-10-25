@@ -392,27 +392,75 @@ const TeamMemberTask = React.memo(
                               </div>
                             )}
 
-                            {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '6px',
+                                marginTop: '4px',
+                                marginLeft: '4px',
+                              }}
+                            >
+                              {canGetWeeklySummaries && (
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                  <GoogleDocIcon link={userGoogleDocLink} />
+                                </div>
+                              )}
 
-                            {canSeeReports && (
-                              <Link
-                                className={styles['team-member-tasks-user-report-link']}
-                                to={`/peoplereport/${user?.personId}`}
-                              >
-                                <img
-                                  src="/report_icon.png"
-                                  alt="reportsicon"
-                                  className={styles['team-member-tasks-user-report-link-image']}
-                                />
-                              </Link>
-                            )}
-                            {canSeeReports && (
-                              <Link to={`/peoplereport/${user?.personId}`}>
-                                <span className={styles['team-member-tasks-number']}>
-                                  {completedTasks.length}
-                                </span>
-                              </Link>
-                            )}
+                              {canSeeReports && (
+                                <>
+                                  <Link
+                                    to={`/peoplereport/${user?.personId}`}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      textDecoration: 'none',
+                                    }}
+                                  >
+                                    <img
+                                      src="/report_icon.png"
+                                      alt="reportsicon"
+                                      style={{
+                                        width: '22px',
+                                        height: '22px',
+                                        marginTop: '-2px', // 🔧 fixes the slight vertical offset of the R icon
+                                      }}
+                                    />
+                                  </Link>
+
+                                  <Link
+                                    to={`/peoplereport/${user?.personId}`}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      textDecoration: 'none',
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        textAlign: 'center',
+                                        background: '#0000FF',
+                                        borderRadius: '50%',
+                                        color: '#fff',
+                                        height: '22px',
+                                        width: '22px',
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                        marginLeft: '2px',
+                                      }}
+                                    >
+                                      {completedTasks.length}
+                                    </span>
+                                  </Link>
+                                </>
+                              )}
+                            </div>
                             <Warning
                               username={user.name}
                               nameOfUser={user}
@@ -543,25 +591,6 @@ const TeamMemberTask = React.memo(
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
-                                      {isAllowedToSeeDeadlineCount && (
-                                        <span
-                                          className={styles['deadlineCount']}
-                                          title="Click to view task change history"
-                                          data-testid={`deadline-${task.taskName}`}
-                                          onClick={() => handleOpenTaskChangeLog(task)}
-                                          onKeyDown={e => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                              e.preventDefault();
-                                              handleOpenTaskChangeLog(task);
-                                            }
-                                          }}
-                                          role="button"
-                                          tabIndex={0}
-                                          style={{ cursor: 'pointer' }}
-                                        >
-                                          {taskCounts[task._id] ?? task.deadlineCount ?? 0}
-                                        </span>
-                                      )}
                                       <div className={styles['team-task-progress-container']}>
                                         <span
                                           data-testid={`times-${task.taskName}`}
@@ -577,14 +606,38 @@ const TeamMemberTask = React.memo(
                                         </span>
                                         {canSeeFollowUpCheckButton && (
                                           <>
-                                            <FollowupCheckButton
-                                              moseoverText={followUpMouseoverText(task)}
-                                              user={user}
-                                              task={task}
-                                            />
+                                            {/* Wrap checkbox + badge so we can pin the badge to the checkbox */}
+                                            <span className={styles.followupWrap}>
+                                              <FollowupCheckButton
+                                                moseoverText={followUpMouseoverText(task)}
+                                                user={user}
+                                                task={task}
+                                              />
+
+                                              {isAllowedToSeeDeadlineCount && (
+                                                <span
+                                                  className={styles.deadlinePill}
+                                                  title="Click to view task change history"
+                                                  data-testid={`deadline-${task.taskName}`}
+                                                  onClick={() => handleOpenTaskChangeLog(task)}
+                                                  onKeyDown={e => {
+                                                    if (e.key === 'Enter' || e.key === ' ') {
+                                                      e.preventDefault();
+                                                      handleOpenTaskChangeLog(task);
+                                                    }
+                                                  }}
+                                                  role="button"
+                                                  tabIndex={0}
+                                                >
+                                                  {taskCounts[task._id] ?? task.deadlineCount ?? 0}
+                                                </span>
+                                              )}
+                                            </span>
+
                                             <FollowUpInfoModal />
                                           </>
                                         )}
+
                                         <Progress
                                           color={getProgressColor(
                                             task.hoursLogged,
