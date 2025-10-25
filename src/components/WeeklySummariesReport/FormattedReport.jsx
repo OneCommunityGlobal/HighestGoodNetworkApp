@@ -109,14 +109,28 @@ function FormattedReport({
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
   // Only proceed if summaries is valid
-  if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+  // if (!summaries || !Array.isArray(summaries) || summaries.length === 0) {
+  //   return (
+  //     <div className="text-center py-4">
+  //       <p>No data available to display</p>
+  //     </div>
+  //   );
+  // }
+  if (!summaries) {
     return (
       <div className="text-center py-4">
-        <p>No data available to display</p>
+        <p>Loading weekly summaries...</p>
       </div>
     );
   }
 
+  if (Array.isArray(summaries) && summaries.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p>No data available for this week</p>
+      </div>
+    );
+  }
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   // Determining if it's the final week:
@@ -145,7 +159,11 @@ function FormattedReport({
       <ListGroup flush>
         {summaries.map(summary => {
           // Add safety check for each summary
-          if (!summary || !summary.totalSeconds) {
+          if (
+            !summary ||
+            !Array.isArray(summary.totalSeconds) ||
+            !Array.isArray(summary.promisedHoursByWeek)
+          ) {
             return null;
           }
 
@@ -296,10 +314,22 @@ function ReportDetails({
   getWeeklySummariesReport,
   isFinalWeek, // new prop
 }) {
+  // eslint-disable-next-line no-console
+  // console.log('DEBUG ReportDetails:', {
+  //   summary,
+  //   weekIndex,
+  //   totalSeconds: summary?.totalSeconds,
+  //   promisedHoursByWeek: summary?.promisedHoursByWeek,
+  // });
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  // const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const totalSecondsArray = summary.totalSeconds || [];
+  const promisedHoursArray = summary.promisedHoursByWeek || [];
+  const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
+  const promisedHours = promisedHoursArray[weekIndex] ?? 0;
+
   const isMeetCriteria =
     canSeeBioHighlight &&
     summary.totalTangibleHrs > 80 &&
@@ -352,15 +382,14 @@ function ReportDetails({
             <ListGroupItem darkMode={darkMode}>
               <p
                 style={{
-                  color: getTextColorForHoursLogged(
-                    hoursLogged,
-                    summary.promisedHoursByWeek[weekIndex],
-                  ),
+                  color: getTextColorForHoursLogged(hoursLogged, promisedHours),
+                  // summary.promisedHoursByWeek[weekIndex],
+                  // ),
                   fontWeight: 'bold',
                 }}
               >
                 {/* Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]} */}
-                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                Hours logged: {hoursLogged} / {promisedHours}
               </p>
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -395,7 +424,8 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
-  const weeklySummaries = Array.isArray(summary?.weeklySummaries) ? summary.weeklySummaries : [];
+  // const weeklySummaries = Array.isArray(summary?.weeklySummaries) ? summary.weeklySummaries : [];
+  const weeklySummaries = summary?.weeklySummaries || [];
   const currentSummary = weeklySummaries[weekIndex];
 
   // Keeping this block commented intentionally for future reference —
@@ -799,10 +829,11 @@ function Index({
   const dispatch = useDispatch();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const promisedHoursByWeek = Array.isArray(summary?.promisedHoursByWeek)
-    ? summary.promisedHoursByWeek
-    : [];
-  const filterColor = Array.isArray(summary?.filterColor) ? summary.filterColor : [];
+  // for testing purpose
+  // const promisedHoursByWeek = Array.isArray(summary?.promisedHoursByWeek)
+  //   ? summary.promisedHoursByWeek
+  //   : [];
+  // const filterColor = Array.isArray(summary?.filterColor) ? summary.filterColor : [];
   // newly added
   // const getMergedFilterColor = (summary, bulkSelectedColors) => {
   //   // eslint-disable-next-line no-nested-ternary
@@ -900,7 +931,6 @@ function Index({
       >
         {summary.firstName} {summary.lastName}
       </Link>
-
       <div style={{ display: 'inline-block' }}>
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
@@ -955,7 +985,6 @@ function Index({
           </Modal>
         </div>
       </div>
-
       <div style={{ display: 'inline-block', marginLeft: '10px' }}>
         {/* <p>{summary.filterColor}</p> */}
         {(() => {
@@ -981,28 +1010,28 @@ function Index({
               borderRadius: '50%',
               // console.log('Rendering summary:', summary._id, summary.filterColor),
               backgroundColor:
-                Array.isArray(filterColor) && filterColor.includes(color) ? color : 'transparent',
+                Array.isArray(summary.filterColor) && summary.filterColor.includes(color)
+                  ? color
+                  : 'transparent',
               border: `3px solid ${color}`,
               cursor: 'pointer',
             }}
           />
         ))}
       </div>
-
-      {Array.isArray(filterColor) && filterColor.length > 0 && (
+      {Array.isArray(summary.filterColor) && summary.filterColor.length > 0 && (
         <span style={{ marginLeft: '8px', fontSize: '0.85rem', color: '#555' }}>
           (
-          {filterColor
+          {summary.filterColor
             .map(color => teamColorMap[color])
             .filter(Boolean)
             .join(', ')}
           )
         </span>
       )}
-
-      {Array.isArray(promisedHoursByWeek) &&
-        promisedHoursByWeek.length > weekIndex &&
-        showStar(hoursLogged, promisedHoursByWeek[weekIndex]) && (
+      {Array.isArray(summary.promisedHoursByWeek) &&
+        summary.promisedHoursByWeek.length > weekIndex &&
+        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
           <i
             className="fa fa-star"
             title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
@@ -1025,7 +1054,7 @@ function Index({
                 fontSize: '10px',
               }}
             >
-              +{Math.round((hoursLogged / (promisedHoursByWeek[weekIndex] || 1) - 1) * 100)}%
+              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
             </span>
           </i>
         )}
@@ -1044,19 +1073,18 @@ function Index({
           </small>
         </p>
       )}
-
       {/* //newly added */}
-      {Array.isArray(promisedHoursByWeek) &&
-        promisedHoursByWeek.length > weekIndex &&
+      {Array.isArray(summary.promisedHoursByWeek) &&
+        summary.promisedHoursByWeek.length > weekIndex &&
         weekIndex !== null &&
         weekIndex !== undefined &&
-        promisedHoursByWeek[weekIndex] !== undefined &&
-        showStar(hoursLogged, promisedHoursByWeek[weekIndex]) && (
+        summary.promisedHoursByWeek[weekIndex] !== undefined &&
+        showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
           <i
             className="fa fa-star"
-            title={`Weekly Committed: ${promisedHoursByWeek[weekIndex]} hours`}
+            title={`Weekly Committed: ${summary.promisedHoursByWeek[weekIndex]} hours`}
             style={{
-              color: assignStarDotColors(hoursLogged, promisedHoursByWeek[weekIndex]),
+              color: assignStarDotColors(hoursLogged, summary.promisedHoursByWeek[weekIndex]),
               fontSize: '55px',
               marginLeft: '10px',
               verticalAlign: 'middle',
@@ -1074,8 +1102,8 @@ function Index({
                 fontSize: '10px',
               }}
             >
-              {/* +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}% */}
-              +{Math.round((hoursLogged / promisedHoursByWeek[weekIndex] - 1) * 100)}%
+              +{Math.round((hoursLogged / summary.promisedHoursByWeek[weekIndex] - 1) * 100)}%
+              {/* +{Math.round((hoursLogged / promisedHoursByWeek[weekIndex] - 1) * 100)}% */}
             </span>
           </i>
         )}
@@ -1089,16 +1117,16 @@ FormattedReport.propTypes = {
   weekIndex: PropTypes.number.isRequired,
 
   // Adding these to clarify structure for Sonar:
-  summary: PropTypes.shape({
-    _id: PropTypes.string,
-    filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-    promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
-    weeklySummaries: PropTypes.arrayOf(
-      PropTypes.shape({
-        summary: PropTypes.string,
-      }),
-    ),
-  }),
+  // summary: PropTypes.shape({
+  //   _id: PropTypes.string,
+  //   filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+  //   promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+  //   weeklySummaries: PropTypes.arrayOf(
+  //     PropTypes.shape({
+  //       summary: PropTypes.string,
+  //     }),
+  //   ),
+  // }),
 };
 
 export default FormattedReport;
