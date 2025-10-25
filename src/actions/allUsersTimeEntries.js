@@ -1,6 +1,6 @@
 import axios from 'axios';
 import * as actions from '../constants/allUsersTimeEntries';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 /**
  * Action to set the 'loading' flag to true.

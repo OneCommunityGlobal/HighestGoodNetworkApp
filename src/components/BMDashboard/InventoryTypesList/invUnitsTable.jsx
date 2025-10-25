@@ -1,4 +1,5 @@
 import { Table, Button } from 'react-bootstrap';
+import styles from './TypesList.module.css';
 
 export default function UnitsTable(props) {
   const { invUnits } = props;
@@ -14,7 +15,7 @@ export default function UnitsTable(props) {
   return (
     <div>
       <Table hover borderless size="sm" responsive="lg">
-        <thead className="table-header">
+        <thead className={`${styles.tableHeader}`}>
           <tr>
             <th>Name</th>
             <th>Delete</th>
@@ -25,7 +26,7 @@ export default function UnitsTable(props) {
             <tr key={`invUnit-${unit.unit}`}>
               <td>{unit.unit}</td>
               <td>
-                <Button size="sm" className="btn-types" onClick={handleDelete}>
+                <Button size="sm" className={`${styles.btnTypes}`} onClick={handleDelete}>
                   Delete
                 </Button>
               </td>
@@ -35,7 +36,7 @@ export default function UnitsTable(props) {
       </Table>
       <div>
         <input id="input-measurement" type="text" placeholder="Enter a new measurement" />
-        <Button size="sm" className="btn-types" onClick={handleAdd}>
+        <Button size="sm" className={`${styles.btnTypes}`} onClick={handleAdd}>
           Add
         </Button>
       </div>

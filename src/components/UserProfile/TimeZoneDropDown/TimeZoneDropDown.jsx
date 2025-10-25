@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import timeZoneMap from 'constants/timeZones';
+import timeZoneMap from '~/constants/timeZones';
 import { useSelector } from 'react-redux';
 
 /**

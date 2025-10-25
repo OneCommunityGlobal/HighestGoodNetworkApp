@@ -2,8 +2,8 @@ import { Label, Form, Row, Col } from 'reactstrap';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
-import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
-import './Equipments.css';
+import { fetchBMProjects } from '~/actions/bmdashboard/projectActions';
+import styles from './Equipments.module.css';
 
 function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
   const dispatch = useDispatch();
@@ -60,8 +60,8 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
   return (
     <div className="container">
       <Form>
-        <Row className="align-items-center InputsMargin">
-          <Col className="InputsMargin">
+        <Row className={`align-items-center ${styles.InputsMargin}`}>
+          <Col className={`${styles.InputsMargin}`}>
             <Row className="justify-content-start align-items-center">
               <Label for="selectequipment" lg={2} md={3}>
                 Project:
@@ -77,7 +77,7 @@ function EquipmentsInputs({ equipment, setEquipment, project, setProject }) {
             </Row>
           </Col>
 
-          <Col className="InputsMargin">
+          <Col className={`${styles.InputsMargin}`}>
             <Row className="justify-content-start align-items-center">
               <Label lg={3} md={3} for="selectproject">
                 Equipment:

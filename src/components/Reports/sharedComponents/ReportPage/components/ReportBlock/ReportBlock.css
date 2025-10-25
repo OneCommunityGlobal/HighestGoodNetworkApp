@@ -8,6 +8,13 @@
   height: 100%;
   padding: 16px;
   overflow: auto;
+  border-radius: 12px;
+}
+
+/* allow content inside the block to shrink inside grid/flex containers
+   so wide children don't force the parent to overflow unexpectedly */
+.report-block-content {
+  min-width: 0;
 }
 
 .report-block-wrapper-dark {

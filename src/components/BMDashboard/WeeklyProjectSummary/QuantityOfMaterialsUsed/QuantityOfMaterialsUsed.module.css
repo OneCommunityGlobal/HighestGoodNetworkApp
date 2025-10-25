@@ -1,0 +1,440 @@
+/* Chart Title */
+.quantityOfMaterialsUsedChartTitle {
+  font-size: medium;
+  font-weight: bold;
+  color: var(--text-color);
+  margin: 0;    
+}
+
+.chartTitleContainer {
+  position: relative;
+  text-align: center;
+  margin-bottom: 5px;
+  padding-right: 30px;   
+}
+
+/* Chart Container */
+.quantityOfMaterialsUsedChartContainer {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+/* On hover, show scrollbar in Firefox */
+.quantityOfMaterialsUsedChartContainer:hover {
+  scrollbar-color: #aaa transparent;
+}
+
+/* WebKit Browsers (Chrome, Safari) */
+.quantityOfMaterialsUsedChartContainer::-webkit-scrollbar {
+  height: 4px;
+  background: transparent;
+}
+
+.quantityOfMaterialsUsedChartContainer::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+/* Show WebKit scrollbar thumb on hover */
+.quantityOfMaterialsUsedChartContainer:hover::-webkit-scrollbar-thumb {
+  background: #aaa;
+}
+
+/* Inner chart content sizing */
+.quantityOfMaterialsUsedChartInnerScrollable {
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  min-width: 100%;
+}
+
+/* Dropdown Container - Stay in a row but stack when needed */
+div.weeklyProjectSummaryCard.normalCard .dropdownContainer {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 2px !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  min-height: 15px !important;
+  font-size: 10px;
+  overflow: visible !important;
+  position: relative !important;
+  background-color: var(--card-bg);
+}
+
+/* Dropdown Item - Shrink as much as possible before stacking */
+div.weeklyProjectSummaryCard.normalCard .dropdownItem {
+  flex: 1 1 auto !important;
+  min-width: 50px !important;
+  max-width: 120px !important;
+  font-size: 12px !important;
+  padding: 1px !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+  text-overflow: ellipsis !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Ensure dropdowns are the same height */
+.quantityOfMaterialsUsedCard .customSelect_control {
+  min-height: 25px !important;
+  font-size: 10px !important;
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+/* Ensure selected dropdown option is highlighted */
+.quantityOfMaterialsUsedCard .customSelect_option-IsSelected {
+  background-color: var(--button-hover) !important;
+  color: var(--card-bg) !important;
+  font-weight: bold !important;
+}
+
+/* Restrict text display area inside dropdown so input stays visible */
+.quantityOfMaterialsUsedCard .customSelect_valueContainer {
+  padding: 2px 15px 2px 5px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  position: relative;
+}
+
+/* Firefox: show scrollbar on hover */
+.quantityOfMaterialsUsedCard .customSelect_valueContainer:hover {
+  scrollbar-width: thin;
+}
+
+/* WebKit: hide by default */
+.quantityOfMaterialsUsedCard .customSelect_valueContainer::-webkit-scrollbar {
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* WebKit: show scrollbar on hover */
+.quantityOfMaterialsUsedCard .customSelect_valueContainer:hover::-webkit-scrollbar {
+  height: 2px;
+  background: #f1f1f1;
+  opacity: 1;
+}
+
+/* WebKit: thumb styling */
+.quantityOfMaterialsUsedCard .customSelect_valueContainer::-webkit-scrollbar-thumb {
+  background: #aaa;
+  border-radius: 2px;
+}
+
+/* WebKit: thumb on hover */
+.quantityOfMaterialsUsedCard .customSelect_valueContainer:hover::-webkit-scrollbar-thumb {
+  background: #666;
+}
+.quantityOfMaterialsUsedCard .multiSelect .customSelect_valueContainer {
+  max-width: 75%;
+}
+
+/* Multi-Value (Tags) */
+.quantityOfMaterialsUsedCard .customSelect_multiValue {
+  background-color: #e6f7ff;
+  border-radius: 2px;
+  margin: 1px 3px 1px 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  max-width: none;
+}
+
+/* Multi-Value Label */
+.quantityOfMaterialsUsedCard .customSelect_multiValue_label {
+  font-size: 8px;
+  padding: 0 4px;
+  color: #0066cc;
+}
+
+/* Multi-Value Remove Button */
+.quantityOfMaterialsUsedCard .customSelect_multiValue_remove {
+  padding: 0 3px;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dropdown Indicators */
+.quantityOfMaterialsUsedCard .customSelect_indicators,
+.quantityOfMaterialsUsedCard .customSelect_dropdownIndicator,
+.quantityOfMaterialsUsedCard .customSelect_clearIndicator {
+  height: 15px;
+  width: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  z-index: 3;
+  z-index: 5;
+}
+
+.quantityOfMaterialUsedDatePickerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 3px;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.quantityOfMaterialUsedCustomDatePicker {
+  height: 25px;
+  font-size: 10px;
+  width: 125px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  padding: 2px 6px;
+  background-color: white;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.quantityOfMaterialsUsedCard .customSelect_singleValue {
+  color: var(--text-color) !important;
+}
+
+/* Dropdown Menu (background and text color) */
+.quantityOfMaterialsUsedCard .customSelect_menu {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border: 1px solid #ccc;
+}
+
+/* Dropdown Options (List items) */
+.quantityOfMaterialsUsedCard .customSelect_option {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  height: 25px !important;
+  line-height: 25px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* Hover effect on dropdown options */
+.quantityOfMaterialsUsedCard .customSelect_option-IsFocused {
+  background-color: var(--button-hover) !important;
+  color: var(--card-bg) !important;
+  overflow: visible !important;
+  min-width: max-content;
+}
+
+/* Placeholder text inside dropdown */
+.quantityOfMaterialsUsedCard .customSelect_placeholder {
+  color: var(--text-color) !important;
+}
+
+/* Input text inside the dropdown */
+.quantityOfMaterialsUsedCard .customSelect_input {
+  color: var(--text-color) !important;
+}
+
+.quantityOfMaterialsUsedCustomLegendContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 3px;
+  font-size: 8px;
+  color: #555;
+  width: 100%;
+  text-align: center;
+  column-gap: 2px;
+}
+
+.quantityOfMaterialsUsedLegendItem {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 3px;
+}
+
+.quantityOfMaterialsUsedLegendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.quantityOfMaterialsUsedChartInfoButton {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+  color: var(--text-color);
+}
+
+.quantityOfMaterialsUsedChartInfoButton:hover {
+  color: #007bff;
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+.quantityOfMaterialsUsedChartTooltip {
+  font-size: 10px !important;
+  max-width: 220px;
+  text-align: left;
+}
+
+.quantityOfMaterialsUsedSwapDatesButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-bg);
+  border: 1px var(--text-color);
+  color: var(--text-color);
+  border-radius: 4px;
+  padding: 2px 6px;
+  height: 25px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.quantityOfMaterialsUsedSwapDatesButton:hover {
+  background: var(--button-hover);
+  transform: scale(1.05);
+}
+
+/* Adjust Drop downs on medium size screens */
+@media (max-width: 1200px) {
+  div.weeklyProjectSummaryCard.normalCard .dropdownContainer {
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 6px !important;
+  }
+
+  div.weeklyProjectSummaryCard.normalCard .dropdownItem {
+    width: 95% !important;
+    max-width: none !important;
+    font-size: 11px !important;
+  }
+
+  .quantityOfMaterialsUsedCard .customSelect_menu {
+    width: 95% !important;
+    max-width: 100% !important;
+  }
+}
+
+.quantityModalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantityModalContent {
+  background: var(--card-bg);
+  color: var(--text-color);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  animation: modalFadeIn 0.25s ease;
+}
+
+.quantityModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.quantityModalHeading {
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.quantityModalCloseButton {
+  background: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 11px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.quantityModalCloseButton:hover {
+  background: #555;
+}
+
+.quantityModalSubheading {
+  margin-top: 15px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.quantityModalTimeline {
+  font-size: 13px;
+  border-top: 1px solid #ddd;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.timelineRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+  border-bottom: 1px dashed #ddd;
+}
+
+.timelineDate {
+  color: var(--text-color);
+}
+
+.timelineQty {
+  font-weight: bold;
+  color: #007bff;
+}
+
+@keyframes modalFadeIn {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
