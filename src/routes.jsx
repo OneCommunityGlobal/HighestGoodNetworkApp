@@ -12,7 +12,6 @@ import RoutePermissions from '~/utils/routePermissions';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from '~/components/UserProfile/EditableModal/RoleInfoModal';
 import LessonList from '~/components/BMDashboard/LessonList/LessonListForm';
-import ResourceUsage from '~/components/CommunityPortal/ResourceUsage/ResourceUsage';
 import AddEquipmentType from '~/components/BMDashboard/Equipment/Add/AddEquipmentType';
 import EDailyActivityLog from '~/components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
 import Announcements from '~/components/Announcements';
@@ -24,7 +23,6 @@ import FaqHistory from '~/components/Faq/FaqHistory';
 import UnansweredFaqs from '~/components/Faq/UnansweredFaqs';
 import HeaderRenderer from '~/components/Header/HeaderRenderer';
 import IssueDashboard from '~/components/BMDashboard/Issues/IssueDashboard';
-import { ExperienceDonutChart } from '~/components/ExperienceDonutChart';
 import LessonForm from '~/components/BMDashboard/Lesson/LessonForm';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -55,15 +53,12 @@ import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
-import UnsubscribePage from './components/EmailSubscribeForm/UnsubscribePage';
-import SubscribePage from './components/EmailSubscribeForm/SubscribePage';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import EmailSender from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
-import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantsAgeChart from './components/ApplicantsChart';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
@@ -121,8 +116,6 @@ import ActivityAttendance from './components/CommunityPortal/Activities/Activity
 import Activity from './components/CommunityPortal/Activities/activityId/Activity';
 
 import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
@@ -144,8 +137,6 @@ import SkillsOverviewPage from './components/HGNHelpSkillsDashboard/SkillsOvervi
 import CommunityMembersPage from './components/HGNHelpSkillsDashboard/CommunityMembersPage';
 import UserProfilePage from './components/HGNHelpSkillsDashboard/UserProfilePage';
 import FeedbackModal from './components/HGNHelpSkillsDashboard/FeedbackModal';
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 // HGN PR Dashboard
 import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
@@ -153,7 +144,6 @@ import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibili
 
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
-// import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
 import EquipmentUpdate from './components/BMDashboard/Tools/EquipmentUpdate';
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
@@ -168,9 +158,6 @@ const PurchaseMaterials = lazy(() =>
 const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
-// const PurchaseEquipment = lazy(() =>
-//   import('./components/BMDashboard/PurchaseRequests/EquipmentPurchaseRequest'),
-// );
 const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
