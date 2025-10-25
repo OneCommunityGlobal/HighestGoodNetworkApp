@@ -387,6 +387,10 @@ export const ENDPOINTS = {
   JOBS: `${APIEndpoint}/jobs`,
   JOB_CATEGORIES: `${APIEndpoint}/jobs/categories`,
   JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
+
+  // Collaboration - Jobforms endpoints
+  JOBFORMS_RESPONSES: `${APIEndpoint}/jobforms/responses`,
+  
 };
 
 export const ApiEndpoint = APIEndpoint;
