@@ -5,6 +5,7 @@
   width: 100%;
   padding: 20px;
   justify-self: center;
+  min-height: 100vh;
 }
 .darkMode {
   background-color: #1b2a41;
