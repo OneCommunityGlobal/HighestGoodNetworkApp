@@ -77,13 +77,12 @@ function ReviewWordCloud({ darkMode }) {
       backgroundColor: darkMode ? '#1C2541' : '#fff',
     }),
     option: (provided, state) => {
-      const optionBg = state.isFocused
-        ? darkMode
-          ? '#3A506B'
-          : '#f0f0f0'
-        : darkMode
-        ? '#1C2541'
-        : '#fff';
+      let optionBg;
+      if (state.isFocused) {
+        optionBg = darkMode ? '#3A506B' : '#f0f0f0';
+      } else {
+        optionBg = darkMode ? '#1C2541' : '#fff';
+      }
       return {
         ...provided,
         backgroundColor: optionBg,
