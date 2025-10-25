@@ -170,7 +170,7 @@ const CustomMenuList = props => {
 
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
-  const { loading, infoCollections, getInfoCollections } = props;
+  const { loading, getInfoCollections } = props;
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
@@ -254,11 +254,11 @@ const WeeklySummariesReport = props => {
 
   const intialInfoCollections = async summariesCopy => {
     try {
-      await getInfoCollections();
+      const infoCollectionsData = await getInfoCollections();
       const roleInfoNames = getAllRoles(summariesCopy);
       const allRoleInfo = [];
-      if (Array.isArray(infoCollections)) {
-        infoCollections.forEach(info => {
+      if (Array.isArray(infoCollectionsData)) {
+        infoCollectionsData.forEach(info => {
           if (roleInfoNames?.includes(info.infoName)) {
             const visible =
               info.visibility === '0' ||
@@ -2026,7 +2026,7 @@ const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: weekIndex => dispatch(getWeeklySummariesReport(weekIndex)),
   hasPermission: permission => dispatch(hasPermission(permission)),
-  getInfoCollections: () => getInfoCollections(),
+  getInfoCollections: () => dispatch(getInfoCollections()),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
