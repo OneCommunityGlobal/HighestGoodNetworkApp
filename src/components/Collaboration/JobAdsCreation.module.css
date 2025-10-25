@@ -84,14 +84,13 @@ input {
 .jobAds-creation-button-group {
   margin-top:20px;
   display: flex;
-  max-width: 100%;
-  justify-content: center;
-  /*align-items: center;
-  background-color: aliceblue; */
-  gap:150px; 
+  width: 70%;
+  justify-content: space-evenly;
+  background-color: aliceblue;   
 }
 .submit-button,.cancel-button {
-  padding: 10px 20px;
+  /*padding: 10px 20px; */
+  padding: 10px;
   font-size: 1em;
   cursor: pointer;
   transition: background 0.2s ease;

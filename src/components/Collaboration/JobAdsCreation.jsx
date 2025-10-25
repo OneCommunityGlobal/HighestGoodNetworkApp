@@ -15,11 +15,12 @@ function JobAdsCreation() {
   const textareaFields = [
     { key: 'description', display: 'Description' },
     { key: 'requirements', display: 'Requirements' },
-    { key: 'skills', display: 'Skills' },
+    //    { key: 'skills', display: 'Skills' },
     { key: 'projects', display: 'Projects' },
-    { key: 'whoareyou', display: 'Who are you' },
+    //    { key: 'whoareyou', display: 'Who are you' },
     // apply: '',
-    { key: 'whoweare', display: 'Who are we' },
+    { key: 'ourCommunity', display: 'Our Community' },
+    //        { key: 'whoweare', display: 'Who are we' },
   ];
 
   const formFields = [
@@ -35,11 +36,12 @@ function JobAdsCreation() {
     /* new fields */
     // about: '',
     requirements: '',
-    skills: '',
+    // skills: '',
     projects: '',
-    whoareyou: '',
+    // whoareyou: '',
     // apply: '',
-    whoweare: '',
+    //  whoweare: '',
+    ourCommunity: '',
     /* newly */
     description: '',
     imageUrl: '',
@@ -268,22 +270,22 @@ function JobAdsCreation() {
       textareaRef.current?.focus();
       return;
     }
-    if (!formData.skills) {
+    /* if (!formData.skills) {
       setErrors({ skills: 'Skills is required' });
       toast.error('Skills is required');
       return;
-    }
+    } */
     //
-    const skillsWordCount = getWordCount(formData.skills);
+    // const skillsWordCount = getWordCount(formData.skills);
     // eslint-disable-next-line no-console
-    console.log(`word count ${skillsWordCount}`);
+    // console.log(`word count ${skillsWordCount}`);
 
-    if (skillsWordCount < 30) {
+    /* if (skillsWordCount < 30) {
       setErrors({ skills: 'Skills must be at least 30 words long' });
       toast.error('Skills must be at least 30 words long');
       textareaRef.current?.focus();
       return;
-    }
+    } */
     if (!formData.projects) {
       setErrors({ projects: 'Projects is required' });
       toast.error('Projects is required');
@@ -300,35 +302,35 @@ function JobAdsCreation() {
       textareaRef.current?.focus();
       return;
     }
-    if (!formData.whoareyou) {
+    /* if (!formData.whoareyou) {
       setErrors({ whoareyou: 'Who are you is required' });
       toast.error('Who are you is required');
       return;
-    }
+    } */
     //
-    const whoareyouWordCount = getWordCount(formData.whoareyou);
+    // const whoareyouWordCount = getWordCount(formData.whoareyou);
     // eslint-disable-next-line no-console
-    console.log(`word count ${whoareyouWordCount}`);
+    // console.log(`word count ${whoareyouWordCount}`);
 
-    if (whoareyouWordCount < 30) {
+    /* if (whoareyouWordCount < 30) {
       setErrors({ whoareyou: 'Who are you must be at least 30 words long' });
       toast.error('Who are you must be at least 30 words long');
       textareaRef.current?.focus();
       return;
-    }
-    if (!formData.whoweare) {
-      setErrors({ whoweare: 'Who we are is required' });
-      toast.error('Who we are is required');
+    } */
+    if (!formData.ourCommunity) {
+      setErrors({ ourCommunity: 'Our Community is required' });
+      toast.error('Our Community is required');
       return;
     }
     //
-    const whoweareWordCount = getWordCount(formData.whoweare);
+    const ourCommunityWordCount = getWordCount(formData.ourCommunity);
     // eslint-disable-next-line no-console
-    console.log(`word count ${whoweareWordCount}`);
+    console.log(`word count ${ourCommunityWordCount}`);
 
-    if (whoweareWordCount < 30) {
-      setErrors({ whoweare: 'Who we are must be at least 30 words long' });
-      toast.error('Who we are must be at least 30 words long');
+    if (ourCommunityWordCount < 30) {
+      setErrors({ ourCommunity: 'Our Community must be at least 30 words long' });
+      toast.error('Our Community must be at least 30 words long');
       textareaRef.current?.focus();
       return;
     }
@@ -525,7 +527,7 @@ function JobAdsCreation() {
             <Editor
               className={styles['jobAds-input']}
               tinymceScriptSrc="/tinymce/tinymce.min.js"
-              init={field.key === 'whoweare' ? TINY_MCE_INIT_OPTIONS_MEDIA : TINY_MCE_INIT_OPTIONS}
+              init={TINY_MCE_INIT_OPTIONS_MEDIA}
               id={field.key}
               value={formData[field.key] || ''}
               onEditorChange={newVal => setFormData(prev => ({ ...prev, [field.key]: newVal }))}
