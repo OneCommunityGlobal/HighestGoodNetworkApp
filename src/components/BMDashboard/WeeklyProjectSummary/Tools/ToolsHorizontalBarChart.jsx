@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
-import './ToolsHorizontalBarChart.css';
+import styles from './ToolsHorizontalBarChart.module.css';
 
 // No mock data - use real backend data only
 
@@ -16,14 +16,14 @@ function CustomTooltip({ active, payload, label }) {
   const total = payload.reduce((sum, entry) => sum + (entry.value || 0), 0);
 
   return (
-    <div className="tools-horizontal-bar-chart-tooltip">
-      <p className="tools-horizontal-bar-chart-tooltip-label">{label}</p>
+    <div className={styles.toolsHorizontalBarChartTooltip}>
+      <p className={styles.toolsHorizontalBarChartTooltipLabel}>{label}</p>
       {payload.map((entry, index) => (
         <p key={index} style={{ color: entry.color }}>
           {entry.name}: {entry.value}
         </p>
       ))}
-      <p className="tools-horizontal-bar-chart-tooltip-total">Total: {total}</p>
+      <p className={styles.toolsHorizontalBarChartTooltipTotal}>Total: {total}</p>
     </div>
   );
 }
@@ -158,37 +158,37 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
   if (loading) {
     return (
-      <div className="tools-horizontal-bar-chart-card">
-        <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
-        <div className="tools-horizontal-bar-chart-loading">Loading...</div>
+      <div className={styles.toolsHorizontalBarChartCard}>
+        <h4 className={styles.toolsHorizontalBarChartTitle}>Tools by Availability</h4>
+        <div className={styles.toolsHorizontalBarChartLoading}>Loading...</div>
       </div>
     );
   }
 
   if (error && data.length === 0) {
     return (
-      <div className="tools-horizontal-bar-chart-card">
-        <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
-        <div className="tools-horizontal-bar-chart-error">{error}</div>
+      <div className={styles.toolsHorizontalBarChartCard}>
+        <h4 className={styles.toolsHorizontalBarChartTitle}>Tools by Availability</h4>
+        <div className={styles.toolsHorizontalBarChartError}>{error}</div>
       </div>
     );
   }
 
   return (
     <div
-      className={`tools-horizontal-bar-chart-card ${
-        darkMode ? 'tools-horizontal-bar-chart-dark-mode' : ''
+      className={`${styles.toolsHorizontalBarChartCard} ${
+        darkMode ? styles.toolsHorizontalBarChartDarkMode : ''
       }`}
     >
-      <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
+      <h4 className={styles.toolsHorizontalBarChartTitle}>Tools by Availability</h4>
 
       {/* Filters Section */}
-      <div className="tools-horizontal-bar-chart-filters">
-        <div className="tools-horizontal-bar-chart-filter-group">
+      <div className={styles.toolsHorizontalBarChartFilters}>
+        <div className={styles.toolsHorizontalBarChartFilterGroup}>
           <label htmlFor="project-select">Project</label>
           <Select
             id="project-select"
-            className="tools-horizontal-bar-chart-project-select"
+            className={styles.toolsHorizontalBarChartProjectSelect}
             classNamePrefix="select"
             value={selectedProject}
             onChange={handleProjectChange}
@@ -255,23 +255,23 @@ function ToolsHorizontalBarChart({ darkMode }) {
           />
         </div>
 
-        <div className="tools-horizontal-bar-chart-filter-group">
+        <div className={styles.toolsHorizontalBarChartFilterGroup}>
           <label htmlFor="start-date-picker">Date Range</label>
-          <div className="tools-horizontal-bar-chart-date-picker-group">
+          <div className={styles.toolsHorizontalBarChartDatePickerGroup}>
             <input
               id="start-date-picker"
               type="date"
-              className="tools-horizontal-bar-chart-date-picker"
+              className={styles.toolsHorizontalBarChartDatePicker}
               value={startDate}
               onChange={handleStartDateChange}
               placeholder="Start date"
               aria-label="Start date"
             />
-            <span>to</span>
+            <span> to </span>
             <input
               id="end-date-picker"
               type="date"
-              className="tools-horizontal-bar-chart-date-picker"
+              className={styles.toolsHorizontalBarChartDatePicker}
               value={endDate}
               onChange={handleEndDateChange}
               placeholder="End date"
@@ -279,7 +279,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
             />
             <button
               type="button"
-              className="tools-horizontal-bar-chart-clear-dates-btn"
+              className={styles.toolsHorizontalBarChartClearDatesBtn}
               onClick={handleClearDates}
               aria-label="Clear date filters"
               title="Reset to default date range"
@@ -291,7 +291,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
       </div>
 
       {data.length > 0 ? (
-        <div className="tools-horizontal-bar-chart-content">
+        <div className={styles.toolsHorizontalBarChartContent}>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart
               layout="vertical"
@@ -311,7 +311,10 @@ function ToolsHorizontalBarChart({ darkMode }) {
                 axisLine={false}
                 tickLine={false}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip
+                content={<CustomTooltip />}
+                cursor={{ fill: darkMode ? 'rgba(28, 37, 65, .25)' : 'rgba(145, 140, 140, 0.25)' }}
+              />
               <Bar dataKey="inUse" stackId="a" fill="#2196F3" name="In Use" />
               <Bar dataKey="needsReplacement" stackId="a" fill="#F44336" name="Needs Replacement" />
               <Bar dataKey="yetToReceive" stackId="a" fill="#FF9800" name="Yet to Receive" />
@@ -319,7 +322,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="tools-horizontal-bar-chart-empty">
+        <div className={styles.toolsHorizontalBarChartEmpty}>
           <p>📊 No tools data available</p>
         </div>
       )}
