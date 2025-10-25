@@ -171,10 +171,12 @@ const WeeklyCommittedHours = props => {
     const value = parseInt(e.target.value);
     if (value > MAXIMUM_WEEK_HOURS) {
       // Check if Value is greater than maximum hours and set it to maximum hours if needed
+      // eslint-disable-next-line no-alert
       alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
       props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MAXIMUM_WEEK_HOURS });
     } else if (value < MINIMUM_WEEK_HOURS) {
       //Check if value is less than minimum hours and set it to minimum hours if needed
+      // eslint-disable-next-line no-alert
       alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
       props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MINIMUM_WEEK_HOURS });
     } else {
@@ -328,6 +330,7 @@ const ViewTab = props => {
         setTotalTangibleHoursThisWeek(output.totalTangibleHrs.toFixed(2));
       })
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.log(err.message);
       });
 
@@ -342,6 +345,7 @@ const ViewTab = props => {
         sumOfCategoryHours();
       })
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.log(err.message);
       });
   }, []);
