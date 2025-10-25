@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 import Select from 'react-select';
 import {
   BarChart,
@@ -42,7 +43,6 @@ const transformData = rawData =>
 // Custom tick components for Y-axis
 function CustomYAxisTick({ x, y, payload, data, darkMode }) {
   const currentReviewer = payload.value;
-  // This is now reliable because data is passed as a prop
   const isMentor = data.find(d => d.reviewer === currentReviewer)?.isMentor;
   const axisColor = darkMode ? 'white' : 'black';
 
@@ -59,6 +59,27 @@ function CustomYAxisTick({ x, y, payload, data, darkMode }) {
   );
 }
 
+CustomYAxisTick.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  payload: PropTypes.shape({
+    value: PropTypes.string,
+  }),
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      reviewer: PropTypes.string,
+      isMentor: PropTypes.bool,
+    }),
+  ).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+CustomYAxisTick.defaultProps = {
+  x: 0,
+  y: 0,
+  payload: { value: '' },
+};
+
 // Custom X-axis tick component
 function CustomXAxisTick({ x, y, payload, darkMode }) {
   const textColor = darkMode ? 'white' : 'black';
@@ -68,6 +89,21 @@ function CustomXAxisTick({ x, y, payload, darkMode }) {
     </text>
   );
 }
+
+CustomXAxisTick.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  payload: PropTypes.shape({
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }),
+  darkMode: PropTypes.bool.isRequired,
+};
+
+CustomXAxisTick.defaultProps = {
+  x: 0,
+  y: 0,
+  payload: { value: '' },
+};
 
 // Custom X-axis tick component to generate ticks
 function CustomXAxisTicks(data) {
@@ -85,7 +121,7 @@ function CustomXAxisTicks(data) {
 
 // Custom tooltip component
 function CustomTooltip({ active, payload, label, darkMode }) {
-  if (!active || !payload || !payload.length) return null;
+  if (!active || !payload?.length) return null;
 
   return (
     <div className={`${styles.customTooltip} ${darkMode ? styles.darkTooltip : ''}`}>
@@ -95,7 +131,6 @@ function CustomTooltip({ active, payload, label, darkMode }) {
           <span className={`${styles.tooltipLabel}`} style={{ color: entry.color }}>
             {entry.name}:
           </span>
-          {/* Access the value correctly from the payload entry */}
           <span>{entry.value}</span>
         </div>
       ))}
@@ -103,12 +138,29 @@ function CustomTooltip({ active, payload, label, darkMode }) {
   );
 }
 
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      value: PropTypes.number,
+      color: PropTypes.string,
+    }),
+  ),
+  label: PropTypes.string,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+CustomTooltip.defaultProps = {
+  active: false,
+  payload: null,
+  label: '',
+};
+
 // Custom label for each bar segment
 function CustomLabel({ x, y, width, height, value }) {
-  // Don't show zero values
   if (value === 0) return null;
 
-  // Set the fill color to white always
   const textColor = '#fff';
 
   return (
@@ -124,6 +176,22 @@ function CustomLabel({ x, y, width, height, value }) {
     </text>
   );
 }
+
+CustomLabel.propTypes = {
+  x: PropTypes.number,
+  y: PropTypes.number,
+  width: PropTypes.number,
+  height: PropTypes.number,
+  value: PropTypes.number,
+};
+
+CustomLabel.defaultProps = {
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 0,
+  value: 0,
+};
 
 // Function to get date range based on selected duration
 function getDateRange(option) {
@@ -163,118 +231,6 @@ function LegendFormatter(value, entry, darkMode) {
   return <span style={{ color: textColor }}>{value}</span>;
 }
 
-function ReviewersStackedBarChart() {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const [teamFilter, setTeamFilter] = useState('All');
-  const [durationFilter, setDurationFilter] = useState({ label: 'Last Week', value: 'Last Week' });
-  const [sortFilter, setSortFilter] = useState('Ascending');
-  const { start: filterStartDate, end: filterEndDate } = getDateRange(durationFilter.value);
-  const [transformedData, setTransformedData] = useState([]);
-  const [teams, setTeams] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Data filtering logic
-  const filterByTeam = data => {
-    if (teamFilter === 'All') return data;
-    return data.filter(item => item.team === teamFilter);
-  };
-
-  const filterByDuration = data => {
-    if (durationFilter.value === 'All Time') return data;
-    return data.filter(item => {
-      const prDate = new Date(item.prSubmittedDate);
-      return prDate >= filterStartDate && prDate <= filterEndDate;
-    });
-  };
-
-  const sortByTotal = data => {
-    return data.sort((a, b) => {
-      const totalA = a.Exceptional + a.Sufficient + a['Needs Changes'] + a['Did Not Review'];
-      const totalB = b.Exceptional + b.Sufficient + b['Needs Changes'] + b['Did Not Review'];
-      return sortFilter === 'Ascending' ? totalA - totalB : totalB - totalA;
-    });
-  };
-
-  const processData = () => {
-    let filtered = [...MOCK_REVIEWERS_DATA];
-    filtered = filterByTeam(filtered);
-    filtered = filterByDuration(filtered);
-    const transformed = transformData(filtered);
-    return sortByTotal(transformed);
-  };
-
-  // Simulated API call
-  const fetchData = () => {
-    setLoading(true);
-    setError(null);
-
-    setTimeout(() => {
-      try {
-        const processedData = processData();
-        setTransformedData(processedData);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch reviewer data.');
-        setLoading(false);
-      }
-    }, 1001);
-  };
-
-  const { domain, ticks } = CustomXAxisTicks(transformedData);
-
-  useEffect(() => {
-    setTeams(MOCK_TEAMS);
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [teamFilter, durationFilter, sortFilter]);
-
-  return (
-    <div className={`${styles.reviewersChartContainer} ${darkMode ? styles.darkMode : ''}`}>
-      <h4 className={darkMode ? styles.darkMode : ''}>PR Quality by Reviewers</h4>
-      <FilterBar
-        teams={teams}
-        teamFilter={teamFilter}
-        setTeamFilter={setTeamFilter}
-        sortFilter={sortFilter}
-        setSortFilter={setSortFilter}
-        durationFilter={durationFilter}
-        setDurationFilter={setDurationFilter}
-      />
-      <ChartContent
-        loading={loading}
-        error={error}
-        transformedData={transformedData}
-        darkMode={darkMode}
-        domain={domain}
-        ticks={ticks}
-      />
-    </div>
-  );
-}
-
-// Separate FilterBar component
-function FilterBar({
-  teams,
-  teamFilter,
-  setTeamFilter,
-  sortFilter,
-  setSortFilter,
-  durationFilter,
-  setDurationFilter,
-}) {
-  return (
-    <div className={`${styles.reviewersFiltersBar}`}>
-      <TeamFilter teams={teams} teamFilter={teamFilter} setTeamFilter={setTeamFilter} />
-      <SortFilter sortFilter={sortFilter} setSortFilter={setSortFilter} />
-      <DurationFilter durationFilter={durationFilter} setDurationFilter={setDurationFilter} />
-    </div>
-  );
-}
-
 // Individual filter components
 function TeamFilter({ teams, teamFilter, setTeamFilter }) {
   return (
@@ -293,6 +249,12 @@ function TeamFilter({ teams, teamFilter, setTeamFilter }) {
     </div>
   );
 }
+
+TeamFilter.propTypes = {
+  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
+  teamFilter: PropTypes.string.isRequired,
+  setTeamFilter: PropTypes.func.isRequired,
+};
 
 function SortFilter({ sortFilter, setSortFilter }) {
   return (
@@ -314,6 +276,11 @@ function SortFilter({ sortFilter, setSortFilter }) {
     </div>
   );
 }
+
+SortFilter.propTypes = {
+  sortFilter: PropTypes.string.isRequired,
+  setSortFilter: PropTypes.func.isRequired,
+};
 
 function DurationFilter({ durationFilter, setDurationFilter }) {
   const durationOptions = [
@@ -340,29 +307,45 @@ function DurationFilter({ durationFilter, setDurationFilter }) {
   );
 }
 
-// Chart content with different states
-function ChartContent({ loading, error, transformedData, darkMode, domain, ticks }) {
-  if (loading) {
-    return <LoadingState />;
-  }
+DurationFilter.propTypes = {
+  durationFilter: PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+  }).isRequired,
+  setDurationFilter: PropTypes.func.isRequired,
+};
 
-  if (error) {
-    return <ErrorState error={error} />;
-  }
-
-  if (transformedData.length === 0) {
-    return <EmptyState />;
-  }
-
+// Separate FilterBar component
+function FilterBar({
+  teams,
+  teamFilter,
+  setTeamFilter,
+  sortFilter,
+  setSortFilter,
+  durationFilter,
+  setDurationFilter,
+}) {
   return (
-    <ChartDisplay
-      transformedData={transformedData}
-      darkMode={darkMode}
-      domain={domain}
-      ticks={ticks}
-    />
+    <div className={`${styles.reviewersFiltersBar}`}>
+      <TeamFilter teams={teams} teamFilter={teamFilter} setTeamFilter={setTeamFilter} />
+      <SortFilter sortFilter={sortFilter} setSortFilter={setSortFilter} />
+      <DurationFilter durationFilter={durationFilter} setDurationFilter={setDurationFilter} />
+    </div>
   );
 }
+
+FilterBar.propTypes = {
+  teams: PropTypes.arrayOf(PropTypes.string).isRequired,
+  teamFilter: PropTypes.string.isRequired,
+  setTeamFilter: PropTypes.func.isRequired,
+  sortFilter: PropTypes.string.isRequired,
+  setSortFilter: PropTypes.func.isRequired,
+  durationFilter: PropTypes.shape({
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+  }).isRequired,
+  setDurationFilter: PropTypes.func.isRequired,
+};
 
 function LoadingState() {
   return (
@@ -381,13 +364,17 @@ function ErrorState({ error }) {
       <button
         type="button"
         className={`${styles.retryButton}`}
-        onClick={() => window.location.reload()}
+        onClick={() => globalThis.location.reload()}
       >
         Retry
       </button>
     </div>
   );
 }
+
+ErrorState.propTypes = {
+  error: PropTypes.string.isRequired,
+};
 
 function EmptyState() {
   return (
@@ -441,6 +428,154 @@ function ChartDisplay({ transformedData, darkMode, domain, ticks }) {
           ))}
         </BarChart>
       </ResponsiveContainer>
+    </div>
+  );
+}
+
+ChartDisplay.propTypes = {
+  transformedData: PropTypes.arrayOf(
+    PropTypes.shape({
+      reviewer: PropTypes.string,
+      Exceptional: PropTypes.number,
+      Sufficient: PropTypes.number,
+      'Needs Changes': PropTypes.number,
+      'Did Not Review': PropTypes.number,
+    }),
+  ).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  domain: PropTypes.arrayOf(PropTypes.number).isRequired,
+  ticks: PropTypes.arrayOf(PropTypes.number).isRequired,
+};
+
+// Chart content with different states
+function ChartContent({ loading, error, transformedData, darkMode, domain, ticks }) {
+  if (loading) {
+    return <LoadingState />;
+  }
+
+  if (error) {
+    return <ErrorState error={error} />;
+  }
+
+  if (transformedData.length === 0) {
+    return <EmptyState />;
+  }
+
+  return (
+    <ChartDisplay
+      transformedData={transformedData}
+      darkMode={darkMode}
+      domain={domain}
+      ticks={ticks}
+    />
+  );
+}
+
+ChartContent.propTypes = {
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+  transformedData: PropTypes.arrayOf(PropTypes.object).isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  domain: PropTypes.arrayOf(PropTypes.number).isRequired,
+  ticks: PropTypes.arrayOf(PropTypes.number).isRequired,
+};
+
+ChartContent.defaultProps = {
+  error: null,
+};
+
+function ReviewersStackedBarChart() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const [teamFilter, setTeamFilter] = useState('All');
+  const [durationFilter, setDurationFilter] = useState({ label: 'Last Week', value: 'Last Week' });
+  const [sortFilter, setSortFilter] = useState('Ascending');
+  const { start: filterStartDate, end: filterEndDate } = getDateRange(durationFilter.value);
+  const [transformedData, setTransformedData] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Data filtering logic
+  const filterByTeam = data => {
+    if (teamFilter === 'All') return data;
+    return data.filter(item => item.team === teamFilter);
+  };
+
+  const filterByDuration = data => {
+    if (durationFilter.value === 'All Time') return data;
+    return data.filter(item => {
+      const prDate = new Date(item.prSubmittedDate);
+      return prDate >= filterStartDate && prDate <= filterEndDate;
+    });
+  };
+
+  const sortByTotal = data => {
+    return data.sort((a, b) => {
+      const totalA = a.Exceptional + a.Sufficient + a['Needs Changes'] + a['Did Not Review'];
+      const totalB = b.Exceptional + b.Sufficient + b['Needs Changes'] + b['Did Not Review'];
+      return sortFilter === 'Ascending' ? totalA - totalB : totalB - totalA;
+    });
+  };
+
+  const processData = () => {
+    let filtered = [...MOCK_REVIEWERS_DATA];
+    filtered = filterByTeam(filtered);
+    filtered = filterByDuration(filtered);
+    const transformed = transformData(filtered);
+    return sortByTotal(transformed);
+  };
+
+  // Simulated API call
+  const fetchData = () => {
+    setLoading(true);
+    setError(null);
+
+    setTimeout(() => {
+      try {
+        const processedData = processData();
+        setTransformedData(processedData);
+        setLoading(false);
+      } catch (err) {
+        console.error('Failed to fetch reviewer data:', err);
+        setError('Failed to fetch reviewer data.');
+        setLoading(false);
+      }
+    }, 1001);
+  };
+
+  const { domain, ticks } = CustomXAxisTicks(transformedData);
+
+  useEffect(() => {
+    setTeams(MOCK_TEAMS);
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [teamFilter, durationFilter, sortFilter]);
+
+  return (
+    <div className={`${styles.reviewersChartContainer} ${darkMode ? styles.darkMode : ''}`}>
+      <h4 className={darkMode ? styles.darkMode : ''}>PR Quality by Reviewers</h4>
+      <FilterBar
+        teams={teams}
+        teamFilter={teamFilter}
+        setTeamFilter={setTeamFilter}
+        sortFilter={sortFilter}
+        setSortFilter={setSortFilter}
+        durationFilter={durationFilter}
+        setDurationFilter={setDurationFilter}
+      />
+      <ChartContent
+        loading={loading}
+        error={error}
+        transformedData={transformedData}
+        darkMode={darkMode}
+        domain={domain}
+        ticks={ticks}
+      />
     </div>
   );
 }
