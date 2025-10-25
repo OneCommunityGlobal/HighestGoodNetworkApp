@@ -39,6 +39,8 @@ import {
   FaExclamationTriangle,
 } from 'react-icons/fa';
 import './EmailBatchDashboard.css';
+import './StatsChips.css';
+import './ButtonStyles.css';
 
 const EmailBatchDashboard = () => {
   const dispatch = useDispatch();
@@ -51,6 +53,8 @@ const EmailBatchDashboard = () => {
   const [showBatchDetails, setShowBatchDetails] = useState(false);
   const [batchItems, setBatchItems] = useState([]);
   const [loadingItems, setLoadingItems] = useState(false);
+  const [showEmailPreview, setShowEmailPreview] = useState(false);
+  const [previewBatch, setPreviewBatch] = useState(null);
   const [filters, setFilters] = useState({
     status: '',
     dateFrom: '',
@@ -63,15 +67,17 @@ const EmailBatchDashboard = () => {
     isRefreshing: false,
     lastRefresh: null,
     autoRefresh: true,
-    refreshInterval: 120000, // 2 minutes
+    refreshInterval: 60000, // 1 minutes
     backgroundSync: false,
     syncError: null,
+    countdown: 60, // 1 minutes in seconds
   });
 
   // Refs for cleanup
   const refreshIntervalRef = useRef(null);
   const backgroundSyncRef = useRef(null);
   const isRefreshingRef = useRef(false);
+  const countdownIntervalRef = useRef(null);
 
   // Dynamic data fetching with optimistic updates
   const fetchData = useCallback(
@@ -155,7 +161,6 @@ const EmailBatchDashboard = () => {
 
     refreshIntervalRef.current = setInterval(() => {
       if (refreshState.autoRefresh && !isRefreshingRef.current) {
-        console.log('🔄 Auto-refresh triggered at:', new Date().toLocaleTimeString());
         fetchData(true); // Background sync
       }
     }, refreshState.refreshInterval);
@@ -183,6 +188,39 @@ const EmailBatchDashboard = () => {
     };
   }, [refreshState.autoRefresh, startBackgroundSync]);
 
+  // Countdown timer for auto-refresh
+  useEffect(() => {
+    if (refreshState.autoRefresh) {
+      // Start countdown timer
+      countdownIntervalRef.current = setInterval(() => {
+        setRefreshState(prev => ({
+          ...prev,
+          countdown: prev.countdown > 0 ? prev.countdown - 1 : 60,
+        }));
+      }, 1000);
+    } else {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+    }
+
+    return () => {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+    };
+  }, [refreshState.autoRefresh]);
+
+  // Reset countdown when refresh happens
+  useEffect(() => {
+    if (refreshState.lastRefresh) {
+      setRefreshState(prev => ({
+        ...prev,
+        countdown: 60,
+      }));
+    }
+  }, [refreshState.lastRefresh]);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -191,6 +229,9 @@ const EmailBatchDashboard = () => {
       }
       if (backgroundSyncRef.current) {
         clearTimeout(backgroundSyncRef.current);
+      }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
       }
     };
   }, []);
@@ -205,7 +246,6 @@ const EmailBatchDashboard = () => {
       const response = await httpService.get(`/api/email-batches/batches/${batch.batchId}`);
 
       if (response.data.success) {
-        console.log('📊 Batch details received:', response.data.data);
         setSelectedBatch(response.data.data.batch);
         setBatchItems(response.data.data.items || []);
       }
@@ -220,6 +260,52 @@ const EmailBatchDashboard = () => {
   // Handle filter changes
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Apply filters
+  const handleApplyFilters = () => {
+    // Close the filters modal
+    setShowFilters(false);
+    // Trigger data refresh with filters
+    fetchData(false);
+  };
+
+  // Clear filters
+  const handleClearFilters = () => {
+    setFilters({ status: '', dateFrom: '', dateTo: '' });
+    setShowFilters(false);
+    // Trigger data refresh without filters
+    fetchData(false);
+  };
+
+  // Handle retry batch item
+  const handleRetryBatchItem = async itemId => {
+    try {
+      const response = await httpService.post(`/api/email-batches/retry-item/${itemId}`);
+      if (response.data.success) {
+        toast.success('Batch item retry initiated');
+        // Refresh the batch details
+        if (selectedBatch) {
+          handleViewDetails(selectedBatch);
+        }
+      }
+    } catch (error) {
+      console.error('Error retrying batch item:', error);
+      toast.error('Failed to retry batch item');
+    }
+  };
+
+  // Handle view recipients
+  const handleViewRecipients = recipients => {
+    // Show recipients in a modal or alert
+    const recipientList = recipients.map(r => r.email).join(', ');
+    alert(`Recipients (${recipients.length}):\n${recipientList}`);
+  };
+
+  // Handle preview email
+  const handlePreviewEmail = batch => {
+    setPreviewBatch(batch);
+    setShowEmailPreview(true);
   };
 
   // Get status badge color
@@ -260,41 +346,46 @@ const EmailBatchDashboard = () => {
   }
 
   return (
-    <div className="email-batch-dashboard">
+    <>
       {/* Header */}
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <div>
-          <h2 className="page-title">Email Batch Dashboard</h2>
-          <div className="d-flex align-items-center gap-3">
-            <small className="text-muted">Track and monitor email batches</small>
+      <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4">
+        <div className="flex-grow-1 mb-3 mb-lg-0">
+          <h2 className="page-title mb-2">Email Batch Dashboard</h2>
+          <div className="d-flex flex-column gap-1">
             {refreshState.lastRefresh && (
-              <small className="text-muted">
+              <small className="text-muted d-flex align-items-center">
+                <FaClock className="mr-1" size={12} />
                 Last updated: {refreshState.lastRefresh.toLocaleTimeString()}
               </small>
             )}
             {refreshState.backgroundSync && (
-              <small className="text-info">
-                <FaSync className="fa-spin me-1" />
+              <small className="text-info d-flex align-items-center">
+                <FaSync className="fa-spin mr-1" size={12} />
                 Syncing...
               </small>
             )}
             {refreshState.autoRefresh && !refreshState.backgroundSync && (
-              <small className="text-muted">Auto-refresh: 2 min</small>
+              <small className="text-muted d-flex align-items-center">
+                <FaCheckCircle className="mr-1" size={12} />
+                Auto-refreshes in {Math.floor(refreshState.countdown / 60)}:
+                {(refreshState.countdown % 60).toString().padStart(2, '0')}
+              </small>
             )}
             {refreshState.syncError && (
-              <small className="text-danger">
-                <FaExclamationTriangle className="me-1" />
+              <small className="text-danger d-flex align-items-center">
+                <FaExclamationTriangle className="mr-1" size={12} />
                 Sync error
               </small>
             )}
           </div>
         </div>
-        <div className="d-flex gap-2">
+        <div className="action-buttons">
           <Button
             color="outline-primary"
             size="sm"
             onClick={handleManualRefresh}
             disabled={refreshState.isRefreshing}
+            className="action-btn refresh-btn"
             id="refresh-tooltip"
           >
             {refreshState.isRefreshing ? (
@@ -302,7 +393,9 @@ const EmailBatchDashboard = () => {
             ) : (
               <FaRedo className="me-1" />
             )}
-            {refreshState.isRefreshing ? 'Refreshing...' : 'Refresh'}
+            <span className="d-none d-sm-inline">
+              {refreshState.isRefreshing ? 'Refreshing...' : 'Refresh'}
+            </span>
           </Button>
           <Button
             color={refreshState.autoRefresh ? 'success' : 'outline-secondary'}
@@ -313,6 +406,7 @@ const EmailBatchDashboard = () => {
                 autoRefresh: !prev.autoRefresh,
               }))
             }
+            className="action-btn auto-refresh-btn"
             id="auto-refresh-tooltip"
           >
             {refreshState.autoRefresh ? (
@@ -320,11 +414,16 @@ const EmailBatchDashboard = () => {
             ) : (
               <FaClock className="me-1" />
             )}
-            Auto Refresh
+            <span className="d-none d-sm-inline">Auto Refresh</span>
           </Button>
-          <Button color="outline-secondary" size="sm" onClick={() => setShowFilters(!showFilters)}>
+          <Button
+            color="outline-secondary"
+            size="sm"
+            onClick={() => setShowFilters(!showFilters)}
+            className="action-btn filter-btn"
+          >
             <FaFilter className="me-1" />
-            Filters
+            <span className="d-none d-sm-inline">Filters</span>
           </Button>
         </div>
       </div>
@@ -337,324 +436,307 @@ const EmailBatchDashboard = () => {
         {refreshState.autoRefresh ? 'Auto-refresh enabled (2 min)' : 'Enable auto-refresh'}
       </Tooltip>
 
-      {/* Filters */}
+      {/* Inline Filters Modal */}
       {showFilters && (
-        <Card className="mb-4">
-          <CardHeader>
-            <h6 className="mb-0">
-              <FaFilter className="me-2" />
-              Filters
-            </h6>
-          </CardHeader>
-          <CardBody>
-            <Row>
-              <Col md={3}>
-                <FormGroup>
-                  <Label>Status</Label>
-                  <Input
-                    type="select"
-                    value={filters.status}
-                    onChange={e => handleFilterChange('status', e.target.value)}
+        <div className="position-relative">
+          <div className="inline-filters-modal">
+            <Card className="shadow-lg border-0" style={{ maxWidth: '350px' }}>
+              <CardHeader className="bg-primary text-white py-2">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h6 className="mb-0">
+                    <FaFilter className="me-2" />
+                    Filters
+                  </h6>
+                  <Button
+                    color="link"
+                    className="text-white p-0"
+                    onClick={() => setShowFilters(false)}
+                    style={{ fontSize: '1.2rem', lineHeight: 1 }}
                   >
-                    <option value="">All Statuses</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="PROCESSING">Processing</option>
-                    <option value="COMPLETED">Completed</option>
-                    <option value="FAILED">Failed</option>
-                  </Input>
-                </FormGroup>
-              </Col>
-              <Col md={3}>
-                <FormGroup>
-                  <Label>Date From</Label>
-                  <Input
-                    type="date"
-                    value={filters.dateFrom}
-                    onChange={e => handleFilterChange('dateFrom', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-              <Col md={3}>
-                <FormGroup>
-                  <Label>Date To</Label>
-                  <Input
-                    type="date"
-                    value={filters.dateTo}
-                    onChange={e => handleFilterChange('dateTo', e.target.value)}
-                  />
-                </FormGroup>
-              </Col>
-              <Col md={3} className="d-flex align-items-end">
-                <Button
-                  color="outline-secondary"
-                  onClick={() => setFilters({ status: '', dateFrom: '', dateTo: '' })}
-                >
-                  Clear Filters
-                </Button>
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
+                    <FaTimes />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardBody className="p-3">
+                <div className="d-flex flex-column gap-3">
+                  <FormGroup>
+                    <Label className="form-label-sm">Status</Label>
+                    <Input
+                      type="select"
+                      size="sm"
+                      value={filters.status}
+                      onChange={e => handleFilterChange('status', e.target.value)}
+                    >
+                      <option value="">All Statuses</option>
+                      <option value="PENDING">Pending</option>
+                      <option value="PROCESSING">Processing</option>
+                      <option value="COMPLETED">Completed</option>
+                      <option value="FAILED">Failed</option>
+                    </Input>
+                  </FormGroup>
+
+                  <FormGroup>
+                    <Label className="form-label-sm">Date From</Label>
+                    <Input
+                      type="date"
+                      size="sm"
+                      value={filters.dateFrom}
+                      onChange={e => handleFilterChange('dateFrom', e.target.value)}
+                    />
+                  </FormGroup>
+
+                  <FormGroup>
+                    <Label className="form-label-sm">Date To</Label>
+                    <Input
+                      type="date"
+                      size="sm"
+                      value={filters.dateTo}
+                      onChange={e => handleFilterChange('dateTo', e.target.value)}
+                    />
+                  </FormGroup>
+
+                  <div className="d-flex gap-2 pt-2">
+                    <Button
+                      color="primary"
+                      size="sm"
+                      onClick={handleApplyFilters}
+                      className="flex-fill"
+                    >
+                      Apply
+                    </Button>
+                    <Button
+                      color="outline-secondary"
+                      size="sm"
+                      onClick={handleClearFilters}
+                      className="flex-fill"
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+        </div>
       )}
 
-      {/* Stats Cards */}
-      {dashboardStats && (
-        <Row className="mb-4">
-          <Col md={3}>
-            <Card className={`text-center ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-              <CardBody>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="text-primary mb-0">
-                    {dashboardStats.overview?.totalBatches || 0}
-                  </h5>
-                  {refreshState.backgroundSync && (
-                    <FaSync className="text-info fa-spin" size={12} />
-                  )}
-                </div>
-                <small className="text-muted">Total Batches</small>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card className={`text-center ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-              <CardBody>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="text-success mb-0">
-                    {dashboardStats.overview?.completedBatches || 0}
-                  </h5>
-                  {refreshState.backgroundSync && (
-                    <FaSync className="text-info fa-spin" size={12} />
-                  )}
-                </div>
-                <small className="text-muted">Completed</small>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card className={`text-center ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-              <CardBody>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="text-info mb-0">
-                    {dashboardStats.overview?.processingBatches || 0}
-                  </h5>
-                  {refreshState.backgroundSync && (
-                    <FaSync className="text-info fa-spin" size={12} />
-                  )}
-                </div>
-                <small className="text-muted">Processing</small>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md={3}>
-            <Card className={`text-center ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-              <CardBody>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="text-danger mb-0">
-                    {dashboardStats.overview?.failedBatches || 0}
-                  </h5>
-                  {refreshState.backgroundSync && (
-                    <FaSync className="text-info fa-spin" size={12} />
-                  )}
-                </div>
-                <small className="text-muted">Failed</small>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      )}
+      {/* Stats Chips */}
+      <div className="mb-3">
+        <div className="stats-chips">
+          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
+            <FaEnvelope className="stat-icon text-primary" size={14} />
+            <span className="stat-number text-primary">
+              {dashboardStats?.overview?.totalBatches || 0}
+            </span>
+            <span className="stat-label">Total</span>
+            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
+          </div>
+          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
+            <FaCheck className="stat-icon text-success" size={14} />
+            <span className="stat-number text-success">
+              {dashboardStats?.overview?.completedBatches || 0}
+            </span>
+            <span className="stat-label">Completed</span>
+            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
+          </div>
+          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
+            <FaSync className="stat-icon text-info" size={14} />
+            <span className="stat-number text-info">
+              {dashboardStats?.overview?.processingBatches || 0}
+            </span>
+            <span className="stat-label">Processing</span>
+            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
+          </div>
+          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
+            <FaTimes className="stat-icon text-danger" size={14} />
+            <span className="stat-number text-danger">
+              {dashboardStats?.overview?.failedBatches || 0}
+            </span>
+            <span className="stat-label">Failed</span>
+            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
+          </div>
+        </div>
+      </div>
 
-      {/* Email Stats */}
-      {dashboardStats && (
-        <Row className="mb-4">
-          <Col md={4}>
-            <Card className={`text-center ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-              <CardBody>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="text-primary mb-0">
-                    {dashboardStats.emailStats?.totalEmails || 0}
-                  </h5>
-                  {refreshState.backgroundSync && (
-                    <FaSync className="text-info fa-spin" size={12} />
-                  )}
-                </div>
-                <small className="text-muted">Total Emails</small>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md={4}>
-            <Card className={`text-center ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-              <CardBody>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="text-success mb-0">
-                    {dashboardStats.emailStats?.sentEmails || 0}
-                  </h5>
-                  {refreshState.backgroundSync && (
-                    <FaSync className="text-info fa-spin" size={12} />
-                  )}
-                </div>
-                <small className="text-muted">Sent</small>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md={4}>
-            <Card className={`text-center ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-              <CardBody>
-                <div className="d-flex justify-content-between align-items-center">
-                  <h5 className="text-secondary mb-0">
-                    {dashboardStats.emailStats?.successRate || 0}%
-                  </h5>
-                  {refreshState.backgroundSync && (
-                    <FaSync className="text-info fa-spin" size={12} />
-                  )}
-                </div>
-                <small className="text-muted">Success Rate</small>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      )}
+      {/* Email Stats Chips */}
+      <div className="mb-4">
+        <div className="stats-chips">
+          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
+            <FaEnvelope className="stat-icon text-primary" size={14} />
+            <span className="stat-number text-primary">
+              {dashboardStats?.emailStats?.totalEmails || 0}
+            </span>
+            <span className="stat-label">Emails</span>
+            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
+          </div>
+          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
+            <FaCheck className="stat-icon text-success" size={14} />
+            <span className="stat-number text-success">
+              {dashboardStats?.emailStats?.sentEmails || 0}
+            </span>
+            <span className="stat-label">Sent</span>
+            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
+          </div>
+          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
+            <FaUser className="stat-icon text-secondary" size={14} />
+            <span className="stat-number text-secondary">
+              {dashboardStats?.emailStats?.successRate || 0}%
+            </span>
+            <span className="stat-label">Success</span>
+            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
+          </div>
+        </div>
+      </div>
 
       {/* Error Message */}
       {error.batches && (
-        <Alert color="danger" className="mb-4">
+        <Alert color="danger" className="mb-3">
           {error.batches}
         </Alert>
       )}
 
       {/* Batches Table */}
-      <Card>
-        <CardHeader>
-          <div className="d-flex justify-content-between align-items-center">
-            <div className="d-flex align-items-center">
-              <h5 className="mb-0 me-2">Email Batches</h5>
-              {refreshState.backgroundSync && <FaSync className="text-info fa-spin" size={14} />}
-            </div>
-            <div className="d-flex align-items-center gap-2">
-              <small className="text-muted">Showing {batches?.length || 0} batches</small>
-              {refreshState.lastRefresh && (
-                <small className="text-muted">
-                  • Updated {refreshState.lastRefresh.toLocaleTimeString()}
-                </small>
-              )}
-            </div>
-          </div>
-        </CardHeader>
-        <CardBody>
+      <Card className="shadow-sm mb-4">
+        <CardBody className="p-0">
           {batches && batches.length > 0 ? (
-            <Table responsive striped hover>
-              <thead>
-                <tr>
-                  <th>Batch Details</th>
-                  <th>Status & Progress</th>
-                  <th>Email Statistics</th>
-                  <th>Timing</th>
-                  <th>Created By</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {batches.map(batch => (
-                  <tr key={batch._id}>
-                    <td>
-                      <div>
-                        <strong>{batch.name}</strong>
-                        <br />
-                        <small className="text-muted">{batch.subject}</small>
-                        <br />
-                        <small className="text-info">
-                          <FaEnvelope className="me-1" />
-                          {batch.totalEmails || 0} total emails
-                        </small>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="d-flex align-items-center mb-2">
-                        {getStatusIcon(batch.status)}
-                        <Badge color={getStatusBadge(batch.status)} className="ms-2">
-                          {batch.status}
-                        </Badge>
-                      </div>
-                      <div className="d-flex align-items-center">
-                        <div className="progress me-2" style={{ width: '120px', height: '8px' }}>
-                          <div
-                            className="progress-bar"
-                            role="progressbar"
-                            style={{ width: `${batch.progress || 0}%` }}
-                          />
+            <div className="table-responsive">
+              <Table striped hover className="mb-0">
+                <thead className="table-dark">
+                  <tr>
+                    <th className="border-0 py-2 px-3">Email</th>
+                    <th className="border-0 py-2 px-3">Status</th>
+                    <th className="border-0 py-2 px-3 d-none d-lg-table-cell">Statistics</th>
+                    <th className="border-0 py-2 px-3 d-none d-md-table-cell">Timing</th>
+                    <th className="border-0 py-2 px-3 d-none d-xl-table-cell">Created By</th>
+                    <th className="border-0 py-2 px-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {batches.map(batch => (
+                    <tr key={batch._id} className="align-middle">
+                      <td className="py-2 px-3">
+                        <div className="d-flex flex-column gap-1">
+                          <strong className="text-primary">{batch.subject || 'Email Batch'}</strong>
+                          <Button
+                            size="sm"
+                            color="outline-info"
+                            onClick={() => handlePreviewEmail(batch)}
+                            className="d-flex align-items-center p-1 align-self-start"
+                            title="Preview Email"
+                          >
+                            <FaEye size={12} />
+                          </Button>
+                          <div className="d-lg-none mt-2">
+                            <div className="d-flex flex-column gap-1">
+                              <small className="text-primary">
+                                <FaEnvelope className="me-1" size={12} />
+                                {batch.totalEmails || 0} total
+                              </small>
+                              <div className="d-flex justify-content-between">
+                                <small className="text-success">
+                                  <FaCheck className="me-1" size={12} />
+                                  {batch.sentEmails || 0} sent
+                                </small>
+                                <small className="text-danger">
+                                  <FaTimes className="me-1" size={12} />
+                                  {batch.failedEmails || 0} failed
+                                </small>
+                              </div>
+                              {batch.pendingEmails > 0 && (
+                                <small className="text-warning">
+                                  <FaClock className="me-1" size={12} />
+                                  {batch.pendingEmails} pending
+                                </small>
+                              )}
+                            </div>
+                          </div>
+                          <div className="d-md-none mt-1">
+                            <small className="text-muted">
+                              <FaCalendar className="me-1" size={12} />
+                              Created: {formatDate(batch.createdAt)}
+                            </small>
+                          </div>
+                          <div className="d-xl-none mt-1">
+                            <small className="text-muted">
+                              <FaUser className="me-1" size={12} />
+                              {batch.createdBy?.firstName && batch.createdBy?.lastName
+                                ? `${batch.createdBy.firstName} ${batch.createdBy.lastName}`
+                                : batch.createdBy?.firstName || 'System'}
+                            </small>
+                          </div>
                         </div>
-                        <small>{batch.progress || 0}%</small>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <div className="d-flex justify-content-between">
-                          <small className="text-success">
-                            <FaCheck className="me-1" />
-                            {batch.sentEmails || 0}
-                          </small>
-                          <small className="text-danger">
-                            <FaTimes className="me-1" />
-                            {batch.failedEmails || 0}
-                          </small>
+                      </td>
+                      <td className="py-2 px-3">
+                        <div className="d-flex align-items-center mb-2">
+                          <Badge color={getStatusBadge(batch.status)}>{batch.status}</Badge>
                         </div>
-                        <small className="text-muted">
-                          Success:{' '}
-                          {batch.totalEmails > 0
-                            ? Math.round((batch.sentEmails / batch.totalEmails) * 100)
-                            : 0}
-                          %
-                        </small>
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        <small className="text-muted">
-                          <FaCalendar className="me-1" />
-                          Created: {formatDate(batch.createdAt)}
-                        </small>
-                        {batch.startedAt && (
-                          <>
-                            <br />
-                            <small className="text-info">
+                      </td>
+                      <td className="py-2 px-3 d-none d-lg-table-cell">
+                        <div className="text-center">
+                          <div className="d-flex flex-column gap-1">
+                            <small className="text-primary">
+                              <FaEnvelope className="me-1" size={12} />
+                              {batch.totalEmails || 0} total
+                            </small>
+                            <small className="text-success">
+                              <FaCheck className="me-1" size={12} />
+                              {batch.sentEmails || 0} sent
+                            </small>
+                            <small className="text-danger">
+                              <FaTimes className="me-1" size={12} />
+                              {batch.failedEmails || 0} failed
+                            </small>
+                            {batch.pendingEmails > 0 && (
+                              <small className="text-warning">
+                                <FaClock className="me-1" size={12} />
+                                {batch.pendingEmails} pending
+                              </small>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-2 px-3 d-none d-md-table-cell">
+                        <div>
+                          <small className="text-muted d-block">
+                            Created: {formatDate(batch.createdAt)}
+                          </small>
+                          {batch.startedAt && (
+                            <small className="text-info d-block">
                               Started: {formatDate(batch.startedAt)}
                             </small>
-                          </>
-                        )}
-                        {batch.completedAt && (
-                          <>
-                            <br />
-                            <small className="text-success">
+                          )}
+                          {batch.completedAt && (
+                            <small className="text-success d-block">
                               Completed: {formatDate(batch.completedAt)}
                             </small>
-                          </>
-                        )}
-                      </div>
-                    </td>
-                    <td>
-                      <div>
-                        <small>
-                          <FaUser className="me-1" />
-                          {batch.createdByName}
-                        </small>
-                        <br />
-                        <small className="text-muted">{batch.createdByEmail}</small>
-                      </div>
-                    </td>
-                    <td>
-                      <Button
-                        size="sm"
-                        color="outline-primary"
-                        onClick={() => handleViewDetails(batch)}
-                        className="w-100"
-                      >
-                        <FaEye className="me-1" />
-                        View Details
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+                          )}
+                        </div>
+                      </td>
+                      <td className="py-2 px-3 d-none d-xl-table-cell">
+                        <div>
+                          <small className="d-block">
+                            {batch.createdBy?.firstName && batch.createdBy?.lastName
+                              ? `${batch.createdBy.firstName} ${batch.createdBy.lastName}`
+                              : batch.createdBy?.firstName || 'System'}
+                          </small>
+                        </div>
+                      </td>
+                      <td className="py-2 px-3">
+                        <Button
+                          size="sm"
+                          color="outline-primary"
+                          onClick={() => handleViewDetails(batch)}
+                          className="d-flex align-items-center"
+                        >
+                          <FaEye className="me-1" size={12} />
+                          <span className="d-none d-sm-inline">View Details</span>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+            </div>
           ) : (
             <div className="text-center py-5">
               <FaEnvelope size={48} className="text-muted mb-3" />
@@ -672,122 +754,267 @@ const EmailBatchDashboard = () => {
           toggle={() => setShowBatchDetails(false)}
           size="lg"
           centered
+          className="modal-responsive"
         >
           <ModalHeader toggle={() => setShowBatchDetails(false)}>
             Batch Details: {selectedBatch.name}
           </ModalHeader>
-          <ModalBody>
-            <Row>
-              <Col md={6}>
-                <h6>Batch Information</h6>
-                <p>
-                  <strong>Name:</strong> {selectedBatch.name}
-                </p>
-                <p>
-                  <strong>Status:</strong>{' '}
-                  <Badge color={getStatusBadge(selectedBatch.status)}>{selectedBatch.status}</Badge>
-                </p>
-                <p>
-                  <strong>Subject:</strong> {selectedBatch.subject}
-                </p>
-                <p>
-                  <strong>Created:</strong> {formatDate(selectedBatch.createdAt)}
-                </p>
-                {selectedBatch.startedAt && (
-                  <p>
-                    <strong>Started:</strong> {formatDate(selectedBatch.startedAt)}
-                  </p>
-                )}
-                {selectedBatch.completedAt && (
-                  <p>
-                    <strong>Completed:</strong> {formatDate(selectedBatch.completedAt)}
-                  </p>
-                )}
-              </Col>
-              <Col md={6}>
-                <h6>Email Statistics</h6>
-                <p>
-                  <strong>Total Emails:</strong> {selectedBatch.totalEmails || 0}
-                </p>
-                <p>
-                  <strong>Sent:</strong> {selectedBatch.sentEmails || 0}
-                </p>
-                <p>
-                  <strong>Failed:</strong> {selectedBatch.failedEmails || 0}
-                </p>
-                <p>
-                  <strong>Success Rate:</strong>{' '}
-                  {selectedBatch.totalEmails > 0
-                    ? Math.round((selectedBatch.sentEmails / selectedBatch.totalEmails) * 100)
-                    : 0}
-                  %
-                </p>
-                <div className="mt-3">
-                  <Progress
-                    value={selectedBatch.progress || 0}
-                    color={getStatusBadge(selectedBatch.status)}
-                  >
-                    {selectedBatch.progress || 0}%
-                  </Progress>
-                </div>
-              </Col>
-            </Row>
+          <ModalBody className="p-4">
+            <div className="d-flex flex-column flex-md-row gap-5">
+              <div className="flex-fill">
+                <Card className="h-100">
+                  <CardHeader className="bg-light">
+                    <h6 className="mb-0">Batch Information</h6>
+                  </CardHeader>
+                  <CardBody className="p-3">
+                    <div className="d-flex flex-column gap-2">
+                      <div>
+                        <strong>Batch ID:</strong>
+                        <div className="text-primary font-monospace small">
+                          {selectedBatch.batchId}
+                        </div>
+                      </div>
+                      <div>
+                        <strong>Status:</strong>
+                        <div>
+                          <Badge color={getStatusBadge(selectedBatch.status)} className="ms-2">
+                            {selectedBatch.status}
+                          </Badge>
+                        </div>
+                      </div>
+                      <div>
+                        <strong>Created By:</strong>
+                        <div className="text-muted">
+                          {selectedBatch.createdBy?.firstName && selectedBatch.createdBy?.lastName
+                            ? `${selectedBatch.createdBy.firstName} ${selectedBatch.createdName}`
+                            : selectedBatch.createdBy?.firstName || 'System'}
+                        </div>
+                      </div>
+                      <div>
+                        <strong>Created:</strong>
+                        <div className="text-muted">{formatDate(selectedBatch.createdAt)}</div>
+                      </div>
+                      {selectedBatch.startedAt && (
+                        <div>
+                          <strong>Started:</strong>
+                          <div className="text-info">{formatDate(selectedBatch.startedAt)}</div>
+                        </div>
+                      )}
+                      {selectedBatch.completedAt && (
+                        <div>
+                          <strong>Completed:</strong>
+                          <div className="text-success">
+                            {formatDate(selectedBatch.completedAt)}
+                          </div>
+                        </div>
+                      )}
+                      <div>
+                        <strong>Last Updated:</strong>
+                        <div className="text-muted">{formatDate(selectedBatch.updatedAt)}</div>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+              <div className="flex-fill">
+                <Card className="h-100">
+                  <CardHeader className="bg-light">
+                    <h6 className="mb-0">Email Statistics</h6>
+                  </CardHeader>
+                  <CardBody className="p-3">
+                    <div className="d-flex flex-column gap-2">
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Total Emails:</strong>
+                        </span>
+                        <span className="text-primary fw-bold">
+                          {selectedBatch.totalEmails || 0}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Sent:</strong>
+                        </span>
+                        <span className="text-success fw-bold">
+                          {selectedBatch.sentEmails || 0}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Failed:</strong>
+                        </span>
+                        <span className="text-danger fw-bold">
+                          {selectedBatch.failedEmails || 0}
+                        </span>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                        <span>
+                          <strong>Success Rate:</strong>
+                        </span>
+                        <span className="text-secondary fw-bold">
+                          {selectedBatch.totalEmails > 0
+                            ? Math.round(
+                                (selectedBatch.sentEmails / selectedBatch.totalEmails) * 100,
+                              )
+                            : 0}
+                          %
+                        </span>
+                      </div>
+                      <div className="mt-3">
+                        <div className="d-flex justify-content-between mb-1">
+                          <small>Progress</small>
+                          <small>{selectedBatch.progress || 0}%</small>
+                        </div>
+                        <Progress
+                          value={selectedBatch.progress || 0}
+                          color={getStatusBadge(selectedBatch.status)}
+                          style={{ height: '8px' }}
+                        />
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+            </div>
 
             <hr />
 
-            <h6>Email Items</h6>
-            {loadingItems ? (
-              <div className="text-center">
-                <Spinner color="primary" />
-                <p>Loading email items...</p>
-              </div>
-            ) : batchItems.length > 0 ? (
-              <Table responsive striped size="sm">
-                <thead>
-                  <tr>
-                    <th>Recipient</th>
-                    <th>Status</th>
-                    <th>Attempts</th>
-                    <th>Sent At</th>
-                    <th>Error</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {batchItems.map((item, index) => (
-                    <tr key={index}>
-                      <td>
-                        <div>
-                          <strong>{item.recipientEmail}</strong>
-                          {item.recipientName && (
-                            <>
-                              <br />
-                              <small className="text-muted">{item.recipientName}</small>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center">
-                          {getStatusIcon(item.status)}
-                          <Badge color={getStatusBadge(item.status)} className="ms-2">
-                            {item.status}
-                          </Badge>
-                        </div>
-                      </td>
-                      <td>{item.attempts || 0}</td>
-                      <td>
-                        <small>{item.sentAt ? formatDate(item.sentAt) : 'N/A'}</small>
-                      </td>
-                      <td>{item.error && <small className="text-danger">{item.error}</small>}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <div className="text-center py-4">
-                <p className="text-muted">No email items found for this batch.</p>
-              </div>
-            )}
+            <Card className="mt-3">
+              <CardHeader className="bg-light">
+                <h6 className="mb-0">
+                  Batch Items ({batchItems.length}) - Up to 50 recipients per item
+                </h6>
+              </CardHeader>
+              <CardBody className="p-0">
+                {loadingItems ? (
+                  <div className="text-center py-4">
+                    <Spinner color="primary" />
+                    <p className="mt-2">Loading email items...</p>
+                  </div>
+                ) : batchItems.length > 0 ? (
+                  <div className="table-responsive">
+                    <Table striped hover className="mb-0">
+                      <thead className="table-dark">
+                        <tr>
+                          <th className="border-0 py-2 px-3">Batch Item</th>
+                          <th className="border-0 py-2 px-3">Status</th>
+                          <th className="border-0 py-2 px-3 d-none d-sm-table-cell">Attempts</th>
+                          <th className="border-0 py-2 px-3 d-none d-md-table-cell">Timing</th>
+                          <th className="border-0 py-2 px-3">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {batchItems.map((item, index) => (
+                          <tr key={index}>
+                            <td className="py-2 px-3">
+                              <div>
+                                <strong className="text-primary d-block">
+                                  Batch Item #{index + 1}
+                                </strong>
+                                <small className="text-muted">
+                                  {item.recipients?.length || 0} recipients
+                                </small>
+                                <div className="d-sm-none mt-1">
+                                  <small className="text-muted">
+                                    Attempts: {item.attempts || 0}
+                                    {item.lastAttemptedAt && (
+                                      <span className="ms-2">
+                                        Last: {formatDate(item.lastAttemptedAt)}
+                                      </span>
+                                    )}
+                                  </small>
+                                </div>
+                                <div className="d-md-none mt-1">
+                                  <small className="text-muted">
+                                    {item.sentAt ? formatDate(item.sentAt) : 'N/A'}
+                                  </small>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="py-2 px-3">
+                              <div className="d-flex align-items-center">
+                                {getStatusIcon(item.status)}
+                                <Badge color={getStatusBadge(item.status)} className="ms-2">
+                                  {item.status}
+                                </Badge>
+                              </div>
+                            </td>
+                            <td className="py-2 px-3 d-none d-sm-table-cell">
+                              <div className="d-flex flex-column gap-1">
+                                <span className="badge bg-info">{item.attempts || 0} attempts</span>
+                                {item.lastAttemptedAt && (
+                                  <small className="text-muted">
+                                    Last: {formatDate(item.lastAttemptedAt)}
+                                  </small>
+                                )}
+                              </div>
+                            </td>
+                            <td className="py-2 px-3 d-none d-md-table-cell">
+                              <div className="d-flex flex-column gap-1">
+                                {item.sentAt && (
+                                  <small className="text-success">
+                                    <FaCheck className="me-1" size={10} />
+                                    Sent: {formatDate(item.sentAt)}
+                                  </small>
+                                )}
+                                {item.failedAt && (
+                                  <small className="text-danger">
+                                    <FaTimes className="me-1" size={10} />
+                                    Failed: {formatDate(item.failedAt)}
+                                  </small>
+                                )}
+                                <small className="text-muted">
+                                  Created: {formatDate(item.createdAt)}
+                                </small>
+                              </div>
+                            </td>
+                            <td className="py-2 px-3">
+                              <div className="d-flex flex-column gap-2">
+                                <div className="d-flex gap-1">
+                                  {(item.status === 'FAILED' || item.status === 'PENDING') && (
+                                    <Button
+                                      size="sm"
+                                      color="warning"
+                                      onClick={() => handleRetryBatchItem(item._id)}
+                                      className="d-flex align-items-center"
+                                    >
+                                      <FaRedo size={12} className="me-1" />
+                                      <span className="d-none d-sm-inline">Retry</span>
+                                    </Button>
+                                  )}
+                                  <Button
+                                    size="sm"
+                                    color="outline-info"
+                                    onClick={() => handleViewRecipients(item.recipients)}
+                                    className="d-flex align-items-center"
+                                  >
+                                    <FaEye size={12} className="me-1" />
+                                    <span className="d-none d-sm-inline">View</span>
+                                  </Button>
+                                </div>
+                                {item.error &&
+                                  (item.status === 'FAILED' || item.status === 'PENDING') && (
+                                    <small className="text-danger" title={item.error}>
+                                      {item.error.length > 50
+                                        ? `${item.error.substring(0, 50)}...`
+                                        : item.error}
+                                    </small>
+                                  )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <FaEnvelope size={32} className="text-muted mb-2" />
+                    <p className="text-muted">No email items found for this batch.</p>
+                  </div>
+                )}
+              </CardBody>
+            </Card>
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={() => setShowBatchDetails(false)}>
@@ -796,7 +1023,41 @@ const EmailBatchDashboard = () => {
           </ModalFooter>
         </Modal>
       )}
-    </div>
+
+      {/* Email Preview Modal */}
+      {showEmailPreview && previewBatch && (
+        <Modal
+          isOpen={showEmailPreview}
+          toggle={() => setShowEmailPreview(false)}
+          size="lg"
+          centered
+          className="modal-responsive"
+        >
+          <ModalHeader toggle={() => setShowEmailPreview(false)}>
+            Email Preview: {previewBatch.subject || 'Email Batch'}
+          </ModalHeader>
+          <ModalBody className="p-4">
+            <div className="mb-3">
+              <strong>Subject:</strong>
+              <div className="text-muted">{previewBatch.subject || 'No subject'}</div>
+            </div>
+            <div>
+              <strong>Email Content:</strong>
+              <div
+                className="border rounded p-3 bg-light mt-2"
+                style={{ maxHeight: '400px', overflow: 'auto' }}
+                dangerouslySetInnerHTML={{ __html: previewBatch.htmlContent || 'No content' }}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={() => setShowEmailPreview(false)}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+      )}
+    </>
   );
 };
 

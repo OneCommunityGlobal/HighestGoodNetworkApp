@@ -353,6 +353,61 @@
   --text-muted: #adb5bd;
 }
 
+/* Table headers - light mode (default) */
+.table-dark,
+.table-dark th {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
+  border-color: #dee2e6 !important;
+}
+
+/* Table headers - dark mode */
+[data-theme="dark"] .table-dark,
+[data-theme="dark"] .table-dark th,
+.dark-mode .table-dark,
+.dark-mode .table-dark th,
+body.dark .table-dark,
+body.dark .table-dark th {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+  border-color: #495057 !important;
+}
+
+[data-theme="dark"] .table-dark thead th,
+.dark-mode .table-dark thead th,
+body.dark .table-dark thead th {
+  background-color: #212529 !important;
+  color: #ffffff !important;
+  border-color: #495057 !important;
+}
+
+/* Dark mode support for card headers */
+[data-theme="dark"] .card-header,
+[data-theme="dark"] .card-header.bg-light,
+.dark-mode .card-header,
+.dark-mode .card-header.bg-light,
+body.dark .card-header,
+body.dark .card-header.bg-light {
+  background-color: #2d2d2d !important;
+  border-color: #404040 !important;
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .card-header h5,
+[data-theme="dark"] .card-header .text-muted,
+.dark-mode .card-header h5,
+.dark-mode .card-header .text-muted,
+body.dark .card-header h5,
+body.dark .card-header .text-muted {
+  color: #ffffff !important;
+}
+
+[data-theme="dark"] .card-header .text-muted,
+.dark-mode .card-header .text-muted,
+body.dark .card-header .text-muted {
+  color: #adb5bd !important;
+}
+
 /* Animation Classes */
 .fade-in {
   animation: fadeIn 0.3s ease-in;
