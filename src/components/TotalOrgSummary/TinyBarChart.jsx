@@ -12,47 +12,6 @@ import {
   ReferenceLine,
 } from 'recharts';
 
-function ProjectLabel({ viewBox, info }) {
-  return (
-    <foreignObject
-      x={viewBox.x + 60}
-      y={viewBox.y + 10}
-      width={140}
-      height={70}
-      style={{ overflow: 'visible' }}
-    >
-      <div
-        style={{
-          textAlign: 'left',
-          color: info.fontcolor,
-          fontSize: 14,
-          background: 'white',
-          borderRadius: 4,
-          padding: 6,
-          boxShadow: '0 1px 4px #ccc',
-          lineHeight: 1.2,
-          border: '1px solid #eee',
-          minWidth: 120,
-          minHeight: 60,
-          pointerEvents: 'none',
-          display: 'grid',
-          justifyItems: 'center',
-          gap: 1,
-        }}
-      >
-        <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
-        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>{info.amount}</div>
-        <div style={{ color: '#666', fontSize: 10 }}>({info.percentage})</div>
-        {info.ifcompare && (
-          <div style={{ color: info.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
-            {info.change}
-          </div>
-        )}
-      </div>
-    </foreignObject>
-  );
-}
-
 export default function TinyBarChart(props) {
   const {
     chartData,
@@ -65,12 +24,13 @@ export default function TinyBarChart(props) {
   } = props;
 
   return (
-    <ResponsiveContainer maxWidth={600} maxHeight={400} minWidth={180} minHeight={340}>
+    <ResponsiveContainer width="100%" height="100%" maxHeight={400} minWidth={180} minHeight={340}>
       <BarChart
         data={chartData}
         margin={{
           top: 50,
           bottom: 40,
+          left: 40,
           right: 20,
         }}
       >
@@ -86,10 +46,11 @@ export default function TinyBarChart(props) {
             value: yAxisLabel,
             angle: -90,
             position: 'insideLeft',
-            offset: 20,
+            offset: 5,
             fill: darkMode ? 'white' : '#444',
-            fontSize: 14,
+            fontSize: 12,
             fontWeight: 'bold',
+            style: { textAnchor: 'middle' },
           }}
         />
         <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
@@ -105,7 +66,6 @@ export default function TinyBarChart(props) {
             stroke={darkMode ? 'lightgreen' : 'green'}
             strokeDasharray="6 6"
             ifOverflow="extendDomain"
-            label={<ProjectLabel info={projectBarInfo} />}
           />
         )}
       </BarChart>
