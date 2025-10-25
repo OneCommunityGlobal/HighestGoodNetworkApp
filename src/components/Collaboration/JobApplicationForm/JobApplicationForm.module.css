@@ -202,6 +202,42 @@
   line-height: 1.5;
 }
 
+.resumeLabel {
+  display: inline-flex;
+  margin-bottom: 0;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #cfcfcf;
+  color: #222;
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+  transition: background 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+
+.resumeLabel:hover {
+  background: #f6f6f6;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  transform: translateY(-1px);
+}
+
+.resumeLabel input[type="file"] {
+  display: none;
+}
+
+.resumeLabel .fileName {
+  font-size: 13px;
+  color: #555;
+  background: #f2f6f9;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #e6eef6;
+}
+
 .darkMode {
   background: #1b2a41;
   color: #e0e0e0;
@@ -306,4 +342,22 @@
 .darkMode .formGroup h2 {
   color: #9c0;
   transition: color 0.3s;
+}
+
+.darkMode .resumeLabel {
+  background: #1c2541;
+  border-color: #2b3f57;
+  color: #e6eef6;
+  box-shadow: none;
+}
+
+.darkMode .resumeLabel:hover {
+  background: #22364e;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.darkMode .resumeLabel .fileName {
+  background: rgba(255, 255, 255, 0.04);
+  color: #cfe7ff;
+  border-color: rgba(255, 255, 255, 0.05);
 }

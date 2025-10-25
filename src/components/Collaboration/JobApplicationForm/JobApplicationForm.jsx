@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
+// ...existing code...
+import React, { useState, useEffect, useRef } from 'react';
 import styles from './JobApplicationForm.module.css';
 import OneCommunityImage from '../../../assets/images/logo2.png';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import { useSelector } from 'react-redux';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function JobApplicationForm() {
   const [forms, setForms] = useState([]);
@@ -12,48 +15,49 @@ function JobApplicationForm() {
   const [jobTitleInput, setJobTitleInput] = useState('');
   const [filteredForm, setFilteredForm] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
+  const [applicantName, setApplicantName] = useState('');
+  const [applicantEmail, setApplicantEmail] = useState('');
+  const [locationTimezone, setLocationTimezone] = useState('');
+  const [phone, setPhone] = useState('');
+  const [companyPosition, setCompanyPosition] = useState('');
+  const [websiteSocial, setWebsiteSocial] = useState('');
+  const [resumeFile, setResumeFile] = useState(null);
+  const resumeInputRef = useRef(null);
 
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme?.darkMode);
 
-  // Fetch all job forms on mount
   useEffect(() => {
     async function fetchForms() {
       try {
         const res = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
-        console.log('API Response:', res.data);
         const formsArr = Array.isArray(res.data.forms) ? res.data.forms : [];
         setForms(formsArr);
-        // Log all forms and their titles
-        console.log('All forms:', formsArr);
-        formsArr.forEach(f => console.log('Form title:', f.title));
-        // Set first job with questions as default
         const firstWithQuestions = formsArr.find(f => f.questions && f.questions.length > 0);
         if (firstWithQuestions) {
           setSelectedJob(firstWithQuestions.title);
           setFilteredForm(firstWithQuestions);
-          setAnswers(Array((firstWithQuestions.questions || []).length).fill(''));
+          setAnswers(new Array((firstWithQuestions.questions ?? []).length).fill(''));
         } else if (formsArr.length > 0) {
           setSelectedJob(formsArr[0].title);
           setFilteredForm(formsArr[0]);
-          setAnswers(Array((formsArr[0].questions || []).length).fill(''));
+          setAnswers(new Array((formsArr[0].questions ?? []).length).fill(''));
         }
       } catch (err) {
         setForms([]);
         setSelectedJob('');
         setFilteredForm(null);
         setAnswers([]);
-        console.error('Error fetching forms:', err);
+        toast.error('Failed to load job forms.');
       }
     }
     fetchForms();
   }, []);
 
-  // Update filteredForm and answers when selectedJob changes
   useEffect(() => {
     if (!selectedJob) return;
     const form = forms.find(f => f.title === selectedJob);
     setFilteredForm(form);
-    setAnswers(Array((form?.questions || []).length).fill(''));
+    setAnswers(new Array((form?.questions ?? []).length).fill(''));
   }, [selectedJob, forms]);
 
   const handleJobChange = e => {
@@ -65,9 +69,11 @@ function JobApplicationForm() {
   };
 
   const handleGoClick = () => {
-    const form = forms.find(f => f.title.toLowerCase() === jobTitleInput.trim().toLowerCase());
+    const form = forms.find(f => f.title?.toLowerCase() === jobTitleInput.trim().toLowerCase());
     if (form) {
       setSelectedJob(form.title);
+    } else {
+      toast.info('No form matches that job title.');
     }
   };
 
@@ -86,8 +92,53 @@ function JobApplicationForm() {
     setShowDescription(false);
   };
 
+  const handleResumeChange = e => {
+    const f = e.target.files?.[0] || null;
+    setResumeFile(f);
+  };
+
+  const validateBeforeSubmit = () => {
+    const missing = [];
+    if (!applicantName.trim()) missing.push('Name');
+    if (!applicantEmail.trim()) missing.push('Email');
+
+    if (filteredForm?.questions?.length) {
+      for (const [idx, q] of filteredForm.questions.entries()) {
+        const required = q.required ?? false;
+        if (required && !String(answers[idx] ?? '').trim()) {
+          missing.push(q.label || q.questionText || `Question ${idx + 1}`);
+        }
+      }
+    }
+
+    return missing;
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
+    const missing = validateBeforeSubmit();
+    if (missing.length > 0) {
+      toast.error(`Please complete required fields: ${missing.join(', ')}`, { autoClose: 7000 });
+      return;
+    }
+
+    toast.success('Application submitted. A copy will be sent to your email.');
+
+    setApplicantName('');
+    setApplicantEmail('');
+    setLocationTimezone('');
+    setPhone('');
+    setCompanyPosition('');
+    setWebsiteSocial('');
+    setResumeFile(null);
+    if (resumeInputRef.current) resumeInputRef.current.value = '';
+    setAnswers(new Array((filteredForm?.questions ?? []).length).fill(''));
+  };
+
   return (
     <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+      <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} />
       <header className={styles.logo}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
@@ -107,7 +158,7 @@ function JobApplicationForm() {
               value={jobTitleInput}
               onChange={handleJobTitleInputChange}
             />
-            <button className="btn btn-secondary" onClick={handleGoClick}>
+            <button className="btn btn-secondary" onClick={handleGoClick} type="button">
               Go
             </button>
           </div>
@@ -128,7 +179,6 @@ function JobApplicationForm() {
               Click to know more about this position
             </a>
           </p>
-          {/* Popup for job description */}
           {showDescription && filteredForm && (
             <div className={styles.popupOverlay}>
               <div className={styles.popupContent}>
@@ -145,29 +195,64 @@ function JobApplicationForm() {
               </div>
             </div>
           )}
-
-          <form className={styles.form}>
+          <form className={styles.form} onSubmit={handleSubmit}>
             <div>
               Here is a questionnaire to apply to work with us. To complete your application and
               schedule a Zoom interview, please answer the pre-interview questions below.
             </div>
             <div className={styles.formContentGroup}>
-              {/* These questions stay the same and are necessary */}
               <div className={styles.formProfileDetailGroup}>
-                <input type="text" placeholder="Name" className={styles.inputField} />
-                <input type="email" placeholder="Email" className={styles.inputField} />
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className={styles.inputField}
+                  value={applicantName}
+                  onChange={e => setApplicantName(e.target.value)}
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className={styles.inputField}
+                  value={applicantEmail}
+                  onChange={e => setApplicantEmail(e.target.value)}
+                />
                 <input
                   type="text"
                   placeholder="Location & Timezone"
                   className={styles.inputField}
+                  value={locationTimezone}
+                  onChange={e => setLocationTimezone(e.target.value)}
                 />
-                <input type="text" placeholder="Phone Number" className={styles.inputField} />
-                <input type="text" placeholder="Company & Position" className={styles.inputField} />
+                <input
+                  type="text"
+                  placeholder="Phone Number"
+                  className={styles.inputField}
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Company & Position"
+                  className={styles.inputField}
+                  value={companyPosition}
+                  onChange={e => setCompanyPosition(e.target.value)}
+                />
                 <input
                   type="text"
                   placeholder="Primary Website/Social"
                   className={styles.inputField}
+                  value={websiteSocial}
+                  onChange={e => setWebsiteSocial(e.target.value)}
                 />
+                <label className={styles.resumeLabel}>
+                  Upload Resume (optional)
+                  <input
+                    ref={resumeInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleResumeChange}
+                  />
+                </label>
               </div>
               <div className={styles.formGroup}>
                 <h2>1. How did you hear about One Community?</h2>
@@ -215,7 +300,6 @@ function JobApplicationForm() {
                   </option>
                 </select>
               </div>
-              {/* Render dynamic questions from the selected form */}
               {filteredForm &&
                 (filteredForm.questions || []).map((q, idx) => (
                   <div className={styles.formGroup} key={q._id?.$oid || q._id || idx}>
@@ -251,7 +335,7 @@ function JobApplicationForm() {
                               name={`question-${idx}`}
                               value={opt}
                               checked={answers[idx] === opt}
-                              onChange={e => handleAnswerChange(idx, opt)}
+                              onChange={() => handleAnswerChange(idx, opt)}
                             />{' '}
                             {opt}
                           </label>
