@@ -10,9 +10,41 @@
   background-color: white;
   overflow: hidden;
 }
+/* keep if you need a local wrapper around the icon */
+.followup-info-override {
+  position: relative;
+  display: inline-block;
+  z-index: 10;          /* keep */
+  overflow: visible !important;
+}
+/* Let tooltips escape the scrolling containers */
+:global(.dark-mode .modal-body),
+:global(.dark-mode .modal),
+.task_table-container,
+.task_table-container table {
+  overflow: visible !important;
+}
+
+/* keep your tooltip styles */
+:global(.followup-tooltip) {
+  position: absolute !important;
+  top: 20px !important;
+  right: 0 !important;
+  left: auto !important;
+  z-index: 2000 !important;
+  display: block !important;
+  max-height: 90vh !important;
+  overflow: auto !important;
+  max-width: min(520px, 90vw);
+  white-space: normal;
+  background: #2d3748 !important;
+  padding: 15px !important;
+  border-radius: 6px !important;
+  box-sizing: border-box;
+}
 
 .team-member-task-review-button {
-  margin-top: 15px;
+  margin-top: 0;
 }
 
 .team-member-tasks h1 {
@@ -85,15 +117,29 @@
   justify-content: center; 
 }
 
-.team-task-progress {
+/* .team-task-progress {
   position: relative;
   width: 100px;
   min-width: 120px;
   max-width: 120px;
+} */
+ .team-task-progress {
+  /* border: rgb(0, 213, 255) 1px solid !important; */
+  width: 45%;
+  height: auto !important;
 }
 
-.task-break {
+/* .task-break {
   border-bottom: 1px solid lightgray;
+} */
+
+.task-break {
+  /* border: red 1px solid; */
+  border-bottom: 1px solid lightgray;
+  height: auto !important; 
+  width: 100%;
+  display: flex; 
+  margin: 1px 0 1px 0;
 }
 
 .task-break:last-of-type {
@@ -110,15 +156,33 @@
   color: black;
 }
 
-.task-align {
+/* .task-align {
   text-align: left;
   display: flex;
   flex-direction: column;
   gap: 1px;
   vertical-align: middle; 
-
+} */
+ .task-align {
+  width: 55%;
+  height: auto !important;
+  /* border: teal 1px solid !important; */
 }
-
+.inner-task-align{
+  /* border: purple 1px solid !important; */
+  padding: 0px 5px 5px 3px;
+  text-align: left;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  vertical-align: top;
+  flex-wrap: wrap;
+  margin: 0px;
+}
+.team-member-task-review-button, .task-align { /* Use the actual parent class from your HTML */
+    overflow: visible !important; 
+    z-index: 10; 
+}
 .team-member-tasks-user-name {
   width: 50%;
   text-align: center;
@@ -137,7 +201,7 @@
   height: 22px;
 }
 
-.deadlineCount {
+/* .deadlineCount {
   position: absolute;
   text-align: center;
   vertical-align: middle;
@@ -149,6 +213,25 @@
   width: 25px;
   top: 3px;
   right: -11px;
+} */
+.deadlineCount {
+  position: absolute;
+  top: 0px;          /* tweak to taste */
+  right: 0px;         /* or top: 8px; to add some padding from the edge */
+  background: #fd0710;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 50%;
+  padding: 4px 8px;
+}
+
+.task-followup-icon{
+  /* border: palevioletred 1px solid; */
+  display: flex;
+  align-items: center;
+  gap: 6px;               /* space between the two icons only */
+  /* margin-left: -20px;   */
 }
 
 .team-clocks {
@@ -398,14 +481,14 @@
   border-radius: 5px;
   justify-self: end;
   margin-right: -12px;
-
+  margin-bottom: -12px;
+}
 .review-dropdown-item {
   display: flex;
   align-items: center;
   gap: 6px;
 }
-  margin-bottom: -12px;
-}
+
 
 .time-off-detail-modal-card-container {
   border: 1px solid #ccc;
@@ -413,26 +496,61 @@
   border-radius: 5px;
 }
 
-.team-member-tasks-icons {
+/* .team-member-tasks-icons {
   display: inline-flex;
   align-items: flex-start;
   gap: 8px;
+} */
+ .team-member-tasks-icons {
+  /* border: green 1px solid; */
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 7px;
+  flex-wrap: wrap;
 }
 
-.team-member-tasks-content {
+/* .team-member-tasks-content {
   align-items: center;
   gap: 8px;
+} */
+ .team-member-tasks-content {
+  /* border: blue 10px solid; */
+  gap: 5px;
+  height: auto !important;
+  max-height: none !important; 
+  overflow: visible !important;
+  text-align: left;
+  width: 150px;
 }
 
-.team-task-progress-container {
+/* .team-task-progress-container {
   display: grid;
   grid-template-columns: 1fr repeat(2, auto);
   grid-template-rows: repeat(2, auto);
   column-gap: 10px;
   margin-left: -20px;
+} */
+.team-task-progress-container {
+ position: relative;
+ gap: 0;
+ /* border: orange 1px solid !important; */
+ display:flex; 
+ flex-direction: row;
 }
 
-.team-task-progress-time {
+.progress-text{
+  margin: 0;
+  /* border: green 1px solid; */
+  font-size: 13px;
+  padding: 0;
+  flex-wrap: wrap;
+  display: inline-block; 
+  font-weight: 400;
+  width: 60px;
+}
+
+/* .team-task-progress-time {
   grid-column: 1 / span 1;
   grid-row: 1 / span 1;
   align-self: center;
@@ -442,8 +560,14 @@
   grid-column: 1 / span 3;
   grid-row: 1 / span 1;
   justify-self: center;
+} */
+.team-task-progress-time,
+.team-task-progress-time-volunteers {
+  display: flex;
+  align-items: center;
+  padding: 0;             /* remove padding that creates the gap */
+  margin: 0;              /* remove any default margins */
 }
-
 .followup-tooltip-container {
   grid-column: 3 / span 1;
   grid-row: 1 / span 1;
@@ -454,6 +578,7 @@
   grid-column: 1 / span 3;
   grid-row: 2 / span 1;
   margin-top: 2px;
+  width: 100% !important;
 }
 
 .hours-btn-div {
