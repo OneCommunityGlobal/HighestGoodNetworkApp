@@ -155,3 +155,25 @@
   border: 2px solid red !important;
   border-radius: 5px;
 }
+/* Final-week notice */
+.finalWeekNotice {
+  color: #b00020; /* accessible red on light bg */
+  font-weight: 700;
+  background: rgba(255, 235, 59, 0.18);
+  padding: 6px 10px;
+  border-radius: 6px;
+  line-height: 1.3;
+  margin-top: 5px;
+
+  small {
+    display: block;
+    margin-top: 2px;
+    opacity: 0.9;
+    font-weight: 600;
+  }
+}
+
+.finalWeekNoticeDark {
+  color: #ffd1d1; /* light red for dark bg */
+  background: rgba(255, 255, 255, 0.08);
+}
