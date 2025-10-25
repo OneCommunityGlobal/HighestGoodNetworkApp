@@ -1,0 +1,342 @@
+.oneCommunityGlobalImg {
+  height: auto;
+  max-width: 1000px;
+}
+
+.formBuilderContainer {
+  background-color: #d9d9d9;
+  max-width: 80%;
+  margin: 1% 10% 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 10px;
+  padding: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pageWrapper {
+  min-height: 100vh;
+  background-color: #f5f5f5; /* Light mode page background */
+  width: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.customForm {
+  background-color: #d9d9d9;
+  padding: 10px;
+  margin-top: 3%;
+  border-radius: 5px;
+  border: 1px solid #d9d9d9;
+}
+
+.jobformNavbar {
+  display: flex;
+  padding: 0 10px;
+  justify-content: space-between;
+  background-color: #97ca02;
+  border-radius: 5px;
+  border: 1px solid #97ca02;
+  margin-bottom: 3%;
+}
+
+.jobformNavbar input {
+  margin: 8px 0;
+}
+
+.jobformNavbar select {
+  margin: 8px 0;
+  width: 100%;
+}
+
+.jobformNavbar div {
+  display: flex;
+  padding: 2px;
+}
+
+.jobformNavbar button {
+  padding: 11px 13px;
+  margin: 8px 10px;
+  border: none;
+  background-color: #cccccc;
+  color: white;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.jobformNavbar button:hover {
+  background-color: grey;
+}
+
+.jobformDesc {
+  line-height: 2;
+}
+
+.jobformTitle {
+  text-align: center;
+  color: black;
+  font-weight: bold;
+}
+
+.jbformLabel {
+  display: block;
+  font-weight: bold;
+  margin-top: 15px;
+}
+
+.jobformInput,
+.jobformTextarea,
+.jobformSelect {
+  width: 95%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+}
+
+.jobformTextarea {
+  height: 80px;
+  resize: vertical;
+}
+
+.newFieldSection {
+  background-color: #d9d9d9;
+  padding: 20px;
+}
+
+/* General Container for Each Question */
+.formField {
+  padding: 5px;
+  margin-bottom: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.formDiv {
+  display: flex;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.formDivCheckbox {
+  width: 40px;
+  padding: 0;
+  bottom: 0;
+  vertical-align: middle;
+}
+
+/* Label for the Question */
+.fieldLabel {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.2;
+  margin: auto 0;
+  /* margin-bottom: 10px; */
+}
+
+/* Container for Options (Checkbox/Radio/Dropdown) */
+.fieldOptions {
+  display: flex;
+  flex-direction: column; /* Stack options vertically by default */
+  margin: 1px;
+  /* gap: 10px;  */
+}
+
+.fieldOptions input,
+.jobformTextarea {
+  width: 95%;
+}
+
+/* Individual Option Item */
+.optionItem {
+  display: flex; /* Align checkbox and label on the same line */
+  align-items: flex-start;
+  margin: 0;
+  gap: 10px;
+  word-wrap: break-word;
+  white-space: normal;
+  padding: 2px;
+}
+
+.optionsSection input {
+  margin: 0 12px 0;
+}
+
+.optionItem input[type='checkbox'],
+.optionItem input[type='radio'] {
+  margin: 0; /* Ensure no extra margins around inputs */
+  background-color: black;
+  width: 1em;
+  height: 1em;
+}
+
+.optionItem label {
+  font-size: 1rem;
+  font-weight: normal;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.addFieldButton,
+.addOptionButton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.addFieldButton,
+.addOptionButton:hover {
+  background-color: #45a049;
+}
+
+/* Submit Button */
+.jobSubmitButton {
+  display: block;
+  width: 100%;
+  /* max-width: 300px; */
+  padding: 10px;
+  text-align: center;
+  margin-top: 20px;
+  margin-left:auto;
+  margin-right:auto;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  font-size: 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.jobSubmitButton:hover {
+  background-color: #45a049;
+}
+
+/* Dark mode styles following your collaboration component pattern */
+.darkMode {
+  background-color: #1B2A41;
+  color: #f1f1f1;
+}
+
+.darkMode .formBuilderContainer {
+  background-color: #1B2A41;
+  margin-top: 0;
+}
+
+.darkMode .jobformNavbar {
+  background-color: #1C2541;
+  box-shadow: 2px 2px 4px 1px black;
+}
+
+.darkMode .customForm {
+  background-color: #1B2A41;
+}
+
+.darkMode .newFieldSection {
+  background-color: #1B2A41;
+}
+
+.darkMode .jobformInput,
+.darkMode .jobformTextarea,
+.darkMode .jobformSelect {
+  background-color: #1C1C1C;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+.darkMode .jobformInput::placeholder {
+  color: #f1f1f1;
+}
+
+.darkMode .jobformSelect {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='lightgray' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px 18px;
+}
+
+.darkMode .jobformSelect:focus,
+.darkMode .jobformSelect:active {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
+}
+
+.darkMode .jbformLabel,
+.darkMode .fieldLabel {
+  color: #f1f1f1;
+}
+
+.darkMode .jobformDesc {
+  color: #f1f1f1;
+}
+
+.darkMode .formDiv {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  border-color: #333;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+.darkMode .formField {
+  background: transparent;
+}
+
+.darkMode .optionItem {
+  color: #f1f1f1;
+}
+
+.darkMode .optionItem label {
+  color: #e0e0e0;
+}
+
+.darkMode .addFieldButton,
+.darkMode .addOptionButton,
+.darkMode .jobSubmitButton {
+  background-color: #333;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+.darkMode .addFieldButton:hover,
+.darkMode .addOptionButton:hover,
+.darkMode .jobSubmitButton:hover {
+  background-color: #555;
+}
+
+.darkMode .goButton {
+  background-color: #333;
+  color: #f1f1f1;
+  border: 1px solid #444;
+}
+
+.darkMode .goButton:hover {
+  background-color: #555;
+}
+
+.darkMode .optionsList h4 {
+  color: #f1f1f1;
+}
+
+.darkMode .optionsList .optionItem {
+  background: linear-gradient(135deg, #23272a, #181a1b);
+  padding: 5px;
+  border-radius: 3px;
+  margin-bottom: 5px;
+}
+
+.darkMode .jobformTitle {
+  color: white;
+}

@@ -9,7 +9,7 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { fetchAllProjects } from 'actions/projects';
+import { fetchAllProjects } from '~/actions/projects';
 
 import AddUserProfile from './UserProfileAdd';
 
@@ -21,6 +21,7 @@ const mapStateToProps = state => ({
   userProjects: state.userProjects,
   allProjects: get(state, 'allProjects'),
   allTeams: state,
+  darkMode: state.theme.darkMode,
   state,
 });
 

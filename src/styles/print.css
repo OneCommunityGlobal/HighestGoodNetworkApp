@@ -1,0 +1,36 @@
+@media print {
+  /* 确保导航栏在打印时保持正常大小 */
+  .navbar,
+  .navbar * {
+    transform: none !important;
+    -webkit-transform: none !important;
+    -moz-transform: none !important;
+    -ms-transform: none !important;
+    scale: 1 !important;
+    zoom: 1 !important;
+  }
+
+  /* 设置导航栏打印时的固定尺寸 */
+  .navbar {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 60px !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* 确保导航栏内容正确显示 */
+  .navbar-content {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  /* 防止文本溢出 */
+  .navbar * {
+    white-space: normal !important;
+    overflow: visible !important;
+  }
+} 

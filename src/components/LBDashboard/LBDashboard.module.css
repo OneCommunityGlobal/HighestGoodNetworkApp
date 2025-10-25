@@ -1,0 +1,277 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.dashboardContainer {
+  padding: 16px 20px 48px;
+  background: #faf9fb;
+}
+
+.darkContainer {
+  background: #1B2A41;
+  color: #fff;
+}
+
+.dashboardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 15px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.darkText {
+  color: #fff;
+}
+
+.backBtn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.darkBackBtn {
+  background: #3A506B;
+  color: #fff;
+}
+
+.filterBar {
+  background: #fff;
+  border: 1px solid #ece7f4;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px 16px;
+  align-items: center;
+  margin: 0 15px 18px 15px;
+}
+
+.darkFilterBar {
+  background: #1C2541;
+  border-color: #225163;
+}
+
+.filterLabel {
+  font-size: 12px;
+  color: #666;
+}
+
+.darkFilterLabel {
+  color: #6C757D;
+}
+
+.categoryGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Purple buttons */
+.filterBtn {
+  background: #6a4ff7 !important;
+  border-color: #6a4ff7 !important;
+  color: #fff !important;
+  border-radius: 16px;
+  padding: 6px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.darkFilterBtn {
+  background: #225163 !important;
+  border-color: #225163 !important;
+}
+
+.filterBtn:hover {
+  color: #fff !important;
+}
+
+.filterBtn:focus {
+  outline: none;
+  box-shadow: none !important;
+}
+
+/* Active = black pill */
+.active {
+  background: #000 !important;
+  border-color: #000 !important;
+  color: #fff !important;
+}
+
+/* Dropdown caret button same purple/black treatment */
+.dd :global(.dropdown-toggle) {
+  background: #6a4ff7 !important;
+  border-color: #6a4ff7 !important;
+  color: #fff !important;
+  border-radius: 16px !important;
+  padding: 6px 10px;
+}
+
+.dd :global(.dropdown-toggle:hover) {
+  background: #593dd8 !important;
+  border-color: #593dd8 !important;
+  color: #fff !important;
+}
+
+/* Dropdown menu + items */
+.dropdownMenu {
+  border-radius: 10px;
+  padding: 4px 0;
+}
+
+.darkDropdownMenu {
+  background: #1C2541;
+  border-color: #225163;
+}
+
+.dropdownItem {
+  font-size: 14px;
+  padding: 6px 14px;
+}
+
+.darkDropdownItem {
+  color: #fff;
+}
+
+.darkDropdownItem:hover {
+  background: #3A506B;
+  color: #fff;
+}
+
+.dropdownItem:hover {
+  background: #eae4fb;
+  color: #6a4ff7;
+}
+
+.dropdownActive {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.currentMetric {
+  justify-self: end;
+  font-size: 14px;
+}
+
+.section {
+  margin: 0 15px 14px 15px;
+}
+
+.sectionSummary {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 10px 6px;
+}
+
+.darkSectionSummary {
+  color: #fff;
+}
+
+/* caret */
+.sectionSummary::before {
+  content: '▾';
+  font-size: 18px;
+  margin-right: 8px;
+}
+
+.sectionBody {
+  background: #fff;
+  border: 1px solid #ece7f4;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.darkSectionBody {
+  background: #1C2541;
+  border-color: #225163;
+}
+
+.graphCard {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  min-height: 220px;
+}
+
+.darkCard {
+  background: #1C2541;
+  border-color: #225163;
+}
+
+.graphTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.metricPill {
+  font-size: 12px;
+  border: 1px solid #e2e2e2;
+  border-radius: 999px;
+  padding: 2px 8px;
+  background: #f6f6f8;
+}
+
+.darkMetricPill {
+  background: #3A506B;
+  border-color: #225163;
+  color: #fff;
+}
+
+.graphPlaceholder {
+  height: 160px;
+  border: 1px dashed #c9c9d4;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+}
+
+.darkPlaceholder {
+  border-color: #3A506B;
+}
+
+.placeholderText {
+  font-size: 13px;
+  color: #999;
+}
+
+.wordcloudCard {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  min-height: 240px;
+}
+
+.wordcloudBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.wordcloudTitle {
+  font-weight: 600;
+}
+
+.wordcloudPlaceholder {
+  flex: 1;
+  border: 1px dashed #c9c9d4;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: #999;
+}

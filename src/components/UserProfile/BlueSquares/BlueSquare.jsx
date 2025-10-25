@@ -1,130 +1,77 @@
-import React from 'react';
 import './BlueSquare.css';
-import hasPermission from 'utils/permissions';
-import { connect, useSelector } from 'react-redux';
-import { formatCreatedDate, formatDate } from 'utils/formatDate';
-import {
-  formatDateFromDescriptionString,
-  formatTimeOffRequests,
-} from 'utils/formatDateFromDescriptionString';
+import hasPermission from '~/utils/permissions';
+import { connect } from 'react-redux';
+import { formatCreatedDate, formatDate } from '~/utils/formatDate';
 
-const BlueSquare = props => {
-  const authRole = useSelector(state => state.auth.user.role);
 
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare, numberOfReasons, infringementsNum } = props;
+const BlueSquare = (props) => {
+  const {
+    blueSquares,
+    handleBlueSquare,
+    hasPermission,
+    darkMode
+  } = props;
 
+  const canAddInfringements = hasPermission('addInfringements');
+  const canEditInfringements = hasPermission('editInfringements');
+  const canDeleteInfringements = hasPermission('deleteInfringements');
+  const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements;
+
+  const handleOnClick = (blueSquare) => {    
+    if (!blueSquare._id) {
+      handleBlueSquare, darkMode(isInfringementAuthorizer, 'message', 'none');
+    } else if (canEditInfringements || canDeleteInfringements) {
+      handleBlueSquare(true, 'modBlueSquare', blueSquare._id);
+    } else {
+      handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
+    }
+  };    
   return (
-    <div className="blueSquareContainer">
-      <div className="blueSquares">
-        {blueSquares
-          ? blueSquares
-              .sort((a, b) => (a.date > b.date ? 1 : -1))
-              .map((blueSquare, index) => (
-                <div
-                  key={index}
-                  role="button"
-                  id="wrapper"
-                  data-testid="blueSquare"
-                  className="blueSquareButton"
-                  onClick={() => {
-                    if (!blueSquare._id) {
-                      handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                    } else if (canPutUserProfileImportantInfo) {
-                      handleBlueSquare(
-                        canPutUserProfileImportantInfo,
-                        'modBlueSquare',
-                        blueSquare._id,
-                      );
-                    } else {
-                      handleBlueSquare(
-                        !canPutUserProfileImportantInfo,
-                        'viewBlueSquare',
-                        blueSquare._id,
-                      );
-                    }
-                  }}
-                >
-                  <div className="report" data-testid="report">
-                    <div className="title">{formatDate(blueSquare.date)}</div>
-                    {blueSquare.description !== undefined && (
-                      <div className="summary">
-                        {(() => {
-                          const dateFormattedDescription = formatDateFromDescriptionString(
-                            blueSquare.description,
-                          );
-                          const formattedDescription = formatTimeOffRequests(
-                            dateFormattedDescription,
-                          );
-
-                          if (formattedDescription.length > 0) {
-                            return (
-                              <>
-                                <span>
-                                  {blueSquare.createdDate !== undefined
-                                    ? formatCreatedDate(BlueSquare.createdDate) + ':'
-                                    : null}
-                                </span>
-                                <span>
-                                  {formattedDescription[0]}
-                                  <br />
-                                  <span style={{ fontWeight: 'bold' }}>Notice :</span>
-                                  <span
-                                    style={{ fontStyle: 'italic', textDecoration: 'underline' }}
-                                  >{`${formattedDescription[1]}`}</span>
-                                </span>
-                              </>
-                            );
-                          } else {
-                            return blueSquare.createdDate !== undefined
-                              ? formatCreatedDate(BlueSquare.createdDate) +
-                                  ': ' +
-                                  dateFormattedDescription
-                              : dateFormattedDescription;
-                          }
-                        })()}
-                      </div>
-                    )}
-                  </div>
+    <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
+      <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
+        {blueSquares?.length ? (
+          blueSquares
+            .sort((a, b) => (a.date > b.date ? 1 : -1))  // sorting by most recent date(awareded) last
+            .map((blueSquare, index) => (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus, jsx-a11y/no-static-element-interactions
+              <div
+                key={index}
+                role="button"
+                id="wrapper"
+                data-testid="blueSquare"
+                className="blueSquareButton"
+                onClick={() => handleOnClick(blueSquare)}
+              >
+                <div className="report" data-testid="report">
+                  <div className="title">{formatDate(blueSquare.date)}</div>
+                  {blueSquare.description && (
+                    <div className="summary">
+                      {blueSquare.createdDate ? `${formatCreatedDate(blueSquare.createdDate)}: ` : ''}
+                      {blueSquare.description}
+                    </div>
+                  )}
                 </div>
-              ))
-          : null}
-      </div>
-      {/* Check for userRole, infringements and scheduled reasons to render + button - Sucheta*/}
-      {authRole === 'Owner' || authRole === 'Administrator' ? (
-        <div
-          onClick={() => {
-            handleBlueSquare(true, 'addBlueSquare', '');
-          }}
-          className="blueSquareButton"
-          color="primary"
-          data-testid="addBlueSquare"
-        >
-          +
-        </div>
-      ) : (
-        isInfringementAuthorizer &&
-        !(
-          infringementsNum >= 5 ||
-          numberOfReasons >= 5 ||
-          numberOfReasons + infringementsNum >= 5
-        ) && (
+              </div>
+            ))
+        ) : (
+          <div>No blue squares.</div>
+        )}
+        {canAddInfringements && (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
           <div
-            onClick={() => {
-              handleBlueSquare(true, 'addBlueSquare', '');
-            }}
+            onClick={() => handleBlueSquare(true, 'addBlueSquare', '')}
             className="blueSquareButton"
             color="primary"
             data-testid="addBlueSquare"
           >
             +
           </div>
-        )
-      )}
-      <br />
+        )}
+      </div>
     </div>
   );
 };
+
+
 
 export default connect(null, { hasPermission })(BlueSquare);

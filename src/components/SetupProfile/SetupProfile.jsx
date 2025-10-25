@@ -1,15 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
-import { ENDPOINTS } from 'utils/URL';
-import httpService from 'services/httpService';
+import { ENDPOINTS } from '~/utils/URL';
+import httpService from '~/services/httpService';
 import SetupProfileInvalidToken from './SetupProfileInvalidToken';
 import SetupProfileUserEntry from './SetupProfileUserEntry';
 import './SetupProfile.css';
-const SetupProfile = ({ match }) => {
+
+function SetupProfile({ match }) {
   const [loading, setLoading] = useState(true);
   const [isValidToken, setIsValidToken] = useState(false);
   const [linktoken, setLinkToken] = useState('');
   const [email, setEmail] = useState('');
+  const [inValidMessage, setInValidMessage] = useState('');
+
   useEffect(() => {
     const { token } = match.params;
     setLinkToken(token);
@@ -23,24 +26,23 @@ const SetupProfile = ({ match }) => {
         setLoading(false);
       })
       .catch(err => {
-        console.log(err);
+        const res = err.response;
+        if (res.data) {
+          setInValidMessage(res.data);
+        }
         setLoading(false);
       });
   }, []);
 
-  return (
-    <>
-      {!loading ? (
-        isValidToken ? (
-          <SetupProfileUserEntry token={linktoken} userEmail={email} />
-        ) : (
-          <SetupProfileInvalidToken />
-        )
-      ) : (
-        <></>
-      )}
-    </>
-  );
-};
+  if (loading) {
+    return null;
+  }
+
+  if (isValidToken) {
+    return <SetupProfileUserEntry token={linktoken} userEmail={email} />;
+  }
+
+  return <SetupProfileInvalidToken message={inValidMessage} />;
+}
 
 export default withRouter(SetupProfile);

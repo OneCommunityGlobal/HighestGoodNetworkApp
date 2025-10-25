@@ -1,0 +1,252 @@
+.frontendBackendQuestions {
+  width: 50%;
+  margin: 10px auto;
+  border: 1px solid #c0c0c0;
+  border-radius: 15px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.darkContainer {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .frontendBackendQuestions {
+    width: 80%;
+    margin: 10px auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .frontendBackendQuestions {
+    width: 90%;
+  }
+}
+
+.frontendBackendQuestions h1 {
+  text-align: left;
+  margin-bottom: 20px;
+  margin-left: 30px;
+  margin-right: 30px;
+  font-weight: 400;
+}
+
+.frontendBackendQuestions p {
+  line-height: 1.2;
+  text-align: left;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-bottom: 0;
+}
+
+.frontendBackendQuestions hr {
+  border: none;
+  border-top: 2px solid #ddd;
+  margin: 10px 0;
+}
+
+.blueStrip {
+  height: 50px;
+  background-color: #5082a7;
+  width: 100%;
+  margin-top: 0;
+  margin-bottom: 10px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  color: #fff;
+  font-weight: 400;
+  text-align: center;
+}
+
+.darkStrip { background-color: #3a506b; }
+
+.question {
+  color: #2f5061;
+  margin: 20px;
+  font-size: 1.1em;
+  margin-bottom: 10px;
+}
+
+.darkContainer .question { color: #93c5fd; }
+.darkContainer p { color: #b3bfca; }
+.darkContainer label { color: #e5eef6; }
+
+/* Buttons */
+.darkContainer .buttonContainer button { border-color: #3a506b; color: #ffffff; }
+
+.frontendBackendRating {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 5px;
+  margin: 10px 60px;
+}
+
+.frontendBackendRating div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.frontendBackendRating label {
+  margin-bottom: 2px;
+}
+
+@media screen and (max-width: 1024px) {
+  .frontendBackendRating div {
+    width: 30%;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .frontendBackendRating div {
+    width: 45%;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .frontendBackendRating div {
+    width: 100%;
+  }
+}
+
+.questionContainer{
+  width:100%;
+}
+
+.editQuestionContainer {  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background-color: #f9f9f9;
+  transition: all 0.3s ease-in-out;
+  border: 1px solid #5082a7;
+  border-radius: 10px;
+  width: 95%;
+  margin-left:auto;
+  margin-right:auto;
+  padding:10px;
+}
+
+.editTitle {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  margin-top:0.5rem;
+  color: #2f5061;
+}
+
+.editQuestion {
+  display: flex;
+  align-items: center;
+}
+
+.editInput {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  width: 100%;
+  margin: 5px;
+  margin-left:0;
+}
+
+.editInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+  outline: none;
+}
+
+.saveIcon {
+  cursor: pointer;
+  color: green;
+  font-size: 1.5rem;
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+  margin-right: 20px;
+}
+
+.saveIcon:hover {
+  color: #006400;
+  transform: scale(1.2);
+}
+
+.editIcon {
+  cursor: pointer;
+  color: #5082a7;
+  margin-left: 5px;
+  font-size: 1.2rem;
+  transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.editIcon:hover {
+  color: #0056b3;
+  transform: scale(1.2);
+}
+
+.editIcon:active {
+  color: #003f7f;
+  transform: scale(1.1);
+}
+
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin:10px;
+}
+
+.buttonContainer button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin: 15px;
+  width: 20%;
+  border: 2px solid #2e5163;
+  font-size: medium;
+}
+
+.hgnReturnButton {
+  color: white;
+  background-color:#2e5163 ;
+  border-radius: 10px;
+  width: 20%;
+  margin-left:0;
+}
+
+.hgnReturnButton:hover {
+  background-color:#4e748d;
+  border-color: #4e748d ;
+}
+
+.nextButton {
+  background-color: #2e5163;
+  border-radius: 10px;
+  width: 20%;
+  color: #ffffff;
+}
+
+.nextButton:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
+}
+
+.editButton {
+  background-color: #2e5163;
+  margin-left: 10px;
+}
+
+.submitButton {
+  background-color: #081437;
+  transition: all 0.3s ease;
+  border-radius: 10px;
+}
+
+.submitButton:hover {
+  background-color: #21618a;
+  /* color: white; */
+}

@@ -1,12 +1,52 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import {
   GET_USER_PROFILE,
   GET_USER_TASKS,
   EDIT_FIRST_NAME,
   EDIT_USER_PROFILE,
   CLEAR_USER_PROFILE,
+  GET_PROJECT_BY_USER_NAME,
+  USER_NOT_FOUND_ERROR,
+  GET_USER_AUTOCOMPLETE,
 } from '../constants/userProfile';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
+
+export const getProjectsByPersonActionCreator = data => ({
+  type: GET_PROJECT_BY_USER_NAME,
+  payload: data,
+});
+
+const userNotFoundError = error => ({
+  type: USER_NOT_FOUND_ERROR,
+  payload: error,
+});
+
+export const getUserProfileActionCreator = data => ({
+  type: GET_USER_PROFILE,
+  payload: data,
+});
+
+export const getUserTaskActionCreator = data => ({
+  type: GET_USER_TASKS,
+  payload: data,
+});
+
+export const editFirstNameActionCreator = data => ({
+  type: EDIT_FIRST_NAME,
+  payload: data,
+});
+
+export const putUserProfileActionCreator = data => ({
+  type: EDIT_USER_PROFILE,
+  payload: data,
+});
+
+// Action creator for user autocomplete
+export const getUserAutocompleteActionCreator = data => ({
+  type: GET_USER_AUTOCOMPLETE,
+  payload: data,
+});
 
 export const getUserProfile = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
@@ -22,6 +62,7 @@ export const getUserProfile = userId => {
       const resp = dispatch(getUserProfileActionCreator(res.data));
       return resp.payload;
     }
+    return null;
   };
 };
 
@@ -33,10 +74,10 @@ export const getUserTasks = userId => {
       if (res.status === 200) {
         dispatch(getUserTaskActionCreator(res.data));
       } else {
-        console.log(`Get user task request status is not 200, status message: ${res.statusText}`)
+        toast.info(`Get user task request status is not 200, status message: ${res.statusText}`);
       }
     } catch (error) {
-      console.log(error);
+      toast.error(error);
     }
   };
 };
@@ -51,7 +92,7 @@ export const putUserProfile = data => dispatch => {
 
 export const clearUserProfile = () => ({ type: CLEAR_USER_PROFILE });
 
-export const updateUserProfile = (userProfile) => {
+export const updateUserProfile = userProfile => {
   const url = ENDPOINTS.USER_PROFILE(userProfile._id);
   return async dispatch => {
     const res = await axios.put(url, userProfile);
@@ -73,22 +114,33 @@ export const updateUserProfileProperty = (userProfile, key, value) => {
   };
 };
 
-export const getUserProfileActionCreator = data => ({
-  type: GET_USER_PROFILE,
-  payload: data,
-});
+export const getProjectsByUsersName = searchName => {
+  const url = ENDPOINTS.GET_PROJECT_BY_PERSON(searchName);
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      dispatch(getProjectsByPersonActionCreator(res.data));
+      return res.data.allProjects;
+    } catch (error) {
+      dispatch(userNotFoundError(error.message));
+      dispatch(getProjectsByPersonActionCreator([]));
+      toast.error('Could not find user or project, please try again');
+      return [];
+    }
+  };
+};
 
-export const getUserTaskActionCreator = data => ({
-  type: GET_USER_TASKS,
-  payload: data,
-});
-
-export const editFirstNameActionCreator = data => ({
-  type: EDIT_FIRST_NAME,
-  payload: data,
-});
-
-export const putUserProfileActionCreator = data => ({
-  type: EDIT_USER_PROFILE,
-  payload: data,
-});
+// Action to get user suggestions for autocomplete
+export const getUserByAutocomplete = searchText => {
+  const url = ENDPOINTS.USER_AUTOCOMPLETE(searchText);
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      dispatch(getUserAutocompleteActionCreator(res.data)); // Dispatching the data to the store
+      return res.data; // Return the data to be used in the component
+    } catch (error) {
+      toast.error('Error fetching autocomplete suggestions');
+      return [];
+    }
+  };
+};

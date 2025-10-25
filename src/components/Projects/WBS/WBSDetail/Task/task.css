@@ -7,6 +7,7 @@
   word-break: break-all;
 }
 
+
 .remove-link {
   margin-right: 5px;
   color: red;
@@ -47,4 +48,7 @@
   .container-tasks tbody tr:nth-child(8n + 7) {
     background-color: rgb(228, 255, 255);
   }
+}
+.text-left {
+  text-align: left !important;
 }

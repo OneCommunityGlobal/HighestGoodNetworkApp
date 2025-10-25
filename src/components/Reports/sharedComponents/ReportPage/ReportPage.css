@@ -1,53 +1,41 @@
 .report-page-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 256px;
-  grid-template-rows: auto;
-  column-gap: 24px;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
   background-color: #faf7fd;
   padding: 40px 0 0 24px;
-  align-items: start;
-  padding: 2vh 7vw;
+  align-items: stretch;
 }
 
 .report-page-content {
   display: flex;
   flex-direction: column;
-  grid-row-start: 1;
   row-gap: 32px;
-  /* padding-bottom: 24px; */
+  width: 100%;
+  min-width: 0; /* allow children to shrink if needed */
 }
 
 
 .report-page-profile {
-  padding: 24px;
-  background-color: #f1ebf7;
   border-top-left-radius: 25px;
   border-radius: 25px;
+  width: 100%;
 }
 
-@media (max-width: 1100px) {
-  .report-page-wrapper {    
-    max-width: 100vw;
-  }
+.report-page-profile-dark {
+  border-top-left-radius: 25px;
+  border-radius: 25px;
+  width: 100%;
 }
 
-@media (max-width: 850px) {
-  .report-page-wrapper {
-    display: flex;
-    flex-direction: column;
-    padding: 40px;
-    align-items: center;
-  }
+.report-page-wrapper {
+  padding: 40px;
+}
 
-  .report-page-content {
-    padding: 24px;
-  }
-
-  .report-page-content {
-    justify-content: center;
-    align-items: center;
-  }
+.report-page-content {
+  padding: 24px;
+  justify-content: center;
+  align-items: center;
 }
 
 
@@ -60,4 +48,14 @@
   .report-page-wrapper {
     padding: 20px;
   }
+}
+
+.project-header {
+  font-size: 32px;
+  padding: 5px 5px;
+  text-align: center;
+  background-color: white;
+  border-radius: 20px;
+  box-shadow: 0 0 12px #eae1f6;
+  width: 100%;
 }

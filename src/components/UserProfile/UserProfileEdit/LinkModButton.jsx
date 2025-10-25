@@ -3,7 +3,7 @@ import EditLinkModal from '../UserProfileModal/EditLinkModal';
 import './UserProfileEdit.scss';
 
 const LinkModButton = props => {
-  const { updateLink, userProfile, setChanged, handleSubmit } = props;
+  const { updateLink, userProfile, setChanged, handleSubmit, color } = props;
   const [modal, setModal] = useState(false);
   const toggleModal = () => {
     setModal(!modal);
@@ -19,10 +19,11 @@ const LinkModButton = props => {
         setChanged={setChanged}
         role={props.role}
       />
+      {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus */}
       <span
         style={{
           textDecoration: 'underline',
-          color: 'grey',
+          color: color ? color : 'grey',
           fontSize: '11pt',
           fontWeight: 600,
         }}

@@ -1,21 +1,61 @@
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import GET_TOOL_BY_ID from 'constants/bmdashboard/toolsConstants';
-import { GET_ERRORS } from 'constants/errors';
+import { GET_TOOL_BY_ID, GET_TOOLS, GET_TOOL_AVAILABILITY } from '../../constants/bmdashboard/toolsConstants';
+import { GET_ERRORS } from '../../constants/errors';
+import { ENDPOINTS } from '~/utils/URL';
 
+export const setTools = payload => {
+  return {
+    type: GET_TOOLS,
+    payload,
+  };
+};
 
-export const fetchToolById = (toolId) => {
-  const url = ENDPOINTS.BM_TOOL_BY_ID(toolId);
+export const setTool = payload => {
+  return {
+    type: GET_TOOL_BY_ID,
+    payload,
+  };
+};
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload,
+  };
+};
+
+export const setToolAvailability = payload => ({
+  type: GET_TOOL_AVAILABILITY,
+  payload,
+});
+
+export const fetchTools = () => {
+  const url = ENDPOINTS.BM_TOOLS;
   return async dispatch => {
-    axios.get(url)
+    axios
+      .get(url)
       .then(res => {
-        dispatch(setTool(res.data))
+        dispatch(setTools(res.data));
       })
       .catch(error => {
-        dispatch(setErrors(error))
+        dispatch(setErrors(error));
+      });
+  };
+};
+
+export const fetchToolById = toolId => {
+  const url = ENDPOINTS.BM_TOOL_BY_ID(toolId);
+  return async dispatch => {
+    axios
+      .get(url)
+      .then(res => {
+        dispatch(setTool(res.data));
       })
-  }
-}
+      .catch(error => {
+        dispatch(setErrors(error));
+      });
+  };
+};
 
 export const purchaseTools = async body => {
   return axios
@@ -28,16 +68,15 @@ export const purchaseTools = async body => {
     });
 };
 
-export const setTool = payload => {
-  return {
-    type: GET_TOOL_BY_ID,
-    payload
-  }
-}
-
-export const setErrors = payload => {
-  return {
-    type: GET_ERRORS,
-    payload
-  }
-}
+export const fetchToolAvailability = (toolId = '', projectId = '') => {
+  return async dispatch => {
+    try {
+      const url = ENDPOINTS.BM_TOOL_AVAILABILITY(toolId, projectId);
+      const response = await axios.get(url);
+      dispatch(setToolAvailability(response.data));
+    } catch (error) {
+      // console.error('Error fetching tool availability:', error);
+      dispatch(setErrors(error));
+    }
+  };
+};
