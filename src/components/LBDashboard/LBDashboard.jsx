@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import {
   Container,
@@ -18,7 +19,7 @@ import styles from './LBDashboard.module.css';
 
 const METRIC_OPTIONS = {
   DEMAND: [
-    { key: 'pageVisits', label: 'Page Visits' }, // default overall
+    { key: 'pageVisits', label: 'Page Visits' },
     { key: 'numBids', label: 'Number of Bids' },
     { key: 'avgRating', label: 'Average Rating' },
   ],
@@ -58,6 +59,12 @@ function GraphCard({ title, metricLabel, darkMode }) {
   );
 }
 
+GraphCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  metricLabel: PropTypes.string,
+  darkMode: PropTypes.bool,
+};
+
 export function LBDashboard() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [activeCategory, setActiveCategory] = useState('DEMAND');
@@ -85,6 +92,48 @@ export function LBDashboard() {
     window.history.back();
   };
 
+  const renderCategoryControls = (categoryKey, label) => (
+    <>
+      <Button
+        className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
+          darkMode ? styles.darkFilterBtn : ''
+        }`}
+        onClick={() => handleCategoryClick(categoryKey)}
+      >
+        {label}
+      </Button>
+
+      <ButtonDropdown
+        isOpen={openDD[categoryKey]}
+        toggle={() => toggleDD(categoryKey)}
+        className={styles.dd}
+      >
+        <DropdownToggle
+          caret
+          className={`${styles.filterBtn} ${activeCategory === categoryKey ? styles.active : ''} ${
+            darkMode ? styles.darkFilterBtn : ''
+          }`}
+        />
+        <DropdownMenu
+          className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
+        >
+          {METRIC_OPTIONS[categoryKey].map(m => (
+            <DropdownItem
+              key={m.key}
+              active={selectedMetricKey === m.key}
+              onClick={() => handleMetricPick(categoryKey, m.key)}
+              className={`${styles.dropdownItem} ${
+                selectedMetricKey === m.key ? styles.dropdownActive : ''
+              } ${darkMode ? styles.darkDropdownItem : ''}`}
+            >
+              {m.label}
+            </DropdownItem>
+          ))}
+        </DropdownMenu>
+      </ButtonDropdown>
+    </>
+  );
+
   return (
     <Container
       fluid
@@ -111,119 +160,9 @@ export function LBDashboard() {
         </div>
 
         <ButtonGroup className={styles.categoryGroup}>
-          {/* DEMAND */}
-          <Button
-            className={`${styles.filterBtn} ${activeCategory === 'DEMAND' ? styles.active : ''} ${
-              darkMode ? styles.darkFilterBtn : ''
-            }`}
-            onClick={() => handleCategoryClick('DEMAND')}
-          >
-            Demand
-          </Button>
-          <ButtonDropdown
-            isOpen={openDD.DEMAND}
-            toggle={() => toggleDD('DEMAND')}
-            className={styles.dd}
-          >
-            <DropdownToggle
-              caret
-              className={`${styles.filterBtn} ${activeCategory === 'DEMAND' ? styles.active : ''} ${
-                darkMode ? styles.darkFilterBtn : ''
-              }`}
-            />
-            <DropdownMenu
-              className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
-            >
-              {METRIC_OPTIONS.DEMAND.map(m => (
-                <DropdownItem
-                  key={m.key}
-                  active={selectedMetricKey === m.key}
-                  onClick={() => handleMetricPick('DEMAND', m.key)}
-                  className={`${styles.dropdownItem} ${
-                    selectedMetricKey === m.key ? styles.dropdownActive : ''
-                  } ${darkMode ? styles.darkDropdownItem : ''}`}
-                >
-                  {m.label}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </ButtonDropdown>
-
-          {/* VACANCY */}
-          <Button
-            className={`${styles.filterBtn} ${activeCategory === 'VACANCY' ? styles.active : ''} ${
-              darkMode ? styles.darkFilterBtn : ''
-            }`}
-            onClick={() => handleCategoryClick('VACANCY')}
-          >
-            Vacancy
-          </Button>
-          <ButtonDropdown
-            isOpen={openDD.VACANCY}
-            toggle={() => toggleDD('VACANCY')}
-            className={styles.dd}
-          >
-            <DropdownToggle
-              caret
-              className={`${styles.filterBtn} ${
-                activeCategory === 'VACANCY' ? styles.active : ''
-              } ${darkMode ? styles.darkFilterBtn : ''}`}
-            />
-            <DropdownMenu
-              className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
-            >
-              {METRIC_OPTIONS.VACANCY.map(m => (
-                <DropdownItem
-                  key={m.key}
-                  active={selectedMetricKey === m.key}
-                  onClick={() => handleMetricPick('VACANCY', m.key)}
-                  className={`${styles.dropdownItem} ${
-                    selectedMetricKey === m.key ? styles.dropdownActive : ''
-                  } ${darkMode ? styles.darkDropdownItem : ''}`}
-                >
-                  {m.label}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </ButtonDropdown>
-
-          {/* REVENUE */}
-          <Button
-            className={`${styles.filterBtn} ${activeCategory === 'REVENUE' ? styles.active : ''} ${
-              darkMode ? styles.darkFilterBtn : ''
-            }`}
-            onClick={() => handleCategoryClick('REVENUE')}
-          >
-            Revenue
-          </Button>
-          <ButtonDropdown
-            isOpen={openDD.REVENUE}
-            toggle={() => toggleDD('REVENUE')}
-            className={styles.dd}
-          >
-            <DropdownToggle
-              caret
-              className={`${styles.filterBtn} ${
-                activeCategory === 'REVENUE' ? styles.active : ''
-              } ${darkMode ? styles.darkFilterBtn : ''}`}
-            />
-            <DropdownMenu
-              className={`${styles.dropdownMenu} ${darkMode ? styles.darkDropdownMenu : ''}`}
-            >
-              {METRIC_OPTIONS.REVENUE.map(m => (
-                <DropdownItem
-                  key={m.key}
-                  active={selectedMetricKey === m.key}
-                  onClick={() => handleMetricPick('REVENUE', m.key)}
-                  className={`${styles.dropdownItem} ${
-                    selectedMetricKey === m.key ? styles.dropdownActive : ''
-                  } ${darkMode ? styles.darkDropdownItem : ''}`}
-                >
-                  {m.label}
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </ButtonDropdown>
+          {renderCategoryControls('DEMAND', 'Demand')}
+          {renderCategoryControls('VACANCY', 'Vacancy')}
+          {renderCategoryControls('REVENUE', 'Revenue')}
         </ButtonGroup>
 
         <div className={`${styles.currentMetric} ${darkMode ? styles.darkText : ''}`}>

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { TagCloud } from 'react-tagcloud';
 import Select from 'react-select';
 import styles from './ReviewWordCloud.module.css';
 
 function ReviewWordCloud({ darkMode }) {
-  // Sample reviews data
   const reviewsData = [
     'The Mountain View property in Eco Village has excellent solar panels and a beautiful community garden. Sustainable living at its best with amazing views!',
     'Lakeside Cottage in Forest Retreat needs maintenance on the water system, but the natural surroundings and hiking trails are wonderful. The eco-friendly design is innovative.',
@@ -59,15 +59,12 @@ function ReviewWordCloud({ darkMode }) {
     },
   ];
 
-  // State for selected filters
   const [selectedVillages, setSelectedVillages] = useState(villageOptions);
   const [selectedProperties, setSelectedProperties] = useState([]);
 
-  // State for word clouds
   const [villageWordCloud, setVillageWordCloud] = useState([]);
   const [propertyWordCloud, setPropertyWordCloud] = useState([]);
 
-  // Select styles for dark mode
   const customSelectStyles = {
     control: provided => ({
       ...provided,
@@ -79,17 +76,20 @@ function ReviewWordCloud({ darkMode }) {
       ...provided,
       backgroundColor: darkMode ? '#1C2541' : '#fff',
     }),
-    option: (provided, state) => ({
-      ...provided,
-      backgroundColor: state.isFocused
+    option: (provided, state) => {
+      const optionBg = state.isFocused
         ? darkMode
           ? '#3A506B'
           : '#f0f0f0'
         : darkMode
         ? '#1C2541'
-        : '#fff',
-      color: darkMode ? '#fff' : '#333',
-    }),
+        : '#fff';
+      return {
+        ...provided,
+        backgroundColor: optionBg,
+        color: darkMode ? '#fff' : '#333',
+      };
+    },
     multiValue: provided => ({
       ...provided,
       backgroundColor: darkMode ? '#3A506B' : '#e2e3fc',
@@ -109,7 +109,7 @@ function ReviewWordCloud({ darkMode }) {
   };
 
   const processText = text => {
-    const stopWords = [
+    const stopWords = new Set([
       'the',
       'and',
       'a',
@@ -139,18 +139,18 @@ function ReviewWordCloud({ darkMode }) {
       "it's",
       'that',
       'this',
-    ];
+    ]);
 
     const words = text
       .toLowerCase()
       .replace(/[^\w\s]/g, '')
       .split(/\s+/)
-      .filter(word => word.length > 3 && !stopWords.includes(word));
+      .filter(word => word.length > 3 && !stopWords.has(word));
 
     const wordCount = {};
-    words.forEach(word => {
+    for (const word of words) {
       wordCount[word] = (wordCount[word] || 0) + 1;
-    });
+    }
 
     return Object.entries(wordCount)
       .map(([value, count]) => ({ value, count }))
@@ -158,9 +158,7 @@ function ReviewWordCloud({ darkMode }) {
       .slice(0, 30);
   };
 
-  // Generate word clouds based on filters
   useEffect(() => {
-    // Filter reviews based on selected villages
     let filteredVillageReviews = reviewsData;
     if (selectedVillages.length > 0) {
       const villageNames = selectedVillages.map(v => v.value);
@@ -169,7 +167,6 @@ function ReviewWordCloud({ darkMode }) {
       );
     }
 
-    // Filter reviews based on selected properties
     let filteredPropertyReviews = reviewsData;
     if (selectedProperties.length > 0) {
       const propertyNames = selectedProperties.map(p => p.value);
@@ -178,15 +175,13 @@ function ReviewWordCloud({ darkMode }) {
       );
     }
 
-    // Generate word clouds
     setVillageWordCloud(processText(filteredVillageReviews.join(' ')));
     setPropertyWordCloud(processText(filteredPropertyReviews.join(' ')));
   }, [selectedVillages, selectedProperties]);
 
-  // Cloud rendering options
   const cloudOptions = {
     luminosity: darkMode ? 'light' : 'dark',
-    hue: darkMode ? 'blue' : 'blue',
+    hue: 'blue',
     minSize: 20,
     maxSize: 40,
   };
@@ -198,7 +193,6 @@ function ReviewWordCloud({ darkMode }) {
           darkMode ? styles.darkWordCloudsContainer : ''
         }`}
       >
-        {/* Left Word Cloud - Villages */}
         <div className={`${styles.wordCloudBox} ${darkMode ? styles.darkWordCloudBox : ''}`}>
           <div className={styles.filterBox}>
             <label
@@ -238,7 +232,6 @@ function ReviewWordCloud({ darkMode }) {
           </div>
         </div>
 
-        {/* Right Word Cloud - Properties */}
         <div className={`${styles.wordCloudBox} ${darkMode ? styles.darkWordCloudBox : ''}`}>
           <div className={styles.filterBox}>
             <label
@@ -281,5 +274,9 @@ function ReviewWordCloud({ darkMode }) {
     </div>
   );
 }
+
+ReviewWordCloud.propTypes = {
+  darkMode: PropTypes.bool,
+};
 
 export default ReviewWordCloud;
