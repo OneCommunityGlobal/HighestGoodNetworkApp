@@ -417,7 +417,7 @@ function ReviewButton({ user, task, updateTask }) {
                 ...(darkMode ? boxStyleDark : boxStyle),
               }}
             >
-              Work Submitted and Awaiting Review
+              Ready for Review
             </DropdownToggle>
 
             <DropdownMenu
