@@ -87,7 +87,6 @@ function FormattedReport({
   summaries,
   weekIndex,
   bioCanEdit,
-  canRequestBio,
   allRoleInfo,
   badges,
   loadBadges,
@@ -138,23 +137,6 @@ function FormattedReport({
   return (
     <>
       <ListGroup flush>
-<<<<<<< HEAD
-        {summaries.map(summary => (
-          <ReportDetails
-            key={summary._id}
-            summary={summary}
-            weekIndex={weekIndex}
-            bioCanEdit={bioCanEdit}
-            canRequestBio={canRequestBio}
-            canEditSummaryCount={isEditCount}
-            allRoleInfo={allRoleInfo}
-            canEditTeamCode={canEditTeamCode}
-            badges={badges}
-            loadBadges={loadBadges}
-            canSeeBioHighlight={canSeeBioHighlight}
-          />
-        ))}
-=======
         {summaries.map(summary => {
           // Add safety check for each summary
           if (!summary || !summary.totalSeconds) {
@@ -191,7 +173,6 @@ function FormattedReport({
             />
           );
         })}
->>>>>>> origin/development
       </ListGroup>
       <EmailsList summaries={summaries} auth={auth} />
     </>
@@ -294,7 +275,6 @@ function ReportDetails({
   summary,
   weekIndex,
   bioCanEdit,
-  canRequestBio,
   canEditSummaryCount,
   allRoleInfo,
   badges,
@@ -348,12 +328,7 @@ function ReportDetails({
             <ListGroupItem darkMode={darkMode}>
               <div style={{ backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
-<<<<<<< HEAD
-                  bioCanEdit={bioCanEdit}
-                  canRequestBio={canRequestBio}
-=======
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
->>>>>>> origin/development
                   userId={summary._id}
                   bioPosted={summary.bioPosted}
                   summary={summary}
@@ -656,9 +631,9 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
   );
 }
 
-function Bio({ bioCanEdit, canRequestBio, ...props }) {
+function Bio({ bioCanEdit, ...props }) {
   // eslint-disable-next-line react/jsx-props-no-spreading
-  return canRequestBio ? <BioSwitch {...props} /> : <BioLabel {...props} />;
+  return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
 function BioSwitch({ userId, bioPosted, summary }) {

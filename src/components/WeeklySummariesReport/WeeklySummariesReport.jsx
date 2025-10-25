@@ -132,40 +132,10 @@ const CheckboxOption = props => {
   );
 };
 
-<<<<<<< HEAD
-  async componentDidMount() {
-    const {
-      loading,
-      allBadgeData,
-      authUser,
-      infoCollections,
-      getWeeklySummariesReport,
-      fetchAllBadges,
-      getInfoCollections,
-      hasPermission,
-      auth,
-    } = this.props;
-    // 1. fetch report
-    const res = await getWeeklySummariesReport();
-    // eslint-disable-next-line react/destructuring-assignment
-    const summaries = res?.data ?? this.props.summaries;
-    const badgeStatusCode = await fetchAllBadges();
-    this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-    this.bioEditPermission = this.canPutUserProfileImportantInfo;
-    this.canToggleRequestBio = hasPermission('requestBio');
-    this.canRequestBio = this.canToggleRequestBio;
-    this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission =
-      hasPermission('editTeamCode') ||
-      auth.user.role === 'Owner' ||
-      auth.user.role === 'Administrator';
-    this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
-=======
 // Custom MenuList with "Select All / Deselect All" header
 const CustomMenuList = props => {
   const { children, selectProps } = props;
   const allSelected = (selectProps.value?.length || 0) === (selectProps.options?.length || 0);
->>>>>>> origin/development
 
   const toggleSelectAll = () => {
     if (allSelected) {
@@ -516,157 +486,6 @@ const WeeklySummariesReport = props => {
 
   const popUpElements = () => {
     return (
-<<<<<<< HEAD
-      <Container fluid className="bg--white-smoke py-3 mb-5">
-        <Row>
-          <Col lg={{ size: 10, offset: 1 }}>
-            <h3 className="mt-3 mb-5">
-              <div className="d-flex align-items-center">
-                <span className="mr-2">Weekly Summaries Reports page</span>
-                <EditableInfoModal
-                  areaName="WeeklySummariesReport"
-                  areaTitle="Weekly Summaries Report"
-                  role={role}
-                  fontSize={24}
-                  isPermissionPage
-                  className="p-2" // Add Bootstrap padding class to the EditableInfoModal
-                />
-              </div>
-            </h3>
-          </Col>
-        </Row>
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
-            Select Team Code
-            <MultiSelect
-              className="multi-select-filter"
-              options={teamCodes}
-              value={selectedCodes}
-              onChange={e => {
-                this.handleSelectCodeChange(e);
-              }}
-            />
-          </Col>
-          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
-            Select Color
-            <MultiSelect
-              className="multi-select-filter"
-              options={colorOptions}
-              value={selectedColors}
-              onChange={e => {
-                this.handleSelectColorChange(e);
-              }}
-            />
-          </Col>
-        </Row>
-        <Row style={{ marginBottom: '10px' }}>
-          <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
-            <div className="filter-container">
-              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
-                <div className="filter-style margin-right">
-                  <span>Filter by Bio Status</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input"
-                      id="bio-status-toggle"
-                      onChange={this.handleBioStatusToggleChange}
-                    />
-                    <label className="custom-control-label" htmlFor="bio-status-toggle">
-                      {}
-                    </label>
-                  </div>
-                </div>
-              )}
-              {hasPermissionToFilter && (
-                <div className="filter-style">
-                  <span>Filter by Over Hours</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input"
-                      id="over-hours-toggle"
-                      onChange={this.handleOverHoursToggleChange}
-                    />
-                    <label className="custom-control-label" htmlFor="over-hours-toggle">
-                      {}
-                    </label>
-                  </div>
-                </div>
-              )}
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col lg={{ size: 10, offset: 1 }}>
-            <Nav tabs>
-              {navItems.map(item => (
-                <NavItem key={item}>
-                  <NavLink
-                    href="#"
-                    data-testid={item}
-                    active={item === activeTab}
-                    onClick={() => this.toggleTab(item)}
-                  >
-                    {item}
-                  </NavLink>
-                </NavItem>
-              ))}
-            </Nav>
-            <TabContent activeTab={activeTab} className="p-4">
-              {navItems.map((item, index) => (
-                <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
-                  <Row>
-                    <Col sm="12" md="6" className="mb-2">
-                      From <b>{this.weekDates[index].fromDate}</b> to{' '}
-                      <b>{this.weekDates[index].toDate}</b>
-                    </Col>
-                    <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <GeneratePdfReport
-                        summaries={filteredSummaries}
-                        weekIndex={index}
-                        weekDates={this.weekDates[index]}
-                      />
-                      {hasSeeBadgePermission && (
-                        <Button
-                          className="btn--dark-sea-green"
-                          style={boxStyle}
-                          onClick={() => this.setState({ loadBadges: !loadBadges })}
-                        >
-                          {loadBadges ? 'Hide Badges' : 'Load Badges'}
-                        </Button>
-                      )}
-                      <Button className="btn--dark-sea-green" style={boxStyle}>
-                        Load Trophies
-                      </Button>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <b>Total Team Members:</b> {filteredSummaries.length}
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormattedReport
-                        summaries={filteredSummaries}
-                        weekIndex={index}
-                        bioCanEdit={this.bioEditPermission}
-                        canRequestBio={this.canRequestBio}
-                        canEditSummaryCount={this.canEditSummaryCount}
-                        allRoleInfo={allRoleInfo}
-                        badges={badges}
-                        loadBadges={loadBadges}
-                        canEditTeamCode={this.codeEditPermission}
-                        auth={auth}
-                        canSeeBioHighlight={this.canSeeBioHighlight}
-                      />
-                    </Col>
-                  </Row>
-                </WeeklySummariesReportTab>
-              ))}
-            </TabContent>
-=======
       <WeeklySummaryRecipientsPopup
         open={state.summaryRecepientsPopupOpen}
         onClose={onSummaryRecepientsPopupClose}
@@ -1600,7 +1419,6 @@ const WeeklySummariesReport = props => {
         >
           <Col>
             <Alert color="danger">Error! {error.message}</Alert>
->>>>>>> origin/development
           </Col>
         </Row>
       </Container>
