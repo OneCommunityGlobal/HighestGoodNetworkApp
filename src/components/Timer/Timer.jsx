@@ -322,8 +322,8 @@ function Timer({ authUser, darkMode, isPopout }) {
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
     setInacModal(forcedPauseLJM);
-    setTimeIsOverModalIsOpen(chimingLJM);
-  }, [lastJsonMessage]);
+    setTimeIsOverModalIsOpen(chimingLJM && customReadyState === ReadyState.OPEN);
+  }, [lastJsonMessage, customReadyState]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -380,6 +380,13 @@ function Timer({ authUser, darkMode, isPopout }) {
       timeIsOverAudioRef.current.currentTime = 0;
     }
   }, [timeIsOverModalOpen]);
+
+  // Close time over modal if connection is lost
+  useEffect(() => {
+    if (customReadyState !== ReadyState.OPEN && timeIsOverModalOpen) {
+      setTimeIsOverModalIsOpen(false);
+    }
+  }, [customReadyState, timeIsOverModalOpen]);
 
   useEffect(() => {
     if (inacModal) {
@@ -438,6 +445,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             isOpen={logTimeEntryModal}
             data={logTimer}
             sendStop={sendStop}
+            timerConnected={customReadyState === ReadyState.OPEN}
           />
         )}
         <audio
@@ -746,6 +754,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           isOpen={logTimeEntryModal}
           data={logTimer}
           sendStop={sendStop}
+          timerConnected={customReadyState === ReadyState.OPEN}
         />
       )}
       <audio
