@@ -682,7 +682,11 @@ export default (
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
-        <EPProtectedRoute path="/evaluation-results" exact component={EvaluationResults} />
+        <EPProtectedRoute
+          path="/educationportal/evaluation-results"
+          exact
+          component={EvaluationResults}
+        />
         <Route path="/educationportal/login" component={EPLogin} />
 
         <CPProtectedRoute

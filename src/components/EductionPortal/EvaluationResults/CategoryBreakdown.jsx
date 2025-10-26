@@ -71,18 +71,25 @@ const CategoryBreakdown = ({ categories, selectedCategory = 'all', isLoading }) 
     >
       <CardHeader className={styles.breakdownHeader}>
         <div className={styles.headerContent}>
-          <FontAwesomeIcon icon={faChartPie} className={styles.headerIcon} />
-          <div>
-            <h4 className={styles.headerTitle}>
-              {selectedCategory === 'all'
-                ? 'Category Breakdown'
-                : `${selectedCategory.charAt(0).toUpperCase() +
-                    selectedCategory.slice(1)} Performance`}
-            </h4>
-            <p className={styles.headerSubtitle}>
-              {selectedCategory === 'all'
-                ? `Showing all ${categories.length} categories`
-                : `Showing ${filteredCategories.length} selected category`}
+          <div className={styles.headerLeft}>
+            <FontAwesomeIcon icon={faChartPie} className={styles.headerIcon} />
+            <div>
+              <h4 className={styles.headerTitle}>
+                {selectedCategory === 'all'
+                  ? 'Category Breakdown'
+                  : `${selectedCategory.charAt(0).toUpperCase() +
+                      selectedCategory.slice(1)} Performance`}
+              </h4>
+              <p className={styles.headerSubtitle}>
+                {selectedCategory === 'all'
+                  ? `Showing all ${categories.length} categories`
+                  : `Showing ${filteredCategories.length} selected category`}
+              </p>
+            </div>
+          </div>
+          <div className={styles.headerRight}>
+            <p className={styles.instructorInfo}>
+              Instructor: Dr. Emily Rodriguez • Professor of Computer Science
             </p>
           </div>
         </div>
@@ -213,35 +220,41 @@ const CategoryBreakdown = ({ categories, selectedCategory = 'all', isLoading }) 
                     </div>
                   </div>
 
-                  {/* Due Date Alert */}
-                  {isOverdue && (
+                  {/* Date Alerts Section */}
+                  {(isOverdue || (!isOverdue && category.dueDate)) && (
                     <div className={styles.alertSection}>
-                      <div className={styles.overdueAlert}>
-                        <FontAwesomeIcon
-                          icon={faExclamationTriangle}
-                          className={styles.alertIcon}
-                        />
-                        <span className={styles.alertText}>
-                          Overdue: {new Date(category.dueDate).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  )}
+                      {/* Overdue Alert */}
+                      {isOverdue && (
+                        <div className={styles.overdueAlert}>
+                          <FontAwesomeIcon
+                            icon={faExclamationTriangle}
+                            className={styles.alertIcon}
+                          />
+                          <span className={styles.alertText}>
+                            Overdue:{' '}
+                            {new Date(category.dueDate).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                          </span>
+                        </div>
+                      )}
 
-                  {/* Due Date Info */}
-                  {!isOverdue && category.dueDate && (
-                    <div className={styles.dueDateSection}>
-                      <div className={styles.dueDateInfo}>
-                        <FontAwesomeIcon icon={faClock} className={styles.dueDateIcon} />
-                        <span className={styles.dueDateText}>
-                          Due:{' '}
-                          {new Date(category.dueDate).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
-                        </span>
-                      </div>
+                      {/* Due Date Info */}
+                      {!isOverdue && category.dueDate && (
+                        <div className={styles.dueDateInfo}>
+                          <FontAwesomeIcon icon={faClock} className={styles.dueDateIcon} />
+                          <span className={styles.dueDateText}>
+                            Due:{' '}
+                            {new Date(category.dueDate).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

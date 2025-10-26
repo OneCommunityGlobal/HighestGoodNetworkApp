@@ -31,7 +31,7 @@ export const mockEvaluationData = {
       color: '#10b981',
       icon: 'faClipboardCheck',
       description: 'Programming assignments, essays, and individual homework tasks',
-      dueDate: '2024-10-15',
+      dueDate: '2024-10-14T12:00:00',
       submissions: {
         onTime: 9,
         late: 2,
@@ -51,7 +51,7 @@ export const mockEvaluationData = {
       color: '#3b82f6',
       icon: 'faQuestion',
       description: 'Short weekly quizzes and knowledge check assessments',
-      dueDate: '2024-09-30',
+      dueDate: '2024-09-29T12:00:00',
       submissions: {
         onTime: 7,
         late: 1,
@@ -71,7 +71,7 @@ export const mockEvaluationData = {
       color: '#f59e0b',
       icon: 'faGraduationCap',
       description: 'Comprehensive midterm and final examinations',
-      dueDate: '2024-12-10',
+      dueDate: '2024-12-09T12:00:00',
       submissions: {
         onTime: 2,
         late: 0,
@@ -91,7 +91,7 @@ export const mockEvaluationData = {
       color: '#8b5cf6',
       icon: 'faProjectDiagram',
       description: 'Collaborative group projects and individual capstone work',
-      dueDate: '2024-11-20',
+      dueDate: '2024-11-19T12:00:00',
       submissions: {
         onTime: 1,
         late: 1,
@@ -115,7 +115,7 @@ export const mockEvaluationData = {
       status: 'On Time',
       statusColor: '#10b981',
       submittedDate: '2024-09-10T14:30:00Z',
-      dueDate: '2024-09-12T23:59:00Z',
+      dueDate: '2024-09-29T23:59:00Z',
       teacherFeedback:
         'Excellent implementation! Clean code structure and efficient algorithms. Minor improvement needed in edge case handling.',
       rubricScores: {
@@ -225,8 +225,8 @@ export const mockEvaluationData = {
       percentage: 85.3,
       status: 'On Time',
       statusColor: '#10b981',
-      submittedDate: '2024-10-15T12:00:00Z',
-      dueDate: '2024-10-15T12:00:00Z',
+      submittedDate: '2024-10-14T12:00:00Z',
+      dueDate: '2024-10-14T12:00:00Z',
       teacherFeedback:
         'Strong performance across all topics. Excellent problem-solving in dynamic programming section. Minor errors in graph algorithms.',
       sections: {

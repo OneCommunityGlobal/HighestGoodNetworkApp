@@ -35,7 +35,7 @@ class EvaluationNotificationService {
           publishedDate: new Date().toISOString(),
         },
         priority: 'medium',
-        actionUrl: '/evaluation-results',
+        actionUrl: 'http://localhost:5173/educationportal/evaluation-results',
       });
 
       return true;
@@ -58,7 +58,11 @@ class EvaluationNotificationService {
           <p>${notificationData.message}</p>
           <p><strong>Published:</strong> ${new Date(
             notificationData.data.publishedDate,
-          ).toLocaleDateString()}</p>
+          ).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}</p>
           <a href="${
             notificationData.actionUrl
           }" style="color: white; text-decoration: underline;">View Results</a>

@@ -34,7 +34,33 @@ const EvaluationResults = ({ auth }) => {
         setLoading(true);
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 1500));
-        setEvaluationData(mockEvaluationData);
+
+        // Personalize the evaluation data with actual user name
+        const userName = auth?.user?.firstName || 'Student';
+        const userLastName = auth?.user?.lastName || '';
+        const fullName = `${userName} ${userLastName}`.trim();
+        const userEmail = auth?.user?.email || 'student@school.edu';
+
+        const personalizedData = {
+          ...mockEvaluationData,
+          student: {
+            ...mockEvaluationData.student,
+            name: fullName,
+            email: userEmail,
+          },
+          teacherFeedback: {
+            ...mockEvaluationData.teacherFeedback,
+            overall: mockEvaluationData.teacherFeedback.overall.replace('Alex', userName),
+          },
+          tasks: mockEvaluationData.tasks.map(task => ({
+            ...task,
+            teamMembers: task.teamMembers
+              ? task.teamMembers.map(member => (member === 'Alex Johnson' ? fullName : member))
+              : task.teamMembers,
+          })),
+        };
+
+        setEvaluationData(personalizedData);
 
         // Trigger notification for new results (simulate this is new data)
         if (auth?.user?.userid && mockEvaluationData) {
@@ -96,9 +122,16 @@ const EvaluationResults = ({ auth }) => {
               <FontAwesomeIcon icon={faGraduationCap} className={styles.headerIcon} />
               <div>
                 <h1 className={styles.pageTitle}>Academic Performance Dashboard</h1>
-                <p className={styles.studentName}>Welcome back, {student.name}</p>
+                <p className={styles.studentName}>
+                  Welcome back, {auth?.user?.firstName} {auth?.user?.lastName}
+                </p>
                 <small className={styles.lastUpdated}>
-                  Last updated: {new Date(student.lastUpdated).toLocaleDateString()}
+                  Last updated:{' '}
+                  {new Date(student.lastUpdated).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
                 </small>
               </div>
             </div>
