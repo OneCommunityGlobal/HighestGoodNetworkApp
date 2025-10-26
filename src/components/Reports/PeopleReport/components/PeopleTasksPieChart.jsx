@@ -1,7 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
-import { UserProjectPieChart } from '../../../common/PieChart/ProjectPieChart';
+//import  {UserProjectD3PieChart}  from '../../../common/PieChart/ProjectPieChart';
+import UserProjectD3PieChart from '../../../common/PieChart/ProjectPieChart';
+
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
 import './PeopleTasksPieChart.css';
@@ -16,6 +18,20 @@ export function PeopleTasksPieChart({ darkMode }) {
     // showViewAllTasksButton,
     hoursLoggedToProjectsOnly,
   } = useSelector(peopleTasksPieChartViewData);
+
+  const DONUT_MIN = 260;   // px the donut needs
+  const ROW_H = 26;        // legend row height
+  const HEADER_H = 32;
+  const VSPACE = 24;
+  
+  const projectsHeight = Math.max(
+    DONUT_MIN,
+    HEADER_H + VSPACE + ROW_H * Math.max(1, hoursLoggedToProjectsOnly.length)
+  );
+  const tasksHeight = Math.max(
+    DONUT_MIN,
+    HEADER_H + VSPACE + ROW_H * Math.max(1, tasksLegend.length)
+  );
 
   const showTasksPie = showTasksPieChart;
   
@@ -33,45 +49,33 @@ export function PeopleTasksPieChart({ darkMode }) {
   return (
     <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`} >
       {hoursLoggedToProjectsOnly.length!==0 && (
-        <ReportPage.ReportBlock darkMode={darkMode} >
-          <div style={{
-    height: showTasksPie ? '' : '615px', padding: showTasksPie ? '' : '90px' 
-  }}>
-     <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
-          {hoursLoggedToProjectsOnly.length!==0 && <UserProjectPieChart
+        <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className="pie-no-scroll">
+        <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
+        {/* <div style={{ width: '100%', minHeight: projectsHeight }}> */}
+        <div style={{ width: '100%' }}>
+        <div className="people-report-pie-wrapper">
+          <UserProjectD3PieChart
             pieChartId="projectsPieChart"
             darkMode={darkMode}
             projectsData={hoursLoggedToProjectsOnly}
-            tasksData={tasksLegend}       
-          />}
-  </div>
-         
-        </ReportPage.ReportBlock>
+            tasksData={tasksLegend}
+          />
+          </div>
+        </div>
+      </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
-        <ReportPage.ReportBlock darkMode={darkMode}>
-          <h5 className="people-pie-charts-header">
-            {/* {`${
-            showViewAllTasksButton ? 'Last ' : ''
-          } */}
-          Tasks With Completed Hours
-          {/* } */}
-          </h5>
+        <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className="pie-no-scroll">
+        <h5 className="people-pie-charts-header">Tasks With Completed Hours</h5>
+        <div style={{ width: '100%', minHeight: tasksHeight }}>
           <PieChart
             pieChartId="tasksPieChart"
             darkMode={darkMode}
-            data={tasksWithLoggedHoursById}
-            tasksData={tasksLegend}
-            projectsData={hoursLoggedToProjectsOnly}
+            tasksData={tasksWithLoggedHoursById}
+            height={tasksHeight}     // pass down
           />
-          {/* {showViewAllTasksButton && (
-            <div>
-              <div onClick={handleViewAll} className="show-all-tasks-button">
-                {showAllTasks ? 'Collapse' : 'View all'}
-              </div>
-            </div>
-          )} */}
-        </ReportPage.ReportBlock>
+        </div>
+      </ReportPage.ReportBlock>
       )}
     </div>
   );

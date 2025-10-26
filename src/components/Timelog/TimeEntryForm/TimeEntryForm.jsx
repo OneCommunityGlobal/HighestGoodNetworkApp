@@ -562,11 +562,11 @@ function TimeEntryForm(props) {
 
   /* ---------------- useEffects -------------- */
   useEffect(() => {
-    if (isAsyncDataLoaded) {
-      const options = buildOptions();
+      if (isAsyncDataLoaded) {
+        const options = buildOptions();
       setProjectsAndTasksOptions(options);
-    }
- }, [isAsyncDataLoaded, timeEntryFormUserProjects]);
+      }
+    }, [isAsyncDataLoaded, timeEntryFormUserProjects, timeEntryFormUserTasks]);
 
   // grab form data before editing
   useEffect(() => {
@@ -583,19 +583,17 @@ function TimeEntryForm(props) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (actualDate && !edit) {
-      setFormValues({
-        ...formValues,
-        dateOfWork: moment(actualDate)
-          .tz('America/Los_Angeles')
-          .format('YYYY-MM-DD'),
-      });
-    }
-  }, [actualDate]);
+      if (actualDate && !edit) {
+      setFormValues(prev => ({
+          ...prev,
+          dateOfWork: moment(actualDate).tz('America/Los_Angeles').format('YYYY-MM-DD'),
+        }));
+      }
+    }, [actualDate, edit]);
 
   useEffect(() => {
-    setFormValues({ ...formValues, ...data });
-  }, [data]);
+      setFormValues(prev => ({ ...prev, ...data }));
+    }, [data]);
 
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
@@ -735,7 +733,9 @@ function TimeEntryForm(props) {
                 className="form-control"
                 value={formValues.notes}
                 onEditorChange={handleEditorChange}
-                disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
+                disabled={
+                  !((isSameDayAuthUserEdit || canEditTimeEntryDescription) && !!formValues.projectId)
+                }
               />
 
               {'notes' in errors && (
