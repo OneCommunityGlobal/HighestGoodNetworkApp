@@ -10,38 +10,11 @@
   background-color: white;
   overflow: hidden;
 }
-/* keep if you need a local wrapper around the icon */
-.followup-info-override {
-  position: relative;
-  display: inline-block;
-  z-index: 10;          /* keep */
-  overflow: visible !important;
-}
-/* Let tooltips escape the scrolling containers */
-:global(.dark-mode .modal-body),
-:global(.dark-mode .modal),
-.task_table-container,
-.task_table-container table {
-  overflow: visible !important;
-}
 
-/* keep your tooltip styles */
-:global(.followup-tooltip) {
-  position: absolute !important;
-  top: 20px !important;
-  right: 0 !important;
-  left: auto !important;
-  z-index: 2000 !important;
-  display: block !important;
-  max-height: 90vh !important;
-  overflow: auto !important;
-  max-width: min(520px, 90vw);
-  white-space: normal;
-  background: #2d3748 !important;
-  padding: 15px !important;
-  border-radius: 6px !important;
-  box-sizing: border-box;
-}
+
+
+
+
 
 .team-member-task-review-button {
   margin-top: 0;
@@ -834,4 +807,47 @@
   .team-task-progress-time-volunteers {
     font-size: 0.75rem !important;
   }
+}
+
+
+/* wrapper around the info icon + tooltip */
+.followup-tooltip-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+
+/* HIDE by default (override any earlier display:block !important) */
+.followup-tooltip {
+  position: absolute;
+  top: 22px;
+  right: 0;
+  z-index: 3000;
+
+  display: none !important;          /* <- key change */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+
+  /* keep your existing visuals */
+  max-width: min(520px, 90vw);
+  max-height: 90vh;
+  overflow: auto;
+  background: #2d3748;
+  color: #fff;
+  padding: 15px;
+  border-radius: 6px;
+  box-sizing: border-box;
+
+  transition: opacity 120ms ease;
+}
+
+/* SHOW on hover or keyboard focus of the wrapper */
+.followup-tooltip-button:hover .followup-tooltip,
+.followup-tooltip-button:focus-within .followup-tooltip {
+  display: block !important;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }

@@ -6636,10 +6636,15 @@ jest-matcher-utils@^29.7.0:
   resolved "https://registry.npmjs.org/jest-matcher-utils/-/jest-matcher-utils-29.7.0.tgz"
   integrity sha512-sBkD+Xi9DtcChsI3L3u0+N0opgPYnCRPtGcQYrgXmR+hmt/fYfWAL0xRXYU8eWOdfuLgBe0YCW3AFtnRLagq/g==
   dependencies:
+    "@babel/code-frame" "^7.12.13"
+    "@jest/types" "^29.6.3"
+    "@types/stack-utils" "^2.0.0"
     chalk "^4.0.0"
-    jest-diff "^29.7.0"
-    jest-get-type "^29.6.3"
+    graceful-fs "^4.2.9"
+    micromatch "^4.0.4"
     pretty-format "^29.7.0"
+    slash "^3.0.0"
+    stack-utils "^2.0.3"
 
 jest-matcher-utils@30.1.1:
   version "30.1.1"
@@ -6651,20 +6656,14 @@ jest-matcher-utils@30.1.1:
     jest-diff "30.1.1"
     pretty-format "30.0.5"
 
-jest-message-util@^29.7.0:
+jest-mock@^29.7.0:
   version "29.7.0"
   resolved "https://registry.npmjs.org/jest-message-util/-/jest-message-util-29.7.0.tgz"
   integrity sha512-GBEV4GRADeP+qtB2+6u61stea8mGcOT4mCtrYISZwfu9/ISHFJ/5zOMXYbpBE9RsS5+Gb63DW4FgmnKJ79Kf6w==
   dependencies:
-    "@babel/code-frame" "^7.12.13"
     "@jest/types" "^29.6.3"
-    "@types/stack-utils" "^2.0.0"
-    chalk "^4.0.0"
-    graceful-fs "^4.2.9"
-    micromatch "^4.0.4"
-    pretty-format "^29.7.0"
-    slash "^3.0.0"
-    stack-utils "^2.0.3"
+    "@types/node" "*"
+    jest-util "^29.7.0"
 
 jest-message-util@30.1.0:
   version "30.1.0"
