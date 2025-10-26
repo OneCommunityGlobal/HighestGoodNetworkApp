@@ -4,17 +4,19 @@
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
 }
 
 /* Title */
-.paid-labor-cost-title {
+.paidLaborCostTitle {
   font-size: large;
   font-weight: bold;
   text-align: center;
+  color: var(--text-color);
 }
 
 /* Filters container */
-.paid-labor-cost-filters {
+.paidLaborCostFilters {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
@@ -25,31 +27,34 @@
 }
 
 /* Each filter group (Tasks, Project, Date Range) */
-.paid-labor-cost-filter-group {
+.paidLaborCostFilterGroup {
   display: flex;
-  flex-direction: column;
-  min-width: 70px;
-  flex: 1 1 0;
+  flex-direction: row; /* side by side */
+  align-items: center; /* align vertically */
+  gap: 8px; /* space between label and select */
+  width: fit-content; /* shrink-wrap to contents instead of 100% */
+    padding: 4px 8px; /* optional padding */
 }
 
-/* Filter labels */
-.paid-labor-cost-filter-label {
-  margin: 3px;
-  font-size: 12px;
-  color: #666;
+.paidLaborCostFilterLabel {
+  margin: 0; /* reset margin so it doesn't push things apart */
+  font-size: 15px;
+  color: var(--text-color);
+  white-space: nowrap; /* keep label text on one line */
 }
 
-/* Filter select elements */
-.paid-labor-cost-filter-select {
-  font-size: 12px;
+.paidLaborCostFilterSelect {
+  font-size: 14px;
   padding: 4px 8px;
   height: 28px;
   box-sizing: border-box;
-  width: 100%;
+  width: auto; /* let it size naturally */
+  min-width: 80px; /* optional minimum width */
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: white;
 }
+
 
 /* Chart container */
 .paid-labor-cost-chart-container {
@@ -58,7 +63,7 @@
 }
 
 /* Loading indicator */
-.paid-labor-cost-loading {
+.paidLaborCostLoading {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -68,7 +73,7 @@
 }
 
 /* Date picker container styles */
-.paid-labor-cost-daterange-row {
+.paidLaborCostDaterangeRow {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
@@ -79,8 +84,6 @@
   position: relative;
   width: 100%;
   overflow: visible;
-  position: relative;
-
   max-width: 300px;
   transition: all 0.3s ease-in-out;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -511,26 +514,26 @@
   }
 }
 
-.paid-labor-cost-chart-scroll-wrapper {
+.paidLaborCostChartScrollWrapper {
   width: 100%;
   overflow-x: auto;
   background-color: var(--bg-color);
 }
 
-.paid-labor-cost-chart-scroll-wrapper::-webkit-scrollbar {
+.paidLaborCostChartScrollWrapper::-webkit-scrollbar {
   height: 6px;
 }
 
-.paid-labor-cost-chart-scroll-wrapper::-webkit-scrollbar-track {
+.paidLaborCostChartScrollWrapper::-webkit-scrollbar-track {
   background: var(--bg-color);
 }
 
-.paid-labor-cost-chart-scroll-wrapper::-webkit-scrollbar-thumb {
+.paidLaborCostChartScrollWrapper::-webkit-scrollbar-thumb {
   background: var(--button-bg);
   border-radius: 3px;
 }
 
-.paid-labor-cost-chart-scroll-wrapper {
+.paidLaborCostChartScrollWrapper {
   scrollbar-width: thin;
   scrollbar-color: var(--button-bg) var(--card-shadow);
 }

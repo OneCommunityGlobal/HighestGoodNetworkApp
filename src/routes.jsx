@@ -167,6 +167,8 @@ import { UserRole } from './utils/enums';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 
 // Social Architecture
+
+import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
 
@@ -282,6 +284,13 @@ export default (
         </>
       )}
     />
+
+    <LBProtectedRoute path="/lbdashboard/home" component={LBHome} />
+    <LBProtectedRoute path="/lbdashboard/messaging" component={LBMessaging} />
+    <LBProtectedRoute path="/lbdashboard/map/masterplan" component={MasterPlan} />
+    <LBProtectedRoute path="/lbdashboard/listingoverview" component={ListOveriew} />
+    <LBProtectedRoute path="/lbdashboard/biddingoverview" component={LBBidOverview} />
+    <LBProtectedRoute path="/lbdashboard/biddinghomepage" component={BiddingHomepage} />
     {/* ----- LB Dashboard Routing Ends----- */}
 
     <Route path="/EventPopularity" component={EventPopularity} />
@@ -541,6 +550,7 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+        <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />;
         <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />
         <ProtectedRoute
@@ -747,6 +757,11 @@ export default (
           path="/communityportal/reports/event/personalization"
           exact
           component={EventStats}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation"
+          exact
+          component={EventParticipation}
         />
         <CPProtectedRoute
           path="/communityportal/reports/resourceusage"

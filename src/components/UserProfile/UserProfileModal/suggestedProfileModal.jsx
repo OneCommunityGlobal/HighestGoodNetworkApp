@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Modal, ModalHeader, ModalBody, Button } from "reactstrap";
-import './UserProfileModal.css';  // For custom styling
+import styles from './UserProfileModal.module.css';  // For custom styling
 import axios from "axios";
-import { ENDPOINTS } from "utils/URL";
+import { ENDPOINTS } from "~/utils/URL";
 import { toast } from "react-toastify";
 
 const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
@@ -41,12 +41,12 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
     <Modal isOpen={isOpen} toggle={toggleModal}>
       <ModalHeader toggle={toggleModal}>Select a Profile Image</ModalHeader>
       <ModalBody>
-        <div className="suggestedProfileLinks scrollable-container">
+        <div className={`${styles.suggestedProfileLinks} ${styles['scrollable-container']}`}>
           {suggestedProfilePics.map((image, index) => (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
               key={index}
-              className={`suggestedProfileTile ${selectedImage === image ? 'selected' : ''}`}
+              className={`${styles.suggestedProfileTile} ${selectedImage === image ? styles.selected : ''}`}
               onClick={() => handleImageSelect(image)}
             >
               <img src={getImageSource(image)} alt={image.alt} />
@@ -54,8 +54,8 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
           ))}
         </div>
         
-        <div className="button-group">
-          <Button color="secondary" onClick={toggleModal} className="modal-button">
+        <div className={`${styles['button-group']}`}>
+          <Button color="secondary" onClick={toggleModal} className={`${styles['modal-button']}`}>
             Close
           </Button>
           <Button
@@ -66,7 +66,7 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
                 updateProfileImage()
               }
             }}
-            className="modal-button"
+            className={`${styles['modal-button']}`}
           >
             Set Image
           </Button>

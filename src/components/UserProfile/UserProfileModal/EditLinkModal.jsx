@@ -11,7 +11,7 @@ import {
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import './EditLinkModal.css';
+import styles from './EditLinkModal.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { connect, useSelector } from 'react-redux';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from '~/utils/checkValidURL';
@@ -197,7 +197,7 @@ const EditLinkModal = props => {
                 <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Admin Links:</Label>
                   {mediaFolderDiffWarning && (
-                    <span className="warning-help-context" data-testid="diff-media-url-warning" >
+                    <span className={`${styles['warning-help-context']}`} data-testid="diff-media-url-warning" >
                       <strong>Media Folder link must be a working DropBox link</strong>
                       <p>
                         Current Media URL: <a href={userProfile.mediaUrl}>{userProfile.mediaUrl}</a>
@@ -205,11 +205,11 @@ const EditLinkModal = props => {
                     </span>
                   )}
                   <div>
-                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <label className={`custom-label ${darkMode ? 'text-light' : ''}`} htmlFor='google-doc-link' >Google Doc</label>
+                    <div style={{ display: 'flex', margin: '5px' }} className={`${styles['link-fields']}`}>
+                      <label className={`${styles['custom-label']} ${darkMode ? 'text-light' : ''}`} htmlFor='google-doc-link' >Google Doc</label>
                       <input
                         id='google-doc-link'
-                        className="customEdit"
+                        className={styles.customEdit}
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
                         onChange={e => {
@@ -218,11 +218,11 @@ const EditLinkModal = props => {
                         }}
                       />
                     </div>
-                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <div style={{ display: 'flex', margin: '5px' }} className={`${styles['link-fields']}`}>
 
-                      <label className={`custom-label ${darkMode ? 'text-light' : ''}`} htmlFor='media-folder-link' >Media Folder</label>
+                      <label className={`${styles['custom-label']} ${darkMode ? 'text-light' : ''}`} htmlFor='media-folder-link' >Media Folder</label>
                       <input
-                        className="customEdit"
+                        className={styles.customEdit}
                         id="media-folder-link"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
@@ -234,23 +234,23 @@ const EditLinkModal = props => {
                         <div
                           key={index}
                           style={{ display: 'flex', margin: '5px' }}
-                          className="link-fields"
+                          className={`${styles['link-fields']}`}
                         >
                           <input
-                            className="customInput"
+                            className={styles.customInput}
                             value={link.Name}
                             onChange={e => handleNameChanges(e, adminLinks, index, setAdminLinks)}
                             placeholder="Link Name"
                           />
                           <input
-                            className="customInput"
+                            className={styles.customInput}
                             value={link.Link}
                             onChange={e => handleLinkChanges(e, adminLinks, index, setAdminLinks)}
                             placeholder="Link URL"
                           />
                           <button
                             type="button"
-                            className="closeButton"
+                            className={styles.closeButton}
                             color="danger"
                             onClick={() =>
                               removeLink(adminLinks, setAdminLinks, {
@@ -265,12 +265,12 @@ const EditLinkModal = props => {
                       );
                     })}
                     <div style={{ display: 'flex', margin: '5px' }}>
-                      <div className="customTitle">+ ADD LINK:</div>
+                      <div className={styles.customTitle}>+ ADD LINK:</div>
                     </div>
 
-                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields new-admin-links">
+                    <div style={{ display: 'flex', margin: '5px' }} className={`${styles['link-fields']} new-admin-links`}>
                       <input
-                        className="customEdit"
+                        className={styles.customEdit}
                         id="linkName"
                         placeholder="enter name"
                         value={newAdminLink.Name}
@@ -280,7 +280,7 @@ const EditLinkModal = props => {
                         }}
                       />
                       <input
-                        className="customEdit"
+                        className={styles.customEdit}
                         id="linkURL"
                         placeholder="enter link"
                         value={newAdminLink.Link}
@@ -292,7 +292,7 @@ const EditLinkModal = props => {
 
                       <button
                         type="button"
-                        className="addButton"
+                        className={styles.addButton}
                         aria-label='add-admin-link-button'
                         onClick={() => {
                           addNewLink(adminLinks, setAdminLinks, newAdminLink, () =>
@@ -315,21 +315,21 @@ const EditLinkModal = props => {
                     <div
                       key={index}
                       style={{ display: 'flex', margin: '5px' }}
-                      className="link-fields"
+                      className={`${styles['link-fields']}`}
                     >
                       <input
-                        className="customInput"
+                        className={styles.customInput}
                         value={link.Name}
                         onChange={e => handleNameChanges(e, personalLinks, index, setPersonalLinks)}
                       />
                       <input
-                        className="customInput"
+                        className={styles.customInput}
                         value={link.Link}
                         onChange={e => handleLinkChanges(e, personalLinks, index, setPersonalLinks)}
                       />
                       <button
                         type="button"
-                        className="closeButton"
+                        className={styles.closeButton}
                         color="danger"
                         aria-label='add-personal-link-button'
                         onClick={() =>
@@ -345,12 +345,12 @@ const EditLinkModal = props => {
                   ))}
 
                   <div style={{ display: 'flex', margin: '5px' }}>
-                    <div className="customTitle">+ ADD LINK:</div>
+                    <div className={styles.customTitle}>+ ADD LINK:</div>
                   </div>
 
-                  <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                  <div style={{ display: 'flex', margin: '5px' }} className={`${styles['link-fields']}`}>
                     <input
-                      className="customEdit me-3"
+                      className={`${styles['customEdit']} me-3`}
                       placeholder="enter name"
                       value={newPersonalLink.Name}
                       onChange={e => {
@@ -360,7 +360,7 @@ const EditLinkModal = props => {
                       }}
                     />
                     <input
-                      className="customEdit"
+                      className={styles.customEdit}
                       placeholder="enter link"
                       value={newPersonalLink.Link}
                       onChange={e => {
@@ -371,7 +371,7 @@ const EditLinkModal = props => {
                     />
                     <button
                       type="button"
-                      className="addButton"
+                      className={styles.addButton}
                       onClick={() => {
                         addNewLink(personalLinks, setPersonalLinks, newPersonalLink, () =>
                           setNewPersonalLink(emptyLink),
@@ -384,7 +384,7 @@ const EditLinkModal = props => {
                 </div>
               </Card>
               {!isValidLink && (
-                <p className='invalid-help-context' data-testid='invalid-url-warning' >
+                <p className={`${styles['invalid-help-context']}`} data-testid='invalid-url-warning' >
                   Please enter valid URLs for each link.
                 </p>
               )}
