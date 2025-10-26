@@ -185,17 +185,6 @@ const TeamMemberTask = React.memo(
       setSelectedTaskForChangeLog(null);
     };
 
-    /** 
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    };
-    */
-
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
     };
@@ -644,13 +633,6 @@ const TeamMemberTask = React.memo(
                                                 task.hoursLogged.toFixed(2),
                                               )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
                                             </p>
-                                            {/* <p
-                                              className={`${styles['progress-text']} ${
-                                                darkMode ? 'text-light' : ''
-                                              }`}
-                                            >
-                                              13.00 of 20.00
-                                            </p> */}
                                           </div>
                                           {canSeeFollowUpCheckButton && (
                                             <div className={styles['task-followup-icon']}>
