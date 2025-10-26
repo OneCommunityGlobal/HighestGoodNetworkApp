@@ -3,12 +3,6 @@ import { connect, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardHeader,
-  CardBody,
   Form,
   FormGroup,
   Label,
@@ -31,9 +25,7 @@ import {
   FaTrash,
   FaEye,
   FaCode,
-  FaCheckCircle,
   FaExclamationTriangle,
-  FaSpinner,
   FaPencilAlt,
 } from 'react-icons/fa';
 import { Editor } from '@tinymce/tinymce-react';
@@ -82,6 +74,8 @@ const EmailTemplateEditor = ({
   const [showTypeSelectionModal, setShowTypeSelectionModal] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [editingVariableIndex, setEditingVariableIndex] = useState(null);
+  const [retryAttempts, setRetryAttempts] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   // Effect to load template data when in edit mode
   useEffect(() => {
@@ -141,16 +135,16 @@ const EmailTemplateEditor = ({
         formData.name !== (template.name || '') ||
         formData.subject !== (template.subject || '') ||
         formData.html_content !== (template.html_content || '') ||
-        JSON.stringify(formData.variables) !== JSON.stringify(template.variables || []);
+        JSON.stringify(formData.variables || []) !== JSON.stringify(template.variables || []);
 
       setHasUnsavedChanges(hasChanges);
     } else {
       // For new templates, check if any field has content
       const hasContent =
-        formData.name.trim() !== '' ||
-        formData.subject.trim() !== '' ||
-        formData.html_content.trim() !== '' ||
-        formData.variables.length > 0;
+        (formData.name && formData.name.trim() !== '') ||
+        (formData.subject && formData.subject.trim() !== '') ||
+        (formData.html_content && formData.html_content.trim() !== '') ||
+        (formData.variables && formData.variables.length > 0);
 
       setHasUnsavedChanges(hasContent);
     }
@@ -193,9 +187,9 @@ const EmailTemplateEditor = ({
 
   // Extract variables from HTML content and subject
   const extractVariables = useCallback(() => {
-    const htmlContent = formData.html_content;
-    const subject = formData.subject;
-    const allContent = `${htmlContent || ''} ${subject || ''}`;
+    const htmlContent = formData.html_content || '';
+    const subject = formData.subject || '';
+    const allContent = `${htmlContent} ${subject}`;
     const regex = /{{(\w+)}}/g;
     const matches = [...allContent.matchAll(regex)];
     const uniqueVariables = [...new Set(matches.map(match => match[1]))];
@@ -320,7 +314,7 @@ const EmailTemplateEditor = ({
     const usedVariables = [
       ...new Set([...allContent.matchAll(/{{(\w+)}}/g)].map(match => match[1])),
     ];
-    const definedVariableNames = formData.variables.map(v => v.name);
+    const definedVariableNames = (formData.variables || []).map(v => v.name);
     const undefinedVariables = usedVariables.filter(v => !definedVariableNames.includes(v));
     const unusedVariables = definedVariableNames.filter(v => !usedVariables.includes(v));
 
@@ -485,18 +479,46 @@ const EmailTemplateEditor = ({
     clearCurrentTemplate();
   }, [clearEmailTemplateError, clearCurrentTemplate]);
 
+  // Manual retry function for template loading
+  const handleManualRetry = useCallback(async () => {
+    if (isRetrying || !templateId) return;
+
+    setIsRetrying(true);
+    setRetryAttempts(prev => prev + 1);
+    setApiError(null);
+
+    try {
+      await fetchEmailTemplate(templateId);
+      setRetryAttempts(0); // Reset on success
+      toast.success('Template loaded successfully');
+    } catch (err) {
+      setApiError('Failed to load template. Please try again.');
+      toast.error(`Retry failed: ${err.message || 'Unknown error'}`);
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [fetchEmailTemplate, templateId, isRetrying]);
+
   const getPreviewContent = useMemo(() => {
+    if (!formData.html_content) return '';
+
     let content = formData.html_content;
-    formData.variables.forEach(variable => {
-      const placeholder = `[${variable.label}]`;
-      content = content.replace(new RegExp(`{{${variable.name}}}`, 'g'), placeholder);
-    });
+    if (formData.variables && Array.isArray(formData.variables)) {
+      formData.variables.forEach(variable => {
+        if (variable && variable.name && variable.label) {
+          const placeholder = `[${variable.label}]`;
+          const regex = new RegExp(`{{${variable.name}}}`, 'g');
+          content = content.replace(regex, placeholder);
+        }
+      });
+    }
     return content;
   }, [formData.html_content, formData.variables]);
 
   const tinyMCEConfig = useMemo(() => getTemplateEditorConfig(darkMode, formData), [
     darkMode,
-    formData.variables,
+    formData,
+    'v2', // Force re-creation when height changes
   ]);
 
   if (initialLoading && templateId) {
@@ -517,10 +539,32 @@ const EmailTemplateEditor = ({
     return (
       <div className="email-template-editor">
         <div className="error-state">
-          <Alert color="danger" className="mb-3">
-            <strong>Error Loading Template</strong>
-            <div>{apiError}</div>
-          </Alert>
+          <div className="text-center">
+            <h5 className="text-danger">Error Loading Template</h5>
+            <p className="text-muted mb-3">{apiError}</p>
+            {retryAttempts > 0 && (
+              <small className="text-muted d-block mb-2">Retry attempt: {retryAttempts}</small>
+            )}
+            <Button
+              color="primary"
+              onClick={handleManualRetry}
+              disabled={isRetrying}
+              className="retry-button"
+              size="sm"
+            >
+              {isRetrying ? (
+                <>
+                  <Spinner size="sm" className="me-1" />
+                  Retrying...
+                </>
+              ) : (
+                <>
+                  <FaTimes className="me-1" />
+                  Retry
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -650,7 +694,13 @@ const EmailTemplateEditor = ({
                 <FaCode className="me-2" />
                 Template Variables
                 {formData.variables.length > 0 && (
-                  <Badge color="light" className="ms-2" style={{ fontSize: '0.75rem' }}>
+                  <Badge
+                    color={darkMode ? 'dark' : 'light'}
+                    className={`ms-2 template-variable-count ${
+                      darkMode ? 'dark-mode' : 'light-mode'
+                    }`}
+                    style={{ fontSize: '0.75rem' }}
+                  >
                     {formData.variables.length}
                   </Badge>
                 )}
@@ -662,9 +712,11 @@ const EmailTemplateEditor = ({
                   disabled={!formData.html_content.trim()}
                   title="Extract variables from HTML content and subject"
                   className="btn-auto-extract"
+                  size="sm"
                 >
                   <FaCode className="me-1" />
-                  <span className="d-none d-md-inline">Auto Extract</span>
+                  <span className="d-none d-sm-inline">Auto Extract</span>
+                  <span className="d-inline d-sm-none">Auto Extract</span>
                 </Button>
               </div>
             </div>
@@ -672,12 +724,10 @@ const EmailTemplateEditor = ({
 
           {formData.variables.length === 0 ? (
             <div className="empty-variables-state">
-              <div className="text-center border rounded p-3">
-                <FaCode className="text-muted mb-2" style={{ fontSize: '1.5rem', opacity: 0.6 }} />
-                <p className="text-muted mb-2 small">No variables defined</p>
-                <p className="text-muted mb-0 small">
-                  Use the &quot;Auto Extract&quot; button above to automatically extract variables
-                  from your HTML content.
+              <div className="text-center border rounded p-4">
+                <p className="text-muted mb-0 small lh-base">
+                  Use the <strong>&quot;Auto Extract&quot;</strong> button above to automatically
+                  extract variables from your HTML content.
                 </p>
               </div>
             </div>
@@ -718,7 +768,7 @@ const EmailTemplateEditor = ({
           <FormGroup className="editor-container">
             <Label>HTML Content *</Label>
             <Editor
-              key={`template-editor-${darkMode ? 'dark' : 'light'}`}
+              key={`template-editor-${darkMode ? 'dark' : 'light'}-v2`}
               tinymceScriptSrc="/tinymce/tinymce.min.js"
               value={formData.html_content}
               onEditorChange={content => handleInputChange('html_content', content)}

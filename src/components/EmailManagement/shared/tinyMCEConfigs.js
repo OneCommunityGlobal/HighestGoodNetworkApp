@@ -1,7 +1,7 @@
 // TinyMCE Configuration for Template Editor (Advanced)
 export const getTemplateEditorConfig = (darkMode, formData) => ({
   license_key: 'gpl',
-  height: 1000,
+  height: 500,
   menubar: 'file edit view insert format tools table help',
   placeholder: 'Enter your email content here...',
   skin: darkMode ? 'oxide-dark' : 'oxide',

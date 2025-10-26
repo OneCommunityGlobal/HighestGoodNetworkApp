@@ -7,12 +7,39 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null };
   }
 
+  static getDerivedStateFromProps(props, state) {
+    // Reset error state when key prop changes
+    if (props.resetKey && props.resetKey !== state.lastResetKey) {
+      return { hasError: false, error: null, lastResetKey: props.resetKey };
+    }
+    return null;
+  }
+
   static getDerivedStateFromError(error) {
-    return { hasError: true, error };
+    // Only catch critical JavaScript errors, not API errors
+    if (
+      error.name === 'ChunkLoadError' ||
+      error.message.includes('Loading chunk') ||
+      error.message.includes('Loading CSS chunk') ||
+      error.stack?.includes('webpack')
+    ) {
+      return { hasError: true, error };
+    }
+    // Don't catch API errors like AxiosError
+    return null;
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('EmailManagement Error:', error, errorInfo);
+    // Only log critical errors
+    if (
+      error.name === 'ChunkLoadError' ||
+      error.message.includes('Loading chunk') ||
+      error.message.includes('Loading CSS chunk') ||
+      error.stack?.includes('webpack') ||
+      errorInfo?.componentStack?.includes('ErrorBoundary')
+    ) {
+      // console.error('EmailManagement Critical Error:', error, errorInfo);
+    }
   }
 
   render() {

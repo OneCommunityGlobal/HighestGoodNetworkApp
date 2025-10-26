@@ -61,15 +61,157 @@
 
 /* Loading state styling */
 .email-template-editor .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   padding: 3rem 2rem;
   color: #6c757d;
+  min-height: 200px;
 }
 
 .email-template-editor .loading-state .spinner-border {
-  width: 2rem;
-  height: 2rem;
+  width: 2.5rem;
+  height: 2.5rem;
   margin-bottom: 1rem;
+  border-width: 0.3rem;
+}
+
+/* Error state styling */
+.email-template-editor .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #dc3545;
+  min-height: 200px;
+}
+
+.email-template-editor .error-state h5 {
+  color: #dc3545;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.email-template-editor .retry-button {
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.email-template-editor .retry-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.email-template-editor .retry-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Compact retry button */
+.email-template-editor .retry-button {
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.15s ease-in-out;
+  font-size: 0.875rem;
+  min-width: 100px;
+}
+
+/* Empty variables state styling */
+.email-template-editor .empty-variables-state {
+  margin: 1rem 0;
+}
+
+.email-template-editor .empty-variables-state .border {
+  border-color: #e9ecef !important;
+  background-color: #f8f9fa;
+  transition: all 0.2s ease-in-out;
+}
+
+.email-template-editor .empty-variables-state .border:hover {
+  border-color: #dee2e6 !important;
+  background-color: #f1f3f4;
+}
+
+.email-template-editor .empty-variables-state h6 {
+  font-size: 0.95rem;
+  letter-spacing: 0.025em;
+}
+
+.email-template-editor .empty-variables-state p {
+  line-height: 1.5;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.email-template-editor .empty-variables-state strong {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Dark mode support for empty variables state */
+.email-template-editor.dark-mode .empty-variables-state .border {
+  border-color: #495057 !important;
+  background-color: #2d3748;
+}
+
+.email-template-editor.dark-mode .empty-variables-state .border:hover {
+  border-color: #4a5568 !important;
+  background-color: #374151;
+}
+
+.email-template-editor.dark-mode .empty-variables-state h6 {
+  color: #a0aec0;
+}
+
+.email-template-editor.dark-mode .empty-variables-state p {
+  color: #718096;
+}
+
+.email-template-editor.dark-mode .empty-variables-state strong {
+  color: #e2e8f0;
+}
+
+/* Auto Extract button responsive styling */
+.email-template-editor .btn-auto-extract {
+  white-space: nowrap;
+  min-width: auto;
+  transition: all 0.2s ease-in-out;
+}
+
+.email-template-editor .btn-auto-extract:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Responsive text for Auto Extract button */
+@media (max-width: 576px) {
+  .email-template-editor .btn-auto-extract {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .email-template-editor .btn-auto-extract .me-1 {
+    margin-right: 0.25rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .email-template-editor .btn-auto-extract {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .email-template-editor .btn-auto-extract .me-1 {
+    margin-right: 0.125rem !important;
+  }
 }
 
 .email-template-editor .unsaved-changes-indicator small {
@@ -81,9 +223,11 @@
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
+
   100% {
     opacity: 1;
   }
@@ -283,7 +427,7 @@
 
 .email-template-editor .chip-action-btn {
   padding: 0.125rem;
-  border-radius: 50%;
+  border-radius: 1rem;
   font-size: 0.6875rem;
   width: 20px;
   height: 20px;
@@ -291,6 +435,31 @@
   align-items: center;
   justify-content: center;
   min-width: 20px;
+}
+
+/* Template variable count badge styling */
+.email-template-editor .template-variable-count {
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.email-template-editor .template-variable-count.light-mode {
+  background-color: #f8f9fa;
+  color: #495057;
+  border: 1px solid #dee2e6;
+}
+
+.email-template-editor .template-variable-count.dark-mode {
+  background-color: #374151;
+  color: #e5e7eb;
+  border: 1px solid #4b5563;
+}
+
+.email-template-editor .template-variable-count:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* ==========================================================================

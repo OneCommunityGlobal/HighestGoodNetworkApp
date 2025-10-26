@@ -5,10 +5,8 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
 import {
-  Container,
   Row,
   Col,
-  Card,
   Table,
   Button,
   Input,
@@ -19,18 +17,7 @@ import {
   ModalFooter,
   Spinner,
 } from 'reactstrap';
-import {
-  FaPlus,
-  FaSearch,
-  FaTags,
-  FaExclamationTriangle,
-  FaInfo,
-  FaFilter,
-  FaSortAlphaDown,
-  FaSortAlphaUp,
-  FaEdit,
-  FaTrash,
-} from 'react-icons/fa';
+import { FaPlus, FaSearch, FaInfo, FaEdit, FaTrash } from 'react-icons/fa';
 import {
   fetchEmailTemplates,
   deleteEmailTemplate,
@@ -54,7 +41,6 @@ const EmailTemplateList = ({
 }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [templateToDelete, setTemplateToDelete] = useState(null);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [templateToShow, setTemplateToShow] = useState(null);
   const [loadingTemplateInfo, setLoadingTemplateInfo] = useState(false);
@@ -62,6 +48,11 @@ const EmailTemplateList = ({
   const [sortOrder, setSortOrder] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
+  const [retryAttempts, setRetryAttempts] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  // Constants
+  const PAGE_SIZE = 10; // Standard page size for templates
 
   // Skeleton loading component
   const SkeletonLoader = ({ width = '100%', height = '20px', className = '' }) => (
@@ -75,12 +66,21 @@ const EmailTemplateList = ({
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Show toast notifications for errors from Redux
+  // Show toast notifications for errors from Redux (only once per error)
+  const [lastError, setLastError] = useState(null);
   useEffect(() => {
-    if (error) {
-      toast.error(`Failed to load templates: ${error}`);
+    if (error && error !== lastError) {
+      setLastError(error);
+      toast.error(`Failed to load templates: ${error}`, {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
-  }, [error]);
+  }, [error, lastError]);
 
   // Fetch templates with optimized parameters
   useEffect(() => {
@@ -94,7 +94,10 @@ const EmailTemplateList = ({
 
   const handleSearch = useCallback(
     e => {
-      setSearchTerm(e.target.value);
+      const value = e.target.value;
+      if (typeof value === 'string') {
+        setSearchTerm(value);
+      }
     },
     [setSearchTerm],
   );
@@ -105,6 +108,11 @@ const EmailTemplateList = ({
   }, []);
 
   const handleInfoClick = useCallback(async template => {
+    if (!template || !template._id) {
+      toast.error('Invalid template selected');
+      return;
+    }
+
     setLoadingTemplateInfo(true);
     setTemplateToShow(template);
     setShowInfoModal(true);
@@ -112,26 +120,35 @@ const EmailTemplateList = ({
     try {
       // Fetch full template data including variables
       const response = await axios.get(`${ENDPOINTS.EMAIL_TEMPLATES}/${template._id}`);
-      setTemplateToShow(response.data.template);
+      if (response.data && response.data.template) {
+        setTemplateToShow(response.data.template);
+      } else {
+        throw new Error('Invalid response format');
+      }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching template details:', error);
       toast.error('Failed to load template details');
+      setTemplateToShow(null);
     } finally {
       setLoadingTemplateInfo(false);
     }
   }, []);
 
   const handleDeleteConfirm = useCallback(async () => {
-    if (templateToDelete) {
-      try {
-        await deleteEmailTemplate(templateToDelete._id);
-        setShowDeleteModal(false);
-        setTemplateToDelete(null);
-        toast.success(`Template "${templateToDelete.name}" deleted successfully`);
-      } catch (error) {
-        toast.error(`Failed to delete template: ${error.message || 'Unknown error'}`);
-      }
+    if (!templateToDelete || !templateToDelete._id) {
+      toast.error('Invalid template selected for deletion');
+      return;
+    }
+
+    try {
+      await deleteEmailTemplate(templateToDelete._id);
+      setShowDeleteModal(false);
+      setTemplateToDelete(null);
+      toast.success(`Template "${templateToDelete.name}" deleted successfully`);
+    } catch (error) {
+      toast.error(`Failed to delete template: ${error.message || 'Unknown error'}`);
+      // Keep modal open on error so user can retry
     }
   }, [templateToDelete, deleteEmailTemplate]);
 
@@ -140,94 +157,153 @@ const EmailTemplateList = ({
     setTemplateToDelete(null);
   }, []);
 
-  // Retry function for failed API calls
+  // Manual retry function
+  const handleManualRetry = useCallback(async () => {
+    if (isRetrying) return;
+
+    setIsRetrying(true);
+    setRetryAttempts(prev => prev + 1);
+
+    try {
+      // Clear any existing error state before retrying
+      clearEmailTemplateError();
+
+      await fetchEmailTemplates({
+        search: debouncedSearch,
+        page: currentPage,
+        sortBy,
+        sortOrder,
+      });
+      setRetryAttempts(0); // Reset on success
+      toast.success('Templates loaded successfully');
+    } catch (err) {
+      toast.error(`Retry failed: ${err.message || 'Unknown error'}`);
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [
+    fetchEmailTemplates,
+    debouncedSearch,
+    currentPage,
+    sortBy,
+    sortOrder,
+    isRetrying,
+    clearEmailTemplateError,
+  ]);
 
   const formatDate = useCallback(dateString => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    if (!dateString) return 'Unknown';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return 'Invalid Date';
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (error) {
+      return 'Invalid Date';
+    }
   }, []);
 
   const handleSortChange = useCallback((field, order) => {
-    setSortBy(field);
-    setSortOrder(order);
-    setCurrentPage(1); // Reset to first page when sorting changes
+    if (field && order && ['asc', 'desc'].includes(order)) {
+      setSortBy(field);
+      setSortOrder(order);
+      setCurrentPage(1); // Reset to first page when sorting changes
+    }
   }, []);
 
   const handlePageChange = useCallback(page => {
-    setCurrentPage(page);
-    // Scroll to top when page changes
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (typeof page === 'number' && page > 0) {
+      setCurrentPage(page);
+      // Scroll to top when page changes
+      try {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (error) {
+        // Fallback for browsers that don't support smooth scrolling
+        window.scrollTo(0, 0);
+      }
+    }
   }, []);
 
   // Templates are already sorted and filtered by the API
-  const sortedAndFilteredTemplates = useMemo(() => templates, [templates]);
+  const sortedAndFilteredTemplates = useMemo(() => {
+    if (!templates || !Array.isArray(templates)) {
+      return [];
+    }
+    return templates.filter(template => {
+      return (
+        template && template._id && typeof template._id === 'string' && template._id.length > 0
+      );
+    });
+  }, [templates]);
 
   return (
     <div className="email-template-list">
-      {/* Controls Section */}
-      <div className="controls-section">
-        <Row className="align-items-center mb-2 gx-0">
-          <Col lg={8} md={12} className="px-0">
-            <div className="d-flex gap-3 align-items-center">
-              <div className="search-container flex-grow-1">
-                <FaSearch className="search-icon" />
-                <Input
-                  type="text"
-                  placeholder="Search templates..."
-                  value={searchTerm}
-                  onChange={handleSearch}
-                  aria-label="Search templates"
-                />
+      {/* Controls Section - Only show when templates are successfully loaded */}
+      {!loading && !error && (
+        <div className="controls-section">
+          <Row className="align-items-center mb-2 gx-0">
+            <Col lg={8} md={12} className="px-0">
+              <div className="d-flex gap-3 align-items-center">
+                <div className="search-container flex-grow-1">
+                  <FaSearch className="search-icon" />
+                  <Input
+                    type="text"
+                    placeholder="Search templates..."
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    aria-label="Search templates"
+                  />
+                </div>
+                <div className="sort-container" style={{ width: '200px', flexShrink: 0 }}>
+                  <Input
+                    type="select"
+                    value={`${sortBy}-${sortOrder}`}
+                    onChange={e => {
+                      const [field, order] = e.target.value.split('-');
+                      handleSortChange(field, order);
+                    }}
+                    aria-label="Sort templates"
+                  >
+                    <option value="created_at-desc">Newest First</option>
+                    <option value="created_at-asc">Oldest First</option>
+                    <option value="updated_at-desc">Recently Updated</option>
+                    <option value="updated_at-asc">Least Recently Updated</option>
+                    <option value="name-asc">Name A-Z</option>
+                    <option value="name-desc">Name Z-A</option>
+                  </Input>
+                </div>
               </div>
-              <div className="sort-container" style={{ width: '200px', flexShrink: 0 }}>
-                <Input
-                  type="select"
-                  value={`${sortBy}-${sortOrder}`}
-                  onChange={e => {
-                    const [field, order] = e.target.value.split('-');
-                    handleSortChange(field, order);
-                  }}
-                  aria-label="Sort templates"
+            </Col>
+            <Col lg={4} md={12} className="px-0">
+              <div className="create-button-container d-flex justify-content-lg-end justify-content-center">
+                <Button
+                  color="primary"
+                  onClick={onCreateTemplate}
+                  style={{ width: 'auto', minWidth: '140px' }}
                 >
-                  <option value="created_at-desc">Newest First</option>
-                  <option value="created_at-asc">Oldest First</option>
-                  <option value="updated_at-desc">Recently Updated</option>
-                  <option value="updated_at-asc">Least Recently Updated</option>
-                  <option value="name-asc">Name A-Z</option>
-                  <option value="name-desc">Name Z-A</option>
-                </Input>
+                  <FaPlus className="me-2" />
+                  Create Template
+                </Button>
               </div>
-            </div>
-          </Col>
-          <Col lg={4} md={12} className="px-0">
-            <div className="create-button-container d-flex justify-content-lg-end justify-content-center">
-              <Button
-                color="primary"
-                onClick={onCreateTemplate}
-                style={{ width: 'auto', minWidth: '140px' }}
-              >
-                <FaPlus className="me-2" />
-                Create Template
-              </Button>
-            </div>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
 
-        {/* Results summary */}
-        <Row>
-          <Col>
-            <div className="templates-count">
-              Showing {sortedAndFilteredTemplates.length} of {totalCount} templates
-              {debouncedSearch && ` for "${debouncedSearch}"`}
-            </div>
-          </Col>
-        </Row>
-      </div>
+          {/* Results summary */}
+          <Row>
+            <Col>
+              <div className="templates-count">
+                Showing {sortedAndFilteredTemplates.length} of {totalCount} templates
+                {debouncedSearch && ` for "${debouncedSearch}"`}
+              </div>
+            </Col>
+          </Row>
+        </div>
+      )}
 
       {/* Loading Spinner */}
       {loading && (
@@ -239,8 +315,55 @@ const EmailTemplateList = ({
         </div>
       )}
 
+      {/* Error State - On parent background */}
+      {error && !loading && (
+        <div className="error-state-parent-bg">
+          <h5 className="text-danger">Failed to load templates</h5>
+          <div className="error-messages">
+            {error.split('\n').map((line, index) => (
+              <p key={index} className="error-line">
+                {line}
+              </p>
+            ))}
+          </div>
+          {retryAttempts > 0 && (
+            <small className="text-muted d-block mb-3">Retry attempt: {retryAttempts}</small>
+          )}
+          <div className="error-actions">
+            <Button
+              color="primary"
+              onClick={handleManualRetry}
+              disabled={isRetrying}
+              className="retry-button"
+              size="sm"
+            >
+              {isRetrying ? (
+                <>
+                  <Spinner size="sm" className="me-1" />
+                  Retrying...
+                </>
+              ) : (
+                <>
+                  <FaSearch className="me-1" />
+                  Retry
+                </>
+              )}
+            </Button>
+            <Button
+              color="outline-primary"
+              onClick={onCreateTemplate}
+              className="create-button"
+              size="sm"
+            >
+              <FaPlus className="me-1" />
+              Create Template
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Templates Table */}
-      {!loading && (
+      {!loading && !error && (
         <div className="templates-table">
           <Table responsive striped hover>
             <thead>
@@ -273,34 +396,6 @@ const EmailTemplateList = ({
                     </div>
                   </td>
                 </tr>
-              ) : loading ? (
-                // Skeleton loading rows
-                Array.from({ length: 5 }).map((_, index) => (
-                  <tr key={`skeleton-${index}`}>
-                    <td>
-                      <SkeletonLoader width="200px" height="16px" />
-                    </td>
-                    <td className="d-none d-md-table-cell">
-                      <SkeletonLoader width="120px" height="16px" />
-                    </td>
-                    <td className="d-none d-lg-table-cell">
-                      <SkeletonLoader width="100px" height="14px" />
-                    </td>
-                    <td className="d-none d-lg-table-cell">
-                      <SkeletonLoader width="100px" height="14px" />
-                    </td>
-                    <td className="d-none d-xl-table-cell">
-                      <SkeletonLoader width="120px" height="16px" />
-                    </td>
-                    <td>
-                      <div className="d-flex gap-2">
-                        <SkeletonLoader width="32px" height="32px" />
-                        <SkeletonLoader width="32px" height="32px" />
-                        <SkeletonLoader width="32px" height="32px" />
-                      </div>
-                    </td>
-                  </tr>
-                ))
               ) : (
                 sortedAndFilteredTemplates
                   .map(template => {
@@ -311,14 +406,20 @@ const EmailTemplateList = ({
                     return (
                       <tr key={template._id}>
                         <td>
-                          <div className="template-name">{template.name || 'Unnamed Template'}</div>
+                          <div className="template-name">
+                            {template.name && typeof template.name === 'string'
+                              ? template.name
+                              : 'Unnamed Template'}
+                          </div>
                         </td>
                         <td className="d-none d-md-table-cell">
                           <div className="created-by">
                             {template.created_by &&
                             template.created_by.firstName &&
-                            template.created_by.lastName
-                              ? `${template.created_by.firstName} ${template.created_by.lastName}`
+                            template.created_by.lastName &&
+                            typeof template.created_by.firstName === 'string' &&
+                            typeof template.created_by.lastName === 'string'
+                              ? `${template.created_by.firstName} ${template.created_by.lastName}`.trim()
                               : 'Unknown'}
                           </div>
                         </td>
@@ -336,8 +437,10 @@ const EmailTemplateList = ({
                           <div className="updated-by">
                             {template.updated_by &&
                             template.updated_by.firstName &&
-                            template.updated_by.lastName
-                              ? `${template.updated_by.firstName} ${template.updated_by.lastName}`
+                            template.updated_by.lastName &&
+                            typeof template.updated_by.firstName === 'string' &&
+                            typeof template.updated_by.lastName === 'string'
+                              ? `${template.updated_by.firstName} ${template.updated_by.lastName}`.trim()
                               : 'Unknown'}
                           </div>
                         </td>
@@ -356,7 +459,13 @@ const EmailTemplateList = ({
                             <Button
                               color="outline-primary"
                               size="sm"
-                              onClick={() => onEditTemplate(template)}
+                              onClick={() => {
+                                if (template && template._id) {
+                                  onEditTemplate(template);
+                                } else {
+                                  toast.error('Cannot edit template: Invalid template data');
+                                }
+                              }}
                               title="Edit Template"
                               aria-label={`Edit template ${template.name || 'template'}`}
                               className="action-btn edit-btn"
@@ -384,7 +493,7 @@ const EmailTemplateList = ({
           </Table>
 
           {/* Pagination Controls */}
-          {totalCount > 5 && (
+          {totalCount > PAGE_SIZE && (
             <div className="pagination-controls d-flex justify-content-between align-items-center mt-3">
               <div className="pagination-buttons d-flex align-items-center gap-3">
                 <Button
@@ -396,13 +505,13 @@ const EmailTemplateList = ({
                   Previous
                 </Button>
                 <span className="pagination-text mx-2">
-                  Page {currentPage} of {Math.ceil(totalCount / 5)}
+                  Page {currentPage} of {Math.ceil(totalCount / PAGE_SIZE)}
                 </span>
                 <Button
                   color="outline-primary"
                   size="sm"
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= Math.ceil(totalCount / 5)}
+                  disabled={currentPage >= Math.ceil(totalCount / PAGE_SIZE)}
                 >
                   Next
                 </Button>
@@ -428,12 +537,13 @@ const EmailTemplateList = ({
           ) : templateToShow ? (
             <div>
               <div className="mb-3">
-                <strong>Template Name:</strong> {templateToShow.name}
+                <strong>Template Name:</strong> {templateToShow.name || 'Unnamed Template'}
               </div>
               <div className="mb-3">
                 <strong>Created By:</strong>{' '}
                 {templateToShow.created_by
-                  ? `${templateToShow.created_by.firstName} ${templateToShow.created_by.lastName}`
+                  ? `${templateToShow.created_by.firstName || ''} ${templateToShow.created_by
+                      .lastName || ''}`.trim() || 'Unknown'
                   : 'Unknown'}
               </div>
               <div className="mb-3">
@@ -450,20 +560,22 @@ const EmailTemplateList = ({
               <div className="mb-3">
                 <strong>Updated At:</strong> {formatDate(templateToShow.updated_at)}
               </div>
-              {templateToShow.variables && templateToShow.variables.length > 0 && (
-                <div className="mb-3">
-                  <strong>Variables:</strong>
-                  <div className="mt-2">
-                    {templateToShow.variables.map((variable, index) => (
-                      <Badge key={index} color="secondary" className="me-2 mb-1">
-                        {variable.name} ({variable.label})
-                      </Badge>
-                    ))}
+              {templateToShow.variables &&
+                Array.isArray(templateToShow.variables) &&
+                templateToShow.variables.length > 0 && (
+                  <div className="mb-3">
+                    <strong>Variables:</strong>
+                    <div className="mt-2">
+                      {templateToShow.variables.map((variable, index) => (
+                        <Badge key={index} color="secondary" className="me-2 mb-1">
+                          {variable.name || 'Unnamed'} ({variable.label || 'No Label'})
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
               <div className="mb-3">
-                <strong>Subject:</strong> {templateToShow.subject}
+                <strong>Subject:</strong> {templateToShow.subject || 'No subject'}
               </div>
               {templateToShow.html_content && (
                 <div className="mb-3">
@@ -476,7 +588,11 @@ const EmailTemplateList = ({
                 </div>
               )}
             </div>
-          ) : null}
+          ) : (
+            <div className="text-center text-muted">
+              <p>No template data available</p>
+            </div>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={() => setShowInfoModal(false)}>
@@ -485,8 +601,12 @@ const EmailTemplateList = ({
           <Button
             color="primary"
             onClick={() => {
-              setShowInfoModal(false);
-              onEditTemplate(templateToShow);
+              if (templateToShow && templateToShow._id) {
+                setShowInfoModal(false);
+                onEditTemplate(templateToShow);
+              } else {
+                toast.error('Cannot edit template: Invalid template data');
+              }
             }}
           >
             Edit Template
@@ -498,14 +618,22 @@ const EmailTemplateList = ({
       <Modal isOpen={showDeleteModal} toggle={handleDeleteCancel}>
         <ModalHeader toggle={handleDeleteCancel}>Confirm Delete</ModalHeader>
         <ModalBody>
-          Are you sure you want to delete the template &quot;{templateToDelete?.name}&quot;? This
-          action cannot be undone.
+          {templateToDelete ? (
+            <>
+              Are you sure you want to delete the template &quot;
+              {templateToDelete.name || 'Unnamed Template'}&quot;? This action cannot be undone.
+            </>
+          ) : (
+            <div className="text-center text-muted">
+              <p>No template selected for deletion</p>
+            </div>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={handleDeleteCancel}>
             Cancel
           </Button>
-          <Button color="danger" onClick={handleDeleteConfirm}>
+          <Button color="danger" onClick={handleDeleteConfirm} disabled={!templateToDelete}>
             Delete
           </Button>
         </ModalFooter>

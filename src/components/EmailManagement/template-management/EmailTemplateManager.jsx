@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Alert, Button } from 'reactstrap';
+import { Alert, Button, Spinner } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { EmailTemplateList, EmailTemplateEditor } from './templates';
 import { ErrorBoundary } from '../shared';
@@ -52,6 +52,8 @@ const EmailTemplateManager = () => {
   const [currentView, setCurrentView] = useState(() => getCurrentViewFromURL());
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [editingTemplateId, setEditingTemplateId] = useState(() => getTemplateIdFromURL());
+  const [retryAttempts, setRetryAttempts] = useState(0);
+  const [isRetrying, setIsRetrying] = useState(false);
 
   // Update URL when currentView changes
   const updateURL = useCallback(
@@ -144,6 +146,11 @@ const EmailTemplateManager = () => {
 
   const handleEditTemplate = useCallback(
     template => {
+      if (!template || !template._id) {
+        toast.error('Invalid template selected for editing');
+        return;
+      }
+
       // Force complete state reset before editing
       setSelectedTemplate(null);
       setEditingTemplateId(null);
@@ -171,14 +178,36 @@ const EmailTemplateManager = () => {
   const handleSaveTemplate = useCallback(
     savedTemplate => {
       // Template saved successfully, stay in current view
-      // Don't redirect to list - let user continue editing or manually navigate
-      // setCurrentView('list');
-      // setSelectedTemplate(null);
-      // setEditingTemplateId(null);
-      // updateURL('list');
+      // User can continue editing or manually navigate
+      if (savedTemplate && savedTemplate._id) {
+        setEditingTemplateId(savedTemplate._id);
+        setSelectedTemplate(savedTemplate);
+      }
     },
     [updateURL],
   );
+
+  // Manual retry function for error recovery
+  const handleManualRetry = useCallback(async () => {
+    if (isRetrying) return;
+
+    setIsRetrying(true);
+    setRetryAttempts(prev => prev + 1);
+
+    try {
+      // Reset error states
+      setHasError(false);
+      setErrorInfo(null);
+      setNavigationError(null);
+
+      // Force a page reload to reset all states
+      window.location.reload();
+    } catch (err) {
+      toast.error(`Retry failed: ${err.message || 'Unknown error'}`);
+    } finally {
+      setIsRetrying(false);
+    }
+  }, [isRetrying]);
 
   const renderCurrentView = useMemo(() => {
     switch (currentView) {
@@ -220,11 +249,44 @@ const EmailTemplateManager = () => {
             <div className="page-title-container mb-3">
               <h2 className="page-title">Email Templates</h2>
             </div>
-            <EmailTemplateList
-              key="list"
-              onCreateTemplate={handleCreateTemplate}
-              onEditTemplate={handleEditTemplate}
-            />
+            <div className="template-list-container">
+              {(() => {
+                try {
+                  return (
+                    <EmailTemplateList
+                      key="list"
+                      onCreateTemplate={handleCreateTemplate}
+                      onEditTemplate={handleEditTemplate}
+                    />
+                  );
+                } catch (error) {
+                  // Only catch critical component errors, not API errors
+                  if (
+                    error.name === 'ChunkLoadError' ||
+                    error.message.includes('Loading chunk') ||
+                    error.stack?.includes('webpack')
+                  ) {
+                    return (
+                      <div className="error-state">
+                        <div className="text-center">
+                          <h5 className="text-danger">Component Loading Error</h5>
+                          <p className="text-muted mb-3">{error.message}</p>
+                          <Button
+                            color="primary"
+                            onClick={() => window.location.reload()}
+                            className="retry-button"
+                          >
+                            Reload Page
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  }
+                  // Re-throw API errors so they can be handled by EmailTemplateList
+                  throw error;
+                }
+              })()}
+            </div>
           </div>
         );
     }
@@ -244,8 +306,27 @@ const EmailTemplateManager = () => {
         <div>
           <strong>{type === 'navigation' ? 'Navigation Error:' : 'Application Error:'}</strong>
           <div className="mt-1">{error}</div>
+          {retryAttempts > 0 && (
+            <small className="text-muted d-block mt-1">Retry attempt: {retryAttempts}</small>
+          )}
         </div>
         <div className="d-flex gap-2">
+          <Button
+            color="outline-primary"
+            size="sm"
+            onClick={handleManualRetry}
+            disabled={isRetrying}
+            className="retry-button"
+          >
+            {isRetrying ? (
+              <>
+                <Spinner size="sm" className="me-1" />
+                Retrying...
+              </>
+            ) : (
+              'Retry'
+            )}
+          </Button>
           <Button color="outline-secondary" size="sm" onClick={resetErrorState}>
             Dismiss
           </Button>
@@ -254,24 +335,42 @@ const EmailTemplateManager = () => {
     </Alert>
   );
 
-  // Error boundary effect
+  // Error boundary effect - only catch critical errors, not API errors
   useEffect(() => {
     const handleError = (error, errorInfo) => {
-      // Log error for debugging (can be removed in production)
-      // eslint-disable-next-line no-console
-      console.error('EmailTemplateManager Error:', error, errorInfo);
-      setHasError(true);
-      setErrorInfo(error.message || 'An unexpected error occurred');
+      // Only catch critical JavaScript errors, not API errors
+      if (
+        error.name === 'ChunkLoadError' ||
+        error.message.includes('Loading chunk') ||
+        error.message.includes('Loading CSS chunk') ||
+        error.stack?.includes('webpack') ||
+        errorInfo?.componentStack?.includes('ErrorBoundary')
+      ) {
+        // eslint-disable-next-line no-console
+        console.error('EmailTemplateManager Critical Error:', error, errorInfo);
+        setHasError(true);
+        setErrorInfo(error.message || 'An unexpected error occurred');
+      }
+      // Let API errors (like AxiosError) be handled by individual components
+    };
+
+    const handleUnhandledRejection = event => {
+      // Only catch critical promise rejections, not API errors
+      if (
+        event.reason?.name === 'ChunkLoadError' ||
+        event.reason?.message?.includes('Loading chunk')
+      ) {
+        handleError(new Error(event.reason), { componentStack: 'Promise rejection' });
+      }
+      // Let API promise rejections be handled by individual components
     };
 
     window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', event => {
-      handleError(new Error(event.reason), { componentStack: 'Promise rejection' });
-    });
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
 
     return () => {
       window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleError);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, []);
 
@@ -281,16 +380,22 @@ const EmailTemplateManager = () => {
       <div className={`email-template-management ${darkMode ? 'dark-mode' : 'light-mode'}`}>
         <ErrorDisplay error={errorInfo} type="application" />
         <div className="text-center mt-4">
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              setHasError(false);
-              setErrorInfo(null);
-              window.location.reload();
-            }}
+          <Button
+            color="primary"
+            onClick={handleManualRetry}
+            disabled={isRetrying}
+            className="retry-button"
+            size="sm"
           >
-            Reload Application
-          </button>
+            {isRetrying ? (
+              <>
+                <Spinner size="sm" className="me-1" />
+                Retrying...
+              </>
+            ) : (
+              'Reload Application'
+            )}
+          </Button>
         </div>
       </div>
     );
@@ -303,8 +408,21 @@ const EmailTemplateManager = () => {
         <div className="error-boundary-container">
           <ErrorDisplay error={errorInfo} type="application" />
           <div className="text-center">
-            <Button color="primary" onClick={resetErrorState}>
-              Try Again
+            <Button
+              color="primary"
+              onClick={handleManualRetry}
+              disabled={isRetrying}
+              className="retry-button"
+              size="sm"
+            >
+              {isRetrying ? (
+                <>
+                  <Spinner size="sm" className="me-1" />
+                  Retrying...
+                </>
+              ) : (
+                'Try Again'
+              )}
             </Button>
           </div>
         </div>
@@ -316,14 +434,31 @@ const EmailTemplateManager = () => {
   return (
     <div className={`email-template-management ${darkMode ? 'dark-mode' : 'light-mode'}`}>
       {navigationError && <ErrorDisplay error={navigationError} type="navigation" />}
-      <ErrorBoundaryWrapper>{renderCurrentView}</ErrorBoundaryWrapper>
+      <ErrorBoundaryWrapper>
+        {(() => {
+          try {
+            return renderCurrentView;
+          } catch (error) {
+            // Only catch critical component errors, not API errors
+            if (
+              error.name === 'ChunkLoadError' ||
+              error.message.includes('Loading chunk') ||
+              error.stack?.includes('webpack')
+            ) {
+              setHasError(true);
+              setErrorInfo(error.message || 'Component loading error');
+              return null;
+            }
+            // Re-throw API errors so they can be handled by individual components
+            throw error;
+          }
+        })()}
+      </ErrorBoundaryWrapper>
     </div>
   );
 };
 
 // PropTypes for type checking
-EmailTemplateManager.propTypes = {
-  // No props expected for this component
-};
+EmailTemplateManager.propTypes = {};
 
 export default EmailTemplateManager;

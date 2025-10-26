@@ -1,6 +1,3 @@
-// Main Email Management component
-export { default as EmailManagement } from './EmailManagement';
-
 // Template Management components
 export {
   EmailTemplateManager,
