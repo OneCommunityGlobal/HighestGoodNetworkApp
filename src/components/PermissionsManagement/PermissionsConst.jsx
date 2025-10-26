@@ -197,6 +197,12 @@ export const permissionLabels = [
         key: 'setTrackingManagement',
         description: 'Gives the user permission to interact with the edit warnings list modal.',
       },
+      {
+        label: 'HGN People +/- Setup',
+        key: 'manageHGNAccessSetup',
+        description:
+          'Gives the user permission to access the HGN Add Access button on user profile pages to add/remove user access to GitHub, Dropbox, Slack, and Sentry.',
+      },
     ],
   },
   {

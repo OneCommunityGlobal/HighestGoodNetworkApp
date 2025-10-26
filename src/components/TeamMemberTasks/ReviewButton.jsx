@@ -15,7 +15,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styles from './style.module.css';
-import './reviewButton.css';
+import style from './reviewButton.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -381,15 +381,23 @@ function ReviewButton({ user, task, updateTask }) {
   const buttonFormat = () => {
     if (user.personId === myUserId && reviewStatus === 'Unsubmitted') {
       return (
-        <Button
-          className={styles.reviewBtn}
-          color="primary"
+        // <Button
+        //   className={style['reviewBtn']}
+        //   color="primary"
+        //   onClick={toggleModal}
+        //   style={darkMode ? boxStyleDark : boxStyle}
+        //   disabled={isSubmitting}
+        // >
+        //   Submit for Review
+        // </Button>
+        <button
+          className={`${style.reviewBtn} btn btn-primary`}
           onClick={toggleModal}
           style={darkMode ? boxStyleDark : boxStyle}
           disabled={isSubmitting}
         >
           Submit for Review
-        </Button>
+        </button>
       );
     }
     if (reviewStatus === 'Submitted') {
@@ -398,14 +406,22 @@ function ReviewButton({ user, task, updateTask }) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle
-              className={`${styles['btn--dark-sea-green']} ${styles.reviewBtn}`}
+              className={`${styles['btn--dark-sea-green']} ${style.reviewBtn} ${style['reviewBtn-dropdown-wrapper']}`}
               caret
-              style={darkMode ? boxStyleDark : boxStyle}
+              style={{
+                // Use inline styles to match the desired light green pill look
+                backgroundColor: '#E5F4E8' /* Light Green background */,
+                color: '#326749' /* Dark Green Text */,
+                borderColor: '#C3E6CB' /* Light Green Border */,
+
+                ...(darkMode ? boxStyleDark : boxStyle),
+              }}
             >
-              Work Submitted and Awaiting Review
+              Ready for Review
             </DropdownToggle>
+
             <DropdownMenu
-              className={`${styles['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
+              className={`${style['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
             >
               {task.relatedWorkLinks &&
                 // eslint-disable-next-line no-shadow
@@ -414,14 +430,14 @@ function ReviewButton({ user, task, updateTask }) {
                     key={link}
                     href={link}
                     target="_blank"
-                    className={`${darkMode ? 'text-light' : ''} ${styles['dark-mode-btn']}`}
+                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
                   >
                     <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
                 ))}
               <DropdownItem
                 onClick={toggleEditLinkModal}
-                className={`${darkMode ? 'text-light' : ''} ${styles['dark-mode-btn']}`}
+                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
               >
                 <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
               </DropdownItem>
@@ -439,14 +455,14 @@ function ReviewButton({ user, task, updateTask }) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle
-              className={`${styles['btn--dark-sea-green']} ${styles.reviewBtn}`}
+              className={`${styles['btn--dark-sea-green']} ${style['reviewBtn']}`}
               caret
               style={darkMode ? boxStyleDark : boxStyle}
             >
               Ready for Review
             </DropdownToggle>
             <DropdownMenu
-              className={`${styles['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
+              className={`${style['review-button-dropdown']} ${darkMode ? 'bg-space-cadet' : ''}`}
             >
               {task.relatedWorkLinks &&
                 task.relatedWorkLinks.map(dropLink => (
@@ -454,7 +470,7 @@ function ReviewButton({ user, task, updateTask }) {
                     key={dropLink}
                     href={dropLink}
                     target="_blank"
-                    className={`${darkMode ? 'text-light' : ''} ${styles['dark-mode-btn']}`}
+                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
                   >
                     <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
@@ -470,7 +486,7 @@ function ReviewButton({ user, task, updateTask }) {
                   setSelectedAction('Complete and Remove');
                   toggleVerify();
                 }}
-                className={`${darkMode ? 'text-light' : ''} ${styles['dark-mode-btn']}`}
+                className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
               >
                 <div className={styles['review-dropdown-item']}>
                   <FontAwesomeIcon className={styles['team-member-tasks-done']} icon={faCheck} />
@@ -491,7 +507,7 @@ function ReviewButton({ user, task, updateTask }) {
         );
       }
       return (
-        <Button className={styles.reviewBtn} color="success" disabled>
+        <Button className={style.reviewBtn} color="success" disabled>
           Ready for Review
         </Button>
       );

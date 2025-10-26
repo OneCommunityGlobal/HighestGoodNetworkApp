@@ -24,6 +24,7 @@ import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
 import { boxStyle, boxStyleDark } from '~/styles';
+import { v4 as uuidv4 } from 'uuid';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
@@ -76,6 +77,7 @@ import {
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
+import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
 
 function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -154,6 +156,7 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
+  const [specialWarnings, setSpecialWarnings] = useState([]);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
@@ -195,7 +198,19 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   const canEditTeamCode = props.hasPermission('editTeamCode');
-  const [titleOnSet, setTitleOnSet] = useState(false);
+  const [titleOnSet, setTitleOnSet] = useState(false); // added by development
+
+  /* useEffect functions */ // added by luis, the below useEffect
+  useEffect(() => {
+    loadUserProfile();
+    getCurretLoggedinUserEmail();
+    dispatch(fetchAllProjects());
+    dispatch(getAllUserTeams());
+    dispatch(getAllTimeOffRequests());
+    dispatch(getAllTeamCode());
+    fetchSpecialWarnings();
+    canEditTeamCode && fetchTeamCodeAllUsers();
+  }, []);
 
  
   const updateProjectTouserProfile = () => {
@@ -417,6 +432,8 @@ function UserProfile(props) {
       const [response] = await Promise.all([axios.get(ENDPOINTS.USER_PROFILE(userId))]);
 
       const newUserProfile = response.data;
+      // Assuming newUserProfile contains isRehireable attribute
+      setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       // sanitize data first
@@ -476,13 +493,16 @@ function UserProfile(props) {
       setUserProfile(profileWithFormattedDates);
       setOriginalUserProfile(profileWithFormattedDates);
       setIsRehireable(newUserProfile.isRehireable);
+      setUserStartDate(startDate);
 
       // Fetch calculated start date from first time entry
       await fetchCalculatedStartDate(userId, newUserProfile);
 
       // run after main profile is loaded
       const teamId = newUserProfile?.teams[0]?._id;
-      loadSummaryIntroDetails(teamId, newUserProfile);
+      if (teamId) {
+        await loadSummaryIntroDetails(teamId, response.data);
+      }
 
       // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
       // Users can now toggle between manual and calculated startDate via button
@@ -774,6 +794,80 @@ const onAssignProject = assignedProject => {
       }
     }
   };
+  const fetchSpecialWarnings = async () => {
+    const userId = props?.match?.params?.userId;
+    try {
+      dispatch(getSpecialWarnings(userId)).then(res => {
+        if (res.error) {
+          console.log(res.error);
+          return;
+        }
+        setSpecialWarnings(res);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleLogWarning = async newWarningData => {
+    let warningData = {};
+    let warningsArray = null;
+    if (newWarningData.bothTriggered) {
+      warningsArray = Object.entries(newWarningData)
+        .filter(([key]) => key !== 'issueBlueSquare' && key !== 'bothTriggered')
+        .map(([title, color]) => ({
+          userId: props?.match?.params?.userId,
+          iconId: uuidv4(),
+          color: color.color,
+          date: moment().format('MM/DD/YYYY'), // Use a dynamic timestamp or pass it explicitly
+          description: title, // Use the title as the description
+        }));
+    } else {
+      warningData = {
+        description: newWarningData.title,
+        color: newWarningData.colorAssigned,
+        iconId: uuidv4(),
+        date: moment().format('MM/DD/YYYY'),
+      };
+    }
+
+    warningData = {
+      ...warningData,
+      warningsArray,
+      issueBlueSquare: newWarningData.issueBlueSquare,
+      userId: props?.match?.params?.userId,
+      monitorData: {
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        email: userProfile.email,
+        userId: props.auth.user.userid,
+      },
+    };
+
+    let toastMessage = '';
+    dispatch(postWarningByUserId(warningData))
+      .then(response => {
+        if (response.error) {
+          toast.error('Warning failed to log try again');
+          return;
+        } else {
+          setShowModal(false);
+          fetchSpecialWarnings();
+
+          if (warningData.color === 'blue') {
+            toastMessage = 'Successfully logged and tracked';
+          } else if (warningData.color === 'yellow') {
+            toastMessage = 'Warning successfully logged';
+          } else {
+            toastMessage = 'Successfully logged and Blue Square issued';
+          }
+        }
+        toast.success(toastMessage);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
 
   // const handleSubmit = async updatedUserProfile => {
   //   for (let i = 0; i < updatedTasks.length; i += 1) {
@@ -861,16 +955,6 @@ const onAssignProject = assignedProject => {
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
-
-  /* useEffect functions */
-  useEffect(() => {
-    getCurretLoggedinUserEmail();
-    dispatch(fetchAllProjects());
-    dispatch(getAllUserTeams());
-    dispatch(getAllTimeOffRequests());
-    dispatch(getAllTeamCode());
-    canEditTeamCode && getAllTeamCode();
-  }, []);
 
   useEffect(() => {
     userProfileRef.current = userProfile;
@@ -1102,6 +1186,7 @@ const onAssignProject = assignedProject => {
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
+  const canManageHGNAccessSetup = props.hasPermission('manageHGNAccessSetup');
   const canEditVisibility = props.hasPermission('toggleInvisibility');
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
@@ -1170,7 +1255,9 @@ const onAssignProject = assignedProject => {
           userProfile={userProfile}
           id={id}
           handleLinkModel={props.handleLinkModel}
-          role={requestorRole}
+          role={requestorRole}      
+          handleLogWarning={handleLogWarning}
+          specialWarnings={specialWarnings}
         />
       )}
       <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
@@ -1379,7 +1466,7 @@ const onAssignProject = assignedProject => {
                 </Link>
               </span>
             )}
-            {(requestorRole === 'Owner' || requestorRole === 'Administrator') && (
+            {(canManageHGNAccessSetup) && (
               <span className="mr-2">
                 <Button
                   color="link"
