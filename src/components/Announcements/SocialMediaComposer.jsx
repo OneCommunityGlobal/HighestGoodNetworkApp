@@ -46,6 +46,17 @@ export default function SocialMediaComposer({ platform }) {
         body: JSON.stringify({ content: postContent.trim() }),
       });
 
+      // Log the response details for debugging
+      console.log('Response status:', res.status);
+      console.log('Response headers:', Object.fromEntries(res.headers.entries()));
+
+      // Only try to parse JSON if the response is ok
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error('Error response:', errorText);
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
       const data = await res.json();
 
       if (!data || typeof data.plurk_id === 'undefined') {
@@ -56,7 +67,12 @@ export default function SocialMediaComposer({ platform }) {
       }
     } catch (err) {
       console.error('Plurk post failed:', err);
-      alert('Failed to post to Plurk.');
+      // Show the actual error message from the server if available
+      const errorMessage =
+        err.message === 'HTTP error! status: 401'
+          ? 'Authentication failed.'
+          : 'Failed to post to Plurk.';
+      alert(errorMessage);
     } finally {
       setIsPostingPlurk(false);
     }
