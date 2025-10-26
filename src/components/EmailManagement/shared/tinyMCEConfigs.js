@@ -168,7 +168,7 @@ export const getTemplateEditorConfig = (darkMode, formData) => ({
 // TinyMCE Configuration for Email Sender (Standard)
 export const getEmailSenderConfig = darkMode => ({
   license_key: 'gpl',
-  height: 300,
+  height: 500,
   menubar: false,
   placeholder: '',
   skin: darkMode ? 'oxide-dark' : 'oxide',
@@ -187,10 +187,10 @@ export const getEmailSenderConfig = darkMode => ({
   content_style: `body, p, div, span, * { 
     font-family: Arial, Helvetica, sans-serif; 
     font-size: 14px; 
-    line-height: 1.5; 
+    line-height: 1; 
     color: ${darkMode ? '#ffffff' : '#000000'}; 
     background-color: ${darkMode ? '#2d2d2d' : '#ffffff'}; 
-    padding: 0;
+    padding: 4px;
     margin: 0;
   }`,
 
