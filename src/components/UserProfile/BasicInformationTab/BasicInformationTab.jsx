@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
 import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
@@ -895,55 +896,51 @@ const BasicInformationTab = props => {
   );
 
   const statusComponentMobile = (
-    <>
-      <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Status</Label>
-        <div>
-          <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
-            {userProfile.isActive
-              ? 'Active'
-              : userProfile.reactivationDate
-              ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-              : 'Inactive'}
-          </Label>
-          &nbsp;
-          {canEdit && canEditStatus && (
-            <PauseAndResumeButton
-              setUserProfile={setUserProfile}
-              loadUserProfile={loadUserProfile}
-              isBigBtn={true}
-              userProfile={userProfile}
-              darkMode={darkMode}
-            />
-          )}
-        </div>
-      </Col>
-    </>
+    <Col>
+      <Label className={darkMode ? 'text-light' : ''}>Status</Label>
+      <div>
+        <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
+          {userProfile.isActive
+            ? 'Active'
+            : userProfile.reactivationDate
+            ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+            : 'Inactive'}
+        </Label>
+        &nbsp;
+        {canEdit && canEditStatus && (
+          <PauseAndResumeButton
+            setUserProfile={setUserProfile}
+            loadUserProfile={loadUserProfile}
+            isBigBtn={true}
+            userProfile={userProfile}
+            darkMode={darkMode}
+          />
+        )}
+      </div>
+    </Col>
   );
 
   const endDateComponentMobile = (
-    <>
-      <Col>
-        <Label className={darkMode ? 'text-light' : ''}>End Date</Label>
-        <div>
-          <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
-            {userProfile.endDate
-              ? formatDateLocal(userProfile.endDate)
-              : 'N/A'}
-          </Label>
-          &nbsp;
-          {canEdit && canEditEndDate && (
-            <SetUpFinalDayButton
-              loadUserProfile={loadUserProfile}
-              setUserProfile={setUserProfile}
-              isBigBtn={true}
-              userProfile={userProfile}
-              darkMode={darkMode}
-            />
-          )}
-        </div>
-      </Col>
-    </>
+    <Col>
+      <Label className={darkMode ? 'text-light' : ''}>End Date</Label>
+      <div>
+        <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
+          {userProfile.endDate
+            ? formatDateLocal(userProfile.endDate)
+            : 'N/A'}
+        </Label>
+        &nbsp;
+        {canEdit && canEditEndDate && (
+          <SetUpFinalDayButton
+            loadUserProfile={loadUserProfile}
+            setUserProfile={setUserProfile}
+            isBigBtn={true}
+            userProfile={userProfile}
+            darkMode={darkMode}
+          />
+        )}
+      </div>
+    </Col>
   );
 
   return (
@@ -1011,4 +1008,61 @@ const BasicInformationTab = props => {
     </div>
   );
 };
+
+BasicInformationTab.propTypes = {
+  userProfile: PropTypes.shape({
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    jobTitle: PropTypes.string,
+    email: PropTypes.string,
+    phoneNumber: PropTypes.string,
+    collaborationPreference: PropTypes.string,
+    role: PropTypes.string,
+    location: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({
+        userProvided: PropTypes.string,
+        coords: PropTypes.shape({
+          lat: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          lng: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        }),
+        country: PropTypes.string,
+        city: PropTypes.string,
+      }),
+    ]),
+    timeZone: PropTypes.string,
+    isActive: PropTypes.bool,
+    reactivationDate: PropTypes.string,
+    endDate: PropTypes.string,
+    privacySettings: PropTypes.shape({
+      email: PropTypes.bool,
+      phoneNumber: PropTypes.bool,
+    }),
+    emailSubscriptions: PropTypes.bool,
+    permissions: PropTypes.shape({
+      frontPermissions: PropTypes.array,
+    }),
+  }).isRequired,
+  setUserProfile: PropTypes.func.isRequired,
+  isUserSelf: PropTypes.bool,
+  handleUserProfile: PropTypes.func.isRequired,
+  formValid: PropTypes.shape({
+    firstName: PropTypes.bool,
+    lastName: PropTypes.bool,
+    email: PropTypes.bool,
+  }).isRequired,
+  setFormValid: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool,
+  canEditRole: PropTypes.bool,
+  roles: PropTypes.arrayOf(
+    PropTypes.shape({
+      roleName: PropTypes.string,
+    })
+  ),
+  role: PropTypes.string,
+  loadUserProfile: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  hasPermission: PropTypes.func.isRequired,
+};
+
 export default connect(null, { hasPermission })(BasicInformationTab);
