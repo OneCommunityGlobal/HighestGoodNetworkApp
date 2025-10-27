@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 import PropTypes from 'prop-types';
@@ -65,14 +65,14 @@ const TimestampsTab = ({ userId, getTimelogTracking, addTimelogEvent }) => {
   return (
     <div className="timestamps-tab-container">
       <div className="mb-3">
-        <p className="text-muted">
+        <p className={darkMode ? 'text-white-50' : 'text-muted'}>
           This table shows a chronological log of timelog events including when the timer was started, paused, stopped, or automatically paused.
         </p>
       </div>
 
       {trackingEvents.length === 0 ? (
         <div className="text-center p-4">
-          <p className="text-muted">No timelog tracking events found.</p>
+          <p className={darkMode ? 'text-white-50' : 'text-muted'}>No timelog tracking events found.</p>
         </div>
       ) : (
         <div className="table-responsive">
@@ -81,8 +81,8 @@ const TimestampsTab = ({ userId, getTimelogTracking, addTimelogEvent }) => {
             striped
             hover
           >
-            <thead>
-              <tr>
+            <thead className={darkMode ? 'table-dark' : 'table-light'}>
+              <tr className={darkMode ? 'text-light' : 'text-dark'}>
                 <th style={{ width: '40%' }}>Event</th>
                 <th style={{ width: '60%' }}>Time</th>
               </tr>
