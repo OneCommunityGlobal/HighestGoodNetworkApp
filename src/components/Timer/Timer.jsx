@@ -409,6 +409,20 @@ function Timer({ authUser, darkMode, isPopout }) {
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
+  const renderTimeEntryForm = () => (
+    logTimeEntryModal && (
+      <TimeEntryForm
+        from="Timer"
+        edit={false}
+        toggle={toggleLogTimeModal}
+        isOpen={logTimeEntryModal}
+        data={logTimer}
+        sendStop={sendStop}
+        timerConnected={customReadyState === ReadyState.OPEN}
+      />
+    )
+  );
+
   if (realIsPopout) {
     return (
       <div className={cs(css.timer, darkMode ? 'dark-mode' : '')}>
@@ -437,17 +451,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             />
           )}
         </div>
-        {logTimeEntryModal && (
-          <TimeEntryForm
-            from="Timer"
-            edit={false}
-            toggle={toggleLogTimeModal}
-            isOpen={logTimeEntryModal}
-            data={logTimer}
-            sendStop={sendStop}
-            timerConnected={customReadyState === ReadyState.OPEN}
-          />
-        )}
+        {renderTimeEntryForm()}
         <audio
           ref={timeIsOverAudioRef}
           key="timeIsOverAudio"
@@ -746,17 +750,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           </div>
         </div>
       )}
-      {logTimeEntryModal && (
-        <TimeEntryForm
-          from="Timer"
-          edit={false}
-          toggle={toggleLogTimeModal}
-          isOpen={logTimeEntryModal}
-          data={logTimer}
-          sendStop={sendStop}
-          timerConnected={customReadyState === ReadyState.OPEN}
-        />
-      )}
+      {renderTimeEntryForm()}
       <audio
         ref={timeIsOverAudioRef}
         key="timeIsOverAudio"
