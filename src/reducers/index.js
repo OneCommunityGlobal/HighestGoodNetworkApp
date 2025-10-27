@@ -78,6 +78,8 @@ import userSkillsReducer from './userSkillsReducer';
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
 
+import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
+
 // lbdashboard
 import wishListReducer from './listBidDashboard/wishListItemReducer';
 
@@ -136,13 +138,13 @@ const localReducers = {
   tools: toolReducer,
   toolAvailability: toolAvailabilityReducer,
   bmProjects: bmProjectReducer,
+  bmInjuries: bmInjuryReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
   lessons: lessonsReducer,
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
   bmEquipments: equipmentReducer,
-  bmIssues: issueReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
@@ -173,6 +175,8 @@ const localReducers = {
 
   // job analytics
   hoursPledged: hoursPledgedReducer,
+
+  jobApplication: jobApplicationReducer,
 };
 
 const sessionReducers = {

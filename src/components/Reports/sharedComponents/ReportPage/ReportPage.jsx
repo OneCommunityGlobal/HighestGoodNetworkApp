@@ -11,7 +11,9 @@ export function ReportPage({ children, renderProfile, contentClassName, darkMode
           {renderProfile()}
         </div>
       )}
-      <div className={`report-page-content ${contentClassName}`} data-testid="report-content">{children}</div>
+      <div className={`report-page-content ${contentClassName}`} data-testid="report-content">
+        {children}
+      </div>
     </section>
   );
 }

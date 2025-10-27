@@ -3,7 +3,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserFollowUp } from '../../actions/followUpActions';
-import './FollowUpCheckButton.css';
+import styles from './FollowUpCheckButton.module.css';
 
 function FollowupCheckButton({ moseoverText, user, task }) {
   const dispatch = useDispatch();
@@ -68,12 +68,12 @@ function FollowupCheckButton({ moseoverText, user, task }) {
   };
 
   return (
-    <>
+    <div className={styles['followup-box']}>
       <input
         type="checkbox"
         title={moseoverText}
-        className={`team-task-progress-follow-up ${
-          needFollowUp ? 'team-task-progress-follow-up-red' : ''
+        className={`${styles['team-task-progress-follow-up']} ${
+          needFollowUp ? styles['team-task-progress-follow-up-red'] : ''
         }`}
         checked={isChecked && !needFollowUp}
         onChange={handleCheckboxFollowUp}
@@ -82,11 +82,11 @@ function FollowupCheckButton({ moseoverText, user, task }) {
         <FontAwesomeIcon
           icon={faCheck}
           title="This box is used to track follow ups. Clicking it means you’ve checked in with a person that they are on track to meet their deadline"
-          className="team-task-progress-follow-up-check"
+          className={styles['team-task-progress-follow-up-check']}
           onClick={handleCheckboxFollowUp}
         />
       )}
-    </>
+    </div>
   );
 }
 
