@@ -97,6 +97,9 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 
+// education portal
+import { atomReducer } from './educationPortal/atomReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -177,6 +180,9 @@ const localReducers = {
   hoursPledged: hoursPledgedReducer,
 
   jobApplication: jobApplicationReducer,
+
+  // education portal
+  atomBadge: atomBadgeReducer,
 };
 
 const sessionReducers = {
