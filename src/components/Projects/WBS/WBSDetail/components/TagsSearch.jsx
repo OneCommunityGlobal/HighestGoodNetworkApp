@@ -37,6 +37,7 @@ function TagsSearch(props) {
         try {
           props.findProjectMembers(props.projectId, currentValue);
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Error searching project members:', error);
         } finally {
           setIsLoading(false);
@@ -120,10 +121,12 @@ function TagsSearch(props) {
           {shouldShowDropdown && (
             <ul className="my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 scrollbar shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light scrollable-menu">
               {filteredMembers.map((member, index) => (
+                // eslint-disable-next-line jsx-a11y/anchor-is-valid
                 <a
                   key={member._id || member.userID || index}
                   className="text-decoration-none w-100"
                 >
+                  {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/no-noninteractive-element-interactions */}
                   <li
                     className="dropdown-item border-bottom fs-6 w-100 p-1"
                     onMouseDown={event => handleClick(event, member)}

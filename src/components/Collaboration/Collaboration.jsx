@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import hasPermission from '~/utils/permissions';
-import './Collaboration.css';
+import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
-import JobReorderModal from './JobReorderModal';
 
 function Collaboration() {
   const [query, setQuery] = useState('');
@@ -164,12 +163,12 @@ function Collaboration() {
   useEffect(() => {
     fetchJobAds(query, category);
     fetchCategories();
-  }, [currentPage]); // Re-fetch job ads when page or category changes
+  }, [currentPage]);
 
   if (summaries) {
     return (
-      <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
-        <div className="job-header">
+      <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={styles.jobHeader}>
           <a
             href="https://www.onecommunityglobal.org/collaboration/"
             target="_blank"
@@ -178,10 +177,10 @@ function Collaboration() {
             <img src={OneCommunityImage} alt="One Community Logo" />
           </a>
         </div>
-        <div className="user-collaboration-container">
-          <nav className="job-navbar">
-            <div className="job-navbar-left">
-              <form className="search-form">
+        <div className={styles.jobContainer}>
+          <nav className={styles.jobNavbar}>
+            <div className={styles.jobNavbarLeft}>
+              <form className={styles.jobSearchForm}>
                 <input
                   type="text"
                   placeholder="Search by title..."
@@ -195,7 +194,7 @@ function Collaboration() {
                 {/* Only show reorder button for users with permission */}
                 {canReorderJobs && (
                   <button
-                    className="btn btn-secondary reorder-button"
+                    className={`btn btn-secondary ${styles.reorderButton}`}
                     type="button"
                     onClick={toggleReorderModal}
                   >
@@ -204,11 +203,11 @@ function Collaboration() {
                 )}
               </form>
               {showTooltip && tooltipPosition === 'search' && (
-                <div className="job-tooltip">
+                <div className={styles.jobTooltip}>
                   <p>Use the search bar to refine your search further!</p>
                   <button
                     type="button"
-                    className="job-tooltip-dismiss"
+                    className={styles.jobTooltipDismiss}
                     onClick={dismissSearchTooltip}
                   >
                     Got it
@@ -217,8 +216,8 @@ function Collaboration() {
               )}
             </div>
 
-            <div className="job-navbar-right">
-              <select className="job-select" value={category} onChange={handleCategoryChange}>
+            <div className={styles.jobNavbarRight}>
+              <select className={styles.jobSelect} value={category} onChange={handleCategoryChange}>
                 <option value="">Select from Categories</option>
                 {categories.map(specificCategory => (
                   <option key={specificCategory} value={specificCategory}>
@@ -227,11 +226,11 @@ function Collaboration() {
                 ))}
               </select>
               {showTooltip && tooltipPosition === 'category' && (
-                <div className="job-tooltip category-tooltip">
+                <div className={`${styles.jobTooltip} ${styles.categoryTooltip}`}>
                   <p>Use the categories to refine your search further!</p>
                   <button
                     type="button"
-                    className="job-tooltip-dismiss"
+                    className={styles.jobTooltipDismiss}
                     onClick={dismissCategoryTooltip}
                   >
                     Got it
@@ -240,9 +239,9 @@ function Collaboration() {
               )}
             </div>
           </nav>
-          <div className="job-queries">
+          <div className={styles.jobQueries}>
             {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
-              <p className="job-query">
+              <p className={styles.jobQuery}>
                 Listing results for
                 {searchTerm && !selectedCategory && <strong> &apos;{searchTerm}&apos;</strong>}
                 {selectedCategory && !searchTerm && (
@@ -257,7 +256,7 @@ function Collaboration() {
                 .
               </p>
             ) : (
-              <p className="job-query">Listing all job ads.</p>
+              <p className={styles.jobQuery}>Listing all job ads.</p>
             )}
             <button
               className="btn btn-secondary active"
@@ -267,12 +266,12 @@ function Collaboration() {
                 setShowSearchResults(true);
               }}
             >
-              Show Summaries
+              Close Summaries
             </button>
             {searchTerm && (
-              <div className="query-option btn btn-secondary " type="button">
+              <div className={`${styles.jobQueryOption} btn btn-secondary`} type="button">
                 <span>{searchTerm}</span>
-                <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                <button className={styles.jobCrossButton} type="button" onClick={handleRemoveQuery}>
                   <img
                     width="30"
                     height="30"
@@ -283,9 +282,13 @@ function Collaboration() {
               </div>
             )}
             {selectedCategory && (
-              <div className="btn btn-secondary query-option" type="button">
+              <div className={`${styles.jobQueryOption} btn btn-secondary`} type="button">
                 {selectedCategory}
-                <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                <button
+                  className={styles.jobCrossButton}
+                  type="button"
+                  onClick={handleRemoveCategory}
+                >
                   <img
                     width="30"
                     height="30"
@@ -296,14 +299,14 @@ function Collaboration() {
               </div>
             )}
           </div>
-          <div className="jobs-summaries-list">
+          <div className={styles.jobsSummariesList}>
             {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
               summaries.jobs.map(summary => (
-                <div key={summary._id} className="job-summary-item">
+                <div key={summary._id} className={styles.jobSummaryItem}>
                   <h3>
                     <a href={summary.jobDetailsLink}>{summary.title}</a>
                   </h3>
-                  <div className="job-summary-content">
+                  <div className={styles.jobSummaryContent}>
                     <p>{summary.description}</p>
                     <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
                   </div>
@@ -316,19 +319,19 @@ function Collaboration() {
         </div>
 
         {/* Reorder Modal */}
-        <JobReorderModal
+        {/* <JobReorderModal
           isOpen={isReorderModalOpen}
           toggle={toggleReorderModal}
           onJobsReordered={handleJobsReordered}
           darkMode={darkMode}
-        />
+        /> */}
       </div>
     );
   }
 
   return (
-    <div className={`job-landing ${darkMode ? 'user-collaboration-dark-mode' : ''}`}>
-      <div className="job-header">
+    <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={styles.jobHeader}>
         <a
           href="https://www.onecommunityglobal.org/collaboration/"
           target="_blank"
@@ -337,10 +340,10 @@ function Collaboration() {
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
-      <div className="user-collaboration-container">
-        <nav className="job-navbar">
-          <div className="job-navbar-left">
-            <form className="search-form">
+      <div className={styles.jobContainer}>
+        <nav className={styles.jobNavbar}>
+          <div className={styles.jobNavbarLeft}>
+            <form className={styles.jobSearchForm}>
               <input
                 type="text"
                 placeholder="Search by title..."
@@ -354,7 +357,7 @@ function Collaboration() {
               {/* Only show reorder button for users with permission */}
               {canReorderJobs && (
                 <button
-                  className="btn btn-secondary reorder-button"
+                  className={`btn btn-secondary ${styles.reorderButton}`}
                   type="button"
                   onClick={toggleReorderModal}
                 >
@@ -363,11 +366,11 @@ function Collaboration() {
               )}
             </form>
             {showTooltip && tooltipPosition === 'search' && (
-              <div className="job-tooltip">
+              <div className={`${styles.jobTooltip}`}>
                 <p>Use the search bar to refine your search further!</p>
                 <button
                   type="button"
-                  className="job-tooltip-dismiss"
+                  className={styles.jobTooltipDismiss}
                   onClick={dismissSearchTooltip}
                 >
                   Got it
@@ -376,8 +379,8 @@ function Collaboration() {
             )}
           </div>
 
-          <div className="job-navbar-right">
-            <select className="job-select" value={category} onChange={handleCategoryChange}>
+          <div className={styles.jobNavbarRight}>
+            <select className={styles.jobSelect} value={category} onChange={handleCategoryChange}>
               <option value="">Select from Categories</option>
               {categories.map(cat => (
                 <option key={cat} value={cat}>
@@ -386,11 +389,11 @@ function Collaboration() {
               ))}
             </select>
             {showTooltip && tooltipPosition === 'category' && (
-              <div className="job-tooltip category-tooltip">
+              <div className={`${styles.jobTooltip} ${styles.categoryTooltip}`}>
                 <p>Use the categories to refine your search further!</p>
                 <button
                   type="button"
-                  className="job-tooltip-dismiss"
+                  className={styles.jobTooltipDismiss}
                   onClick={dismissCategoryTooltip}
                 >
                   Got it
@@ -401,10 +404,10 @@ function Collaboration() {
         </nav>
 
         {showSearchResults ? (
-          <div>
-            <div className="job-queries">
+          <div className={styles.jobDetails}>
+            <div className={styles.jobQueries}>
               {searchTerm.length !== 0 || selectedCategory.length !== 0 ? (
-                <p className="job-query">
+                <p className={styles.jobQuery}>
                   Listing results for
                   {searchTerm && !selectedCategory && <strong> &apos;{searchTerm}&apos;</strong>}
                   {selectedCategory && !searchTerm && (
@@ -419,15 +422,19 @@ function Collaboration() {
                   .
                 </p>
               ) : (
-                <p className="job-query">Listing all job ads.</p>
+                <p className={styles.jobQuery}>Listing all job ads.</p>
               )}
               <button className="btn btn-secondary" type="button" onClick={handleShowSummaries}>
                 Show Summaries
               </button>
               {searchTerm && (
-                <div className="query-option btn btn-secondary " type="button">
+                <div className={`btn btn-secondary ${styles.jobQueryOption}`} type="button">
                   <span>{searchTerm}</span>
-                  <button className="cross-button" type="button" onClick={handleRemoveQuery}>
+                  <button
+                    className={styles.jobCrossButton}
+                    type="button"
+                    onClick={handleRemoveQuery}
+                  >
                     <img
                       width="30"
                       height="30"
@@ -438,9 +445,13 @@ function Collaboration() {
                 </div>
               )}
               {selectedCategory && (
-                <div className="btn btn-secondary query-option" type="button">
+                <div className={`btn btn-secondary ${styles.jobQueryOption}`} type="button">
                   {selectedCategory}
-                  <button className="cross-button" type="button" onClick={handleRemoveCategory}>
+                  <button
+                    className={styles.jobCrossButton}
+                    type="button"
+                    onClick={handleRemoveCategory}
+                  >
                     <img
                       width="30"
                       height="30"
@@ -453,9 +464,9 @@ function Collaboration() {
             </div>
 
             {jobAds.length !== 0 ? (
-              <div className="job-list">
+              <div className={styles.jobList}>
                 {jobAds.map(ad => (
-                  <div key={ad._id} className="job-ad">
+                  <div key={ad._id} className={styles.jobAd}>
                     <img
                       src={`/api/placeholder/640/480?text=${encodeURIComponent(
                         ad.category || 'Job Opening',
@@ -493,12 +504,12 @@ function Collaboration() {
                 ))}
               </div>
             ) : (
-              <div className="no-results">
+              <div className={styles.jobNoResults}>
                 <h2>No job ads found.</h2>
               </div>
             )}
 
-            <div className="pagination">
+            <div className={styles.jobPagination}>
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
                   type="button"
@@ -512,20 +523,12 @@ function Collaboration() {
             </div>
           </div>
         ) : (
-          <div className={`job-headings ${darkMode ? ' user-collaboration-dark-mode' : ''}`}>
-            <h1 className="job-head">Like to Work With Us? Apply Now!</h1>
-            <p className="job-intro"> Learn about who we are and who we want to work with!</p>
+          <div className={`${styles.jobHeadings} ${darkMode ? styles.darkMode : ''}`}>
+            <h1 className={styles.jobHead}>Like to Work With Us? Apply Now!</h1>
+            <p className={styles.jobIntro}> Learn about who we are and who we want to work with!</p>
           </div>
         )}
       </div>
-
-      {/* Reorder Modal */}
-      <JobReorderModal
-        isOpen={isReorderModalOpen}
-        toggle={toggleReorderModal}
-        onJobsReordered={handleJobsReordered}
-        darkMode={darkMode}
-      />
     </div>
   );
 }
