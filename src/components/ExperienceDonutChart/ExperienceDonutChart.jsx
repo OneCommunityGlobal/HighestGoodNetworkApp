@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import './ExperienceDonutChart.css';
 
@@ -13,6 +12,7 @@ const SEGMENT_COLORS = [
   '#8B5CF6',
   '#10B981',
 ];
+
 const EXPERIENCE_LABELS = ['0-1 years', '1-3 years', '3-5 years', '5+ years'];
 
 function Spinner() {
@@ -25,29 +25,25 @@ function Spinner() {
 }
 
 export default function ExperienceDonutChart() {
-  // filters (unapplied)
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-  // applied filters
-  const [appliedFilters, setAppliedFilters] = useState({ startDate: '', endDate: '', roles: [] });
+  const [appliedFilters, setAppliedFilters] = useState({
+    startDate: '',
+    endDate: '',
+    roles: [],
+  });
 
   const [chartData, setChartData] = useState(null);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // hover/active
   const [activeIndex, setActiveIndex] = useState(null);
   const pieRef = useRef(null);
 
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const baseURL =
-    import.meta?.env?.VITE_API_BASE_URL ||
-    process.env?.REACT_APP_API_BASE_URL ||
-    'http://localhost:4500';
 
   const hasFilters = useMemo(
     () =>
@@ -65,37 +61,27 @@ export default function ExperienceDonutChart() {
     setActiveIndex(null);
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No token found. Please log in.');
+      // ✅ Generate dynamic dummy values based on filters
+      const randomMultiplier =
+        (appliedFilters.roles?.length || 1) +
+        (appliedFilters.startDate ? 1 : 0) +
+        (appliedFilters.endDate ? 1 : 0);
 
-      const params = {};
-      if (appliedFilters.startDate) params.startDate = appliedFilters.startDate;
-      if (appliedFilters.endDate) params.endDate = appliedFilters.endDate;
-      if (appliedFilters.roles?.length) params.roles = appliedFilters.roles.join(',');
+      const dummy = EXPERIENCE_LABELS.map((label, idx) => ({
+        name: label,
+        value: Math.floor(Math.random() * 50 * randomMultiplier) + 5, // 5 to 200-ish range
+        color: SEGMENT_COLORS[idx % SEGMENT_COLORS.length],
+      }));
 
-      const res = await axios.get(`${baseURL}/api/experience-breakdown`, {
-        headers: { Authorization: token },
-        params,
-      });
+      const filtered = dummy.filter(d => d.value > 0);
+      const totalCount = filtered.reduce((sum, d) => sum + d.value, 0);
 
-      const data = Array.isArray(res.data) ? res.data : [];
-      // normalize & order by labels
-      const normalized = EXPERIENCE_LABELS.map((label, i) => {
-        const found = data.find(d => (d.experience ?? d.Experience ?? d.name) === label);
-        const count = found ? Number(found.count ?? found.value ?? 0) : 0;
-        return { name: label, value: count, color: SEGMENT_COLORS[i % SEGMENT_COLORS.length] };
-      });
-
-      const filtered = normalized.filter(d => d.value > 0);
-      const totalCount = filtered.reduce((s, d) => s + d.value, 0);
-
-      setChartData(filtered.length ? filtered : null);
+      setChartData(filtered);
       setTotal(totalCount);
-    } catch (e) {
-      console.error(e);
+    } catch {
+      setError('Failed to load dummy data');
       setChartData(null);
       setTotal(0);
-      setError(e?.response?.data?.message || e?.message || 'Error fetching data.');
     } finally {
       setLoading(false);
     }
@@ -104,9 +90,8 @@ export default function ExperienceDonutChart() {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [appliedFilters.startDate, appliedFilters.endDate, JSON.stringify(appliedFilters.roles)]);
+  }, [appliedFilters]);
 
-  // handlers
   const onRolesChange = e => {
     const next = Array.from(e.target.selectedOptions, o => o.value);
     setSelectedRoles(next);
@@ -127,13 +112,12 @@ export default function ExperienceDonutChart() {
     setAppliedFilters({ startDate: '', endDate: '', roles: [] });
   };
 
-  // Always-visible details
   const DetailsPanel = () => {
     if (!chartData || total === 0) return null;
     return (
       <div className="chart-details" aria-label="Breakdown details">
         {chartData.map((d, idx) => {
-          const pct = total ? ((d.value / total) * 100).toFixed(1) : '0.0';
+          const pct = ((d.value / total) * 100).toFixed(1);
           const isActive = activeIndex === idx;
           return (
             <div
@@ -141,7 +125,6 @@ export default function ExperienceDonutChart() {
               className={`detail-item ${isActive ? 'active' : ''}`}
               onMouseEnter={() => setActiveIndex(idx)}
               onMouseLeave={() => setActiveIndex(null)}
-              role="listitem"
             >
               <span className="detail-dot" style={{ backgroundColor: d.color }} />
               <span className="detail-name">{d.name}</span>
@@ -156,20 +139,17 @@ export default function ExperienceDonutChart() {
     );
   };
 
-  // custom tooltip
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
-    const d = payload[0]?.payload;
-    const pct = total ? ((d.value / total) * 100).toFixed(1) : '0.0';
+    const item = payload[0]?.payload;
+    const pct = ((item.value / total) * 100).toFixed(1);
     return (
-      <div className="custom-tooltip" role="dialog" aria-live="polite">
-        <p className="tooltip-content">
-          <strong>{d.name}</strong>
-          <br />
-          Count: {d.value.toLocaleString()}
-          <br />
-          Percentage: {pct}%
-        </p>
+      <div className="custom-tooltip">
+        <strong>{item.name}</strong>
+        <br />
+        Count: {item.value}
+        <br />
+        {pct}% of applicants
       </div>
     );
   };
@@ -181,7 +161,7 @@ export default function ExperienceDonutChart() {
           <h2 className="chart-title">Applicants by Experience</h2>
         </div>
 
-        <section className="filter-section" aria-label="Filters">
+        <section className="filter-section">
           <div className="filter-row">
             <div className="filter-group">
               <label htmlFor="startDate" className="filter-label">
@@ -217,10 +197,9 @@ export default function ExperienceDonutChart() {
               </label>
               <select
                 id="roles"
-                className="filter-select"
                 multiple
                 size={5}
-                aria-describedby="roles-hint"
+                className="filter-select"
                 value={selectedRoles}
                 onChange={onRolesChange}
               >
@@ -230,28 +209,14 @@ export default function ExperienceDonutChart() {
                 <option value="Junior Developer">Junior Developer</option>
                 <option value="Full Stack Developer">Full Stack Developer</option>
               </select>
-              <small id="roles-hint" className="filter-hint">
-                Hold Ctrl/Cmd to select multiple
-              </small>
             </div>
           </div>
 
           <div className="filter-actions">
-            <button
-              type="button"
-              className="btn primary"
-              onClick={applyFilters}
-              aria-label="Apply filters"
-            >
+            <button className="btn primary" onClick={applyFilters}>
               Apply
             </button>
-            <button
-              type="button"
-              className="btn ghost"
-              onClick={resetFilters}
-              aria-label="Reset filters"
-              disabled={!hasFilters && !startDate && !endDate && selectedRoles.length === 0}
-            >
+            <button className="btn ghost" onClick={resetFilters} disabled={!hasFilters}>
               Reset
             </button>
           </div>
@@ -261,24 +226,11 @@ export default function ExperienceDonutChart() {
           <div className="chart-area">
             {loading && <Spinner />}
 
-            {!loading && error && (
-              <div className="error-container" role="alert">
-                <p className="error-message">{error}</p>
-              </div>
-            )}
-
-            {!loading && !error && (!chartData || total === 0) && (
-              <div className="no-data-container">
-                <p className="no-data-message">No Data Available</p>
-                <p className="no-data-subtitle">Try adjusting your filters and click Apply.</p>
-              </div>
-            )}
-
             {!loading && !error && chartData && total > 0 && (
               <>
                 <div className="chart-canvas">
-                  <ResponsiveContainer width="100%" aspect={1} minWidth={240}>
-                    <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                  <ResponsiveContainer width="100%" aspect={1}>
+                    <PieChart>
                       <Pie
                         data={chartData}
                         cx="50%"
@@ -287,42 +239,43 @@ export default function ExperienceDonutChart() {
                         nameKey="name"
                         innerRadius="55%"
                         outerRadius="82%"
-                        paddingAngle={1.5}
                         stroke={darkMode ? '#1c2441' : '#fff'}
                         strokeWidth={3}
                         onMouseEnter={(_, idx) => setActiveIndex(idx)}
                         onMouseLeave={() => setActiveIndex(null)}
-                        onClick={(_, idx) => setActiveIndex(activeIndex === idx ? null : idx)}
                       >
-                        {chartData.map((d, i) => (
+                        {chartData.map((item, idx) => (
                           <Cell
-                            key={d.name}
-                            className="pie-cell"
-                            fill={d.color}
-                            opacity={activeIndex == null || activeIndex === i ? 1 : 0.45}
+                            key={item.name}
+                            fill={item.color}
+                            opacity={activeIndex == null || activeIndex === idx ? 1 : 0.45}
                           />
                         ))}
-                        <text
-                          x="50%"
-                          y="50%"
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          style={{
-                            fontWeight: 800,
-                            fontSize: '1rem',
-                            fill: darkMode ? '#f8fafc' : '#0f172a',
-                          }}
-                        >
-                          {total.toLocaleString()}
-                        </text>
                       </Pie>
                       <Tooltip content={<CustomTooltip />} />
+                      <text
+                        x="50%"
+                        y="50%"
+                        dominantBaseline="middle"
+                        textAnchor="middle"
+                        style={{
+                          fontWeight: 800,
+                          fontSize: '1rem',
+                          fill: darkMode ? '#f8fafc' : '#0f172a',
+                        }}
+                      >
+                        {total.toLocaleString()}
+                      </text>
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
                 <DetailsPanel />
               </>
             )}
+
+            {!loading && !error && (!chartData || total === 0) && <p>No Data Available</p>}
+
+            {!loading && error && <p className="error-message">{error}</p>}
           </div>
         </section>
       </div>
