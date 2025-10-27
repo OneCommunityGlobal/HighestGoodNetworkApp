@@ -18,10 +18,10 @@ import Userprofile from '../../components/UserProfile/UserProfile.container';
 import * as actions from '../../actions/userProfile';
 import { wrap } from 'lodash';
 
-vi.mock('../../actions/allTeamsAction.js');
-vi.mock('../../actions/userProfile.js');
-vi.mock('../../actions/team.js');
-vi.mock('../../actions/projects.js');
+jest.mock('../../actions/allTeamsAction.js');
+jest.mock('../../actions/userProfile.js');
+jest.mock('../../actions/team.js');
+jest.mock('../../actions/projects.js');
 
 const mockStore = configureMockStore([thunk]);
 describe('User profile page', () => {
@@ -37,7 +37,7 @@ describe('User profile page', () => {
       allProjects: allProjectsMock,
       allTeams: allTeamsMock,
     });
-    store.dispatch = vi.fn();
+    store.dispatch = jest.fn();
     renderWithRouterMatch(
       <Route path="/userprofile/:userId">
         {props => <Userprofile {...props} />}
@@ -281,7 +281,7 @@ describe('Non-admin user', () => {
       allProjects: allProjectsMock,
       allTeams: allTeamsMock,
     });
-    store.dispatch = vi.fn();
+    store.dispatch = jest.fn();
     renderWithRouterMatch(
       <Route path="/userprofile/:userId">
         {props => <Userprofile {...props} />}

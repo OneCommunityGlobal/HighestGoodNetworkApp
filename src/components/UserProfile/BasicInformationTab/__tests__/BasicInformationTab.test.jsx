@@ -302,7 +302,9 @@ describe('Test suite for TimeZoneDifference component ', () => {
   it('Test case 2 : Renders timezone offset when user is not self', () => {
     testProps.isUserSelf=false;
     render(<TimeZoneDifference {...testProps} />);
-    expect(screen.getByText(/[-+]?\d+ hours/)).toBeInTheDocument(); 
+    //expect(screen.getByText(/[-+]?\d+ hours/)).toBeInTheDocument(); 
+    expect(screen.getByText(/[+-]?\d{1,3}\s+hours/)).toBeInTheDocument();
+
    
 
   });
