@@ -1,12 +1,12 @@
 /* eslint-env vitest */
 
 import React from 'react';
-import { Name, Title, Email, formatPhoneNumber, Phone, TimeZoneDifference } from '../BasicInformationTab';
-import BasicInformationTab from '../BasicInformationTab';
+import BasicInformationTab, { Name, Title, Email, formatPhoneNumber, Phone, TimeZoneDifference } from '../BasicInformationTab';
+
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import mockAdminState from '__tests__/mockAdminState';
 
@@ -49,7 +49,7 @@ describe('Test Suite for Name component', () => {
     render(<Name {...testProps} />);
     expect(screen.queryByTestId('firstName')).not.toBeInTheDocument();
     expect(screen.queryByTestId('lastName')).not.toBeInTheDocument();
-    expect(screen.queryByText(testProps.userProfile.firstName+' '+testProps.userProfile.lastName)).toBeInTheDocument();
+    expect(screen.getByText(testProps.userProfile.firstName+' '+testProps.userProfile.lastName)).toBeInTheDocument();
   });
 
 
@@ -71,13 +71,13 @@ describe('Test Suite for Name component', () => {
     render(<Name {...testProps} />);
     const firstNameField=screen.queryByTestId('lastName');
     fireEvent.change(firstNameField, { target: { value: '' } });
-    expect(screen.queryByText("Last Name Can't have less than 2 characters")).toBeInTheDocument();
+    expect(screen.getByText("Last Name Can't have less than 2 characters")).toBeInTheDocument();
   });
   it('Test case 6 : Verify error message is displayed for an empty First Name', () => {
     render(<Name {...testProps} />);
     const firstNameField=screen.queryByTestId('firstName');
     fireEvent.change(firstNameField, { target: { value: '' } });
-    expect(screen.queryByText("First Name Can't be empty")).toBeInTheDocument();
+    expect(screen.getByText("First Name Can't be empty")).toBeInTheDocument();
   });
 });
 
@@ -101,7 +101,7 @@ describe('Test Suite for Title component', () => {
    testProps.canEdit = false;
    render(<Title {...testProps} />);
    expect(screen.queryByTestId('jobTitle')).not.toBeInTheDocument();
-   expect(screen.queryByText(testProps.userProfile.jobTitle)).toBeInTheDocument();
+   expect(screen.getByText(testProps.userProfile.jobTitle)).toBeInTheDocument();
  });
 
 
@@ -147,7 +147,7 @@ describe('Test Suite for Email component', () => {
    expect(screen.queryByTestId('email')).not.toBeInTheDocument();
    expect(screen.queryByText('emailPrivacy')).not.toBeInTheDocument();
    expect(screen.queryByText('emailSubscription')).not.toBeInTheDocument();
-   expect(screen.queryByText(testProps.userProfile.email)).toBeInTheDocument();
+   expect(screen.getByText(testProps.userProfile.email)).toBeInTheDocument();
  });
 
 
@@ -181,7 +181,7 @@ it('Test case 5 : Verify  if email is not displayed if privacy settings is false
   
   expect(screen.queryByText(testProps.userProfile.email)).not.toBeInTheDocument();
 
-  expect(screen.queryByText("Email is not Valid")).toBeInTheDocument();
+  expect(screen.getByText("Email is not Valid")).toBeInTheDocument();
 
 });
 
@@ -337,9 +337,9 @@ it('Test case 3 : Renders error message if the component has encountered error f
       timeZone: 'Invalid/Timezone', // Use an invalid timezone to trigger error
     },
   };
-  await act(async () => {
+ 
     render(<TimeZoneDifference {...testProps} />);
-  });
+
   
   //render(<TimeZoneDifference {...testProps} />);
   
@@ -491,8 +491,8 @@ it('Test case 4: Renders the Email component as expected  ', () => {
   expect(screen.getByText("Email")).toBeInTheDocument();// Label
   expect(screen.getByTestId("info-email")).toBeInTheDocument();// tooltip
   expect(screen.getByTestId("email")).toBeInTheDocument(); // input field
-  expect(screen.queryByText('emailPrivacy')).toBeInTheDocument(); // toggle button
-  expect(screen.queryByText('emailSubscription')).toBeInTheDocument(); // toggle button
+  expect(screen.getByText('emailPrivacy')).toBeInTheDocument(); // toggle button
+  expect(screen.getByText('emailSubscription')).toBeInTheDocument(); // toggle button
 
 });
 
@@ -507,7 +507,7 @@ it('Test case 5: Renders the Phone component as expected  ', () => {
   );
   expect(screen.getByText("Phone")).toBeInTheDocument();// Label
   //expect(screen.queryByText('ph-input-style')).toBeInTheDocument();// Toggle
-  expect(screen.queryByTestId('phoneinput')).toBeInTheDocument();
+  expect(screen.getByTestId('phoneinput')).toBeInTheDocument();
   expect(screen.getByText('phone')).toBeInTheDocument();// PhoneInput 
  
 });
@@ -550,7 +550,7 @@ it('Test case 8: Renders videoCallPreference component with non- editable field 
     </Provider>,
   );
   expect(screen.queryByTestId("collaborationPreference")).not.toBeInTheDocument();
-  expect(screen.queryByText("video")).toBeInTheDocument();//non- editable field 
+  expect(screen.getByText("video")).toBeInTheDocument();//non- editable field 
 
 });
 
@@ -591,7 +591,7 @@ it('Test case 11 : Renders all role type as options except Owner ', () => {
     </Provider>,
   );
 
-expect(screen.queryByText('Admin')).toBeInTheDocument();
+expect(screen.getByText('Admin')).toBeInTheDocument();
 expect(screen.queryByText('Owner')).not.toBeInTheDocument();
 
 });
