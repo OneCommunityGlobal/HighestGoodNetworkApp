@@ -563,38 +563,6 @@ const TeamMemberTasks = React.memo(props => {
                   {days === '1' ? 'day' : 'days'}
                 </button>
               ))}
-              <select
-                className={`m-1 mobile-view-select ${styles['circle-border']} ${
-                  darkMode ? 'box-shadow-dark' : ''
-                }`}
-                onChange={e => selectPeriod(e.target.value)}
-                value={selectedPeriod || ''}
-                title={`Timelogs submitted in the past ${selectedPeriod} days`}
-                style={{
-                  color: isTimeFilterActive
-                    ? `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : 'white'}`
-                    : `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`,
-                  backgroundColor: isTimeFilterActive
-                    ? `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`
-                    : `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : '#007BFF'}`,
-                  border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`,
-                }}
-              >
-                {Object.entries(hrsFilterBtnColorMap).map(([days, color]) => (
-                  <option
-                    key={days}
-                    value={days}
-                    style={{
-                      color,
-                      backgroundColor:
-                        selectedPeriod === days && isTimeFilterActive ? color : 'white',
-                      border: `1px solid ${color}`,
-                    }}
-                  >
-                    {`${days} ${days === '1' ? 'day' : 'days'}`}
-                  </option>
-                ))}
-              </select>
               <EditableInfoModal
                 areaName="TeamMemberTasksTimeFilterInfoPoint"
                 areaTitle="Team Member Task Time Filter"
