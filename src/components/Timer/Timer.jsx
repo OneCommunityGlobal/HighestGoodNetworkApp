@@ -409,7 +409,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
-  const renderTimeEntryForm = () => (
+  const renderTimeEntryForm = () =>
     logTimeEntryModal && (
       <TimeEntryForm
         from="Timer"
@@ -420,8 +420,7 @@ function Timer({ authUser, darkMode, isPopout }) {
         sendStop={sendStop}
         timerConnected={customReadyState === ReadyState.OPEN}
       />
-    )
-  );
+    );
 
   const renderAudioElements = () => (
     <>
@@ -486,9 +485,9 @@ function Timer({ authUser, darkMode, isPopout }) {
       </ModalHeader>
       <ModalBody className={bodyBg}>
         The user timer has been paused due to inactivity or a lost in connection to the server.
-        Please check your internet connection and refresh the page to continue. This is to
-        ensure that our resources are being used efficiently and to improve performance for all
-        of our users.
+        Please check your internet connection and refresh the page to continue. This is to ensure
+        that our resources are being used efficiently and to improve performance for all of our
+        users.
       </ModalBody>
       <ModalFooter className={bodyBg}>
         <Button
@@ -515,9 +514,7 @@ function Timer({ authUser, darkMode, isPopout }) {
       <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
         Time Complete!
       </ModalHeader>
-      <ModalBody className={bodyBg}>{`You have worked for ${
-        logHours ? `${logHours} hours` : ''
-      }${
+      <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
         logMinutes ? ` ${logMinutes} minutes` : ''
       }. Click below if you'd like to add time or Log Time.`}</ModalBody>
       <ModalFooter className={bodyBg}>
