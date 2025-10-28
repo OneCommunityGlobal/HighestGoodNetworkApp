@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import DisplayBox from './DisplayBox';
-import './DisplayBox.css';
+//import './DisplayBox.css';
+import styles from './DisplayBox.module.css';
 
 export default function PromotionsPage() {
   const [showModal, setShowModal] = useState(false);
