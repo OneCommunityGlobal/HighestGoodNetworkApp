@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import styles from './EventManagementPage.module.css';
-import { getEvent, updateEventDescription, updateEventMeta } from '@/api/events';
+import { getEvent, updateEventDescription, updateEventMeta } from '../../../../../api/events';
 import EventInfoCard from './components/EventInfoCard';
 import Tabs from './components/Tabs';
 import DescriptionEditor from './components/DescriptionEditor';

@@ -1,5 +1,5 @@
-import httpService from '~/services/httpService';
-import { ENDPOINTS } from '~/utils/URL';
+import httpService from '../services/httpService';
+import { ENDPOINTS } from '../utils/URL';
 
 export async function getEvent(eventId) {
   const res = await httpService.get(`${ENDPOINTS.EVENTS}/${eventId}`);
