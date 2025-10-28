@@ -275,15 +275,15 @@ AssignAtomModal.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  isModalOpen: state.atomBadge?.isModalOpen || false,
-  studentId: state.atomBadge?.studentId,
-  studentName: state.atomBadge?.studentName,
-  availableAtoms: state.atomBadge?.availableAtoms || [],
-  selectedAtoms: state.atomBadge?.selectedAtoms || [],
-  note: state.atomBadge?.note || '',
-  isLoadingAtoms: state.atomBadge?.isLoadingAtoms || false,
-  isSubmitting: state.atomBadge?.isSubmitting || false,
-  submitError: state.atomBadge?.submitError,
+  isModalOpen: state.atom?.isModalOpen || false,
+  studentId: state.atom?.studentId,
+  studentName: state.atom?.studentName,
+  availableAtoms: state.atom?.availableAtoms || [],
+  selectedAtoms: state.atom?.selectedAtoms || [],
+  note: state.atom?.note || '',
+  isLoadingAtoms: state.atom?.isLoadingAtoms || false,
+  isSubmitting: state.atom?.isSubmitting || false,
+  submitError: state.atom?.submitError,
   darkMode: state.theme?.darkMode || false,
 });
 

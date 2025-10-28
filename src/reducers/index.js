@@ -182,7 +182,7 @@ const localReducers = {
   jobApplication: jobApplicationReducer,
 
   // education portal
-  atomBadge: atomBadgeReducer,
+  atom: atomReducer,
 };
 
 const sessionReducers = {
