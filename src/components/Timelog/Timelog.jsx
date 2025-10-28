@@ -6,6 +6,8 @@ import { useParams, useLocation } from 'react-router-dom';
 import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
 import htmlToPdfmake from 'html-to-pdfmake';
+import tipStyles from './TimeEntryTooltip.module.css';
+import TooltipPortal from "./TooltipPortal";
 import {
   Container,
   Row,
@@ -31,6 +33,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import './Timelog.css';
+import styles from './followup-modal.module.css';
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
@@ -127,7 +130,7 @@ const escapeHtml = s =>
 
 // Return the raw period entries respecting the same filter as the UI
 const getFilteredPeriodData = () => {
-  const data = Array.isArray(timeEntries?.period) ? [...timeEntries.period] : [];
+  const data = Array.isArray(timeEntries?.period) ? timeEntries.period.filter(entryBelongsToDisplayed) : [];
   if (!timeLogState.projectsOrTasksSelected?.length || timeLogState.projectsOrTasksSelected.includes('all')) {
     return data;
   }
@@ -324,6 +327,13 @@ const downloadPeriodPdf = () => {
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
+  const displayedId = displayUserId || displayUserProfile?._id;
+
+  const entryBelongsToDisplayed = (e) => {
+    const pid = e?.personId ?? e?.userId ?? e?.person?._id ?? e?.person?._id ?? e?.person?._id;
+    return String(pid) === String(displayedId);
+  };
+  
   const tabMapping = {
     '#tasks': 0,
     '#currentWeek': 1,
@@ -398,6 +408,7 @@ const generateAllTimeEntryItems = () => {
 
 
   const generateTimeEntries = (data, tab) => {
+    data = (Array.isArray(data) ? data : []).filter(entryBelongsToDisplayed);
     if (!timeLogState.projectsOrTasksSelected.includes('all')) {
       // eslint-disable-next-line no-param-reassign
       data = data.filter(
@@ -542,7 +553,9 @@ const generateAllTimeEntryItems = () => {
   };
 
   const calculateTotalTime = (data, isTangible) => {
-    const filteredData = data.filter(entry => entry.isTangible === isTangible);
+    const filteredData = (Array.isArray(data) ? data : [])
+    .filter(entryBelongsToDisplayed)
+    .filter(entry => entry.isTangible === isTangible);
     const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };
@@ -855,61 +868,69 @@ return (
                         <div className="tasks-and-timelog-header-add-time-div mt-2">
                           <div>
                             <div className="followup-tooltip-container">
+                              
                               <Button
                                 className="btn btn-success"
                                 onClick={toggle}
                                 style={darkMode ? boxStyleDark : boxStyle}
                               >
                                 Add Intangible Time Entry
-                                <div className="followup-tooltip-button">
-                                  <i
-                                    className="fa fa-info-circle"
-                                    data-tip
-                                    data-for="timeEntryTip"
-                                    aria-hidden="true"
-                                    title=""
-                                  />
-                                  <div className="followup-tooltip">
-                                    Clicking this button only allows for “Intangible Time” to be
-                                    <u>
-                                      added to your time log. You can manually log Intangible Time,
-                                      but it does not count towards your weekly time commitment.
-                                    </u>
-                                    <br />
-                                    <br />
-                                    “Tangible Time” is the default for logging time using the timer
-                                    at the top of the app. It represents all work done on assigned
-                                    action items and is what counts towards a person’s weekly
-                                    volunteer time commitment.
-                                    <br />
-                                    <br />
-                                    The only way for a volunteer to log Tangible Time is by using
-                                    the clock in/out timer.
-                                    <br />
-                                    <br />
-                                    Intangible Time is almost always used only by the management
-                                    team. It is used for weekly Monday night management team calls,
-                                    monthly management team reviews and Welcome Team Calls, and
-                                    non-action-item-related research, classes, and other learning,
-                                    meetings, etc., that benefit or relate to the project but are
-                                    not related to a specific action item in the{' '}
+                                <TooltipPortal
+                                darkMode={darkMode}
+                                  maxWidth={720}
+                                  trigger={<i className="fa fa-info-circle ml-2" aria-label="More info" />}
+                                >
+                                  {/* your same tooltip HTML goes here; keep the stopPropagation on links if you like */}
+                                  <div
+                                  style={{
+                                    fontSize: "14px",
+                                    lineHeight: "1.5",
+                                    textAlign: "left",
+                                    textColor: darkMode ? "#ffffff" : "#000000",
+                                  }}
+                                >
+                                  <p>
+                                    Clicking this button only allows for <strong>“Intangible Time”</strong> to be
+                                    added to your time log. You can manually log Intangible Time, but it does not
+                                    count towards your weekly time commitment.
+                                  </p>
+
+                                  <p>
+                                    <strong>“Tangible Time”</strong> is the default for logging time using the timer
+                                    at the top of the app. It represents all work done on assigned action items and
+                                    counts towards a person’s weekly volunteer time commitment.
+                                  </p>
+
+                                  <p>
+                                    The only way for a volunteer to log Tangible Time is by using the clock in/out
+                                    timer.
+                                  </p>
+
+                                  <p>
+                                    Intangible Time is almost always used only by the management team. It is used for
+                                    weekly Monday night management team calls, monthly management team reviews and
+                                    Welcome Team Calls, and non-action-item-related research, classes, and other
+                                    learning or meetings that benefit or relate to the project but are not tied to a
+                                    specific action item in the{" "}
                                     <a
                                       href="https://www.tinyurl.com/oc-os-wbs"
-                                      onClick={e => e.stopPropagation()}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: "#1d4ed8", textDecoration: "underline" }}
                                     >
-                                      One Community Work Breakdown Structure.
-                                    </a>
-                                    <br />
-                                    <br />
-                                    Intangible Time may also be logged by a volunteer when in the
-                                    field or for other reasons when the timer was not able to be
-                                    used. In these cases, the volunteer will use this button to log
-                                    time as “Intangible Time” and then request that an Admin
-                                    manually change the log from Intangible to Tangible.
-                                    <br />
-                                    <br />
-                                  </div>
+                                      One Community Work Breakdown Structure
+                                    </a>.
+                                  </p>
+
+                                  <p>
+                                    Intangible Time may also be logged by a volunteer when in the field or for other
+                                    reasons when the timer was not able to be used. In these cases, the volunteer
+                                    will use this button to log time as “Intangible Time” and then request that an
+                                    Admin manually change the log from Intangible to Tangible.
+                                  </p>
                                 </div>
+
+                                </TooltipPortal>
                               </Button>
                             </div>
                           </div>
