@@ -345,6 +345,8 @@ function Timer({ authUser, darkMode, isPopout }) {
     // Ignore TIMELOG_EVENT messages - they're for the timestamps tab, not the timer
     if (lastJsonMessage && lastJsonMessage.type === 'TIMELOG_EVENT') {
       return;
+    }
+    
     // Handle explicit week close pause action messages
     if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
       if (running) {
