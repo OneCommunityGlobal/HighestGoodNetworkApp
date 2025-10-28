@@ -84,7 +84,7 @@ export default function DisplayBox({ onClose }) {
                   {promotion.weeklyPRs.map((pr, i) => (
                     <span
                       key={`${promotion.prReviewer}-${pr.week}-${i}`}
-                      className={`${styles.prCountBadge} ${styles[`color${i % 5}`]}`}
+                      className={[styles.prCountBadge, styles[`color${i % 5}`]].join(' ')}
                     >
                       {pr.prCount}
                     </span>
