@@ -1,16 +1,23 @@
-// If you already use a calendar lib, swap this for it.
-// This simplified version renders a clickable list of available dates.
-
-export default function CalendarView({ dates, selected, onSelect }) {
-  if (!dates || !dates.length) return <div>No dates available.</div>;
+export default function CalendarView({
+  dates,
+  selected,
+  onSelect,
+  highlightedDates,
+  currentMonth,
+  onPickDate,
+}) {
+  const list = dates ?? highlightedDates ?? [];
+  const sel = selected ?? null;
+  const pick = onSelect ?? onPickDate ?? (() => {});
+  if (!list || !list.length) return <div>No dates available.</div>;
   return (
     <div style={{ display: 'grid', gap: 8 }}>
-      {dates.map(d => {
-        const isSel = d === selected;
+      {list.map(d => {
+        const isSel = d === sel;
         return (
           <button
             key={d}
-            onClick={() => onSelect(d)}
+            onClick={() => pick(d)}
             style={{
               textAlign: 'left',
               padding: '8px 10px',

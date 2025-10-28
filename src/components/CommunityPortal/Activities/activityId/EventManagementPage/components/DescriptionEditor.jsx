@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react';
-import styles from '../EventOrganizerPage.module.css';
+import styles from '../EventManagementPage.module.css';
 
-export default function DescriptionEditor({ initialValue, onSave, onUpload }) {
+export default function DescriptionEditor({ initialValue, onSave, onUpload, onSubmit }) {
+  // support both onSave (older) and onSubmit (parent currently passes onSubmit)
+  const submitFn = onSave ?? onSubmit;
   const [val, setVal] = useState(initialValue);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef(null);
@@ -9,7 +11,7 @@ export default function DescriptionEditor({ initialValue, onSave, onUpload }) {
   async function handleSave() {
     setBusy(true);
     try {
-      await onSave(val);
+      if (submitFn) await submitFn(val);
     } finally {
       setBusy(false);
     }
@@ -20,10 +22,14 @@ export default function DescriptionEditor({ initialValue, onSave, onUpload }) {
     if (!file) return;
     setBusy(true);
     try {
-      const res = await onUpload(file);
-      if (res && res.url) {
-        const newVal = `${val}\n![media](${res.url})`;
-        setVal(newVal);
+      if (onUpload) {
+        const res = await onUpload(file);
+        if (res && res.url) {
+          const newVal = `${val}\n![media](${res.url})`;
+          setVal(newVal);
+        }
+      } else {
+        // no onUpload handler provided; skip upload
       }
     } finally {
       setBusy(false);
