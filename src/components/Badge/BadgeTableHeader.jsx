@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { UncontrolledTooltip } from 'reactstrap';
+import styles from './Badge.module.css';
+
 function BadgeTableHeader({ darkMode }) {
   return (
     <tr className={darkMode ? 'bg-space-cadet' : ''}>
@@ -8,22 +10,29 @@ function BadgeTableHeader({ darkMode }) {
       <th className="d-xl-table-cell d-none">Description</th>
       <th>Type</th>
       <th className="d-xl-table-cell d-none">Details</th>
-      <th>Ranking{' '}
-        <i className="fa fa-info-circle" id="SortRankingInfo" style={{ marginLeft: '5px' }} />
+      <th>
+        Ranking{' '}
+        <i
+          className="fa fa-info-circle"
+          id="SortRankingInfo"
+          aria-label="Ranking Info"
+          data-testid="SortRankingInfo"
+          style={{ marginLeft: '5px' }}
+        />
         <UncontrolledTooltip
           placement="right"
           target="SortRankingInfo"
           style={{ backgroundColor: '#666', color: '#fff' }}
         >
-          <p className="badge_info_icon_text">
+          <p className={styles.badge_info_icon_text}>
             Sort the number by ascending or descending order. The lower the number (other than zero)
             the higher the badge ranking.
           </p>
-          <p className="badge_info_icon_text">
+          <p className={styles.badge_info_icon_text}>
             Note that 0 is treated as the largest number (thus the lowest ranking). When no number
             is specified for the ranking field, the default value is 0.
           </p>
-          <p className="badge_info_icon_text">
+          <p className={styles.badge_info_icon_text}>
             All badges of the same number in ranking sort alphabetically by their names.
           </p>
         </UncontrolledTooltip>

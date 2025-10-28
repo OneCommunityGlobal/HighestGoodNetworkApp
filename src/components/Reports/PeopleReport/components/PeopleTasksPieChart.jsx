@@ -71,7 +71,9 @@ export function PeopleTasksPieChart({ darkMode }) {
           <PieChart
             pieChartId="tasksPieChart"
             darkMode={darkMode}
-            tasksData={tasksWithLoggedHoursById}
+            data={tasksWithLoggedHoursById}
+            tasksData={tasksLegend}
+            projectsData={hoursLoggedToProjectsOnly}
             height={tasksHeight}     // pass down
           />
         </div>

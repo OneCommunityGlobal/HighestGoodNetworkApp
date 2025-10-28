@@ -1,6 +1,7 @@
 /* eslint-disable*/
 import { Component } from 'react';
-import styles from './PeopleReport.module.css';
+import '../../Teams/Team.css';
+import './PeopleReport.css';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
@@ -23,6 +24,7 @@ import PeopleTableDetails from '../PeopleTableDetails';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
+import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement'
 
@@ -343,7 +345,7 @@ class PeopleReport extends Component {
       }
       if (props.infringements.length > 0) {
         props.infringements.map((current, index) => (
-          <tr className={styles.teams__tr} key={index}>
+          <tr className="teams__tr" key={index}>
             <td>{index + 1}</td>
             <td>{current.date}</td>
             <td>{current.description}</td>
@@ -483,23 +485,23 @@ class PeopleReport extends Component {
 
     return (
 
-      <div className={`${styles.containerPeopleWrapper} ${darkMode ? styles.bgOxfordBlue : ''}`}>
-        <div className={`${styles.peopleReportFlexLayout}`}>
+      <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <div className="people-report-flex-layout" >
 
-          <div xs="12" md="9" lg="9" className={`${styles.peopleReportLeft}`} >
+          <div xs="12" md="9" lg="9" className="people-report-left" >
             <ReportPage darkMode={darkMode}>
 
 
-              <div className={`${styles.peopleReportTimeLogsWrapper}`} 
+              <div className={`people-report-time-logs-wrapper`} 
               // style={boxCount === 3 ? { height: '68vw' } : { width: '100%' }}
               >
                 <ReportPage.ReportBlock
                   firstColor="#ff5e82"
                   secondColor="#e25cb2"
-                  className={styles.peopleReportTimeLogBlock}
+                  className="people-report-time-log-block"
                   darkMode={darkMode}
                 >
-                  <h3 className={styles.textLight}>{weeklycommittedHours}</h3>
+                  <h3 className="text-light">{weeklycommittedHours}</h3>
                   <p>Weekly Committed Hours</p>
                 </ReportPage.ReportBlock>
 
@@ -508,29 +510,29 @@ class PeopleReport extends Component {
                   <ReportPage.ReportBlock
                     firstColor="#b368d2"
                     secondColor="#831ec4"
-                    className={styles.peopleReportTimeLogBlock}
+                    className="people-report-time-log-block"
                     darkMode={darkMode}
                   >
-                    <h3 className={styles.textLight}>{tangibleHoursReportedThisWeek}</h3>
+                    <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
                     <p>Hours Logged This Week</p>
                   </ReportPage.ReportBlock>
                 )}
                 <ReportPage.ReportBlock
                   firstColor="#64b7ff"
                   secondColor="#928aef"
-                  className={styles.peopleReportTimeLogBlock}
+                  className="people-report-time-log-block"
                   darkMode={darkMode}
                 >
-                  <h3 className={styles.textLight}>{infringements.length}</h3>
+                  <h3 className="text-light">{infringements.length}</h3>
                   <p>Blue squares</p>
                 </ReportPage.ReportBlock>
                 <ReportPage.ReportBlock
                   firstColor="#ffdb56"
                   secondColor="#ff9145"
-                  className={styles.peopleReportTimeLogBlock}
+                  className="people-report-time-log-block"
                   darkMode={darkMode}
                 >
-                  <h3 className={styles.textLight}>{totalTangibleHrsRound}</h3>
+                  <h3 className="text-light">{totalTangibleHrsRound}</h3>
                   <p>Total Hours Logged</p>
                 </ReportPage.ReportBlock>
               </div>
@@ -539,18 +541,18 @@ class PeopleReport extends Component {
 
               <PeopleTasksPieChart darkMode={darkMode} />
 
-              <div className={`${styles.mobilePeopleTable}`}>
+              <div className="mobile-people-table">
                 <ReportPage.ReportBlock darkMode={darkMode}>
                   {this.state.isLoading ? (
                     <p
-                      className={`${darkMode ? styles.textLight : ''}
+                      className={`${darkMode ? 'text-light' : ''}
                    d-flex align-items-center flex-row justify-content-center`}
                     >
                       Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
                     </p>
                   ) : activeTasks.length > 0 ? (
                     <>
-                      <div className={`intro_date ${darkMode ? styles.textLight : ''}`}>
+                      <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
                         <h4>Tasks contributed</h4>
                       </div>
                       <PeopleDataTable />
@@ -558,8 +560,8 @@ class PeopleReport extends Component {
                   ) : (
                     <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
                   )}
-                  <div className={`${styles.infringementContainer}`}>
-                    <div className={`${styles.infringementContainerInner}`}>
+                  <div className="Infringementcontainer">
+                    <div className="InfringementcontainerInner">
                       <UserProject userProjects={userProjects} />
                       <Infringements
                         infringements={infringements}
@@ -567,10 +569,10 @@ class PeopleReport extends Component {
                         toDate={toDate}
                         timeEntries={timeEntries}
                       />
-                      <div className={`${styles.visualizationDiv}`}>
+                      <div className="visualizationDiv">
                         <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
                       </div>
-                      <div className={`${styles.visualizationDiv}`}>
+                      <div className="visualizationDiv">
                         <InfringementsViz
                           infringements={infringements}
                           fromDate={fromDate}
@@ -578,15 +580,15 @@ class PeopleReport extends Component {
                           darkMode={darkMode}
                         />
                       </div>
-                      <div className={`${styles.visualizationDivRow}`}>
-                        <div className={`${styles.badgeSummaryDiv}`}>
+                      <div className="visualizationDivRow">
+                        <div className="BadgeSummaryDiv">
                           <BadgeSummaryViz
                             authId={auth.user.userid}
                             userId={match.params.userId}
                             badges={userProfile.badgeCollection}
                           />
                         </div>
-                        <div className={`${styles.badgeSummaryPreviewDiv}`}>
+                        <div className="BadgeSummaryPreviewDiv">
                           <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
                         </div>
                       </div>
@@ -643,7 +645,7 @@ class PeopleReport extends Component {
           )} */}
             </ReportPage>
           </div>
-          <div className={`${styles.peopleReportRight} ${darkMode ? styles.bgOxfordBlue : ''}`} xs="12" md="3" lg="3">
+          <div className={`people-report-right ${darkMode ? 'bg-oxford-blue' : ''}`} xs="12" md="3" lg="3">
             <ReportPage.ReportHeader
               src={profilePic}
               avatar={profilePic ? undefined : <FiUser />}
@@ -653,12 +655,12 @@ class PeopleReport extends Component {
 
               <div
                 // style={{ minHeight: '200px' }}
-                className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
+                className={`report-stats ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
               >
                 <p>
                   <Link to={`/userProfile/${_id}`}
                     title="View Profile"
-                    className={`${darkMode ? `${styles.textLight} ${styles.fontWeightBold}` : ''}`}
+                    className={darkMode ? 'text-light font-weight-bold' : ''}
                     style={{ fontSize: "24px" }}>
                     {firstName} {lastName}
                   </Link>
@@ -667,18 +669,21 @@ class PeopleReport extends Component {
                 <p>Title: {jobTitle}</p>
 
                 {/* {endDate ? ( */}
-                <div className={styles.rehireable}>
+                <div className="rehireable">
                   <Checkbox
                     value={isRehireable}
                     onChange={() => this.setRehireable(!isRehireable)}
                     label="Rehireable"
                     darkMode={darkMode}
-                    className={`${styles.reportStats} ${darkMode ? `${styles.bgYinmnBlue} ${styles.textLight}` : ''}`}
-                    backgroundColorCN={darkMode ? styles.bgYinmnBlue : ""}
-                    textColorCN={darkMode ? styles.textLight : ""}
+                    backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
+                    textColorCN={darkMode ? "text-light" : ""}
                   />
                 </div>
-                <div className={styles.dateInfo}>
+                {/* ) : (
+              ''
+            )} */}
+
+                <div className="stats">
                   <div>
                     <h4>{formatDate(startDate)}</h4>
                     <p>Start Date</p>
@@ -687,9 +692,26 @@ class PeopleReport extends Component {
                     <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
                     <p>End Date</p>
                   </div>
+                  {bioStatus ? (
+                    <div>
+                      <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
+                      {authRole === 'Administrator' || authRole === 'Owner' ? (
+                        <ToggleSwitch
+                          fontSize="13px"
+                          fontColor="#007BFF"
+                          switchType="bio"
+                          state={bioStatus}
+                          /* eslint-disable-next-line no-use-before-define */
+                          handleUserProfile={bio => onChangeBioPosted(bio)}
+                        />
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
               </div>
             </ReportPage.ReportHeader>
+
+
           </div >
         </div>
       </div>

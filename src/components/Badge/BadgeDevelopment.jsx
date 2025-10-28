@@ -5,7 +5,7 @@ import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import BadgeTypes from './BadgeTypes';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
 import '../Header/DarkMode.css';
-import { matches } from 'lodash';
+import styles from './Badge.module.css';
 
 function BadgeDevelopment(props) {
   const { darkMode, allBadgeData = [] } = props;
@@ -46,14 +46,14 @@ function BadgeDevelopment(props) {
   return (
     <div className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
       <Button
-        className="btn--dark-sea-green"
+        className={styles['btn--dark-sea-green']}
         onClick={toggle}
         style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
       >
         Create New Badge
       </Button>
       <Button
-        className="btn--dark-sea-green"
+        className={styles['btn--dark-sea-green']}
         onClick={toggleFilters}
         style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
       >

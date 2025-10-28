@@ -5,14 +5,11 @@ body {
   padding: 0;
 }
 
+
+
 .dashboardContainer {
   padding: 16px 20px 48px;
   background: #faf9fb;
-}
-
-.darkContainer {
-  background: #1B2A41;
-  color: #fff;
 }
 
 .dashboardHeader {
@@ -20,17 +17,12 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
-  padding: 0 15px;
 }
 
 .title {
   font-size: 26px;
   font-weight: 700;
   margin: 0;
-}
-
-.darkText {
-  color: #fff;
 }
 
 .backBtn {
@@ -41,35 +33,21 @@ body {
   padding: 6px 12px;
 }
 
-.darkBackBtn {
-  background: #3A506B;
-  color: #fff;
-}
-
 .filterBar {
   background: #fff;
   border: 1px solid #ece7f4;
   border-radius: 14px;
   padding: 14px 16px;
+  margin-bottom: 18px;
   display: grid;
   grid-template-columns: auto 1fr auto;
   gap: 12px 16px;
   align-items: center;
-  margin: 0 15px 18px 15px;
-}
-
-.darkFilterBar {
-  background: #1C2541;
-  border-color: #225163;
 }
 
 .filterLabel {
   font-size: 12px;
   color: #666;
-}
-
-.darkFilterLabel {
-  color: #6C757D;
 }
 
 .categoryGroup {
@@ -90,12 +68,8 @@ body {
   font-weight: 500;
 }
 
-.darkFilterBtn {
-  background: #225163 !important;
-  border-color: #225163 !important;
-}
-
 .filterBtn:hover {
+
   color: #fff !important;
 }
 
@@ -126,29 +100,19 @@ body {
   color: #fff !important;
 }
 
+
+
+
+
 /* Dropdown menu + items */
 .dropdownMenu {
   border-radius: 10px;
   padding: 4px 0;
 }
 
-.darkDropdownMenu {
-  background: #1C2541;
-  border-color: #225163;
-}
-
 .dropdownItem {
   font-size: 14px;
   padding: 6px 14px;
-}
-
-.darkDropdownItem {
-  color: #fff;
-}
-
-.darkDropdownItem:hover {
-  background: #3A506B;
-  color: #fff;
 }
 
 .dropdownItem:hover {
@@ -167,7 +131,7 @@ body {
 }
 
 .section {
-  margin: 0 15px 14px 15px;
+  margin-bottom: 14px;
 }
 
 .sectionSummary {
@@ -176,10 +140,6 @@ body {
   font-weight: 600;
   font-size: 18px;
   padding: 10px 6px;
-}
-
-.darkSectionSummary {
-  color: #fff;
 }
 
 /* caret */
@@ -196,20 +156,10 @@ body {
   padding: 14px;
 }
 
-.darkSectionBody {
-  background: #1C2541;
-  border-color: #225163;
-}
-
 .graphCard {
   border: 1px solid #eee;
   border-radius: 12px;
   min-height: 220px;
-}
-
-.darkCard {
-  background: #1C2541;
-  border-color: #225163;
 }
 
 .graphTitle {
@@ -228,22 +178,12 @@ body {
   background: #f6f6f8;
 }
 
-.darkMetricPill {
-  background: #3A506B;
-  border-color: #225163;
-  color: #fff;
-}
-
 .graphPlaceholder {
   height: 160px;
   border: 1px dashed #c9c9d4;
   border-radius: 10px;
   display: grid;
   place-items: center;
-}
-
-.darkPlaceholder {
-  border-color: #3A506B;
 }
 
 .placeholderText {

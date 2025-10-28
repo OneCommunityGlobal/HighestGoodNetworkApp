@@ -7,32 +7,22 @@ import { faCircle } from '@fortawesome/free-solid-svg-icons';
 import moment from 'moment';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-import styles from './Warnings.module.css';
 
 const colors = {
   blue: 'blue',
   red: 'red',
   yellow: '#ffc107',
 };
-function WarningIcon({
-  userProfileModal,
-  id,
-  color,
-  date: dateAssigned,
-  warningText,
-  handleShowWarningModal,
-  numberOfWarnings,
-  canIssueTrackingWarnings,
-  handleWarningIconClicked,
-}) {
-  // const {
-  //   id,
-  //   color,
-  //   date: dateAssigned,
-  //   warningText,
-  //   handleModalTriggered,
-  //   numberOfWarnings,
-  // } = props;
+function WarningIcon(props) {
+  const {
+    id,
+    color,
+    date: dateAssigned,
+    warningText,
+    handleModalTriggered,
+    numberOfWarnings,
+    canIssueTrackingWarnings,
+  } = props;
 
   const btnColor = color ? colors[color] : 'white';
 
@@ -48,15 +38,15 @@ function WarningIcon({
     const warningDetails = { todaysDate, id, colorAssigned, warningText };
 
     if (color === 'blue' || color === 'red' || color === 'yellow') {
-      handleShowWarningModal({ id, deleteWarning: true, warningDetails });
+      handleModalTriggered({ id, deleteWarning: true });
       return;
     }
     if (numberOfWarnings >= 2) {
-      handleShowWarningModal({ id, deleteWarning: false, displayModal: true, warningDetails });
+      handleModalTriggered({ id, deleteWarning: false, displayModal: true, warningDetails });
       return;
     }
 
-    handleWarningIconClicked({ id, colorAssigned, todaysDate, warningText });
+    props.handleWarningIconClicked({ id, colorAssigned, todaysDate, warningText });
   };
 
   const popover = (
@@ -66,33 +56,24 @@ function WarningIcon({
     </Popover>
   );
 
-  const renderIcon = (
-    <FontAwesomeIcon
-      style={{
-        color: btnColor,
-        border: '1px solid black',
-        borderRadius: '50%',
-        width: '10px',
-        height: '10px',
-        margin: '0em 0.175em',
-        cursor: userProfileModal ? 'not-allowed' : 'pointer',
-      }}
-      id={id}
-      onClick={userProfileModal ? null : () => handleIssueWarning(id)}
-      icon={faCircle}
-      data-testid="icon"
-    />
-  );
-
   return (
-    <div className={`${styles['warning-icon']}`}>
-      {dateAssigned ? (
-        <OverlayTrigger placement="top" delay={{ show: 100, hide: 250 }} overlay={popover}>
-          {renderIcon}
-        </OverlayTrigger>
-      ) : (
-        renderIcon
-      )}
+    <div className="warning-icon">
+      <OverlayTrigger placement="top" delay={{ show: 100, hide: 250 }} overlay={popover}>
+        <FontAwesomeIcon
+          style={{
+            color: btnColor,
+            border: '1px solid black',
+            borderRadius: '50%',
+            width: '10px',
+            height: '10px',
+            margin: '0em 0.175em',
+          }}
+          id={id}
+          onClick={() => handleIssueWarning(id)}
+          icon={faCircle}
+          data-testid="icon"
+        />
+      </OverlayTrigger>
     </div>
   );
 }

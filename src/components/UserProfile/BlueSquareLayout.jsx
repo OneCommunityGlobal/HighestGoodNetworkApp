@@ -31,16 +31,13 @@ const BlueSquareLayout = ({
   const [showExplanation, setShowExplanation] = useState(false);
   const [showEmailBCCModal, setShowEmailBCCModal] = useState(false);
   const hasBlueSquareEmailBCCRolePermission = user.role === 'Owner';
-  const [selectedRequest, setSelectedRequest] = useState(null);
 
-  const handleOpen = (request = null) => {
-    setSelectedRequest(request);
+  const handleOpen = () => {
     setShow(true);
   };
 
   const handleClose = () => {
     setShow(false);
-    setSelectedRequest(null);
   };
 
   // This handler is used for Explanation Modal, that open when <a>Click to learn why </a> is clicked
@@ -105,7 +102,7 @@ const BlueSquareLayout = ({
               {allRequests[userProfile._id]?.length > 0 && (
                 <Button
                   variant="primary"
-                  onClick={() => handleOpen(null)}
+                  onClick={handleOpen}
                   className="w-100 mt-3"
                   size="md"
                   style={darkMode ? boxStyleDark : boxStyle}
@@ -118,7 +115,7 @@ const BlueSquareLayout = ({
             <>
               <Button
                 variant="primary"
-                onClick={() => handleOpen(null)}
+                onClick={handleOpen}
                 className="w-100"
                 size="md"
                 style={darkMode ? boxStyleDark : boxStyle}
@@ -188,7 +185,6 @@ const BlueSquareLayout = ({
               canManageTimeOffRequests={canManageTimeOffRequests}
               checkIfUserCanScheduleTimeOff={checkIfUserCanScheduleTimeOff}
               darkMode={darkMode}
-              selectedRequest={selectedRequest}
             />
           </Modal>
         )}

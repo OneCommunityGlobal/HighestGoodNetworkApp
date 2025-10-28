@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import BadgeTableFilter from '~/components/Badge/BadgeTableFilter';
 
@@ -46,9 +46,10 @@ describe('BadgeTableFilter component', () => {
       type: '',
       order: '',
     };
-    const { container } = renderComponent(mockData);
-    const nameElement = container.querySelector('#search_badge_name_search');
-    expect(nameElement.value).toBe('badge');
+    renderComponent(mockData);
+    // There are two textboxes, the first is for name
+    const textboxes = screen.getAllByRole('textbox');
+    expect(textboxes[0].value).toBe('badge');
   });
   it('Check description box', () => {
     const mockData = {
@@ -57,9 +58,10 @@ describe('BadgeTableFilter component', () => {
       type: '',
       order: '',
     };
-    const { container } = renderComponent(mockData);
-    const descriptionElement = container.querySelector('#search_badge_description_search');
-    expect(descriptionElement.value).toBe('personal record');
+    renderComponent(mockData);
+    // There are two textboxes, the second is for description
+    const textboxes = screen.getAllByRole('textbox');
+    expect(textboxes[1].value).toBe('personal record');
   });
   it('Check type dropdown', () => {
     const mockData = {
@@ -68,12 +70,13 @@ describe('BadgeTableFilter component', () => {
       type: 'Personal Max',
       order: '',
     };
-    const { container } = renderComponent(mockData);
-    const typeElement = container.querySelector('#search_badge_types_search');
-
+    renderComponent(mockData);
+    // There are two comboboxes, the first is for type
+    const comboboxes = screen.getAllByRole('combobox');
+    const typeElement = comboboxes[0];
     expect(typeElement.value).toBe('Personal Max');
     Array.from(typeElement.options).forEach(option => {
-      if (option.value == 'Personal Max') {
+      if (option.value === 'Personal Max') {
         expect(option.selected).toBe(true);
       } else {
         expect(option.selected).toBe(false);
@@ -87,19 +90,20 @@ describe('BadgeTableFilter component', () => {
       type: '',
       order: 'Descending',
     };
-    const { container } = renderComponent(mockData);
-    const orderElement = container.querySelector('#search_badge_ranking_sort');
-
+    renderComponent(mockData);
+    // There are two comboboxes, the second is for ranking
+    const comboboxes = screen.getAllByRole('combobox');
+    const orderElement = comboboxes[1];
     expect(orderElement.value).toBe('Descending');
     Array.from(orderElement.options).forEach(option => {
-      if (option.value == 'Descending') {
+      if (option.value === 'Descending') {
         expect(option.selected).toBe(true);
       } else {
         expect(option.selected).toBe(false);
       }
     });
     expect(screen.getByText('Descending')).toBeInTheDocument();
-    expect(screen.getByText('Ascending')).not.toBeInTheDocument;
+    expect(screen.getByText('Ascending')).toBeInTheDocument();
   });
   it('Check if reset filter button works properly', () => {
     const mockData = {

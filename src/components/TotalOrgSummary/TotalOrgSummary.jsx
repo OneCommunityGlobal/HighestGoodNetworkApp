@@ -823,7 +823,7 @@ ${
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Work and Role Distribution">
+        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
           <Row>
             <Col lg={{ size: 7 }}>
               <div
@@ -870,7 +870,7 @@ ${
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Teams and Blue Squares">
+        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
           <Row>
             <Col lg={{ size: 6 }}>
               <div

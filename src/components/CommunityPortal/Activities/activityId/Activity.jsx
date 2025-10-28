@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import CommentSection from './CommentSection/CommentSection';
-import './Activity.module.css';
+import './Activity.css';
 
 const data = {
   eventName: 'Event Name',

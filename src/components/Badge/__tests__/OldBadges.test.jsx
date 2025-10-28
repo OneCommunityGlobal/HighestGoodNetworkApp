@@ -40,24 +40,23 @@ describe('Old Badges component', () => {
   });
 
   it('shows and hides tooltip correctly', async () => {
-    const { container } = render(
-      <OldBadges personalBestMaxHrs={25} badges={badges} darkMode={true} />,
-    );
+    render(<OldBadges personalBestMaxHrs={25} badges={badges} darkMode={true} />);
 
-    // Find the tooltip trigger element (info icon)
-    const toolTipElement = container.querySelector('.fa.fa-info-circle');
+    // Find the tooltip trigger element (info icon) by role and label
+    const toolTipElement = screen.getByLabelText('info');
 
     // Hover over the tooltip trigger
     await userEvent.hover(toolTipElement);
 
-    // Wait for tooltip content to appear
+    // Wait for tooltip content to appear (split assertions)
     await waitFor(() => {
       expect(
         screen.getByText(
           'Holy Awesome, these are all the badges you earned before last week!!! Click "Full View" to bask in the glory of your COMPLETE LIST!',
         ),
       ).toBeInTheDocument();
-
+    });
+    await waitFor(() => {
       expect(
         screen.getByText(
           'Have a number bigger than "1" in the bottom righthand corner of a badge? That\'s how many times you\'ve earned the same badge! Do your Happy Dance you Champion!!',
@@ -68,14 +67,15 @@ describe('Old Badges component', () => {
     // Unhover to hide tooltip
     await userEvent.unhover(toolTipElement);
 
-    // Wait for tooltip content to disappear
+    // Wait for tooltip content to disappear (split assertions)
     await waitFor(() => {
       expect(
         screen.queryByText(
           'Holy Awesome, these are all the badges you earned before last week!!! Click "Full View" to bask in the glory of your COMPLETE LIST!',
         ),
       ).not.toBeInTheDocument();
-
+    });
+    await waitFor(() => {
       expect(
         screen.queryByText(
           'Have a number bigger than "1" in the bottom righthand corner of a badge? That\'s how many times you\'ve earned the same badge! Do your Happy Dance you Champion!!',
@@ -86,6 +86,6 @@ describe('Old Badges component', () => {
 
   it('check Badges Earned Before Last Week heading', () => {
     render(<OldBadges personalBestMaxHrs={10} badges={badges} darkMode={true} />);
-    expect(screen.queryByText('Badges Earned Before Last Week')).toBeInTheDocument();
+    expect(screen.getByText('Badges Earned Before Last Week')).toBeInTheDocument();
   });
 });
