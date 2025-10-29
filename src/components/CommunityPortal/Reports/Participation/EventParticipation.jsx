@@ -53,49 +53,6 @@ function EventParticipation() {
         darkMode ? styles.participationLandingPageDark : ''
       }`}
     >
-      {/* Print-only page title header */}
-      <header
-        className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
-      >
-        <h1
-          className={`${styles.landingPageHeader} ${darkMode ? styles.landingPageHeaderDark : ''}`}
-        >
-          Social And Recreational Management
-        </h1>
-        <div className={styles.headerActions}>
-          <button
-            className={`${styles.savePdfBtn} ${
-              darkMode ? styles.savePdfBtnDark : styles.savePdfBtnLight
-            } ${styles.noPrint}`}
-            onClick={handleSaveAsPDF}
-            disabled={exporting}
-            aria-busy={exporting}
-          >
-            {exporting ? (
-              'Preparing…'
-            ) : (
-              <>
-                <FontAwesomeIcon icon={faFilePdf} style={{ marginRight: '6px' }} />
-                Save as PDF
-              </>
-            )}
-          </button>
-
-          <select
-            className={`${styles.organizerDropdown} ${
-              darkMode ? styles.organizerDropdownDark : ''
-            }`}
-            value={selectedOrganizer}
-            onChange={e => setSelectedOrganizer(e.target.value)}
-          >
-            <option value="All Organizers">All Organizers</option>
-            <option value="Organizer 1">Organizer 1</option>
-            <option value="Organizer 2">Organizer 2</option>
-            <option value="Organizer 3">Organizer 3</option>
-          </select>
-        </div>
-      </header>
-
       <EventParticipationHeader />
       <EngagementSummaryCards />
       <div className={styles.chartsSection}>
