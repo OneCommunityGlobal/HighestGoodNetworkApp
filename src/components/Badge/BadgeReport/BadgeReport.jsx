@@ -101,6 +101,16 @@ function createBadgeHtml(badge) {
   });
 }
 
+async function FormatReportForPdf(badges, callback) {
+  const bgReport = [];
+  bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>`;
+
+  const badgePromises = badges.map(badge => createBadgeHtml(badge));
+  const badgesHtml = await Promise.all(badgePromises);
+
+  callback(bgReport.concat(badgesHtml).join(''));
+}
+
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState([]);
   const [numFeatured, setNumFeatured] = useState(0);
@@ -115,16 +125,6 @@ function BadgeReport(props) {
 
   const canAssignBadges = props.hasPermission('assignBadges');
   const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
-
-  async function FormatReportForPdf(badges, callback) {
-    const bgReport = [];
-    bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>`;
-
-    const badgePromises = badges.map(badge => createBadgeHtml(badge));
-    const badgesHtml = await Promise.all(badgePromises);
-
-    callback(bgReport.concat(badgesHtml).join(''));
-  }
 
   const pdfDocGenerator = async () => {
     const currentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
