@@ -37,10 +37,12 @@ import {
   FaSync,
   FaCheckCircle,
   FaExclamationTriangle,
+  FaHistory,
 } from 'react-icons/fa';
 import './EmailBatchDashboard.css';
 import './StatsChips.css';
 import './ButtonStyles.css';
+import AuditTrailModal from './AuditTrailModal';
 
 const EmailBatchDashboard = () => {
   const dispatch = useDispatch();
@@ -61,6 +63,9 @@ const EmailBatchDashboard = () => {
     dateTo: '',
   });
   const [showFilters, setShowFilters] = useState(false);
+  const [showAuditTrail, setShowAuditTrail] = useState(false);
+  const [auditTrailType, setAuditTrailType] = useState('batch');
+  const [auditTrailId, setAuditTrailId] = useState(null);
 
   // Dynamic refresh state
   const [refreshState, setRefreshState] = useState({
@@ -295,6 +300,19 @@ const EmailBatchDashboard = () => {
     }
   };
 
+  // Handle audit trail
+  const handleViewAuditTrail = (id, type = 'email') => {
+    setAuditTrailId(id);
+    setAuditTrailType(type);
+    setShowAuditTrail(true);
+  };
+
+  const handleCloseAuditTrail = () => {
+    setShowAuditTrail(false);
+    setAuditTrailId(null);
+    setAuditTrailType('email');
+  };
+
   // Handle view recipients
   const handleViewRecipients = recipients => {
     // Show recipients in a modal or alert
@@ -311,10 +329,12 @@ const EmailBatchDashboard = () => {
   // Get status badge color
   const getStatusBadge = status => {
     const colors = {
-      PENDING: 'warning',
-      PROCESSING: 'info',
-      COMPLETED: 'success',
+      QUEUED: 'warning',
+      SENDING: 'info',
+      SENT: 'success',
+      PROCESSED: 'info', // Mixed results - processing finished
       FAILED: 'danger',
+      CANCELLED: 'secondary',
     };
     return colors[status] || 'secondary';
   };
@@ -327,10 +347,12 @@ const EmailBatchDashboard = () => {
   // Get status icon
   const getStatusIcon = status => {
     const icons = {
-      PENDING: <FaClock className="text-warning" />,
-      PROCESSING: <FaClock className="text-info fa-spin" />,
+      QUEUED: <FaClock className="text-warning" />,
+      SENDING: <FaClock className="text-info fa-spin" />,
       SENT: <FaCheck className="text-success" />,
+      PROCESSED: <FaCheck className="text-info" />, // Mixed results - processing finished
       FAILED: <FaTimes className="text-danger" />,
+      CANCELLED: <FaTimes className="text-secondary" />,
     };
     return icons[status] || <FaEnvelope className="text-muted" />;
   };
@@ -468,9 +490,10 @@ const EmailBatchDashboard = () => {
                       onChange={e => handleFilterChange('status', e.target.value)}
                     >
                       <option value="">All Statuses</option>
-                      <option value="PENDING">Pending</option>
-                      <option value="PROCESSING">Processing</option>
-                      <option value="COMPLETED">Completed</option>
+                      <option value="QUEUED">Queued</option>
+                      <option value="SENDING">Sending</option>
+                      <option value="SENT">Sent</option>
+                      <option value="PROCESSED">Processed</option>
                       <option value="FAILED">Failed</option>
                     </Input>
                   </FormGroup>
@@ -722,15 +745,26 @@ const EmailBatchDashboard = () => {
                         </div>
                       </td>
                       <td className="py-2 px-3">
-                        <Button
-                          size="sm"
-                          color="outline-primary"
-                          onClick={() => handleViewDetails(batch)}
-                          className="d-flex align-items-center"
-                        >
-                          <FaEye className="me-1" size={12} />
-                          <span className="d-none d-sm-inline">View Details</span>
-                        </Button>
+                        <div className="d-flex gap-2">
+                          <Button
+                            size="sm"
+                            color="outline-primary"
+                            onClick={() => handleViewDetails(batch)}
+                            className="d-flex align-items-center"
+                          >
+                            <FaEye className="me-1" size={12} />
+                            <span className="d-none d-sm-inline">View Details</span>
+                          </Button>
+                          <Button
+                            size="sm"
+                            color="outline-secondary"
+                            onClick={() => handleViewAuditTrail(batch._id, 'email')}
+                            className="d-flex align-items-center"
+                          >
+                            <FaHistory className="me-1" size={12} />
+                            <span className="d-none d-sm-inline">Audit</span>
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -971,7 +1005,7 @@ const EmailBatchDashboard = () => {
                             <td className="py-2 px-3">
                               <div className="d-flex flex-column gap-2">
                                 <div className="d-flex gap-1">
-                                  {(item.status === 'FAILED' || item.status === 'PENDING') && (
+                                  {(item.status === 'FAILED' || item.status === 'QUEUED') && (
                                     <Button
                                       size="sm"
                                       color="warning"
@@ -991,9 +1025,18 @@ const EmailBatchDashboard = () => {
                                     <FaEye size={12} className="me-1" />
                                     <span className="d-none d-sm-inline">View</span>
                                   </Button>
+                                  <Button
+                                    size="sm"
+                                    color="outline-secondary"
+                                    onClick={() => handleViewAuditTrail(item._id, 'emailBatch')}
+                                    className="d-flex align-items-center"
+                                  >
+                                    <FaHistory size={12} className="me-1" />
+                                    <span className="d-none d-sm-inline">Audit</span>
+                                  </Button>
                                 </div>
                                 {item.error &&
-                                  (item.status === 'FAILED' || item.status === 'PENDING') && (
+                                  (item.status === 'FAILED' || item.status === 'QUEUED') && (
                                     <small className="text-danger" title={item.error}>
                                       {item.error.length > 50
                                         ? `${item.error.substring(0, 50)}...`
@@ -1057,6 +1100,15 @@ const EmailBatchDashboard = () => {
           </ModalFooter>
         </Modal>
       )}
+
+      {/* Audit Trail Modal */}
+      <AuditTrailModal
+        isOpen={showAuditTrail}
+        toggle={handleCloseAuditTrail}
+        emailId={auditTrailType === 'email' ? auditTrailId : null}
+        emailBatchId={auditTrailType === 'emailBatch' ? auditTrailId : null}
+        type={auditTrailType}
+      />
     </>
   );
 };
