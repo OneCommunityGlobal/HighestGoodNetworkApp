@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Container, Row, Col, Card, CardBody, Badge, Alert } from 'reactstrap';
+import { Container, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faChartLine,
-  faTrophy,
-  faClipboardCheck,
-  faExclamationTriangle,
-  faClock,
-  faCheckCircle,
-  faTimesCircle,
-  faStar,
+  faUser,
+  faBell,
+  faEye,
   faGraduationCap,
+  faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
+
 import styles from './EvaluationResults.module.css';
-import OverallPerformance from './OverallPerformance';
-import CategoryBreakdown from './CategoryBreakdown';
-import TaskDetailsList from './TaskDetailsList';
-import SummaryStats from './SummaryStats';
-import TeacherFeedback from './TeacherFeedback';
 import EvaluationNotificationService from './evaluationNotificationService';
-import { mockEvaluationData } from './mockData';
+import { mockEvaluationData } from './mockData_new';
 
 const EvaluationResults = ({ auth }) => {
   const [evaluationData, setEvaluationData] = useState(null);
@@ -28,13 +20,9 @@ const EvaluationResults = ({ auth }) => {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
-    // Simulate API call with realistic loading time
-    const loadEvaluationData = async () => {
+    // Load evaluation data immediately since we're using mock data
+    const loadEvaluationData = () => {
       try {
-        setLoading(true);
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
         // Personalize the evaluation data with actual user name
         const userName = auth?.user?.firstName || 'Student';
         const userLastName = auth?.user?.lastName || '';
@@ -76,8 +64,10 @@ const EvaluationResults = ({ auth }) => {
           );
         }
       } catch (error) {
-        // Handle error silently for now
+        // Set fallback data to prevent infinite loading
+        setEvaluationData(mockEvaluationData);
       } finally {
+        // Ensure loading is always set to false
         setLoading(false);
       }
     };
@@ -110,83 +100,213 @@ const EvaluationResults = ({ auth }) => {
     );
   }
 
-  const { student, overallScore, categories, tasks, summary, teacherFeedback } = evaluationData;
+  const { student, overallScore, categories, tasks, summary } = evaluationData;
+
+  // Calculate total score for new design (77/100 format)
+  const totalEarnedPoints = categories.reduce((sum, cat) => sum + cat.earnedMarks, 0);
+  const totalPossiblePoints = categories.reduce((sum, cat) => sum + cat.totalMarks, 0);
+  const percentageScore = Math.round((totalEarnedPoints / totalPossiblePoints) * 100);
+
+  // Helper functions
+  const getPerformanceColor = percentage => {
+    if (percentage >= 80) return 'excellent';
+    if (percentage >= 70) return 'good';
+    if (percentage >= 60) return 'fair';
+    return 'poor';
+  };
+
+  const getStatusClass = status => {
+    if (status === 'On time' || status === 'completed') return 'onTime';
+    if (status?.toLowerCase().includes('late')) return 'late';
+    return 'onTime';
+  };
+
+  const getPerformanceColorClass = percentage => {
+    if (percentage >= 80) return styles.excellent;
+    if (percentage >= 70) return styles.good;
+    if (percentage >= 60) return styles.fair;
+    return styles.poor;
+  };
 
   return (
     <div className={styles.evaluationResultsPage}>
-      {/* Header Section */}
+      {/* New Clean Header */}
       <div className={styles.headerSection}>
         <Container>
           <div className={styles.headerContent}>
-            <div className={styles.studentInfo}>
-              <FontAwesomeIcon icon={faGraduationCap} className={styles.headerIcon} />
-              <div>
-                <h1 className={styles.pageTitle}>Academic Performance Dashboard</h1>
-                <p className={styles.studentName}>
-                  Welcome back, {auth?.user?.firstName} {auth?.user?.lastName}
-                </p>
-                <small className={styles.lastUpdated}>
-                  Last updated:{' '}
-                  {new Date(student.lastUpdated).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </small>
-              </div>
+            <div className={styles.headerLeft}>
+              <h1 className={styles.pageTitle}>Evaluation Results</h1>
+              <p className={styles.pageSubtitle}>
+                Comprehensive overview of your grades, performance on assignments, and detailed
+                feedback from teachers
+              </p>
             </div>
-            <div className={styles.overallScoreBadge}>
-              <div className={styles.scoreCircle}>
-                <span className={styles.scoreNumber}>{overallScore}%</span>
-                <span className={styles.scoreLabel}>Overall</span>
+            <div className={styles.headerRight}>
+              <div className={styles.userWelcome}>
+                <FontAwesomeIcon icon={faUser} className={styles.userIcon} />
+                <span>Welcome, {auth?.user?.firstName || 'Student Name'}</span>
               </div>
+              <FontAwesomeIcon icon={faBell} className={styles.notificationIcon} />
             </div>
           </div>
         </Container>
       </div>
 
       <Container className={styles.mainContent}>
-        {/* Teacher Feedback Section */}
-        <TeacherFeedback feedback={teacherFeedback} />
-
-        {/* Overall Performance Section */}
-        <OverallPerformance score={overallScore} student={student} categories={categories} />
-
-        {/* Summary Statistics */}
-        <SummaryStats summary={summary} />
-
-        {/* Category Filter */}
-        <div className={styles.filterSection}>
-          <h4 className={styles.sectionTitle}>
-            <FontAwesomeIcon icon={faChartLine} className="me-2" />
-            Performance Breakdown
-          </h4>
-          <div className={styles.categoryFilter}>
-            {['all', ...categories.map(cat => cat.name.toLowerCase())].map(category => (
-              <button
-                key={category}
-                className={`${styles.filterButton} ${
-                  selectedCategory === category ? styles.active : ''
-                }`}
-                onClick={() => setSelectedCategory(category)}
-              >
-                {category === 'all'
-                  ? 'All Categories'
-                  : category.charAt(0).toUpperCase() + category.slice(1)}
-              </button>
-            ))}
+        {/* Overall Performance Summary */}
+        <div className={styles.overallSection}>
+          <div className={styles.sectionHeader}>
+            <h3>Overall Performance Summary</h3>
+            <div className={styles.overallScore}>
+              <span className={styles.scoreText}>{percentageScore}%</span>
+              <span className={styles.scoreLabel}>Overall Grade</span>
+            </div>
+          </div>
+          <div className={styles.progressSection}>
+            <div className={styles.progressBar}>
+              <div className={styles.progressFill} style={{ width: `${percentageScore}%` }}></div>
+            </div>
+            <div className={styles.scoreDetails}>
+              <span>
+                Total Score: {totalEarnedPoints}/{totalPossiblePoints} points
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Category Breakdown Table */}
-        <CategoryBreakdown categories={categories} selectedCategory={selectedCategory} />
+        {/* Category Performance Table */}
+        <div className={styles.categorySection}>
+          <h3 className={styles.sectionTitle}>Overall Performance Summary</h3>
+          <div className={styles.tableContainer}>
+            <table className={styles.performanceTable}>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Weightage</th>
+                  <th>Items</th>
+                  <th>Total Points</th>
+                  <th>Your Score</th>
+                  <th>Percentage</th>
+                  <th>Performance</th>
+                </tr>
+              </thead>
+              <tbody>
+                {categories.map(category => (
+                  <tr key={category.id}>
+                    <td className={styles.categoryName}>{category.name}</td>
+                    <td>{category.weightage}%</td>
+                    <td>{category.completedItems}</td>
+                    <td>{category.totalMarks}</td>
+                    <td>{category.earnedMarks}</td>
+                    <td>{Math.round(category.percentage)}%</td>
+                    <td>
+                      <div className={styles.performanceBar}>
+                        <div
+                          className={`${styles.performanceFill} ${
+                            styles[getPerformanceColor(category.percentage)]
+                          }`}
+                          style={{ width: `${category.percentage}%` }}
+                        ></div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-        {/* Detailed Tasks List */}
-        <TaskDetailsList
-          tasks={tasks}
-          selectedCategory={selectedCategory}
-          categories={categories}
-        />
+        {/* Performance Insights */}
+        <div className={styles.insightsSection}>
+          <div className={styles.insightsBox}>
+            <h4>Performance Insights</h4>
+            <p>
+              You performed strongly in <strong>Assignments (80%)</strong>,{' '}
+              <strong>Exams (80%)</strong>, and <strong>Participation (80%)</strong>. You may
+              improve your performance in <strong>Quizzes (60%)</strong> - consider reviewing quiz
+              preparation strategies.
+            </p>
+            <div className={styles.actionButtons}>
+              <button className={styles.actionButton}>Review Quiz Messages</button>
+              <button className={styles.actionButton}>Study Schedule Tips</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Individual Assignment & Task Results */}
+        <div className={styles.assignmentSection}>
+          <h3 className={styles.sectionTitle}>Individual Assignment & Task Results</h3>
+          <div className={styles.tableContainer}>
+            <table className={styles.assignmentTable}>
+              <thead>
+                <tr>
+                  <th>Assignment Name</th>
+                  <th>Weightage</th>
+                  <th>Your Marks</th>
+                  <th>Percentage</th>
+                  <th>Status</th>
+                  <th>Feedback</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tasks.slice(0, 6).map(task => (
+                  <tr key={task.id}>
+                    <td>
+                      <div className={styles.assignmentInfo}>
+                        <div className={styles.assignmentName}>{task.name}</div>
+                        <div className={styles.assignmentDate}>
+                          Submitted: {new Date(task.submissionDate).toLocaleDateString()}
+                        </div>
+                      </div>
+                    </td>
+                    <td>{task.weightage || '8'}%</td>
+                    <td>
+                      {task.earnedMarks}/{task.totalMarks}
+                    </td>
+                    <td>
+                      <span className={getPerformanceColorClass(task.percentage)}>
+                        {Math.round(task.percentage)}%
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className={`${styles.statusBadge} ${styles[getStatusClass(task.status)]}`}
+                      >
+                        {task.status || 'On time'}
+                      </span>
+                    </td>
+                    <td>
+                      <button className={styles.feedbackButton}>
+                        <FontAwesomeIcon icon={faEye} className={styles.buttonIcon} />
+                        View Feedback
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Summary Cards */}
+        <div className={styles.summaryCards}>
+          <div className={styles.summaryCard}>
+            <div className={`${styles.cardNumber} ${styles.total}`}>6</div>
+            <div className={styles.cardLabel}>Total Assignments</div>
+          </div>
+          <div className={styles.summaryCard}>
+            <div className={`${styles.cardNumber} ${styles.onTime}`}>5</div>
+            <div className={styles.cardLabel}>On Time</div>
+          </div>
+          <div className={styles.summaryCard}>
+            <div className={`${styles.cardNumber} ${styles.late}`}>1</div>
+            <div className={styles.cardLabel}>Late Submissions</div>
+          </div>
+          <div className={styles.summaryCard}>
+            <div className={`${styles.cardNumber} ${styles.average}`}>72%</div>
+            <div className={styles.cardLabel}>Avg Score</div>
+          </div>
+        </div>
       </Container>
     </div>
   );

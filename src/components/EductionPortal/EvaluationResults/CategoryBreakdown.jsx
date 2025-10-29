@@ -12,7 +12,7 @@ import {
   faClock,
   faExclamationTriangle,
 } from '@fortawesome/free-solid-svg-icons';
-import { getPerformanceLevel, calculateCategoryProgress } from './mockData';
+import { getPerformanceLevel, calculateCategoryProgress } from './mockData_new';
 import styles from './CategoryBreakdown.module.css';
 
 const CategoryBreakdown = ({ categories, selectedCategory = 'all', isLoading }) => {

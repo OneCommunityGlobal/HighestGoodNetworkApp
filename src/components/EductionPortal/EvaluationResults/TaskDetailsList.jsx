@@ -15,7 +15,7 @@ import {
   faDownload,
   faEye,
 } from '@fortawesome/free-solid-svg-icons';
-import { getStatusInfo } from './mockData';
+import { getStatusInfo } from './mockData_new';
 import styles from './TaskDetailsList.module.css';
 
 const TaskDetailsList = ({ tasks, selectedCategory = 'all', categories, isLoading }) => {
