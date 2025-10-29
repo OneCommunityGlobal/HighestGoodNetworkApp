@@ -531,7 +531,7 @@ function BadgeReport(props) {
               </tr>
             </thead>
             <tbody>
-              {sortBadges && sortBadges.length ? (
+              {sortBadges?.length ? (
                 sortBadges.map((value, index) => (
                   <tr key={value._id}>
                     <td className="badge_image_sm">
