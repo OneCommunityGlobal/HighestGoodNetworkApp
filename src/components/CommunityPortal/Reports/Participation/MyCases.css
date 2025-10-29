@@ -231,6 +231,12 @@ body {
   color: #555;
 }
 
+.rates-dark {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #e5e7eb;
+}
+
 /* List View Styles */
 .case-list {
   list-style-type: none;

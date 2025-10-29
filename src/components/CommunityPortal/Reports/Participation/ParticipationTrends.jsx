@@ -98,6 +98,13 @@ function ParticipationTrends() {
 
   return (
     <div className={`${styles.analyticsPage} ${darkMode ? styles.analyticsPageDark : ''}`}>
+      <div className={styles.headerNavigation}>
+        <div className={styles.navLinks}>
+          <a href="/communityportal/reports/participation" className={styles.navLink}>
+            ← Back to Participation
+          </a>
+        </div>
+      </div>
       <div className={styles.pageHeader}>
         <h1 className={`${styles.pageTitle} ${darkMode ? styles.pageTitleDark : ''}`}>
           Participation Trends Analysis
