@@ -200,9 +200,10 @@ function BadgeReport(props) {
 
   useEffect(() => {
     let isMounted = true; // flag to track if component is mounted
+
     const initializeBadges = () => {
       const badges = structuredClone(props.badges) || [];
-      let newBadges = badges.slice();
+      const newBadges = badges.slice();
 
       if (isMounted) {
         newBadges.sort((a, b) => {
@@ -216,22 +217,23 @@ function BadgeReport(props) {
         });
 
         setNumFeatured(0);
-        newBadges.forEach((badge, index) => {
+        for (const badge of newBadges) {
           if (badge.featured) {
             setNumFeatured(prev => prev + 1);
           }
-          if (typeof newBadges[index] === 'string') {
-            newBadges[index].lastModified = new Date(newBadges[index].lastModified);
+          if (typeof badge === 'string') {
+            badge.lastModified = new Date(badge.lastModified);
           }
-        });
+        }
         setSortBadges(newBadges);
       }
     };
+
     initializeBadges();
 
     return () => {
-      isMounted = false;
-    }; // cleanup function
+      isMounted = false; // cleanup function
+    };
   }, [props.badges]);
 
   const countChange = (badge, index, newValue) => {
