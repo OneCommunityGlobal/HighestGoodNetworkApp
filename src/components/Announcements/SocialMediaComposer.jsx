@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { postToMastodon } from '../services/mastodonService';
 
 export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
@@ -13,6 +14,18 @@ export default function SocialMediaComposer({ platform }) {
 
   const tabStyle = tabId => {
     const isActive = activeSubTab === tabId;
+
+    async function handleMastodonPost() {
+      if (platform === 'mastodon') {
+        const result = await postToMastodon(postContent);
+
+        if (result.success) {
+          alert('Mastodon post sent successfully!');
+        } else {
+          alert('Failed to post to Mastodon');
+        }
+      }
+    }
 
     return {
       padding: '10px 16px',
