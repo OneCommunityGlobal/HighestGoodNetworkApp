@@ -74,6 +74,33 @@ export async function imageToUri(url, callback) {
   };
 }
 
+function createBadgeHtml(badge) {
+  const imageUrl = badge.badge?.imageUrl || '';
+  const badgeName = badge.badge?.badgeName || 'Unknown Badge';
+  const description = badge.badge?.description || 'No description available';
+
+  return new Promise(resolve => {
+    imageToUri(imageUrl, uri => {
+      const badgeHtml = `
+      <table>
+        <thead>
+          <tr>
+            <th>Badge Image</th>
+            <th>Badge Name, Count Awarded & Badge Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><img src="${uri}" /></td>
+            <td>${badgeName} - ${description}</td>
+          </tr>
+        </tbody>
+      </table>`;
+      resolve(badgeHtml);
+    });
+  });
+}
+
 function BadgeReport(props) {
   const [sortBadges, setSortBadges] = useState([]);
   const [numFeatured, setNumFeatured] = useState(0);
@@ -88,33 +115,6 @@ function BadgeReport(props) {
 
   const canAssignBadges = props.hasPermission('assignBadges');
   const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
-
-  function createBadgeHtml(badge) {
-    const imageUrl = badge.badge?.imageUrl || '';
-    const badgeName = badge.badge?.badgeName || 'Unknown Badge';
-    const description = badge.badge?.description || 'No description available';
-
-    return new Promise(resolve => {
-      imageToUri(imageUrl, uri => {
-        const badgeHtml = `
-        <table>
-          <thead>
-            <tr>
-              <th>Badge Image</th>
-              <th>Badge Name, Count Awarded & Badge Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><img src="${uri}" /></td>
-              <td>${badgeName} - ${description}</td>
-            </tr>
-          </tbody>
-        </table>`;
-        resolve(badgeHtml);
-      });
-    });
-  }
 
   async function FormatReportForPdf(badges, callback) {
     const bgReport = [];
