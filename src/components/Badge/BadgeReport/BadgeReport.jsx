@@ -359,7 +359,7 @@ function BadgeReport(props) {
                 sortBadges.map((value, index) => (
                   <tr key={value._id}>
                     <td className="badge_image_sm">
-                      <img src={value.badge.imageUrl} alt="Badge" id={'popover_' + index} />
+                      <img src={value.badge.imageUrl} alt="Badge " id={'popover_' + index} />
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
                         count={value.count}
@@ -654,15 +654,13 @@ function BadgeReport(props) {
                               }}
                             >
                               {canDeleteBadges ? (
-                                <div
+                                <button
                                   className="btn btn-danger"
-                                  onClick={e => handleDeleteBadge(sortBadges[index])}
+                                  onClick={() => handleDeleteBadge(sortBadges[index])}
                                 >
                                   Delete
-                                </div>
-                              ) : (
-                                []
-                              )}
+                                </button>
+                              ) : null}
                             </DropdownItem>
                           </DropdownMenu>
                         </UncontrolledDropdown>
