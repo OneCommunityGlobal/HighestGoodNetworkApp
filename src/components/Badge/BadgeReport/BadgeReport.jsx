@@ -201,7 +201,7 @@ function BadgeReport(props) {
   useEffect(() => {
     let isMounted = true; // flag to track if component is mounted
     const initializeBadges = () => {
-      const badges = JSON.parse(JSON.stringify(props.badges)) || [];
+      const badges = structuredClone(props.badges) || [];
       let newBadges = badges.slice();
 
       if (isMounted) {
