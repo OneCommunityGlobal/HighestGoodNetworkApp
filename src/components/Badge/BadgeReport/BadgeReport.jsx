@@ -283,7 +283,6 @@ function BadgeReport(props) {
       toast.error(
         'Error: The badge may not exist in the badge records. Please refresh the page. If the problem persists, please contact the administrator.',
       );
-      return;
     }
   };
 
