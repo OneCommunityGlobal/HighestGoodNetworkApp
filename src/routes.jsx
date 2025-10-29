@@ -147,6 +147,12 @@ import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChar
 import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
 import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 
+// import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
+// import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+
+
+import RescheduleEvent from './components/CommunityPortal/Activities/RescheduleEvent';
+import ReschedulePoll from './components/CommunityPortal/Activities/ReschedulePoll';
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
@@ -699,9 +705,11 @@ export default (
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
+        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/activities/:activityId/manage" component={RescheduleEvent} routePermissions={['rescheduleEvent']}/>
+        <Route path="/communityportal/ReschedulePoll" component={ReschedulePoll}/>
         {/* ----- Community Calendar Routing ----- */}
         <CPProtectedRoute path="/communityportal/calendar" exact component={CommunityCalendar} />
-        <CPProtectedRoute path="/communityportal/activities" exact component={ActivityList} />
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"
           component={Feedbackform}
