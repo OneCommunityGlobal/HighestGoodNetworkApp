@@ -359,7 +359,7 @@ function BadgeReport(props) {
                 sortBadges.map((value, index) => (
                   <tr key={value._id}>
                     <td className="badge_image_sm">
-                      <img src={value.badge.imageUrl} alt="Badge Image" id={'popover_' + index} />
+                      <img src={value.badge.imageUrl} alt="Badge" id={'popover_' + index} />
                       <BadgeImage
                         personalBestMaxHrs={props.personalBestMaxHrs}
                         count={value.count}
