@@ -336,9 +336,10 @@ function BadgeReport(props) {
 
     try {
       const newBadgeCollection = structuredClone(sortBadges);
-      newBadgeCollection.forEach(badge => {
+
+      for (const badge of newBadgeCollection) {
         badge.badge = badge.badge._id;
-      });
+      }
 
       await props.changeBadgesByUserID(props.userId, newBadgeCollection);
       await props.getUserProfile(props.userId);
