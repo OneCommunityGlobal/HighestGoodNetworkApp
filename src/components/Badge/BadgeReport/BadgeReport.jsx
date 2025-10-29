@@ -89,70 +89,42 @@ function BadgeReport(props) {
   const canAssignBadges = props.hasPermission('assignBadges');
   const canModifyBadgeAmount = props.hasPermission('modifyBadgeAmount');
 
-  const FormatReportForPdf = async (badges, callback) => {
-    try {
-      const bgReport = [];
-      bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-        <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-        props.lastName
-      }</h4></div>
-        <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+  function createBadgeHtml(badge) {
+    const imageUrl = badge.badge?.imageUrl || '';
+    const badgeName = badge.badge?.badgeName || 'Unknown Badge';
+    const description = badge.badge?.description || 'No description available';
 
-      const badgePromises = badges.map((badge, i) => {
-        const imageUrl = badge.badge?.imageUrl || ''; // Fallback to empty string if imageUrl is missing
-        const badgeName = badge.badge?.badgeName || 'Unknown Badge'; // Fallback for missing badgeName
-        const description = badge.badge?.description || 'No description available'; // Fallback for missing description
-
-        return new Promise(resolve => {
-          imageToUri(imageUrl, uri => {
-            const badgeHtml = `
-              <table>
-                <thead>
-                  <tr>
-                    <th>Badge Image</th>
-                    <th>Badge Name, Count Awarded & Badge Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style="width:160px">
-                      <div><img height="150" width="150" src="${uri}" /></div>
-                    </td>
-                    <td style="width:500px">
-                      <div><b>Name:</b> <span class="name">${badgeName}</span></div>
-                      <div><b>Count:</b> ${badge.count}</div>
-                      <div><b>Description:</b> ${description}</div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              ${
-                (i + 1) % 4 === 0 && i + 1 !== badges.length
-                  ? `</br></br></br>
-              <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(
-                      badges.length / 4,
-                    )})</h3>
-              <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-                      props.lastName
-                    }</h4></div>
-              <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
-              `
-                  : ''
-              }`;
-            resolve(badgeHtml);
-          });
-        });
+    return new Promise(resolve => {
+      imageToUri(imageUrl, uri => {
+        const badgeHtml = `
+        <table>
+          <thead>
+            <tr>
+              <th>Badge Image</th>
+              <th>Badge Name, Count Awarded & Badge Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><img src="${uri}" /></td>
+              <td>${badgeName} - ${description}</td>
+            </tr>
+          </tbody>
+        </table>`;
+        resolve(badgeHtml);
       });
+    });
+  }
 
-      const badgeHtmlArray = await Promise.all(badgePromises);
-      bgReport.push(...badgeHtmlArray);
+  async function FormatReportForPdf(badges, callback) {
+    const bgReport = [];
+    bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>`;
 
-      callback(bgReport.join('\n'));
-    } catch (error) {
-      console.error('Error generating badge report:', error);
-      callback('<p>Error generating badge report. Please try again later.</p>');
-    }
-  };
+    const badgePromises = badges.map(badge => createBadgeHtml(badge));
+    const badgesHtml = await Promise.all(badgePromises);
+
+    callback(bgReport.concat(badgesHtml).join(''));
+  }
 
   const pdfDocGenerator = async () => {
     const currentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
