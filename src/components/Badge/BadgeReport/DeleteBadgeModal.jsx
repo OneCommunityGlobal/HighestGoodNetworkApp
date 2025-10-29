@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 const DeleteBadgeModal = ({ isOpen, onCancel, onDelete, darkMode, boxStyle, boxStyleDark }) => {
@@ -41,6 +42,21 @@ const DeleteBadgeModal = ({ isOpen, onCancel, onDelete, darkMode, boxStyle, boxS
       </ModalFooter>
     </Modal>
   );
+};
+
+DeleteBadgeModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool,
+  boxStyle: PropTypes.object,
+  boxStyleDark: PropTypes.object,
+};
+
+DeleteBadgeModal.defaultProps = {
+  darkMode: false,
+  boxStyle: {},
+  boxStyleDark: {},
 };
 
 export default DeleteBadgeModal;
