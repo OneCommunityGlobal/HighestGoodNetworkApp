@@ -1,7 +1,6 @@
 .customInput {
   display: block;
   width: 100%;
-  padding: 2px;
   margin: 2px;
   height: calc(1.5em + 0.75rem + 2px);
   padding: 0.25em 0.4em;
@@ -20,7 +19,6 @@
 
 .closeButton {
   display: block;
-  padding: 2px;
   margin: 2px;
   height: calc(1.5em + 0.75rem + 2px);
   padding: 0.375rem 0.8rem;
@@ -69,7 +67,6 @@
 
 .addButton {
   display: block;
-  padding: 2px;
   margin: 2px;
   height: calc(1.5em + 0.75rem + 2px);
   padding: 0.375rem 0.75rem;
@@ -84,6 +81,14 @@
 
   -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.popover__title {
+  text-align: center;
+}
+
+.popover__title p {
+  margin: 0.3em 0;
 }
 
 /* Profile Image Modal - Suggested Profile Links Grid */
