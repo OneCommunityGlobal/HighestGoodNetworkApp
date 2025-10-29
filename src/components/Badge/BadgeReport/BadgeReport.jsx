@@ -730,8 +730,6 @@ BadgeReport.propTypes = {
   getUserProfile: PropTypes.func.isRequired,
 
   badges: PropTypes.arrayOf(PropTypes.object).isRequired, // array of badge objects
-  firstName: PropTypes.string.isRequired,
-  lastName: PropTypes.string.isRequired,
   userId: PropTypes.string.isRequired,
   darkMode: PropTypes.bool,
 
