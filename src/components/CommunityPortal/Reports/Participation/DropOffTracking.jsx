@@ -9,29 +9,22 @@ function DropOffTracking() {
 
   const getDateRange = () => {
     const today = new Date();
-    let startDate;
-    let endDate;
+    let startDate, endDate;
 
     if (selectedTime === 'Today') {
       startDate = new Date(today);
-      // Start of the day
       startDate.setHours(0, 0, 0, 0);
       endDate = new Date(today);
-      // End of the day
       endDate.setHours(23, 59, 59, 999);
     } else if (selectedTime === 'This Week') {
       startDate = new Date(today);
       startDate.setDate(today.getDate() - today.getDay());
-      // Start of the week
       startDate.setHours(0, 0, 0, 0);
       endDate = new Date(startDate);
       endDate.setDate(startDate.getDate() + 6);
-      // End of the week
       endDate.setHours(23, 59, 59, 999);
     } else if (selectedTime === 'This Month') {
-      // Start of the month
       startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-      // End of the month
       endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
       endDate.setHours(23, 59, 59, 999);
     }
@@ -39,29 +32,30 @@ function DropOffTracking() {
     return { startDate, endDate };
   };
 
-  // Filter events based on selected filters
   const filteredEvents = mockEvents.filter(event => {
-    // Filter by event type
     if (selectedEvent !== 'All Events' && event.eventType !== selectedEvent) {
       return false;
     }
-
-    // Filter by date range
     if (selectedTime !== 'All Time') {
       const { startDate, endDate } = getDateRange();
-      const eventDate = new Date(event.eventTime.split(' pm ')[1]);
-      if (startDate && endDate) {
-        return eventDate >= startDate && eventDate <= endDate;
-      }
+      const eventDate = new Date(event.eventDate);
+      return eventDate >= startDate && eventDate <= endDate;
     }
-
     return true;
   });
 
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
+<<<<<<< HEAD
     <div className={`${styles.trackingContainer} ${darkMode ? styles.trackingContainerDark : ''}`}>
+=======
+    <div
+      className={`tracking-container-global ${styles.trackingContainer} ${
+        darkMode ? styles.trackingContainerDark : ''
+      }`}
+    >
+>>>>>>> origin/development
       <div className={`${styles.trackingHeader} ${darkMode ? styles.trackingHeaderDark : ''}`}>
         <h3>Drop-off and no-show rate tracking</h3>
         <div className={styles.trackingFilters}>
@@ -80,27 +74,55 @@ function DropOffTracking() {
           </select>
         </div>
       </div>
+<<<<<<< HEAD
       <div className={styles.trackingSummary}>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
           <p className={styles.trackingRateValue}>
             +5%
             <span className={darkMode ? styles.spanDark : ''}>Last week</span>
+=======
+
+      <div className={styles.trackingSummary}>
+        <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
+          <p className={styles.trackingRateValue}>
+            +5% <span>Last week</span>
           </p>
-          <p>Drop-off rate</p>
+          <p className={styles.trackingRateSubheading}>
+            <span> Drop-off rate</span>
+>>>>>>> origin/development
+          </p>
         </div>
         <div className={`${styles.trackingRate} ${darkMode ? styles.trackingRateDark : ''}`}>
           <p className={styles.trackingRateValue}>
+<<<<<<< HEAD
             +5% <span className={darkMode ? styles.spanDark : ''}>Last week</span>
+=======
+            +5% <span>Last week</span>
           </p>
-          <p>No-show rate</p>
+          <p className={styles.trackingRateSubheading}>
+            <span> No-show rate </span>
+>>>>>>> origin/development
+          </p>
         </div>
       </div>
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/development
       <div
         className={`${styles.trackingListContainer} ${
           darkMode ? styles.trackingListContainerDark : ''
         }`}
       >
+<<<<<<< HEAD
         <table className={`${styles.trackingTable} ${darkMode ? styles.trackingTableDark : ''}`}>
+=======
+        <table
+          className={`tracking-table-global ${styles.trackingTable} ${
+            darkMode ? `tracking-table-global-dark ${styles.trackingTableDark}` : ''
+          }`}
+        >
+>>>>>>> origin/development
           <thead>
             <tr>
               <th>Event name</th>

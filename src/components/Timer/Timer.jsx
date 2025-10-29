@@ -14,7 +14,7 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import css from './Timer.module.css';
 import '../Header/DarkMode.css';
 import { ENDPOINTS } from '~/utils/URL';
@@ -23,8 +23,10 @@ import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 import TimerPopout from './TimerPopout';
+import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
 
 function Timer({ authUser, darkMode, isPopout }) {
+  const dispatch = useDispatch();
   const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
@@ -51,7 +53,8 @@ function Timer({ authUser, darkMode, isPopout }) {
    *  forcedPause: boolean,
    *  started: boolean,
    *  goal: number,
-   *  startAt: Date
+   *  startAt: Date,
+   *  weekEndPause: boolean
    * }
    */
 
@@ -84,6 +87,7 @@ function Timer({ authUser, darkMode, isPopout }) {
     initialGoal: 900000,
     chiming: false,
     startAt: Date.now(),
+    weekEndPause: false,
   };
 
   const MAX_HOURS = 5;
@@ -103,6 +107,7 @@ function Timer({ authUser, darkMode, isPopout }) {
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
   const [viewingUserId, setViewingUserId] = useState(null);
+  const [weekEndModal, setWeekEndModal] = useState(false);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
@@ -220,6 +225,14 @@ function Timer({ authUser, darkMode, isPopout }) {
     sendStartChime(!timeIsOverModalOpen);
   };
 
+  const toggleWeekEndModal = () => {
+    setWeekEndModal(!weekEndModal);
+    if (weekEndModal) {
+      // When closing the modal, stop chiming
+      sendStartChime(false);
+    }
+  };
+
   const checkBtnAvail = useCallback(
     addition => {
       const remainingDuration = moment.duration(remaining);
@@ -301,16 +314,44 @@ function Timer({ authUser, darkMode, isPopout }) {
     }
   };
 
+  const handleWeekEndPause = () => {
+    if (goal - remaining < 60000) {
+      return; // Don't show modal if less than 1 minute
+    }
+
+    // Prevent duplicate calls if modal is already open
+    if (weekEndModal) {
+      return;
+    }
+
+    setWeekEndModal(true);
+    sendPause(); // Pause timer
+    toast.info('The week is close to ending! Please log your time.');
+    sendStartChime(true); // Start chiming
+  };
+
   /**
    * This useEffect is to make sure that all the states will be updated before taking effects,
    * so that message state and other states like running, inacMoal ... will be updated together
    * at the same time.
    */
   useEffect(() => {
-    // Exclude heartbeat message
+    // Exclude heartbeat message and timelog event messages
     if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
       isWSOpenRef.current = 0;
       return;
+    }
+
+    // Ignore TIMELOG_EVENT messages - they're for the timestamps tab, not the timer
+    if (lastJsonMessage && lastJsonMessage.type === 'TIMELOG_EVENT') {
+      return;
+    }
+    // Handle explicit week close pause action messages
+    if (lastJsonMessage && lastJsonMessage.action === 'WEEK_CLOSE_PAUSE') {
+      if (running) {
+        handleWeekEndPause();
+      }
+      return; // Exit early to prevent other modal logic
     }
 
     const {
@@ -318,12 +359,17 @@ function Timer({ authUser, darkMode, isPopout }) {
       forcedPause: forcedPauseLJM,
       started: startedLJM,
       chiming: chimingLJM,
-    } = lastJsonMessage || defaultMessage; // lastJsonMessage might be null at the beginning
+      weekEndPause: weekEndPauseLJM,
+    } = lastJsonMessage || defaultMessage;
+
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
+
+    // Show inactivity or time-over modals based on message state
     setInacModal(forcedPauseLJM);
-    setTimeIsOverModalIsOpen(chimingLJM);
-  }, [lastJsonMessage]);
+    // Only show time-over modal if it's not a weekend pause
+    setTimeIsOverModalIsOpen(chimingLJM && !weekEndModal);
+  }, [lastJsonMessage, running, message, weekEndModal]);
 
   // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
@@ -393,6 +439,17 @@ function Timer({ authUser, darkMode, isPopout }) {
   }, [inacModal]);
 
   useEffect(() => {
+    if (weekEndModal) {
+      window.focus();
+      timeIsOverAudioRef.current.play();
+    } else {
+      window.focus();
+      timeIsOverAudioRef.current.pause();
+      timeIsOverAudioRef.current.currentTime = 0;
+    }
+  }, [weekEndModal]);
+
+  useEffect(() => {
     if (!isInitialJsonMessageReceived) return;
 
     sendGetTimer();
@@ -440,6 +497,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             sendStop={sendStop}
           />
         )}
+
         <audio
           ref={timeIsOverAudioRef}
           key="timeIsOverAudio"
@@ -851,6 +909,35 @@ function Timer({ authUser, darkMode, isPopout }) {
           >
             Add More Time
           </Button>{' '}
+        </ModalFooter>
+      </Modal>
+      <Modal
+        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+        isOpen={weekEndModal}
+        toggle={toggleWeekEndModal}
+        centered
+        size="md"
+      >
+        <ModalHeader className={headerBg} toggle={toggleWeekEndModal}>
+          Week Ended!
+        </ModalHeader>
+        <ModalBody className={bodyBg}>
+          {`This is an automatic pause as the week is coming to an end. Make sure to log your time immediately so that you don't lose any time for this week.
+
+You have worked for ${logHours ? `${logHours} hours` : ''}${
+            logMinutes ? ` ${logMinutes} minutes` : ''
+          }. Please log your time.`}
+        </ModalBody>
+        <ModalFooter className={bodyBg}>
+          <Button
+            color="primary"
+            onClick={() => {
+              toggleWeekEndModal();
+              toggleLogTimeModal();
+            }}
+          >
+            Log Time
+          </Button>
         </ModalFooter>
       </Modal>
     </div>
