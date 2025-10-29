@@ -219,7 +219,7 @@ function BadgeReport(props) {
     }
 
     const recordBeforeUpdate = props.badges.filter(item => item.badge._id === badge.badge._id);
-    if (recordBeforeUpdate.length !== 0) {
+    if (recordBeforeUpdate.length) {
       const badgePrevState = badge;
       if (newValue === 0) {
         handleDeleteBadge(badgePrevState);
