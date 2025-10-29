@@ -335,7 +335,7 @@ function BadgeReport(props) {
     setSavingChanges(true);
 
     try {
-      let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
+      const newBadgeCollection = structuredClone(sortBadges);
       newBadgeCollection.forEach(badge => {
         badge.badge = badge.badge._id;
       });
