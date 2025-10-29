@@ -99,6 +99,9 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
 import { studentTasksReducer } from './studentTasksReducer';
 
+// Education Dashboard Reducers
+import { studentReducer } from './studentProfileReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -198,6 +201,7 @@ const sessionReducers = {
   timelogTracking: timelogTrackingReducer,
   teamMemberTasks: teamMemberTasksReducer,
   warning: warningsByUserIdReducer,
+  student: studentReducer,
 };
 
 export { localReducers, sessionReducers };
