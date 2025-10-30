@@ -20,6 +20,16 @@ const COLORS = {
   materialIssues: '#F3C13A', // yellow
 };
 
+// Fixed issue types for filter (display names)
+const FIXED_ISSUE_TYPES = ['Equipment Issues', 'Labor Issues', 'Materials Issues'];
+
+// Map display names to API property names
+const ISSUE_TYPE_MAPPING = {
+  'Equipment Issues': 'equipmentIssues',
+  'Labor Issues': 'laborIssues',
+  'Materials Issues': 'materialIssues',
+};
+
 export default function IssuesBreakdownChart() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -183,7 +193,13 @@ export default function IssuesBreakdownChart() {
       }
 
       if (filters.issueTypes && filters.issueTypes.length > 0) {
-        params.append('issueTypes', filters.issueTypes.join(','));
+        // Map display names to API property names
+        const apiIssueTypes = filters.issueTypes
+          .map(displayName => ISSUE_TYPE_MAPPING[displayName] || displayName)
+          .filter(Boolean); // Remove any undefined values
+        if (apiIssueTypes.length > 0) {
+          params.append('issueTypes', apiIssueTypes.join(','));
+        }
       }
 
       const queryString = params.toString();
@@ -444,6 +460,118 @@ export default function IssuesBreakdownChart() {
                 aria-label="End date"
               />
             </div>
+          </div>
+
+          <div className={styles.filterGroup}>
+            <label htmlFor="issue-type-filter" className={styles.filterLabel}>
+              Issue Type
+            </label>
+            <Select
+              id="issue-type-filter"
+              isMulti
+              classNamePrefix="customSelect"
+              options={FIXED_ISSUE_TYPES.map(type => ({
+                value: type,
+                label: type,
+              }))}
+              value={selectedIssueTypes.map(type => ({
+                value: type,
+                label: type,
+              }))}
+              onChange={selectedOptions =>
+                setSelectedIssueTypes(
+                  selectedOptions ? selectedOptions.map(option => option.value) : [],
+                )
+              }
+              placeholder="Select Issue Types"
+              isClearable
+              styles={
+                darkMode
+                  ? {
+                      control: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#2c3344',
+                        borderColor: '#364156',
+                        minHeight: '38px',
+                        fontSize: '14px',
+                      }),
+                      menu: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#2c3344',
+                        fontSize: '14px',
+                      }),
+                      option: (baseStyles, state) => ({
+                        ...baseStyles,
+                        backgroundColor: state.isSelected
+                          ? '#0d55b3'
+                          : state.isFocused
+                          ? '#364156'
+                          : '#2c3344',
+                        color: state.isSelected ? '#fff' : '#e0e0e0',
+                        fontSize: '14px',
+                      }),
+                      multiValue: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#375071',
+                        borderRadius: '6px',
+                      }),
+                      multiValueLabel: baseStyles => ({
+                        ...baseStyles,
+                        color: '#fff',
+                        fontSize: '12px',
+                      }),
+                      multiValueRemove: baseStyles => ({
+                        ...baseStyles,
+                        color: '#fff',
+                        ':hover': {
+                          backgroundColor: '#0d55b3',
+                          color: '#fff',
+                        },
+                      }),
+                      singleValue: baseStyles => ({
+                        ...baseStyles,
+                        color: '#e0e0e0',
+                      }),
+                      placeholder: baseStyles => ({
+                        ...baseStyles,
+                        color: '#aaaaaa',
+                      }),
+                    }
+                  : {
+                      control: baseStyles => ({
+                        ...baseStyles,
+                        minHeight: '38px',
+                        fontSize: '14px',
+                      }),
+                      menu: baseStyles => ({
+                        ...baseStyles,
+                        fontSize: '14px',
+                      }),
+                      option: baseStyles => ({
+                        ...baseStyles,
+                        fontSize: '14px',
+                      }),
+                      multiValue: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#e2e7ee',
+                        borderRadius: '6px',
+                      }),
+                      multiValueLabel: baseStyles => ({
+                        ...baseStyles,
+                        color: '#333',
+                        fontSize: '12px',
+                      }),
+                      multiValueRemove: baseStyles => ({
+                        ...baseStyles,
+                        color: '#333',
+                        ':hover': {
+                          backgroundColor: '#0d55b3',
+                          color: '#fff',
+                        },
+                      }),
+                    }
+              }
+            />
           </div>
         </div>
       </div>
