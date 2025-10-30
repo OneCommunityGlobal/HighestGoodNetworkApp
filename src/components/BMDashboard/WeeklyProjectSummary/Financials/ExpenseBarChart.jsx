@@ -1,4 +1,13 @@
-import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  LabelList,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 import { useState, useEffect } from 'react';
 import styles from './ExpectedVsActualBarChart.module.css';
 
@@ -100,7 +109,9 @@ export default function ExpenseBarChart() {
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-        <h4 style={{ margin: 0, color: '#555', fontSize: '1.3rem' }}>Planned vs Actual Cost</h4>
+        <h4 style={{ margin: 0, color: '#000000ff', fontSize: '1.4rem' }}>
+          Planned vs Actual Cost
+        </h4>
         {errorMessage && (
           <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
             {errorMessage}
@@ -198,23 +209,23 @@ export default function ExpenseBarChart() {
           <BarChart data={data} margin={{ top: 10, right: 10, left: 35, bottom: 35 }}>
             <XAxis
               dataKey="project"
-              tick={{ fontSize: windowWidth < 480 ? 8 : 10 }} // smaller font on small screens
+              tick={{ fontSize: windowWidth < 480 ? 8 : 15 }} // smaller font on small screens
               interval={0}
-              angle={windowWidth < 480 ? -35 : -15} // rotate more on mobile
+              angle={windowWidth < 480 ? -35 : 0} // rotate more on mobile
               textAnchor="end"
               label={{
                 value: 'Project Name',
                 position: 'insideBottom',
                 dy: windowWidth < 480 ? 40 : 25,
-                fontSize: 10,
+                fontSize: 15,
               }}
             />
-            <YAxis tick={{ fontSize: 10 }} axisLine tickLine />
+            <YAxis tick={{ fontSize: 15 }} axisLine tickLine />
             <Bar dataKey="planned" fill="#4285F4" name="Planned">
-              <LabelList dataKey="planned" position="top" style={{ fontSize: 8 }} />
+              <LabelList dataKey="planned" position="top" style={{ fontSize: 12 }} />
             </Bar>
             <Bar dataKey="actual" fill="#EA4335" name="Actual">
-              <LabelList dataKey="actual" position="top" style={{ fontSize: 8 }} />
+              <LabelList dataKey="actual" position="top" style={{ fontSize: 12 }} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
