@@ -15,9 +15,8 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Spinner,
 } from 'reactstrap';
-import { FaPlus, FaSearch, FaInfo, FaEdit, FaTrash } from 'react-icons/fa';
+import { FaPlus, FaSearch, FaInfo, FaEdit, FaTrash, FaSpinner } from 'react-icons/fa';
 import {
   fetchEmailTemplates,
   deleteEmailTemplate,
@@ -31,7 +30,6 @@ const EmailTemplateList = ({
   loading,
   error,
   searchTerm,
-  totalCount,
   fetchEmailTemplates,
   deleteEmailTemplate,
   setSearchTerm,
@@ -54,10 +52,7 @@ const EmailTemplateList = ({
   // Constants
   const PAGE_SIZE = 10; // Standard page size for templates
 
-  // Skeleton loading component
-  const SkeletonLoader = ({ width = '100%', height = '20px', className = '' }) => (
-    <div className={`skeleton-loader ${className}`} style={{ width, height }} />
-  );
+  // Removed shimmer/skeleton in favor of simple spinners
   // Debounce search term
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -87,6 +82,7 @@ const EmailTemplateList = ({
     fetchEmailTemplates({
       search: debouncedSearch,
       page: currentPage,
+      limit: PAGE_SIZE,
       sortBy,
       sortOrder,
     });
@@ -146,11 +142,27 @@ const EmailTemplateList = ({
       setShowDeleteModal(false);
       setTemplateToDelete(null);
       toast.success(`Template "${templateToDelete.name}" deleted successfully`);
+      // Refetch current page to keep list in sync after deletion
+      await fetchEmailTemplates({
+        search: debouncedSearch,
+        page: currentPage,
+        limit: PAGE_SIZE,
+        sortBy,
+        sortOrder,
+      });
     } catch (error) {
       toast.error(`Failed to delete template: ${error.message || 'Unknown error'}`);
       // Keep modal open on error so user can retry
     }
-  }, [templateToDelete, deleteEmailTemplate]);
+  }, [
+    templateToDelete,
+    deleteEmailTemplate,
+    fetchEmailTemplates,
+    debouncedSearch,
+    currentPage,
+    sortBy,
+    sortOrder,
+  ]);
 
   const handleDeleteCancel = useCallback(() => {
     setShowDeleteModal(false);
@@ -297,8 +309,9 @@ const EmailTemplateList = ({
           <Row>
             <Col>
               <div className="templates-count">
-                Showing {sortedAndFilteredTemplates.length} of {totalCount} templates
-                {debouncedSearch && ` for "${debouncedSearch}"`}
+                {debouncedSearch
+                  ? `Showing ${sortedAndFilteredTemplates.length} templates for "${debouncedSearch}"`
+                  : `Showing ${sortedAndFilteredTemplates.length} templates`}
               </div>
             </Col>
           </Row>
@@ -308,9 +321,7 @@ const EmailTemplateList = ({
       {/* Loading Spinner */}
       {loading && (
         <div className="loading-state">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </Spinner>
+          <FaSpinner className="fa-spin me-2" />
           <div>Loading templates...</div>
         </div>
       )}
@@ -339,7 +350,7 @@ const EmailTemplateList = ({
             >
               {isRetrying ? (
                 <>
-                  <Spinner size="sm" className="me-1" />
+                  <FaSpinner className="fa-spin me-1" />
                   Retrying...
                 </>
               ) : (
@@ -493,31 +504,7 @@ const EmailTemplateList = ({
           </Table>
 
           {/* Pagination Controls */}
-          {totalCount > PAGE_SIZE && (
-            <div className="pagination-controls d-flex justify-content-between align-items-center mt-3">
-              <div className="pagination-buttons d-flex align-items-center gap-3">
-                <Button
-                  color="outline-primary"
-                  size="sm"
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </Button>
-                <span className="pagination-text mx-2">
-                  Page {currentPage} of {Math.ceil(totalCount / PAGE_SIZE)}
-                </span>
-                <Button
-                  color="outline-primary"
-                  size="sm"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= Math.ceil(totalCount / PAGE_SIZE)}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
+          {/* Removed pagination controls (PAGE_SIZE, handlePageChange, and their JSX) */}
         </div>
       )}
 
@@ -529,9 +516,7 @@ const EmailTemplateList = ({
         <ModalBody>
           {loadingTemplateInfo ? (
             <div className="text-center">
-              <Spinner animation="border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </Spinner>
+              <FaSpinner className="fa-spin me-2" />
               <div className="mt-2">Loading template details...</div>
             </div>
           ) : templateToShow ? (
@@ -647,7 +632,6 @@ const mapStateToProps = state => ({
   loading: state.emailTemplates.loading,
   error: state.emailTemplates.error,
   searchTerm: state.emailTemplates.searchTerm,
-  totalCount: state.emailTemplates.totalCount,
 });
 
 const mapDispatchToProps = {
@@ -663,7 +647,6 @@ EmailTemplateList.propTypes = {
   loading: PropTypes.bool,
   error: PropTypes.string,
   searchTerm: PropTypes.string,
-  totalCount: PropTypes.number,
   fetchEmailTemplates: PropTypes.func.isRequired,
   deleteEmailTemplate: PropTypes.func.isRequired,
   setSearchTerm: PropTypes.func.isRequired,
@@ -678,7 +661,6 @@ EmailTemplateList.defaultProps = {
   loading: false,
   error: null,
   searchTerm: '',
-  totalCount: 0,
 };
 
 // Memoize the component to prevent unnecessary re-renders

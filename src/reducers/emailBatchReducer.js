@@ -1,144 +1,94 @@
 import { EMAIL_BATCH_ACTIONS } from '../actions/emailBatchActions';
 
 const initialState = {
-  batches: [],
+  emails: [], // Parent Email records
   pagination: {},
-  dashboardStats: null,
-  batchAuditTrail: [],
-  itemAuditTrail: [],
-  auditStats: null,
+  // dashboardStats removed
+  emailAuditTrail: [], // Audit trail for parent Email
+  emailBatchAuditTrail: [], // Audit trail for child EmailBatch
   loading: {
-    batches: false,
-    dashboardStats: false,
-    batchAudit: false,
-    itemAudit: false,
-    auditStats: false,
+    emails: false,
+    emailAudit: false,
+    emailBatchAudit: false,
   },
   error: {
-    batches: null,
-    dashboardStats: null,
-    batchAudit: null,
-    itemAudit: null,
-    auditStats: null,
+    emails: null,
+    emailAudit: null,
+    emailBatchAudit: null,
   },
 };
 
 const emailBatchReducer = (state = initialState, action) => {
   switch (action.type) {
-    // Fetch batches
-    case EMAIL_BATCH_ACTIONS.FETCH_BATCHES_START:
+    // Fetch emails (parent Email records)
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAILS_START:
       return {
         ...state,
-        loading: { ...state.loading, batches: true },
-        error: { ...state.error, batches: null },
+        loading: { ...state.loading, emails: true },
+        error: { ...state.error, emails: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_BATCHES_SUCCESS:
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAILS_SUCCESS:
       return {
         ...state,
-        loading: { ...state.loading, batches: false },
-        batches: action.payload.batches,
-        pagination: action.payload.pagination,
-        error: { ...state.error, batches: null },
+        loading: { ...state.loading, emails: false },
+        emails: action.payload || [],
+        error: { ...state.error, emails: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_BATCHES_ERROR:
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAILS_ERROR:
       return {
         ...state,
-        loading: { ...state.loading, batches: false },
-        error: { ...state.error, batches: action.payload },
+        loading: { ...state.loading, emails: false },
+        error: { ...state.error, emails: action.payload },
       };
 
-    // Fetch dashboard stats
-    case EMAIL_BATCH_ACTIONS.FETCH_DASHBOARD_STATS_START:
+    // Dashboard stats removed
+
+    // Fetch email audit trail (parent Email)
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_START:
       return {
         ...state,
-        loading: { ...state.loading, dashboardStats: true },
-        error: { ...state.error, dashboardStats: null },
+        loading: { ...state.loading, emailAudit: true },
+        error: { ...state.error, emailAudit: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_DASHBOARD_STATS_SUCCESS:
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_SUCCESS:
       return {
         ...state,
-        loading: { ...state.loading, dashboardStats: false },
-        dashboardStats: action.payload,
-        error: { ...state.error, dashboardStats: null },
+        loading: { ...state.loading, emailAudit: false },
+        emailAuditTrail: action.payload,
+        error: { ...state.error, emailAudit: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_DASHBOARD_STATS_ERROR:
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_ERROR:
       return {
         ...state,
-        loading: { ...state.loading, dashboardStats: false },
-        error: { ...state.error, dashboardStats: action.payload },
+        loading: { ...state.loading, emailAudit: false },
+        error: { ...state.error, emailAudit: action.payload },
       };
 
-    // Fetch batch audit trail
-    case EMAIL_BATCH_ACTIONS.FETCH_BATCH_AUDIT_START:
+    // Fetch email batch audit trail (child EmailBatch)
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_START:
       return {
         ...state,
-        loading: { ...state.loading, batchAudit: true },
-        error: { ...state.error, batchAudit: null },
+        loading: { ...state.loading, emailBatchAudit: true },
+        error: { ...state.error, emailBatchAudit: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_BATCH_AUDIT_SUCCESS:
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_SUCCESS:
       return {
         ...state,
-        loading: { ...state.loading, batchAudit: false },
-        batchAuditTrail: action.payload,
-        error: { ...state.error, batchAudit: null },
+        loading: { ...state.loading, emailBatchAudit: false },
+        emailBatchAuditTrail: action.payload,
+        error: { ...state.error, emailBatchAudit: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_BATCH_AUDIT_ERROR:
+    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_ERROR:
       return {
         ...state,
-        loading: { ...state.loading, batchAudit: false },
-        error: { ...state.error, batchAudit: action.payload },
-      };
-
-    // Fetch item audit trail
-    case EMAIL_BATCH_ACTIONS.FETCH_ITEM_AUDIT_START:
-      return {
-        ...state,
-        loading: { ...state.loading, itemAudit: true },
-        error: { ...state.error, itemAudit: null },
-      };
-
-    case EMAIL_BATCH_ACTIONS.FETCH_ITEM_AUDIT_SUCCESS:
-      return {
-        ...state,
-        loading: { ...state.loading, itemAudit: false },
-        itemAuditTrail: action.payload,
-        error: { ...state.error, itemAudit: null },
-      };
-
-    case EMAIL_BATCH_ACTIONS.FETCH_ITEM_AUDIT_ERROR:
-      return {
-        ...state,
-        loading: { ...state.loading, itemAudit: false },
-        error: { ...state.error, itemAudit: action.payload },
-      };
-
-    // Fetch audit stats
-    case EMAIL_BATCH_ACTIONS.FETCH_AUDIT_STATS_START:
-      return {
-        ...state,
-        loading: { ...state.loading, auditStats: true },
-        error: { ...state.error, auditStats: null },
-      };
-
-    case EMAIL_BATCH_ACTIONS.FETCH_AUDIT_STATS_SUCCESS:
-      return {
-        ...state,
-        loading: { ...state.loading, auditStats: false },
-        auditStats: action.payload,
-        error: { ...state.error, auditStats: null },
-      };
-
-    case EMAIL_BATCH_ACTIONS.FETCH_AUDIT_STATS_ERROR:
-      return {
-        ...state,
-        loading: { ...state.loading, auditStats: false },
-        error: { ...state.error, auditStats: action.payload },
+        loading: { ...state.loading, emailBatchAudit: false },
+        error: { ...state.error, emailBatchAudit: action.payload },
       };
 
     default:

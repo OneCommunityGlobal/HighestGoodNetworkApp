@@ -23,6 +23,7 @@ export const EMAIL_TEMPLATE_ACTIONS = {
   DELETE_EMAIL_TEMPLATE_SUCCESS: 'DELETE_EMAIL_TEMPLATE_SUCCESS',
   DELETE_EMAIL_TEMPLATE_ERROR: 'DELETE_EMAIL_TEMPLATE_ERROR',
 
+  // Deprecated: sending emails from templates handled by emailController endpoints
   SEND_EMAIL_START: 'SEND_EMAIL_START',
   SEND_EMAIL_SUCCESS: 'SEND_EMAIL_SUCCESS',
   SEND_EMAIL_ERROR: 'SEND_EMAIL_ERROR',
@@ -39,30 +40,22 @@ export const EMAIL_TEMPLATE_ACTIONS = {
 // Fetch all email templates with pagination and sorting
 export const fetchEmailTemplates = ({
   search = '',
-  page = 1,
-  limit,
   sortBy = 'created_at',
-  sortOrder = 'desc',
-  fields,
-  includeVariables,
+  includeEmailContent = false,
 } = {}) => async dispatch => {
   try {
     dispatch({ type: EMAIL_TEMPLATE_ACTIONS.FETCH_EMAIL_TEMPLATES_START });
 
     const params = new URLSearchParams();
     if (search) params.append('search', search);
-    if (page) params.append('page', page.toString());
-    if (limit) params.append('limit', limit.toString());
     if (sortBy) params.append('sortBy', sortBy);
-    if (sortOrder) params.append('sortOrder', sortOrder);
-    if (fields) params.append('fields', fields);
-    if (includeVariables) params.append('includeVariables', includeVariables);
+    if (includeEmailContent) params.append('includeEmailContent', 'true');
 
     const response = await axios.get(`${ENDPOINTS.EMAIL_TEMPLATES}?${params.toString()}`);
 
     dispatch({
       type: EMAIL_TEMPLATE_ACTIONS.FETCH_EMAIL_TEMPLATES_SUCCESS,
-      payload: response.data,
+      payload: response.data.templates,
     });
 
     return response.data;
@@ -168,28 +161,8 @@ export const deleteEmailTemplate = id => async dispatch => {
   }
 };
 
-// Send email using template
-export const sendEmailWithTemplate = (id, emailData) => async dispatch => {
-  try {
-    dispatch({ type: EMAIL_TEMPLATE_ACTIONS.SEND_EMAIL_START });
-
-    const response = await axios.post(`${ENDPOINTS.EMAIL_TEMPLATES}/${id}/send`, emailData);
-
-    dispatch({
-      type: EMAIL_TEMPLATE_ACTIONS.SEND_EMAIL_SUCCESS,
-      payload: response.data,
-    });
-
-    return response.data;
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || 'Failed to send email';
-    dispatch({
-      type: EMAIL_TEMPLATE_ACTIONS.SEND_EMAIL_ERROR,
-      payload: errorMessage,
-    });
-    throw error;
-  }
-};
+// Removed: Template sending is now performed client-side by rendering variables and
+// posting to send/broadcast endpoints in emailController
 
 // Set search term
 export const setSearchTerm = searchTerm => ({

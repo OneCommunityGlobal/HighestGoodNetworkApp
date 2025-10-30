@@ -2,10 +2,10 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { Alert, Button, Spinner } from 'reactstrap';
+import { Alert, Button } from 'reactstrap';
+import { FaSpinner } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { EmailTemplateList, EmailTemplateEditor } from './templates';
-import { ErrorBoundary } from '../shared';
 import '../EmailManagement.css';
 
 const EmailTemplateManager = () => {
@@ -320,7 +320,7 @@ const EmailTemplateManager = () => {
           >
             {isRetrying ? (
               <>
-                <Spinner size="sm" className="me-1" />
+                <FaSpinner className="fa-spin me-1" />
                 Retrying...
               </>
             ) : (
@@ -360,16 +360,22 @@ const EmailTemplateManager = () => {
         event.reason?.name === 'ChunkLoadError' ||
         event.reason?.message?.includes('Loading chunk')
       ) {
-        handleError(new Error(event.reason), { componentStack: 'Promise rejection' });
+        const err = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+        handleError(err, { componentStack: 'Promise rejection' });
       }
       // Let API promise rejections be handled by individual components
     };
 
-    window.addEventListener('error', handleError);
+    const windowErrorListener = e => {
+      const err = e.error instanceof Error ? e.error : new Error(e.message || 'Error');
+      handleError(err, { componentStack: 'window.onerror' });
+    };
+
+    window.addEventListener('error', windowErrorListener);
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
 
     return () => {
-      window.removeEventListener('error', handleError);
+      window.removeEventListener('error', windowErrorListener);
       window.removeEventListener('unhandledrejection', handleUnhandledRejection);
     };
   }, []);
@@ -389,7 +395,7 @@ const EmailTemplateManager = () => {
           >
             {isRetrying ? (
               <>
-                <Spinner size="sm" className="me-1" />
+                <FaSpinner className="fa-spin me-1" />
                 Retrying...
               </>
             ) : (
@@ -417,7 +423,7 @@ const EmailTemplateManager = () => {
             >
               {isRetrying ? (
                 <>
-                  <Spinner size="sm" className="me-1" />
+                  <FaSpinner className="fa-spin me-1" />
                   Retrying...
                 </>
               ) : (

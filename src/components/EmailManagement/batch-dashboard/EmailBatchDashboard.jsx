@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { fetchBatches, fetchDashboardStats } from '../../../actions/emailBatchActions';
+import { fetchEmails, resendEmail } from '../../../actions/emailBatchActions';
 import httpService from '../../../services/httpService';
 import {
   Card,
@@ -33,39 +33,39 @@ import {
   FaEnvelope,
   FaUser,
   FaCalendar,
-  FaFilter,
+  // FaFilter removed
   FaSync,
   FaCheckCircle,
   FaExclamationTriangle,
   FaHistory,
+  FaPaperPlane,
 } from 'react-icons/fa';
 import './EmailBatchDashboard.css';
 import './StatsChips.css';
 import './ButtonStyles.css';
 import AuditTrailModal from './AuditTrailModal';
+import ResendEmailModal from './ResendEmailModal';
+import WorkerStatus from './WorkerStatus';
 
 const EmailBatchDashboard = () => {
   const dispatch = useDispatch();
 
   // Redux state
-  const { batches, dashboardStats, loading, error } = useSelector(state => state.emailBatches);
+  const { emails, loading, error } = useSelector(state => state.emailBatches);
 
   // Local state
-  const [selectedBatch, setSelectedBatch] = useState(null);
-  const [showBatchDetails, setShowBatchDetails] = useState(false);
-  const [batchItems, setBatchItems] = useState([]);
+  const [selectedEmail, setSelectedEmail] = useState(null);
+  const [showEmailDetails, setShowEmailDetails] = useState(false);
+  const [emailBatches, setEmailBatches] = useState([]); // Child EmailBatch items
   const [loadingItems, setLoadingItems] = useState(false);
   const [showEmailPreview, setShowEmailPreview] = useState(false);
   const [previewBatch, setPreviewBatch] = useState(null);
-  const [filters, setFilters] = useState({
-    status: '',
-    dateFrom: '',
-    dateTo: '',
-  });
-  const [showFilters, setShowFilters] = useState(false);
+  // Filters removed
   const [showAuditTrail, setShowAuditTrail] = useState(false);
   const [auditTrailType, setAuditTrailType] = useState('batch');
   const [auditTrailId, setAuditTrailId] = useState(null);
+  const [showResendModal, setShowResendModal] = useState(false);
+  const [emailToResend, setEmailToResend] = useState(null);
 
   // Dynamic refresh state
   const [refreshState, setRefreshState] = useState({
@@ -101,25 +101,17 @@ const EmailBatchDashboard = () => {
         }));
 
         // Fetch data in parallel for better performance
-        const [batchesResult, statsResult] = await Promise.allSettled([
-          dispatch(fetchBatches(filters)),
-          dispatch(fetchDashboardStats()),
-        ]);
+        const [emailsResult] = await Promise.allSettled([dispatch(fetchEmails())]);
 
         // Handle partial failures gracefully
-        if (batchesResult.status === 'rejected') {
-          console.warn('Failed to fetch batches:', batchesResult.reason);
+        if (emailsResult.status === 'rejected') {
+          console.warn('Failed to fetch emails:', emailsResult.reason);
           if (!isBackground) {
-            toast.error('Failed to fetch batches');
+            toast.error('Failed to fetch emails');
           }
         }
 
-        if (statsResult.status === 'rejected') {
-          console.warn('Failed to fetch dashboard stats:', statsResult.reason);
-          if (!isBackground) {
-            toast.error('Failed to fetch dashboard statistics');
-          }
-        }
+        // dashboard stats removed
 
         isRefreshingRef.current = false;
         setRefreshState(prev => ({
@@ -144,7 +136,7 @@ const EmailBatchDashboard = () => {
         }
       }
     },
-    [dispatch, filters],
+    [dispatch],
   );
 
   // Manual refresh with user feedback
@@ -241,62 +233,72 @@ const EmailBatchDashboard = () => {
     };
   }, []);
 
-  // Handle batch details
-  const handleViewDetails = async batch => {
-    setSelectedBatch(batch);
-    setShowBatchDetails(true);
+  // Handle email details
+  const handleViewDetails = async email => {
+    setSelectedEmail(email);
+    setShowEmailDetails(true);
     setLoadingItems(true);
 
     try {
-      const response = await httpService.get(`/api/email-batches/batches/${batch.batchId}`);
+      const response = await httpService.get(`/api/email-batches/emails/${email._id}`);
 
       if (response.data.success) {
-        setSelectedBatch(response.data.data.batch);
-        setBatchItems(response.data.data.items || []);
+        setSelectedEmail(response.data.data.email);
+        setEmailBatches(response.data.data.batches || []); // Child EmailBatch items
       }
     } catch (error) {
-      console.error('Error fetching batch details:', error);
-      toast.error('Failed to fetch batch details');
+      console.error('Error fetching email details:', error);
+      toast.error('Failed to fetch email details');
     } finally {
       setLoadingItems(false);
     }
   };
 
-  // Handle filter changes
-  const handleFilterChange = (key, value) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-  };
+  // Filter handlers removed
 
-  // Apply filters
-  const handleApplyFilters = () => {
-    // Close the filters modal
-    setShowFilters(false);
-    // Trigger data refresh with filters
-    fetchData(false);
-  };
-
-  // Clear filters
-  const handleClearFilters = () => {
-    setFilters({ status: '', dateFrom: '', dateTo: '' });
-    setShowFilters(false);
-    // Trigger data refresh without filters
-    fetchData(false);
-  };
-
-  // Handle retry batch item
-  const handleRetryBatchItem = async itemId => {
+  // Handle retry Email - queues all failed EmailBatch items for retry
+  const handleRetryEmail = async emailId => {
     try {
-      const response = await httpService.post(`/api/email-batches/retry-item/${itemId}`);
+      const response = await httpService.post(`/api/email-batches/emails/${emailId}/retry`);
       if (response.data.success) {
-        toast.success('Batch item retry initiated');
-        // Refresh the batch details
-        if (selectedBatch) {
-          handleViewDetails(selectedBatch);
+        const message =
+          response.data.data.failedItemsRetried > 0
+            ? `Queued ${response.data.data.failedItemsRetried} failed batch items for retry. They will be processed shortly.`
+            : 'No failed items to retry';
+        toast.success(message);
+
+        // Refresh the email details
+        if (selectedEmail) {
+          handleViewDetails(selectedEmail);
         }
+
+        // Also refresh the main emails list to update status
+        await dispatch(fetchEmails());
       }
     } catch (error) {
-      console.error('Error retrying batch item:', error);
-      toast.error('Failed to retry batch item');
+      console.error('Error retrying Email:', error);
+      toast.error('Failed to retry Email');
+    }
+  };
+
+  // Handle resend email modal
+  const handleOpenResendModal = email => {
+    setEmailToResend(email);
+    setShowResendModal(true);
+  };
+
+  const handleCloseResendModal = () => {
+    setShowResendModal(false);
+    setEmailToResend(null);
+  };
+
+  const handleResendEmail = async (emailId, recipientOption, specificRecipients) => {
+    try {
+      await dispatch(resendEmail(emailId, recipientOption, specificRecipients));
+      handleCloseResendModal();
+    } catch (error) {
+      console.error('Error resending email:', error);
+      // Error toast is already shown by the action
     }
   };
 
@@ -321,8 +323,8 @@ const EmailBatchDashboard = () => {
   };
 
   // Handle preview email
-  const handlePreviewEmail = batch => {
-    setPreviewBatch(batch);
+  const handlePreviewEmail = email => {
+    setPreviewBatch(email);
     setShowEmailPreview(true);
   };
 
@@ -358,7 +360,7 @@ const EmailBatchDashboard = () => {
   };
 
   // Show initial loading only on first load
-  if (loading.batches && !refreshState.lastRefresh) {
+  if (loading.emails && !refreshState.lastRefresh) {
     return (
       <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
         <Spinner color="primary" />
@@ -372,8 +374,9 @@ const EmailBatchDashboard = () => {
       {/* Header */}
       <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4">
         <div className="flex-grow-1 mb-3 mb-lg-0">
-          <h2 className="page-title mb-2">Email Batch Dashboard</h2>
+          <h2 className="page-title mb-2">Email Dashboard</h2>
           <div className="d-flex flex-column gap-1">
+            <WorkerStatus />
             {refreshState.lastRefresh && (
               <small className="text-muted d-flex align-items-center">
                 <FaClock className="mr-1" size={12} />
@@ -419,34 +422,8 @@ const EmailBatchDashboard = () => {
               {refreshState.isRefreshing ? 'Refreshing...' : 'Refresh'}
             </span>
           </Button>
-          <Button
-            color={refreshState.autoRefresh ? 'success' : 'outline-secondary'}
-            size="sm"
-            onClick={() =>
-              setRefreshState(prev => ({
-                ...prev,
-                autoRefresh: !prev.autoRefresh,
-              }))
-            }
-            className="action-btn auto-refresh-btn"
-            id="auto-refresh-tooltip"
-          >
-            {refreshState.autoRefresh ? (
-              <FaCheckCircle className="me-1" />
-            ) : (
-              <FaClock className="me-1" />
-            )}
-            <span className="d-none d-sm-inline">Auto Refresh</span>
-          </Button>
-          <Button
-            color="outline-secondary"
-            size="sm"
-            onClick={() => setShowFilters(!showFilters)}
-            className="action-btn filter-btn"
-          >
-            <FaFilter className="me-1" />
-            <span className="d-none d-sm-inline">Filters</span>
-          </Button>
+          {/* Auto Refresh button removed */}
+          {/* Filters button removed */}
         </div>
       </div>
 
@@ -454,293 +431,95 @@ const EmailBatchDashboard = () => {
       <Tooltip target="refresh-tooltip" placement="bottom">
         {refreshState.isRefreshing ? 'Refreshing data...' : 'Manually refresh data'}
       </Tooltip>
-      <Tooltip target="auto-refresh-tooltip" placement="bottom">
-        {refreshState.autoRefresh ? 'Auto-refresh enabled (2 min)' : 'Enable auto-refresh'}
-      </Tooltip>
+      {/* Auto refresh tooltip removed */}
 
-      {/* Inline Filters Modal */}
-      {showFilters && (
-        <div className="position-relative">
-          <div className="inline-filters-modal">
-            <Card className="shadow-lg border-0" style={{ maxWidth: '350px' }}>
-              <CardHeader className="bg-primary text-white py-2">
-                <div className="d-flex justify-content-between align-items-center">
-                  <h6 className="mb-0">
-                    <FaFilter className="me-2" />
-                    Filters
-                  </h6>
-                  <Button
-                    color="link"
-                    className="text-white p-0"
-                    onClick={() => setShowFilters(false)}
-                    style={{ fontSize: '1.2rem', lineHeight: 1 }}
-                  >
-                    <FaTimes />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardBody className="p-3">
-                <div className="d-flex flex-column gap-3">
-                  <FormGroup>
-                    <Label className="form-label-sm">Status</Label>
-                    <Input
-                      type="select"
-                      size="sm"
-                      value={filters.status}
-                      onChange={e => handleFilterChange('status', e.target.value)}
-                    >
-                      <option value="">All Statuses</option>
-                      <option value="QUEUED">Queued</option>
-                      <option value="SENDING">Sending</option>
-                      <option value="SENT">Sent</option>
-                      <option value="PROCESSED">Processed</option>
-                      <option value="FAILED">Failed</option>
-                    </Input>
-                  </FormGroup>
+      {/* Filters modal removed */}
 
-                  <FormGroup>
-                    <Label className="form-label-sm">Date From</Label>
-                    <Input
-                      type="date"
-                      size="sm"
-                      value={filters.dateFrom}
-                      onChange={e => handleFilterChange('dateFrom', e.target.value)}
-                    />
-                  </FormGroup>
-
-                  <FormGroup>
-                    <Label className="form-label-sm">Date To</Label>
-                    <Input
-                      type="date"
-                      size="sm"
-                      value={filters.dateTo}
-                      onChange={e => handleFilterChange('dateTo', e.target.value)}
-                    />
-                  </FormGroup>
-
-                  <div className="d-flex gap-2 pt-2">
-                    <Button
-                      color="primary"
-                      size="sm"
-                      onClick={handleApplyFilters}
-                      className="flex-fill"
-                    >
-                      Apply
-                    </Button>
-                    <Button
-                      color="outline-secondary"
-                      size="sm"
-                      onClick={handleClearFilters}
-                      className="flex-fill"
-                    >
-                      Clear
-                    </Button>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-        </div>
-      )}
-
-      {/* Stats Chips */}
-      <div className="mb-3">
-        <div className="stats-chips">
-          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-            <FaEnvelope className="stat-icon text-primary" size={14} />
-            <span className="stat-number text-primary">
-              {dashboardStats?.overview?.totalBatches || 0}
-            </span>
-            <span className="stat-label">Total</span>
-            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
-          </div>
-          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-            <FaCheck className="stat-icon text-success" size={14} />
-            <span className="stat-number text-success">
-              {dashboardStats?.overview?.completedBatches || 0}
-            </span>
-            <span className="stat-label">Completed</span>
-            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
-          </div>
-          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-            <FaSync className="stat-icon text-info" size={14} />
-            <span className="stat-number text-info">
-              {dashboardStats?.overview?.processingBatches || 0}
-            </span>
-            <span className="stat-label">Processing</span>
-            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
-          </div>
-          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-            <FaTimes className="stat-icon text-danger" size={14} />
-            <span className="stat-number text-danger">
-              {dashboardStats?.overview?.failedBatches || 0}
-            </span>
-            <span className="stat-label">Failed</span>
-            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
-          </div>
-        </div>
-      </div>
-
-      {/* Email Stats Chips */}
-      <div className="mb-4">
-        <div className="stats-chips">
-          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-            <FaEnvelope className="stat-icon text-primary" size={14} />
-            <span className="stat-number text-primary">
-              {dashboardStats?.emailStats?.totalEmails || 0}
-            </span>
-            <span className="stat-label">Emails</span>
-            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
-          </div>
-          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-            <FaCheck className="stat-icon text-success" size={14} />
-            <span className="stat-number text-success">
-              {dashboardStats?.emailStats?.sentEmails || 0}
-            </span>
-            <span className="stat-label">Sent</span>
-            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
-          </div>
-          <div className={`stat-chip ${refreshState.backgroundSync ? 'border-info' : ''}`}>
-            <FaUser className="stat-icon text-secondary" size={14} />
-            <span className="stat-number text-secondary">
-              {dashboardStats?.emailStats?.successRate || 0}%
-            </span>
-            <span className="stat-label">Success</span>
-            {refreshState.backgroundSync && <FaSync className="text-info fa-spin ms-2" size={10} />}
-          </div>
-        </div>
-      </div>
+      {/* Stats removed */}
 
       {/* Error Message */}
-      {error.batches && (
+      {error.emails && (
         <Alert color="danger" className="mb-3">
-          {error.batches}
+          {error.emails}
         </Alert>
       )}
 
-      {/* Batches Table */}
+      {/* Emails Table */}
       <Card className="shadow-sm mb-4">
         <CardBody className="p-0">
-          {batches && batches.length > 0 ? (
+          {emails && emails.length > 0 ? (
             <div className="table-responsive">
               <Table striped hover className="mb-0">
                 <thead className="table-dark">
                   <tr>
                     <th className="border-0 py-2 px-3">Email</th>
                     <th className="border-0 py-2 px-3">Status</th>
-                    <th className="border-0 py-2 px-3 d-none d-lg-table-cell">Statistics</th>
                     <th className="border-0 py-2 px-3 d-none d-md-table-cell">Timing</th>
-                    <th className="border-0 py-2 px-3 d-none d-xl-table-cell">Created By</th>
+                    <th className="border-0 py-2 px-3 d-none d-lg-table-cell">Created By</th>
                     <th className="border-0 py-2 px-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {batches.map(batch => (
-                    <tr key={batch._id} className="align-middle">
+                  {emails.map(email => (
+                    <tr key={email._id} className="align-middle">
                       <td className="py-2 px-3">
                         <div className="d-flex flex-column gap-1">
-                          <strong className="text-primary">{batch.subject || 'Email Batch'}</strong>
+                          <strong className="text-primary">{email.subject || 'Email'}</strong>
                           <Button
                             size="sm"
                             color="outline-info"
-                            onClick={() => handlePreviewEmail(batch)}
+                            onClick={() => handlePreviewEmail(email)}
                             className="d-flex align-items-center p-1 align-self-start"
                             title="Preview Email"
                           >
                             <FaEye size={12} />
                           </Button>
-                          <div className="d-lg-none mt-2">
-                            <div className="d-flex flex-column gap-1">
-                              <small className="text-primary">
-                                <FaEnvelope className="me-1" size={12} />
-                                {batch.totalEmails || 0} total
-                              </small>
-                              <div className="d-flex justify-content-between">
-                                <small className="text-success">
-                                  <FaCheck className="me-1" size={12} />
-                                  {batch.sentEmails || 0} sent
-                                </small>
-                                <small className="text-danger">
-                                  <FaTimes className="me-1" size={12} />
-                                  {batch.failedEmails || 0} failed
-                                </small>
-                              </div>
-                              {batch.pendingEmails > 0 && (
-                                <small className="text-warning">
-                                  <FaClock className="me-1" size={12} />
-                                  {batch.pendingEmails} pending
-                                </small>
-                              )}
-                            </div>
-                          </div>
+                          {/* counts removed from compact view */}
                           <div className="d-md-none mt-1">
                             <small className="text-muted">
                               <FaCalendar className="me-1" size={12} />
-                              Created: {formatDate(batch.createdAt)}
+                              Created: {formatDate(email.createdAt)}
                             </small>
                           </div>
-                          <div className="d-xl-none mt-1">
+                          <div className="d-lg-none mt-1">
                             <small className="text-muted">
                               <FaUser className="me-1" size={12} />
-                              {batch.createdBy?.firstName && batch.createdBy?.lastName
-                                ? `${batch.createdBy.firstName} ${batch.createdBy.lastName}`
-                                : batch.createdBy?.firstName || 'System'}
+                              {email.createdBy?.firstName && email.createdBy?.lastName
+                                ? `${email.createdBy.firstName} ${email.createdBy.lastName}`
+                                : email.createdBy?.firstName || 'System'}
                             </small>
                           </div>
                         </div>
                       </td>
                       <td className="py-2 px-3">
                         <div className="d-flex align-items-center mb-2">
-                          <Badge color={getStatusBadge(batch.status)}>{batch.status}</Badge>
-                        </div>
-                      </td>
-                      <td className="py-2 px-3 d-none d-lg-table-cell">
-                        <div className="text-center">
-                          <div className="d-flex flex-column gap-1">
-                            <small className="text-primary">
-                              <FaEnvelope className="me-1" size={12} />
-                              {batch.totalEmails || 0} total
-                            </small>
-                            <small className="text-success">
-                              <FaCheck className="me-1" size={12} />
-                              {batch.sentEmails || 0} sent
-                            </small>
-                            <small className="text-danger">
-                              <FaTimes className="me-1" size={12} />
-                              {batch.failedEmails || 0} failed
-                            </small>
-                            {batch.pendingEmails > 0 && (
-                              <small className="text-warning">
-                                <FaClock className="me-1" size={12} />
-                                {batch.pendingEmails} pending
-                              </small>
-                            )}
-                          </div>
+                          <Badge color={getStatusBadge(email.status)}>{email.status}</Badge>
                         </div>
                       </td>
                       <td className="py-2 px-3 d-none d-md-table-cell">
                         <div>
                           <small className="text-muted d-block">
-                            Created: {formatDate(batch.createdAt)}
+                            <FaCalendar className="me-1" size={12} />
+                            Created: {formatDate(email.createdAt)}
                           </small>
-                          {batch.startedAt && (
+                          {email.startedAt && (
                             <small className="text-info d-block">
-                              Started: {formatDate(batch.startedAt)}
+                              Started: {formatDate(email.startedAt)}
                             </small>
                           )}
-                          {batch.completedAt && (
+                          {email.completedAt && (
                             <small className="text-success d-block">
-                              Completed: {formatDate(batch.completedAt)}
+                              Completed: {formatDate(email.completedAt)}
                             </small>
                           )}
                         </div>
                       </td>
-                      <td className="py-2 px-3 d-none d-xl-table-cell">
+                      <td className="py-2 px-3 d-none d-lg-table-cell">
                         <div>
                           <small className="d-block">
-                            {batch.createdBy?.firstName && batch.createdBy?.lastName
-                              ? `${batch.createdBy.firstName} ${batch.createdBy.lastName}`
-                              : batch.createdBy?.firstName || 'System'}
+                            {email.createdBy?.firstName && email.createdBy?.lastName
+                              ? `${email.createdBy.firstName} ${email.createdBy.lastName}`
+                              : email.createdBy?.firstName || 'System'}
                           </small>
                         </div>
                       </td>
@@ -749,16 +528,40 @@ const EmailBatchDashboard = () => {
                           <Button
                             size="sm"
                             color="outline-primary"
-                            onClick={() => handleViewDetails(batch)}
+                            onClick={() => handleViewDetails(email)}
                             className="d-flex align-items-center"
                           >
                             <FaEye className="me-1" size={12} />
                             <span className="d-none d-sm-inline">View Details</span>
                           </Button>
+                          {(email.status === 'FAILED' || email.status === 'PROCESSED') && (
+                            <Button
+                              size="sm"
+                              color="warning"
+                              onClick={() => handleRetryEmail(email._id)}
+                              className="d-flex align-items-center"
+                              title="Queue failed EmailBatch items for retry"
+                            >
+                              <FaRedo className="me-1" size={12} />
+                              <span className="d-none d-sm-inline">Retry</span>
+                            </Button>
+                          )}
+                          {(email.status === 'SENT' || email.status === 'PROCESSED') && (
+                            <Button
+                              size="sm"
+                              color="info"
+                              onClick={() => handleOpenResendModal(email)}
+                              className="d-flex align-items-center"
+                              title="Resend email to new or same recipients"
+                            >
+                              <FaPaperPlane className="me-1" size={12} />
+                              <span className="d-none d-sm-inline">Resend</span>
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             color="outline-secondary"
-                            onClick={() => handleViewAuditTrail(batch._id, 'email')}
+                            onClick={() => handleViewAuditTrail(email._id, 'email')}
                             className="d-flex align-items-center"
                           >
                             <FaHistory className="me-1" size={12} />
@@ -774,77 +577,75 @@ const EmailBatchDashboard = () => {
           ) : (
             <div className="text-center py-5">
               <FaEnvelope size={48} className="text-muted mb-3" />
-              <h5 className="text-muted">No Email Batches Found</h5>
-              <p className="text-muted">Create your first email batch to get started.</p>
+              <h5 className="text-muted">No Emails Found</h5>
+              <p className="text-muted">Send your first email to get started.</p>
             </div>
           )}
         </CardBody>
       </Card>
 
-      {/* Batch Details Modal */}
-      {showBatchDetails && selectedBatch && (
+      {/* Email Details Modal */}
+      {showEmailDetails && selectedEmail && (
         <Modal
-          isOpen={showBatchDetails}
-          toggle={() => setShowBatchDetails(false)}
+          isOpen={showEmailDetails}
+          toggle={() => setShowEmailDetails(false)}
           size="lg"
           centered
           className="modal-responsive"
         >
-          <ModalHeader toggle={() => setShowBatchDetails(false)}>
-            Batch Details: {selectedBatch.name}
+          <ModalHeader toggle={() => setShowEmailDetails(false)}>
+            Email Details: {selectedEmail.subject}
           </ModalHeader>
           <ModalBody className="p-4">
             <div className="d-flex flex-column flex-md-row gap-5">
               <div className="flex-fill">
                 <Card className="h-100">
                   <CardHeader className="bg-light">
-                    <h6 className="mb-0">Batch Information</h6>
+                    <h6 className="mb-0">Email Information</h6>
                   </CardHeader>
                   <CardBody className="p-3">
                     <div className="d-flex flex-column gap-2">
                       <div>
-                        <strong>Batch ID:</strong>
-                        <div className="text-primary font-monospace small">
-                          {selectedBatch.batchId}
-                        </div>
+                        <strong>Email ID:</strong>
+                        <div className="text-primary font-monospace small">{selectedEmail._id}</div>
                       </div>
                       <div>
                         <strong>Status:</strong>
                         <div>
-                          <Badge color={getStatusBadge(selectedBatch.status)} className="ms-2">
-                            {selectedBatch.status}
+                          <Badge color={getStatusBadge(selectedEmail.status)} className="ms-2">
+                            {selectedEmail.status}
                           </Badge>
                         </div>
                       </div>
                       <div>
                         <strong>Created By:</strong>
                         <div className="text-muted">
-                          {selectedBatch.createdBy?.firstName && selectedBatch.createdBy?.lastName
-                            ? `${selectedBatch.createdBy.firstName} ${selectedBatch.createdName}`
-                            : selectedBatch.createdBy?.firstName || 'System'}
+                          {selectedEmail.createdBy?.firstName && selectedEmail.createdBy?.lastName
+                            ? `${selectedEmail.createdBy.firstName} ${selectedEmail.createdBy.lastName}`
+                            : selectedEmail.createdBy?.firstName || 'System'}
                         </div>
                       </div>
                       <div>
                         <strong>Created:</strong>
-                        <div className="text-muted">{formatDate(selectedBatch.createdAt)}</div>
+                        <div className="text-muted">{formatDate(selectedEmail.createdAt)}</div>
                       </div>
-                      {selectedBatch.startedAt && (
+                      {selectedEmail.startedAt && (
                         <div>
                           <strong>Started:</strong>
-                          <div className="text-info">{formatDate(selectedBatch.startedAt)}</div>
+                          <div className="text-info">{formatDate(selectedEmail.startedAt)}</div>
                         </div>
                       )}
-                      {selectedBatch.completedAt && (
+                      {selectedEmail.completedAt && (
                         <div>
                           <strong>Completed:</strong>
                           <div className="text-success">
-                            {formatDate(selectedBatch.completedAt)}
+                            {formatDate(selectedEmail.completedAt)}
                           </div>
                         </div>
                       )}
                       <div>
                         <strong>Last Updated:</strong>
-                        <div className="text-muted">{formatDate(selectedBatch.updatedAt)}</div>
+                        <div className="text-muted">{formatDate(selectedEmail.updatedAt)}</div>
                       </div>
                     </div>
                   </CardBody>
@@ -862,7 +663,7 @@ const EmailBatchDashboard = () => {
                           <strong>Total Emails:</strong>
                         </span>
                         <span className="text-primary fw-bold">
-                          {selectedBatch.totalEmails || 0}
+                          {selectedEmail.totalEmails || 0}
                         </span>
                       </div>
                       <div className="d-flex justify-content-between">
@@ -870,7 +671,7 @@ const EmailBatchDashboard = () => {
                           <strong>Sent:</strong>
                         </span>
                         <span className="text-success fw-bold">
-                          {selectedBatch.sentEmails || 0}
+                          {selectedEmail.sentEmails || 0}
                         </span>
                       </div>
                       <div className="d-flex justify-content-between">
@@ -878,7 +679,7 @@ const EmailBatchDashboard = () => {
                           <strong>Failed:</strong>
                         </span>
                         <span className="text-danger fw-bold">
-                          {selectedBatch.failedEmails || 0}
+                          {selectedEmail.failedEmails || 0}
                         </span>
                       </div>
                       <div className="d-flex justify-content-between">
@@ -886,9 +687,9 @@ const EmailBatchDashboard = () => {
                           <strong>Success Rate:</strong>
                         </span>
                         <span className="text-secondary fw-bold">
-                          {selectedBatch.totalEmails > 0
+                          {selectedEmail.totalEmails > 0
                             ? Math.round(
-                                (selectedBatch.sentEmails / selectedBatch.totalEmails) * 100,
+                                (selectedEmail.sentEmails / selectedEmail.totalEmails) * 100,
                               )
                             : 0}
                           %
@@ -897,11 +698,11 @@ const EmailBatchDashboard = () => {
                       <div className="mt-3">
                         <div className="d-flex justify-content-between mb-1">
                           <small>Progress</small>
-                          <small>{selectedBatch.progress || 0}%</small>
+                          <small>{selectedEmail.progress || 0}%</small>
                         </div>
                         <Progress
-                          value={selectedBatch.progress || 0}
-                          color={getStatusBadge(selectedBatch.status)}
+                          value={selectedEmail.progress || 0}
+                          color={getStatusBadge(selectedEmail.status)}
                           style={{ height: '8px' }}
                         />
                       </div>
@@ -916,7 +717,7 @@ const EmailBatchDashboard = () => {
             <Card className="mt-3">
               <CardHeader className="bg-light">
                 <h6 className="mb-0">
-                  Batch Items ({batchItems.length}) - Up to 50 recipients per item
+                  Email Batches ({emailBatches.length}) - Up to 1000 recipients per batch
                 </h6>
               </CardHeader>
               <CardBody className="p-0">
@@ -925,12 +726,12 @@ const EmailBatchDashboard = () => {
                     <Spinner color="primary" />
                     <p className="mt-2">Loading email items...</p>
                   </div>
-                ) : batchItems.length > 0 ? (
+                ) : emailBatches.length > 0 ? (
                   <div className="table-responsive">
                     <Table striped hover className="mb-0">
                       <thead className="table-dark">
                         <tr>
-                          <th className="border-0 py-2 px-3">Batch Item</th>
+                          <th className="border-0 py-2 px-3">Email Batch</th>
                           <th className="border-0 py-2 px-3">Status</th>
                           <th className="border-0 py-2 px-3 d-none d-sm-table-cell">Attempts</th>
                           <th className="border-0 py-2 px-3 d-none d-md-table-cell">Timing</th>
@@ -938,12 +739,12 @@ const EmailBatchDashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {batchItems.map((item, index) => (
+                        {emailBatches.map((item, index) => (
                           <tr key={index}>
                             <td className="py-2 px-3">
                               <div>
                                 <strong className="text-primary d-block">
-                                  Batch Item #{index + 1}
+                                  Email Batch #{index + 1}
                                 </strong>
                                 <small className="text-muted">
                                   {item.recipients?.length || 0} recipients
@@ -1005,17 +806,6 @@ const EmailBatchDashboard = () => {
                             <td className="py-2 px-3">
                               <div className="d-flex flex-column gap-2">
                                 <div className="d-flex gap-1">
-                                  {(item.status === 'FAILED' || item.status === 'QUEUED') && (
-                                    <Button
-                                      size="sm"
-                                      color="warning"
-                                      onClick={() => handleRetryBatchItem(item._id)}
-                                      className="d-flex align-items-center"
-                                    >
-                                      <FaRedo size={12} className="me-1" />
-                                      <span className="d-none d-sm-inline">Retry</span>
-                                    </Button>
-                                  )}
                                   <Button
                                     size="sm"
                                     color="outline-info"
@@ -1053,14 +843,14 @@ const EmailBatchDashboard = () => {
                 ) : (
                   <div className="text-center py-4">
                     <FaEnvelope size={32} className="text-muted mb-2" />
-                    <p className="text-muted">No email items found for this batch.</p>
+                    <p className="text-muted">No email batches found for this email.</p>
                   </div>
                 )}
               </CardBody>
             </Card>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={() => setShowBatchDetails(false)}>
+            <Button color="secondary" onClick={() => setShowEmailDetails(false)}>
               Close
             </Button>
           </ModalFooter>
@@ -1077,7 +867,7 @@ const EmailBatchDashboard = () => {
           className="modal-responsive"
         >
           <ModalHeader toggle={() => setShowEmailPreview(false)}>
-            Email Preview: {previewBatch.subject || 'Email Batch'}
+            Email Preview: {previewBatch.subject || 'Email'}
           </ModalHeader>
           <ModalBody className="p-4">
             <div className="mb-3">
@@ -1108,6 +898,14 @@ const EmailBatchDashboard = () => {
         emailId={auditTrailType === 'email' ? auditTrailId : null}
         emailBatchId={auditTrailType === 'emailBatch' ? auditTrailId : null}
         type={auditTrailType}
+      />
+
+      {/* Resend Email Modal */}
+      <ResendEmailModal
+        isOpen={showResendModal}
+        toggle={handleCloseResendModal}
+        email={emailToResend}
+        onResend={handleResendEmail}
       />
     </>
   );

@@ -33,11 +33,15 @@ import {
   FaInfoCircle,
   FaSpinner,
 } from 'react-icons/fa';
-import { Editor } from '@tinymce/tinymce-react';
 import { getEmailSenderConfig } from '../shared';
+import { validateTemplateVariables, validateVariable, Validators } from './validation';
+import {
+  parseRecipients as parseRecipientsUtil,
+  validateEmail as validateEmailUtil,
+  buildRenderedEmailFromTemplate,
+} from './utils';
 import {
   fetchEmailTemplates,
-  sendEmailWithTemplate,
   clearEmailTemplateError,
 } from '../../../actions/emailTemplateActions';
 import './IntegratedEmailSender.css';
@@ -56,32 +60,46 @@ const VariableRow = React.memo(
     error,
     onVariableChange,
     onImageSourceChange,
-    getYouTubeThumbnailWithFallback,
+    onImageLoadStatusChange,
   }) => {
-    const handleImageError = useCallback(e => {
-      // Try fallback thumbnails for YouTube videos
-      const currentSrc = e.target.src;
-      const youtubeMatch = currentSrc.match(/img\.youtube\.com\/vi\/([^\/]+)\/([^\/]+)\.jpg/);
+    const [imgError, setImgError] = React.useState(false);
+    const [qualityIndex, setQualityIndex] = React.useState(0);
+    const qualities = React.useMemo(
+      () => ['maxresdefault', 'hqdefault', 'mqdefault', 'default'],
+      [],
+    );
 
-      if (youtubeMatch) {
-        const videoId = youtubeMatch[1];
-        const currentQuality = youtubeMatch[2];
+    React.useEffect(() => {
+      setImgError(false);
+      setQualityIndex(0);
+    }, [value, extractedValue]);
 
-        // Try next quality level
-        const fallbackOptions = ['hqdefault', 'mqdefault', 'default'];
-        const currentIndex = fallbackOptions.indexOf(currentQuality);
+    const youtubeId = React.useMemo(() => Validators.extractYouTubeId(value || ''), [value]);
+    const computedSrc = React.useMemo(() => {
+      if (youtubeId) {
+        const q = qualities[Math.min(qualityIndex, qualities.length - 1)];
+        return `https://img.youtube.com/vi/${youtubeId}/${q}.jpg`;
+      }
+      return extractedValue || value || '';
+    }, [youtubeId, qualities, qualityIndex, extractedValue, value]);
 
-        if (currentIndex < fallbackOptions.length - 1) {
-          const nextQuality = fallbackOptions[currentIndex + 1];
-          e.target.src = `https://img.youtube.com/vi/${videoId}/${nextQuality}.jpg`;
-          return;
+    const handleImageError = useCallback(() => {
+      if (youtubeId && qualityIndex < qualities.length - 1) {
+        setQualityIndex(idx => idx + 1);
+      } else {
+        setImgError(true);
+        if (onImageLoadStatusChange) {
+          onImageLoadStatusChange(variable.name, false);
         }
       }
+    }, [youtubeId, qualityIndex, qualities.length]);
 
-      // If all fallbacks fail, show error
-      e.target.style.display = 'none';
-      e.target.nextSibling.style.display = 'flex';
-    }, []);
+    const handleImageLoad = useCallback(() => {
+      setImgError(false);
+      if (onImageLoadStatusChange) {
+        onImageLoadStatusChange(variable.name, true);
+      }
+    }, [onImageLoadStatusChange, variable?.name]);
 
     return (
       <tr>
@@ -125,39 +143,44 @@ const VariableRow = React.memo(
                 <div className="mt-2">
                   <small className="text-muted d-block mb-1">Preview:</small>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <img
-                      src={extractedValue || value}
-                      alt="Preview"
-                      style={{
-                        maxWidth: '400px',
-                        width: '100%',
-                        height: 'auto',
-                        objectFit: 'contain',
-                        borderRadius: '4px',
-                        border: '1px solid #dee2e6',
-                      }}
-                      onError={handleImageError}
-                    />
-                    <div
-                      style={{
-                        display: 'none',
-                        width: '400px',
-                        height: 'auto',
-                        minHeight: '200px',
-                        backgroundColor: '#f8f9fa',
-                        border: '1px solid #dee2e6',
-                        borderRadius: '4px',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        color: '#dc3545',
-                        flexDirection: 'column',
-                        gap: '4px',
-                      }}
-                    >
-                      <div>❌</div>
-                      <div>Invalid Image</div>
-                    </div>
+                    {!imgError ? (
+                      <img
+                        key={computedSrc}
+                        src={computedSrc}
+                        alt="Preview"
+                        style={{
+                          maxWidth: '400px',
+                          width: '100%',
+                          height: 'auto',
+                          objectFit: 'contain',
+                          borderRadius: '4px',
+                          border: '1px solid #dee2e6',
+                        }}
+                        onError={handleImageError}
+                        onLoad={handleImageLoad}
+                      />
+                    ) : (
+                      <div
+                        style={{
+                          width: '400px',
+                          height: 'auto',
+                          minHeight: '200px',
+                          backgroundColor: '#f8f9fa',
+                          border: '1px solid #dee2e6',
+                          borderRadius: '4px',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          color: '#dc3545',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '4px',
+                        }}
+                      >
+                        <div>❌</div>
+                        <div>Invalid Image</div>
+                      </div>
+                    )}
                     {extractedValue && (
                       <div style={{ flex: 1 }}>
                         <div style={{ fontSize: '12px', color: '#6c757d', marginBottom: '2px' }}>
@@ -202,7 +225,6 @@ const IntegratedEmailSender = ({
   sendingEmail,
   emailSent,
   fetchEmailTemplates,
-  sendEmailWithTemplate,
   clearEmailTemplateError,
   onClose,
   initialContent = '',
@@ -253,33 +275,7 @@ const IntegratedEmailSender = ({
   const progressIntervalRef = useRef(null);
   const editorLoadTimeoutRef = useRef(null);
 
-  // Enhanced skeleton loading component with progress
-  const SkeletonLoader = useMemo(() => {
-    const SkeletonComponent = ({
-      width = '100%',
-      height = '20px',
-      className = '',
-      count = 1,
-      animated = true,
-    }) => (
-      <>
-        {Array.from({ length: count }, (_, index) => (
-          <div
-            key={index}
-            className={`skeleton-loader ${animated ? 'skeleton-animated' : ''} ${className}`}
-            style={{
-              width,
-              height,
-              marginBottom: count > 1 ? '0.5rem' : '0',
-              animationDelay: `${index * 0.1}s`,
-            }}
-          />
-        ))}
-      </>
-    );
-    SkeletonComponent.displayName = 'SkeletonLoader';
-    return SkeletonComponent;
-  }, []);
+  // Removed shimmer skeleton loader; using spinners/progress instead
 
   // Enhanced loading component with progress bar
   const EnhancedLoader = useMemo(() => {
@@ -334,39 +330,20 @@ const IntegratedEmailSender = ({
     return FallbackComponentInner;
   }, []);
 
-  // Enhanced template loading with progress
+  // Simple template loading indicator (no shimmer)
   const TemplateSelectLoader = useMemo(() => {
     const TemplateLoaderComponent = () => (
-      <div className="template-shimmer-container">
-        <div className="shimmer-select-wrapper">
-          <div className="shimmer-select shimmer-animated"></div>
-        </div>
-        <div className="shimmer-info">
-          <div className="shimmer-line shimmer-animated"></div>
-          <div className="shimmer-line shimmer-animated shimmer-short"></div>
-        </div>
+      <div className="template-loading-simple d-flex align-items-center" style={{ gap: '8px' }}>
+        <FaSpinner className="fa-spin" />
+        <span>Loading templates...</span>
       </div>
     );
     TemplateLoaderComponent.displayName = 'TemplateSelectLoader';
     return TemplateLoaderComponent;
   }, []);
 
-  // Memoized loading state for template variables
-  const VariablesLoader = useMemo(() => {
-    const VariablesLoaderComponent = () => (
-      <div className="template-variables">
-        <div className="variables-header">
-          <SkeletonLoader width="200px" height="24px" className="mb-2" />
-          <SkeletonLoader width="300px" height="16px" />
-        </div>
-        <div className="mt-3">
-          <SkeletonLoader height="200px" />
-        </div>
-      </div>
-    );
-    VariablesLoaderComponent.displayName = 'VariablesLoader';
-    return VariablesLoaderComponent;
-  }, [SkeletonLoader]);
+  // Removed unused VariablesLoader
+  // VariablesLoader is currently unused; kept minimal UI in place if needed later
 
   // Memoized URL update function
   const updateModeURL = useCallback(
@@ -470,8 +447,8 @@ const IntegratedEmailSender = ({
 
         await fetchEmailTemplates({
           search: '',
-          page: 1,
-          sortBy: 'created_at',
+          // no pagination for dropdown; fetch all
+          sortBy: 'updated_at',
           sortOrder: 'desc',
           includeVariables: true,
         });
@@ -599,7 +576,7 @@ const IntegratedEmailSender = ({
 
       await fetchEmailTemplates({
         search: '',
-        page: 1,
+        // no pagination for dropdown; fetch all
         sortBy: 'created_at',
         sortOrder: 'desc',
         includeVariables: true,
@@ -716,115 +693,60 @@ const IntegratedEmailSender = ({
     [initializeVariableValues, fetchFullTemplateContent],
   );
 
-  const handleVariableChange = useCallback((variableName, value) => {
-    // Sanitize input to prevent XSS
-    const sanitizedValue = typeof value === 'string' ? value.trim() : value;
+  const handleVariableChange = useCallback(
+    (variableName, value) => {
+      setVariableValues(prevValues => {
+        const nextValues = { ...prevValues, [variableName]: value };
 
-    setVariableValues(prev => ({
-      ...prev,
-      [variableName]: sanitizedValue,
-    }));
+        // Live validate only the changed variable when a template is selected
+        if (selectedTemplate) {
+          const variableMeta = selectedTemplate.variables?.find(v => v?.name === variableName);
+          if (variableMeta) {
+            const errorMsg = validateVariable(variableMeta, nextValues);
+            setValidationErrors(prevErrs => ({ ...prevErrs, [variableName]: errorMsg }));
+          }
+        }
 
-    setValidationErrors(prev => {
-      if (prev[variableName]) {
-        return {
-          ...prev,
-          [variableName]: null,
-        };
-      }
-      return prev;
-    });
-  }, []);
+        return nextValues;
+      });
+    },
+    [selectedTemplate],
+  );
 
-  const parseRecipients = useCallback(recipientText => {
-    if (!recipientText || typeof recipientText !== 'string') {
-      return [];
-    }
-    return recipientText
-      .split(/[,;\n]/)
-      .map(email => email.trim())
-      .filter(email => email.length > 0 && email.includes('@'));
-  }, []);
+  const parseRecipients = useCallback(recipientText => parseRecipientsUtil(recipientText), []);
 
   // Memoized function to extract image from various sources with proper sizing
-  const extractImageFromSource = useCallback(source => {
-    if (!source || typeof source !== 'string') return null;
-
-    // Check if it's already a direct image URL
-    if (source.match(/\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i)) {
-      return source;
-    }
-
-    // YouTube thumbnail extraction with multiple quality options
-    const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/;
-    const youtubeMatch = source.match(youtubeRegex);
-    if (youtubeMatch) {
-      const videoId = youtubeMatch[1];
-
-      // Validate video ID to prevent XSS
-      if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-        return null;
-      }
-
-      // Try multiple thumbnail qualities in order of preference
-      const thumbnailOptions = [
-        `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`, // 1280x720 - best quality
-        `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`, // 480x360 - high quality
-        `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`, // 320x180 - medium quality
-        `https://img.youtube.com/vi/${videoId}/default.jpg`, // 120x90 - default
-      ];
-
-      // Return the highest quality option (maxresdefault)
-      return thumbnailOptions[0];
-    }
-
-    // For other video platforms or invalid URLs, return null
-    return null;
-  }, []);
+  const extractImageFromSource = useCallback(Validators.extractImageFromSource, []);
 
   // Memoized handle image source change with automatic extraction
   const handleImageSourceChange = useCallback(
     (variableName, source) => {
       const extractedImage = extractImageFromSource(source);
 
-      setVariableValues(prev => ({
-        ...prev,
-        [variableName]: source,
-        [`${variableName}_extracted`]: extractedImage || '',
-      }));
+      setVariableValues(prevValues => {
+        const nextValues = {
+          ...prevValues,
+          [variableName]: source,
+          [`${variableName}_extracted`]: extractedImage || '',
+        };
 
-      if (validationErrors[variableName]) {
-        setValidationErrors(prev => ({
-          ...prev,
-          [variableName]: null,
-        }));
-      }
+        if (selectedTemplate) {
+          const variableMeta = selectedTemplate.variables?.find(v => v?.name === variableName);
+          if (variableMeta) {
+            const errorMsg = validateVariable(variableMeta, nextValues);
+            setValidationErrors(prevErrs => ({ ...prevErrs, [variableName]: errorMsg }));
+          }
+        }
+
+        return nextValues;
+      });
     },
-    [extractImageFromSource, validationErrors],
+    [extractImageFromSource, selectedTemplate],
   );
 
-  // Memoized function to get YouTube thumbnail with fallback
-  const getYouTubeThumbnailWithFallback = useCallback(videoId => {
-    // Validate video ID to prevent XSS
-    if (!videoId || !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-      return [];
-    }
+  // Removed unused YouTube thumbnail fallback helper
 
-    const thumbnailOptions = [
-      `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`, // 1280x720 - best quality
-      `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`, // 480x360 - high quality
-      `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`, // 320x180 - medium quality
-      `https://img.youtube.com/vi/${videoId}/default.jpg`, // 120x90 - default
-    ];
-
-    return thumbnailOptions;
-  }, []);
-
-  const validateEmail = useCallback(email => {
-    if (!email || typeof email !== 'string') return false;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email.trim());
-  }, []);
+  const validateEmail = useCallback(email => validateEmailUtil(email), []);
 
   const validateForm = useCallback(() => {
     const errors = {};
@@ -860,13 +782,10 @@ const IntegratedEmailSender = ({
       setRecipientList([]);
     }
 
-    // Validate all variables for templates (all are required by default)
-    if (useTemplate && selectedTemplate && selectedTemplate.variables) {
-      selectedTemplate.variables.forEach(variable => {
-        if (!variableValues[variable.name]?.trim()) {
-          errors[variable.name] = `${variable.name} is required`;
-        }
-      });
+    // Validate template variables (type-aware, honors required flag)
+    if (useTemplate && selectedTemplate) {
+      const varErrors = validateTemplateVariables(selectedTemplate, variableValues);
+      Object.assign(errors, varErrors);
     }
 
     setValidationErrors(errors);
@@ -899,13 +818,10 @@ const IntegratedEmailSender = ({
       errors.customSubject = 'Please enter email subject';
     }
 
-    // Validate all variables for templates (all are required by default)
-    if (useTemplate && selectedTemplate && selectedTemplate.variables) {
-      selectedTemplate.variables.forEach(variable => {
-        if (!variableValues[variable.name]?.trim()) {
-          errors[variable.name] = `${variable.name} is required`;
-        }
-      });
+    // Validate variables as in submit (recipients are skipped for preview)
+    if (useTemplate && selectedTemplate) {
+      const varErrors = validateTemplateVariables(selectedTemplate, variableValues);
+      Object.assign(errors, varErrors);
     }
 
     // Don't validate recipients for preview
@@ -920,18 +836,31 @@ const IntegratedEmailSender = ({
     setShowConfirmModal(true);
   }, [validateForm]);
 
+  const getPreviewContent = useCallback(() => {
+    if (useTemplate && selectedTemplate) {
+      const templateData = fullTemplateContent || selectedTemplate;
+      return buildRenderedEmailFromTemplate(templateData, variableValues);
+    }
+    return { subject: customSubject, content: customContent };
+  }, [
+    useTemplate,
+    selectedTemplate,
+    fullTemplateContent,
+    variableValues,
+    customSubject,
+    customContent,
+  ]);
+
   const confirmSendEmail = useCallback(async () => {
     setShowConfirmModal(false);
 
     try {
       if (useTemplate && selectedTemplate) {
-        // Process variable values to use extracted images where available
-        const processedVariableValues = { ...variableValues };
-
         // Use full template content if available for sending
         const templateData = fullTemplateContent || selectedTemplate;
 
         // Replace image variables with extracted images if available
+        const processedVariableValues = { ...variableValues };
         if (templateData.variables && Array.isArray(templateData.variables)) {
           templateData.variables.forEach(variable => {
             if (
@@ -944,14 +873,25 @@ const IntegratedEmailSender = ({
           });
         }
 
-        // Send using template
-        const emailData = {
-          recipients: emailDistribution === 'broadcast' ? [] : recipientList,
-          variableValues: processedVariableValues,
-          broadcastToAll: emailDistribution === 'broadcast',
-        };
+        // Render template locally and send via emailController endpoints
+        const rendered = getPreviewContent();
+        const payload =
+          emailDistribution === 'broadcast'
+            ? {
+                subject: rendered.subject,
+                html: rendered.content,
+              }
+            : {
+                to: recipientList,
+                subject: rendered.subject,
+                html: rendered.content,
+              };
 
-        await sendEmailWithTemplate(selectedTemplate._id, emailData);
+        if (emailDistribution === 'broadcast') {
+          await axios.post(ENDPOINTS.BROADCAST_EMAILS, payload);
+        } else {
+          await axios.post(ENDPOINTS.POST_EMAILS, payload);
+        }
         const recipientCount =
           emailDistribution === 'broadcast'
             ? 'all subscribers'
@@ -968,12 +908,6 @@ const IntegratedEmailSender = ({
             await axios.post(ENDPOINTS.BROADCAST_EMAILS, {
               subject: customSubject,
               html: customContent,
-              useBatch: true, // Enable batch system
-              requestor: {
-                requestorId: 'current-user', // You might want to get this from auth context
-                role: 'admin',
-                permissions: ['sendEmailToAll'],
-              },
             });
           } else {
             // Use existing send email functionality for specific recipients
@@ -981,12 +915,6 @@ const IntegratedEmailSender = ({
               to: recipientList,
               subject: customSubject,
               html: customContent,
-              useBatch: true, // Enable batch system
-              requestor: {
-                requestorId: 'current-user', // You might want to get this from auth context
-                role: 'admin',
-                permissions: ['sendEmails'],
-              },
             });
           }
 
@@ -1010,59 +938,13 @@ const IntegratedEmailSender = ({
     useTemplate,
     selectedTemplate,
     variableValues,
+    fullTemplateContent,
+    getPreviewContent,
     emailDistribution,
     recipientList,
     customSubject,
     customContent,
-    sendEmailWithTemplate,
     resetAllStates,
-  ]);
-
-  const getPreviewContent = useCallback(() => {
-    if (useTemplate && selectedTemplate) {
-      // Use full template content if available, otherwise fall back to selected template
-      const templateData = fullTemplateContent || selectedTemplate;
-      let content = templateData.html_content || templateData.content || '';
-      let subject = templateData.subject || '';
-
-      // Debug logging
-      // console.log('Template preview - Using full template content:', !!fullTemplateContent);
-      // console.log('Template preview - Original content:', content);
-      // console.log('Template preview - Original subject:', subject);
-      // console.log('Template preview - Variables:', templateData.variables);
-      // console.log('Template preview - Variable values:', variableValues);
-
-      if (templateData.variables && Array.isArray(templateData.variables)) {
-        templateData.variables.forEach(variable => {
-          if (variable && variable.name) {
-            // Use extracted image if available for image variables
-            let value = variableValues[variable.name] || `[${variable.name}]`;
-            if (variable.type === 'image' && variableValues[`${variable.name}_extracted`]) {
-              value = variableValues[`${variable.name}_extracted`];
-            }
-            const regex = new RegExp(`{{${variable.name}}}`, 'g');
-            content = content.replace(regex, value);
-            subject = subject.replace(regex, value);
-          }
-        });
-      }
-
-      // console.log('Template preview - Final content:', content);
-      // console.log('Template preview - Final subject:', subject);
-
-      return { subject, content };
-    } else {
-      // console.log('Custom preview - Subject:', customSubject);
-      // console.log('Custom preview - Content:', customContent);
-      return { subject: customSubject, content: customContent };
-    }
-  }, [
-    useTemplate,
-    selectedTemplate,
-    fullTemplateContent,
-    variableValues,
-    customSubject,
-    customContent,
   ]);
 
   // Memoized TinyMCE configuration for performance
@@ -1167,7 +1049,16 @@ const IntegratedEmailSender = ({
                   });
                 }
               }}
-              disabled={(!useTemplate && !customContent) || (useTemplate && !selectedTemplate)}
+              disabled={
+                (!useTemplate && !customContent) ||
+                (useTemplate &&
+                  (!selectedTemplate ||
+                    Object.keys(validationErrors).some(key =>
+                      selectedTemplate?.variables?.some(
+                        v => v?.name === key && !!validationErrors[key],
+                      ),
+                    )))
+              }
               aria-label="Preview email content"
               title="Preview how the email will look before sending"
             >
@@ -1177,7 +1068,18 @@ const IntegratedEmailSender = ({
             <Button
               color="primary"
               onClick={handleSendEmail}
-              disabled={sendingEmail || customSendingEmail || isRetrying}
+              disabled={
+                sendingEmail ||
+                customSendingEmail ||
+                isRetrying ||
+                (useTemplate &&
+                  selectedTemplate &&
+                  Object.keys(validationErrors).some(key =>
+                    selectedTemplate?.variables?.some(
+                      v => v?.name === key && !!validationErrors[key],
+                    ),
+                  ))
+              }
               aria-label={sendingEmail || customSendingEmail ? 'Sending email...' : 'Send email'}
               className={sendingEmail || customSendingEmail ? 'sending-email-btn' : ''}
             >
@@ -1366,12 +1268,12 @@ const IntegratedEmailSender = ({
               <Label>Content *</Label>
               <div className="editor-container">
                 {!isEditorLoaded && !editorError && (
-                  <div className="editor-loading">
-                    <EnhancedLoader
-                      message="Loading rich text editor..."
-                      progress={loadingProgress}
-                      showProgress={true}
-                    />
+                  <div
+                    className="editor-loading d-flex align-items-center justify-content-center py-3"
+                    style={{ gap: '8px' }}
+                  >
+                    <Spinner size="sm" />
+                    <span>Loading editor...</span>
                   </div>
                 )}
 
@@ -1392,8 +1294,12 @@ const IntegratedEmailSender = ({
 
                 <Suspense
                   fallback={
-                    <div className="editor-suspense">
-                      <SkeletonLoader height="300px" count={1} animated />
+                    <div
+                      className="editor-suspense d-flex align-items-center justify-content-center py-3"
+                      style={{ gap: '8px' }}
+                    >
+                      <Spinner size="sm" />
+                      <span>Loading editor...</span>
                     </div>
                   }
                 >
@@ -1410,10 +1316,6 @@ const IntegratedEmailSender = ({
                           editor.on('init', () => {
                             setIsEditorLoaded(true);
                             setLoadingProgress(100);
-                            toast.success('Editor loaded successfully!', {
-                              autoClose: 2000,
-                              icon: <FaCheckCircle />,
-                            });
                           });
 
                           // Handle editor errors
@@ -1498,7 +1400,14 @@ const IntegratedEmailSender = ({
                       error={validationErrors[variable.name]}
                       onVariableChange={handleVariableChange}
                       onImageSourceChange={handleImageSourceChange}
-                      getYouTubeThumbnailWithFallback={getYouTubeThumbnailWithFallback}
+                      onImageLoadStatusChange={(name, ok) => {
+                        setValidationErrors(prev => ({
+                          ...prev,
+                          [name]: ok
+                            ? null
+                            : `${name} is required (valid image URL or YouTube link)`,
+                        }));
+                      }}
                     />
                   ))}
                 </tbody>
@@ -1549,7 +1458,11 @@ const IntegratedEmailSender = ({
                 name="emailDistribution"
                 value="broadcast"
                 checked={emailDistribution === 'broadcast'}
-                onChange={() => setEmailDistribution('broadcast')}
+                onChange={() => {
+                  setEmailDistribution('broadcast');
+                  setValidationErrors(prev => ({ ...prev, recipients: null }));
+                  setRecipientList([]);
+                }}
               />
               <span className="option-icon mx-2">🚀</span>
               Broadcast to All Subscribers
@@ -1564,7 +1477,27 @@ const IntegratedEmailSender = ({
                 type="textarea"
                 rows={4}
                 value={recipients}
-                onChange={e => setRecipients(e.target.value)}
+                onChange={e => {
+                  const val = e.target.value;
+                  setRecipients(val);
+                  // Live validate recipients when specific distribution selected
+                  if (emailDistribution === 'specific') {
+                    const emails = parseRecipients(val);
+                    let errorMsg = null;
+                    if (!val.trim()) {
+                      errorMsg = 'Please enter at least one recipient';
+                    } else if (emails.length === 0) {
+                      errorMsg = 'Please enter at least one valid email address';
+                    } else {
+                      const invalid = emails.filter(email => !validateEmail(email));
+                      if (invalid.length > 0) {
+                        errorMsg = `Invalid email addresses: ${invalid.join(', ')}`;
+                      }
+                    }
+                    setValidationErrors(prev => ({ ...prev, recipients: errorMsg }));
+                    setRecipientList(errorMsg ? [] : emails);
+                  }
+                }}
                 invalid={!!validationErrors.recipients}
                 placeholder="Enter email addresses separated by commas&#10;Example: john@example.com, jane@example.com, team@company.com"
               />
@@ -1686,7 +1619,7 @@ IntegratedEmailSender.propTypes = {
   emailSent: PropTypes.bool,
   // Redux actions
   fetchEmailTemplates: PropTypes.func.isRequired,
-  sendEmailWithTemplate: PropTypes.func.isRequired,
+  // removed sendEmailWithTemplate; template emails are rendered client-side and sent via emailController
   clearEmailTemplateError: PropTypes.func.isRequired,
   // Component props
   onClose: PropTypes.func,
@@ -1720,7 +1653,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = {
   fetchEmailTemplates,
-  sendEmailWithTemplate,
   clearEmailTemplateError,
 };
 

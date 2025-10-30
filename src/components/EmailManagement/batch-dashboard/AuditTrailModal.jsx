@@ -10,18 +10,9 @@ import {
   ModalBody,
   ModalFooter,
   Table,
-  Badge,
   Button,
   Spinner,
   Alert,
-  Card,
-  CardBody,
-  CardHeader,
-  Row,
-  Col,
-  Input,
-  FormGroup,
-  Label,
 } from 'reactstrap';
 import {
   FaHistory,
@@ -30,40 +21,34 @@ import {
   FaExclamationTriangle,
   FaTimesCircle,
   FaInfoCircle,
-  FaFilter,
   FaSync,
 } from 'react-icons/fa';
 import './AuditTrailModal.css';
 
 const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email' }) => {
   const dispatch = useDispatch();
-  const { batchAuditTrail, itemAuditTrail, loading, error } = useSelector(
+  const { emailAuditTrail, emailBatchAuditTrail, loading, error } = useSelector(
     state => state.emailBatches,
   );
 
-  const [filters, setFilters] = useState({
-    action: '',
-    page: 1,
-    limit: 20,
-  });
   const [refreshing, setRefreshing] = useState(false);
 
-  const auditData = type === 'email' ? batchAuditTrail : itemAuditTrail;
-  const loadingState = type === 'email' ? loading.batchAudit : loading.itemAudit;
-  const errorState = type === 'email' ? error.batchAudit : error.itemAudit;
+  const auditData = type === 'email' ? emailAuditTrail : emailBatchAuditTrail;
+  const loadingState = type === 'email' ? loading.emailAudit : loading.emailBatchAudit;
+  const errorState = type === 'email' ? error.emailAudit : error.emailBatchAudit;
 
   useEffect(() => {
     if (isOpen && (emailId || emailBatchId)) {
       loadAuditTrail();
     }
-  }, [isOpen, emailId, emailBatchId, filters]);
+  }, [isOpen, emailId, emailBatchId]);
 
   const loadAuditTrail = async () => {
     try {
       if (type === 'email' && emailId) {
-        await dispatch(fetchEmailAuditTrail(emailId, filters));
+        await dispatch(fetchEmailAuditTrail(emailId));
       } else if (type === 'emailBatch' && emailBatchId) {
-        await dispatch(fetchEmailBatchAuditTrail(emailBatchId, filters));
+        await dispatch(fetchEmailBatchAuditTrail(emailBatchId));
       }
     } catch (error) {
       console.error('Error loading audit trail:', error);
@@ -78,16 +63,17 @@ const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email'
 
   const getActionIcon = action => {
     switch (action) {
-      case 'BATCH_CREATED':
-      case 'ITEM_SENT':
+      case 'EMAIL_CREATED':
+      case 'EMAIL_SENT':
+      case 'EMAIL_BATCH_SENT':
         return <FaCheckCircle className="text-success" />;
-      case 'BATCH_STARTED':
-      case 'ITEM_SENDING':
+      case 'EMAIL_SENDING':
+      case 'EMAIL_BATCH_QUEUED':
         return <FaClock className="text-info" />;
-      case 'BATCH_SENT':
+      case 'EMAIL_PROCESSED':
         return <FaCheckCircle className="text-success" />;
-      case 'BATCH_FAILED':
-      case 'ITEM_FAILED':
+      case 'EMAIL_FAILED':
+      case 'EMAIL_BATCH_FAILED':
         return <FaTimesCircle className="text-danger" />;
       default:
         return <FaInfoCircle className="text-secondary" />;
@@ -96,20 +82,23 @@ const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email'
 
   const getActionBadgeColor = action => {
     switch (action) {
-      case 'BATCH_CREATED':
-      case 'ITEM_SENT':
-      case 'BATCH_SENT':
+      case 'EMAIL_CREATED':
+      case 'EMAIL_SENT':
+      case 'EMAIL_BATCH_SENT':
+      case 'EMAIL_PROCESSED':
         return 'success';
-      case 'BATCH_STARTED':
-      case 'ITEM_SENDING':
+      case 'EMAIL_SENDING':
+      case 'EMAIL_BATCH_QUEUED':
         return 'info';
-      case 'BATCH_FAILED':
-      case 'ITEM_FAILED':
+      case 'EMAIL_FAILED':
+      case 'EMAIL_BATCH_FAILED':
         return 'danger';
       default:
         return 'secondary';
     }
   };
+
+  // No separate status column; showing action only as requested
 
   const formatTimestamp = timestamp => {
     return new Date(timestamp).toLocaleString();
@@ -117,49 +106,61 @@ const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email'
 
   const renderAuditEntry = (entry, index) => (
     <tr key={entry._id || index}>
-      <td>
-        <div className="d-flex align-items-center">
-          {getActionIcon(entry.action)}
-          <span className="ml-2">{entry.action}</span>
-        </div>
-      </td>
-      <td>
-        <Badge color={getActionBadgeColor(entry.action)}>{entry.action}</Badge>
-      </td>
-      <td>
-        <div>
-          <div>{entry.details}</div>
-          {entry.triggeredBy && (
-            <div className="text-muted small mt-1">
-              <FaInfoCircle className="mr-1" />
-              By: {entry.triggeredBy.firstName} {entry.triggeredBy.lastName} (
-              {entry.triggeredBy.email})
+      <td className="compact-row w-100">
+        <div className="d-flex align-items-start w-100">
+          <div className="mr-3 mt-1">{getActionIcon(entry.action)}</div>
+          <div className="flex-grow-1 w-100">
+            <div className="d-flex justify-content-between align-items-start mb-2">
+              <div className="font-weight-medium text-dark">{entry.action.replace(/_/g, ' ')}</div>
+              <div className="text-muted small">{formatTimestamp(entry.timestamp)}</div>
             </div>
-          )}
-        </div>
-      </td>
-      <td>{formatTimestamp(entry.timestamp)}</td>
-      <td>
-        {entry.error && (
-          <div className="text-danger small">
-            <FaExclamationTriangle className="mr-1" />
-            {entry.error}
+
+            {entry.details && <div className="text-secondary small mb-2">{entry.details}</div>}
+
+            {entry.error && (
+              <div className="text-danger small mb-2 d-flex align-items-center">
+                <FaExclamationTriangle className="mr-1" size={12} />
+                <span>{entry.error}</span>
+                {entry.errorCode && (
+                  <span className="ml-2 text-muted">[Code: {entry.errorCode}]</span>
+                )}
+              </div>
+            )}
+
+            {entry.triggeredBy && (
+              <div className="text-muted small mb-2 d-flex align-items-center">
+                <FaInfoCircle className="mr-1" size={10} />
+                <span>
+                  Triggered by: {entry.triggeredBy.firstName} {entry.triggeredBy.lastName} (
+                  {entry.triggeredBy.email})
+                </span>
+              </div>
+            )}
+
+            {entry.metadata && Object.keys(entry.metadata).length > 0 && (
+              <details className="mt-2">
+                <summary
+                  className="text-info small cursor-pointer d-inline-flex align-items-center"
+                  style={{ cursor: 'pointer' }}
+                >
+                  <FaInfoCircle className="mr-1" size={10} />
+                  View Metadata ({Object.keys(entry.metadata).length} fields)
+                </summary>
+                <div
+                  className="mt-2 p-2 bg-light rounded border"
+                  style={{ maxHeight: '200px', overflow: 'auto' }}
+                >
+                  <pre
+                    className="small mb-0"
+                    style={{ fontSize: '0.75rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+                  >
+                    {JSON.stringify(entry.metadata, null, 2)}
+                  </pre>
+                </div>
+              </details>
+            )}
           </div>
-        )}
-        {entry.errorCode && <div className="text-muted small">Code: {entry.errorCode}</div>}
-      </td>
-      <td>
-        {entry.metadata && Object.keys(entry.metadata).length > 0 && (
-          <Button
-            size="sm"
-            color="outline-info"
-            onClick={() => {
-              alert(JSON.stringify(entry.metadata, null, 2));
-            }}
-          >
-            <FaInfoCircle />
-          </Button>
-        )}
+        </div>
       </td>
     </tr>
   );
@@ -172,64 +173,15 @@ const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email'
       </ModalHeader>
 
       <ModalBody>
-        {/* Filters */}
-        <Card className="mb-3">
-          <CardHeader>
-            <FaFilter className="mr-2" />
-            Filters
-          </CardHeader>
-          <CardBody>
-            <Row>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="actionFilter">Action</Label>
-                  <Input
-                    type="select"
-                    id="actionFilter"
-                    value={filters.action}
-                    onChange={e => setFilters({ ...filters, action: e.target.value })}
-                  >
-                    <option value="">All Actions</option>
-                    <option value="BATCH_CREATED">Batch Created</option>
-                    <option value="BATCH_STARTED">Batch Started</option>
-                    <option value="BATCH_SENT">Batch Sent</option>
-                    <option value="BATCH_FAILED">Batch Failed</option>
-                    <option value="ITEM_SENDING">Item Sending</option>
-                    <option value="ITEM_SENT">Item Sent</option>
-                    <option value="ITEM_FAILED">Item Failed</option>
-                  </Input>
-                </FormGroup>
-              </Col>
-              <Col md={4}>
-                <FormGroup>
-                  <Label for="limitFilter">Items per page</Label>
-                  <Input
-                    type="select"
-                    id="limitFilter"
-                    value={filters.limit}
-                    onChange={e => setFilters({ ...filters, limit: parseInt(e.target.value) })}
-                  >
-                    <option value={10}>10</option>
-                    <option value={20}>20</option>
-                    <option value={50}>50</option>
-                    <option value={100}>100</option>
-                  </Input>
-                </FormGroup>
-              </Col>
-              <Col md={4} className="d-flex align-items-end">
-                <Button
-                  color="primary"
-                  onClick={handleRefresh}
-                  disabled={refreshing}
-                  className="w-100"
-                >
-                  {refreshing ? <Spinner size="sm" /> : <FaSync />}
-                  {refreshing ? ' Refreshing...' : ' Refresh'}
-                </Button>
-              </Col>
-            </Row>
-          </CardBody>
-        </Card>
+        {/* Simple toolbar */}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="text-muted small">
+            {auditData?.length > 0 && `${auditData.length} entries`}
+          </div>
+          <Button color="link" onClick={handleRefresh} disabled={refreshing} size="sm">
+            {refreshing ? <Spinner size="sm" /> : <FaSync />}
+          </Button>
+        </div>
 
         {/* Error Display */}
         {errorState && (
@@ -247,71 +199,25 @@ const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email'
           </div>
         )}
 
-        {/* Audit Trail Table */}
-        {!loadingState && auditData && auditData.auditTrail && auditData.auditTrail.length > 0 && (
-          <div>
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <h6 className="mb-0">Found {auditData.totalCount} audit entries</h6>
-              <div className="text-muted small">
-                Page {auditData.page} of {auditData.totalPages}
-              </div>
-            </div>
-
-            <Table responsive striped hover>
-              <thead>
-                <tr>
-                  <th>Action</th>
-                  <th>Status</th>
-                  <th>Details</th>
-                  <th>Timestamp</th>
-                  <th>Error</th>
-                  <th>Metadata</th>
-                </tr>
-              </thead>
-              <tbody>
-                {auditData.auditTrail.map((entry, index) => renderAuditEntry(entry, index))}
-              </tbody>
+        {/* Audit Trail Log */}
+        {!loadingState && auditData && auditData.length > 0 && (
+          <div className="audit-log">
+            <Table responsive borderless hover size="sm">
+              <tbody>{auditData.map((entry, index) => renderAuditEntry(entry, index))}</tbody>
             </Table>
-
-            {/* Pagination */}
-            {auditData.totalPages > 1 && (
-              <div className="d-flex justify-content-center mt-3">
-                <Button
-                  color="outline-primary"
-                  size="sm"
-                  disabled={filters.page <= 1}
-                  onClick={() => setFilters({ ...filters, page: filters.page - 1 })}
-                  className="mr-2"
-                >
-                  Previous
-                </Button>
-                <span className="mx-3 align-self-center">
-                  Page {filters.page} of {auditData.totalPages}
-                </span>
-                <Button
-                  color="outline-primary"
-                  size="sm"
-                  disabled={filters.page >= auditData.totalPages}
-                  onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
-                >
-                  Next
-                </Button>
-              </div>
-            )}
           </div>
         )}
 
         {/* Empty State */}
-        {!loadingState &&
-          (!auditData || !auditData.auditTrail || auditData.auditTrail.length === 0) && (
-            <div className="text-center py-5">
-              <FaHistory size={48} className="text-muted mb-3" />
-              <h5 className="text-muted">No audit entries found</h5>
-              <p className="text-muted">
-                No audit trail available for this {type === 'email' ? 'email' : 'email batch'}.
-              </p>
-            </div>
-          )}
+        {!loadingState && (!auditData || !auditData.length || auditData.length === 0) && (
+          <div className="text-center py-5">
+            <FaHistory size={48} className="text-muted mb-3" />
+            <h5 className="text-muted">No audit entries found</h5>
+            <p className="text-muted">
+              No audit trail available for this {type === 'email' ? 'email' : 'email batch'}.
+            </p>
+          </div>
+        )}
       </ModalBody>
 
       <ModalFooter>

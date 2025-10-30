@@ -2,49 +2,50 @@ import httpService from '../services/httpService';
 import { toast } from 'react-toastify';
 
 // Action Types
+// Note: EMAIL = parent Email record, EMAIL_BATCH = child EmailBatch item
 export const EMAIL_BATCH_ACTIONS = {
-  FETCH_BATCHES_START: 'FETCH_BATCHES_START',
-  FETCH_BATCHES_SUCCESS: 'FETCH_BATCHES_SUCCESS',
-  FETCH_BATCHES_ERROR: 'FETCH_BATCHES_ERROR',
+  FETCH_EMAILS_START: 'FETCH_EMAILS_START',
+  FETCH_EMAILS_SUCCESS: 'FETCH_EMAILS_SUCCESS',
+  FETCH_EMAILS_ERROR: 'FETCH_EMAILS_ERROR',
 
-  FETCH_DASHBOARD_STATS_START: 'FETCH_DASHBOARD_STATS_START',
-  FETCH_DASHBOARD_STATS_SUCCESS: 'FETCH_DASHBOARD_STATS_SUCCESS',
-  FETCH_DASHBOARD_STATS_ERROR: 'FETCH_DASHBOARD_STATS_ERROR',
+  FETCH_EMAIL_AUDIT_START: 'FETCH_EMAIL_AUDIT_START',
+  FETCH_EMAIL_AUDIT_SUCCESS: 'FETCH_EMAIL_AUDIT_SUCCESS',
+  FETCH_EMAIL_AUDIT_ERROR: 'FETCH_EMAIL_AUDIT_ERROR',
 
-  FETCH_BATCH_AUDIT_START: 'FETCH_BATCH_AUDIT_START',
-  FETCH_BATCH_AUDIT_SUCCESS: 'FETCH_BATCH_AUDIT_SUCCESS',
-  FETCH_BATCH_AUDIT_ERROR: 'FETCH_BATCH_AUDIT_ERROR',
+  FETCH_EMAIL_BATCH_AUDIT_START: 'FETCH_EMAIL_BATCH_AUDIT_START',
+  FETCH_EMAIL_BATCH_AUDIT_SUCCESS: 'FETCH_EMAIL_BATCH_AUDIT_SUCCESS',
+  FETCH_EMAIL_BATCH_AUDIT_ERROR: 'FETCH_EMAIL_BATCH_AUDIT_ERROR',
 
-  FETCH_ITEM_AUDIT_START: 'FETCH_ITEM_AUDIT_START',
-  FETCH_ITEM_AUDIT_SUCCESS: 'FETCH_ITEM_AUDIT_SUCCESS',
-  FETCH_ITEM_AUDIT_ERROR: 'FETCH_ITEM_AUDIT_ERROR',
-
-  FETCH_AUDIT_STATS_START: 'FETCH_AUDIT_STATS_START',
-  FETCH_AUDIT_STATS_SUCCESS: 'FETCH_AUDIT_STATS_SUCCESS',
-  FETCH_AUDIT_STATS_ERROR: 'FETCH_AUDIT_STATS_ERROR',
 };
 
-// Fetch batches
-export const fetchBatches = (filters = {}) => async (dispatch) => {
+// Fetch emails (parent Email records)
+export const fetchEmails = () => async (dispatch) => {
   try {
-    dispatch({ type: EMAIL_BATCH_ACTIONS.FETCH_BATCHES_START });
+    dispatch({ type: EMAIL_BATCH_ACTIONS.FETCH_EMAILS_START });
 
-    const response = await httpService.get('/api/email-batches/batches', { params: filters });
+    const response = await httpService.get('/api/email-batches/emails');
 
     if (response.data.success) {
+      // Handle both array response and wrapped response with pagination
+      const emails = Array.isArray(response.data.data)
+        ? response.data.data 
+        : (response.data.data?.emails || []);
+      
       dispatch({
-        type: EMAIL_BATCH_ACTIONS.FETCH_BATCHES_SUCCESS,
-        payload: response.data.data,
+        type: EMAIL_BATCH_ACTIONS.FETCH_EMAILS_SUCCESS,
+        payload: emails,
       });
     } else {
-      throw new Error(response.data.message || 'Failed to fetch batches');
+      throw new Error(response.data.message || 'Failed to fetch emails');
     }
 
-    return response.data.data;
+    return Array.isArray(response.data.data) 
+      ? response.data.data 
+      : (response.data.data?.emails || []);
   } catch (error) {
-    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch batches';
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch emails';
     dispatch({
-      type: EMAIL_BATCH_ACTIONS.FETCH_BATCHES_ERROR,
+      type: EMAIL_BATCH_ACTIONS.FETCH_EMAILS_ERROR,
       payload: errorMessage,
     });
     toast.error(errorMessage);
@@ -52,44 +53,20 @@ export const fetchBatches = (filters = {}) => async (dispatch) => {
   }
 };
 
-// Fetch dashboard stats
-export const fetchDashboardStats = () => async (dispatch) => {
-  try {
-    dispatch({ type: EMAIL_BATCH_ACTIONS.FETCH_DASHBOARD_STATS_START });
+// Alias for backward compatibility
+export const fetchBatches = fetchEmails;
 
-    const response = await httpService.get('/api/email-batches/dashboard');
+
+// Fetch email audit trail (for parent Email record)
+export const fetchEmailAuditTrail = (emailId) => async (dispatch) => {
+  try {
+    dispatch({ type: EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_START });
+
+    const response = await httpService.get(`/api/email-batches/audit/email/${emailId}`);
 
     if (response.data.success) {
       dispatch({
-        type: EMAIL_BATCH_ACTIONS.FETCH_DASHBOARD_STATS_SUCCESS,
-        payload: response.data.data,
-      });
-    } else {
-      throw new Error(response.data.message || 'Failed to fetch dashboard stats');
-    }
-
-    return response.data.data;
-  } catch (error) {
-    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch dashboard stats';
-    dispatch({
-      type: EMAIL_BATCH_ACTIONS.FETCH_DASHBOARD_STATS_ERROR,
-      payload: errorMessage,
-    });
-    toast.error(errorMessage);
-    throw error;
-  }
-};
-
-// Fetch email audit trail
-export const fetchEmailAuditTrail = (emailId, filters = {}) => async (dispatch) => {
-  try {
-    dispatch({ type: EMAIL_BATCH_ACTIONS.FETCH_BATCH_AUDIT_START });
-
-    const response = await httpService.get(`/api/email-batches/audit/email/${emailId}`, { params: filters });
-
-    if (response.data.success) {
-      dispatch({
-        type: EMAIL_BATCH_ACTIONS.FETCH_BATCH_AUDIT_SUCCESS,
+        type: EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_SUCCESS,
         payload: response.data.data,
       });
     } else {
@@ -100,7 +77,7 @@ export const fetchEmailAuditTrail = (emailId, filters = {}) => async (dispatch) 
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch email audit trail';
     dispatch({
-      type: EMAIL_BATCH_ACTIONS.FETCH_BATCH_AUDIT_ERROR,
+      type: EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_ERROR,
       payload: errorMessage,
     });
     toast.error(errorMessage);
@@ -108,16 +85,16 @@ export const fetchEmailAuditTrail = (emailId, filters = {}) => async (dispatch) 
   }
 };
 
-// Fetch email batch item audit trail
-export const fetchEmailBatchAuditTrail = (emailBatchId, filters = {}) => async (dispatch) => {
+// Fetch email batch audit trail (for child EmailBatch item)
+export const fetchEmailBatchAuditTrail = (emailBatchId) => async (dispatch) => {
   try {
-    dispatch({ type: EMAIL_BATCH_ACTIONS.FETCH_ITEM_AUDIT_START });
+    dispatch({ type: EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_START });
 
-    const response = await httpService.get(`/api/email-batches/audit/email-batch/${emailBatchId}`, { params: filters });
+    const response = await httpService.get(`/api/email-batches/audit/email-batch/${emailBatchId}`);
 
     if (response.data.success) {
       dispatch({
-        type: EMAIL_BATCH_ACTIONS.FETCH_ITEM_AUDIT_SUCCESS,
+        type: EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_SUCCESS,
         payload: response.data.data,
       });
     } else {
@@ -128,7 +105,7 @@ export const fetchEmailBatchAuditTrail = (emailBatchId, filters = {}) => async (
   } catch (error) {
     const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch email batch audit trail';
     dispatch({
-      type: EMAIL_BATCH_ACTIONS.FETCH_ITEM_AUDIT_ERROR,
+      type: EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_ERROR,
       payload: errorMessage,
     });
     toast.error(errorMessage);
@@ -136,30 +113,37 @@ export const fetchEmailBatchAuditTrail = (emailBatchId, filters = {}) => async (
   }
 };
 
-// Fetch audit statistics
-export const fetchAuditStats = (filters = {}) => async (dispatch) => {
+// Resend email with selected recipient option
+export const resendEmail = (emailId, recipientOption, specificRecipients = []) => async (dispatch) => {
   try {
-    dispatch({ type: EMAIL_BATCH_ACTIONS.FETCH_AUDIT_STATS_START });
-
-    const response = await httpService.get('/api/email-batches/audit/stats', { params: filters });
+    const response = await httpService.post('/api/resend-email', {
+      emailId,
+      recipientOption,
+      specificRecipients,
+    });
 
     if (response.data.success) {
-      dispatch({
-        type: EMAIL_BATCH_ACTIONS.FETCH_AUDIT_STATS_SUCCESS,
-        payload: response.data.data,
-      });
+      toast.success(response.data.message || 'Email resent successfully');
+      // Refresh the emails list
+      await dispatch(fetchEmails());
+      return response.data.data;
     } else {
-      throw new Error(response.data.message || 'Failed to fetch audit stats');
+      throw new Error(response.data.message || 'Failed to resend email');
     }
-
-    return response.data.data;
   } catch (error) {
-    const errorMessage = error.response?.data?.message || error.message || 'Failed to fetch audit stats';
-    dispatch({
-      type: EMAIL_BATCH_ACTIONS.FETCH_AUDIT_STATS_ERROR,
-      payload: errorMessage,
-    });
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to resend email';
     toast.error(errorMessage);
     throw error;
+  }
+};
+
+// Fetch worker status
+export const fetchWorkerStatus = async () => {
+  try {
+    const response = await httpService.get('/api/email-batches/worker-status');
+    return response.data.success ? response.data.data : null;
+  } catch (error) {
+    console.error('Error fetching worker status:', error);
+    return null;
   }
 };

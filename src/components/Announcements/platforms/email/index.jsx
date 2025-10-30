@@ -24,7 +24,7 @@ export default function EmailPanel({ title, initialEmail }) {
     const path = location.pathname;
     if (path.includes('/templates')) return 'templates';
     if (path.includes('/sender')) return 'sender';
-    if (path.includes('/batches')) return 'batches';
+    if (path.includes('/emails')) return 'emails';
     return 'dashboard';
   }, [location.pathname]);
 
@@ -38,8 +38,8 @@ export default function EmailPanel({ title, initialEmail }) {
           history.push('/announcements/email/templates');
         } else if (view === 'sender') {
           history.push('/announcements/email/sender');
-        } else if (view === 'batches') {
-          history.push('/announcements/email/batches');
+        } else if (view === 'emails') {
+          history.push('/announcements/email/emails');
         } else {
           history.push('/announcements/email');
         }
@@ -158,7 +158,7 @@ export default function EmailPanel({ title, initialEmail }) {
               </p>
             </button>
 
-            {/* Email Batch Dashboard Card */}
+            {/* Email Dashboard Card */}
             <button
               className="platform-card"
               type="button"
@@ -170,7 +170,7 @@ export default function EmailPanel({ title, initialEmail }) {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
-              onClick={() => handleViewChange('batches')}
+              onClick={() => handleViewChange('emails')}
               onMouseEnter={e => {
                 e.target.style.borderColor = '#6f42c1';
                 e.target.style.transform = 'translateY(-2px)';
@@ -182,10 +182,10 @@ export default function EmailPanel({ title, initialEmail }) {
             >
               <FaChartLine style={{ fontSize: '3rem', color: '#6f42c1', marginBottom: '1rem' }} />
               <h3 style={{ color: darkMode ? '#fff' : '#000', marginBottom: '1rem' }}>
-                Batch Dashboard
+                Email Dashboard
               </h3>
               <p style={{ color: darkMode ? '#ccc' : '#666' }}>
-                Monitor and manage email batches with real-time tracking and analytics
+                Monitor and manage emails with real-time tracking and analytics
               </p>
             </button>
           </div>
@@ -239,19 +239,19 @@ export default function EmailPanel({ title, initialEmail }) {
     );
   }
 
-  if (currentView === 'batches') {
+  if (currentView === 'emails') {
     return (
       <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
         {navigationError && <ErrorDisplay error={navigationError} />}
         <div
           className="email-content-area"
           role="tabpanel"
-          aria-labelledby="email-batches-tab"
-          id="email-batches-panel"
+          aria-labelledby="email-emails-tab"
+          id="email-emails-panel"
           aria-live="polite"
         >
           <ErrorBoundary>
-            <EmailBatchDashboard key="batches" />
+            <EmailBatchDashboard key="emails" />
           </ErrorBoundary>
         </div>
       </div>

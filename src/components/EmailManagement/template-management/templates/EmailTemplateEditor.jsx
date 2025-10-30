@@ -27,6 +27,7 @@ import {
   FaCode,
   FaExclamationTriangle,
   FaPencilAlt,
+  FaSpinner,
 } from 'react-icons/fa';
 import { Editor } from '@tinymce/tinymce-react';
 import { getTemplateEditorConfig } from '../../shared';
@@ -241,9 +242,7 @@ const EmailTemplateEditor = ({
     // Create variables with proper structure (name as label, required as false)
     const variablesToAdd = extractedVariables.map(variable => ({
       name: variable.name,
-      label: variable.name, // Use name as label
       type: variable.type,
-      required: false, // Always set to false
     }));
 
     setFormData(prev => ({
@@ -423,9 +422,7 @@ const EmailTemplateEditor = ({
     // Create variable with name as label and required as false
     const variableToAdd = {
       name: newVariable.name,
-      label: newVariable.name, // Use name as label
       type: newVariable.type,
-      required: false, // Always set to false
     };
 
     if (editingVariableIndex !== null) {
@@ -505,8 +502,8 @@ const EmailTemplateEditor = ({
     let content = formData.html_content;
     if (formData.variables && Array.isArray(formData.variables)) {
       formData.variables.forEach(variable => {
-        if (variable && variable.name && variable.label) {
-          const placeholder = `[${variable.label}]`;
+        if (variable && variable.name) {
+          const placeholder = `[${variable.name}]`;
           const regex = new RegExp(`{{${variable.name}}}`, 'g');
           content = content.replace(regex, placeholder);
         }
@@ -525,9 +522,7 @@ const EmailTemplateEditor = ({
     return (
       <div className="email-template-editor">
         <div className="loading-state">
-          <Spinner animation="border" role="status">
-            <span className="visually-hidden">Loading template...</span>
-          </Spinner>
+          <FaSpinner className="fa-spin me-2" />
           <div>Loading template...</div>
         </div>
       </div>
@@ -618,7 +613,7 @@ const EmailTemplateEditor = ({
                 Preview
               </Button>
               <Button color="primary" onClick={handleSave} disabled={saving}>
-                {saving ? <Spinner size="sm" className="me-1" /> : <FaSave className="me-1" />}
+                {saving ? <FaSpinner className="fa-spin me-1" /> : <FaSave className="me-1" />}
                 {saving ? 'Saving...' : 'Save & Continue'}
               </Button>
               <Button
@@ -659,6 +654,32 @@ const EmailTemplateEditor = ({
             <strong>Error saving template</strong>
             <br />
             <small>{error}</small>
+          </div>
+        </Alert>
+      )}
+
+      {/* Undefined Variables - keep this error window at the top */}
+      {validationErrors.undefined_variables && (
+        <Alert color="danger" className="mb-3" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+          <div className="d-flex align-items-start">
+            <FaExclamationTriangle className="me-2 mt-1" />
+            <div>
+              <strong>Undefined Variables:</strong>
+              <div className="mt-1">{validationErrors.undefined_variables}</div>
+            </div>
+          </div>
+        </Alert>
+      )}
+
+      {/* Unused Variables - keep this warning window at the top */}
+      {validationErrors.unused_variables && (
+        <Alert color="warning" className="mb-3" style={{ position: 'sticky', top: 0, zIndex: 1 }}>
+          <div className="d-flex align-items-start">
+            <FaExclamationTriangle className="me-2 mt-1" />
+            <div>
+              <strong>Unused Variables:</strong>
+              <div className="mt-1">{validationErrors.unused_variables}</div>
+            </div>
           </div>
         </Alert>
       )}
@@ -777,20 +798,7 @@ const EmailTemplateEditor = ({
             {validationErrors.html_content && (
               <div className="text-danger mt-1">{validationErrors.html_content}</div>
             )}
-            {validationErrors.undefined_variables && (
-              <div className="text-danger mt-2 p-2 bg-light rounded">
-                <strong>⚠️ Undefined Variables:</strong>
-                <br />
-                {validationErrors.undefined_variables}
-              </div>
-            )}
-            {validationErrors.unused_variables && (
-              <div className="text-warning mt-2 p-2 bg-light rounded">
-                <strong>ℹ️ Unused Variables:</strong>
-                <br />
-                {validationErrors.unused_variables}
-              </div>
-            )}
+            {/* Unused variables warning now shown at the top */}
           </FormGroup>
         </div>
       </div>
