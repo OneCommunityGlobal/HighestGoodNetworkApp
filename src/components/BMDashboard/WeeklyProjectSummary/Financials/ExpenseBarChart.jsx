@@ -103,7 +103,7 @@ export default function ExpenseBarChart() {
       <div
         style={{
           display: 'flex',
-          flexWrap: 'wrap',
+          flexWrap: 'nowrap',
           justifyContent: 'center',
           alignItems: 'center',
           gap: '1rem',
