@@ -58,6 +58,22 @@ export default function IssuesBreakdownChart() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchIssueTypes = async () => {
+      try {
+        const response = await httpService.get(`${process.env.REACT_APP_APIENDPOINT}/issues/types`);
+        if (response.data && response.data.issueTypes) {
+          setAvailableIssueTypes(response.data.issueTypes);
+        }
+      } catch (err) {
+        // Chart can work without issue types filter - set to empty array
+        setAvailableIssueTypes([]);
+      }
+    };
+
+    fetchIssueTypes();
+  }, []);
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!data || data.length === 0) return <div>No data available</div>;
