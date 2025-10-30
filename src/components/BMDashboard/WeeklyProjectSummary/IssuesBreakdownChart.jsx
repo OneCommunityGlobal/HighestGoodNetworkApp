@@ -46,6 +46,99 @@ export default function IssuesBreakdownChart() {
   const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');
   const tooltipBg = rootStyles.getPropertyValue('--section-bg') || '#fff';
 
+  /**
+   * Process API response data to map to three fixed issue types
+   * Ensures each project has equipmentIssues, laborIssues, and materialIssues properties
+   */
+  const processChartData = apiData => {
+    if (!apiData || !Array.isArray(apiData)) {
+      return [];
+    }
+
+    return apiData.map(project => {
+      // Extract projectId and projectName
+      const processedProject = {
+        projectId: project.projectId || project._id || '',
+        projectName: project.projectName || project.name || '',
+        equipmentIssues: 0,
+        laborIssues: 0,
+        materialIssues: 0,
+      };
+
+      // Track which properties we've already matched exactly
+      const matchedKeys = new Set();
+
+      // Check if API returns properties matching the fixed types directly
+      if (project.equipmentIssues !== undefined) {
+        processedProject.equipmentIssues = Number(project.equipmentIssues) || 0;
+        matchedKeys.add('equipmentIssues');
+      }
+      if (project.laborIssues !== undefined) {
+        processedProject.laborIssues = Number(project.laborIssues) || 0;
+        matchedKeys.add('laborIssues');
+      }
+      if (project.materialIssues !== undefined) {
+        processedProject.materialIssues = Number(project.materialIssues) || 0;
+        matchedKeys.add('materialIssues');
+      }
+      if (project.materialsIssues !== undefined) {
+        processedProject.materialIssues = Number(project.materialsIssues) || 0;
+        matchedKeys.add('materialsIssues');
+      }
+
+      // Map remaining properties that don't match exactly
+      // This handles cases where API returns different property names
+      Object.keys(project).forEach(key => {
+        // Skip project metadata and already matched keys
+        if (
+          key === 'projectId' ||
+          key === 'projectName' ||
+          key === '_id' ||
+          key === 'name' ||
+          matchedKeys.has(key)
+        ) {
+          return;
+        }
+
+        const value = Number(project[key]) || 0;
+        if (value === 0) return; // Skip zero values
+
+        const lowerKey = key.toLowerCase();
+
+        // Map to equipmentIssues if not already set or if pattern matches
+        if (
+          !matchedKeys.has('equipmentIssues') &&
+          (lowerKey.includes('equipment') ||
+            lowerKey.includes('tool') ||
+            lowerKey.includes('machine'))
+        ) {
+          processedProject.equipmentIssues += value;
+        }
+        // Map to laborIssues if not already set or if pattern matches
+        else if (
+          !matchedKeys.has('laborIssues') &&
+          (lowerKey.includes('labor') || lowerKey.includes('labour') || lowerKey === 'labor')
+        ) {
+          processedProject.laborIssues += value;
+        }
+        // Map to materialIssues if not already set or if pattern matches
+        else if (
+          !matchedKeys.has('materialIssues') &&
+          (lowerKey.includes('material') ||
+            lowerKey.includes('supply') ||
+            lowerKey.includes('resource'))
+        ) {
+          processedProject.materialIssues += value;
+        }
+        // For other types (Safety, Weather, METs quality / functionality, etc.):
+        // If all three fixed types are already set from exact matches, ignore
+        // Otherwise, we could aggregate into "Other" but for now we maintain the three fixed structure
+      });
+
+      return processedProject;
+    });
+  };
+
   const fetchData = async filters => {
     try {
       setLoading(true);
@@ -76,7 +169,9 @@ export default function IssuesBreakdownChart() {
       }`;
 
       const response = await httpService.get(url);
-      setData(response.data);
+      // Process API response to map to three fixed issue types
+      const processedData = processChartData(response.data);
+      setData(processedData);
       setError(null);
     } catch (err) {
       // Handle 400 errors (validation errors) with user-friendly messages
