@@ -172,6 +172,15 @@ export default function IssuesBreakdownChart() {
     }
   };
 
+  const handleResetFilters = () => {
+    // Clear all filters
+    setSelectedProjects([]);
+    setStartDate(null);
+    setEndDate(null);
+    setSelectedIssueTypes([]);
+    // Data refetch will be triggered automatically by useEffect when state changes
+  };
+
   const fetchData = async filters => {
     try {
       setLoading(true);
@@ -573,6 +582,21 @@ export default function IssuesBreakdownChart() {
               }
             />
           </div>
+        </div>
+
+        {/* Reset Filters Button */}
+        <div className={styles.resetButtonContainer}>
+          <button
+            type="button"
+            onClick={handleResetFilters}
+            className={styles.resetButton}
+            style={{
+              backgroundColor: darkMode ? '#DE6A6A' : '#f44336',
+              color: darkMode ? '#0d1b2a' : 'white',
+            }}
+          >
+            Reset Filters
+          </button>
         </div>
       </div>
 
