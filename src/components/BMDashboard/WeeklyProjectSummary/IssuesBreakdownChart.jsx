@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import {
   BarChart,
@@ -38,28 +38,84 @@ export default function IssuesBreakdownChart() {
   const [availableIssueTypes, setAvailableIssueTypes] = useState([]);
   const [availableProjects, setAvailableProjects] = useState([]);
 
+  // Ref for debouncing timeout
+  const debounceTimeoutRef = useRef(null);
+
   const rootStyles = getComputedStyle(document.body);
   const textColor = rootStyles.getPropertyValue('--text-color') || '#666';
   const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');
   const tooltipBg = rootStyles.getPropertyValue('--section-bg') || '#fff';
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await httpService.get(
-          `${process.env.REACT_APP_APIENDPOINT}/issues/breakdown`,
-        );
-        setData(response.data);
-        setError(null);
-      } catch (err) {
+  const fetchData = async filters => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Build query string with URLSearchParams
+      const params = new URLSearchParams();
+
+      if (filters.projects && filters.projects.length > 0) {
+        params.append('projects', filters.projects.join(','));
+      }
+
+      if (filters.startDate) {
+        params.append('startDate', filters.startDate);
+      }
+
+      if (filters.endDate) {
+        params.append('endDate', filters.endDate);
+      }
+
+      if (filters.issueTypes && filters.issueTypes.length > 0) {
+        params.append('issueTypes', filters.issueTypes.join(','));
+      }
+
+      const queryString = params.toString();
+      const url = `${process.env.REACT_APP_APIENDPOINT}/issues/breakdown${
+        queryString ? `?${queryString}` : ''
+      }`;
+
+      const response = await httpService.get(url);
+      setData(response.data);
+      setError(null);
+    } catch (err) {
+      // Handle 400 errors (validation errors) with user-friendly messages
+      if (err.response && err.response.status === 400) {
+        const errorMessage =
+          err.response.data?.error || err.response.data?.message || 'Invalid filter parameters';
+        setError(errorMessage);
+      } else {
         setError(err.message || 'Failed to fetch issue statistics');
-      } finally {
-        setLoading(false);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Clear any existing timeout
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    // Debounce API calls to prevent excessive requests
+    debounceTimeoutRef.current = setTimeout(() => {
+      const filters = {
+        projects: selectedProjects,
+        startDate,
+        endDate,
+        issueTypes: selectedIssueTypes,
+      };
+      fetchData(filters);
+    }, 300);
+
+    // Cleanup function to clear timeout on unmount or when dependencies change
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
       }
     };
-
-    fetchData();
-  }, []);
+  }, [selectedProjects, startDate, endDate, selectedIssueTypes]);
 
   useEffect(() => {
     const fetchIssueTypes = async () => {
