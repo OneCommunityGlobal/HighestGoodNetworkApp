@@ -25,6 +25,16 @@ export default function IssuesBreakdownChart() {
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Filter states
+  const [selectedProjects, setSelectedProjects] = useState([]);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [selectedIssueTypes, setSelectedIssueTypes] = useState([]);
+
+  // Available options states
+  const [availableIssueTypes, setAvailableIssueTypes] = useState([]);
+  const [availableProjects, setAvailableProjects] = useState([]);
+
   const rootStyles = getComputedStyle(document.body);
   const textColor = rootStyles.getPropertyValue('--text-color') || '#666';
   const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');
