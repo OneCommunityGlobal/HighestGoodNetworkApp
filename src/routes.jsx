@@ -826,6 +826,11 @@ export default (
           exact
           component={PromotionEligibility}
         />
+        <ProtectedRoute
+          path="/pr-team-analytics/popular-prs"
+          exact
+          component={PRReviewTeamAnalytics}
+        />
         <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
