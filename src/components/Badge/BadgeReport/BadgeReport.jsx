@@ -359,14 +359,16 @@ function BadgeReport(props) {
                 sortBadges.map((value, index) => (
                   <tr key={value._id}>
                     <td className="badge_image_sm">
-                      <img src={value.badge.imageUrl} alt="Badge " id={'popover_' + index} />
-                      <BadgeImage
-                        personalBestMaxHrs={props.personalBestMaxHrs}
-                        count={value.count}
-                        badgeData={value.badge}
-                        index={index}
-                        cssSuffix="_report"
-                      />
+                      <span id={'popover_' + index} style={{ display: 'inline-block' }}>
+                        <BadgeImage
+                          personalBestMaxHrs={props.personalBestMaxHrs}
+                          className
+                          count={value.count}
+                          badgeData={value.badge}
+                          index={index}
+                          cssSuffix="_report"
+                        />
+                      </span>
                     </td>
 
                     <UncontrolledPopover trigger="hover" target={'popover_' + index}>
