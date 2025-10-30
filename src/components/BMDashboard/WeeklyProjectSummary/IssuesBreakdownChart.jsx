@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
+import Select from 'react-select';
 import httpService from '../../../services/httpService';
 import styles from './IssueBreakdownChart.module.css';
 
@@ -279,6 +280,124 @@ export default function IssuesBreakdownChart() {
             <span className={styles.legendLabel}>Materials Issues</span>
           </span>
         </div>
+
+        {/* Filters Section */}
+        <div className={styles.filtersRow}>
+          <div className={styles.filterGroup}>
+            <label htmlFor="project-filter" className={styles.filterLabel}>
+              Project
+            </label>
+            <Select
+              id="project-filter"
+              isMulti
+              classNamePrefix="customSelect"
+              options={availableProjects.map(project => ({
+                value: project._id || project.projectId,
+                label: project.name || project.projectName || project._id || project.projectId,
+              }))}
+              value={availableProjects
+                .filter(project => selectedProjects.includes(project._id || project.projectId))
+                .map(project => ({
+                  value: project._id || project.projectId,
+                  label: project.name || project.projectName || project._id || project.projectId,
+                }))}
+              onChange={selectedOptions =>
+                setSelectedProjects(
+                  selectedOptions ? selectedOptions.map(option => option.value) : [],
+                )
+              }
+              placeholder="Select Projects"
+              isClearable
+              isDisabled={availableProjects.length === 0}
+              styles={
+                darkMode
+                  ? {
+                      control: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#2c3344',
+                        borderColor: '#364156',
+                        minHeight: '38px',
+                        fontSize: '14px',
+                      }),
+                      menu: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#2c3344',
+                        fontSize: '14px',
+                      }),
+                      option: (baseStyles, state) => ({
+                        ...baseStyles,
+                        backgroundColor: state.isSelected
+                          ? '#0d55b3'
+                          : state.isFocused
+                          ? '#364156'
+                          : '#2c3344',
+                        color: state.isSelected ? '#fff' : '#e0e0e0',
+                        fontSize: '14px',
+                      }),
+                      multiValue: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#375071',
+                        borderRadius: '6px',
+                      }),
+                      multiValueLabel: baseStyles => ({
+                        ...baseStyles,
+                        color: '#fff',
+                        fontSize: '12px',
+                      }),
+                      multiValueRemove: baseStyles => ({
+                        ...baseStyles,
+                        color: '#fff',
+                        ':hover': {
+                          backgroundColor: '#0d55b3',
+                          color: '#fff',
+                        },
+                      }),
+                      singleValue: baseStyles => ({
+                        ...baseStyles,
+                        color: '#e0e0e0',
+                      }),
+                      placeholder: baseStyles => ({
+                        ...baseStyles,
+                        color: '#aaaaaa',
+                      }),
+                    }
+                  : {
+                      control: baseStyles => ({
+                        ...baseStyles,
+                        minHeight: '38px',
+                        fontSize: '14px',
+                      }),
+                      menu: baseStyles => ({
+                        ...baseStyles,
+                        fontSize: '14px',
+                      }),
+                      option: baseStyles => ({
+                        ...baseStyles,
+                        fontSize: '14px',
+                      }),
+                      multiValue: baseStyles => ({
+                        ...baseStyles,
+                        backgroundColor: '#e2e7ee',
+                        borderRadius: '6px',
+                      }),
+                      multiValueLabel: baseStyles => ({
+                        ...baseStyles,
+                        color: '#333',
+                        fontSize: '12px',
+                      }),
+                      multiValueRemove: baseStyles => ({
+                        ...baseStyles,
+                        color: '#333',
+                        ':hover': {
+                          backgroundColor: '#0d55b3',
+                          color: '#fff',
+                        },
+                      }),
+                    }
+              }
+            />
+          </div>
+        </div>
       </div>
 
       <div className={styles.chartContainer}>
@@ -295,6 +414,7 @@ export default function IssuesBreakdownChart() {
                 color: textColor,
               }}
             />
+            {/* Fixed three bars: Equipment Issues, Labor Issues, Materials Issues */}
             <Bar dataKey="equipmentIssues" name="Equipment Issues" fill={COLORS.equipmentIssues}>
               <LabelList dataKey="equipmentIssues" position="top" fill={textColor} />
             </Bar>

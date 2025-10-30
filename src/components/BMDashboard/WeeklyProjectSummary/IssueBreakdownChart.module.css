@@ -60,6 +60,29 @@
   font-size: 22px;
 }
 
+.filtersRow {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  min-width: 250px;
+  flex: 1;
+}
+
+.filterLabel {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-color, #333);
+}
+
 .chartContainer {
   width: 100%;
   height: 500px;
