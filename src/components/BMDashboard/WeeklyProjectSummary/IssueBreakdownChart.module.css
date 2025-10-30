@@ -67,6 +67,7 @@
   margin-top: 24px;
   margin-bottom: 20px;
   width: 100%;
+  align-items: flex-start;
 }
 
 .filterGroup {
@@ -98,6 +99,11 @@
   background: var(--section-bg, #fff);
   color: var(--text-color, #333);
   min-height: 38px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.datePicker:hover {
+  border-color: var(--border-color-hover, #bbb);
 }
 
 .datePicker:focus {
@@ -128,15 +134,23 @@
   font-weight: 500;
   font-size: 14px;
   transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .resetButton:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
 }
 
 .resetButton:active {
   transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.resetButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.3);
 }
 
 .chartContainer {
@@ -145,4 +159,107 @@
   margin-top: 20px;
   background: var(--section-bg, transparent);
   border-radius: 12px;
+}
+
+/* ===================== RESPONSIVE DESIGN ===================== */
+
+/* Tablet and smaller screens */
+@media (max-width: 1024px) {
+  .filtersRow {
+    gap: 16px;
+  }
+
+  .filterGroup {
+    min-width: 200px;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  .heading {
+    font-size: 28px;
+  }
+
+  .filtersRow {
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 16px;
+  }
+
+  .filterGroup {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  .datePickerGroup {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .datePicker {
+    min-width: 0;
+  }
+
+  .resetButtonContainer {
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  .resetButton {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .chartContainer {
+    height: 400px;
+    margin-top: 16px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .container {
+    padding: 16px;
+  }
+
+  .heading {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .legend {
+    gap: 16px;
+    justify-content: flex-start;
+  }
+
+  .legendLabel {
+    font-size: 18px;
+  }
+
+  .filtersRow {
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .filterLabel {
+    font-size: 13px;
+  }
+
+  .datePickerGroup {
+    flex-wrap: wrap;
+  }
+
+  .dateSeparator {
+    width: 100%;
+    text-align: center;
+  }
+
+  .chartContainer {
+    height: 350px;
+  }
 }
