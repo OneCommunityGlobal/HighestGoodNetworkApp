@@ -1,5 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
+import styles from './ExpectedVsActualBarChart.module.css';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
@@ -11,6 +12,13 @@ export default function ExpenseBarChart() {
   const [endDate, setEndDate] = useState('');
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth); // for responsiveness of labels
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth); // windowWidth updates every time the user resizes the browser
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
@@ -92,7 +100,7 @@ export default function ExpenseBarChart() {
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-        <h4 style={{ margin: 0, color: '#555', fontSize: '1.2rem' }}>Planned vs Actual Cost</h4>
+        <h4 style={{ margin: 0, color: '#555', fontSize: '1.3rem' }}>Planned vs Actual Cost</h4>
         {errorMessage && (
           <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
             {errorMessage}
@@ -106,9 +114,9 @@ export default function ExpenseBarChart() {
           flexWrap: 'nowrap',
           justifyContent: 'center',
           alignItems: 'center',
-          gap: '1rem',
-          fontSize: '0.75rem',
-          marginBottom: '0.5rem',
+          gap: '5rem',
+          fontSize: '0.85rem',
+          marginBottom: '0.2rem',
         }}
       >
         <label style={{ minWidth: '150px' }}>
@@ -185,16 +193,21 @@ export default function ExpenseBarChart() {
         </span>
       </div>
 
-      <div style={{ width: '100%', height: '240px' }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <div className={styles.chartContainer}>
+        <ResponsiveContainer>
           <BarChart data={data} margin={{ top: 10, right: 10, left: 35, bottom: 35 }}>
             <XAxis
               dataKey="project"
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: windowWidth < 480 ? 8 : 10 }} // smaller font on small screens
               interval={0}
-              angle={-15}
+              angle={windowWidth < 480 ? -35 : -15} // rotate more on mobile
               textAnchor="end"
-              label={{ value: 'Project Name', position: 'insideBottom', dy: 25, fontSize: 10 }}
+              label={{
+                value: 'Project Name',
+                position: 'insideBottom',
+                dy: windowWidth < 480 ? 40 : 25,
+                fontSize: 10,
+              }}
             />
             <YAxis tick={{ fontSize: 10 }} axisLine tickLine />
             <Bar dataKey="planned" fill="#4285F4" name="Planned">
