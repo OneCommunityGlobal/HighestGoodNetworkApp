@@ -140,6 +140,28 @@ export default function IssuesBreakdownChart() {
     });
   };
 
+  const handleStartDateChange = e => {
+    const newStartDate = e.target.value;
+    setStartDate(newStartDate);
+
+    // Validate: endDate must be >= startDate
+    if (endDate && newStartDate && endDate < newStartDate) {
+      // If endDate is before new startDate, adjust endDate to startDate
+      setEndDate(newStartDate);
+    }
+  };
+
+  const handleEndDateChange = e => {
+    const newEndDate = e.target.value;
+    setEndDate(newEndDate);
+
+    // Validate: endDate must be >= startDate
+    if (startDate && newEndDate && newEndDate < startDate) {
+      // If new endDate is before startDate, adjust startDate to endDate
+      setStartDate(newEndDate);
+    }
+  };
+
   const fetchData = async filters => {
     try {
       setLoading(true);
@@ -396,6 +418,32 @@ export default function IssuesBreakdownChart() {
                     }
               }
             />
+          </div>
+
+          <div className={styles.filterGroup}>
+            <label htmlFor="start-date-picker" className={styles.filterLabel}>
+              Date Range
+            </label>
+            <div className={styles.datePickerGroup}>
+              <input
+                id="start-date-picker"
+                type="date"
+                className={styles.datePicker}
+                value={startDate || ''}
+                onChange={handleStartDateChange}
+                aria-label="Start date"
+              />
+              <span className={styles.dateSeparator}>to</span>
+              <input
+                id="end-date-picker"
+                type="date"
+                className={styles.datePicker}
+                value={endDate || ''}
+                onChange={handleEndDateChange}
+                min={startDate || ''}
+                aria-label="End date"
+              />
+            </div>
           </div>
         </div>
       </div>
