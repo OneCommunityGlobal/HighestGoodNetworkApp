@@ -450,7 +450,7 @@ const IntegratedEmailSender = ({
           // no pagination for dropdown; fetch all
           sortBy: 'updated_at',
           sortOrder: 'desc',
-          includeVariables: true,
+          includeEmailContent: true,
         });
 
         setLoadingProgress(100);
@@ -683,12 +683,32 @@ const IntegratedEmailSender = ({
         return;
       }
 
-      // Template already has full data including variables from includeVariables: true
-      setSelectedTemplate(template);
-      initializeVariableValues(template);
+      // Check if template has full data (variables, html_content, subject)
+      // This is set when includeEmailContent=true is passed to fetchEmailTemplates
+      const hasFullData =
+        Array.isArray(template.variables) && (template.html_content || template.subject);
 
-      // Fetch full template content for preview
-      await fetchFullTemplateContent(template._id);
+      if (!hasFullData) {
+        // Fallback: fetch full template data if only basic data was loaded
+        try {
+          const fullTemplate = await fetchFullTemplateContent(template._id);
+          if (fullTemplate) {
+            setSelectedTemplate(fullTemplate);
+            initializeVariableValues(fullTemplate);
+            setFullTemplateContent(fullTemplate);
+          }
+        } catch (error) {
+          console.error('Failed to fetch full template data:', error);
+          // Continue with the template we have
+          setSelectedTemplate(template);
+          initializeVariableValues(template);
+        }
+      } else {
+        // Template already has full data, no additional API call needed
+        setSelectedTemplate(template);
+        initializeVariableValues(template);
+        setFullTemplateContent(template);
+      }
     },
     [initializeVariableValues, fetchFullTemplateContent],
   );
