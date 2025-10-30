@@ -25,6 +25,9 @@ export default function IssuesBreakdownChart() {
   const [error, setError] = useState(null);
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  // Get projects from Redux
+  const reduxProjects = useSelector(state => state.bmProjects || state.allProjects?.projects || []);
+
   // Filter states
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [startDate, setStartDate] = useState(null);
@@ -73,6 +76,29 @@ export default function IssuesBreakdownChart() {
 
     fetchIssueTypes();
   }, []);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      // Use Redux store if available
+      if (reduxProjects && reduxProjects.length > 0) {
+        setAvailableProjects(reduxProjects);
+        return;
+      }
+
+      // Fetch from API if not in Redux
+      try {
+        const response = await httpService.get(`${process.env.REACT_APP_APIENDPOINT}/projects`);
+        if (response.data && Array.isArray(response.data)) {
+          setAvailableProjects(response.data);
+        }
+      } catch (err) {
+        // Chart can work without projects filter - set to empty array
+        setAvailableProjects([]);
+      }
+    };
+
+    fetchProjects();
+  }, [reduxProjects]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
