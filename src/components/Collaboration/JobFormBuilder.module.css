@@ -25,12 +25,14 @@
 
 .jobformNavbar {
   display: flex;
+  flex-wrap: wrap;
   padding: 0 10px;
   justify-content: space-between;
   background-color: #97ca02;
   border-radius: 5px;
   border: 1px solid #97ca02;
   margin-bottom: 3%;
+  align-items: center;
 }
 
 .jobformNavbar input {
@@ -215,4 +217,58 @@
 
 .jobSubmitButton:hover {
   background-color: #45a049;
+}
+
+@media (max-width: 720px) {
+
+  .formBuilderContainer {
+    width: 98%;
+    max-width: 100%;
+    padding: 10px;
+  }
+  .jobformNavbar {
+    flex-direction: column;
+    padding: 8px;
+    align-items: stretch;
+  }
+
+  .jobformNavbar > div {
+    flex-direction: column;
+    align-items: stretch;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .jobformInput,
+  .jobformTextarea,
+  .jobformSelect,
+  .goButton {
+    width: 100%;
+  }
+
+  .formDiv {
+    flex-direction: column;
+  }
+
+  .formDivCheckbox {
+    width: auto;
+    order: 1;
+  }
+
+  .formField {
+    order: 2;
+    width: 100%;
+  }
+
+  .optionItem {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    word-break: break-word;
+  }
+
+  .oneCommunityGlobalImg {
+    max-width: 100%;
+    height: auto;
+  }
 }
