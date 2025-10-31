@@ -101,6 +101,11 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
+      {
+        label: 'See Job Analytics Reports',
+        key: 'getJobReports',
+        description: 'Job Analytics Reports.',
+      },
     ],
   },
   {
@@ -196,6 +201,12 @@ export const permissionLabels = [
         label: 'Tracking Management',
         key: 'setTrackingManagement',
         description: 'Gives the user permission to interact with the edit warnings list modal.',
+      },
+      {
+        label: 'HGN People +/- Setup',
+        key: 'manageHGNAccessSetup',
+        description:
+          'Gives the user permission to access the HGN Add Access button on user profile pages to add/remove user access to GitHub, Dropbox, Slack, and Sentry.',
       },
     ],
   },
