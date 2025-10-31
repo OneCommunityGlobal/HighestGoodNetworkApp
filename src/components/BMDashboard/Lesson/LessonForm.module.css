@@ -1,7 +1,6 @@
 .formContainer{
 
   padding: 5%;
-  background-color: #FFFFFF;
   border-radius: 1%;
 
   .formControl {
@@ -22,6 +21,7 @@
 .lessonLabel{
    font-size: larger;
    font-weight: bold;
+   color: inherit;
 }
 .lessonPlaceholderText{
  min-height: 20vh;
@@ -104,8 +104,6 @@
   min-width: 50px;
   padding: 4px 8px;
   margin:1px;
-
-  border: 1px solid black;
   border-radius: 4px;
   overflow: hidden;
   word-break: break-all;
@@ -197,3 +195,21 @@
 
  }
  }
+
+.wrapperDark {
+  background-color: #1b2a41; 
+  color: #f5f7fa; 
+}
+
+.whiteText {
+  color: white;
+}
+
+.blackText {
+  color: black;
+}
+
+.darkFormContainer{
+  background-color: '#1e2433';
+  /* color: '#f5f7fa' */
+}
