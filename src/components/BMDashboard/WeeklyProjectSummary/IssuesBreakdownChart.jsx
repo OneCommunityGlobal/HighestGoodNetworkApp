@@ -27,9 +27,10 @@ const COLORS = {
 };
 
 // Fixed issue types for filter (display names)
+// These match the API response property names exactly
 const FIXED_ISSUE_TYPES = ['Equipment Issues', 'Labor Issues', 'Materials Issues'];
 
-// Map display names to API property names
+// Map display names to chart data keys
 const ISSUE_TYPE_MAPPING = {
   'Equipment Issues': 'equipmentIssues',
   'Labor Issues': 'laborIssues',
@@ -52,7 +53,6 @@ export default function IssuesBreakdownChart() {
   const [selectedIssueTypes, setSelectedIssueTypes] = useState([]);
 
   // Available options states
-  const [availableIssueTypes, setAvailableIssueTypes] = useState([]);
   const [availableProjects, setAvailableProjects] = useState([]);
 
   // Ref for debouncing timeout
@@ -67,7 +67,8 @@ export default function IssuesBreakdownChart() {
 
   /**
    * Process API response data to map to three fixed issue types
-   * Ensures each project has equipmentIssues, laborIssues, and materialIssues properties
+   * API returns data with property names: "Equipment Issues", "Labor Issues", "Materials Issues"
+   * We map these to camelCase for use in the chart
    */
   const processChartData = useCallback(apiData => {
     if (!apiData || !Array.isArray(apiData)) {
@@ -75,86 +76,13 @@ export default function IssuesBreakdownChart() {
     }
 
     return apiData.map(project => {
-      // Extract projectId and projectName
-      const processedProject = {
+      return {
         projectId: project.projectId || project._id || '',
         projectName: project.projectName || project.name || '',
-        equipmentIssues: 0,
-        laborIssues: 0,
-        materialIssues: 0,
+        equipmentIssues: Number(project['Equipment Issues']) || 0,
+        laborIssues: Number(project['Labor Issues']) || 0,
+        materialIssues: Number(project['Materials Issues']) || 0,
       };
-
-      // Track which properties we've already matched exactly
-      const matchedKeys = new Set();
-
-      // Check if API returns properties matching the fixed types directly
-      if (project.equipmentIssues !== undefined) {
-        processedProject.equipmentIssues = Number(project.equipmentIssues) || 0;
-        matchedKeys.add('equipmentIssues');
-      }
-      if (project.laborIssues !== undefined) {
-        processedProject.laborIssues = Number(project.laborIssues) || 0;
-        matchedKeys.add('laborIssues');
-      }
-      if (project.materialIssues !== undefined) {
-        processedProject.materialIssues = Number(project.materialIssues) || 0;
-        matchedKeys.add('materialIssues');
-      }
-      if (project.materialsIssues !== undefined) {
-        processedProject.materialIssues = Number(project.materialsIssues) || 0;
-        matchedKeys.add('materialsIssues');
-      }
-
-      // Map remaining properties that don't match exactly
-      // This handles cases where API returns different property names
-      Object.keys(project).forEach(key => {
-        // Skip project metadata and already matched keys
-        if (
-          key === 'projectId' ||
-          key === 'projectName' ||
-          key === '_id' ||
-          key === 'name' ||
-          matchedKeys.has(key)
-        ) {
-          return;
-        }
-
-        const value = Number(project[key]) || 0;
-        if (value === 0) return; // Skip zero values
-
-        const lowerKey = key.toLowerCase();
-
-        // Map to equipmentIssues if not already set or if pattern matches
-        if (
-          !matchedKeys.has('equipmentIssues') &&
-          (lowerKey.includes('equipment') ||
-            lowerKey.includes('tool') ||
-            lowerKey.includes('machine'))
-        ) {
-          processedProject.equipmentIssues += value;
-        }
-        // Map to laborIssues if not already set or if pattern matches
-        else if (
-          !matchedKeys.has('laborIssues') &&
-          (lowerKey.includes('labor') || lowerKey.includes('labour') || lowerKey === 'labor')
-        ) {
-          processedProject.laborIssues += value;
-        }
-        // Map to materialIssues if not already set or if pattern matches
-        else if (
-          !matchedKeys.has('materialIssues') &&
-          (lowerKey.includes('material') ||
-            lowerKey.includes('supply') ||
-            lowerKey.includes('resource'))
-        ) {
-          processedProject.materialIssues += value;
-        }
-        // For other types (Safety, Weather, METs quality / functionality, etc.):
-        // If all three fixed types are already set from exact matches, ignore
-        // Otherwise, we could aggregate into "Other" but for now we maintain the three fixed structure
-      });
-
-      return processedProject;
     });
   }, []);
 
@@ -233,16 +161,8 @@ export default function IssuesBreakdownChart() {
           params.append('endDate', filters.endDate);
         }
 
-        // Handle empty arrays: if no issue types selected, fetch all (don't send issueTypes param)
-        if (filters.issueTypes && filters.issueTypes.length > 0) {
-          // Map display names to API property names
-          const apiIssueTypes = filters.issueTypes
-            .map(displayName => ISSUE_TYPE_MAPPING[displayName] || displayName)
-            .filter(Boolean); // Remove any undefined values
-          if (apiIssueTypes.length > 0) {
-            params.append('issueTypes', apiIssueTypes.join(','));
-          }
-        }
+        // Note: issueTypes filter is applied client-side by controlling which bars are displayed
+        // We don't send issueTypes to the API
 
         const queryString = params.toString();
         const url = `${process.env.REACT_APP_APIENDPOINT}/issues/breakdown${
@@ -312,12 +232,12 @@ export default function IssuesBreakdownChart() {
     }
 
     // Debounce API calls to prevent excessive requests
+    // Note: selectedIssueTypes is NOT included here because it's a client-side filter
     debounceTimeoutRef.current = setTimeout(() => {
       const filters = {
         projects: selectedProjects,
         startDate,
         endDate,
-        issueTypes: selectedIssueTypes,
       };
       fetchData(filters);
     }, 300);
@@ -328,7 +248,7 @@ export default function IssuesBreakdownChart() {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
-  }, [selectedProjects, startDate, endDate, selectedIssueTypes, fetchData]);
+  }, [selectedProjects, startDate, endDate, fetchData]);
 
   // Cleanup API calls on unmount
   useEffect(() => {
@@ -342,22 +262,6 @@ export default function IssuesBreakdownChart() {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
-  }, []);
-
-  useEffect(() => {
-    const fetchIssueTypes = async () => {
-      try {
-        const response = await httpService.get(`${process.env.REACT_APP_APIENDPOINT}/issues/types`);
-        if (response.data && response.data.issueTypes) {
-          setAvailableIssueTypes(response.data.issueTypes);
-        }
-      } catch (err) {
-        // Chart can work without issue types filter - set to empty array
-        setAvailableIssueTypes([]);
-      }
-    };
-
-    fetchIssueTypes();
   }, []);
 
   useEffect(() => {
@@ -748,15 +652,28 @@ export default function IssuesBreakdownChart() {
                 }}
               />
               {/* Fixed three bars: Equipment Issues, Labor Issues, Materials Issues */}
-              <Bar dataKey="equipmentIssues" name="Equipment Issues" fill={COLORS.equipmentIssues}>
-                <LabelList dataKey="equipmentIssues" position="top" fill={textColor} />
-              </Bar>
-              <Bar dataKey="laborIssues" name="Labor Issues" fill={COLORS.laborIssues}>
-                <LabelList dataKey="laborIssues" position="top" fill={textColor} />
-              </Bar>
-              <Bar dataKey="materialIssues" name="Materials Issues" fill={COLORS.materialIssues}>
-                <LabelList dataKey="materialIssues" position="top" fill={textColor} />
-              </Bar>
+              {/* Only show bars for selected issue types (or all if none selected) */}
+              {(selectedIssueTypes.length === 0 ||
+                selectedIssueTypes.includes('Equipment Issues')) && (
+                <Bar
+                  dataKey="equipmentIssues"
+                  name="Equipment Issues"
+                  fill={COLORS.equipmentIssues}
+                >
+                  <LabelList dataKey="equipmentIssues" position="top" fill={textColor} />
+                </Bar>
+              )}
+              {(selectedIssueTypes.length === 0 || selectedIssueTypes.includes('Labor Issues')) && (
+                <Bar dataKey="laborIssues" name="Labor Issues" fill={COLORS.laborIssues}>
+                  <LabelList dataKey="laborIssues" position="top" fill={textColor} />
+                </Bar>
+              )}
+              {(selectedIssueTypes.length === 0 ||
+                selectedIssueTypes.includes('Materials Issues')) && (
+                <Bar dataKey="materialIssues" name="Materials Issues" fill={COLORS.materialIssues}>
+                  <LabelList dataKey="materialIssues" position="top" fill={textColor} />
+                </Bar>
+              )}
             </BarChart>
           </ResponsiveContainer>
         )}
