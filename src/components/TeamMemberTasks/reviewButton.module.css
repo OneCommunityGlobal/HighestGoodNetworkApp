@@ -2,14 +2,37 @@
   width: auto;
   height: auto; /* Allow the height to adjust based on content */
   white-space: normal; /* Allow content to wrap within the button */
-  overflow: hidden; /* Hide any overflowing content */
+   overflow: hidden; /*Hide any overflowing content  */
   z-index: 1000;
+  position: relative;
+  /* size */
+  --bs-btn-font-size: 12px;
+  --bs-btn-padding-y: 8px;   /* 0.25rem */
+  --bs-btn-padding-x: 8px;   /* 0.5rem */
+
+  /* extras you want */
+  font-weight: 600;
+  align-self: flex-start;
 }
 
 .review-button-dropdown {
   overflow-y: auto; /* enable scrolling if the dropdown is too long*/
   z-index: 1000;
+  position:fixed !important;
+  margin-top: -50px;
+}
 
+.reviewBtn-dropdown-wrapper{
+  display: 'inline-flex';
+  align-items: 'center';
+  margin-top: 6;
+  font-size: 1px !important;
+  font-size: 14px !important;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 6px 14px !important;
+  min-width: 140px;
+  height: auto !important;
 }
 
 .dark-mode-btn:hover{
@@ -35,14 +58,14 @@
   }
   .edit-link-btn {
     padding: 5px !important;
-    font-size: 0.75rem !important;
+    font-size: 0.65rem !important;
   }
 }
 
 @media screen and (max-width: 1151px) and (min-width: 992px) {
   .reviewBtn {
     padding: 2px !important;
-    font-size: 0.75rem !important;
+    font-size: 0.65rem !important;
   }
   .review-button-dropdown{
     max-height: 150px;
@@ -50,13 +73,13 @@
   }
   .edit-link-btn {
     padding: 2px !important;
-    font-size: 0.75rem !important;
+    font-size: 0.65rem !important;
   }
 }
 @media screen and (max-width: 991px) {
   .reviewBtn {
     padding: 2px !important;
-    font-size: 0.75rem !important;
+    font-size: 0.65rem !important;
     width: 100%
   }
   .review-button-dropdown{
@@ -65,7 +88,7 @@
   }
   .edit-link-btn {
     padding: 2px !important;
-    font-size: 0.75rem !important;
+    font-size: 0.65rem !important;
   }
 }
 

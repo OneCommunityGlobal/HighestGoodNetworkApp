@@ -1,4 +1,4 @@
-@import url('./UserProfileModal.css');
+@import url('./UserProfileModal.module.css');
 @media (max-width: 1024px) {
   .link-fields {
     display: flex;

@@ -177,7 +177,7 @@ describe('AddTeamPopup component', () => {
   });
   it.skip('check searched value results', async () => {
     axios.get.mockResolvedValue({
-      status: 200,
+      data: store.getState().allTeams,
     });
 
     axios.post.mockResolvedValue({

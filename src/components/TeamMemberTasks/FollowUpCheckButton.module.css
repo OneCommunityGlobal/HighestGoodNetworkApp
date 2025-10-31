@@ -1,91 +1,44 @@
-/* wrapper so we can overlay the check icon */
-.followup-checkbox-wrap{
+/* wrapper gives a positioning context */
+.followup-box {
   position: relative;
   display: inline-block;
-  width: 18px;             /* same as checkbox */
-  height: 18px;
-  line-height: 0;
-}
-
-/* the square checkbox */
-.team-task-progress-follow-up{
   width: 18px;
   height: 18px;
-  margin: 0;
-  vertical-align: middle;
-  appearance: none;        /* consistent look cross-browser */
+}
+
+/* the custom checkbox */
+.team-task-progress-follow-up {
+  appearance: none;
   -webkit-appearance: none;
-  border: 2px solid #3BA55D;
+  -moz-appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: 2px solid green;
   border-radius: 3px;
-  background: #fff;
-  cursor: pointer;
+  background-color: #e1f3e2;
+  outline: none;
+  display: block;
 }
 
 .team-task-progress-follow-up-red {
-  border: 2px solid red;
+  border-color: red;
   background-color: #f3e1e2;
 }
+
+/* the check icon sits inside the box */
 .team-task-progress-follow-up-check {
-  grid-column: 2 / span 1;
-  grid-row: 1 / span 1;
-  align-self: center;
-  justify-self: center;
-  font-size: 10px;
-  color: green;
-}
-@media screen and (max-width: 480px) {
-  .team-task-progress-follow-up {
-    box-sizing: border-box;
-    grid-column: 1 / span 1;
-    grid-row: 3 / span 1;
-    justify-self: end;
-    width: 15px;
-    height: 15px;
-  }
-}
-
-/* wrapper so we can overlay the check icon */
-.wrap {
-  position: relative;
-  display: inline-block;
-  width: 18px;          /* same as checkbox */
-  height: 18px;
-  line-height: 0;
-}
-
-/* the square checkbox */
-.checkbox {
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  vertical-align: middle;
-  appearance: none;
-  -webkit-appearance: none;
-  border: 2px solid #3BA55D;
-  border-radius: 3px;
-  background: #fff;
-  cursor: pointer;
-}
-
-/* red border for “needs follow up” */
-.checkboxRed {
-  border-color: #FF4D4F !important;
-}
-
-/* the green check, centered INSIDE the box */
-.checkIcon {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -52%); /* slight lift for optical centering */
-  font-size: 12px;                  /* fits inside 18×18 box */
-  color: #3BA55D;
-  pointer-events: none;             /* clicks go to the checkbox below */
+  inset: 3px;                 /* top/right/bottom/left: 0 */
+  display: grid;
+  place-items: center;      /* centers the icon */
+  font-size: 12px;
+  color: green;
+  pointer-events: none;     /* clicks go to the input */
 }
 
-/* optional responsive size tweak */
-@media screen and (max-width: 480px) {
-  .wrap { width: 15px; height: 15px; }
-  .checkbox { width: 15px; height: 15px; }
-  .checkIcon { font-size: 10px; }
+/* mobile sizing to match your old media rule */
+@media (max-width: 480px) {
+  .followup-box { width: 15px; height: 15px; }
+  .team-task-progress-follow-up-check { font-size: 10px; }
 }
