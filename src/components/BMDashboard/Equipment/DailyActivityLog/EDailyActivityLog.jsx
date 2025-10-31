@@ -142,26 +142,51 @@ function EDailyActivityLog(props) {
       className={`container-fluid ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
       style={{ height: '100%' }}
     >
+      {/* Custom dark mode table row and header hover style: dark background, light text */}
+      {darkMode && (
+        <style>{`
+          .dark-table-row:hover,
+          thead.table-dark tr.text-light:hover,
+          tr.select-project-row.dark-mode:hover {
+            background-color: #222 !important;
+            color: #fff !important;
+            transition: background-color 0.2s;
+          }
+        `}</style>
+      )}
       <div className="container">
         <h4 className="mb-4">Daily Equipment Log</h4>
 
         {/* header */}
         <div className="row mb-3">
           <div className="col-md-3">
-            <label className="form-label fw-bold" htmlFor="date">
+            <label
+              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              htmlFor="date"
+              style={darkMode ? { color: '#f8f9fa' } : {}}
+            >
               Date
             </label>
             <input
               type="date"
               id="date"
-              className="form-control"
+              className={`form-control${darkMode ? ' bg-dark text-light border-secondary' : ''}`}
               value={date}
               onChange={e => setDate(e.target.value)}
+              style={
+                darkMode
+                  ? { backgroundColor: '#343a40', color: '#f8f9fa', borderColor: '#495057' }
+                  : {}
+              }
             />
           </div>
 
           <div className="col-md-5">
-            <label className="form-label fw-bold" htmlFor="project-select">
+            <label
+              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              htmlFor="project-select"
+              style={darkMode ? { color: '#f8f9fa' } : {}}
+            >
               Project
             </label>
             <Select
@@ -171,12 +196,78 @@ function EDailyActivityLog(props) {
               options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
               placeholder="Select project…"
               isClearable
-              styles={{ maxWidth: '150px' }}
+              styles={{
+                maxWidth: '150px',
+                control: base => ({
+                  ...base,
+                  backgroundColor: darkMode ? '#343a40' : '#fff',
+                  borderColor: darkMode ? '#495057' : '#ced4da',
+                  color: darkMode ? '#fff' : '#000',
+                  minHeight: 38,
+                  boxShadow: 'none',
+                }),
+                singleValue: base => ({
+                  ...base,
+                  color: darkMode ? '#fff' : '#000',
+                }),
+                input: base => ({
+                  ...base,
+                  color: darkMode ? '#fff' : '#000',
+                }),
+                placeholder: base => ({
+                  ...base,
+                  color: darkMode ? '#adb5bd' : '#6c757d',
+                }),
+                menu: base => ({
+                  ...base,
+                  backgroundColor: darkMode ? '#343a40' : '#fff',
+                  border: darkMode ? '1px solid #495057' : '1px solid #ced4da',
+                  zIndex: 10001,
+                  borderRadius: 8,
+                  marginTop: 2,
+                }),
+                menuList: base => ({
+                  ...base,
+                  maxHeight: 400,
+                  overflowY: 'auto',
+                  backgroundColor: darkMode ? '#343a40' : '#fff',
+                  color: darkMode ? '#fff' : '#000',
+                  padding: 0,
+                }),
+                option: (base, state) => ({
+                  ...base,
+                  backgroundColor: state.isSelected
+                    ? '#0d55b3'
+                    : state.isFocused
+                    ? darkMode
+                      ? '#495057'
+                      : '#f8f9fa'
+                    : darkMode
+                    ? '#343a40'
+                    : '#fff',
+                  color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#000',
+                  fontSize: 13,
+                  padding: '10px 16px',
+                  cursor: 'pointer',
+                  '&:hover': {
+                    backgroundColor: state.isSelected
+                      ? '#0d55b3'
+                      : darkMode
+                      ? '#495057'
+                      : '#c4c8cbff',
+                    color: state.isSelected ? '#c4c8cbff' : darkMode ? '#fff' : '#000',
+                  },
+                }),
+              }}
             />
           </div>
 
           <div className="col-md-4">
-            <p className="form-label fw-bold" id="log-type-label">
+            <p
+              className={`form-label fw-bold${darkMode ? ' text-light' : ''}`}
+              id="log-type-label"
+              style={darkMode ? { color: '#f8f9fa' } : {}}
+            >
               Log Type
             </p>
             <ButtonGroup className="d-block" aria-labelledby="log-type-label">
@@ -209,7 +300,7 @@ function EDailyActivityLog(props) {
           </thead>
           <tbody>
             {!selectedProject && (
-              <tr>
+              <tr className={darkMode ? 'select-project-row dark-mode' : ''}>
                 <td
                   colSpan={5}
                   className={`text-center py-3 ${darkMode ? 'text-light' : 'text-dark'} `}
@@ -234,7 +325,7 @@ function EDailyActivityLog(props) {
                 const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
 
                 return (
-                  <tr key={r.id} className={`${darkMode ? 'text-light' : 'text-dark'} `}>
+                  <tr key={r.id} className={darkMode ? 'dark-table-row text-light' : 'text-dark'}>
                     <td>{r.name}</td>
                     <td>{r.workingQty}</td>
                     <td>{r.availableQty}</td>
@@ -260,10 +351,13 @@ function EDailyActivityLog(props) {
                             width: '100%', // fill the container
                             overflow: 'hidden',
                             whiteSpace: 'nowrap',
+                            backgroundColor: darkMode ? '#343a40' : '#fff',
+                            borderColor: darkMode ? '#495057' : '#ced4da',
+                            color: darkMode ? '#fff' : '#000',
                           }),
                           placeholder: base => ({
                             ...base,
-                            color: '#000',
+                            color: darkMode ? '#adb5bd' : '#6c757d',
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
@@ -273,17 +367,28 @@ function EDailyActivityLog(props) {
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
+                            color: darkMode ? '#fff' : '#000',
                           }),
                           multiValue: base => ({
                             ...base,
                             maxWidth: '60%',
                             overflow: 'hidden',
+                            backgroundColor: darkMode ? '#495057' : '#e9ecef',
                           }),
                           multiValueLabel: base => ({
                             ...base,
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
+                            color: darkMode ? '#fff' : '#000',
+                          }),
+                          multiValueRemove: base => ({
+                            ...base,
+                            color: darkMode ? '#fff' : '#000',
+                            '&:hover': {
+                              backgroundColor: darkMode ? '#6c757d' : '#dee2e6',
+                              color: darkMode ? '#fff' : '#000',
+                            },
                           }),
                           indicatorsContainer: base => ({
                             ...base,
@@ -295,11 +400,42 @@ function EDailyActivityLog(props) {
                             minWidth: 300,
                             maxWidth: 300,
                             zIndex: 9999,
+                            backgroundColor: darkMode ? '#343a40' : '#fff',
+                            border: darkMode ? '1px solid #495057' : '1px solid #ced4da',
+                            borderRadius: 8,
+                            marginTop: 2,
+                          }),
+                          menuList: base => ({
+                            ...base,
+                            maxHeight: 400,
+                            overflowY: 'auto',
+                            backgroundColor: darkMode ? '#343a40' : '#fff',
+                            color: darkMode ? '#fff' : '#000',
+                            padding: 0,
                           }),
                           option: (base, state) => ({
                             ...base,
-                            color: '#000',
-                            backgroundColor: state.isFocused ? '#f0f0f0' : '#fff',
+                            backgroundColor: state.isSelected
+                              ? '#0d55b3'
+                              : state.isFocused
+                              ? darkMode
+                                ? '#495057'
+                                : '#f0f0f0'
+                              : darkMode
+                              ? '#343a40'
+                              : '#fff',
+                            color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#000',
+                            fontSize: 13,
+                            padding: '10px 16px',
+                            cursor: 'pointer',
+                            '&:hover': {
+                              backgroundColor: state.isSelected
+                                ? '#0d55b3'
+                                : darkMode
+                                ? '#495057'
+                                : '#c4c8cbff',
+                              color: darkMode ? '#fff' : '#000',
+                            },
                           }),
                           menuPortal: base => ({ ...base, zIndex: 9999 }),
                         }}
