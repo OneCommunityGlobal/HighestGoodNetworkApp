@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('composer');
-
+  const [isPostingMastodon, setIsPostingMastodon] = useState(false);
   const tabOrder = [
     { id: 'composer', label: '📝 Make Post' },
     { id: 'scheduled', label: '⏰ Scheduled Post' },
@@ -25,6 +25,43 @@ export default function SocialMediaComposer({ platform }) {
       textAlign: 'center',
       transition: 'all 0.2s ease-in-out',
     };
+  };
+
+  //Mastodon Post handler
+  const handleMastodonPost = async () => {
+    if (!postContent.trim()) {
+      alert('Mastodon post cannot be empty.');
+      return;
+    }
+
+    setIsPostingMastodon(true);
+
+    try {
+      const response = await fetch('/api/mastodon/createPin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: 'Mastodon Post',
+          description: postContent.trim(),
+          imgType: 'URL',
+          mediaItems: '', // Optional, can be extended later
+        }),
+      });
+
+      if (response.ok) {
+        alert('Mastodon post sent successfully!');
+        setPostContent('');
+      } else {
+        const errorText = await response.text();
+        console.error('Mastodon error:', errorText);
+        alert('Failed to post to Mastodon.');
+      }
+    } catch (err) {
+      console.error('Mastodon post failed:', err);
+      alert('Error while posting to Mastodon.');
+    } finally {
+      setIsPostingMastodon(false);
+    }
   };
 
   return (
@@ -64,7 +101,10 @@ export default function SocialMediaComposer({ platform }) {
             }}
           />
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            {/* Mastodon Post Button */}
             <button
+              onClick={handleMastodonPost}
+              disabled={isPostingMastodon}
               style={{
                 backgroundColor: '#007bff',
                 color: 'white',
@@ -73,7 +113,7 @@ export default function SocialMediaComposer({ platform }) {
                 border: 'none',
               }}
             >
-              Post to {platform}
+              {isPostingMastodon ? 'Posting…' : `Post to ${platform}`}
             </button>
 
             <div style={{ position: 'relative' }}>
