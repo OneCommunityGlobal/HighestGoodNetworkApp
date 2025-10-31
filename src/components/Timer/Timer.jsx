@@ -24,9 +24,11 @@ import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 import TimerPopout from './TimerPopout';
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
+import { useServerTime } from '~/context/ServerTimeContext';
 
 function Timer({ authUser, darkMode, isPopout }) {
   const dispatch = useDispatch();
+  const { getServerDateISO } = useServerTime();
   const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
@@ -495,6 +497,7 @@ function Timer({ authUser, darkMode, isPopout }) {
             isOpen={logTimeEntryModal}
             data={logTimer}
             sendStop={sendStop}
+            serverDate={getServerDateISO()}
           />
         )}
 
@@ -804,6 +807,7 @@ function Timer({ authUser, darkMode, isPopout }) {
           isOpen={logTimeEntryModal}
           data={logTimer}
           sendStop={sendStop}
+          serverDate={getServerDateISO()}
         />
       )}
       <audio

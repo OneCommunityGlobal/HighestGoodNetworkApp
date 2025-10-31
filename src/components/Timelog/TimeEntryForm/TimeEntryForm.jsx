@@ -77,9 +77,7 @@ function TimeEntryForm(props) {
   const [actualDate, setActualDate] = useState('');
 
   const initialFormValues = {
-    dateOfWork: moment()
-      .tz('America/Los_Angeles')
-      .format('YYYY-MM-DD'),
+    dateOfWork: '', // Will be set by server date logic in useEffect
     personId: viewingUser.userId ?? authUser.userid,
     projectId: '',
     wbsId: '',
@@ -309,7 +307,11 @@ function TimeEntryForm(props) {
    * @param {*} closed If true, the form closes after being cleared.
    */
   const clearForm = closed => {
-    setFormValues(initialFormValues);
+    const resetValues = {
+      ...initialFormValues,
+      dateOfWork: props.serverDate ? moment(props.serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD') : initialFormValues.dateOfWork,
+    };
+    setFormValues(resetValues);
     setReminder({ ...initialReminder });
     setErrors({});
     setProjectOrTaskId('defaultProject');
@@ -327,7 +329,11 @@ function TimeEntryForm(props) {
     }
 
     const handleFormReset = () => {
-      setFormValues(initialFormValues);
+      const resetValues = {
+        ...initialFormValues,
+        dateOfWork: props.serverDate ? moment(props.serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD') : initialFormValues.dateOfWork,
+      };
+      setFormValues(resetValues);
       setReminder(initialReminder);
       if (isOpen) toggle();
       setSubmitting(false);
@@ -550,10 +556,20 @@ function TimeEntryForm(props) {
 
   const getActualDate = () => {
     try {
-      const now = moment()
-        .tz(userTimeZone)
-        .toISOString();
-      setActualDate(now);
+      // Use server date if provided (from Timer for bulletproof time protection)
+      if (props.serverDate) {
+        // eslint-disable-next-line no-console
+        console.log('🕐 TimeEntryForm using server date:', props.serverDate);
+        setActualDate(props.serverDate);
+      } else {
+        // Fallback to system time for other uses
+        // eslint-disable-next-line no-console
+        console.log('⚠️ TimeEntryForm falling back to system time');
+        const now = moment()
+          .tz(userTimeZone)
+          .toISOString();
+        setActualDate(now);
+      }
     } catch (error) {
       setActualDate(null);
       toast.error('Failed to fetch the actual date. Please refresh and try logging time again');
@@ -561,6 +577,16 @@ function TimeEntryForm(props) {
   };
 
   /* ---------------- useEffects -------------- */
+  // Debug logging for serverDate prop
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('🔍 TimeEntryForm received props.serverDate:', props.serverDate);
+    // eslint-disable-next-line no-console
+    console.log('🔍 TimeEntryForm current formValues.dateOfWork:', formValues.dateOfWork);
+    // eslint-disable-next-line no-console
+    console.log('🔍 TimeEntryForm isOpen:', isOpen);
+  }, [props.serverDate, formValues.dateOfWork, isOpen]);
+
   useEffect(() => {
       if (isAsyncDataLoaded) {
         const options = buildOptions();
@@ -590,6 +616,16 @@ function TimeEntryForm(props) {
         }));
       }
     }, [actualDate, edit]);
+
+  // Update form values when serverDate prop changes
+  useEffect(() => {
+    if (props.serverDate && !edit) {
+      setFormValues(prev => ({
+        ...prev,
+        dateOfWork: moment(props.serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD'),
+      }));
+    }
+  }, [props.serverDate, edit]);
 
   useEffect(() => {
       setFormValues(prev => ({ ...prev, ...data }));

@@ -68,6 +68,7 @@ import WeeklySummaries from './WeeklySummaries';
 import TimestampsTab from './TimestampsTab';
 import Badge from '../Badge';
 import { ENDPOINTS } from '~/utils/URL';
+import { useServerTime } from '~/context/ServerTimeContext';
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
 // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
@@ -91,6 +92,7 @@ const endOfWeek = offset => {
 
 function Timelog(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const { getServerDateISO } = useServerTime();
   const location = useLocation();
 
   const normalizeNotes = (raw) => {
@@ -982,6 +984,7 @@ return (
                         data={intangibletimeEntryFormData}
                         userProfile={displayUserProfile}
                         roles={roles}
+                        serverDate={getServerDateISO()}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
