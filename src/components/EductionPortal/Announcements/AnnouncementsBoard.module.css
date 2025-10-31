@@ -1,0 +1,409 @@
+/* AnnouncementsBoard.module.css */
+
+/* Board Container */
+.announcementsBoard {
+  padding: 1.5rem 0;
+  background: #f8f9fa;
+  min-height: calc(100vh - 64px);
+  transition: all 0.3s ease;
+}
+
+.announcementsBoard.darkMode {
+  background: #1a1a1a;
+  color: #e9ecef;
+}
+
+/* Header Section */
+.headerRow {
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.boardTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.darkMode .boardTitle {
+  color: #e9ecef;
+}
+
+.titleIcon {
+  color: #007bff;
+  font-size: 1.8rem;
+}
+
+.createButton {
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.createButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* Filter Section */
+.filterRow {
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.filterSection {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filterIcon {
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.audienceFilter {
+  max-width: 200px;
+  border-radius: 0.375rem;
+  border: 1px solid #ced4da;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.audienceFilter:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.resultCount {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.darkMode .resultCount {
+  color: #adb5bd;
+}
+
+/* Announcement Cards */
+.announcementCol {
+  margin-bottom: 1.5rem;
+}
+
+.announcementCard {
+  border: 1px solid #e9ecef;
+  border-radius: 0.75rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.darkMode .announcementCard {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.announcementCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #007bff;
+}
+
+.darkMode .announcementCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.newAnnouncement {
+  border-left: 4px solid #28a745;
+}
+
+.newAnnouncement::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #28a745, #20c997);
+}
+
+/* Card Header */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+}
+
+.cardHeaderLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.announcementTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.darkMode .announcementTitle {
+  color: #e9ecef;
+}
+
+.newBadge {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.editButton {
+  flex-shrink: 0;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #dee2e6;
+  background: #f8f9fa;
+  color: #495057;
+  transition: all 0.2s ease;
+}
+
+.editButton:hover {
+  background: #e9ecef;
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.darkMode .editButton {
+  background: #4a5568;
+  border-color: #4a5568;
+  color: #e9ecef;
+}
+
+.darkMode .editButton:hover {
+  background: #718096;
+  color: #007bff;
+}
+
+/* Card Body */
+.cardBody {
+  margin-bottom: 1rem;
+}
+
+.announcementBody {
+  color: #495057;
+  line-height: 1.6;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.darkMode .announcementBody {
+  color: #cbd5e0;
+}
+
+/* Card Footer */
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1rem;
+  border-top: 1px solid #f1f3f4;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.darkMode .cardFooter {
+  border-top-color: #4a5568;
+}
+
+.authorInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.darkMode .authorInfo {
+  color: #a0aec0;
+}
+
+.authorIcon {
+  font-size: 0.8rem;
+}
+
+.authorName {
+  font-weight: 500;
+}
+
+.metaInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.audienceBadge {
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  text-transform: capitalize;
+}
+
+.dateInfo {
+  color: #6c757d;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.darkMode .dateInfo {
+  color: #a0aec0;
+}
+
+/* Loading and Empty States */
+.loadingSpinner {
+  padding: 3rem;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.darkMode .loadingSpinner {
+  color: #a0aec0;
+}
+
+.emptyState {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.darkMode .emptyState {
+  color: #a0aec0;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  color: #dee2e6;
+  margin-bottom: 1.5rem;
+}
+
+.darkMode .emptyIcon {
+  color: #4a5568;
+}
+
+.emptyState h4 {
+  color: #495057;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.darkMode .emptyState h4 {
+  color: #cbd5e0;
+}
+
+.emptyState p {
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .headerRow {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .filterRow {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .filterSection {
+    justify-content: center;
+  }
+  
+  .cardFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .metaInfo {
+    justify-content: space-between;
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .announcementsBoard {
+    padding: 1rem 0;
+  }
+  
+  .boardTitle {
+    font-size: 1.5rem;
+  }
+  
+  .createButton {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .announcementCard {
+    margin-bottom: 1rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .announcementCard {
+    transition: none;
+  }
+  
+  .createButton {
+    transition: none;
+  }
+  
+  .newBadge {
+    animation: none;
+  }
+}
+
+/* Focus States */
+.createButton:focus,
+.editButton:focus,
+.audienceFilter:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .announcementCard {
+    border-width: 2px;
+  }
+  
+  .cardFooter {
+    border-top-width: 2px;
+  }
+}
