@@ -1,8 +1,10 @@
 import React from 'react';
 import styles from './BrowseLessonPlan.module.css';
 
-export default function LessonPlanCard({ plan, onSave }) {
-  const { title, subject, difficulty, description, thumbnail } = plan;
+export default function LessonPlanCard({ plan, onSave, isSaved }) {
+  const { title, subject, subjects, difficulty, description, thumbnail } = plan;
+  const subjectLabel = subject || (subjects && subjects[0]) || 'General';
+
   return (
     <div className={styles.card}>
       {thumbnail ? (
@@ -13,18 +15,23 @@ export default function LessonPlanCard({ plan, onSave }) {
       <div className={styles.body}>
         <h3 className={styles.title}>{title}</h3>
         <div className={styles.meta}>
-          <span className={styles.tag}>{subject}</span>
+          <span className={styles.tag}>{subjectLabel}</span>
           <span className={styles.tag}>{difficulty}</span>
         </div>
         <p className={styles.description}>
-          {description
-            ? description.slice(0, 120) + (description.length > 120 ? '…' : '')
-            : 'No description.'}
+          {description ? (description.length > 120 ? `${description.slice(0, 120)}…` : description) : 'No description.'}
         </p>
         <div className={styles.actions}>
-          <button className={styles.view}>View</button>
-          <button className={styles.save} onClick={onSave}>
-            Save
+          <button
+            className={styles.view}
+            onClick={() => {
+              alert('Open lesson detail (not implemented)');
+            }}
+          >
+            View
+          </button>
+          <button className={styles.save} onClick={onSave} disabled={!!isSaved}>
+            {isSaved ? 'Saved' : 'Save'}
           </button>
         </div>
       </div>
