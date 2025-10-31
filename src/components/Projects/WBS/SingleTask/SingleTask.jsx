@@ -40,6 +40,7 @@ function SingleTask(props) {
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
   const canPostProject = props.hasPermission('postProject');
+  const canDeleteTask = props.hasPermission('deleteTask');
 
   const history = useHistory();
   useEffect(() => {
@@ -49,6 +50,7 @@ function SingleTask(props) {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         setTask(res?.data || {});
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log(error);
       }
     };
@@ -162,9 +164,7 @@ function SingleTask(props) {
                       level={task.level}
                       setTask={setTask}
                     />
-                    {user.role === 'Volunteer' ? (
-                      ''
-                    ) : (
+                    {canDeleteTask && (
                       <>
                         <Button
                           type="button"
@@ -208,6 +208,7 @@ function SingleTask(props) {
                               target="_blank"
                               rel="noreferrer"
                             >
+                              {/* eslint-disable-next-line jsx-a11y/alt-text */}
                               <img className="img-circle" src={elem.profilePic} />
                             </a>
                           );
