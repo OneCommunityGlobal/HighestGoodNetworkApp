@@ -1,0 +1,594 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+.loading,
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error h2 {
+  color: #d32f2f;
+  margin-bottom: 0.5rem;
+}
+
+.backButton,
+.backLink {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover,
+.backLink:hover {
+  background-color: #2980b9;
+}
+
+.backLink {
+  margin-bottom: 1.5rem;
+}
+
+/* Header Section */
+.header {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.studentInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  justify-content: space-between;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #3498db;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.studentDetails {
+  flex: 1;
+  min-width: 0;
+}
+
+.studentName {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+  text-align: left;
+}
+
+.studentId {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}
+
+.viewPortfolioBtn {
+  background-color: #fff;
+  border: 2px solid #3498db;
+  color: #3498db;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.viewPortfolioBtn:hover {
+  background-color: #3498db;
+  color: white;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.infoCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: transparent;
+  border: none;
+}
+
+.infoCard > div {
+  flex: 1;
+}
+
+.infoIcon {
+  font-size: 1.2rem;
+  color: #9e9e9e;
+  margin-top: 0.1rem;
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+.infoLabel {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0 0 0.25rem 0;
+  font-weight: 500;
+}
+
+.infoValue {
+  font-size: 0.95rem;
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+.linkButton {
+  background: none !important;
+  border: none;
+  color: #3498db;
+  font-size: 0.75rem;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  margin-top: 0.25rem;
+  text-decoration: underline;
+  outline: none;
+  white-space: nowrap;
+  display: block;
+  text-align: right;
+  margin-left: auto;
+}
+
+.linkButton:hover {
+  color: #2980b9;
+  background: none !important;
+}
+
+.linkButton:focus {
+  background: none !important;
+  outline: none;
+}
+
+.linkButton:active {
+  background: none !important;
+}
+
+/* Tabs Section */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  background: white;
+  padding: 0.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #666;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.tabActive {
+  background-color: #3498db;
+  color: white !important;
+}
+
+/* Progress Section */
+.progressSection {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.5rem 0;
+}
+
+.sectionSubtitle {
+  font-size: 0.95rem;
+  color: #666;
+  margin: 0 0 2rem 0;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  justify-items: stretch;
+  align-items: start;
+}
+
+.noData {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+/* Summary Section */
+.summarySection {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.statCard:hover {
+  transform: translateY(-4px);
+}
+
+.statCard h3 {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0 0 0.75rem 0;
+  font-weight: 500;
+}
+
+.statNumber {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3498db;
+  margin: 0;
+}
+
+/* Subject Cards */
+.subjectCard {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+}
+
+.subjectCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.subjectIcon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.subjectIcon:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.subjectIconText {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.1;
+  max-width: 70px;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.subjectName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 1rem 0;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.progressBars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bar {
+  height: 6px;
+  border-radius: 3px;
+  background-color: #f0f0f0;
+  transition: width 0.3s ease;
+}
+
+/* Modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalBackdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: -1;
+}
+
+.modal {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.closeBtn {
+  background: #f5f5f5;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #666;
+}
+
+.closeBtn:hover {
+  background: #e0e0e0;
+}
+
+/* Chart */
+.chartContainer {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.molecule {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.molecule:hover {
+  filter: brightness(1.1) drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+}
+
+/* Specific molecule state styles */
+.completedMolecule {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.4));
+}
+
+.completedMolecule:hover {
+  filter: drop-shadow(0 4px 12px rgba(255, 215, 0, 0.6)) brightness(1.15);
+}
+
+.inProgressMolecule {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  filter: drop-shadow(0 2px 4px rgba(76, 175, 80, 0.3));
+}
+
+.inProgressMolecule:hover {
+  filter: drop-shadow(0 4px 8px rgba(76, 175, 80, 0.5)) brightness(1.1);
+}
+
+.notStartedMolecule {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.notStartedMolecule:hover {
+  opacity: 1;
+  filter: brightness(1.1);
+}
+
+/* Pulse animation removed - static rings now */
+
+.tooltip {
+  position: fixed;
+  transform: translate(-50%, -100%);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  z-index: 1001;
+  pointer-events: none;
+}
+
+.tooltip h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.tooltip p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .chartsGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .chartsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .header {
+    padding: 1.5rem;
+  }
+
+  .studentInfo {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .viewPortfolioBtn {
+    width: 100%;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .summarySection {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .studentName {
+    font-size: 1.25rem;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .summarySection {
+    grid-template-columns: 1fr;
+  }
+
+  .statNumber {
+    font-size: 1.5rem;
+  }
+}
