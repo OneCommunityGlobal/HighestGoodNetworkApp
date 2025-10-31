@@ -1,67 +1,129 @@
-/* issueChart.module.css */
+.chartContainer {
+  width: 100%;
+  height: 500px;
+}
 
-.issueChartEventContainer {
-  max-width: 900px;
-  margin: 0 auto;
+/* Container for entire chart section */
+.issueChartContainer {
+  width: 50vw; /* full viewport width */
   padding: 20px;
+  box-sizing: border-box; /* include padding in width */
   background: #f9f9f9;
   border-radius: 8px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.issueChartEventContainerDark {
+
+.filterCenterWrapper {
+  max-width: 650px; /* filters centered and constrained */
+  margin: 0 auto 20px auto;
+}
+
+
+.issueChartContainerDark {
+  width: 50vw; /* full viewport width */
+  padding: 20px;
+  box-sizing: border-box; /* include padding in width */
   background: #121212;
   box-shadow: 0 4px 12px rgba(0,0,0,0.9);
   color: #ccd1dc;
 }
 
-.issueChartEventTitle {
+/* Chart title */
+.title {
   text-align: center;
   font-size: 24px;
-  color: #333;
-}
-
-.issueChartEventTitleDark {
-  color: #fff;
-}
-
-.chartWrapper {
-  padding: 20px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.chartWrapperDark {
-  background: #1e1e1e;
-  box-shadow: 0 0 15px rgba(0,0,0,0.9);
-  color: #ccd1dc;
-}
-
-.issueChartLabel {
-  font-size: 16px;
-  color: #555;
-}
-
-.issueChartLabelDark {
-  color: #fff;
-}
-
-.issueChartSelect {
-  padding: 2px 10px;
-  font-size: 16px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-  transition: border-color 0.3s ease;
-  outline: none;
+  font-weight: bold;
   margin-bottom: 20px;
+  color: #333;
 }
 
-.issueChartSelectDark {
-  border-color: #3d444d;
-  background-color: #22272e;
+.titleDark {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+/* Filter rows */
+.dateRow {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.projectRow {
+  width: 100%;
+}
+
+/* Labels */
+.dateLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.dark .dateLabel {
   color: #cfd7e3;
+}
+
+/* Date picker */
+.dateField {
+  width: 100%;
+}
+
+.dateLight,
+.dateDark {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.dateDark {
+  background: #22272e;
+  color: #cfd7e3;
+  border-color: #3d444d;
+}
+
+/* React select */
+.selectReact {
+  width: 100%;
+}
+
+.selectDark {
+  color: #cfd7e3;
+}
+
+/* No data text */
+.noData {
+  text-align: center;
+  color: #888;
+  font-size: 16px;
+  padding: 40px 0;
+}
+
+/* Loading/Error */
+.loading,
+.error {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 650px) {
+  .dateRow {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .dateRow span.dateLabel {
+    display: none; /* hide labels for small screens */
+  }
 }
