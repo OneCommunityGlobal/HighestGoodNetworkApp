@@ -5,10 +5,10 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import './Equipments.css';
 import ReactTooltip from 'react-tooltip';
-import { fetchAllEquipments } from 'actions/bmdashboard/equipmentActions';
+import { fetchAllEquipments } from '~/actions/bmdashboard/equipmentActions';
 import EquipmentListModal from './EquipmentListModal';
+import styles from './Equipments.module.css';
 
 function EquipmentsTable({ equipment, project }) {
   // Data fetched in the parent component : EquipmentsView
@@ -157,12 +157,12 @@ function EquipmentsTable({ equipment, project }) {
           record={selectedRow}
         />
         <Table responsive>
-          <thead className="BuildingTableHeaderLine">
+          <thead className={`${styles.BuildingTableHeaderLine}`}>
             <tr>
               <th onClick={() => handleSort('project')}>
                 <div
                   data-tip={`Sort project ${sortOrder.project}`}
-                  className="d-flex  align-self-stretch cusorpointer"
+                  className={`d-flex align-self-stretch ${styles.cusorpointer}`}
                 >
                   <div>Project</div>
                   <FontAwesomeIcon icon={iconToDisplay.project} size="lg" />
@@ -172,7 +172,7 @@ function EquipmentsTable({ equipment, project }) {
               <th onClick={() => handleSort('itemType')}>
                 <div
                   data-tip={`Sort name ${sortOrder.itemType}`}
-                  className="d-flex align-items-stretch cusorpointer"
+                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
                 >
                   <div>Name</div>
                   <FontAwesomeIcon icon={iconToDisplay.itemType} size="lg" />
@@ -184,7 +184,7 @@ function EquipmentsTable({ equipment, project }) {
               <th onClick={() => handleSort('rentedOn')}>
                 <div
                   data-tip={`Sort Rented On ${sortOrder.rentedOn}`}
-                  className="d-flex align-items-stretch cusorpointer"
+                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
                 >
                   <div>Rented On</div>
                   <FontAwesomeIcon icon={iconToDisplay.rentedOn} size="lg" />
@@ -194,7 +194,7 @@ function EquipmentsTable({ equipment, project }) {
               <th onClick={() => handleSort('rentedDue')}>
                 <div
                   data-tip={`Sort Rental Due ${sortOrder.rentedDue}`}
-                  className="d-flex align-items-stretch cusorpointer"
+                  className={`d-flex align-items-stretch ${styles.cusorpointer}`}
                 >
                   <div>Rental Due</div>
                   <FontAwesomeIcon icon={iconToDisplay.rentedDue} size="lg" />

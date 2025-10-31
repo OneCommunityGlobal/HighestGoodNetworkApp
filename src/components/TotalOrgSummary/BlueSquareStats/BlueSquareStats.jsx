@@ -1,9 +1,9 @@
-import { BLUE_SQUARE_STATS_COLORS } from 'constants/totalOrgSummary';
+import { BLUE_SQUARE_STATS_COLORS } from '~/constants/totalOrgSummary';
 import './BlueSquareStats.css';
-import Loading from 'components/common/Loading';
+import Loading from '~/components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
-function BlueSquareStats({ isLoading, blueSquareStats }) {
+function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode }) {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -42,17 +42,18 @@ function BlueSquareStats({ isLoading, blueSquareStats }) {
   ];
 
   const hasData = data.every(item => item.value !== 0);
-
+  const pctChange = totalBlueSquares.comparisonPercentage ?? totalBlueSquares.percentageChange ?? 0;
   return (
     <section className="blue-square-stats">
       <div className="blue-square-stats-pie-chart">
         <DonutChart
           title="TOTAL BLUE SQUARES"
           totalCount={totalBlueSquares.count}
-          percentageChange={totalBlueSquares.comparisonPercentage}
+          percentageChange={pctChange}
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
-          hasData={hasData}
+          comparisonType={comparisonType}
+          darkMode={darkMode}
         />
       </div>
     </section>

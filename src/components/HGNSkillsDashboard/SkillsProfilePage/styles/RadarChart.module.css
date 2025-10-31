@@ -1,0 +1,16 @@
+.radarChart {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.radarChart canvas {
+  max-width: 500px;
+  max-height: 500px;
+}
+
+@media (max-width: 768px) {
+  .radarChart {
+    margin-top: 0px;
+  }
+}
