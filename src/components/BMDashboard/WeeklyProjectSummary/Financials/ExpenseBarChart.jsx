@@ -23,6 +23,15 @@ export default function ExpenseBarChart() {
   const [errorMessage, setErrorMessage] = useState('');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth); // for responsiveness of labels
 
+  // Reset all the filters
+  const resetFilters = () => {
+    setProjectId('');
+    setCategoryFilter('ALL');
+    setStartDate('');
+    setEndDate('');
+    setErrorMessage('');
+  };
+
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth); // windowWidth updates every time the user resizes the browser
     window.addEventListener('resize', handleResize);
@@ -178,6 +187,26 @@ export default function ExpenseBarChart() {
             style={{ marginLeft: '0.3rem', width: '100%' }}
           />
         </label>
+
+        {/* Reset Filters button */}
+        <div style={{ minWidth: '120px' }}>
+          <button
+            type="button"
+            onClick={resetFilters}
+            style={{
+              padding: '0.5rem 1.2em',
+              borderRadius: '6px',
+              border: '1px solid #d9d2d2ff',
+              background: '#dededeff',
+              cursor: 'pointer',
+              fontSize: '0.95rem',
+            }}
+            aria-label="Reset filters"
+            title="Reset filters"
+          >
+            Reset
+          </button>
+        </div>
       </div>
 
       <div
@@ -189,20 +218,7 @@ export default function ExpenseBarChart() {
           marginBottom: '0.75rem',
           flexWrap: 'wrap',
         }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <span
-            style={{ width: 10, height: 10, backgroundColor: '#4285F4', display: 'inline-block' }}
-          />{' '}
-          Planned
-        </span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <span
-            style={{ width: 10, height: 10, backgroundColor: '#EA4335', display: 'inline-block' }}
-          />{' '}
-          Actual
-        </span>
-      </div>
+      ></div>
 
       <div className={styles.chartContainer}>
         <ResponsiveContainer>
@@ -221,6 +237,11 @@ export default function ExpenseBarChart() {
               }}
             />
             <YAxis tick={{ fontSize: 15 }} axisLine tickLine />
+            <Legend verticalAlign="top" height={36} />
+            <Tooltip
+              labelFormatter={label => `Project: ${label}`}
+              formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
+            />
             <Bar dataKey="planned" fill="#4285F4" name="Planned">
               <LabelList dataKey="planned" position="top" style={{ fontSize: 12 }} />
             </Bar>
