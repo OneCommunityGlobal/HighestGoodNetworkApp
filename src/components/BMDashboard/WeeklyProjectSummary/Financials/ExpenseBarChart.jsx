@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { useState, useEffect } from 'react';
 import styles from './ExpectedVsActualBarChart.module.css';
+import { useSelector } from 'react-redux';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
@@ -22,6 +23,11 @@ export default function ExpenseBarChart() {
   const [data, setData] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
   const [windowWidth, setWindowWidth] = useState(window.innerWidth); // for responsiveness of labels
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const rootStyles = getComputedStyle(document.documentElement);
+  const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');
+  const textColor = darkMode ? '#ffffff' : '#000000';
+  const bgColor = darkMode ? '#2b3e59' : '#ffffff';
 
   // Reset all the filters
   const resetFilters = () => {
@@ -222,10 +228,14 @@ export default function ExpenseBarChart() {
 
       <div className={styles.chartContainer}>
         <ResponsiveContainer>
-          <BarChart data={data} margin={{ top: 10, right: 10, left: 35, bottom: 35 }}>
+          <BarChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 35, bottom: 35 }}
+            style={{ backgroundColor: bgColor }}
+          >
             <XAxis
               dataKey="project"
-              tick={{ fontSize: windowWidth < 480 ? 8 : 15 }} // smaller font on small screens
+              tick={{ fontSize: windowWidth < 480 ? 8 : 15, fill: textColor }} // smaller font on small screens
               interval={0}
               angle={windowWidth < 480 ? -35 : 0} // rotate more on mobile
               textAnchor="end"
@@ -234,9 +244,15 @@ export default function ExpenseBarChart() {
                 position: 'insideBottom',
                 dy: windowWidth < 480 ? 40 : 25,
                 fontSize: 15,
+                fill: textColor,
               }}
+              stroke={gridColor}
             />
-            <YAxis tick={{ fontSize: 15 }} axisLine tickLine />
+            <YAxis
+              tick={{ fontSize: 15, fill: textColor }}
+              axisLine={{ stroke: gridColor }}
+              tickLine={{ stroke: gridColor }}
+            />
             <Legend verticalAlign="top" height={36} />
             <Tooltip
               labelFormatter={label => `Project: ${label}`}
