@@ -2,8 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import styles from './UserStateEdit.module.css';
 
-const DEFAULT_API = process.env.REACT_APP_APIENDPOINT || '';
-
 export default function UserStateEdit({
   open,
   onClose,
@@ -12,34 +10,40 @@ export default function UserStateEdit({
   selections: selectionsProp,
   onSaved,
   canEditCatalog = true,
-  apiBase = DEFAULT_API,
+  apiBase,
 }) {
+  const base = (apiBase || '/api') + '/user-states';
+
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   const [localCatalog, setLocalCatalog] = useState(catalogProp || []);
-  const [localSelKeys, setLocalSelKeys] = useState(new Set((selectionsProp || []).map(s => s.key)));
+  const [localSelKeys, setLocalSelKeys] = useState(
+    new Set((selectionsProp || []).map(s => (typeof s === 'string' ? s : s.key)))
+  );
 
   const [editingKey, setEditingKey] = useState(null);
   const [editLabel, setEditLabel] = useState('');
   const [newLabel, setNewLabel] = useState('');
 
   const api = useMemo(() => {
-    const token = localStorage.getItem('token');
+    const token = (typeof localStorage !== 'undefined' && localStorage.getItem('token')) || '';
     return axios.create({
-      baseURL: `${apiBase}/user-states`,
+      baseURL: base,
       headers: {
         'Content-Type': 'application/json',
-        Authorization: token,
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
-  }, [apiBase]);
+  }, [base]);
 
   useEffect(() => {
     if (!open) return;
     setLocalCatalog(catalogProp || []);
-    setLocalSelKeys(new Set((selectionsProp || []).map(s => s.key)));
+    setLocalSelKeys(
+      new Set((selectionsProp || []).map(s => (typeof s === 'string' ? s : s.key)))
+    );
     setEditingKey(null);
     setEditLabel('');
     setNewLabel('');
@@ -52,38 +56,28 @@ export default function UserStateEdit({
 
     const needCatalog = !(Array.isArray(catalogProp) && catalogProp.length);
     const needSelection = !(Array.isArray(selectionsProp) && selectionsProp.length);
-
     if (!needCatalog && !needSelection) return;
 
     (async () => {
       try {
         setLoading(true);
         setError('');
-
         const calls = [];
         if (needCatalog) calls.push(api.get('/catalog'));
         if (needSelection) calls.push(api.get(`/users/${userId}/state-indicators`));
-
-        const [catalogRes, selRes] = await Promise.all([
-          needCatalog ? calls.shift() : null,
-          needSelection ? calls.pop() : null,
-        ]);
-
+        const [catRes, selRes] = await Promise.all(calls);
         if (!cancelled) {
-          if (catalogRes) {
-            const items = Array.isArray(catalogRes?.data?.items) ? catalogRes.data.items : [];
+          if (catRes) {
+            const items = Array.isArray(catRes?.data?.items) ? catRes.data.items : [];
             setLocalCatalog(items);
           }
           if (selRes) {
-            const keys = new Set((selRes?.data?.stateIndicators || []).map(k => k));
-            setLocalSelKeys(keys);
+            const arr = Array.isArray(selRes?.data?.selections) ? selRes.data.selections : [];
+            setLocalSelKeys(new Set(arr.map(s => (typeof s === 'string' ? s : s.key))));
           }
         }
-      } catch (e) {
-        if (!cancelled) {
-          setError(e?.response?.data?.error || 'Failed to load data');
-        }
-        console.error('UserStateEdit: load failed', e?.response?.status, e?.message);
+      } catch {
+        if (!cancelled) setError('Failed to load data');
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -95,9 +89,9 @@ export default function UserStateEdit({
   }, [open, api, userId, catalogProp, selectionsProp]);
 
   const byKey = useMemo(() => {
-    const map = new Map();
-    (localCatalog || []).forEach(o => map.set(o.key, o));
-    return map;
+    const m = new Map();
+    (localCatalog || []).forEach(o => m.set(o.key, o));
+    return m;
   }, [localCatalog]);
 
   if (!open) return null;
@@ -125,7 +119,6 @@ export default function UserStateEdit({
   const saveRename = async () => {
     const label = editLabel.trim();
     if (!label || label.length > 30) return;
-
     try {
       setSaving(true);
       setError('');
@@ -133,36 +126,27 @@ export default function UserStateEdit({
       setLocalCatalog(prev => prev.map(o => (o.key === editingKey ? { ...o, label } : o)));
       setEditingKey(null);
       setEditLabel('');
-    } catch (e) {
-      setError(e?.response?.data?.error || 'Rename failed');
-      console.error('PATCH /catalog/:key failed', e?.response?.status, e?.message);
+    } catch {
+      setError('Rename failed');
     } finally {
       setSaving(false);
     }
   };
 
-  const cancelRename = () => {
-    setEditingKey(null);
-    setEditLabel('');
-  };
-
   const handleAdd = async () => {
     const label = newLabel.trim();
     if (!label || label.length > 30) return;
-
     try {
       setSaving(true);
       setError('');
-
       const { data } = await api.post('/catalog', { label });
       const item = data?.item;
       if (item) {
         setLocalCatalog(prev => [...prev, item]);
         setNewLabel('');
       }
-    } catch (e) {
-      setError(e?.response?.data?.error || 'Add failed');
-      console.error('POST /catalog failed', e?.response?.status, e?.message);
+    } catch {
+      setError('Add failed');
     } finally {
       setSaving(false);
     }
@@ -171,37 +155,32 @@ export default function UserStateEdit({
   const handleSaveAll = async () => {
     const keys = new Set(localCatalog.map(c => c.key));
     const selectedKeys = Array.from(localSelKeys).filter(k => keys.has(k));
-
     try {
       setSaving(true);
       setError('');
-
       const { data } = await api.patch(`/users/${userId}/state-indicators`, { selectedKeys });
-      onSaved && onSaved(data?.selections || [], localCatalog);
+      const savedSelections = Array.isArray(data?.selections) ? data.selections : [];
+      onSaved && onSaved(savedSelections, localCatalog);
       onClose();
-    } catch (e) {
-      setError(e?.response?.data?.error || 'Save failed');
-      console.error('PATCH /users/:id/state-indicators failed', e?.response?.status, e?.message);
+    } catch {
+      setError('Save failed');
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <div className={styles.backdrop} role="dialog" aria-modal="true">
+    <div className={styles.backdrop}>
       <div className={styles.modal}>
         <div className={styles.header}>
           <h3 className={styles.title}>User State</h3>
-          <button className={styles.iconBtn} onClick={onClose} aria-label="Close">
-            ✕
-          </button>
+          <button className={styles.iconBtn} onClick={onClose}>✕</button>
         </div>
 
         <div className={styles.body}>
           <div className={styles.left}>
             <div className={styles.sectionTitle}>
-              Select states{' '}
-              {loading && <span style={{ marginLeft: 8, opacity: 0.7 }}>(loading…)</span>}
+              Select states {loading && <span style={{ marginLeft: 8, opacity: 0.7 }}>(loading…)</span>}
               {error && <span style={{ marginLeft: 8, color: 'red' }}>— {error}</span>}
             </div>
 
@@ -230,47 +209,14 @@ export default function UserStateEdit({
                     <div className={styles.controls}>
                       {editingKey === opt.key ? (
                         <>
-                          <button
-                            className={styles.smallBtn}
-                            onClick={saveRename}
-                            disabled={saving}
-                          >
-                            Save
-                          </button>
-                          <button
-                            className={styles.smallBtn}
-                            onClick={cancelRename}
-                            disabled={saving}
-                          >
-                            Cancel
-                          </button>
+                          <button className={styles.smallBtn} onClick={saveRename} disabled={saving}>Save</button>
+                          <button className={styles.smallBtn} onClick={() => setEditingKey(null)} disabled={saving}>Cancel</button>
                         </>
                       ) : (
                         <>
-                          <button
-                            className={styles.smallBtn}
-                            onClick={() => moveItem(idx, -1)}
-                            aria-label="Move up"
-                            disabled={saving}
-                          >
-                            ↑
-                          </button>
-                          <button
-                            className={styles.smallBtn}
-                            onClick={() => moveItem(idx, +1)}
-                            aria-label="Move down"
-                            disabled={saving}
-                          >
-                            ↓
-                          </button>
-                          <button
-                            className={styles.smallBtn}
-                            onClick={() => startRename(opt.key)}
-                            aria-label="Rename"
-                            disabled={saving}
-                          >
-                            Rename
-                          </button>
+                          <button className={styles.smallBtn} onClick={() => moveItem(idx, -1)} disabled={saving}>↑</button>
+                          <button className={styles.smallBtn} onClick={() => moveItem(idx, +1)} disabled={saving}>↓</button>
+                          <button className={styles.smallBtn} onClick={() => startRename(opt.key)} disabled={saving}>Rename</button>
                         </>
                       )}
                     </div>
@@ -305,9 +251,7 @@ export default function UserStateEdit({
 
         <div className={styles.footer}>
           <div className={styles.actions}>
-            <button className={styles.secondaryBtn} onClick={onClose} disabled={saving}>
-              Cancel
-            </button>
+            <button className={styles.secondaryBtn} onClick={onClose} disabled={saving}>Cancel</button>
             <button className={styles.primaryBtn} onClick={handleSaveAll} disabled={saving}>
               {saving ? 'Saving…' : 'Save'}
             </button>
