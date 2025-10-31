@@ -65,6 +65,7 @@ import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
+import KnowledgeEvolution from './components/BMDashboard/KnowledgeEvolution/KnowledgeEvolution';
 
 import FaqSearch from './components/Faq/FaqSearch';
 import FaqManagement from './components/Faq/FaqManagement';
@@ -704,6 +705,11 @@ export default (
           fallback
           exact
           component={ToolsAvailabilityPage}
+        />
+        <BMProtectedRoute
+          path="/student/knowledge-evolution"
+          exact
+          component={KnowledgeEvolution}
         />
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />

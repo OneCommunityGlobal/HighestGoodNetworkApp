@@ -1,0 +1,32 @@
+.pageContainer {
+  padding: 20px;
+  font-family: 'Inter', sans-serif;
+}
+
+.headerContainer {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1.5px solid #ccc;
+  border-radius: 10px;
+  background: #fafafa;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tooltip {
+  position: absolute;
+  background: #333;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  pointer-events: none;
+  visibility: hidden;
+  transition: opacity 0.2s;
+}
