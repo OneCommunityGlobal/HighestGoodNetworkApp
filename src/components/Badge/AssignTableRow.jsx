@@ -20,7 +20,7 @@ function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
     } else {
       setSelect(false);
     }
-  }, [existBadges, badge._id, dispatch]);
+  }, [badge._id, dispatch]);
 
   const toggle = () => setOpen(prev => !prev);
 
