@@ -336,7 +336,7 @@ export default function IssuesBreakdownChart() {
   }, []);
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? 'dark-mode' : ''}`}>
       <div className={styles.inner}>
         <div className={styles.headerRow}>
           <h2 className={styles.heading}>Issues breakdown by Type</h2>

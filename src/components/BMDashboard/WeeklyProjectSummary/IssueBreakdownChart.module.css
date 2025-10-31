@@ -100,10 +100,64 @@
   color: var(--text-color, #333);
   min-height: 38px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  /* Ensure browser adapts native controls to dark mode */
+  color-scheme: light dark;
+}
+
+/* Dark mode specific styling for better visibility */
+:global(.dark-mode) .datePicker {
+  background-color: #2c3344 !important;
+  border-color: #364156 !important;
+  color: #e0e0e0 !important;
+  color-scheme: dark;
+}
+
+/* Ensure placeholder text is visible in dark mode */
+.datePicker::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+:global(.dark-mode) .datePicker::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.5);
+  opacity: 1;
+  cursor: pointer;
+}
+
+.datePicker::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+:global(.dark-mode) .datePicker::-webkit-calendar-picker-indicator:hover {
+  filter: invert(1) brightness(1.8);
+}
+
+/* Ensure the date text is visible */
+.datePicker::-webkit-datetime-edit {
+  color: inherit;
+}
+
+.datePicker::-webkit-datetime-edit-fields-wrapper {
+  color: inherit;
+}
+
+.datePicker::-webkit-datetime-edit-text {
+  color: inherit;
+  padding: 0 0.3em;
+}
+
+.datePicker::-webkit-datetime-edit-month-field,
+.datePicker::-webkit-datetime-edit-day-field,
+.datePicker::-webkit-datetime-edit-year-field {
+  color: inherit;
 }
 
 .datePicker:hover {
   border-color: var(--border-color-hover, #bbb);
+}
+
+:global(.dark-mode) .datePicker:hover {
+  border-color: #4a5568 !important;
 }
 
 .datePicker:focus {
@@ -112,10 +166,19 @@
   box-shadow: 0 0 0 2px rgba(13, 85, 179, 0.1);
 }
 
+:global(.dark-mode) .datePicker:focus {
+  border-color: #0d55b3 !important;
+  box-shadow: 0 0 0 2px rgba(13, 85, 179, 0.3) !important;
+}
+
 .dateSeparator {
   color: var(--text-color, #666);
   font-size: 14px;
   white-space: nowrap;
+}
+
+:global(.dark-mode) .dateSeparator {
+  color: #e0e0e0 !important;
 }
 
 .resetButtonContainer {
