@@ -29,18 +29,9 @@ module.exports = [
       'public/**',
       'build/**',
       // Ignore test files inside /src/components
-      'src/components/BMDashboard/_tests_/BMDashboard.test.jsx',
       'src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx',
       // Ignore entire component folders
       'src/components/Badge/**',
-      'src/components/Dashboard/**',
-      'src/components/Projects/**',
-      'src/components/SummaryManagement/**',
-      'src/components/TeamMemberTasks/**',
-      'src/components/Teams/TeamMembersPopup.jsx',
-      'src/components/UserManagement/**',
-      'src/components/UserProfile/**',
-      'src/components/Announcements/index.jsx',
     ],
   },
 
