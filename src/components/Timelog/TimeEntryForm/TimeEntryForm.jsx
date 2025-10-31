@@ -351,6 +351,13 @@ function TimeEntryForm(props) {
             }),
           );
           break;
+        case 'WeekEnd':
+          // Handle week-end time log completion
+          if (props.onComplete) {
+            await props.onComplete(timeEntry);
+          }
+          clearForm();
+          break;
         case 'TimeLog': {
           const date = moment(formValues.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
@@ -369,7 +376,7 @@ function TimeEntryForm(props) {
           break;
       }
 
-      if (from !== 'Timer' && !reminder.editLimitNotification) {
+      if (from !== 'Timer' && from !== 'WeekEnd' && !reminder.editLimitNotification) {
         setReminder(r => ({
           ...r,
           editLimitNotification: !r.editLimitNotification,
