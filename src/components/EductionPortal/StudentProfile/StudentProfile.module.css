@@ -390,6 +390,11 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  outline: none;
+}
+
+.modalOverlay:focus {
+  outline: none;
 }
 
 .modalBackdrop {
@@ -402,6 +407,14 @@
   border: none;
   cursor: pointer;
   z-index: -1;
+  outline: none;
+}
+
+.modalBackdrop:hover,
+.modalBackdrop:focus,
+.modalBackdrop:active {
+  background: transparent;
+  outline: none;
 }
 
 .modal {
