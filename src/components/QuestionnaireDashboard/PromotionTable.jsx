@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import './PromotionTable.css'; // Make sure this is present
+import styles from './PromotionTable.module.css';
 
-// Dummy data remains the same
 const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'Grace'];
 const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
   id: i + 1,
@@ -36,22 +35,21 @@ function PromotionTable() {
   if (loading) return <div>Loading promotions...</div>;
 
   return (
-    // The key change: added data-theme attribute
-    <div className="container" data-theme={darkMode ? 'dark' : 'light'}>
-      <div className="header">
+    <div className={styles.container} data-theme={darkMode ? 'dark' : 'light'}>
+      <div className={styles.header}>
         <h1>Promotion Eligibility</h1>
-        <div className="actions">
-          <button type="button" className="btn btn-primary">
+        <div className={styles.actions}>
+          <button type="button" className={`${styles.btn} ${styles['btnPrimary']}`}>
             Review for This Week
           </button>
-          <button type="button" className="btn btn-secondary">
+          <button type="button" className={`${styles.btn} ${styles['btnSecondary']}`}>
             Process Promotions
           </button>
         </div>
       </div>
 
-      <div className="promotion-table-wrapper">
-        <table className="promotion-table">
+      <div className={styles['promotionTableWrapper']}>
+        <table className={styles['promotionTable']}>
           <thead>
             <tr>
               <th style={{ width: '15%' }}>Existing/New</th>
@@ -65,15 +63,15 @@ function PromotionTable() {
           </thead>
           <tbody>
             {/* --- New Members Section --- */}
-            <tr className="section-header">
+            <tr className={styles['sectionHeader']}>
               <td colSpan="7">New Members</td>
             </tr>
             {newMembers.map(user => (
               <tr key={user.id}>
                 <td />
                 <td>{user.reviewer}</td>
-                <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
-                  <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
+                <td className={user.hasMetWeekly ? styles['statusMet'] : styles['statusNotMet']}>
+                  <span className={styles['statusIcon']}>{user.hasMetWeekly ? '✓' : '✗'}</span>
                   {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
                 </td>
                 <td>{user.requiredPRs}</td>
@@ -81,7 +79,7 @@ function PromotionTable() {
                 <td>{user.remainingWeeks}</td>
                 <td>
                   <input
-                    className="promote-checkbox"
+                    className={styles['promoteCheckbox']}
                     type="checkbox"
                     defaultChecked={user.promote}
                   />
@@ -90,15 +88,15 @@ function PromotionTable() {
             ))}
 
             {/* --- Existing Members Section --- */}
-            <tr className="section-header">
+            <tr className={styles['sectionHeader']}>
               <td colSpan="7">Existing Members</td>
             </tr>
             {existingMembers.map(user => (
               <tr key={user.id}>
                 <td />
                 <td>{user.reviewer}</td>
-                <td className={user.hasMetWeekly ? 'status-met' : 'status-not-met'}>
-                  <span className="status-icon">{user.hasMetWeekly ? '✓' : '✗'}</span>
+                <td className={user.hasMetWeekly ? styles['statusMet'] : styles['statusNotMet']}>
+                  <span className={styles['statusIcon']}>{user.hasMetWeekly ? '✓' : '✗'}</span>
                   {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
                 </td>
                 <td>{user.requiredPRs}</td>
@@ -106,7 +104,7 @@ function PromotionTable() {
                 <td>{user.remainingWeeks}</td>
                 <td>
                   <input
-                    className="promote-checkbox"
+                    className={styles['promoteCheckbox']}
                     type="checkbox"
                     defaultChecked={user.promote}
                   />
