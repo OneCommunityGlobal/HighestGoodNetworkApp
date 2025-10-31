@@ -1,6 +1,11 @@
 /* eslint-disable testing-library/no-node-access */
 import { useSelector } from 'react-redux';
 import { useRef, useState, useCallback } from 'react';
+import EventParticipationHeader from './EventParticipationHeader';
+import EngagementSummaryCards from './EngagementSummaryCards';
+import EventTypePieChart from './EventTypePieChart';
+import EngagementBarChart from './EngagementBarChart';
+import AnalyticsNavigation from './AnalyticsNavigation';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
@@ -46,43 +51,20 @@ function EventParticipation() {
         darkMode ? styles.participationLandingPageDark : ''
       }`}
     >
-      {/* Print-only page title header */}
-      <div className={`${styles.printOnly} ${styles.printHeader}`}>
-        <div className={styles.printHeaderTitle}>Social And Recreational Management</div>
-        <div className={styles.printHeaderSubtitle}>Event Participation</div>
+      <EventParticipationHeader />
+      <EngagementSummaryCards />
+      <div className={styles.chartsSection}>
+        <div className={styles.chartsRow}>
+          <EventTypePieChart />
+          <EngagementBarChart />
+        </div>
       </div>
-
-      <header
-        className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
-      >
-        <h1
-          className={`${styles.landingPageHeader} ${darkMode ? styles.landingPageHeaderDark : ''}`}
-        >
-          Social And Recreational Management
-        </h1>
-        <button
-          className={`${styles.savePdfBtn} ${
-            darkMode ? styles.savePdfBtnDark : styles.savePdfBtnLight
-          } ${styles.noPrint}`}
-          onClick={handleSaveAsPDF}
-          disabled={exporting}
-          aria-busy={exporting}
-        >
-          {exporting ? 'Preparing…' : '📄 Save as PDF'}
-        </button>
-      </header>
-
-      <MyCases />
-
+      <AnalyticsNavigation />
       <div className={styles.analyticsSection}>
         <DropOffTracking />
         <NoShowInsights />
       </div>
-
-      {/* Print-only footer note */}
-      <div className={`${styles.printOnly} ${styles.printFooter}`}>
-        Generated from Event Participation
-      </div>
+      <MyCases />
     </div>
   );
 }
