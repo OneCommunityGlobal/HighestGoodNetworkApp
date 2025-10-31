@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import {
   BarChart,
@@ -15,10 +15,15 @@ import Loading from '../../common/Loading/Loading';
 import httpService from '../../../services/httpService';
 import styles from './IssueBreakdownChart.module.css';
 
+/**
+ * Fixed color constants for the three issue types.
+ * These colors are fixed and must not be changed or generated dynamically.
+ * Colors work in both light and dark modes.
+ */
 const COLORS = {
-  equipmentIssues: '#4F81BD', // blue
-  laborIssues: '#C0504D', // red
-  materialIssues: '#F3C13A', // yellow
+  equipmentIssues: '#4F81BD', // blue - Equipment Issues (always)
+  laborIssues: '#C0504D', // red - Labor Issues (always)
+  materialIssues: '#F3C13A', // yellow - Materials Issues (always)
 };
 
 // Fixed issue types for filter (display names)
@@ -52,6 +57,8 @@ export default function IssuesBreakdownChart() {
 
   // Ref for debouncing timeout
   const debounceTimeoutRef = useRef(null);
+  // Ref for abort controller to cancel API calls on unmount
+  const abortControllerRef = useRef(null);
 
   const rootStyles = getComputedStyle(document.body);
   const textColor = rootStyles.getPropertyValue('--text-color') || '#666';
@@ -62,7 +69,7 @@ export default function IssuesBreakdownChart() {
    * Process API response data to map to three fixed issue types
    * Ensures each project has equipmentIssues, laborIssues, and materialIssues properties
    */
-  const processChartData = apiData => {
+  const processChartData = useCallback(apiData => {
     if (!apiData || !Array.isArray(apiData)) {
       return [];
     }
@@ -149,123 +156,154 @@ export default function IssuesBreakdownChart() {
 
       return processedProject;
     });
-  };
+  }, []);
 
-  const handleStartDateChange = e => {
+  const handleStartDateChange = useCallback(e => {
     const newStartDate = e.target.value;
     setStartDate(newStartDate);
 
     // Validate: endDate must be >= startDate
-    if (endDate && newStartDate && endDate < newStartDate) {
-      // If endDate is before new startDate, adjust endDate to startDate
-      setEndDate(newStartDate);
-    }
-  };
+    setEndDate(prevEndDate => {
+      if (prevEndDate && newStartDate && prevEndDate < newStartDate) {
+        // If endDate is before new startDate, adjust endDate to startDate
+        return newStartDate;
+      }
+      return prevEndDate;
+    });
+  }, []);
 
-  const handleEndDateChange = e => {
+  const handleEndDateChange = useCallback(e => {
     const newEndDate = e.target.value;
     setEndDate(newEndDate);
 
     // Validate: endDate must be >= startDate
-    if (startDate && newEndDate && newEndDate < startDate) {
-      // If new endDate is before startDate, adjust startDate to endDate
-      setStartDate(newEndDate);
-    }
-  };
+    setStartDate(prevStartDate => {
+      if (prevStartDate && newEndDate && newEndDate < prevStartDate) {
+        // If new endDate is before startDate, adjust startDate to endDate
+        return newEndDate;
+      }
+      return prevStartDate;
+    });
+  }, []);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     // Clear all filters
     setSelectedProjects([]);
     setStartDate(null);
     setEndDate(null);
     setSelectedIssueTypes([]);
     // Data refetch will be triggered automatically by useEffect when state changes
-  };
+  }, []);
 
-  const fetchData = async filters => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Validate date range
-      if (filters.startDate && filters.endDate && filters.startDate > filters.endDate) {
-        setError('Start date must be before or equal to end date');
-        setLoading(false);
-        return;
+  const fetchData = useCallback(
+    async filters => {
+      // Cancel any pending request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
 
-      // Build query string with URLSearchParams
-      const params = new URLSearchParams();
+      // Create new AbortController for this request
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
 
-      // Handle empty arrays: if no projects selected, fetch all (don't send projects param)
-      if (filters.projects && filters.projects.length > 0) {
-        params.append('projects', filters.projects.join(','));
-      }
+      try {
+        setLoading(true);
+        setError(null);
 
-      if (filters.startDate) {
-        params.append('startDate', filters.startDate);
-      }
+        // Validate date range
+        if (filters.startDate && filters.endDate && filters.startDate > filters.endDate) {
+          setError('Start date must be before or equal to end date');
+          setLoading(false);
+          return;
+        }
 
-      if (filters.endDate) {
-        params.append('endDate', filters.endDate);
-      }
+        // Build query string with URLSearchParams
+        const params = new URLSearchParams();
 
-      // Handle empty arrays: if no issue types selected, fetch all (don't send issueTypes param)
-      if (filters.issueTypes && filters.issueTypes.length > 0) {
-        // Map display names to API property names
-        const apiIssueTypes = filters.issueTypes
-          .map(displayName => ISSUE_TYPE_MAPPING[displayName] || displayName)
-          .filter(Boolean); // Remove any undefined values
-        if (apiIssueTypes.length > 0) {
-          params.append('issueTypes', apiIssueTypes.join(','));
+        // Handle empty arrays: if no projects selected, fetch all (don't send projects param)
+        if (filters.projects && filters.projects.length > 0) {
+          params.append('projects', filters.projects.join(','));
+        }
+
+        if (filters.startDate) {
+          params.append('startDate', filters.startDate);
+        }
+
+        if (filters.endDate) {
+          params.append('endDate', filters.endDate);
+        }
+
+        // Handle empty arrays: if no issue types selected, fetch all (don't send issueTypes param)
+        if (filters.issueTypes && filters.issueTypes.length > 0) {
+          // Map display names to API property names
+          const apiIssueTypes = filters.issueTypes
+            .map(displayName => ISSUE_TYPE_MAPPING[displayName] || displayName)
+            .filter(Boolean); // Remove any undefined values
+          if (apiIssueTypes.length > 0) {
+            params.append('issueTypes', apiIssueTypes.join(','));
+          }
+        }
+
+        const queryString = params.toString();
+        const url = `${process.env.REACT_APP_APIENDPOINT}/issues/breakdown${
+          queryString ? `?${queryString}` : ''
+        }`;
+
+        const response = await httpService.get(url, { signal: abortController.signal });
+
+        // Check if request was aborted
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        // Ensure response.data is valid
+        if (!response || !response.data) {
+          setError('Invalid response from server');
+          setData([]);
+          setLoading(false);
+          return;
+        }
+
+        // Process API response to map to three fixed issue types
+        const processedData = processChartData(response.data);
+        setData(processedData);
+        setError(null);
+      } catch (err) {
+        // Don't set error if request was aborted
+        if (abortController.signal.aborted || err.name === 'AbortError') {
+          return;
+        }
+
+        // Handle 400 errors (validation errors) with user-friendly messages
+        if (err.response && err.response.status === 400) {
+          const errorMessage =
+            err.response.data?.error || err.response.data?.message || 'Invalid filter parameters';
+          setError(errorMessage);
+        } else if (err.response) {
+          // Handle other HTTP errors
+          const status = err.response.status;
+          const errorMessage =
+            err.response.data?.error ||
+            err.response.data?.message ||
+            `Server error (${status}). Please try again.`;
+          setError(errorMessage);
+        } else if (err.request) {
+          // Handle network errors (no response received)
+          setError('Network error. Please check your connection and try again.');
+        } else {
+          // Handle other errors
+          setError(err.message || 'Failed to fetch issue statistics. Please try again.');
+        }
+        setData([]); // Clear data on error
+      } finally {
+        // Only update loading state if request wasn't aborted
+        if (!abortController.signal.aborted) {
+          setLoading(false);
         }
       }
-
-      const queryString = params.toString();
-      const url = `${process.env.REACT_APP_APIENDPOINT}/issues/breakdown${
-        queryString ? `?${queryString}` : ''
-      }`;
-
-      const response = await httpService.get(url);
-
-      // Ensure response.data is valid
-      if (!response || !response.data) {
-        setError('Invalid response from server');
-        setData([]);
-        setLoading(false);
-        return;
-      }
-
-      // Process API response to map to three fixed issue types
-      const processedData = processChartData(response.data);
-      setData(processedData);
-      setError(null);
-    } catch (err) {
-      // Handle 400 errors (validation errors) with user-friendly messages
-      if (err.response && err.response.status === 400) {
-        const errorMessage =
-          err.response.data?.error || err.response.data?.message || 'Invalid filter parameters';
-        setError(errorMessage);
-      } else if (err.response) {
-        // Handle other HTTP errors
-        const status = err.response.status;
-        const errorMessage =
-          err.response.data?.error ||
-          err.response.data?.message ||
-          `Server error (${status}). Please try again.`;
-        setError(errorMessage);
-      } else if (err.request) {
-        // Handle network errors (no response received)
-        setError('Network error. Please check your connection and try again.');
-      } else {
-        // Handle other errors
-        setError(err.message || 'Failed to fetch issue statistics. Please try again.');
-      }
-      setData([]); // Clear data on error
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [processChartData],
+  );
 
   useEffect(() => {
     // Clear any existing timeout
@@ -290,7 +328,21 @@ export default function IssuesBreakdownChart() {
         clearTimeout(debounceTimeoutRef.current);
       }
     };
-  }, [selectedProjects, startDate, endDate, selectedIssueTypes]);
+  }, [selectedProjects, startDate, endDate, selectedIssueTypes, fetchData]);
+
+  // Cleanup API calls on unmount
+  useEffect(() => {
+    return () => {
+      // Cancel any pending API request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      // Clear any pending timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const fetchIssueTypes = async () => {
@@ -331,6 +383,54 @@ export default function IssuesBreakdownChart() {
     fetchProjects();
   }, [reduxProjects]);
 
+  // Memoize react-select options to prevent unnecessary re-renders
+  const projectOptions = useMemo(
+    () =>
+      availableProjects.map(project => ({
+        value: project._id || project.projectId,
+        label: project.name || project.projectName || project._id || project.projectId,
+      })),
+    [availableProjects],
+  );
+
+  const selectedProjectValues = useMemo(
+    () =>
+      availableProjects
+        .filter(project => selectedProjects.includes(project._id || project.projectId))
+        .map(project => ({
+          value: project._id || project.projectId,
+          label: project.name || project.projectName || project._id || project.projectId,
+        })),
+    [availableProjects, selectedProjects],
+  );
+
+  const issueTypeOptions = useMemo(
+    () =>
+      FIXED_ISSUE_TYPES.map(type => ({
+        value: type,
+        label: type,
+      })),
+    [],
+  );
+
+  const selectedIssueTypeValues = useMemo(
+    () =>
+      selectedIssueTypes.map(type => ({
+        value: type,
+        label: type,
+      })),
+    [selectedIssueTypes],
+  );
+
+  // Memoize handlers for react-select onChange
+  const handleProjectChange = useCallback(selectedOptions => {
+    setSelectedProjects(selectedOptions ? selectedOptions.map(option => option.value) : []);
+  }, []);
+
+  const handleIssueTypeChange = useCallback(selectedOptions => {
+    setSelectedIssueTypes(selectedOptions ? selectedOptions.map(option => option.value) : []);
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.inner}>
@@ -366,21 +466,9 @@ export default function IssuesBreakdownChart() {
               id="project-filter"
               isMulti
               classNamePrefix="customSelect"
-              options={availableProjects.map(project => ({
-                value: project._id || project.projectId,
-                label: project.name || project.projectName || project._id || project.projectId,
-              }))}
-              value={availableProjects
-                .filter(project => selectedProjects.includes(project._id || project.projectId))
-                .map(project => ({
-                  value: project._id || project.projectId,
-                  label: project.name || project.projectName || project._id || project.projectId,
-                }))}
-              onChange={selectedOptions =>
-                setSelectedProjects(
-                  selectedOptions ? selectedOptions.map(option => option.value) : [],
-                )
-              }
+              options={projectOptions}
+              value={selectedProjectValues}
+              onChange={handleProjectChange}
               placeholder="Select Projects"
               isClearable
               isDisabled={availableProjects.length === 0}
@@ -507,19 +595,9 @@ export default function IssuesBreakdownChart() {
               id="issue-type-filter"
               isMulti
               classNamePrefix="customSelect"
-              options={FIXED_ISSUE_TYPES.map(type => ({
-                value: type,
-                label: type,
-              }))}
-              value={selectedIssueTypes.map(type => ({
-                value: type,
-                label: type,
-              }))}
-              onChange={selectedOptions =>
-                setSelectedIssueTypes(
-                  selectedOptions ? selectedOptions.map(option => option.value) : [],
-                )
-              }
+              options={issueTypeOptions}
+              value={selectedIssueTypeValues}
+              onChange={handleIssueTypeChange}
               placeholder="Select Issue Types"
               isClearable
               styles={
