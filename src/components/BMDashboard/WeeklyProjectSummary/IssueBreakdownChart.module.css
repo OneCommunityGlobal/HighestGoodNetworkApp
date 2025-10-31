@@ -153,12 +153,104 @@
   box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.3);
 }
 
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  margin-top: 16px;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: 6px;
+  color: #f44336;
+  font-size: 14px;
+  width: 100%;
+}
+
+.errorMessage i {
+  font-size: 16px;
+}
+
 .chartContainer {
   width: 100%;
   height: 500px;
   margin-top: 20px;
   background: var(--section-bg, transparent);
   border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+}
+
+.loadingText {
+  color: var(--text-color, #666);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+}
+
+.errorContainer i {
+  font-size: 48px;
+  color: #f44336;
+  opacity: 0.7;
+}
+
+.errorText {
+  color: var(--text-color, #333);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+  text-align: center;
+}
+
+.emptyContainer i {
+  font-size: 48px;
+  color: var(--text-color, #999);
+  opacity: 0.5;
+}
+
+.emptyText {
+  color: var(--text-color, #666);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.emptySubtext {
+  color: var(--text-color, #999);
+  font-size: 14px;
+  margin-top: 4px;
 }
 
 /* ===================== RESPONSIVE DESIGN ===================== */

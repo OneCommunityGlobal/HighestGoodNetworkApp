@@ -11,6 +11,7 @@ import {
   LabelList,
 } from 'recharts';
 import Select from 'react-select';
+import Loading from '../../common/Loading/Loading';
 import httpService from '../../../services/httpService';
 import styles from './IssueBreakdownChart.module.css';
 
@@ -186,9 +187,17 @@ export default function IssuesBreakdownChart() {
       setLoading(true);
       setError(null);
 
+      // Validate date range
+      if (filters.startDate && filters.endDate && filters.startDate > filters.endDate) {
+        setError('Start date must be before or equal to end date');
+        setLoading(false);
+        return;
+      }
+
       // Build query string with URLSearchParams
       const params = new URLSearchParams();
 
+      // Handle empty arrays: if no projects selected, fetch all (don't send projects param)
       if (filters.projects && filters.projects.length > 0) {
         params.append('projects', filters.projects.join(','));
       }
@@ -201,6 +210,7 @@ export default function IssuesBreakdownChart() {
         params.append('endDate', filters.endDate);
       }
 
+      // Handle empty arrays: if no issue types selected, fetch all (don't send issueTypes param)
       if (filters.issueTypes && filters.issueTypes.length > 0) {
         // Map display names to API property names
         const apiIssueTypes = filters.issueTypes
@@ -217,6 +227,15 @@ export default function IssuesBreakdownChart() {
       }`;
 
       const response = await httpService.get(url);
+
+      // Ensure response.data is valid
+      if (!response || !response.data) {
+        setError('Invalid response from server');
+        setData([]);
+        setLoading(false);
+        return;
+      }
+
       // Process API response to map to three fixed issue types
       const processedData = processChartData(response.data);
       setData(processedData);
@@ -227,9 +246,22 @@ export default function IssuesBreakdownChart() {
         const errorMessage =
           err.response.data?.error || err.response.data?.message || 'Invalid filter parameters';
         setError(errorMessage);
+      } else if (err.response) {
+        // Handle other HTTP errors
+        const status = err.response.status;
+        const errorMessage =
+          err.response.data?.error ||
+          err.response.data?.message ||
+          `Server error (${status}). Please try again.`;
+        setError(errorMessage);
+      } else if (err.request) {
+        // Handle network errors (no response received)
+        setError('Network error. Please check your connection and try again.');
       } else {
-        setError(err.message || 'Failed to fetch issue statistics');
+        // Handle other errors
+        setError(err.message || 'Failed to fetch issue statistics. Please try again.');
       }
+      setData([]); // Clear data on error
     } finally {
       setLoading(false);
     }
@@ -298,10 +330,6 @@ export default function IssuesBreakdownChart() {
 
     fetchProjects();
   }, [reduxProjects]);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!data || data.length === 0) return <div>No data available</div>;
 
   return (
     <div className={styles.container}>
@@ -600,32 +628,60 @@ export default function IssuesBreakdownChart() {
         </div>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className={styles.errorMessage} role="alert">
+          <i className="fa fa-exclamation-circle" aria-hidden="true" />
+          <span>{error}</span>
+        </div>
+      )}
+
       <div className={styles.chartContainer}>
-        <ResponsiveContainer>
-          <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
-            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-            <XAxis dataKey="projectName" tick={{ fill: textColor }} />
-            <YAxis allowDecimals={false} tick={{ fill: textColor }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: tooltipBg,
-                border: 'none',
-                borderRadius: '8px',
-                color: textColor,
-              }}
-            />
-            {/* Fixed three bars: Equipment Issues, Labor Issues, Materials Issues */}
-            <Bar dataKey="equipmentIssues" name="Equipment Issues" fill={COLORS.equipmentIssues}>
-              <LabelList dataKey="equipmentIssues" position="top" fill={textColor} />
-            </Bar>
-            <Bar dataKey="laborIssues" name="Labor Issues" fill={COLORS.laborIssues}>
-              <LabelList dataKey="laborIssues" position="top" fill={textColor} />
-            </Bar>
-            <Bar dataKey="materialIssues" name="Materials Issues" fill={COLORS.materialIssues}>
-              <LabelList dataKey="materialIssues" position="top" fill={textColor} />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <Loading align="center" darkMode={darkMode} />
+            <div className={styles.loadingText}>Loading issue statistics...</div>
+          </div>
+        ) : error ? (
+          <div className={styles.errorContainer}>
+            <i className="fa fa-exclamation-triangle" aria-hidden="true" />
+            <div className={styles.errorText}>{error}</div>
+          </div>
+        ) : !data || data.length === 0 ? (
+          <div className={styles.emptyContainer}>
+            <i className="fa fa-chart-bar" aria-hidden="true" />
+            <div className={styles.emptyText}>No data available</div>
+            <div className={styles.emptySubtext}>
+              Try adjusting your filters or check back later.
+            </div>
+          </div>
+        ) : (
+          <ResponsiveContainer>
+            <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+              <XAxis dataKey="projectName" tick={{ fill: textColor }} />
+              <YAxis allowDecimals={false} tick={{ fill: textColor }} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: tooltipBg,
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: textColor,
+                }}
+              />
+              {/* Fixed three bars: Equipment Issues, Labor Issues, Materials Issues */}
+              <Bar dataKey="equipmentIssues" name="Equipment Issues" fill={COLORS.equipmentIssues}>
+                <LabelList dataKey="equipmentIssues" position="top" fill={textColor} />
+              </Bar>
+              <Bar dataKey="laborIssues" name="Labor Issues" fill={COLORS.laborIssues}>
+                <LabelList dataKey="laborIssues" position="top" fill={textColor} />
+              </Bar>
+              <Bar dataKey="materialIssues" name="Materials Issues" fill={COLORS.materialIssues}>
+                <LabelList dataKey="materialIssues" position="top" fill={textColor} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
     </div>
   );
