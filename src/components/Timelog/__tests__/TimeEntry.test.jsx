@@ -6,6 +6,7 @@ import moment from 'moment-timezone';
 // eslint-disable-next-line import/named
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { ServerTimeProvider } from '../../../context/ServerTimeContext';
 import {
   authMock,
   userProfileMock,
@@ -42,13 +43,15 @@ describe('<TimeEntry />', () => {
     });
 
     renderWithProvider(
-      <TimeEntry
-        data={data}
-        displayYear
-        from="WeeklyTab"
-        timeEntryUserProfile={userProfileMock}
-        tab={0}
-      />,
+      <ServerTimeProvider>
+        <TimeEntry
+          data={data}
+          displayYear
+          from="WeeklyTab"
+          timeEntryUserProfile={userProfileMock}
+          tab={0}
+        />
+      </ServerTimeProvider>,
       { store }
     );
   };
