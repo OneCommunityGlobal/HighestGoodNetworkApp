@@ -1,0 +1,75 @@
+.chart-container {
+  width: 100%;
+  min-height: 250px;
+  max-height: 400px;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.recharts-wrapper text {
+  font-size: 11px;
+}
+
+.selectDarkMode {
+  background-color: #2c3344;
+  border: 1px solid #364156;
+  color: #e0e0e0;
+  font-size: 12px;
+  min-height: 32px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #e0e0e0 50%),
+    linear-gradient(135deg, #e0e0e0 50%, transparent 50%);
+  background-position: calc(100% - 12px) calc(50% - 2px),
+    calc(100% - 7px) calc(50% - 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.selectDarkMode:focus,
+.selectDarkMode:hover {
+  outline: none;
+  border-color: #2196f3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.selectDarkMode option[disabled] {
+  color: #aaaaaa;
+}
+
+.selectDarkMode option {
+  background-color: #2c3344;
+  color: #e0e0e0;
+}
+
+.selectDarkMode option:checked,
+.selectDarkMode option:hover,
+.selectDarkMode option:focus {
+  background-color: #364156;
+}
+
+
+.toolsHorizontalBarChartDatePicker {
+  padding: 4px 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #fff;
+  color: #333;
+  min-width: 120px;
+}
+.toolsHorizontalBarChartDatePicker:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+.darkDate.toolsHorizontalBarChartDatePicker {
+  background-color: #2c3344;
+  border-color: #364156;
+  color: #e0e0e0;
+}

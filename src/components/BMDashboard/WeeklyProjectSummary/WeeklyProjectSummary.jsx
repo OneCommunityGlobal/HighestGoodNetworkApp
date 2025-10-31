@@ -316,7 +316,7 @@ function WeeklyProjectSummary() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small financial-chart">
-              <ExpenseBarChart />
+              <ExpenseBarChart darkMode={darkMode} />
             </div>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>

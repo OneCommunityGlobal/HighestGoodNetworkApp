@@ -1,10 +1,20 @@
-import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  LabelList,
+  ResponsiveContainer,
+  CartesianGrid,
+} from 'recharts';
 import { useState, useEffect } from 'react';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
 
-export default function ExpenseBarChart() {
+import styles from './ExpectedVsActualBarChart.module.css';
+
+export default function ExpenseBarChart({ darkMode }) {
   const [projectId, setProjectId] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [startDate, setStartDate] = useState('');
@@ -92,7 +102,12 @@ export default function ExpenseBarChart() {
   return (
     <div style={{ width: '100%', padding: '0.5rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '0.75rem' }}>
-        <h4 style={{ margin: 0, color: '#555', fontSize: '1.2rem' }}>Planned vs Actual Cost</h4>
+        <h4
+          style={{ margin: 0, color: '#555', fontSize: '1.2rem' }}
+          className={darkMode ? 'text-light' : ''}
+        >
+          Planned vs Actual Cost
+        </h4>
         {errorMessage && (
           <div style={{ color: 'red', fontSize: '0.9rem', marginTop: '0.5rem' }}>
             {errorMessage}
@@ -111,12 +126,13 @@ export default function ExpenseBarChart() {
           marginBottom: '0.5rem',
         }}
       >
-        <label style={{ minWidth: '150px' }}>
+        <label style={{ minWidth: '150px' }} className={darkMode ? 'text-light' : ''}>
           Project:
           <select
             value={projectId}
             onChange={e => setProjectId(e.target.value)}
             style={{ marginLeft: '0.3rem', width: '100%' }}
+            className={darkMode ? styles.selectDarkMode : ''}
           >
             <option value="">All</option>
             {projects.map(p => (
@@ -126,12 +142,13 @@ export default function ExpenseBarChart() {
             ))}
           </select>
         </label>
-        <label style={{ minWidth: '150px' }}>
+        <label style={{ minWidth: '150px' }} className={darkMode ? 'text-light' : ''}>
           Category:
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
             style={{ marginLeft: '0.3rem', width: '100%' }}
+            className={darkMode ? styles.selectDarkMode : ''}
           >
             <option value="ALL">All</option>
             {categories.map(cat => (
@@ -141,22 +158,28 @@ export default function ExpenseBarChart() {
             ))}
           </select>
         </label>
-        <label style={{ minWidth: '150px' }}>
+        <label style={{ minWidth: '150px' }} className={darkMode ? 'text-light' : ''}>
           Start Date:
           <input
             type="date"
             value={startDate}
             onChange={e => setStartDate(e.target.value)}
             style={{ marginLeft: '0.3rem', width: '100%' }}
+            className={`${styles.toolsHorizontalBarChartDatePicker} ${
+              darkMode ? styles.darkDate : ''
+            }`}
           />
         </label>
-        <label style={{ minWidth: '150px' }}>
+        <label style={{ minWidth: '150px' }} className={darkMode ? 'text-light' : ''}>
           End Date:
           <input
             type="date"
             value={endDate}
             onChange={e => setEndDate(e.target.value)}
             style={{ marginLeft: '0.3rem', width: '100%' }}
+            className={`${styles.toolsHorizontalBarChartDatePicker} ${
+              darkMode ? styles.darkDate : ''
+            }`}
           />
         </label>
       </div>
@@ -190,18 +213,32 @@ export default function ExpenseBarChart() {
           <BarChart data={data} margin={{ top: 10, right: 10, left: 35, bottom: 35 }}>
             <XAxis
               dataKey="project"
-              tick={{ fontSize: 10 }}
+              tick={{ fontSize: 10, fill: darkMode ? '#e0e0e0' : '#333' }}
               interval={0}
               angle={-15}
               textAnchor="end"
-              label={{ value: 'Project Name', position: 'insideBottom', dy: 25, fontSize: 10 }}
+              label={{
+                value: 'Project Name',
+                position: 'insideBottom',
+                dy: 25,
+                fontSize: 10,
+                fill: darkMode ? '#e0e0e0' : '#333',
+              }}
             />
-            <YAxis tick={{ fontSize: 10 }} axisLine tickLine />
+            <YAxis tick={{ fontSize: 10, fill: darkMode ? '#e0e0e0' : '#333' }} axisLine tickLine />
             <Bar dataKey="planned" fill="#4285F4" name="Planned">
-              <LabelList dataKey="planned" position="top" style={{ fontSize: 8 }} />
+              <LabelList
+                dataKey="planned"
+                position="top"
+                style={{ fontSize: 8, fill: darkMode ? '#e0e0e0' : '#333' }}
+              />
             </Bar>
             <Bar dataKey="actual" fill="#EA4335" name="Actual">
-              <LabelList dataKey="actual" position="top" style={{ fontSize: 8 }} />
+              <LabelList
+                dataKey="actual"
+                position="top"
+                style={{ fontSize: 8, fill: darkMode ? '#e0e0e0' : '#333' }}
+              />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
