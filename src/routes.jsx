@@ -72,6 +72,8 @@ import FaqHistory from './components/Faq/FaqHistory';
 import UnansweredFaqs from './components/Faq/UnansweredFaqs';
 import { ExperienceDonutChart } from './components/ExperienceDonutChart';
 
+import MostWastedMaterials from './components/MostWastedMaterials/MostWastedMaterials';
+
 import ToolsAvailabilityPage from './components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
 import ResourceUsage from './components/CommunityPortal/ResourceUsage/ResourceUsage';
 
@@ -297,6 +299,7 @@ export default (
 
     <Route path="/EventPopularity" component={EventPopularity} />
     <Route path="/MaterialSummary" component={MaterialSummary} />
+    <Route path="/mostwastedmaterials" component={MostWastedMaterials} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
