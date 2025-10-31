@@ -33,17 +33,17 @@ export default function UserStateEdit({
       baseURL: base,
       headers: {
         'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}`, 'x-auth-token': token } : {}),
       },
+      // enable if your backend issues auth cookies (CORS must allow credentials)
+      withCredentials: true,
     });
   }, [base]);
 
   useEffect(() => {
     if (!open) return;
     setLocalCatalog(catalogProp || []);
-    setLocalSelKeys(
-      new Set((selectionsProp || []).map(s => (typeof s === 'string' ? s : s.key)))
-    );
+    setLocalSelKeys(new Set((selectionsProp || []).map(s => (typeof s === 'string' ? s : s.key))));
     setEditingKey(null);
     setEditLabel('');
     setNewLabel('');
@@ -62,17 +62,17 @@ export default function UserStateEdit({
       try {
         setLoading(true);
         setError('');
-        const calls = [];
-        if (needCatalog) calls.push(api.get('/catalog'));
-        if (needSelection) calls.push(api.get(`/users/${userId}/state-indicators`));
-        const [catRes, selRes] = await Promise.all(calls);
-        if (!cancelled) {
-          if (catRes) {
-            const items = Array.isArray(catRes?.data?.items) ? catRes.data.items : [];
+        if (needCatalog) {
+          const r = await api.get('/catalog');
+          if (!cancelled) {
+            const items = Array.isArray(r?.data?.items) ? r.data.items : [];
             setLocalCatalog(items);
           }
-          if (selRes) {
-            const arr = Array.isArray(selRes?.data?.selections) ? selRes.data.selections : [];
+        }
+        if (needSelection) {
+          const r = await api.get(`/users/${userId}/state-indicators`);
+          if (!cancelled) {
+            const arr = Array.isArray(r?.data?.selections) ? r.data.selections : [];
             setLocalSelKeys(new Set(arr.map(s => (typeof s === 'string' ? s : s.key))));
           }
         }
@@ -83,9 +83,7 @@ export default function UserStateEdit({
       }
     })();
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, [open, api, userId, catalogProp, selectionsProp]);
 
   const byKey = useMemo(() => {

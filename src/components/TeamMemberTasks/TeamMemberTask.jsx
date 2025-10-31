@@ -10,7 +10,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
 import { Table, Progress, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
-
 import { Link } from 'react-router-dom';
 import hasPermission from '~/utils/permissions';
 import styles from './style.module.css';
@@ -19,7 +18,6 @@ import { toast } from 'react-toastify';
 import Warning from '~/components/Warnings/Warnings';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
-
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
@@ -30,11 +28,6 @@ import FollowUpInfoModal from './FollowUpInfoModal';
 import TaskChangeLogModal from './components/TaskChangeLogModal';
 import * as messages from '../../constants/followUpConstants';
 import UserStateManager from '~/components/UserState/UserStateManager';
-import { updateUserStateIndicators } from '../UserState/action';
-import { selectUserStateCatalog, selectUserStateForUser } from '../UserState/reducer';
-import axios from 'axios';
-
-const NUM_TASKS_SHOW_TRUNCATE = 6;
 
 const initialCatalog = [
   { key: 'closing-out', label: '❌ Closing Out', color: 'red' },
@@ -58,6 +51,8 @@ const TeamMemberTask = React.memo(
     onTimeOff,
     goingOnTimeOff,
     displayUser,
+    preloadCatalog,
+    preloadSelectionsMap,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -67,18 +62,15 @@ const TeamMemberTask = React.memo(
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
-    const dashboardToggle = item => setIsDashboardOpen(item.personId);
     const manager = 'Manager';
     const adm = 'Administrator';
     const owner = 'Owner';
-    const API_BASE = process.env.REACT_APP_APIENDPOINT;
+
     const handleDashboardAccess = () => {
-      // null checks
       if (!user || !userRole || !user.role) {
         toast.error('User information not available to determine dashboard access.');
         return;
       }
-
       if (userRole === manager && [adm, owner].includes(user.role)) {
         toast.error("Oops! You don't have the permission to access this user's dashboard!");
       } else if (userRole === adm && [owner].includes(user.role)) {
@@ -89,21 +81,14 @@ const TeamMemberTask = React.memo(
       ) {
         toast.error("Oops! You don't have the permission to access this user's dashboard!");
       } else {
-        openDashboardModal();
+        setIsDashboardModalOpen(true);
       }
     };
 
-    const openDashboardModal = () => {
-      setIsDashboardModalOpen(true);
-    };
-
-    const closeDashboardModal = () => {
-      setIsDashboardModalOpen(false);
-    };
-
+    const closeDashboardModal = () => setIsDashboardModalOpen(false);
     const showDashboard = () => {
-      dispatch(getUserProfile(user.personId)).then(user => {
-        const { _id, role, firstName, lastName, profilePic, email } = user;
+      dispatch(getUserProfile(user.personId)).then(userRes => {
+        const { _id, role, firstName, lastName, profilePic, email } = userRes;
         const viewingUser = {
           userId: _id,
           role,
@@ -134,6 +119,7 @@ const TeamMemberTask = React.memo(
         ),
     );
 
+    const NUM_TASKS_SHOW_TRUNCATE = 6;
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
     const [isTimeOffContentOpen, setIsTimeOffContentOpen] = useState(
@@ -160,16 +146,11 @@ const TeamMemberTask = React.memo(
     const canDeleteTask = dispatch(hasPermission('canDeleteTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
-    const colorsObjs = {
-      'Assistant Manager': '#849ced', // blue
-      Manager: '#90e766', // green
-      Mentor: '#e9dd57', // yellow
-    };
-
+    const colorsObjs = { 'Assistant Manager': '#849ced', Manager: '#90e766', Mentor: '#e9dd57' };
     function getInitials(name) {
       const initials = name
         .split(' ')
-        .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+        .filter((n, index, arr) => index === 0 || index === arr.length - 1)
         .map(n => n[0])
         .join('')
         .toUpperCase();
@@ -178,9 +159,7 @@ const TeamMemberTask = React.memo(
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
-        setTimeout(() => {
-          setIsTruncated(!isTruncated);
-        }, 0);
+        setTimeout(() => setIsTruncated(!isTruncated), 0);
       } else {
         setIsTruncated(!isTruncated);
       }
@@ -190,22 +169,10 @@ const TeamMemberTask = React.memo(
       setSelectedTaskForChangeLog(task);
       setShowChangeLogModal(true);
     };
-
     const handleCloseTaskChangeLog = () => {
       setShowChangeLogModal(false);
       setSelectedTaskForChangeLog(null);
     };
-
-    /** 
-    const handleReportClick = (event, to) => {
-      if (event.metaKey || event.ctrlKey || event.button === 1) {
-        return;
-      }
-
-      event.preventDefault(); // prevent full reload
-      history.push(`/peoplereport/${to}`);
-    };
-    */
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
@@ -213,69 +180,37 @@ const TeamMemberTask = React.memo(
 
     const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
       let target = targetLink;
-      if (currentElement.Name === 'Google Doc') {
-        target = currentElement.Link;
-      }
+      if (currentElement.Name === 'Google Doc') target = currentElement.Link;
       return target;
     }, undefined);
 
     const followUpMouseoverText = task => {
       const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
-      if (progressPersantage < 50) {
-        return messages.MOUSE_OVER_TEXT_UNDER_50;
-      }
-      if (progressPersantage >= 50 && progressPersantage < 75) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75;
-      }
-      if (progressPersantage >= 75 && progressPersantage < 90) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90;
-      }
+      if (progressPersantage < 50) return messages.MOUSE_OVER_TEXT_UNDER_50;
+      if (progressPersantage >= 50 && progressPersantage < 75) return messages.MOUSE_OVER_TEXT_BETWEEN_50_75;
+      if (progressPersantage >= 75 && progressPersantage < 90) return messages.MOUSE_OVER_TEXT_BETWEEN_75_90;
       return messages.MOUSE_OVER_TEXT_OVER_90;
     };
 
-    // user state
-    const catalogFromStore = useSelector(selectUserStateCatalog);
-    // const effectiveCatalog = catalogFromStore?.length ? catalogFromStore : initialCatalog;
-    const selectedFromSlice = useSelector(s => selectUserStateForUser(s, user.personId));
-    const initialSelected =
-      Array.isArray(selectedFromSlice) && selectedFromSlice.length
-        ? selectedFromSlice
-        : user.stateIndicators || [];
-    const canEdit =
-      ['Owner', 'Administrator'].includes(userRole) ||
-      dispatch(hasPermission('manageUserStateIndicator'));
+    const selectedFromPrefetch =
+      preloadSelectionsMap && preloadSelectionsMap[user.personId]
+        ? preloadSelectionsMap[user.personId]
+        : null;
 
-    const [catalogFromApi, setCatalog] = useState(null);
-    //   React.useEffect(() => {
-    //   let cancelled = false;
-    //   (async () => {
-    //     try {
-    //       const token = localStorage.getItem("token");
-    //       const { data } = await axios.get(`${API_BASE}/user-states/catalog`, {
-    //         headers: {
-    //           Accept: "application/json",
-    //           // ...(token ? { Authorization: token } : {}),
-    //         },
-    //       });
-    //       if (!cancelled) setCatalog(Array.isArray(data?.items) ? data.items : []);
-    //     } catch (e) {
-    //       console.error("catalog fetch failed", e?.response?.status, e?.message);
-    //       if (!cancelled) setCatalog([]); // fall back
-    //     }
-    //   })();
-    //   return () => { cancelled = true; };
-    // }, []);
+    const canEdit =
+      ['Owner', 'Administrator'].includes(userRole) || dispatch(hasPermission('manageUserStateIndicator'));
+
     const effectiveCatalog =
-      (catalogFromApi && catalogFromApi.length && catalogFromApi) ||
-      (catalogFromStore && catalogFromStore.length && catalogFromStore) ||
-      initialCatalog;
+      (preloadCatalog && preloadCatalog.length && preloadCatalog) || initialCatalog;
+
+    const initialSelected =
+      (Array.isArray(selectedFromPrefetch) && selectedFromPrefetch.length && selectedFromPrefetch) ||
+      (Array.isArray(user.stateIndicators) && user.stateIndicators.length
+        ? user.stateIndicators
+        : []);
 
     return (
-      <tr
-        ref={ref}
-        className={`${styles['table-row']} ${darkMode ? 'bg-yinmn-blue' : ''}`}
-        key={user.personId}
-      >
+      <tr ref={ref} className={`${styles['table-row']} ${darkMode ? 'bg-yinmn-blue' : ''}`} key={user.personId}>
         <td className={styles['remove-padding']} colSpan={6}>
           <div className={styles['row-content']}>
             {isTimeOffContentOpen && (
@@ -301,9 +236,7 @@ const TeamMemberTask = React.memo(
                 </div>
                 <button
                   className={styles['compress-time-off-detail-button']}
-                  onClick={() => {
-                    setIsTimeOffContentOpen(false);
-                  }}
+                  onClick={() => setIsTimeOffContentOpen(false)}
                   type="button"
                   aria-label="Compress time off detail"
                 >
@@ -314,7 +247,6 @@ const TeamMemberTask = React.memo(
             <Table className={styles['no-bottom-margin']}>
               <tbody>
                 <tr className="remove-child-borders">
-                  {/* green if member has met committed hours for the week, red if not */}
                   <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                       <div className={styles['member-links-wrapper']}>
@@ -340,34 +272,23 @@ const TeamMemberTask = React.memo(
                                 data-testid="icon"
                               />
                             </div>
-
-                            <Link
-                              to={`/timelog/${user.personId}#currentWeek`}
-                              className={styles['timelog-info']}
-                            >
+                            <Link to={`/timelog/${user.personId}#currentWeek`} className={styles['timelog-info']}>
                               <i
                                 className="fa fa-clock-o"
                                 aria-hidden="true"
-                                style={{
-                                  fontSize: 24,
-                                  cursor: 'pointer',
-                                  color: darkMode ? 'lightgray' : 'black',
-                                }}
+                                style={{ fontSize: 24, cursor: 'pointer', color: darkMode ? 'lightgray' : 'black' }}
                                 title="Click to see user's timelog"
                               />
                             </Link>
                           </div>
                           {user.role !== 'Volunteer' && (
-                            <div
-                              className="user-role"
-                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
-                            >
+                            <div className="user-role" style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}>
                               {user.role}
                             </div>
                           )}
                         </div>
                       </div>
-                      {canUpdateTask && teamRoles && (
+                      {teamRoles && (
                         <div className={styles['name-wrapper']}>
                           {['Manager', 'Assistant Manager', 'Mentor'].map(role => {
                             const seenIds = new Set();
@@ -377,24 +298,19 @@ const TeamMemberTask = React.memo(
                               seenIds.add(key);
                               return true;
                             });
-
                             return uniqueRoleMembers.map(elm => {
-                              const { name } = elm;
-                              const initials = getInitials(name);
+                              const initials = getInitials(elm.name);
                               const bg = colorsObjs[role];
                               return (
                                 <a
                                   key={`${role}-${elm.id}-${elm.name}`}
-                                  title={`${role} : ${name}`}
+                                  title={`${role} : ${elm.name}`}
                                   className={styles.name}
                                   href={`/userprofile/${elm.id}`}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
-                                  <span
-                                    className={styles['name-initial']}
-                                    style={{ backgroundColor: bg }}
-                                  >
+                                  <span className={styles['name-initial']} style={{ backgroundColor: bg }}>
                                     {initials}{' '}
                                   </span>
                                 </a>
@@ -405,37 +321,29 @@ const TeamMemberTask = React.memo(
                       )}
                     </div>
                   </td>
+
                   <td colSpan={2} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <Table borderless className={styles['team-member-tasks-subtable']}>
                       <tbody>
-                        <tr
-                          style={{
-                            width: '500px',
-                          }}
-                        >
+                        <tr style={{ width: '500px' }}>
                           <td className={styles['team-member-tasks-user-name']}>
                             <Link
                               className={styles['team-member-tasks-user-name-link']}
                               to={`/userprofile/${user.personId}`}
                               style={{
                                 color:
-                                  currentDate.isSameOrAfter(
-                                    moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                                  ) &&
-                                  currentDate.isBefore(
-                                    moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                                  )
+                                  currentDate.isSameOrAfter(moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+                                  currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                                     ? 'rgba(128, 128, 128, 0.5)'
                                     : darkMode && '#339CFF',
                                 fontSize: '20px',
                               }}
-                            >{`${user.name}`}</Link>
+                            >
+                              {`${user.name}`}
+                            </Link>
 
                             {user.role !== 'Volunteer' && (
-                              <div
-                                className="user-role"
-                                style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
-                              >
+                              <div className="user-role" style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}>
                                 {user.role}
                               </div>
                             )}
@@ -443,22 +351,13 @@ const TeamMemberTask = React.memo(
                             {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
 
                             {canSeeReports && (
-                              <Link
-                                className={styles['team-member-tasks-user-report-link']}
-                                to={`/peoplereport/${user?.personId}`}
-                              >
-                                <img
-                                  src="/report_icon.png"
-                                  alt="reportsicon"
-                                  className={styles['team-member-tasks-user-report-link-image']}
-                                />
+                              <Link className={styles['team-member-tasks-user-report-link']} to={`/peoplereport/${user?.personId}`}>
+                                <img src="/report_icon.png" alt="reportsicon" className={styles['team-member-tasks-user-report-link-image']} />
                               </Link>
                             )}
                             {canSeeReports && (
                               <Link to={`/peoplereport/${user?.personId}`}>
-                                <span className={styles['team-member-tasks-number']}>
-                                  {completedTasks.length}
-                                </span>
+                                <span className={styles['team-member-tasks-number']}>{completedTasks.length}</span>
                               </Link>
                             )}
                             <Warning
@@ -471,24 +370,18 @@ const TeamMemberTask = React.memo(
                               displayUser={displayUser}
                             />
                           </td>
-                          <td
-                            data-label="Time"
-                            className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}
-                          >
+
+                          <td data-label="Time" className={`${styles['team-clocks']} ${darkMode ? 'text-light' : ''}`}>
                             <u className={darkMode ? styles['dashboard-team-clocks'] : ''}>
                               {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
                             </u>{' '}
                             /
-                            <font color="green">
-                              {' '}
-                              {thisWeekHours ? thisWeekHours.toFixed(1) : 0}
-                            </font>{' '}
+                            <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font>{' '}
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                             <div style={{ marginTop: '29px', marginLeft: '-70px' }}>
                               <UserStateManager
                                 userId={user.personId}
                                 canEdit={canEdit}
-                                user={user}
                                 initialSelections={initialSelected}
                               />
                             </div>
@@ -497,6 +390,7 @@ const TeamMemberTask = React.memo(
                       </tbody>
                     </Table>
                   </td>
+
                   <td colSpan={3} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div className={styles['grid-container']}>
                       <Table borderless className={styles['team-member-tasks-subtable']}>
@@ -504,17 +398,10 @@ const TeamMemberTask = React.memo(
                           {user.tasks &&
                             activeTasks.slice(0, numTasksToShow).map(task => {
                               return (
-                                <tr
-                                  key={`${task._id}`}
-                                  className={`${styles['task-break']} ${
-                                    darkMode ? 'bg-yinmn-blue' : ''
-                                  }`}
-                                >
+                                <tr key={`${task._id}`} className={`${styles['task-break']} ${darkMode ? 'bg-yinmn-blue' : ''}`}>
                                   <td
                                     data-label="Task(s)"
-                                    className={`${styles['task-align']} ${
-                                      darkMode ? 'bg-yinmn-blue text-light' : ''
-                                    }`}
+                                    className={`${styles['task-align']} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
                                   >
                                     <div className={styles['team-member-tasks-content']}>
                                       <Link
@@ -525,19 +412,14 @@ const TeamMemberTask = React.memo(
                                       >
                                         <span>{`${task.num} ${task.taskName}`} </span>
                                       </Link>
-                                      <CopyToClipboard
-                                        writeText={task.taskName}
-                                        message="Task Copied!"
-                                      />
+                                      <CopyToClipboard writeText={task.taskName} message="Task Copied!" />
                                     </div>
                                     <div className={styles['team-member-tasks-icons']}>
                                       {task.taskNotifications.length > 0 &&
                                       task.taskNotifications.some(
                                         notification =>
-                                          Object.prototype.hasOwnProperty.call(
-                                            notification,
-                                            'userId',
-                                          ) && notification.userId === user.personId,
+                                          Object.prototype.hasOwnProperty.call(notification, 'userId') &&
+                                          notification.userId === user.personId,
                                       ) ? (
                                         <FontAwesomeIcon
                                           className={styles['team-member-tasks-bell']}
@@ -545,14 +427,9 @@ const TeamMemberTask = React.memo(
                                           icon={faBell}
                                           onClick={() => {
                                             const taskNotificationId = task.taskNotifications.filter(
-                                              taskNotification =>
-                                                taskNotification.userId === user.personId,
+                                              taskNotification => taskNotification.userId === user.personId,
                                             );
-                                            handleOpenTaskNotificationModal(
-                                              user.personId,
-                                              task,
-                                              taskNotificationId,
-                                            );
+                                            handleOpenTaskNotificationModal(user.personId, task, taskNotificationId);
                                           }}
                                           data-taskid={`task-info-icon-${task.taskName}`}
                                         />
@@ -584,20 +461,13 @@ const TeamMemberTask = React.memo(
                                       <TeamMemberTaskIconsInfo />
                                     </div>
                                     <div className={styles['team-member-task-review-button']}>
-                                      <ReviewButton
-                                        user={user}
-                                        userId={userId}
-                                        task={task}
-                                        updateTask={updateTaskStatus}
-                                      />
+                                      <ReviewButton user={user} userId={userId} task={task} updateTask={updateTaskStatus} />
                                     </div>
                                   </td>
                                   {task.hoursLogged != null && task.estimatedHours != null && (
                                     <td
                                       data-label="Progress"
-                                      className={`${styles['team-task-progress']} ${
-                                        darkMode ? 'bg-yinmn-blue text-light' : ''
-                                      }`}
+                                      className={`${styles['team-task-progress']} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
                                     >
                                       {isAllowedToSeeDeadlineCount && (
                                         <span
@@ -627,30 +497,19 @@ const TeamMemberTask = React.memo(
                                               : styles['team-task-progress-time-volunteers']
                                           }`}
                                         >
-                                          {`${parseFloat(
-                                            task.hoursLogged.toFixed(2),
-                                          )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                                          {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
+                                            task.estimatedHours.toFixed(2),
+                                          )}`}
                                         </span>
                                         {canSeeFollowUpCheckButton && (
                                           <>
-                                            <FollowupCheckButton
-                                              moseoverText={followUpMouseoverText(task)}
-                                              user={user}
-                                              task={task}
-                                            />
+                                            <FollowupCheckButton moseoverText={followUpMouseoverText(task)} user={user} task={task} />
                                             <FollowUpInfoModal />
                                           </>
                                         )}
                                         <Progress
-                                          color={getProgressColor(
-                                            task.hoursLogged,
-                                            task.estimatedHours,
-                                            true,
-                                          )}
-                                          value={getProgressValue(
-                                            task.hoursLogged,
-                                            task.estimatedHours,
-                                          )}
+                                          color={getProgressColor(task.hoursLogged, task.estimatedHours, true)}
+                                          value={getProgressValue(task.hoursLogged, task.estimatedHours)}
                                           className={styles['team-task-progress-bar']}
                                         />
                                       </div>
@@ -662,35 +521,21 @@ const TeamMemberTask = React.memo(
                           {canTruncate && (
                             <tr key="truncate-button-row" className={styles['task-break']}>
                               <td className={styles['task-align']}>
-                                <button
-                                  type="button"
-                                  onClick={handleTruncateTasksButtonClick}
-                                  className={darkMode ? 'text-light' : ''}
-                                >
-                                  {isTruncated
-                                    ? `Show All (${activeTasks.length}) Tasks`
-                                    : 'Truncate Tasks'}
+                                <button type="button" onClick={handleTruncateTasksButtonClick} className={darkMode ? 'text-light' : ''}>
+                                  {isTruncated ? `Show All (${activeTasks.length}) Tasks` : 'Truncate Tasks'}
                                 </button>
                               </td>
                             </tr>
                           )}
                         </tbody>
                       </Table>
-                      <Modal
-                        isOpen={isDashboardModalOpen}
-                        toggle={closeDashboardModal}
-                        className={darkMode ? 'text-light dark-mode' : ''}
-                      >
-                        <ModalHeader
-                          toggle={closeDashboardModal}
-                          className={darkMode ? 'bg-space-cadet' : ''}
-                        >
+
+                      <Modal isOpen={isDashboardModalOpen} toggle={closeDashboardModal} className={darkMode ? 'text-light dark-mode' : ''}>
+                        <ModalHeader toggle={closeDashboardModal} className={darkMode ? 'bg-space-cadet' : ''}>
                           Jump to personal Dashboard
                         </ModalHeader>
                         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                          <p className="title-dashboard">
-                            Are you sure you wish to view the dashboard for {user.name}?
-                          </p>
+                          <p className="title-dashboard">Are you sure you wish to view the dashboard for {user.name}?</p>
                         </ModalBody>
                         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                           <button className="btn btn-primary" onClick={showDashboard}>
@@ -701,12 +546,11 @@ const TeamMemberTask = React.memo(
                           </button>
                         </ModalFooter>
                       </Modal>
+
                       {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
                         <button
                           type="button"
-                          className={`${styles['expand-time-off-detail-button']} ${
-                            isTimeOffContentOpen ? styles.hidden : ''
-                          }`}
+                          className={`${styles['expand-time-off-detail-button']} ${isTimeOffContentOpen ? styles.hidden : ''}`}
                           onClick={() => setIsTimeOffContentOpen(true)}
                           aria-label="Expand time off detail"
                         >
@@ -720,14 +564,9 @@ const TeamMemberTask = React.memo(
             </Table>
           </div>
         </td>
-        {/* Task Change Log Modal */}
+
         {selectedTaskForChangeLog && (
-          <TaskChangeLogModal
-            isOpen={showChangeLogModal}
-            toggle={handleCloseTaskChangeLog}
-            task={selectedTaskForChangeLog}
-            darkMode={darkMode}
-          />
+          <TaskChangeLogModal isOpen={showChangeLogModal} toggle={handleCloseTaskChangeLog} task={selectedTaskForChangeLog} darkMode={darkMode} />
         )}
       </tr>
     );

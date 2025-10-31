@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState, useCallback } from 'react';
+import React, { Fragment, useEffect, useState, useCallback, useMemo } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,12 +19,12 @@ import { toast } from 'react-toastify';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
 import { fetchTeamMembersTaskSuccess } from './actions';
-
 import { ENDPOINTS } from '~/utils/URL';
 import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 
+const API_BASE = process.env.REACT_APP_APIENDPOINT || '/api';
+
 const TeamMemberTasks = React.memo(props => {
-  // props from redux store
   const {
     authUser,
     displayUser,
@@ -58,11 +58,31 @@ const TeamMemberTasks = React.memo(props => {
   const [selectedTeamNames, setSelectedTeamNames] = useState([]);
   const [selectedCodes, setSelectedCodes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
-
   const [teamRoles, setTeamRoles] = useState();
   const [usersSelectedTeam] = useState([]);
   const [, setInnerWidth] = useState();
   const [controlUseEfffect] = useState(false);
+
+  const [usCatalog, setUsCatalog] = useState(null);
+  const [usSelectionsMap, setUsSelectionsMap] = useState({});
+
+  const token = useMemo(
+    () => (typeof localStorage !== 'undefined' ? localStorage.getItem('token') : ''),
+    [],
+  );
+
+  const api = useMemo(
+    () =>
+      axios.create({
+        baseURL: API_BASE,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}`, 'x-auth-token': token } : {}),
+        },
+        withCredentials: true,
+      }),
+    [token],
+  );
 
   useEffect(() => {
     setInnerWidth(window.innerWidth);
@@ -92,67 +112,43 @@ const TeamMemberTasks = React.memo(props => {
 
   const onUpdateTask = useCallback(
     (taskId, updatedTask) => {
-      const newTask = {
-        updatedTask,
-        taskId,
-      };
+      const newTask = { updatedTask, taskId };
       submitTasks(newTask);
-
-      // optimistic update while waiting for data being updated
       const newUsersWithTasks = usersWithTasks.map(userWithTasks => {
         if (userWithTasks.tasks.some(task => task._id === taskId)) {
           const hasResource = updatedTask.resources.some(
             resource => resource.userID === userWithTasks.personId,
           );
-
           if (hasResource) {
             return {
               ...userWithTasks,
               tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
             };
           }
-          return {
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
-          };
+          return { ...userWithTasks, tasks: userWithTasks.tasks.filter(task => task._id !== taskId) };
         }
-
         return userWithTasks;
       });
-      dispatch(
-        fetchTeamMembersTaskSuccess({
-          usersWithTasks: newUsersWithTasks,
-        }),
-      );
+      dispatch(fetchTeamMembersTaskSuccess({ usersWithTasks: newUsersWithTasks }));
     },
     [usersWithTasks],
   );
 
   const updateTaskStatus = useCallback(
     async (taskId, updatedTask) => {
-      const newTask = {
-        updatedTask,
-        taskId,
-      };
+      const newTask = { updatedTask, taskId };
       const url = ENDPOINTS.TASK_UPDATE_STATUS(newTask.taskId);
       try {
         await axios.put(url, newTask.updatedTask);
       } catch (error) {
         toast.error('Failed to update task');
       }
-
-      // optimistic update while waiting for data being updated
       const newUsersWithTasks = usersWithTasks.map(userWithTasks => {
         const hasTask = userWithTasks.tasks.some(task => task._id === taskId);
-
-        if (!hasTask) {
-          return userWithTasks;
-        }
-
+        if (!hasTask) return userWithTasks;
         const hasResource = updatedTask.resources.some(
           resource => resource.userID === userWithTasks.personId,
         );
-
         return {
           ...userWithTasks,
           tasks: hasResource
@@ -160,12 +156,7 @@ const TeamMemberTasks = React.memo(props => {
             : userWithTasks.tasks.filter(task => task._id !== taskId),
         };
       });
-
-      dispatch(
-        fetchTeamMembersTaskSuccess({
-          usersWithTasks: newUsersWithTasks,
-        }),
-      );
+      dispatch(fetchTeamMembersTaskSuccess({ usersWithTasks: newUsersWithTasks }));
     },
     [usersWithTasks],
   );
@@ -194,7 +185,6 @@ const TeamMemberTasks = React.memo(props => {
   }, []);
 
   const handleTaskNotificationRead = (userId, taskId, taskNotificationId) => {
-    // if the authentitated user is seeing it's own notification
     if (currentUserId === authUser.userid) {
       dispatch(deleteTaskNotification(userId, taskId, taskNotificationId));
     }
@@ -202,53 +192,30 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const getTimeEntriesForPeriod = async selectedPeriodFunc => {
-    const oneDayAgo = moment()
-      .tz('America/Los_Angeles')
-      .subtract(1, 'days')
-      .format('YYYY-MM-DD');
-
-    const twoDaysAgo = moment()
-      .tz('America/Los_Angeles')
-      .subtract(2, 'days')
-      .format('YYYY-MM-DD');
-
-    const threeDaysAgo = moment()
-      .tz('America/Los_Angeles')
-      .subtract(3, 'days')
-      .format('YYYY-MM-DD');
-
-    const fourDaysAgo = moment()
-      .tz('America/Los_Angeles')
-      .subtract(4, 'days')
-      .format('YYYY-MM-DD');
+    const oneDayAgo = moment().tz('America/Los_Angeles').subtract(1, 'days').format('YYYY-MM-DD');
+    const twoDaysAgo = moment().tz('America/Los_Angeles').subtract(2, 'days').format('YYYY-MM-DD');
+    const threeDaysAgo = moment().tz('America/Los_Angeles').subtract(3, 'days').format('YYYY-MM-DD');
+    const fourDaysAgo = moment().tz('America/Los_Angeles').subtract(4, 'days').format('YYYY-MM-DD');
 
     switch (selectedPeriodFunc) {
       case '1': {
-        const oneDaysList = usersWithTimeEntries.filter(entry =>
-          moment(entry.dateOfWork).isAfter(oneDayAgo),
-        );
-        setTimeEntriesList(oneDaysList);
+        const list = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(oneDayAgo));
+        setTimeEntriesList(list);
         break;
       }
       case '2': {
-        const twoDaysList = usersWithTimeEntries.filter(entry =>
-          moment(entry.dateOfWork).isAfter(twoDaysAgo),
-        );
-        setTimeEntriesList(twoDaysList);
+        const list = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(twoDaysAgo));
+        setTimeEntriesList(list);
         break;
       }
       case '3': {
-        const threeDaysList = usersWithTimeEntries.filter(entry =>
-          moment(entry.dateOfWork).isAfter(threeDaysAgo),
-        );
-        setTimeEntriesList(threeDaysList);
+        const list = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(threeDaysAgo));
+        setTimeEntriesList(list);
         break;
       }
       case '4': {
-        const fourDaysList = usersWithTimeEntries.filter(entry =>
-          moment(entry.dateOfWork).isAfter(fourDaysAgo),
-        );
-        setTimeEntriesList(fourDaysList);
+        const list = usersWithTimeEntries.filter(entry => moment(entry.dateOfWork).isAfter(fourDaysAgo));
+        setTimeEntriesList(list);
         break;
       }
       case '7':
@@ -257,11 +224,9 @@ const TeamMemberTasks = React.memo(props => {
       default:
         setTimeEntriesList([]);
     }
-
     setFinishLoading(true);
   };
 
-  // Display timelogs based on selected period
   const selectPeriod = period => {
     if (period === selectedPeriod) {
       setIsTimeFilterActive(false);
@@ -273,25 +238,15 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line
-    renderTeamsList(
-      filteredUserTeamIds && filteredUserTeamIds.length > 0 ? filteredUserTeamIds : null,
-    );
+    renderTeamsList(filteredUserTeamIds && filteredUserTeamIds.length > 0 ? filteredUserTeamIds : null);
   }, [filteredUserTeamIds]);
 
   const renderTeamsList = async team => {
     if (!team) {
       if (usersWithTasks.length > 0) {
-        // sort all users by their name
-
         usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
-        // find currentUser
-        const currentUserIndex = usersWithTasks.findIndex(
-          user => user.personId === displayUser._id,
-        );
-        // if current user doesn't have any task, the currentUser cannot be found
+        const currentUserIndex = usersWithTasks.findIndex(user => user.personId === displayUser._id);
         if (usersWithTasks[currentUserIndex]?.tasks.length) {
-          // conditional variable for moving current user up front.
           usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
         }
         setTeamList([...usersWithTasks]);
@@ -309,22 +264,39 @@ const TeamMemberTasks = React.memo(props => {
 
   const filteredTeamRoles = teams => {
     const roles = {};
-
     if (teamRoles) {
       teams.forEach(team => {
         if (teamRoles[team.teamName]) {
           Object.entries(teamRoles[team.teamName]).forEach(([role, { id, name }]) => {
-            if (!roles[role]) {
-              roles[role] = [];
-            }
+            if (!roles[role]) roles[role] = [];
             roles[role].push({ id, name });
           });
         }
       });
     }
-
     return Object.keys(roles).length === 0 ? '' : roles;
   };
+
+  useEffect(() => {
+    const initialFetching = async () => {
+      await dispatch(fetchTeamMembersTask(displayUser._id));
+    };
+    initialFetching();
+  }, [displayUser]);
+
+  useEffect(() => {
+    if (clickedToShowModal) setMarkAsDoneModal(true);
+  }, [currentUserId]);
+
+  useEffect(() => {
+    if (usersWithTasks.length > 0) {
+      renderTeamsList(!controlUseEfffect || usersSelectedTeam.length === 0 ? null : usersSelectedTeam);
+      closeMarkAsDone();
+      if (['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role)) {
+        renderFilters();
+      }
+    }
+  }, [usersWithTasks]);
 
   const renderFilters = () => {
     const teamGroup = {};
@@ -337,71 +309,41 @@ const TeamMemberTasks = React.memo(props => {
 
     if (usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
-        const teamNamesInTasks =
-          user.teams !== undefined ? user.teams.map(team => team.teamName) : [];
+        const teamNamesInTasks = user.teams !== undefined ? user.teams.map(team => team.teamName) : [];
         const code = user.teamCode || 'noCodeLabel';
         const color = user.weeklySummaryOption || 'noColorLabel';
         const { role } = user;
 
         teamNamesInTasks.forEach(name => {
-          if (teamGroup[name]) {
-            teamGroup[name].push(user.personId);
-          } else {
-            teamGroup[name] = [user.personId];
-          }
+          if (teamGroup[name]) teamGroup[name].push(user.personId);
+          else teamGroup[name] = [user.personId];
           if (['Manager', 'Assistant Manager', 'Mentor'].includes(role)) {
-            if (!rolesGroup[name]) {
-              rolesGroup[name] = {};
-            }
-            rolesGroup[name][role] = {
-              id: user.personId,
-              name: user.name,
-            };
+            if (!rolesGroup[name]) rolesGroup[name] = {};
+            rolesGroup[name][role] = { id: user.personId, name: user.name };
           }
         });
 
-        if (teamCodeGroup[code]) {
-          teamCodeGroup[code].push(user.personId);
-        } else {
-          teamCodeGroup[code] = [user.personId];
-        }
+        if (teamCodeGroup[code]) teamCodeGroup[code].push(user.personId);
+        else teamCodeGroup[code] = [user.personId];
 
-        if (colorGroup[color]) {
-          colorGroup[color].push(user.personId);
-        } else {
-          colorGroup[color] = [user.personId];
-        }
+        if (colorGroup[color]) colorGroup[color].push(user.personId);
+        else colorGroup[color] = [user.personId];
       });
 
       Object.keys(teamGroup)
         .sort((a, b) => a.localeCompare(b))
-        .forEach(name => {
-          teamOptions.push({
-            value: name,
-            label: `${name}`,
-          });
-        });
+        .forEach(name => teamOptions.push({ value: name, label: `${name}` }));
 
       Object.keys(teamCodeGroup)
         .sort((a, b) => a.localeCompare(b))
         .forEach(code => {
-          if (code !== 'noCodeLabel') {
-            teamCodeOptions.push({
-              value: code,
-              label: `${code}`,
-            });
-          }
+          if (code !== 'noCodeLabel') teamCodeOptions.push({ value: code, label: `${code}` });
         });
 
       Object.keys(colorGroup)
         .sort((a, b) => a.localeCompare(b))
         .forEach(color => {
-          if (color !== 'noColorLabel') {
-            colorOptions.push({
-              value: color,
-              label: `${color}`,
-            });
-          }
+          if (color !== 'noColorLabel') colorOptions.push({ value: color, label: `${color}` });
         });
 
       setTeamNames(teamOptions);
@@ -412,60 +354,25 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   useEffect(() => {
-    // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
-    const initialFetching = async () => {
-      await dispatch(fetchTeamMembersTask(displayUser._id));
-    };
-    initialFetching();
-  }, [displayUser]);
-
-  useEffect(() => {
-    if (clickedToShowModal) {
-      setMarkAsDoneModal(true);
-    }
-  }, [currentUserId]);
-
-  useEffect(() => {
-    if (usersWithTasks.length > 0) {
-      renderTeamsList(
-        !controlUseEfffect || usersSelectedTeam.length === 0 ? null : usersSelectedTeam,
-      );
-      closeMarkAsDone();
-      if (['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role)) {
-        renderFilters();
-      }
-    }
-  }, [usersWithTasks]);
-
-  useEffect(() => {
     getTimeEntriesForPeriod(selectedPeriod);
   }, [selectedPeriod, usersWithTimeEntries]);
 
-  const handleshowWhoHasTimeOff = () => {
-    setShowWhoHasTimeOff(prev => !prev);
-  };
+  const handleshowWhoHasTimeOff = () => setShowWhoHasTimeOff(prev => !prev);
 
   const handleSelectTeamNames = event => {
-    // eslint-disable-next-line
     filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedTeamNames(event);
   };
-
   const handleSelectCodeChange = event => {
-    // eslint-disable-next-line
     filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedCodes(event);
   };
-
   const handleSelectColorChange = event => {
-    // eslint-disable-next-line
     filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedColors(event);
   };
-  const filterByTeamName = name => {
-    return selectedTeamNames.some(option => option.value === name);
-  };
 
+  const filterByTeamName = name => selectedTeamNames.some(option => option.value === name);
   const filterByTeams = teams => {
     if (selectedTeamNames.length === 0) return true;
     let match = false;
@@ -474,39 +381,73 @@ const TeamMemberTasks = React.memo(props => {
     });
     return match;
   };
-
-  const filterByColors = color => {
-    if (selectedColors.length === 0) return true;
-    return selectedColors.some(option => option.value === color);
-  };
-
-  const filterByTeamCodes = code => {
-    if (selectedCodes.length === 0) return true;
-    return selectedCodes.some(option => option.value === code);
-  };
-
+  const filterByColors = color => (selectedColors.length === 0 ? true : selectedColors.some(o => o.value === color));
+  const filterByTeamCodes = code => (selectedCodes.length === 0 ? true : selectedCodes.some(o => o.value === code));
   const filterByUserFeatures = user => {
-    if (selectedTeamNames.length === 0 && selectedCodes.length === 0 && selectedColors.length === 0)
-      return true;
-
-    return (
-      filterByTeamCodes(user.teamCode) &&
-      filterByColors(user.weeklySummaryOption) &&
-      filterByTeams(user.teams)
-    );
+    if (selectedTeamNames.length === 0 && selectedCodes.length === 0 && selectedColors.length === 0) return true;
+    return filterByTeamCodes(user.teamCode) && filterByColors(user.weeklySummaryOption) && filterByTeams(user.teams);
   };
+
+  // -------- Batch preload catalog & selections (avoids N requests and 401 header mismatch) --------
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      if (!teamList.length) return;
+      try {
+        if (!usCatalog) {
+          const { data } = await api.get('/user-states/catalog');
+          if (cancelled) return;
+          setUsCatalog(Array.isArray(data?.items) ? data.items : []);
+        }
+
+        const ids = teamList.map(u => u.personId).filter(Boolean);
+        const unique = Array.from(new Set(ids));
+        if (!unique.length) return;
+
+        // fetch in chunks in case your team is huge
+        const chunkSize = 200;
+        const mapAccum = {};
+        for (let i = 0; i < unique.length; i += chunkSize) {
+          const slice = unique.slice(i, i + chunkSize);
+          try {
+            const { data } = await api.get('/user-states/users/state-indicators', {
+              params: { ids: slice.join(',') },
+            });
+            const part = data?.selectionsByUserId || {};
+            Object.assign(mapAccum, part);
+          } catch {
+            slice.forEach(id => { mapAccum[id] = mapAccum[id] || []; });
+          }
+          if (cancelled) return;
+        }
+
+        // normalize to array of keys (strings)
+        const normalized = {};
+        Object.entries(mapAccum).forEach(([id, arr]) => {
+          normalized[id] = Array.isArray(arr)
+            ? arr.map(x => (typeof x === 'string' ? x : x?.key)).filter(Boolean)
+            : [];
+        });
+
+        if (!cancelled) setUsSelectionsMap(prev => ({ ...prev, ...normalized }));
+      } catch {
+        if (!cancelled) {
+          setUsCatalog(prev => prev || []);
+        }
+      }
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [teamList, api, usCatalog]);
+
   return (
     <div
       data-testid="team-member-tasks-container"
-      className={`container ${styles['team-member-tasks']} ${
-        darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
-      }`}
+      className={`container ${styles['team-member-tasks']} ${darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''}`}
     >
       <header className={styles['header-box']}>
         <section className="d-flex flex-column">
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
-
-          {/* Dropdown for selecting a team */}
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
@@ -514,46 +455,23 @@ const TeamMemberTasks = React.memo(props => {
               <button
                 type="button"
                 data-testid="show-time-off-btn"
-                className={`m-1 ${styles['show-time-off-btn']} ${
-                  darkMode ? 'box-shadow-dark' : ''
-                }`}
-                style={{
-                  backgroundColor: showWhoHasTimeOff ? '#17a2b8' : 'white',
-                }}
+                className={`m-1 ${styles['show-time-off-btn']} ${darkMode ? 'box-shadow-dark' : ''}`}
+                style={{ backgroundColor: showWhoHasTimeOff ? '#17a2b8' : 'white' }}
                 onClick={handleshowWhoHasTimeOff}
                 aria-label="Toggle time off view"
               >
-                <FaCalendarAlt
-                  data-testid="time-off-calendar-icon"
-                  className="show-time-off-calender-svg"
-                  fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
-                  size="20px"
-                />
-                <FaClock
-                  size="12px"
-                  fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
-                  className="show-time-off-icon"
-                  data-testid="show-time-off-icon"
-                />
+                <FaCalendarAlt data-testid="time-off-calendar-icon" className="show-time-off-calender-svg" fill={showWhoHasTimeOff ? 'white' : '#17a2b8'} size="20px" />
+                <FaClock size="12px" fill={showWhoHasTimeOff ? 'white' : '#17a2b8'} className="show-time-off-icon" data-testid="show-time-off-icon" />
               </button>
-
               {Object.entries(hrsFilterBtnColorMap).map(([days, color]) => (
                 <button
                   key={days}
                   type="button"
-                  className={`m-1 responsive-btn-size ${styles['circle-border']} ${
-                    darkMode ? 'box-shadow-dark' : 'box-shadow-light'
-                  }`}
+                  className={`m-1 responsive-btn-size ${styles['circle-border']} ${darkMode ? 'box-shadow-dark' : 'box-shadow-light'}`}
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
-                    color:
-                      selectedPeriod === days && isTimeFilterActive
-                        ? `${darkMode ? color : 'white'}`
-                        : `${darkMode ? 'white' : color}`,
-                    backgroundColor:
-                      selectedPeriod === days && isTimeFilterActive
-                        ? `${darkMode ? 'white' : color}`
-                        : `${darkMode ? color : 'white'}`,
+                    color: selectedPeriod === days && isTimeFilterActive ? `${darkMode ? color : 'white'}` : `${darkMode ? 'white' : color}`,
+                    backgroundColor: selectedPeriod === days && isTimeFilterActive ? `${darkMode ? 'white' : color}` : `${darkMode ? color : 'white'}`,
                     border: `1px solid ${color}`,
                   }}
                   onClick={() => selectPeriod(days)}
@@ -564,19 +482,13 @@ const TeamMemberTasks = React.memo(props => {
                 </button>
               ))}
               <select
-                className={`m-1 mobile-view-select ${styles['circle-border']} ${
-                  darkMode ? 'box-shadow-dark' : ''
-                }`}
+                className={`m-1 mobile-view-select ${styles['circle-border']} ${darkMode ? 'box-shadow-dark' : ''}`}
                 onChange={e => selectPeriod(e.target.value)}
                 value={selectedPeriod || ''}
                 title={`Timelogs submitted in the past ${selectedPeriod} days`}
                 style={{
-                  color: isTimeFilterActive
-                    ? `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : 'white'}`
-                    : `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`,
-                  backgroundColor: isTimeFilterActive
-                    ? `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`
-                    : `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : '#007BFF'}`,
+                  color: isTimeFilterActive ? `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : 'white'}` : `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}`,
+                  backgroundColor: isTimeFilterActive ? `${darkMode ? 'white' : hrsFilterBtnColorMap[selectedPeriod]}` : `${darkMode ? hrsFilterBtnColorMap[selectedPeriod] : '#007BFF'}`,
                   border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`,
                 }}
               >
@@ -586,8 +498,7 @@ const TeamMemberTasks = React.memo(props => {
                     value={days}
                     style={{
                       color,
-                      backgroundColor:
-                        selectedPeriod === days && isTimeFilterActive ? color : 'white',
+                      backgroundColor: selectedPeriod === days && isTimeFilterActive ? color : 'white',
                       border: `1px solid ${color}`,
                     }}
                   >
@@ -606,12 +517,10 @@ const TeamMemberTasks = React.memo(props => {
             </div>
           </section>
         ) : (
-          <SkeletonLoading
-            template="TimelogFilter"
-            data-testid="skeleton-loading-team-member-tasks-header"
-          />
+          <SkeletonLoading template="TimelogFilter" data-testid="skeleton-loading-team-member-tasks-header" />
         )}
       </header>
+
       <TaskDifferenceModal
         isOpen={showTaskNotificationModal}
         taskNotifications={currentTaskNotifications}
@@ -622,6 +531,7 @@ const TeamMemberTasks = React.memo(props => {
         loggedInUserId={authUser.userid}
         darkMode={darkMode}
       />
+
       {currentUserId !== '' && (
         <TaskCompletedModal
           isOpen={showMarkAsDoneModal}
@@ -640,6 +550,7 @@ const TeamMemberTasks = React.memo(props => {
           darkMode={darkMode}
         />
       )}
+
       {['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role) && (
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
@@ -648,22 +559,16 @@ const TeamMemberTasks = React.memo(props => {
               className={`multi-select-filter responsive-font-size ${darkMode ? 'dark-mode' : ''}`}
               options={teamNames}
               value={selectedTeamNames}
-              onChange={e => {
-                handleSelectTeamNames(e);
-              }}
+              onChange={handleSelectTeamNames}
             />
           </Col>
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
-            <span className={darkMode ? 'text-light responsive-font-size' : ''}>
-              Select Team Code
-            </span>
+            <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Team Code</span>
             <MultiSelect
               className={`multi-select-filter responsive-font-size ${darkMode ? 'dark-mode' : ''}`}
               options={teamCodes}
               value={selectedCodes}
-              onChange={e => {
-                handleSelectCodeChange(e);
-              }}
+              onChange={handleSelectCodeChange}
             />
           </Col>
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
@@ -672,89 +577,40 @@ const TeamMemberTasks = React.memo(props => {
               className={`multi-select-filter responsive-font-size ${darkMode ? 'dark-mode' : ''}`}
               options={colors}
               value={selectedColors}
-              onChange={e => {
-                handleSelectColorChange(e);
-              }}
+              onChange={handleSelectColorChange}
             />
           </Col>
         </Row>
       )}
+
       <div className={styles['task_table-container']}>
-        <Table
-          className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}
-        >
-          <thead
-            className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`}
-            style={{ position: 'sticky', top: 0 }}
-          >
+        <Table className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}>
+          <thead className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
-              <th
-                colSpan={3}
-                className={`${styles['team-member-tasks-headers']} ${
-                  darkMode ? 'bg-space-cadet' : ''
-                }`}
-              >
-                <Table
-                  borderless
-                  data-testid="team-member-tasks-subtable"
-                  className={`${styles['team-member-tasks-subtable']} ${
-                    darkMode ? 'text-light' : ''
-                  }`}
-                >
+              <th colSpan={3} className={`${styles['team-member-tasks-headers']} ${darkMode ? 'bg-space-cadet' : ''}`}>
+                <Table borderless data-testid="team-member-tasks-subtable" className={`${styles['team-member-tasks-subtable']} ${darkMode ? 'text-light' : ''}`}>
                   <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
                       <th className={darkMode ? 'bg-space-cadet' : ''}>User Status</th>
-                      <th
-                        className={`${styles['team-member-tasks-headers']} ${
-                          styles['team-member-tasks-user-name']
-                        } ${darkMode ? 'bg-space-cadet' : ''}`}
-                      >
-                        Team Member
-                      </th>
-                      <th
-                        className={`${styles['team-member-tasks-headers']} team-clocks ${
-                          styles['team-clocks-header']
-                        } ${darkMode ? 'bg-space-cadet' : ''}`}
-                      >
-                        <FontAwesomeIcon
-                          style={{ color: darkMode ? 'lightgray' : '' }}
-                          icon={faClock}
-                          title="Weekly Committed Hours"
-                        />
+                      <th className={`${styles['team-member-tasks-headers']} ${styles['team-member-tasks-user-name']} ${darkMode ? 'bg-space-cadet' : ''}`}>Team Member</th>
+                      <th className={`${styles['team-member-tasks-headers']} team-clocks ${styles['team-clocks-header']} ${darkMode ? 'bg-space-cadet' : ''}`}>
+                        <FontAwesomeIcon style={{ color: darkMode ? 'lightgray' : '' }} icon={faClock} title="Weekly Committed Hours" />
                         /
-                        <FontAwesomeIcon
-                          style={{ color: 'green' }}
-                          icon={faClock}
-                          title="Total Hours Completed this Week"
-                        />
+                        <FontAwesomeIcon style={{ color: 'green' }} icon={faClock} title="Total Hours Completed this Week" />
                         /
-                        <FontAwesomeIcon
-                          style={{ color: 'red' }}
-                          icon={faClock}
-                          title="Total Remaining Hours"
-                        />
+                        <FontAwesomeIcon style={{ color: 'red' }} icon={faClock} title="Total Remaining Hours" />
                       </th>
                     </tr>
                   </thead>
                 </Table>
               </th>
-              <th
-                colSpan={3}
-                className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
-              >
-                <Table
-                  borderless
-                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
-                >
+              <th colSpan={3} className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}>
+                <Table borderless className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}>
                   <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
                       <th className={darkMode ? 'bg-space-cadet' : ''}>Tasks(s)</th>
-                      <th className={`team-task-progress ${darkMode ? 'bg-space-cadet' : ''}`}>
-                        Progress
-                      </th>
-                      {displayUser.role === 'Administrator' ? (
-                        <th className={darkMode ? 'bg-space-cadet' : ''}>Status</th>
-                      ) : null}
+                      <th className={`team-task-progress ${darkMode ? 'bg-space-cadet' : ''}`}>Progress</th>
+                      {displayUser.role === 'Administrator' ? <th className={darkMode ? 'bg-space-cadet' : ''}>Status</th> : null}
                     </tr>
                   </thead>
                 </Table>
@@ -763,10 +619,7 @@ const TeamMemberTasks = React.memo(props => {
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
             {teamList.length === 0 ? (
-              <SkeletonLoading
-                template="TeamMemberTasks"
-                data-testid="skeleton-loading-team-member-tasks-row"
-              />
+              <SkeletonLoading template="TeamMemberTasks" data-testid="skeleton-loading-team-member-tasks-row" />
             ) : (
               teamList
                 .filter(user => filterByUserFeatures(user))
@@ -774,16 +627,10 @@ const TeamMemberTasks = React.memo(props => {
                   if (!isTimeFilterActive) {
                     return (
                       <TeamMemberTask
-                        user={user}
-                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                          'putReviewStatus',
-                        )}
-                        teamRoles={
-                          user.teams !== undefined && user.teams.length > 0
-                            ? filteredTeamRoles(user.teams)
-                            : ''
-                        }
                         key={user.personId}
+                        user={user}
+                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes('putReviewStatus')}
+                        teamRoles={user.teams !== undefined && user.teams.length > 0 ? filteredTeamRoles(user.teams) : ''}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
                         handleRemoveFromTaskModal={handleRemoveFromTaskModal}
@@ -795,6 +642,8 @@ const TeamMemberTasks = React.memo(props => {
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                         displayUser={displayUser}
+                        preloadCatalog={usCatalog}
+                        preloadSelectionsMap={usSelectionsMap}
                       />
                     );
                   }
@@ -802,14 +651,8 @@ const TeamMemberTasks = React.memo(props => {
                     <Fragment key={user.personId}>
                       <TeamMemberTask
                         user={user}
-                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
-                          'putReviewStatus',
-                        )}
-                        teamRoles={
-                          user.teams !== undefined && user.teams.length > 0
-                            ? filteredTeamRoles(user.teams)
-                            : ''
-                        }
+                        userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes('putReviewStatus')}
+                        teamRoles={user.teams !== undefined && user.teams.length > 0 ? filteredTeamRoles(user.teams) : ''}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
                         handleRemoveFromTaskModal={handleRemoveFromTaskModal}
@@ -820,6 +663,8 @@ const TeamMemberTasks = React.memo(props => {
                         showWhoHasTimeOff={showWhoHasTimeOff}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                        preloadCatalog={usCatalog}
+                        preloadSelectionsMap={usSelectionsMap}
                       />
                       {timeEntriesList.length > 0 &&
                         timeEntriesList
@@ -827,13 +672,7 @@ const TeamMemberTasks = React.memo(props => {
                           .map(timeEntry => (
                             <tr className="table-row" data-testid="table-row" key={timeEntry._id}>
                               <td colSpan={6} style={{ padding: 0 }}>
-                                <TimeEntry
-                                  from="TaskTab"
-                                  data={timeEntry}
-                                  displayYear
-                                  key={timeEntry._id}
-                                  timeEntryUserProfile={timeEntry.userProfile}
-                                />
+                                <TimeEntry from="TaskTab" data={timeEntry} displayYear key={timeEntry._id} timeEntryUserProfile={timeEntry.userProfile} />
                               </td>
                             </tr>
                           ))}
