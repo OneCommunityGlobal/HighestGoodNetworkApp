@@ -84,9 +84,19 @@ function UserPermissionsPopUp({
       }
       return;
     }
+
+    if (searchText === '') {
+      toast.error('Please type the name of a user.');
+      return;
+    }
     const userId = actualUserProfile?._id;
 
     const url = ENDPOINTS.USER_PROFILE(userId);
+    if (url.includes('undefined')) {
+      toast.error('This user does not exist.');
+      return;
+    }
+
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = {
       ...allUserInfo,
@@ -129,6 +139,20 @@ function UserPermissionsPopUp({
       setToastShown(false);
     }
   }, [modalStatus]);
+
+  const filteredUsers = allUserProfiles
+    // eslint-disable-next-line array-callback-return, consistent-return
+    .filter(user => {
+      if (
+        user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
+        user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
+        `${user.firstName} ${user.lastName}`.toLowerCase().includes(searchText.toLowerCase())
+      ) {
+        if (user.isActive) {
+          return user;
+        }
+      }
+    });
 
   return (
     <>
@@ -203,22 +227,10 @@ function UserPermissionsPopUp({
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
-              {allUserProfiles
-                // eslint-disable-next-line array-callback-return, consistent-return
-                .filter(user => {
-                  if (
-                    user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                    `${user.firstName} ${user.lastName}`
-                      .toLowerCase()
-                      .includes(searchText.toLowerCase())
-                  ) {
-                    if (user.isActive) {
-                      return user;
-                    }
-                  }
-                })
-                .map(user => (
+              {filteredUsers.length === 0 && searchText !== '' ? (
+                <div style={{ padding: '5px' }}>No user found</div>
+              ) : (
+                filteredUsers.map(user => (
                   <div
                     className="user__auto-complete"
                     key={user._id}
@@ -241,7 +253,8 @@ function UserPermissionsPopUp({
                   >
                     {user.firstName} {user.lastName}
                   </div>
-                ))}
+                ))
+              )}
             </div>
           ) : (
             // eslint-disable-next-line react/jsx-no-useless-fragment
