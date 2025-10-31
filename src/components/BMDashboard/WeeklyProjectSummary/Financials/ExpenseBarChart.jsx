@@ -210,7 +210,7 @@ export default function ExpenseBarChart() {
             aria-label="Reset filters"
             title="Reset filters"
           >
-            Reset
+            Reset Filter
           </button>
         </div>
       </div>
