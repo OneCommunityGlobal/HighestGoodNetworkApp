@@ -1,5 +1,17 @@
 /* ApplicationTimeChart.module.css */
 
+.pageContainer {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pageContainer.darkMode {
+  background-color: #1B2A41;
+  color: #e0e0e0;
+}
+
 .container {
   display: flex;
   align-items: flex-start;
@@ -7,8 +19,20 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageContainer {
+    padding: 10px;
+  }
 }
 
 /* Dark theme support */
@@ -405,15 +429,28 @@
 }
 
 /* Responsive layout adjustments */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 100%;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
     gap: 15px;
-    padding: 15px;
+    padding: 0;
   }
   
   .chartCard {
     order: 1;
+    padding: 15px;
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 18px;
+    margin-bottom: 20px;
   }
   
   .filters {
@@ -421,21 +458,71 @@
     flex-direction: row;
     justify-content: space-between;
     min-width: auto;
+    width: 100%;
+    gap: 15px;
+  }
+  
+  .filterCard {
+    flex: 1;
   }
 }
 
 @media (max-width: 480px) {
   .container {
-    padding: 10px;
     gap: 10px;
   }
   
   .chartCard {
-    padding: 15px;
+    padding: 12px;
+  }
+  
+  .title {
+    font-size: 16px;
+    margin-bottom: 15px;
   }
   
   .filters {
     flex-direction: column;
     gap: 10px;
+  }
+  
+  .filterCard {
+    width: 100%;
+  }
+}
+
+@media (max-width: 320px) {
+  .title {
+    font-size: 14px;
+  }
+  
+  .chartArea {
+    padding-left: 60px;
+    padding-right: 20px;
+    min-height: 200px;
+  }
+  
+  .yAxis {
+    width: 55px;
+  }
+  
+  .yAxisItem {
+    font-size: 9px;
+    padding-right: 3px;
+  }
+  
+  .bars {
+    left: 60px;
+    right: 20px;
+  }
+  
+  .grid {
+    left: 60px;
+    right: 20px;
+  }
+  
+  .xAxis {
+    left: 60px;
+    right: 20px;
   }
 }
