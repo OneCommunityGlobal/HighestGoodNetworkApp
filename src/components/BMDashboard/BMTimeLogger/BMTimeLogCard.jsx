@@ -22,8 +22,8 @@ function BMTimeLogCard(props) {
 
   useEffect(() => {
     if (projectInfo && projectInfo.members) {
-      setMemberList(projectInfo.members);
-      setFilteredMembers(projectInfo.members);
+      setMemberList(Array.isArray(projectInfo.members) ? projectInfo.members : []);
+      setFilteredMembers(Array.isArray(projectInfo.members) ? projectInfo.members : []);
       setIsMemberFetched(true);
     }
   }, [projectInfo]);
@@ -44,10 +44,10 @@ function BMTimeLogCard(props) {
 
     const query = searchQuery.toLowerCase();
     const filtered = memberList.filter(member => {
-      const firstName = member.user.firstName.toLowerCase();
-      const lastName = member.user.lastName.toLowerCase();
+      const firstName = member.user?.firstName?.toLowerCase() || '';
+      const lastName = member.user?.lastName?.toLowerCase() || '';
+      const role = member.user?.role?.toLowerCase() || '';
       const fullName = `${firstName} ${lastName}`;
-      const role = member.user.role.toLowerCase();
 
       // Check if user has teams and search in them too
       const teamMatch =
