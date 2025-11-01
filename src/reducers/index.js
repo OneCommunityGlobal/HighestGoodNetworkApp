@@ -20,6 +20,7 @@ import { allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
+import timelogTrackingReducer from './timelogTrackingReducer';
 import wbsReducer from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
@@ -97,6 +98,7 @@ import reviewsInsightReducer from './prAnalytics/reviewsInsightReducer';
 
 // job analytics
 import { hoursPledgedReducer } from './jobAnalytics/hoursPledgedReducer';
+import { studentTasksReducer } from './studentTasksReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -177,6 +179,8 @@ const localReducers = {
   // job analytics
   hoursPledged: hoursPledgedReducer,
 
+  // student tasks
+  studentTasks: studentTasksReducer,
   jobApplication: jobApplicationReducer,
 };
 
@@ -192,6 +196,7 @@ const sessionReducers = {
   userProjects: userProjectsReducer,
   teamsTeamMembers: teamUsersReducer,
   timeEntries: timeEntriesReducer,
+  timelogTracking: timelogTrackingReducer,
   teamMemberTasks: teamMemberTasksReducer,
   warning: warningsByUserIdReducer,
 };

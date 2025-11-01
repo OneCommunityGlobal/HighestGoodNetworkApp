@@ -101,6 +101,11 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
+      {
+        label: 'See Job Analytics Reports',
+        key: 'getJobReports',
+        description: 'Job Analytics Reports.',
+      },
     ],
   },
   {

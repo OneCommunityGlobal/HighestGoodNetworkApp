@@ -50,6 +50,7 @@ import {
   TOTAL_CONSTRUCTION_SUMMARY,
   PR_PROMOTIONS,
   BLUE_SQUARE_EMAIL_MANAGEMENT,
+  JOB_ANALYTICS_REPORT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -96,6 +97,7 @@ export function Header(props) {
     !isAuthUser && canInteractWithViewingUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+  const canGetJobAnalytics = props.hasPermission('getJobReports');
 
   // Users
   const canAccessUserManagement =
@@ -455,6 +457,11 @@ export function Header(props) {
                       {canGetWeeklyVolunteerSummary && (
                         <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
                           {TOTAL_ORG_SUMMARY}
+                        </DropdownItem>
+                      )}
+                      {canGetJobAnalytics && (
+                        <DropdownItem tag={Link} to="/application/analytics" className={fontColor}>
+                          {JOB_ANALYTICS_REPORT}
                         </DropdownItem>
                       )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
