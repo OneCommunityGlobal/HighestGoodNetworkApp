@@ -7,29 +7,36 @@ const DRAFT_KEY = "pm_notif_draft";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_APIENDPOINT || "",
-  withCredentials: true,
 });
 
 function getToken() {
-  return localStorage.getItem("token");
+  const raw = localStorage.getItem("token") || "";
+  return String(raw).replace(/^"(.*)"$/, "$1").trim();
+}
+
+async function POST(url, data) {
+  const token = getToken();
+  try {
+    const res = await api.post(url, data, { headers: token ? { Authorization: token } : {} });
+    return res;
+  } catch (err) {
+    if (err?.response?.status === 401) {
+      const body = new URLSearchParams();
+      Object.entries(data || {}).forEach(([k, v]) => {
+        if (Array.isArray(v)) v.forEach((x) => body.append(`${k}[]`, x));
+        else body.append(k, v);
+      });
+      if (token) body.set("token", token);
+      return api.post(url, body);
+    }
+    throw err;
+  }
 }
 
 async function sendNotification({ educatorIds, message }) {
-  try {
-    const token = getToken();
-    const res = await api.post(
-      "/pm/notifications",
-      { educatorIds, message },
-      { headers: token ? { Authorization: token } : {} }
-    );
-    return res?.data ?? { ok: true };
-  } catch {
-    await new Promise((r) => setTimeout(r, 350));
-    if (!educatorIds.length || !message.trim()) {
-      throw new Error("Select at least one educator and enter a message.");
-    }
-    return { ok: true, fallback: true };
-  }
+  const payload = { educatorIds, message };
+  const res = await POST("/pm/notifications", payload);
+  return res?.data ?? { ok: true };
 }
 
 export default function ProjectManagerNotification({ educators, onClose, onSent }) {
@@ -65,6 +72,7 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
     setError(null);
     try {
       const trimmed = message.trim();
+      if (!selected.length || !trimmed) throw new Error("Select at least one educator and enter a message.");
       const resp = await sendNotification({ educatorIds: selected, message: trimmed });
       localStorage.removeItem(DRAFT_KEY);
       onSent({ educatorIds: selected, message: trimmed, resp });
@@ -87,23 +95,14 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
           <div className={styles.section}>
             <div className={styles.sectionLabel}>Recipients</div>
             <label className={styles.checkAll}>
-              <input
-                type="checkbox"
-                checked={allChecked}
-                ref={(el) => el && (el.indeterminate = someChecked)}
-                onChange={toggleAll}
-              />
+              <input type="checkbox" checked={allChecked} ref={(el) => el && (el.indeterminate = someChecked)} onChange={toggleAll} />
               Select all
             </label>
 
             <div className={styles.list}>
               {educators.map((e) => (
                 <label key={e.id} className={styles.item}>
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(e.id)}
-                    onChange={() => toggleOne(e.id)}
-                  />
+                  <input type="checkbox" checked={selected.includes(e.id)} onChange={() => toggleOne(e.id)} />
                   <span className={styles.itemText}>
                     <span className={styles.itemName}>{e.name}</span>
                     <span className={styles.itemMeta}> • {e.subject}</span>
@@ -115,15 +114,7 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
 
           <div className={styles.section}>
             <div className={styles.sectionLabel}>Message</div>
-            <textarea
-              className={styles.textarea}
-              placeholder="Write your announcement to teachers…"
-              rows={6}
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              maxLength={1000}
-              autoFocus
-            />
+            <textarea className={styles.textarea} placeholder="Write your announcement to teachers…" rows={6} value={message} onChange={(e) => setMessage(e.target.value)} maxLength={1000} autoFocus />
             <div className={styles.counter}>{message.length}/1000</div>
           </div>
 

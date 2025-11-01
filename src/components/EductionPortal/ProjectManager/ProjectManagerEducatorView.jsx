@@ -5,40 +5,45 @@ import styles from "./ProjectManagerEducatorView.module.css";
 import NotificationComposer from "./ProjectManagerNotification";
 
 const mockEducators = [
-  {
-    id: "t-001", name: "Alice Johnson", subject: "Mathematics", studentCount: 3, students: [
-      { id: "s-101", name: "Jay", grade: "7", progress: 0.78 },
-      { id: "s-102", name: "Kate", grade: "7", progress: 0.62 },
-      { id: "s-103", name: "Sam", grade: "8", progress: 0.85 },
-    ]
-  },
-  {
-    id: "t-002", name: "Brian Lee", subject: "Science", studentCount: 2, students: [
-      { id: "s-201", name: "Alina Gupta", grade: "6", progress: 0.54 },
-      { id: "s-202", name: "Samir Khan", grade: "6", progress: 0.91 },
-    ]
-  },
-  {
-    id: "t-003", name: "John Doe", subject: "English", studentCount: 1, students: [
-      { id: "s-301", name: "Ryan", grade: "7", progress: 0.73 },
-    ]
-  },
+  { id: "t-001", name: "Alice Johnson", subject: "Mathematics", studentCount: 3, students: [
+    { id: "s-101", name: "Jay", grade: "7", progress: 0.78 },
+    { id: "s-102", name: "Kate", grade: "7", progress: 0.62 },
+    { id: "s-103", name: "Sam", grade: "8", progress: 0.85 },
+  ]},
+  { id: "t-002", name: "Brian Lee", subject: "Science", studentCount: 2, students: [
+    { id: "s-201", name: "Alina Gupta", grade: "6", progress: 0.54 },
+    { id: "s-202", name: "Samir Khan", grade: "6", progress: 0.91 },
+  ]},
+  { id: "t-003", name: "John Doe", subject: "English", studentCount: 1, students: [
+    { id: "s-301", name: "Ryan", grade: "7", progress: 0.73 },
+  ]},
 ];
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_APIENDPOINT || "",
-  withCredentials: true,
 });
 
 function getToken() {
-  return localStorage.getItem("token");
+  const raw = localStorage.getItem("token") || "";
+  return String(raw).replace(/^"(.*)"$/, "$1").trim();
+}
+
+async function GET(url, { useQueryFallback = true } = {}) {
+  const token = getToken();
+  try {
+    const res = await api.get(url, { headers: token ? { Authorization: token } : {} });
+    return res;
+  } catch (err) {
+    if (useQueryFallback && err?.response?.status === 401 && token) {
+      const sep = url.includes("?") ? "&" : "?";
+      return api.get(`${url}${sep}token=${encodeURIComponent(token)}`);
+    }
+    throw err;
+  }
 }
 
 async function fetchEducatorsAPI() {
-  const token = getToken();
-  const res = await api.get("/pm/educators", {
-    headers: token ? { Authorization: token } : {},
-  });
+  const res = await GET("/pm/educators");
   const list = Array.isArray(res?.data?.data) ? res.data.data : [];
   return list.map((e) => ({
     id: e.id,
@@ -49,10 +54,7 @@ async function fetchEducatorsAPI() {
 }
 
 async function fetchStudentsAPI(educatorId) {
-  const token = getToken();
-  const res = await api.get(`/pm/educators/${encodeURIComponent(educatorId)}/students`, {
-    headers: token ? { Authorization: token } : {},
-  });
+  const res = await GET(`/pm/educators/${encodeURIComponent(educatorId)}/students`);
   return Array.isArray(res?.data?.data) ? res.data.data : [];
 }
 
@@ -73,9 +75,7 @@ function StudentCard({ s }) {
       <div className={styles.studentName}>{s.name}</div>
       <div className={styles.meta}>Grade {s.grade}</div>
       <div className={styles.progressWrap}>
-        <div className={styles.progressBar}>
-          <div className={styles.progressFill} style={{ width: `${pct}%` }} />
-        </div>
+        <div className={styles.progressBar}><div className={styles.progressFill} style={{ width: `${pct}%` }} /></div>
         <div className={styles.progressPct}>{pct}%</div>
       </div>
     </div>
@@ -114,7 +114,7 @@ function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
         type="button"
         className={styles.rowHeader}
         onClick={handleToggle}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleToggle(); } }}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleToggle(); }}}
         aria-expanded={isExpanded}
         aria-controls={`students-${educator.id}`}
       >
@@ -199,9 +199,7 @@ export default function ProjectManagerEducatorView() {
 
   return (
     <div className={`${styles.container} ${darkMode ? styles.dark : ""}`}>
-      <div className={styles.breadcrumb}>
-        <span>Home</span><span className={styles.sep}>/</span><span>Project Manager</span>
-      </div>
+      <div className={styles.breadcrumb}><span>Home</span><span className={styles.sep}>/</span><span>Project Manager</span></div>
 
       <div className={styles.header}>
         <div className={styles.titleBlock}>
@@ -210,30 +208,11 @@ export default function ProjectManagerEducatorView() {
         </div>
 
         <div className={styles.toolbar}>
-          <input
-            type="text"
-            placeholder="Search educators (name/subject)"
-            className={styles.searchInput}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Search educators"
-          />
-          <select
-            className={styles.select}
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            aria-label="Filter by subject"
-          >
+          <input type="text" placeholder="Search educators (name/subject)" className={styles.searchInput} value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search educators" />
+          <select className={styles.select} value={subject} onChange={(e) => setSubject(e.target.value)} aria-label="Filter by subject">
             {subjects.map((subj) => <option key={subj} value={subj}>{subj}</option>)}
           </select>
-          <input
-            type="text"
-            placeholder="Search students inside rows"
-            className={styles.searchInput}
-            value={studentQuery}
-            onChange={(e) => setStudentQuery(e.target.value)}
-            aria-label="Search students"
-          />
+          <input type="text" placeholder="Search students inside rows" className={styles.searchInput} value={studentQuery} onChange={(e) => setStudentQuery(e.target.value)} aria-label="Search students" />
           <button className={styles.ghostBtn} onClick={expandAll}>Expand all</button>
           <button className={styles.ghostBtn} onClick={collapseAll}>Collapse all</button>
           <button className={`${styles.primaryBtn} ${styles.pushRight}`} onClick={handleOpenComposer}>New Announcement</button>
