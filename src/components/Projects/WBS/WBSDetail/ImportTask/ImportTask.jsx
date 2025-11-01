@@ -63,6 +63,7 @@ const ImportTask = props => {
       setImportStatus('imported');
       setTaskList(tmpList);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log("ERROR!!!!!")
       setImportStatus('importError');
       setAlert(error.message);
