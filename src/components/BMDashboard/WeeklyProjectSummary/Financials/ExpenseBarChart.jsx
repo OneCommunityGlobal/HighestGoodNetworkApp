@@ -134,17 +134,7 @@ export default function ExpenseBarChart() {
         )}
       </div>
 
-      <div
-        style={{
-          display: 'flex',
-          flexWrap: 'nowrap',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '5rem',
-          fontSize: '0.85rem',
-          marginBottom: '0.2rem',
-        }}
-      >
+      <div className={styles.filterContainer}>
         <label style={{ minWidth: '150px' }}>
           Project:
           <select
@@ -237,7 +227,7 @@ export default function ExpenseBarChart() {
               dataKey="project"
               tick={{ fontSize: windowWidth < 480 ? 8 : 15, fill: textColor }} // smaller font on small screens
               interval={0}
-              angle={windowWidth < 480 ? -35 : 0} // rotate more on mobile
+              angle={windowWidth < 480 ? -90 : 0} // rotate more on mobile
               textAnchor="end"
               label={{
                 value: 'Project Name',
