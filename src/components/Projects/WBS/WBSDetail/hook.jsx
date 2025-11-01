@@ -87,7 +87,6 @@ export const useFetchWbsTasks = (wbsId, projectId = null, level = 0, parent = nu
   // Refetch when project category changes
   useEffect(() => {
     if (projectCategory) {
-      console.log('[WBS Tasks] Project category changed, refetching tasks...');
       fetchTasks();
     }
   }, [projectCategory]);

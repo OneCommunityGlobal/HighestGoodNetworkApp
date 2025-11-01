@@ -40,15 +40,6 @@ function WBSTasks(props) {
   // Pass projectId to the hook so it can watch for category changes
   const { tasks, isLoading, refresh } = useFetchWbsTasks(wbsId, projectId);
   
-  // Debug log tasks with category flags when tasks change
-  useEffect(() => {
-    if (tasks && tasks.length > 0) {
-      console.log('[WBS Tasks] Tasks changed, showing current state with flags:');
-      for (const t of tasks.slice(0, 5)) {
-        console.log(`  - Task: "${t.taskName}", Category: "${t.category}", Override: ${t.categoryOverride}, Locked: ${t.categoryLocked}`);
-      }
-    }
-  }, [tasks]);
 
   useEffect(() => {
     if(!isLoading){

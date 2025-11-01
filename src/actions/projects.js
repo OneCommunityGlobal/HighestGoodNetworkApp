@@ -155,11 +155,6 @@ export const modifyProject = updatedProject => {
       const res = await axios.put(url, updatedProject);
       status = res.status;
       dispatch(updateProject({ updatedProject, status }));
-      
-      // Log category change for debugging
-      if (categoryChanged) {
-        console.log(`[Project Update] Category changed from "${previousProject.category}" to "${updatedProject.category}". Tasks will be automatically updated.`);
-      }
     } catch (err) {
       status = err.response.status;
       error = err.response.data;
