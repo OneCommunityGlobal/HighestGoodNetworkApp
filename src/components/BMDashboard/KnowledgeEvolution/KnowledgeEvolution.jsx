@@ -1,6 +1,7 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import { Funnel } from 'lucide-react';
 import styles from './knowledgeEvolution.module.css';
 
 const mockData = [
@@ -34,7 +35,18 @@ const mockData = [
 
 const KnowledgeEvolution = () => {
   const svgRef = useRef();
+  const [selectedSubject, setSelectedSubject] = useState(mockData[0].subject);
 
+  //summary
+  const totalCompleted = mockData.flatMap(d => d.courses).filter(c => c.status === 'completed')
+    .length;
+  const totalInProgress = mockData.flatMap(d => d.courses).filter(c => c.status === 'in-progress')
+    .length;
+  const totalNotStarted = mockData.flatMap(d => d.courses).filter(c => c.status === 'not-started')
+    .length;
+  const savedInterest = 2;
+
+  //chart display
   useEffect(() => {
     const width = 700;
     const height = 500;
@@ -47,32 +59,30 @@ const KnowledgeEvolution = () => {
       'not-started': '#6c757d',
     };
 
+    const subjectData = mockData.find(d => d.subject === selectedSubject);
     const allNodes = [];
     const allLinks = [];
 
-    mockData.forEach((subjectData, index) => {
-      const centerX = (index + 1) * (width / (mockData.length + 1));
-      const centerY = height / 2;
+    const centerX = width / 2;
+    const centerY = height / 2;
 
-      const subjectNode = {
-        id: subjectData.subject,
-        type: 'subject',
-        fx: centerX,
-        fy: centerY,
+    const subjectNode = {
+      id: subjectData.subject,
+      type: 'subject',
+      fx: centerX,
+      fy: centerY,
+    };
+    allNodes.push(subjectNode);
+
+    subjectData.courses.forEach(course => {
+      const node = {
+        id: `${subjectData.subject}-${course.name}`,
+        name: course.name,
+        status: course.status,
+        type: 'course',
       };
-      allNodes.push(subjectNode);
-
-      // course nodes
-      subjectData.courses.forEach((course, i) => {
-        const node = {
-          id: `${subjectData.subject}-${course.name}`,
-          name: course.name,
-          status: course.status,
-          type: 'course',
-        };
-        allNodes.push(node);
-        allLinks.push({ source: subjectNode.id, target: node.id });
-      });
+      allNodes.push(node);
+      allLinks.push({ source: subjectNode.id, target: node.id });
     });
 
     const simulation = d3
@@ -82,10 +92,10 @@ const KnowledgeEvolution = () => {
         d3
           .forceLink(allLinks)
           .id(d => d.id)
-          .distance(100),
+          .distance(120),
       )
-      .force('charge', d3.forceManyBody().strength(-200))
-      .force('center', d3.forceCenter(width / 2, height / 2))
+      .force('charge', d3.forceManyBody().strength(-250))
+      .force('center', d3.forceCenter(centerX, centerY))
       .on('tick', ticked);
 
     const link = svg
@@ -133,7 +143,6 @@ const KnowledgeEvolution = () => {
         .attr('y1', d => d.source.y)
         .attr('x2', d => d.target.x)
         .attr('y2', d => d.target.y);
-
       node.attr('cx', d => d.x).attr('cy', d => d.y);
       labels.attr('x', d => d.x).attr('y', d => d.y);
     }
@@ -143,12 +152,10 @@ const KnowledgeEvolution = () => {
       d.fx = d.x;
       d.fy = d.y;
     }
-
     function dragged(event, d) {
       d.fx = event.x;
       d.fy = event.y;
     }
-
     function dragended(event, d) {
       if (!event.active) simulation.alphaTarget(0);
       if (d.type !== 'subject') {
@@ -158,13 +165,67 @@ const KnowledgeEvolution = () => {
     }
 
     return () => simulation.stop();
-  }, []);
+  }, [selectedSubject]);
 
   return (
     <div className={styles.pageContainer}>
+      {/* header */}
       <div className={styles.headerContainer}>
         <h4>Knowledge Evolution</h4>
+
+        {/* Ssummary*/}
+        <div className={styles.summarySection}>
+          <h5 className={styles.summaryHeading}>Overall Progress Across All Subjects</h5>
+          <div className={styles.summaryStats}>
+            <div className={styles.statBox}>
+              <h3>{totalCompleted}</h3>
+              <p>Total Completed</p>
+            </div>
+            <div className={styles.statBox}>
+              <h3>{totalInProgress}</h3>
+              <p>Total In Progress</p>
+            </div>
+            <div className={styles.statBox}>
+              <h3>{totalNotStarted}</h3>
+              <p>Total Not Started</p>
+            </div>
+            <div className={styles.statBox}>
+              <h3>{savedInterest}</h3>
+              <p>Saved Interest</p>
+            </div>
+          </div>
+        </div>
+
+        {/* search and filetr */}
+        <div className={styles.searchFilterContainer}>
+          <input
+            type="text"
+            placeholder="Search atoms or subjects"
+            className={styles.searchInput}
+          />
+          <button className={styles.filterButton}>
+            <Funnel size={18} />
+            <span>Filter by Subject</span>
+          </button>
+        </div>
       </div>
+
+      {/* subjects selection tab */}
+      <div className={styles.subjectTabs}>
+        {mockData.map(subj => (
+          <button
+            key={subj.subject}
+            className={`${styles.tabButton} ${
+              selectedSubject === subj.subject ? styles.activeTab : ''
+            }`}
+            onClick={() => setSelectedSubject(subj.subject)}
+          >
+            {subj.subject}
+          </button>
+        ))}
+      </div>
+
+      {/* chart */}
       <div className={styles.chartWrapper}>
         <svg ref={svgRef} width={700} height={500}></svg>
       </div>
