@@ -274,7 +274,7 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
+            <IssueCharts darkMode={darkMode} />
           </div>
         ),
       },

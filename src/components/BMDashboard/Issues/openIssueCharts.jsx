@@ -20,7 +20,7 @@ import {
 } from '../../../actions/bmdashboard/issueChartActions';
 import './issueCharts.css';
 
-function IssueCharts() {
+function IssueCharts({ darkMode }) {
   const dispatch = useDispatch();
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
@@ -88,14 +88,17 @@ function IssueCharts() {
 
   return (
     <div className="issue-chart-container">
-      <h2>Longest Open Issues</h2>
+      <h2 className={darkMode ? 'text-light' : ''}>Longest Open Issues</h2>
 
       <div className="filters-container">
         <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+          <label
+            className={`issue-chart-label ${darkMode ? 'text-light' : ''}`}
+            htmlFor="start-date"
+          >
             Date Range:
           </label>
-          <div className="date-range-picker">
+          <div className={`date-range-picker`}>
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -125,7 +128,10 @@ function IssueCharts() {
         </div>
 
         <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+          <label
+            className={`issue-chart-label ${darkMode ? 'text-light' : ''}`}
+            htmlFor="start-date"
+          >
             Projects:
           </label>
           <Select
