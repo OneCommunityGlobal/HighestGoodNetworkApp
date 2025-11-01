@@ -1,28 +1,32 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
 import styles from './GroupList.module.css';
 import GroupEditorModal from './GroupEditorModal.jsx';
 
-const data = [];
-const groupsSeed = data;
-const learnersSeed = data;
+function useLocalStorage(key, initialValue) {
+  const [state, setState] = useState(() => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch {}
+  }, [key, state]);
+
+  return [state, setState];
+}
+
+const groupsSeed = [];
+const learnersSeed = [];
 
 const storageKey = 'hgn.groups';
 
-function loadGroups() {
-  try {
-    const raw = localStorage.getItem(storageKey);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {}
-  return Array.isArray(groupsSeed) ? groupsSeed : [];
-}
-
-function saveGroups(list) {
-  try {
-    localStorage.setItem(storageKey, JSON.stringify(list));
-  } catch (e) {}
-}
-
-const GroupItem = React.memo(function GroupItem({ group, onEdit }) {
+const GroupItem = memo(function GroupItem({ group, onEdit }) {
   return (
     <li className={styles.item}>
       <div className={styles.itemInfo}>
@@ -44,50 +48,61 @@ const GroupItem = React.memo(function GroupItem({ group, onEdit }) {
 });
 
 export default function GroupList() {
-  const [groups, setGroups] = useState(() => loadGroups());
+  const [groups, setGroups] = useLocalStorage(storageKey, groupsSeed);
   const [learners] = useState(() => (Array.isArray(learnersSeed) ? learnersSeed : []));
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
 
-  useEffect(() => {
-    setGroups(loadGroups());
-  }, []);
+  const totalGroups = useMemo(() => groups.length, [groups]);
 
   const openNew = useCallback(() => {
     setEditing(null);
     setShowModal(true);
   }, []);
 
-  const openEdit = useCallback(g => {
-    setEditing(g);
+  const openEdit = useCallback(group => {
+    setEditing(group);
     setShowModal(true);
   }, []);
 
-  const handleSave = useCallback(group => {
-    setGroups(prev => {
-      let next;
-      if (group.id) {
-        next = prev.map(g => (g.id === group.id ? group : g));
-      } else {
-        const id = 'g' + Date.now();
-        next = [...prev, { ...group, id }];
-      }
-      saveGroups(next);
-      return next;
-    });
-    setShowModal(false);
+  const makeId = useCallback(() => {
+    try {
+      return typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : 'g' +
+            Date.now().toString(36) +
+            Math.random()
+              .toString(36)
+              .slice(2, 8);
+    } catch {
+      return 'g' + Date.now().toString(36);
+    }
   }, []);
 
-  const handleDelete = useCallback(id => {
-    setGroups(prev => {
-      const next = prev.filter(g => g.id !== id);
-      saveGroups(next);
-      return next;
-    });
-    setShowModal(false);
-  }, []);
+  const handleSave = useCallback(
+    group => {
+      setGroups(prev => {
+        const normalized = { ...group, name: (group.name || 'Untitled Group').trim() };
+        let next;
+        if (normalized.id) {
+          next = prev.map(g => (g.id === normalized.id ? normalized : g));
+        } else {
+          next = [...prev, { ...normalized, id: makeId() }];
+        }
+        return next;
+      });
+      setShowModal(false);
+    },
+    [setGroups, makeId],
+  );
 
-  const totalGroups = useMemo(() => groups.length, [groups]);
+  const handleDelete = useCallback(
+    id => {
+      setGroups(prev => prev.filter(g => g.id !== id));
+      setShowModal(false);
+    },
+    [setGroups],
+  );
 
   return (
     <section className={styles.container} aria-labelledby="groups-heading">
@@ -100,7 +115,7 @@ export default function GroupList() {
         </div>
 
         <div>
-          <button className={styles.newButton} onClick={openNew}>
+          <button className={styles.newButton} onClick={openNew} aria-haspopup="dialog">
             + New Group
           </button>
         </div>
@@ -116,11 +131,13 @@ export default function GroupList() {
 
       {showModal && (
         <GroupEditorModal
+          key={editing?.id || 'new'}
           group={editing}
           learners={learners}
           onClose={() => setShowModal(false)}
           onSave={handleSave}
           onDelete={handleDelete}
+          existingGroups={groups}
         />
       )}
     </section>

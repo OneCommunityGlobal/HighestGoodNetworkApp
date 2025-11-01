@@ -1,3 +1,4 @@
+// ...existing code...
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './GroupList.module.css';
 
@@ -7,31 +8,40 @@ export default function GroupEditorModal({
   onClose,
   onSave,
   onDelete,
+  existingGroups = [],
 }) {
   const [name, setName] = useState(group?.name || '');
-  const [members, setMembers] = useState(
-    Array.isArray(group?.members) ? group.members.slice() : [],
+  const [members, setMembers] = useState(() =>
+    Array.isArray(group?.members) ? Array.from(new Set(group.members)) : [],
   );
+  const [error, setError] = useState('');
+  const overlayRef = useRef(null);
   const modalRef = useRef(null);
   const firstInputRef = useRef(null);
 
   useEffect(() => {
     setName(group?.name || '');
-    setMembers(Array.isArray(group?.members) ? group.members.slice() : []);
+    setMembers(Array.isArray(group?.members) ? Array.from(new Set(group.members)) : []);
+    setError('');
   }, [group]);
 
-  // focus management + close on ESC + prevent background scroll
   useEffect(() => {
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const previousActive = document.activeElement;
+    const previouslyFocused = document.activeElement;
 
-    const onKey = e => {
-      if (e.key === 'Escape') onClose();
-      // basic tab trap
-      if (e.key === 'Tab' && modalRef.current) {
-        const focusable = modalRef.current.querySelectorAll(
-          'a[href], button:not([disabled]), textarea, input, select',
+    requestAnimationFrame(() => firstInputRef.current && firstInputRef.current.focus());
+
+    function onKey(e) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onClose();
+      } else if (e.key === 'Tab') {
+        // focus trap
+        const modal = modalRef.current;
+        if (!modal) return;
+        const focusable = modal.querySelectorAll(
+          'a[href], button:not([disabled]), textarea, input:not([type="hidden"]), select, [tabindex]:not([tabindex="-1"])',
         );
         if (!focusable.length) return;
         const first = focusable[0];
@@ -44,27 +54,67 @@ export default function GroupEditorModal({
           first.focus();
         }
       }
-    };
+    }
 
     document.addEventListener('keydown', onKey);
-    // focus the input
-    setTimeout(() => firstInputRef.current && firstInputRef.current.focus(), 0);
 
     return () => {
       document.body.style.overflow = prevOverflow;
       document.removeEventListener('keydown', onKey);
-      previousActive && previousActive.focus();
+      previouslyFocused && previouslyFocused.focus();
     };
   }, [onClose]);
 
+  const handleOverlayClick = useCallback(
+    e => {
+      if (modalRef.current && modalRef.current.contains(e.target)) return;
+      onClose();
+    },
+    [onClose],
+  );
+
+  const handleOverlayKey = useCallback(
+    e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (modalRef.current && modalRef.current.contains(document.activeElement)) return;
+        onClose();
+      }
+    },
+    [onClose],
+  );
+
   const toggleMember = useCallback(id => {
-    setMembers(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
+    setMembers(prev => {
+      const s = new Set(prev);
+      if (s.has(id)) s.delete(id);
+      else s.add(id);
+      return Array.from(s);
+    });
   }, []);
 
+  const validate = useCallback(() => {
+    const trimmed = (name || '').trim();
+    if (!trimmed) {
+      setError('Please provide a group name.');
+      return false;
+    }
+    const duplicate = existingGroups.find(
+      g => g.name && g.name.trim() === trimmed && g.id !== group?.id,
+    );
+    if (duplicate) {
+      setError('A group with this name already exists.');
+      return false;
+    }
+    setError('');
+    return true;
+  }, [name, existingGroups, group]);
+
   const save = useCallback(() => {
-    const payload = { ...(group || {}), name: (name || 'Untitled Group').trim(), members };
+    if (!validate()) return;
+    const payload = { ...(group || {}), name: name.trim(), members };
     onSave(payload);
-  }, [group, name, members, onSave]);
+  }, [group, name, members, onSave, validate]);
 
   const remove = useCallback(() => {
     if (group?.id) onDelete(group.id);
@@ -74,11 +124,20 @@ export default function GroupEditorModal({
   return (
     <div
       className={styles.overlay}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="group-modal-title"
+      ref={overlayRef}
+      onClick={handleOverlayClick}
+      onKeyDown={handleOverlayKey}
+      role="button"
+      tabIndex={0}
+      aria-label="Close dialog"
     >
-      <div className={styles.modal} ref={modalRef}>
+      <div
+        className={styles.modal}
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="group-modal-title"
+      >
         <div className={styles.head}>
           <h3 id="group-modal-title" className={styles.modalTitle}>
             {group ? 'Edit Group' : 'New Group'}
@@ -89,32 +148,49 @@ export default function GroupEditorModal({
         </div>
 
         <div className={styles.body}>
-          <label className={styles.field}>
-            <div className={styles.fieldLabel}>Name</div>
-            <input
-              ref={firstInputRef}
-              className={styles.input}
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Group name"
-              aria-label="Group name"
-            />
-          </label>
+          <div>
+            <label className={styles.field}>
+              <div className={styles.fieldLabel}>Name</div>
+              <input
+                ref={firstInputRef}
+                className={styles.input}
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Group name"
+                aria-label="Group name"
+                aria-invalid={!!error}
+                aria-describedby={error ? 'group-name-error' : undefined}
+              />
+            </label>
+            {error && (
+              <div
+                id="group-name-error"
+                className={styles.fieldError}
+                role="alert"
+                aria-live="assertive"
+              >
+                {error}
+              </div>
+            )}
+          </div>
 
           <div className={styles.membersSection}>
             <div className={styles.membersTitle}>Members</div>
             <div className={styles.checklist}>
               {learners.length === 0 && <div className={styles.empty}>No learners available</div>}
-              {learners.map(l => (
-                <label key={l.id} className={styles.checkItem}>
-                  <input
-                    type="checkbox"
-                    checked={members.includes(l.id)}
-                    onChange={() => toggleMember(l.id)}
-                  />
-                  <span className={styles.checkLabel}>{l.displayName || l.name || l.email}</span>
-                </label>
-              ))}
+              {learners.map(l => {
+                const label = l.displayName || l.name || l.email || 'Learner';
+                return (
+                  <label key={l.id} className={styles.checkItem}>
+                    <input
+                      type="checkbox"
+                      checked={members.includes(l.id)}
+                      onChange={() => toggleMember(l.id)}
+                    />
+                    <span className={styles.checkLabel}>{label}</span>
+                  </label>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -132,7 +208,7 @@ export default function GroupEditorModal({
             <button className={styles.cancel} onClick={onClose}>
               Cancel
             </button>
-            <button className={styles.primary} onClick={save}>
+            <button className={styles.primary} onClick={save} disabled={!name.trim()}>
               Save
             </button>
           </div>
