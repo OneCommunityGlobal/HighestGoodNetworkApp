@@ -97,12 +97,20 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+.events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
 .section-title {
   font-size: 2.2rem;
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin-bottom: 0;
   font-weight: bold;
-  text-align: center;
+  text-align: left;
 }
 
 .event-card {
