@@ -495,7 +495,7 @@ function JobDetailsLink() {
                           type="file"
                           name={question.label}
                           id={question.label}
-                          accept=".pdf,.doc,.docx"
+                          accept=".pdf,.doc,.docx,.jpg,.png,.bmp"
                           onChange={handleFileChange}
                         />
 
@@ -516,11 +516,7 @@ function JobDetailsLink() {
                               View File
                             </a>
                           </>
-                        ) : (
-                          <>
-                            <p> {question.label} </p>
-                          </>
-                        )}
+                        ) : null}
                       </div>
                     ) : question.type === 'dropdown' ? (
                       <select
