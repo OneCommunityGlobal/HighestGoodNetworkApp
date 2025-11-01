@@ -15,7 +15,7 @@ export function CPDashboard() {
       {
         id: 1,
         title: 'PGSA Lunch Talks',
-        date: '2025-11-08T12:00:00',
+        date: '2025-11-01T12:00:00',
         location: 'Disque 919',
         organizer: 'Physics Graduate Student Association',
         image: 'https://via.placeholder.com/300',
@@ -31,7 +31,7 @@ export function CPDashboard() {
       {
         id: 3,
         title: 'Holiday Lunch',
-        date: '2025-12-22T12:00:00',
+        date: '2025-11-22T12:00:00',
         location: 'Hill Conference Room',
         organizer: 'Chemical and Biological Engineering Graduate Society',
         image: 'https://via.placeholder.com/300',
@@ -51,9 +51,8 @@ export function CPDashboard() {
       filtered = events.filter(event => isSameDay(new Date(event.date), tomorrow));
     } else if (selectedDateFilter === 'weekend') {
       const today = new Date();
-      const dayOfWeek = today.getDay(); // 0 = Sun, 6 = Sat
+      const dayOfWeek = today.getDay();
 
-      // Calculate upcoming Saturday and Sunday
       const daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
       const saturday = new Date(today);
       saturday.setDate(today.getDate() + daysUntilSaturday);
@@ -61,13 +60,9 @@ export function CPDashboard() {
       const sunday = new Date(saturday);
       sunday.setDate(saturday.getDate() + 1);
 
-      // Keep only events within this weekend range
       filtered = events.filter(event => {
-        const eventDate = new Date(event.date);
-        const eventDay = eventDate.toISOString().split('T')[0];
-        const saturdayDay = saturday.toISOString().split('T')[0];
-        const sundayDay = sunday.toISOString().split('T')[0];
-        return eventDay >= saturdayDay && eventDay <= sundayDay;
+        const eventDate = parseToLocalDate(event.date);
+        return eventDate >= parseToLocalDate(saturday) && eventDate <= parseToLocalDate(sunday);
       });
     } else if (customDate) {
       filtered = events.filter(event => isSameDay(event.date, customDate));
@@ -76,10 +71,25 @@ export function CPDashboard() {
     setFilteredEvents(filtered);
   }, [selectedDateFilter, customDate, events]);
 
+  function parseToLocalDate(dateInput) {
+    if (!dateInput) return null;
+
+    if (dateInput instanceof Date)
+      return new Date(dateInput.getFullYear(), dateInput.getMonth(), dateInput.getDate());
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+      const [year, month, day] = dateInput.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    const d = new Date(dateInput);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
   function isSameDay(date1, date2) {
-    const day1 = new Date(date1).toISOString().split('T')[0];
-    const day2 = new Date(date2).toISOString().split('T')[0];
-    return day1 === day2;
+    const d1 = parseToLocalDate(date1);
+    const d2 = parseToLocalDate(date2);
+    return d1 && d2 && d1.getTime() === d2.getTime();
   }
 
   const formatDateForUI = dateString => {
@@ -133,7 +143,7 @@ export function CPDashboard() {
                     type="radio"
                     name="dates"
                     checked={selectedDateFilter === 'tomorrow'}
-                    onChange={() => {
+                    onClick={() => {
                       setSelectedDateFilter(prev => (prev === 'tomorrow' ? '' : 'tomorrow'));
                       setCustomDate('');
                     }}
@@ -156,7 +166,7 @@ export function CPDashboard() {
               <Input
                 type="date"
                 value={customDate}
-                onClick={e => {
+                onChange={e => {
                   setSelectedDateFilter('');
                   setCustomDate(e.target.value);
                 }}
