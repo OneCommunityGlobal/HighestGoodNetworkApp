@@ -1,3 +1,5 @@
+// ...existing code...
+import CustomTooltip from '../CustomTooltip';
 import {
   BarChart,
   Bar,
@@ -41,7 +43,11 @@ function ProjectLabel({ viewBox, info }) {
         <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
         <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>{info.amount}</div>
         <div style={{ color: '#666', fontSize: 10 }}>({info.percentage})</div>
-        <div style={{ color: info.fontcolor, fontSize: 10, fontWeight: 'bold' }}>{info.change}</div>
+        {info.ifcompare && (
+          <div style={{ color: info.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
+            {info.change}
+          </div>
+        )}
       </div>
     </foreignObject>
   );
@@ -86,7 +92,7 @@ export default function TinyBarChart(props) {
             fontWeight: 'bold',
           }}
         />
-        <Tooltip cursor={{ fill: 'transparent' }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
         <Bar dataKey="amount" fill="#8884d8">
           {chartData.map((entry, index) => (
             <Cell key={`cell-${entry.name}-${entry.amount}`} fill={entry.color[index]} />

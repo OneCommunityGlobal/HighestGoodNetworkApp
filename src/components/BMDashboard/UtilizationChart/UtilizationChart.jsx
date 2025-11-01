@@ -7,6 +7,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 import styles from './UtilizationChart.module.css';
+import { useSelector } from 'react-redux';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
@@ -17,6 +18,7 @@ function UtilizationChart() {
   const [toolFilter, setToolFilter] = useState('ALL');
   const [projectFilter, setProjectFilter] = useState('ALL');
   const [error, setError] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const fetchChartData = async () => {
     try {
@@ -51,7 +53,7 @@ function UtilizationChart() {
       {
         label: 'Utilization (%)',
         data: toolsData.map(tool => tool.utilizationRate),
-        backgroundColor: '#a0e7e5',
+        backgroundColor: darkMode ? '#007bff' : '#a0e7e5',
         borderRadius: 6,
       },
     ],
@@ -61,6 +63,9 @@ function UtilizationChart() {
     indexAxis: 'y',
     responsive: true,
     plugins: {
+      legend: {
+        labels: { color: darkMode ? '#ffffff' : '#333' },
+      },
       datalabels: {
         color: '#333',
         anchor: 'end',
@@ -81,6 +86,7 @@ function UtilizationChart() {
             return `Utilization: ${tool.utilizationRate}%, Downtime: ${tool.downtime} hrs`;
           },
         },
+        footerColor: 'white',
       },
     },
     scales: {
@@ -89,19 +95,24 @@ function UtilizationChart() {
         title: {
           display: true,
           text: 'Time (%)',
+          color: darkMode ? '#ffffff' : '#333',
         },
+        ticks: { color: darkMode ? '#ffffff' : '#333' },
+        grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
       y: {
         ticks: {
           autoSkip: false,
+          color: darkMode ? '#ffffff' : '#333',
         },
+        grid: { color: darkMode ? '#c7c7c7ff' : '#bebebeff' },
       },
     },
   };
 
   return (
-    <div className={styles.utilizationChartContainer}>
-      <h2 className={styles.chartTitle}>Utilization Chart</h2>
+    <div className={styles.utilizationChartContainer + (darkMode ? ` bg-yinmn-blue` : '')}>
+      <h2 className={styles.chartTitle + (darkMode ? ' text-light' : '')}>Utilization Chart</h2>
 
       {error ? (
         <div className={styles.utilizationChartError}>{error}</div>
@@ -111,7 +122,7 @@ function UtilizationChart() {
             <select
               value={toolFilter}
               onChange={e => setToolFilter(e.target.value)}
-              className={styles.select}
+              className={styles.select + (darkMode ? ' bg-space-cadet text-light' : '')}
             >
               <option value="ALL">All Tools</option>
               {/* other options */}
@@ -120,7 +131,7 @@ function UtilizationChart() {
             <select
               value={projectFilter}
               onChange={e => setProjectFilter(e.target.value)}
-              className={styles.select}
+              className={styles.select + (darkMode ? ' bg-space-cadet text-light' : '')}
             >
               <option value="ALL">All Projects</option>
               {/* other options */}
@@ -130,17 +141,20 @@ function UtilizationChart() {
               selected={startDate}
               onChange={date => setStartDate(date)}
               placeholderText="Start Date"
-              className={styles.datepickerWrapper}
+              className={styles.datepickerWrapper + (darkMode ? ' bg-space-cadet text-light' : '')}
             />
 
             <DatePicker
               selected={endDate}
               onChange={date => setEndDate(date)}
               placeholderText="End Date"
-              className={styles.datepickerWrapper}
+              className={styles.datepickerWrapper + (darkMode ? ' bg-space-cadet text-light' : '')}
             />
 
-            <button onClick={handleApplyClick} className={styles.button}>
+            <button
+              onClick={handleApplyClick}
+              className={styles.button + (darkMode ? ' bg-azure text-light' : '')}
+            >
               Apply
             </button>
           </div>

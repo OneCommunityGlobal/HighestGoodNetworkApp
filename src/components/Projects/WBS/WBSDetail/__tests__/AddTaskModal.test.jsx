@@ -15,6 +15,15 @@ vi.mock('../../../../../actions/projects', () => ({
   fetchAllProjects: vi.fn(() => () => Promise.resolve()),
 }));
 
+vi.mock('../../../../../actions/projectMembers', () => ({
+  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
+  findProjectMembers: vi.fn(() => ({ type: 'FIND_PROJECT_MEMBERS_TEST_DUMMY' })),
+}));
+
+vi.mock('../../../../../actions/project', () => ({
+  getProjectDetail: vi.fn(() => ({ type: 'GET_PROJECT_DETAIL_TEST_DUMMY' })),
+}));
+
 vi.mock('@tinymce/tinymce-react', () => ({
   Editor: ({ value, onEditorChange }) => (
     <textarea
@@ -45,6 +54,7 @@ const initialState = {
     fetched: false,
     fetching: false,
   },
+  projectById: null,
   theme: {
     darkMode: false,
   },
@@ -151,15 +161,20 @@ describe('AddTaskModal', () => {
     // Verify the "End Date" label is rendered
     expect(screen.getByText(/End Date/i)).toBeInTheDocument();
 
-    // Find the DayPickerInput by its role (textbox)
-    const endDateInput = screen.getByRole('textbox', { name: /End Date/i }); // Use accessible label
+    // Find the End Date input by its aria-label
+    const endDateInput = screen.getByLabelText('End Date');
     expect(endDateInput).toBeInTheDocument();
+    
+    // Verify the input is readOnly (uses calendar picker)
+    expect(endDateInput).toHaveAttribute('readonly');
 
-    // Simulate a date change
-    fireEvent.change(endDateInput, { target: { value: '12/25/24' } });
+    // Click to open the calendar
+    fireEvent.focus(endDateInput);
 
-    // Verify the input value updates
-    expect(endDateInput.value).toBe('12/25/24');
+    // Verify the calendar picker opens (DayPicker component should be visible)
+    // The DayPicker uses a grid role for the calendar
+    const calendar = screen.queryByRole('grid');
+    expect(calendar).toBeInTheDocument();
   });
   test('renders Assigned radio buttons and handles selection', () => {
     render(
