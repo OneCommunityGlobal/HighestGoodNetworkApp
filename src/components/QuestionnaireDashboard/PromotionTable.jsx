@@ -20,6 +20,36 @@ const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
   isNew: i < 15,
 }));
 
+function MemberSection({ title, members, styles }) {
+  return (
+    <>
+      <tr className={styles['sectionHeader']}>
+        <td colSpan="7">{title}</td>
+      </tr>
+      {members.map(user => (
+        <tr key={user.id}>
+          <td />
+          <td>{user.reviewer}</td>
+          <td className={user.hasMetWeekly ? styles['statusMet'] : styles['statusNotMet']}>
+            <span className={styles['statusIcon']}>{user.hasMetWeekly ? '✓' : '✗'}</span>
+            {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
+          </td>
+          <td>{user.requiredPRs}</td>
+          <td>{user.totalReviews}</td>
+          <td>{user.remainingWeeks}</td>
+          <td>
+            <input
+              className={styles['promoteCheckbox']}
+              type="checkbox"
+              defaultChecked={user.promote}
+            />
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+}
+
 function PromotionTable() {
   const [eligibilityData, setEligibilityData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +61,6 @@ function PromotionTable() {
       setEligibilityData(dummyMembers);
       setLoading(false);
     }, 500);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -68,55 +97,8 @@ function PromotionTable() {
             </tr>
           </thead>
           <tbody>
-            {/* --- New Members Section --- */}
-            <tr className={styles['sectionHeader']}>
-              <td colSpan="7">New Members</td>
-            </tr>
-            {newMembers.map(user => (
-              <tr key={user.id}>
-                <td />
-                <td>{user.reviewer}</td>
-                <td className={user.hasMetWeekly ? styles['statusMet'] : styles['statusNotMet']}>
-                  <span className={styles['statusIcon']}>{user.hasMetWeekly ? '✓' : '✗'}</span>
-                  {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
-                </td>
-                <td>{user.requiredPRs}</td>
-                <td>{user.totalReviews}</td>
-                <td>{user.remainingWeeks}</td>
-                <td>
-                  <input
-                    className={styles['promoteCheckbox']}
-                    type="checkbox"
-                    defaultChecked={user.promote}
-                  />
-                </td>
-              </tr>
-            ))}
-
-            {/* --- Existing Members Section --- */}
-            <tr className={styles['sectionHeader']}>
-              <td colSpan="7">Existing Members</td>
-            </tr>
-            {existingMembers.map(user => (
-              <tr key={user.id}>
-                <td />
-                <td>{user.reviewer}</td>
-                <td className={user.hasMetWeekly ? styles['statusMet'] : styles['statusNotMet']}>
-                  <span className={styles['statusIcon']}>{user.hasMetWeekly ? '✓' : '✗'}</span>
-                  {user.hasMetWeekly ? 'Has Met' : 'Has not Met'}
-                </td>
-                <td>{user.requiredPRs}</td>
-                <td>{user.totalReviews}</td>
-                <td>{user.remainingWeeks}</td>
-                <td>
-                  <input
-                    className={styles['promoteCheckbox']}
-                    type="checkbox"
-                    defaultChecked={user.promote}
-                  />
-                </td>
-              </tr>
-            ))}
+            <MemberSection title="New Members" members={newMembers} styles={styles} />
+            <MemberSection title="Existing Members" members={existingMembers} styles={styles} />
           </tbody>
         </table>
       </div>
