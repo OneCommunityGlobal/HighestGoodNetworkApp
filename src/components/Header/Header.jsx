@@ -54,7 +54,7 @@ import {
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
-import './Header.css';
+import styles from './Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
   getUnreadUserNotifications,
@@ -191,6 +191,44 @@ export function Header(props) {
       window.removeEventListener('storage', handleStorageEvent);
     };
   }, [user.userid, props.auth.firstName]);
+
+  // Debugging Enhancement: Monitor window resize events for responsive testing
+  useEffect(() => {
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      // eslint-disable-next-line no-console
+      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
+      
+      // Log breakpoint information for debugging
+      if (currentWidth >= 1728) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
+      } else if (currentWidth >= 1400) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
+      } else if (currentWidth >= 1200) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
+      } else if (currentWidth >= 768) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
+      }
+    };
+
+    // Log initial window size
+    handleResize();
+
+    // Add resize event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     if (props.auth.isAuthenticated) {
@@ -340,29 +378,36 @@ export function Header(props) {
 
   const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className={`header-wrapper${darkMode ? ' dark-mode' : ''}`} data-testid="header">
-      <Navbar className="py-3 navbar" color="dark" dark expand="md">
+    <div className={`${styles.headerWrapper}${darkMode ? ` ${styles.darkMode}` : ''}`} data-testid="header">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         {showPromotionsPopup && 
         (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
-        <div
-          className="timer-message-section"
-          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
-            <div className="owner-message">
-              <OwnerMessage />
-            </div>
-          )}
-        </div>
-        <NavbarToggler onClick={toggle} />
-        {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links d-flex" navbar>
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ width: '100%' }}
+        
+        <div className="d-flex justify-content-between align-items-center w-100 p-3">
+          {/* Left Component - Timer */}
+          <div className={styles.leftSection}>
+            {isAuthenticated && <Timer darkMode={darkMode} />}
+          </div>
+
+          {/* Center Component - Owner Message */}
+          <div className={`${styles.centerSection} text-center flex-grow-1`}>
+            {isAuthenticated && (
+              <div className={styles.ownerMessage}>
+                <OwnerMessage />
+              </div>
+            )}
+          </div>
+
+          {/* Right Component - Navigation */}
+          <div className={styles.rightSection}>
+            <NavbarToggler onClick={toggle} />
+            {isAuthenticated && (
+              <Collapse isOpen={isOpen} navbar>
+                <Nav className={`${styles.navLinks} d-flex`} navbar>
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ width: '100%' }}
               >
                 {canUpdateTask && (
                   <NavItem className="responsive-spacing">
@@ -615,6 +660,8 @@ export function Header(props) {
             </Nav>
           </Collapse>
         )}
+          </div>
+        </div>
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
