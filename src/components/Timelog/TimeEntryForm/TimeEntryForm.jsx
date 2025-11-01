@@ -28,6 +28,7 @@ import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import hasPermission from '~/utils/permissions';
+import { useServerTime } from '~/context/ServerTimeContext';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
@@ -71,6 +72,9 @@ function TimeEntryForm(props) {
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
+  
+  // Get server time directly from context - this ensures we always have server date
+  const { getServerDateISO } = useServerTime();
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
   const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
@@ -307,9 +311,10 @@ function TimeEntryForm(props) {
    * @param {*} closed If true, the form closes after being cleared.
    */
   const clearForm = closed => {
+    const serverDate = getServerDateISO();
     const resetValues = {
       ...initialFormValues,
-      dateOfWork: props.serverDate ? moment(props.serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD') : initialFormValues.dateOfWork,
+      dateOfWork: serverDate ? moment(serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD') : initialFormValues.dateOfWork,
     };
     setFormValues(resetValues);
     setReminder({ ...initialReminder });
@@ -329,9 +334,10 @@ function TimeEntryForm(props) {
     }
 
     const handleFormReset = () => {
+      const serverDate = getServerDateISO();
       const resetValues = {
         ...initialFormValues,
-        dateOfWork: props.serverDate ? moment(props.serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD') : initialFormValues.dateOfWork,
+        dateOfWork: serverDate ? moment(serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD') : initialFormValues.dateOfWork,
       };
       setFormValues(resetValues);
       setReminder(initialReminder);
@@ -556,15 +562,16 @@ function TimeEntryForm(props) {
 
   const getActualDate = () => {
     try {
-      // Use server date if provided (from Timer for bulletproof time protection)
-      if (props.serverDate) {
+      // ALWAYS use server date from context - this ensures bulletproof time protection
+      const serverDate = getServerDateISO();
+      if (serverDate) {
         // eslint-disable-next-line no-console
-        console.log('🕐 TimeEntryForm using server date:', props.serverDate);
-        setActualDate(props.serverDate);
+        console.log('TimeEntryForm using server date from context:', serverDate);
+        setActualDate(serverDate);
       } else {
-        // Fallback to system time for other uses
+        // Only fallback to system time if server date is unavailable
         // eslint-disable-next-line no-console
-        console.log('⚠️ TimeEntryForm falling back to system time');
+        console.log('TimeEntryForm server date unavailable, falling back to system time');
         const now = moment()
           .tz(userTimeZone)
           .toISOString();
@@ -577,15 +584,16 @@ function TimeEntryForm(props) {
   };
 
   /* ---------------- useEffects -------------- */
-  // Debug logging for serverDate prop
+  // Debug logging for server date from context
   useEffect(() => {
+    const serverDate = getServerDateISO();
     // eslint-disable-next-line no-console
-    console.log('🔍 TimeEntryForm received props.serverDate:', props.serverDate);
+    console.log(' TimeEntryForm getServerDateISO():', serverDate);
     // eslint-disable-next-line no-console
-    console.log('🔍 TimeEntryForm current formValues.dateOfWork:', formValues.dateOfWork);
+    console.log(' TimeEntryForm current formValues.dateOfWork:', formValues.dateOfWork);
     // eslint-disable-next-line no-console
-    console.log('🔍 TimeEntryForm isOpen:', isOpen);
-  }, [props.serverDate, formValues.dateOfWork, isOpen]);
+    console.log(' TimeEntryForm isOpen:', isOpen);
+  }, [formValues.dateOfWork, isOpen, getServerDateISO]);
 
   useEffect(() => {
       if (isAsyncDataLoaded) {
@@ -617,15 +625,18 @@ function TimeEntryForm(props) {
       }
     }, [actualDate, edit]);
 
-  // Update form values when serverDate prop changes
+  // Update form values when component mounts or when not editing - always use server date
   useEffect(() => {
-    if (props.serverDate && !edit) {
-      setFormValues(prev => ({
-        ...prev,
-        dateOfWork: moment(props.serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD'),
-      }));
+    if (!edit) {
+      const serverDate = getServerDateISO();
+      if (serverDate) {
+        setFormValues(prev => ({
+          ...prev,
+          dateOfWork: moment(serverDate).tz('America/Los_Angeles').format('YYYY-MM-DD'),
+        }));
+      }
     }
-  }, [props.serverDate, edit]);
+  }, [edit, getServerDateISO]);
 
   useEffect(() => {
       setFormValues(prev => ({ ...prev, ...data }));

@@ -477,7 +477,6 @@ function Timer({ authUser, darkMode, isPopout }) {
         isOpen={logTimeEntryModal}
         data={logTimer}
         sendStop={sendStop}
-        serverDate={getServerDateISO()}
         timerConnected={customReadyState === ReadyState.OPEN}
       />
     );
