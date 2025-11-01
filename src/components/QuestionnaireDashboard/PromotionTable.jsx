@@ -2,16 +2,18 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './PromotionTable.module.css';
 
-// Using Math.random() safely here for dummy data generation.
-// sonarjs/security/detect-non-secure-random: off
-const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'Grace'];
+function seededRandom(seed) {
+  let x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
 const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
   id: i + 1,
   reviewer: names[i % names.length],
   hasMetWeekly: i % 2 === 0,
   requiredPRs: 5,
-  totalReviews: Math.floor(Math.random() * 10),
-  remainingWeeks: Math.max(0, 4 - Math.floor(Math.random() * 4)),
+  totalReviews: Math.floor(seededRandom(i) * 10),
+  remainingWeeks: Math.max(0, 4 - Math.floor(seededRandom(i + 1) * 4)),
   promote: i % 3 === 0,
   isNew: i < 15,
 }));
