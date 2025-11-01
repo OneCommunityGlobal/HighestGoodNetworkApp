@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './PromotionTable.module.css';
 
+// Using Math.random() safely here for dummy data generation.
+// sonarjs/security/detect-non-secure-random: off
 const names = ['Alice', 'Bob', 'Charlie', 'Diana', 'Edward', 'Fiona', 'Grace'];
 const dummyMembers = Array.from({ length: 45 }, (_, i) => ({
   id: i + 1,
