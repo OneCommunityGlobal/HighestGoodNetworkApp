@@ -61,7 +61,7 @@ function renderDotTopOrBottom(lineKey, color) {
   };
 }
 
-function CostPredictionChart({ projectId }) {
+function CostPredictionChart({ projectId, darkMode }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -127,14 +127,24 @@ function CostPredictionChart({ projectId }) {
           fontSize: '24px',
           fontWeight: 'normal',
         }}
+        className={darkMode ? 'text-light' : ''}
       >
         Planned Vs Actual costs tracking
       </h2>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-          <XAxis dataKey="month" tick={{ fill: '#666' }} tickSize={10} />
-          <YAxis tick={{ fill: '#666' }} tickSize={10} domain={[0, 'auto']} />
+          <XAxis
+            dataKey="month"
+            tick={{ fill: darkMode ? '#e0e0e0' : '#333' }}
+            tickSize={10}
+            label={{ fill: darkMode ? '#e0e0e0' : '#333' }}
+          />
+          <YAxis
+            tick={{ fill: darkMode ? '#e0e0e0' : '#333' }}
+            tickSize={10}
+            domain={[0, 'auto']}
+          />
           <Tooltip />
           <Legend
             verticalAlign="bottom"

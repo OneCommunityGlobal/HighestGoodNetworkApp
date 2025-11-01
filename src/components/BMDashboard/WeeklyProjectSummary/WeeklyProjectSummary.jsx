@@ -373,7 +373,7 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
               {(() => {
-                if (index === 2) return <CostPredictionChart projectId={1} />;
+                if (index === 2) return <CostPredictionChart projectId={1} darkMode={darkMode} />;
                 if (index === 3) return <ActualVsPlannedCost />;
                 return '📊 Card';
               })()}
