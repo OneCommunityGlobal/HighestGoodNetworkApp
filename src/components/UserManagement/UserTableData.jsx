@@ -19,6 +19,7 @@ import { boxStyle } from '../../styles';
 import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
 import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
+import PropTypes from "prop-types";
 /**
  * The body row of the user table
  */
@@ -593,6 +594,10 @@ const UserTableDataComponent = (props) => {
       )}
     </tr>
   );
+};
+UserTableData.propTypes = {
+  hasPermission: PropTypes.func, // or PropTypes.bool depending on what it is
+  user: PropTypes.object,        // if you access user or user._id
 };
 
 const UserTableData = React.memo(UserTableDataComponent);
