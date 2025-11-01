@@ -15,7 +15,7 @@ export function CPDashboard() {
       {
         id: 1,
         title: 'PGSA Lunch Talks',
-        date: '2025-11-01T12:00:00',
+        date: '2025-11-08T12:00:00',
         location: 'Disque 919',
         organizer: 'Physics Graduate Student Association',
         image: 'https://via.placeholder.com/300',
