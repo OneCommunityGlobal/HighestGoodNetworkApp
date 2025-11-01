@@ -16,7 +16,7 @@ import {
 import { useSelector } from 'react-redux';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import "../../styles/badges.css"
+import "../../styles/badges.module.css"
 // import "../Badge/BadgeReport/BadgeReport.css"
 import './BadgeSummaryViz.css';
 
