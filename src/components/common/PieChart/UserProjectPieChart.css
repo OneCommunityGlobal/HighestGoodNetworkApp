@@ -1,10 +1,20 @@
 .pie-chart-wrapper {
-    display: flex;
+    display: flex; 
     align-items: center;
-    height: 40vh;
+    
     /* overflow: hidden; */
   }
-  
+  .donut-box {
+  width: 240px;   /* match the bottom donut look */
+  height: 240px;  /* square so the ring isn’t cropped */
+}
+  .pie-chart-wrapper svg,
+.pie-chart-wrapper .recharts-surface {
+  /* border: none !important; */
+  outline: none !important;
+  box-shadow: none !important;
+}
+.pie-chart-wrapper svg { border: 0 !important; }
   .pie-chart {
     margin-right: 32px;
     height: 100%;
@@ -128,10 +138,10 @@
   }
   
   .pie-chart-legend-container {
-    margin-top: 20px;
+    margin-top: 20px; 
     height: 100%;
-    width: 100%;
-  
+    width: 60%;
+    
   }
   
   .pie-chart-legend-header {
@@ -142,7 +152,7 @@
   }
   
   .pie-chart-legend-table-wrapper {
-    height: 27vh;
+    /* height: 27vh; */
     width: 100%;
     /* border: 1px solid rgba(0, 0, 0, 0.1); */
     overflow-y: auto;
@@ -183,7 +193,7 @@
     padding: 8px;
     text-align: left;
     /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
-    color:black
+    color:rgb(236, 233, 233)
   }
   
  
@@ -211,10 +221,34 @@
     font-weight: bold;
     margin-top: 10px;
   }
-  
+
+.strong-text.text-light { color:#f5f5f5 !important; }
 
   @media (max-width: 671px) {
     .pie-chart-legend-table-wrapper {
       max-height: 200px; 
     }
   }
+
+
+  /* remove ANY border/outline around the donut */
+.pie-chart-wrapper,
+.pie-chart-wrapper * {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.pie-chart-wrapper svg,
+.pie-chart-wrapper .recharts-surface,
+.pie-chart-wrapper .recharts-wrapper,
+.pie-chart-wrapper .recharts-responsive-container {
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* keep an accessible focus style on the toggle only (optional) */
+.pie-chart-wrapper .switch input:focus-visible {
+  outline: 2px solid #1e88e5;
+  border-radius: 9999px;
+}

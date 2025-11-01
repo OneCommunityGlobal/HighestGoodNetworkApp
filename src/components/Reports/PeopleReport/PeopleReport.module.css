@@ -1,0 +1,483 @@
+body {
+  margin: 0;
+  /* font-family: 'Lato', sans-serif; */
+}
+
+.teams__tr {
+  text-align: start;
+}
+
+.test-pic {
+  height: 2rem;
+}
+
+.location p {
+  display: inline-block;
+}
+
+.location svg {
+  vertical-align: middle;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.rehireable {
+  margin-bottom: 30px;
+}
+
+
+.peopleReportTimeLogBlock h3 {
+  color: #fff;
+}
+
+/* .auto-width-report-time-logs-wrapper {
+  gap: 40px
+} */
+
+
+/*profile style changes ends*/
+
+.btn--dark-sea-green {
+  background-color: #c9d6c6 !important;
+  border-color: #285739 !important;
+  color: #285739 !important;
+}
+
+.badge_image_sm>img {
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  margin: 5px;
+}
+
+.badge_image_lg>img {
+  border-radius: 50%;
+  height: 200px;
+  width: 200px;
+}
+
+.badge_image_mini>img {
+  border-radius: 50%;
+  height: 25px;
+  width: 25px;
+}
+
+.badge_count {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 15px Arial, sans-serif;
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+.badge_count_3_digit {
+  border-radius: 50%;
+  width: 20px;
+  height: 15px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+.new_badges {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  height: 70px;
+}
+
+.old_badges {
+  height: 220px;
+}
+
+.badge_history_container {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+}
+
+.badge_image_container {
+  position: relative;
+  height: 60px;
+}
+
+.badgemanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}
+
+.assign-badge-margin-top {
+  margin-top: 15px;
+}
+
+.badge-message-background-success {
+  background-color: #d4edda;
+}
+
+.badge-message-background-danger {
+  background-color: #f8d7da;
+}
+
+.badge-message-text-success {
+  color: #092b00;
+}
+
+.badge-message-text-danger {
+  color: #a8071a;
+}
+
+.assign_badge_search_box {
+  margin-bottom: 15px;
+}
+
+.badge_info_icon_text {
+  text-align: left;
+}
+
+.widett {
+  width: 500px;
+}
+
+#badgeEdit .form-group i {
+  margin-left: 5px;
+}
+
+.badgeTooltip .tooltip-inner {
+  background-color: #666;
+}
+
+/*Badge changes ends here*/
+
+.visualizationDiv {
+  /* margin-bottom: 10px; */
+  margin-top: 20px;
+}
+
+.badgeSummaryPreviewDiv {
+  padding-left: 1%;
+}
+
+.badgeSummaryDiv {
+  padding-right: 1%;
+}
+
+#inf td,
+#inf th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+#inf tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/*Table css starts*/
+
+.introDate {
+  margin: 16px 0px 16px 0px;
+  display: flex;
+}
+
+.kaitest {
+  width: 100%;
+}
+
+@media (max-width: 850px) {
+  .introDate {
+    margin: 16px 0px 16px 0px;
+    display: flex;
+    justify-content: center;
+  }
+
+}
+
+.introDate div {
+  display: inline-flex;
+  vertical-align: top;
+  font-family: 'Open Sans', sans-serif;
+  line-height: 28px;
+}
+
+.peopleReportTimeLogsWrapper {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+
+.peopleReportTimeLogBlock {
+  height: auto;
+  min-width: 180px;
+}
+
+@media (min-width: 850px) {
+  .peopleReportTimeLogsWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    color: white;
+    margin-top: 0;
+    padding-top: 0;
+  }
+}
+
+@media (min-width: 850px) and (max-width: 1249px) {
+  .peopleReportTimeLogsWrapper >* {
+    /* display: flex; */
+    flex-wrap: wrap;
+    justify-content: space-between;
+    color: white;
+  }
+}
+
+@media (min-width: 275px) and (max-width: 435px) {
+  .peopleReportTimeLogsWrapper >* {
+    margin-top: 25px;
+    /* display: flex; */
+    flex-wrap: wrap;
+    justify-content: space-between;
+    color: white;
+  }
+}
+
+.infringementContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.infringementContainerInner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.visualizationDivRow {
+  padding-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.containerPeopleWrapper {
+  min-height: 100%;
+  max-width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #faf7fc;
+  margin: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+
+.reportStats a {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.reportStats a:hover {
+  text-decoration: underline;
+}
+
+.reportStats p {
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+/* Dark mode text improvements */
+.textLight.reportStats {
+  color: #f8f9fa;
+}
+
+.textLight.reportStats a {
+  color: #f8f9fa;
+}
+
+.textLight.reportStats p {
+  color: #e9ecef;
+}
+
+.textLight .stats {
+  color: #e9ecef;
+}
+
+.textLight .stats h4 {
+  color: #f8f9fa;
+}
+
+.textLight .stats p {
+  color: #adb5bd;
+}
+
+.textLight .rehireable {
+  color: #e9ecef;
+}
+
+@media (max-width: 1100px) {
+  .mobilePeopleTable {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}
+
+.orderColumn {
+  order: 1;
+}
+
+@media (max-width: 981px) {
+  .orderColumn {
+    order: -1;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+}
+
+.peopleReportFlexLayout {
+  display: flex;
+  flex-wrap: nowrap; 
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  width: 100%;
+}
+
+.peopleReportWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px 32px;
+}
+
+.peopleReportLeft {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.peopleReportRight {
+  width: 23vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  margin-top: 2rem;
+  height: 140vh; 
+  overflow: hidden;
+}
+
+.peopleReportProfileWrapper {
+  position: relative;
+  margin-top: 2.3em; 
+  width: 100%;
+}
+
+.reportStats {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  height: 620px;
+}
+
+@media (max-width: 1260px) {
+  .reportStats {
+    height: 740px;
+  }
+}
+
+.bgOxfordBlue {
+  background-color: #0b1d3a !important;
+}
+
+.bgYinmnBlue {
+  background-color: #2c3e50 !important;
+}
+
+.textLight {
+  color: #ffffff !important;
+}
+
+.fontWeightBold {
+  font-weight: 600 !important; /* or 700 if you prefer */
+}
+
+@media (max-width: 960px) {
+  .peopleReportFlexLayout {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .peopleReportLeft,
+  .peopleReportRight {
+    width: 100% !important;
+  }
+
+  .peopleReportRight {
+    margin-top: 1rem;
+    height: auto !important; /* override the 140vh */
+  }
+}
+
+@media (max-width: 960px) {
+  .peopleReportTimeLogsWrapper {
+    flex-direction: column;
+    align-items: center; 
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .peopleReportTimeLogBlock {
+    width: 40% !important;     
+    height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+
+  .peopleReportTimeLogBlock h3,
+  .peopleReportTimeLogBlock p {
+    margin: 0;
+    padding: 4px 0;
+    text-align: center;
+    color: white !important;
+  }
+
+  .peopleReportTimeLogBlock > div {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+}

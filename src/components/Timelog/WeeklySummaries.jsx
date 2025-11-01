@@ -7,8 +7,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react';
 import Spinner from 'react-bootstrap/Spinner';
 import { updateWeeklySummaries } from '../../actions/weeklySummaries';
+import WeeklySummary from '../WeeklySummary/WeeklySummary';
 
-function WeeklySummaries({ userProfile }) {
+function WeeklySummaries({ userProfile, onEditSummary }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   // Initialize state variables for editing and original summaries
@@ -24,6 +25,9 @@ function WeeklySummaries({ userProfile }) {
   const [LoadingHandleSave, setLoadingHandleSave] = useState(null);
 
   const [wordCount, setWordCount] = useState(0);
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalTab, setModalTab] = useState('1');
 
   const dispatch = useDispatch();
   const canEdit = dispatch(hasPermission('putUserProfile'));
@@ -97,6 +101,19 @@ function WeeklySummaries({ userProfile }) {
     }
   };
 
+  const handleEditSummary = (tabIndex) => {
+    // Map the tab index to the correct tab number
+    const tabNumber = String(tabIndex + 1);
+    setModalTab(tabNumber);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    // Refresh the user profile to get updated summaries
+    dispatch(getUserProfile(userProfile._id));
+  };
+
   // Images are not allowed while editing weekly summaries
   const customImageUploadHandler = () =>
     new Promise((_, reject) => {
@@ -168,7 +185,7 @@ function WeeklySummaries({ userProfile }) {
       );
     }
     if (summary) {
-      // Display the summary with an "Edit" button
+      // Display the summary without edit button for users without edit permissions
       return (
         <div className={darkMode ? 'bg-yinmn-blue summary-text-light' : ''}>
           <h3>{title}</h3>
@@ -176,13 +193,20 @@ function WeeklySummaries({ userProfile }) {
         </div>
       );
     }
-    // Display a message when there's no summary
+    // Display a message when there's no summary with an edit button (always show edit button for missing summaries)
     return (
       <div>
         <h3>{title}</h3>
         <p className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           {userProfile.firstName} {userProfile.lastName} did not submit a summary.
         </p>
+        <button 
+          type="button" 
+          className="button edit-button" 
+          onClick={() => handleEditSummary(index)}
+        >
+          Edit
+        </button>
       </div>
     );
   };
@@ -192,6 +216,18 @@ function WeeklySummaries({ userProfile }) {
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
       {renderSummary("The week before last's summary", userProfile.weeklySummaries[2]?.summary, 2)}
+      
+      {showModal && (
+        <WeeklySummary
+          isModal={true}
+          displayUserId={userProfile._id}
+          setPopup={handleCloseModal}
+          userRole={userProfile.role}
+          isNotAllowedToEdit={false}
+          darkMode={darkMode}
+          initialActiveTab={modalTab}
+        />
+      )}
     </div>
   );
 }

@@ -109,6 +109,7 @@ class ReportsPage extends Component {
     this.onDateChange = this.onDateChange.bind(this);
     this.handleClearFilters = this.handleClearFilters.bind(this);
     this.showContributorsReport = this.showContributorsReport.bind(this);
+    this.handleSearchClick = this.handleSearchClick.bind(this);
   }
 
   async componentDidMount() {
@@ -453,9 +454,17 @@ class ReportsPage extends Component {
       showAddTimeForm: false,
       showAddProjHistory: false,
       showAddPersonHistory: false,
-      showAddTeamHistory: false
+      showAddTeamHistory: false,
+      showCharts: !prevState.showContributorsReport
     }));
   }
+
+  handleSearchClick() {
+    // This function is called when the search button is clicked
+    // The actual scroll behavior is handled in ReportTableSearchPanel
+    // No additional action needed here
+  }
+
 
   render() {
     const { darkMode } = this.props.state.theme;
@@ -498,13 +507,13 @@ class ReportsPage extends Component {
 
     const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
     const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
-    const textColor = darkMode ? 'text-light' : 'text-dark';
+    const textColor = darkMode ? 'text-blue-400' : 'text-dark';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
     return (
       <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
         <div
-          className={`category-data-container ${
+          className={`category-data-container ${isOxfordBlue} ${
             this.state.showPeople ||
             this.state.showProjects ||
             this.state.showTeams ||
@@ -543,7 +552,7 @@ class ReportsPage extends Component {
               </div>
             </h2>
             <div>
-              <p className="mr-2">Select a Category</p>
+              <div className={darkMode ? `text-white` : ``}>Select a Category</div>
             </div>
             <div className='report-container-data'>
               <div className='data-container' style={this.state.showCharts ? {width: '50%'} : {width: '100%'}}>
@@ -597,6 +606,7 @@ class ReportsPage extends Component {
                     setFilterStatus={this.setFilterStatus}
                     onWildCardSearch={this.onWildCardSearch}
                     onCreateNewTeamShow={this.onCreateNewTeamShow}
+                    onSearchClick={this.handleSearchClick}
                     darkMode={darkMode}
                   />
                   <ViewReportByDate

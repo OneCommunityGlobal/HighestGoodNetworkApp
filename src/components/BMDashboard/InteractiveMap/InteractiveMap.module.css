@@ -1,0 +1,119 @@
+:global(.dark-mode-map) {
+  filter: brightness(0.8);
+}
+
+:global(.leaflet-popup-content-wrapper),
+:global(.leaflet-popup-content) {
+  background-color: white;
+  color: #222;
+  border-radius: 4px;
+}
+
+:global(.dark-mode-popup .leaflet-popup-content-wrapper),
+:global(.dark-mode-popup .leaflet-popup-content) {
+  background-color: #2d4059 !important;
+  color: white !important;
+}
+
+:global(.dark-mode-popup .leaflet-popup-tip) {
+  background-color: #2d4059;
+}
+
+:global(.leaflet-tooltip) {
+  background-color: white;
+  color: #222;
+  border: 1px solid #ddd;
+}
+
+:global(.dark-mode-tooltip .leaflet-tooltip) {
+  background-color: #2d4059;
+  color: white !important;
+  border: 1px solid #555;
+}
+
+:global(.dark-mode-tooltip .leaflet-tooltip-top:before) {
+  border-top-color: #2d4059;
+}
+
+:global(.dark-mode-tooltip .leaflet-tooltip-bottom:before) {
+  border-bottom-color: #2d4059;
+}
+
+:global(.dark-mode-tooltip .leaflet-tooltip-left:before) {
+  border-left-color: #2d4059;
+}
+
+:global(.dark-mode-tooltip .leaflet-tooltip-right:before) {
+  border-right-color: #2d4059;
+}
+
+:global(.dark-mode-map .leaflet-control-attribution) {
+  background-color: rgba(45, 64, 89, 0.8);
+  color: #ddd;
+}
+
+:global(.dark-mode-map .leaflet-control-attribution a) {
+  color: #6ACFDE;
+}
+
+:global(.dark-mode-map .leaflet-control-zoom a) {
+  background-color: #2d4059;
+  color: white;
+  border-color: #3a506b;
+}
+
+:global(.dark-mode-map .leaflet-control-zoom a:hover) {
+  background-color: #3a506b;
+}
+
+:global(.dark-mode-popup .leaflet-popup-content-wrapper),
+:global(.dark-mode-popup .leaflet-popup-content),
+:global(.dark-mode-popup .leaflet-popup-content *) {
+  color: white !important;
+}
+
+:global(.leaflet-popup-content-wrapper),
+:global(.leaflet-popup-content),
+:global(.leaflet-popup-content *) {
+  color: #222;
+}
+
+:global(.dark-mode-popup .leaflet-popup-content-wrapper) {
+  background-color: #2d4059 !important;
+}
+
+:global(.leaflet-popup-content-wrapper) {
+  background-color: white !important;
+}
+
+/* Marker cluster styling */
+:global(.marker-cluster-small) {
+  background-color: rgba(181, 226, 140, 0.6);
+}
+:global(.marker-cluster-small div) {
+  background-color: rgba(110, 204, 57, 0.6);
+}
+
+:global(.marker-cluster-medium) {
+  background-color: rgba(241, 211, 87, 0.6);
+}
+:global(.marker-cluster-medium div) {
+  background-color: rgba(240, 194, 12, 0.6);
+}
+
+:global(.marker-cluster-large) {
+  background-color: rgba(253, 156, 115, 0.6);
+}
+:global(.marker-cluster-large div) {
+  background-color: rgba(241, 128, 23, 0.6);
+}
+
+/* Marker cluster hover effects */
+:global(.marker-cluster) {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+:global(.marker-cluster:hover) {
+  transform: scale(1.1);
+}

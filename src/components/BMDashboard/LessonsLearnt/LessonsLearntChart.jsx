@@ -53,7 +53,7 @@ function ChartTitle({ title }) {
   return <h2 className={styles.chartTitle}>{title}</h2>;
 }
 
-export default function LessonsLearntChart() {
+const LessonsLearntChart = () => {
   const [selectedProjects, setSelectedProjects] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -116,19 +116,34 @@ export default function LessonsLearntChart() {
       </div>
 
       <div className={styles.chartWrapper}>
-        {isLoading ? <p>Loading...</p> : <Bar data={chartData} options={chartOptions} />}
-        <div className={styles.percentageLabels}>
-          {lessonsData.map((d, idx) => (
-            <span
-              key={idx}
-              className={styles.percentageLabel}
-              style={{ left: `${(idx + 0.5) * (100 / lessonsData.length)}%` }}
-            >
-              {d.percentage}%
-            </span>
-          ))}
-        </div>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : lessonsData.length === 0 ? (
+          <p>No lessons data available for the selected criteria</p>
+        ) : (
+          <>
+            <Bar data={chartData} options={chartOptions} />
+            <div className={styles.percentageLabels}>
+              {lessonsData.map((d, idx) => (
+                <span
+                  key={idx}
+                  className={styles.percentageLabel}
+                  style={{
+                    left:
+                      lessonsData.length > 0
+                        ? `${(idx + 0.5) * (100 / lessonsData.length)}%`
+                        : '0%',
+                  }}
+                >
+                  {d.percentage}%
+                </span>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default LessonsLearntChart;
