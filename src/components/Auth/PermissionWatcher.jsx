@@ -29,9 +29,9 @@ function PermissionWatcher() {
         const flag = sessionStorage.getItem('wasForceLoggedOut');
         setWasForceLoggedOut(flag === 'true');
         sessionStorage.removeItem('wasForceLoggedOut');
-      } catch (error) {
+      } catch {
         // sessionStorage might not be available (private browsing, etc.)
-        console.warn('Could not access sessionStorage:', error);
+        // Silently fail - component will work without the flag
       }
 
       // Mark as initial login (initial state will be captured when profile loads)
@@ -66,9 +66,6 @@ function PermissionWatcher() {
       !isAcknowledged && !forceLogoutAt && !wasForceLoggedOut;
 
     if (loggedInWithUnacknowledgedPermissions) {
-      console.log(
-        'Edge Case 2: User logged in with unacknowledged permissions (changed while logged out) — showing banner only',
-      );
       setIsInitialLogin(false); // Mark as no longer initial login
       return;
     }
@@ -78,9 +75,6 @@ function PermissionWatcher() {
     const loggedInAfterForceLogout = !isAcknowledged && !forceLogoutAt && wasForceLoggedOut;
 
     if (loggedInAfterForceLogout) {
-      console.log(
-        'Edge Case 3: User logged in after force logout with unacknowledged permissions — showing banner only',
-      );
       setIsInitialLogin(false); // Mark as no longer initial login
       return;
     }
@@ -107,16 +101,13 @@ function PermissionWatcher() {
     if (userProfile === null || userProfile === undefined) return; // Wait for profile to load
     if (isInitialLogin) return; // Skip mid-session checks during initial login
 
-    // Edge Case 1: User permissions changed when logged in → start timer
+    // User permissions changed when logged in → start timer
     // Detected by: permissions were acknowledged (or was null/true), then became unacknowledged
     // AND user was already logged in (not initial login)
     const permissionsChangedMidSession =
       !isAcknowledged && !forceLogoutAt && initialAcknowledgedState !== false; // Was acknowledged or null before (not explicitly false)
 
     if (permissionsChangedMidSession) {
-      console.log(
-        'Edge Case 1: Starting force logout countdown due to mid-session permission change',
-      );
       dispatch(startForceLogout(20000));
       return;
     }
@@ -144,8 +135,6 @@ function PermissionWatcher() {
       setIsAckLoading(true);
 
       if (!userProfile || !userProfile._id) {
-        // eslint-disable-next-line no-console
-        console.error('User profile not available');
         setIsAckLoading(false);
         return;
       }
@@ -168,57 +157,15 @@ function PermissionWatcher() {
           setIsInitialLogin(false);
           dispatch(getUserProfile(_id));
         })
-        .catch(error => {
-          // eslint-disable-next-line no-console
-          console.error('Error updating user profile:', error);
+        .catch(() => {
           setIsAckLoading(false);
         });
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error acknowledging permission changes:', error);
+    } catch {
       setIsAckLoading(false);
     }
   };
 
-  // // Only render the popup when a force logout is in progress
-  // if (!forceLogoutAt) {
-  //   return null;
-  // }
-  // return (
-  //   !isAcknowledged && (
-  //     <PopUpBar
-  //       message={`Permissions changed—logging out in ${secondsRemaining}s. Timer will be stopped; please restart after login.`}
-  //       onClickClose={handleAcknowledge}
-  //       textColor="red"
-  //       isLoading={isAckLoading}
-  //       button={false}
-  //     />
-  //   )
-  // );
-
-  // Edge Case 2 & 3: Show banner only (no timer) when user logs in with unacknowledged permissions
-  // This happens when:
-  // - Edge Case 2: Permissions changed while user was logged out
-  // - Edge Case 3: User was force logged out and logs back in with unacknowledged permissions
-  const showBannerOnly =
-    isAuthenticated &&
-    !isAcknowledged &&
-    !forceLogoutAt &&
-    isInitialLogin &&
-    initialAcknowledgedState !== null; // Profile has been loaded
-
-  if (showBannerOnly) {
-    return (
-      <PopUpBar
-        message="Your permissions have changed. Please review and acknowledge to continue."
-        onClickClose={handleAcknowledge}
-        isLoading={isAckLoading}
-        button
-      />
-    );
-  }
-
-  // Edge Case 1: Force logout timer running (mid-session permission change)
+  // Force logout timer running (mid-session permission change)
   if (forceLogoutAt && !isAcknowledged) {
     return (
       <PopUpBar
