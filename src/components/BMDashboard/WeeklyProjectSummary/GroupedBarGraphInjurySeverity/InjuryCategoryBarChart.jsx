@@ -133,7 +133,9 @@ function InjuryCategoryBarChart() {
   return (
     <div className={`${styles['injury-chart-container']} ${darkMode ? 'darkMode' : ''}`}>
       <div className="injury-chart-header">
-        <h3 className={styles['injury-chart-title']}>Injury Severity by Category of Worker Injured</h3>
+        <h3 className={styles['injury-chart-title']}>
+          Injury Severity by Category of Worker Injured
+        </h3>
 
         <div className={styles['injury-chart-filters']}>
           <div className="filter">
