@@ -8,8 +8,16 @@ import {
   ResponsiveContainer,
   LabelList,
 } from 'recharts';
+import { useSelector } from 'react-redux';
+import styles from './ApplicationChart.module.css';
 
 function AgeChart({ data, compareLabel }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const axisColor = darkMode ? '#f3f4f6' : '#111827';
+  const axisLineColor = darkMode ? '#d1d5db' : '#374151';
+  const gridColor = darkMode ? '#9ca3af' : '#d1d5db';
+  const tickFontSize = 14;
+
   const formatTooltip = (value, name, props) => {
     const { change } = props.payload;
     let changeText = '';
@@ -27,16 +35,47 @@ function AgeChart({ data, compareLabel }) {
   };
 
   return (
-    <div style={{ width: '800px', height: 500, margin: '0 auto', padding: '20px' }}>
-      <h2>Applicants grouped by Age</h2>
-      <ResponsiveContainer width="100%" height="100%">
+    <div className={`${styles.AgeChart} ${darkMode ? 'darkMode' : ''}`}>
+      <h2 style={{ color: axisColor }}>Applicants grouped by Age</h2>
+      <ResponsiveContainer width="100%" height={400}>
         <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 20 }} barSize={80}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="ageGroup" />
-          <YAxis />
-          <Tooltip formatter={formatTooltip} />
+          <CartesianGrid stroke={gridColor} strokeDasharray="3 3" strokeWidth={1.5} />
+          <XAxis
+            dataKey="ageGroup"
+            stroke={axisLineColor}
+            tick={{ fill: axisColor, fontSize: tickFontSize, fontWeight: 'bold' }}
+            label={{
+              value: 'Age Group',
+              position: 'insideBottom',
+              offset: -10,
+              fill: axisColor,
+              fontWeight: 'bold',
+            }}
+          />
+          <YAxis
+            stroke={axisLineColor}
+            tick={{ fill: axisColor, fontSize: tickFontSize, fontWeight: 'bold' }}
+            label={{
+              value: 'Applicants',
+              angle: -90,
+              position: 'insideLeft',
+              fill: axisColor,
+              fontWeight: 'bold',
+            }}
+          />
+          <Tooltip
+            formatter={formatTooltip}
+            contentStyle={{
+              backgroundColor: darkMode ? '#1f2937' : '#ffffff',
+              fontWeight: 'bold',
+            }}
+            labelStyle={{
+              color: darkMode ? '#f3f4f6' : '#111827',
+              fontWeight: 'bold',
+            }}
+          />
           <Bar dataKey="applicants" fill="#3b82f6">
-            <LabelList dataKey="applicants" position="top" />
+            <LabelList dataKey="applicants" position="top" fill={axisColor} fontWeight="bold" />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

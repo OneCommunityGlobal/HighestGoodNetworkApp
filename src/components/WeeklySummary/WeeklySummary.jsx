@@ -218,6 +218,7 @@ export class WeeklySummary extends Component {
       summaries,
       fetchError,
       loading,
+      initialActiveTab,
     } = this.props;
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
@@ -308,7 +309,7 @@ export class WeeklySummary extends Component {
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
       submittedCountInFourWeeks,
-      activeTab: '1',
+      activeTab: initialActiveTab || '1',
       fetchError,
       loading,
       editPopup: false,
@@ -1177,6 +1178,7 @@ WeeklySummary.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.object.isRequired,
   updateWeeklySummaries: PropTypes.func.isRequired,
+  initialActiveTab: PropTypes.string,
 };
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({

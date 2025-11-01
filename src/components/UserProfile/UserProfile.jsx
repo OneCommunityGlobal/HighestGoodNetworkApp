@@ -724,18 +724,20 @@ const onAssignProject = assignedProject => {
               },
             ];
             toast.success('Blue Square Added!');
+            const updatedInfringements = res.data.infringements;
+
             setOriginalUserProfile({
               ...originalUserProfile,
-              infringements: newBlueSqrs,
+              infringements: updatedInfringements,
             });
             setUserProfile({
               ...userProfile,
-              infringements: newBlueSqrs,
+              infringements: updatedInfringements,
             });
           })
           .catch(error => {
             // eslint-disable-next-line no-console
-            console.log('error in modifying bluequare', error);
+            console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
@@ -772,36 +774,78 @@ const onAssignProject = assignedProject => {
     }
   };
 
-  const handleSubmit = async updatedUserProfile => {
-    for (let i = 0; i < updatedTasks.length; i += 1) {
-      const updatedTask = updatedTasks[i];
-      const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      // eslint-disable-next-line no-console
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
-    }
-    try {
-       const userProfileToUpdate = {
-        ...(updatedUserProfile || userProfileRef.current),
-        projects, // Ensure projects are included in the payload
-        };
-        // eslint-disable-next-line no-console
-        console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
-      const result = await props.updateUserProfile(userProfileToUpdate);
-      if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
-        await props.refreshToken(userProfile._id);
-      }
-      await loadUserProfile();
-      await loadUserTasks();
-      setSaved(false);
-    } catch (err) {
-      if (err.response && err.response.data && err.response.data.error) {
-        const errorMessage = err.response.data.error.join('\n');
-        // eslint-disable-next-line no-alert
-        alert(errorMessage);
-      }
-      return err;
-    }
+  // const handleSubmit = async updatedUserProfile => {
+  //   for (let i = 0; i < updatedTasks.length; i += 1) {
+  //     const updatedTask = updatedTasks[i];
+  //     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+  //     // eslint-disable-next-line no-console
+  //     axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+  //   }
+  //   try {
+  //      const userProfileToUpdate = {
+  //       ...(updatedUserProfile || userProfileRef.current),
+  //       projects, // Ensure projects are included in the payload
+  //       };
+  //       // eslint-disable-next-line no-console
+  //       console.log('Submitting UserProfile:', userProfileToUpdate); // Debugging log
+  //     const result = await props.updateUserProfile(userProfileToUpdate);
+  //     if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+  //       await props.refreshToken(userProfile._id);
+  //     }
+  //     await loadUserProfile();
+  //     await loadUserTasks();
+  //     setSaved(false);
+  //   } catch (err) {
+  //     if (err.response && err.response.data && err.response.data.error) {
+  //       const errorMessage = err.response.data.error.join('\n');
+  //       // eslint-disable-next-line no-alert
+  //       alert(errorMessage);
+  //     }
+  //     return err;
+  //   }
+  // };
+
+  const handleSubmit = async (updatedUserProfile) => {
+  // 1) Merge with the current ref FIRST
+  const merged = { ...(userProfileRef.current || {}), ...(updatedUserProfile || {}) };
+
+  // 2) Normalize projects from the merged payload (NOT from a separate variable)
+  const projectsIds = (merged.projects || [])
+    .map(p => String(p?._id ?? p?.projectId ?? p))  // supports objects or plain ids
+    .filter(Boolean);
+
+  const userProfileToUpdate = {
+    ...merged,
+    projects: projectsIds,  // single source of truth
   };
+
+
+  // update tasks (optionally await if you need sequencing)
+  for (let i = 0; i < updatedTasks.length; i += 1) {
+    const updatedTask = updatedTasks[i];
+    const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
+    // consider await here if order matters
+    // eslint-disable-next-line no-console
+    axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
+  }
+
+  try {
+    const result = await props.updateUserProfile(userProfileToUpdate);
+    if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
+      await props.refreshToken(userProfile._id);
+    }
+    await loadUserProfile();
+    await loadUserTasks();
+    setSaved(false);
+  } catch (err) {
+    if (err?.response?.data?.error) {
+      // eslint-disable-next-line no-alert
+      alert(err.response.data.error.join('\n'));
+    }
+    return err;
+  }
+};
+
 
   // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit.
   // AssignBadgePopup already has onSubmit action to call an API to update the user badges.
@@ -1061,9 +1105,8 @@ const onAssignProject = assignedProject => {
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('updatePassword')&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
-
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
@@ -1635,12 +1678,12 @@ const onAssignProject = assignedProject => {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {canResetPassword && (
+              {canResetPassword && !isUserSelf &&  (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canUpdatePassword
+                  canUpdatePassword={canResetPassword}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1768,7 +1811,7 @@ const onAssignProject = assignedProject => {
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canResetPassword && (
+                      {canUpdatePassword && canEdit && !isUserSelf && (
                         <ResetPasswordButton
                           className="mr-1 btn-bottom"
                           user={userProfile}

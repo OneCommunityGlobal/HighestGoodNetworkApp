@@ -1,6 +1,5 @@
 .report-page-wrapper {
   display: grid;
-  grid-template-columns: 1fr 256px;
   grid-template-rows: auto;
   column-gap: 24px;
   min-height: 100vh;

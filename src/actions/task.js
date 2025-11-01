@@ -212,7 +212,7 @@ export const addNewTask = (newTask, wbsId, pageLoadTime) => async dispatch => {
 
     const userIds = task.resources.map(resource => resource.userID);
     await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
-    return task._id;
+    return task;
   } catch (error) {
     status = 400;
     toast.error('Failed to add new task');
