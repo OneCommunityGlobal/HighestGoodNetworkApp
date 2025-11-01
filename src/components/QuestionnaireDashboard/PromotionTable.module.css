@@ -40,9 +40,9 @@
 }
 
 [data-theme="light"] .btnPrimary {
-  background-color: #2c974b;
+  background-color: #22863a;
   color: #ffffff;
-  border-color: #2c974b;
+  border-color: #22863a;
 }
 
 [data-theme="light"] .btnSecondary {
@@ -135,9 +135,9 @@
 }
 
 [data-theme="dark"] .btnPrimary {
-  background-color: #2c974b;
+  background-color: #22863a;
   color: #ffffff;
-  border-color: #2c974b;
+  border-color: #22863a;
 }
 
 [data-theme="dark"] .btnSecondary {
