@@ -1,16 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { MdPreview } from 'react-icons/md';
-import {
-  Button as ReactStrapButton,
-  Modal,
-  ModalBody,
-  ModalHeader,
-  ModalFooter,
-} from 'reactstrap';
+import { Button as ReactStrapButton, Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Badge/BadgeReport.css';
+import '../Badge/BadgeReport/BadgeReport.css';
 import './BadgeSummaryPreview.css';
 
 function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
