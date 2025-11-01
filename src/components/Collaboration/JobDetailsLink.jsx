@@ -28,7 +28,10 @@ function JobDetailsLink() {
   const [loading, setLoading] = useState();
 
   const [jobForms, setJobForms] = useState([]);
-
+  const [uploadingFiles, setUploadingFiles] = useState({});
+  const [resumeFile, setResumeFile] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState();
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const getJobDetails = async (givenCategory, givenPosition) => {
     setLoading(true);
     // Note: route params from the jobDetailsLink are URL-encoded (e.g. %26, %2F).
@@ -187,8 +190,10 @@ function JobDetailsLink() {
   };
   const handleChange = event => {
     const { name, value } = event.target;
-    // console.log(`name  is ${name}`);
-    //console.log(`value is ${value}`);
+    console.log(`name  is ${name}`);
+    console.log(`value is ${value}`);
+    //  if (!event.target.files[0]) setResumeFile(event.target.files[0]);
+
     setFormData(prev => ({
       ...prev,
       answers: Array.isArray(prev.answers)
@@ -196,6 +201,126 @@ function JobDetailsLink() {
         : [{ questionId: name, answer: value }],
     }));
   };
+
+  const handleFileChange = async event => {
+    const name = event.target.name;
+    console.log(`name  is ${event.target.name}`);
+
+    console.log(`name  is ${event.target.files[0].name}`);
+    const selFile = event.target.files[0];
+    if (!selFile) return;
+
+    setUploadingFiles(prev => ({ ...prev, [name]: true }));
+    console.log(uploadingFiles);
+    /* setUploadSuccess(false);
+    console.log('Selected file:', selFile.name);
+    setResumeFile(selFile); commented out */
+    // setResumeFile(event.target.files[0]);
+    try {
+      const formResumeData = new FormData();
+      formResumeData.append('file', selFile);
+      // eslint-disable-next-line no-console
+      console.log(`res is ${ENDPOINTS.APIEndpoint()}/jobforms/responses/upload`);
+
+      const formResumeDataResponse = await axios.post(
+        `${ENDPOINTS.APIEndpoint()}/jobforms/responses/upload`,
+        formResumeData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      // eslint-disable-next-line no-console
+      console.log('formResumeDataResponse');
+      // eslint-disable-next-line no-console
+      console.log(formResumeDataResponse);
+
+      const responseData = await formResumeDataResponse.data;
+      // eslint-disable-next-line no-console
+      console.log('data');
+      // eslint-disable-next-line no-console
+      console.log(responseData);
+      console.log(responseData?.data?.url);
+      const dropboxLink = responseData?.data?.url;
+      /* commented setUploadedFile(responseData?.data);
+    setUploadSuccess(true);
+    */
+      setFormData(prev => ({
+        ...prev,
+        answers: Array.isArray(prev.answers)
+          ? [
+              ...prev.answers.filter(a => a.questionId !== name),
+              { questionId: name, answer: dropboxLink },
+            ]
+          : [{ questionId: name, answer: dropboxLink }],
+      }));
+      setUploadingFiles(prev => ({ ...prev, [name]: false }));
+      console.log(uploadingFiles);
+    } catch (err) {
+      console.error('Upload failed', err);
+      setUploadingFiles(prev => ({ ...prev, [name]: false }));
+      console.log(uploadingFiles);
+    }
+  };
+
+  /*useEffect(() => {
+    const qname =
+      '12.) If you have one, please attach your Resumé, CV, Brochure, etc. in PDF or JPG format.';
+    console.log('uploadSuccess');
+    console.log(uploadSuccess);
+    console.log(qname);
+    console.log(uploadedFile);
+    console.log(uploadedFile?.url);
+    if (uploadSuccess && uploadedFile?.url) {
+      console.log('inside');
+      setFormData(prev => ({
+        ...prev,
+        answers: Array.isArray(prev.answers)
+          ? [
+              ...prev.answers.filter(a => a.questionId !== qname),
+              { questionId: qname, answer: uploadedFile?.url },
+            ]
+          : [{ questionId: qname, answer: uploadedFile?.url }],
+      }));
+      console.log(formData);
+    }
+  }, [uploadSuccess, uploadedFile]);
+*/
+  const handleUpload = async () => {
+    alert('Handle Upload');
+    console.log(resumeFile);
+    // if (!resumeFile) return alert('select a file');
+    const formResumeData = new FormData();
+    formResumeData.append('file', resumeFile);
+    // eslint-disable-next-line no-console
+    console.log(`res is ${ENDPOINTS.APIEndpoint()}/jobforms/responses/upload`);
+
+    const formResumeDataResponse = await axios.post(
+      `${ENDPOINTS.APIEndpoint()}/jobforms/responses/upload`,
+      formResumeData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+
+    // eslint-disable-next-line no-console
+    console.log('formResumeDataResponse');
+    // eslint-disable-next-line no-console
+    console.log(formResumeDataResponse);
+
+    const responseData = await formResumeDataResponse.data;
+    // eslint-disable-next-line no-console
+    console.log('data');
+    // eslint-disable-next-line no-console
+    console.log(responseData);
+    console.log(responseData.data.url);
+    alert(`data.url`);
+  };
+
   const submitJobforms = async () => {
     // eslint-disable-next-line no-console
     console.log('inside submitJobForms');
@@ -365,13 +490,38 @@ function JobDetailsLink() {
                         onChange={handleChange}
                       />
                     ) : question.type === 'file' ? (
-                      <input
-                        type="file"
-                        name={question.label}
-                        id={question.label}
-                        value={getValue(question.label)}
-                        onChange={handleChange}
-                      />
+                      <div className={styles['user-input']}>
+                        <input
+                          type="file"
+                          name={question.label}
+                          id={question.label}
+                          accept=".pdf,.doc,.docx"
+                          onChange={handleFileChange}
+                        />
+
+                        {uploadingFiles[question.label] ? (
+                          <p style={{ color: 'blue' }}> Uploading </p>
+                        ) : formData?.answers?.find(a => a.questionId === question.label)
+                            ?.answer ? (
+                          <>
+                            <p style={{ color: 'green' }}>File Uploaded Successfully </p>
+                            <a
+                              href={
+                                formData?.answers?.find(a => a.questionId === question.label)
+                                  ?.answer
+                              }
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              View File
+                            </a>
+                          </>
+                        ) : (
+                          <>
+                            <p> {question.label} </p>
+                          </>
+                        )}
+                      </div>
                     ) : question.type === 'dropdown' ? (
                       <select
                         name={question.label}

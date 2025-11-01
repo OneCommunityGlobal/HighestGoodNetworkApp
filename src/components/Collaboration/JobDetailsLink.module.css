@@ -34,7 +34,8 @@
   text-align: justify;
   font-weight: 500;
     font-size: 1.5rem;     
-  line-height: 1.6;      
+  line-height: 1.6;  
+      
 }
 .job-details-card p {
   font-size: 30px;
@@ -80,7 +81,12 @@
 .buttonGroup button{
   border:5px;
 }
-
+.input-error {
+  display: flex;
+  flex-direction: column;
+  gap:10px;
+  width:1000px;
+}
 iframe {
   display:flex;
 }
@@ -117,4 +123,11 @@ p img {
 .input-error {
   display: flex;
   flex-direction: column;
+}
+.upload-button {
+  display: flex;
+}
+.user-input {
+  display:flex;
+  flex-direction: row;
 }

@@ -391,6 +391,9 @@ export const ENDPOINTS = {
   // Collaboration - Jobforms endpoints
   JOBFORMS_RESPONSES: `${APIEndpoint}/jobforms/responses`,
   
+  // Collaboration - Jobforms Upload endpoints
+  JOBFORMS_RESPONSES_UPLOAD: `${APIEndpoint}/jobforms/responses/upload`,
+  
 };
 
 export const ApiEndpoint = APIEndpoint;
