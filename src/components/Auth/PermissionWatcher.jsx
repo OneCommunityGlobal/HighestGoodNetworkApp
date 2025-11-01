@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
-import { startForceLogout } from '../../actions/authActions';
+import { startForceLogout, stopForceLogout } from '../../actions/authActions';
 import { useCountdown } from '../../hooks/useCountdown';
 import PopUpBar from '../PopUpBar/PopUpBar';
 import { getUserProfile } from '../../actions/userProfile';
@@ -11,78 +11,133 @@ function PermissionWatcher() {
   const dispatch = useDispatch();
   const { isAuthenticated, forceLogoutAt } = useSelector(state => state.auth || {});
   const userProfile = useSelector(state => state.userProfile);
-  const isAcknowledged = userProfile?.permissions?.isAcknowledged !== false;
+  const isAcknowledged = userProfile?.permissions?.isAcknowledged;
   const [isAckLoading, setIsAckLoading] = useState(false);
-  // Track previous authentication state to detect fresh logins
-  const prevIsAuthenticatedRef = useRef(false);
-  // Track previous acknowledgment state to detect when permissions change while logged in
-  const prevIsAcknowledgedRef = useRef(null);
-  // Track if this is the first effect run
-  const isFirstRunRef = useRef(true);
-  // Track if user was force logged out (using sessionStorage to persist across remounts)
-  // Check sessionStorage on component initialization
-  const checkWasForceLoggedOut = () => {
-    const wasForceLoggedOut = sessionStorage.getItem('wasForceLoggedOut') === 'true';
-    if (wasForceLoggedOut) {
-      // Clear the flag after reading
-      sessionStorage.removeItem('wasForceLoggedOut');
-    }
-    return wasForceLoggedOut;
-  };
-  const wasForceLoggedOutRef = useRef(checkWasForceLoggedOut());
-  const wasForceLoggedOut = wasForceLoggedOutRef.current;
   // Get seconds remaining until force logout
   const secondsRemaining = useCountdown(forceLogoutAt);
+  const [wasForceLoggedOut, setWasForceLoggedOut] = useState(false);
+  const [flagReady, setFlagReady] = useState(false);
+  // Track the initial acknowledged state when user first logs in
+  const [initialAcknowledgedState, setInitialAcknowledgedState] = useState(null);
+  // Track if user has just logged in (to distinguish from mid-session changes)
+  const [isInitialLogin, setIsInitialLogin] = useState(false);
 
-  // Start the force logout countdown when conditions are met
+  // On mount or when authentication changes, read flag from sessionStorage
   useEffect(() => {
-    const wasPreviouslyAuthenticated = prevIsAuthenticatedRef.current;
-    const wasPreviouslyAcknowledged = prevIsAcknowledgedRef.current;
-    const isFirstRun = isFirstRunRef.current;
-    const justLoggedIn = !wasPreviouslyAuthenticated && isAuthenticated;
-    // Detect if permissions changed while user was logged in
-    // (user was authenticated AND acknowledged before, now unacknowledged)
-    const permissionsChangedWhileLoggedIn = wasPreviouslyAuthenticated && wasPreviouslyAcknowledged && !isAcknowledged;
-
-    // On first run, initialize refs to current state
-    if (isFirstRun) {
-      isFirstRunRef.current = false;
-      prevIsAuthenticatedRef.current = isAuthenticated;
-      prevIsAcknowledgedRef.current = isAcknowledged;
-      
-      // On first mount, determine if this is:
-      // 1. First login after permission change (was logged out when permissions changed)
-      // 2. Logging back in after force logout (was logged in, force logged out, now logging back in)
-      // Both scenarios should show notification only (no timer) to prevent logout loop
-      if (isAuthenticated && !isAcknowledged && !forceLogoutAt) {
-        if (wasForceLoggedOut) {
-          // User was force logged out - they've already been through the timer once
-          // Just show notification (no new timer)
-        } else {
-          // First login after permission change - show notification only (no timer)
-        }
+    if (isAuthenticated) {
+      try {
+        const flag = sessionStorage.getItem('wasForceLoggedOut');
+        setWasForceLoggedOut(flag === 'true');
+        sessionStorage.removeItem('wasForceLoggedOut');
+      } catch (error) {
+        // sessionStorage might not be available (private browsing, etc.)
+        console.warn('Could not access sessionStorage:', error);
       }
+
+      // Mark as initial login (initial state will be captured when profile loads)
+      setIsInitialLogin(true);
+      setInitialAcknowledgedState(null); // Reset to wait for profile load
+    } else {
+      // User logged out, reset state
+      setIsInitialLogin(false);
+      setInitialAcknowledgedState(null);
+      setWasForceLoggedOut(false);
+    }
+
+    setFlagReady(true);
+  }, [isAuthenticated]);
+
+  // Track when user profile is first loaded after login and handle initial login cases
+  useEffect(() => {
+    if (!isAuthenticated || !flagReady) return;
+    if (userProfile === null || userProfile === undefined) return; // Wait for profile to load
+    if (!isInitialLogin) return; // Only handle initial login cases
+
+    // Capture the initial acknowledged state when profile is first loaded
+    if (initialAcknowledgedState === null) {
+      setInitialAcknowledgedState(isAcknowledged);
+      return; // Wait for next render to check conditions
+    }
+
+    // Edge Case 2: User permissions changed when logged out → show banner only on login
+    // Detected by: user just logged in with unacknowledged permissions
+    // AND was NOT force logged out (just normal logout with permission changes)
+    const loggedInWithUnacknowledgedPermissions =
+      !isAcknowledged && !forceLogoutAt && !wasForceLoggedOut;
+
+    if (loggedInWithUnacknowledgedPermissions) {
+      console.log(
+        'Edge Case 2: User logged in with unacknowledged permissions (changed while logged out) — showing banner only',
+      );
+      setIsInitialLogin(false); // Mark as no longer initial login
       return;
     }
 
-    // Update refs for next render
-    prevIsAuthenticatedRef.current = isAuthenticated;
-    prevIsAcknowledgedRef.current = isAcknowledged;
+    // Edge Case 3: User was force logged out → permissions change → user logs back in → show banner only
+    // Detected by: user just logged in with unacknowledged permissions AND was force logged out
+    const loggedInAfterForceLogout = !isAcknowledged && !forceLogoutAt && wasForceLoggedOut;
 
-    // Only start force logout timer if:
-    // 1. User is authenticated AND
-    // 2. Permissions are not acknowledged AND
-    // 3. No force logout is already in progress AND
-    // 4. Permissions changed while user was logged in (detected by transition from acknowledged to unacknowledged)
-    if (isAuthenticated && !isAcknowledged && !forceLogoutAt && permissionsChangedWhileLoggedIn) {
-      // User was logged in when permissions changed - start force logout timer
-      dispatch(startForceLogout(20000)); // 20 seconds countdown
-    } else if (justLoggedIn && !isAcknowledged && !forceLogoutAt) {
-      // User just logged in after permissions changed while logged out
-      // Show notification only (no force logout timer)
-      // Header component will handle showing the notification
+    if (loggedInAfterForceLogout) {
+      console.log(
+        'Edge Case 3: User logged in after force logout with unacknowledged permissions — showing banner only',
+      );
+      setIsInitialLogin(false); // Mark as no longer initial login
+      return;
     }
-  }, [isAuthenticated, isAcknowledged, forceLogoutAt, dispatch]);
+
+    // If initial login and permissions are acknowledged, mark as no longer initial
+    if (isAcknowledged) {
+      setIsInitialLogin(false);
+    }
+  }, [
+    isAuthenticated,
+    flagReady,
+    isAcknowledged,
+    forceLogoutAt,
+    wasForceLoggedOut,
+    dispatch,
+    isInitialLogin,
+    initialAcknowledgedState,
+    userProfile,
+  ]);
+
+  // Handle mid-session permission changes (Edge Case 1)
+  useEffect(() => {
+    if (!isAuthenticated || !flagReady) return;
+    if (userProfile === null || userProfile === undefined) return; // Wait for profile to load
+    if (isInitialLogin) return; // Skip mid-session checks during initial login
+
+    // Edge Case 1: User permissions changed when logged in → start timer
+    // Detected by: permissions were acknowledged (or was null/true), then became unacknowledged
+    // AND user was already logged in (not initial login)
+    const permissionsChangedMidSession =
+      !isAcknowledged && !forceLogoutAt && initialAcknowledgedState !== false; // Was acknowledged or null before (not explicitly false)
+
+    if (permissionsChangedMidSession) {
+      console.log(
+        'Edge Case 1: Starting force logout countdown due to mid-session permission change',
+      );
+      dispatch(startForceLogout(20000));
+      return;
+    }
+
+    // Case: permissions re-acknowledged → cancel timer
+    if (isAcknowledged && forceLogoutAt) {
+      dispatch(stopForceLogout());
+      // Reset initial state since permissions are now acknowledged
+      setInitialAcknowledgedState(true);
+    }
+  }, [
+    isAuthenticated,
+    flagReady,
+    isAcknowledged,
+    forceLogoutAt,
+    dispatch,
+    isInitialLogin,
+    initialAcknowledgedState,
+    userProfile,
+  ]);
+
   // Handle acknowledgment of permission changes
   const handleAcknowledge = async () => {
     try {
@@ -108,6 +163,9 @@ function PermissionWatcher() {
         })
         .then(() => {
           setIsAckLoading(false);
+          // Update initial state to reflect acknowledgment
+          setInitialAcknowledgedState(true);
+          setIsInitialLogin(false);
           dispatch(getUserProfile(_id));
         })
         .catch(error => {
@@ -122,21 +180,57 @@ function PermissionWatcher() {
     }
   };
 
-  // Only render the popup when a force logout is in progress
-  if (!forceLogoutAt) {
-    return null;
-  }
-  return (
-    !isAcknowledged && (
+  // // Only render the popup when a force logout is in progress
+  // if (!forceLogoutAt) {
+  //   return null;
+  // }
+  // return (
+  //   !isAcknowledged && (
+  //     <PopUpBar
+  //       message={`Permissions changed—logging out in ${secondsRemaining}s. Timer will be stopped; please restart after login.`}
+  //       onClickClose={handleAcknowledge}
+  //       textColor="red"
+  //       isLoading={isAckLoading}
+  //       button={false}
+  //     />
+  //   )
+  // );
+
+  // Edge Case 2 & 3: Show banner only (no timer) when user logs in with unacknowledged permissions
+  // This happens when:
+  // - Edge Case 2: Permissions changed while user was logged out
+  // - Edge Case 3: User was force logged out and logs back in with unacknowledged permissions
+  const showBannerOnly =
+    isAuthenticated &&
+    !isAcknowledged &&
+    !forceLogoutAt &&
+    isInitialLogin &&
+    initialAcknowledgedState !== null; // Profile has been loaded
+
+  if (showBannerOnly) {
+    return (
       <PopUpBar
-        message={`Permissions changed—logging out in ${secondsRemaining}s. Timer will be stopped; please restart after login.`}
+        message="Your permissions have changed. Please review and acknowledge to continue."
         onClickClose={handleAcknowledge}
-        textColor="red"
         isLoading={isAckLoading}
-        button={false}
+        button
       />
-    )
-  );
+    );
+  }
+
+  // Edge Case 1: Force logout timer running (mid-session permission change)
+  if (forceLogoutAt && !isAcknowledged) {
+    return (
+      <PopUpBar
+        message={`Permissions changed—logging out in ${secondsRemaining}s unless acknowledged.`}
+        onClickClose={handleAcknowledge}
+        isLoading={isAckLoading}
+        button
+      />
+    );
+  }
+
+  return null;
 }
 
 export default PermissionWatcher;
