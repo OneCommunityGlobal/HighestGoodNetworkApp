@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import styles from "./ProjectManagerNotification.module.css";
 
@@ -32,6 +33,7 @@ async function sendNotification({ educatorIds, message }) {
 }
 
 export default function ProjectManagerNotification({ educators, onClose, onSent }) {
+  const darkMode = useSelector((state) => state.theme?.darkMode);
   const [selected, setSelected] = React.useState([]);
   const [message, setMessage] = React.useState("");
   const [sending, setSending] = React.useState(false);
@@ -47,9 +49,7 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
   }, [message]);
 
   React.useEffect(() => {
-    function onKey(e) {
-      if (e.key === "Escape") onClose();
-    }
+    function onKey(e) { if (e.key === "Escape") onClose(); }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
@@ -57,12 +57,8 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
   const allChecked = selected.length === educators.length && educators.length > 0;
   const someChecked = selected.length > 0 && selected.length < educators.length;
 
-  function toggleAll() {
-    setSelected(allChecked ? [] : educators.map((e) => e.id));
-  }
-  function toggleOne(id) {
-    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
-  }
+  function toggleAll() { setSelected(allChecked ? [] : educators.map((e) => e.id)); }
+  function toggleOne(id) { setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])); }
 
   async function handleSend() {
     setSending(true);
@@ -80,7 +76,7 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
   }
 
   return (
-    <div className={styles.overlay} role="dialog" aria-modal="true" aria-labelledby="composer-title">
+    <div className={`${styles.overlay} ${darkMode ? styles.dark : ""}`} role="dialog" aria-modal="true" aria-labelledby="composer-title">
       <div className={styles.modal}>
         <div className={styles.header}>
           <h3 id="composer-title" className={styles.title}>New Announcement</h3>
@@ -135,12 +131,8 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
         </div>
 
         <div className={styles.footer}>
-          <button className={styles.cancelBtnNotify} onClick={onClose} disabled={sending}>
-            Cancel
-          </button>
-          <button className={styles.primaryBtn} onClick={handleSend} disabled={sending}>
-            {sending ? "Sending…" : "Send Announcement"}
-          </button>
+          <button className={styles.cancelBtnNotify} onClick={onClose} disabled={sending}>Cancel</button>
+          <button className={styles.primaryBtn} onClick={handleSend} disabled={sending}>{sending ? "Sending…" : "Send Announcement"}</button>
         </div>
       </div>
     </div>

@@ -1,36 +1,27 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 import styles from "./ProjectManagerEducatorView.module.css";
 import NotificationComposer from "./ProjectManagerNotification";
 
 const mockEducators = [
   {
-    id: "t-001",
-    name: "Alice Johnson",
-    subject: "Mathematics",
-    studentCount: 3,
-    students: [
+    id: "t-001", name: "Alice Johnson", subject: "Mathematics", studentCount: 3, students: [
       { id: "s-101", name: "Jay", grade: "7", progress: 0.78 },
       { id: "s-102", name: "Kate", grade: "7", progress: 0.62 },
       { id: "s-103", name: "Sam", grade: "8", progress: 0.85 },
-    ],
+    ]
   },
   {
-    id: "t-002",
-    name: "Brian Lee",
-    subject: "Science",
-    studentCount: 2,
-    students: [
+    id: "t-002", name: "Brian Lee", subject: "Science", studentCount: 2, students: [
       { id: "s-201", name: "Alina Gupta", grade: "6", progress: 0.54 },
       { id: "s-202", name: "Samir Khan", grade: "6", progress: 0.91 },
-    ],
+    ]
   },
   {
-    id: "t-003",
-    name: "John Doe",
-    subject: "English",
-    studentCount: 1,
-    students: [{ id: "s-301", name: "Ryan", grade: "7", progress: 0.73 }],
+    id: "t-003", name: "John Doe", subject: "English", studentCount: 1, students: [
+      { id: "s-301", name: "Ryan", grade: "7", progress: 0.73 },
+    ]
   },
 ];
 
@@ -66,22 +57,13 @@ async function fetchStudentsAPI(educatorId) {
 }
 
 async function fetchEducators() {
-  try {
-    return await fetchEducatorsAPI();
-  } catch {
-    await new Promise((r) => setTimeout(r, 200));
-    return mockEducators.map(({ students, ...rest }) => rest);
-  }
+  try { return await fetchEducatorsAPI(); }
+  catch { await new Promise((r) => setTimeout(r, 200)); return mockEducators.map(({ students, ...rest }) => rest); }
 }
 
 async function fetchStudentsByEducator(educatorId) {
-  try {
-    return await fetchStudentsAPI(educatorId);
-  } catch {
-    await new Promise((r) => setTimeout(r, 150));
-    const edu = mockEducators.find((e) => e.id === educatorId);
-    return edu ? edu.students : [];
-  }
+  try { return await fetchStudentsAPI(educatorId); }
+  catch { await new Promise((r) => setTimeout(r, 150)); const edu = mockEducators.find((e) => e.id === educatorId); return edu ? edu.students : []; }
 }
 
 function StudentCard({ s }) {
@@ -132,12 +114,7 @@ function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
         type="button"
         className={styles.rowHeader}
         onClick={handleToggle}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            handleToggle();
-          }
-        }}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleToggle(); } }}
         aria-expanded={isExpanded}
         aria-controls={`students-${educator.id}`}
       >
@@ -156,14 +133,10 @@ function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
           {loading ? (
             <div className={styles.loadingText}>Loading students…</div>
           ) : filteredStudents.length === 0 ? (
-            <div className={styles.emptyText}>
-              {studentQuery ? "No students match this search." : "No students found."}
-            </div>
+            <div className={styles.emptyText}>{studentQuery ? "No students match this search." : "No students found."}</div>
           ) : (
             <div className={styles.students}>
-              {filteredStudents.map((s) => (
-                <StudentCard key={s.id} s={s} />
-              ))}
+              {filteredStudents.map((s) => <StudentCard key={s.id} s={s} />)}
             </div>
           )}
         </div>
@@ -173,6 +146,7 @@ function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
 }
 
 export default function ProjectManagerEducatorView() {
+  const darkMode = useSelector((state) => state.theme?.darkMode);
   const [educators, setEducators] = React.useState([]);
   const [filtered, setFiltered] = React.useState([]);
   const [query, setQuery] = React.useState("");
@@ -191,70 +165,46 @@ export default function ProjectManagerEducatorView() {
 
   React.useEffect(() => {
     (async () => {
-      try {
-        const data = await fetchEducators();
-        setEducators(data);
-        setFiltered(data);
-      } catch {
-        setError("Failed to load educators");
-      } finally {
-        setLoading(false);
-      }
+      try { const data = await fetchEducators(); setEducators(data); setFiltered(data); }
+      catch { setError("Failed to load educators"); }
+      finally { setLoading(false); }
     })();
   }, []);
 
   React.useEffect(() => {
     const q = query.trim().toLowerCase();
-    setFiltered(
-      educators.filter((e) => {
-        const matchText =
-          e.name.toLowerCase().includes(q) || e.subject.toLowerCase().includes(q);
-        const matchSubject = subject === "All" || e.subject === subject;
-        return matchText && matchSubject;
-      })
-    );
+    setFiltered(educators.filter((e) => {
+      const matchText = e.name.toLowerCase().includes(q) || e.subject.toLowerCase().includes(q);
+      const matchSubject = subject === "All" || e.subject === subject;
+      return matchText && matchSubject;
+    }));
   }, [query, subject, educators]);
 
   function toggleExpanded(id) {
     setExpandedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   }
 
-  function expandAll() {
-    setExpandedIds(new Set(filtered.map((e) => e.id)));
-  }
-  function collapseAll() {
-    setExpandedIds(new Set());
-  }
-
-  function handleOpenComposer() {
-    setShowComposer(true);
-  }
-  function handleCloseComposer() {
-    setShowComposer(false);
-  }
+  function expandAll() { setExpandedIds(new Set(filtered.map((e) => e.id))); }
+  function collapseAll() { setExpandedIds(new Set()); }
+  function handleOpenComposer() { setShowComposer(true); }
+  function handleCloseComposer() { setShowComposer(false); }
   function handleSent(payload) {
-    setLastSentInfo({
-      educatorCount: payload.educatorIds.length,
-      timestamp: new Date().toISOString(),
-    });
+    setLastSentInfo({ educatorCount: payload.educatorIds.length, timestamp: new Date().toISOString() });
     setShowComposer(false);
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.dark : ""}`}>
       <div className={styles.breadcrumb}>
-        <span>Home</span>
-        <span className={styles.sep}>/</span>
-        <span>Project Manager</span>
+        <span>Home</span><span className={styles.sep}>/</span><span>Project Manager</span>
       </div>
 
       <div className={styles.header}>
-        <div>
+        <div className={styles.titleBlock}>
           <h1 className={styles.title}>Project Manager Dashboard</h1>
           <p className={styles.subtitle}>View educators and their assigned students</p>
         </div>
@@ -274,11 +224,7 @@ export default function ProjectManagerEducatorView() {
             onChange={(e) => setSubject(e.target.value)}
             aria-label="Filter by subject"
           >
-            {subjects.map((subj) => (
-              <option key={subj} value={subj}>
-                {subj}
-              </option>
-            ))}
+            {subjects.map((subj) => <option key={subj} value={subj}>{subj}</option>)}
           </select>
           <input
             type="text"
@@ -288,36 +234,24 @@ export default function ProjectManagerEducatorView() {
             onChange={(e) => setStudentQuery(e.target.value)}
             aria-label="Search students"
           />
-          <button className={styles.ghostBtn} onClick={expandAll}>
-            Expand all
-          </button>
-          <button className={styles.ghostBtn} onClick={collapseAll}>
-            Collapse all
-          </button>
-          <button className={styles.primaryBtn} onClick={handleOpenComposer}>
-            New Announcement
-          </button>
+          <button className={styles.ghostBtn} onClick={expandAll}>Expand all</button>
+          <button className={styles.ghostBtn} onClick={collapseAll}>Collapse all</button>
+          <button className={`${styles.primaryBtn} ${styles.pushRight}`} onClick={handleOpenComposer}>New Announcement</button>
         </div>
       </div>
 
       {lastSentInfo && (
         <div className={styles.successBanner} role="status">
-          Sent to {lastSentInfo.educatorCount} educator
-          {lastSentInfo.educatorCount === 1 ? "" : "s"} at{" "}
-          {new Date(lastSentInfo.timestamp).toLocaleTimeString()}
+          Sent to {lastSentInfo.educatorCount} educator{lastSentInfo.educatorCount === 1 ? "" : "s"} at {new Date(lastSentInfo.timestamp).toLocaleTimeString()}
         </div>
       )}
 
       <section className={styles.card} aria-label="Educators">
-        <div className={styles.cardHeader}>
-          <h2 className={styles.cardTitle}>Educators</h2>
-        </div>
+        <div className={styles.cardHeader}><h2 className={styles.cardTitle}>Educators</h2></div>
         <div className={styles.cardBody}>
           {loading && <div className={styles.loadingText}>Loading…</div>}
           {error && <div className={styles.errorText}>{error}</div>}
-          {!loading && !error && filtered.length === 0 && (
-            <div className={styles.emptyText}>No educators match your search.</div>
-          )}
+          {!loading && !error && filtered.length === 0 && <div className={styles.emptyText}>No educators match your search.</div>}
           {!loading && !error && filtered.length > 0 && (
             <div role="list" aria-label="Educator list">
               {filtered.map((e) => (
