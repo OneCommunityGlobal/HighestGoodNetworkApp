@@ -132,7 +132,7 @@ export default function ExpenseBarChart({ darkMode }) {
             value={projectId}
             onChange={e => setProjectId(e.target.value)}
             style={{ marginLeft: '0.3rem', width: '100%' }}
-            className={darkMode ? styles.selectDarkMode : ''}
+            className={darkMode ? styles.selectDarkMode : styles.selectLightMode}
           >
             <option value="">All</option>
             {projects.map(p => (
@@ -148,7 +148,7 @@ export default function ExpenseBarChart({ darkMode }) {
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
             style={{ marginLeft: '0.3rem', width: '100%' }}
-            className={darkMode ? styles.selectDarkMode : ''}
+            className={darkMode ? styles.selectDarkMode : styles.selectLightMode}
           >
             <option value="ALL">All</option>
             {categories.map(cat => (
