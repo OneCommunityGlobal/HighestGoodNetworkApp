@@ -31,13 +31,23 @@ body {
   color: #2c3e50;
 }
 
+.dashboard-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dashboard-search-container {
+  flex: 1;
+  max-width: 600px;
+}
+
 .dashboard-search-container input {
   border: 2px solid #2c3e50;
   border-radius: 25px;
   padding: 12px 20px;
   font-size: 1rem;
   width: 100%;
-  max-width: 600px;
   transition: all 0.3s ease;
 }
 
@@ -133,12 +143,7 @@ body {
   margin: 5px 0;
 }
 
-.dashboard-actions {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.dashboard-actions button {
+.show-past-events-btn {
   background-color: #2c3e50;
   color: #ffffff;
   border: none;
@@ -148,9 +153,10 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: bold;
+  white-space: nowrap;
 }
 
-.dashboard-actions button:hover {
+.show-past-events-btn:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

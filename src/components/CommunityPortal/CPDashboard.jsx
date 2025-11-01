@@ -51,6 +51,9 @@ export function CPDashboard() {
               className="dashboard-search"
             />
           </div>
+          <Button color="primary" className="show-past-events-btn">
+            Show Past Events
+          </Button>
           {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
             <DropdownToggle caret color="secondary">
               Community Portal
@@ -137,9 +140,6 @@ export function CPDashboard() {
               <div className="no-events">No events available</div>
             )}
           </Row>
-          <div className="dashboard-actions">
-            <Button color="primary">Show Past Events</Button>
-          </div>
         </Col>
       </Row>
     </Container>
