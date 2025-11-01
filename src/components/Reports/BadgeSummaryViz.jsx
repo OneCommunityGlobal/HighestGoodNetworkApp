@@ -16,7 +16,7 @@ import {
 import { useSelector } from 'react-redux';
 import BadgeImage from '~/components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Badge/BadgeReport/BadgeReport.css';
+import "../../styles/badges.module.css"
 import './BadgeSummaryViz.css';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs }) {
