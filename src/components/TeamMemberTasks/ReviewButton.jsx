@@ -15,7 +15,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import styles from './style.module.css';
-import './reviewButton.css';
+import './reviewButton.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

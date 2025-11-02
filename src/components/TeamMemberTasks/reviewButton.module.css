@@ -9,7 +9,18 @@
 .review-button-dropdown {
   overflow-y: auto; /* enable scrolling if the dropdown is too long*/
   z-index: 1000;
-
+}
+.reviewBtn-dropdown-wrapper{
+  display: 'inline-flex';
+  align-items: 'center';
+  margin-top: 6;
+  font-size: 1px !important;
+  font-size: 14px !important;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 6px 14px !important;
+  min-width: 140px;
+  height: auto !important;
 }
 
 .dark-mode-btn:hover{
