@@ -356,7 +356,7 @@ function WeeklyProjectSummary() {
               key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
-              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours darkMode={darkMode} />}
             </div>
           );
         }),

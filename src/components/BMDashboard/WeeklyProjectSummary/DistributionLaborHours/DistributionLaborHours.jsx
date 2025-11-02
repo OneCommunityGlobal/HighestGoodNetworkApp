@@ -20,7 +20,7 @@ const CustomTooltip = ({ active, payload, total }) => {
   return null;
 };
 
-export default function DistributionLaborHours() {
+export default function DistributionLaborHours({ darkMode }) {
   const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
@@ -57,10 +57,12 @@ export default function DistributionLaborHours() {
 
   return (
     <div className={styles.container}>
-      <h3 className={styles.title}>Distribution of Labor Hours</h3>
+      <h3 className={`${styles.title} ${darkMode ? 'text-light' : ''}`}>
+        Distribution of Labor Hours
+      </h3>
 
       <div className={styles.filters}>
-        <label>
+        <label className={`${darkMode ? 'text-light' : ''}`}>
           From:
           <input
             type="date"
@@ -68,7 +70,7 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, from: e.target.value })}
           />
         </label>
-        <label>
+        <label className={`${darkMode ? 'text-light' : ''}`}>
           To:
           <input
             type="date"
@@ -76,7 +78,7 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
           />
         </label>
-        <label>
+        <label className={`${darkMode ? 'text-light' : ''}`}>
           Project:
           <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
             <option value="">All</option>
@@ -84,7 +86,7 @@ export default function DistributionLaborHours() {
             <option value="Project B">Project B</option>
           </select>
         </label>
-        <label>
+        <label className={`${darkMode ? 'text-light' : ''}`}>
           Member:
           <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
             <option value="">All</option>
