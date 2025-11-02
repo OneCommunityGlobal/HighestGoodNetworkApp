@@ -1,4 +1,3 @@
-// InjuryChartForm.jsx — dynamic severities + severity-by-project chart
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
@@ -15,14 +14,11 @@ import {
 } from 'recharts';
 import { toast } from 'react-toastify';
 
-// Your app utilities
 import { ENDPOINTS } from '../../../utils/URL';
 
-// Redux thunks
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import { fetchSeverities } from '../../../actions/bmdashboard/injuryActions';
 
-// A small color palette (cycled if there are more series than colors)
 const PALETTE = [
   '#1f77b4',
   '#ff7f0e',
@@ -39,29 +35,23 @@ const PALETTE = [
 function InjuryChartForm({ dark = false }) {
   const dispatch = useDispatch();
 
-  // Redux state
   const bmProjects = useSelector(s => s.bmProjects || []); // [{ _id, name }]
   const bmSeverities = useSelector(s => s.bmInjurySeverities || []); // ['Critical','Low',...]
 
-  // Local state
   const [raw, setRaw] = useState([]); // rows from /bm/injuries/severity-by-project
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Filters
   const [projectId, setProjectId] = useState('all');
   const [department, setDepartment] = useState('all');
 
-  // Chart mode
   const [stacked, setStacked] = useState(true);
 
-  // 1) Load projects + severities (from API via Redux)
   useEffect(() => {
     dispatch(fetchBMProjects());
     dispatch(fetchSeverities());
   }, [dispatch]);
 
-  // 2) Fetch severity-by-project (directly here)
   useEffect(() => {
     const run = async () => {
       setLoading(true);
@@ -69,8 +59,7 @@ function InjuryChartForm({ dark = false }) {
       try {
         const res = await axios.get(ENDPOINTS.BM_INJURY_SEVERITY);
         const data = Array.isArray(res.data) ? res.data : [];
-        // Debug: inspect the API rows
-        console.log('Raw severity-by-project:', data);
+
         setRaw(data);
       } catch (e) {
         const msg = e?.response?.data?.error || e?.message || 'Failed to fetch chart data';
@@ -83,7 +72,6 @@ function InjuryChartForm({ dark = false }) {
     run();
   }, []);
 
-  // 3) Map of projectId -> display name (prefer Redux list)
   const projectNameById = useMemo(() => {
     const m = new Map();
     for (const p of bmProjects) {
@@ -92,34 +80,29 @@ function InjuryChartForm({ dark = false }) {
     return m;
   }, [bmProjects]);
 
-  // 4) Dynamic severities list (no hardcoding). Fallback if API empty.
   const SEVERITIES = useMemo(() => {
     if (!bmSeverities?.length) {
-      return ['Critical', 'Major', 'Medium', 'Minor', 'Serious', 'Low']; // graceful fallback
+      return ['Critical', 'Major', 'Medium', 'Minor', 'Serious', 'Low'];
     }
-    // API may return strings or objects. Normalize to strings.
+
     return bmSeverities.map(s => (typeof s === 'string' ? s : s?.name)).filter(Boolean);
   }, [bmSeverities]);
 
-  // 5) Departments list for filter
   const departments = useMemo(() => {
     const set = new Set();
     for (const r of raw) if (r?.department) set.add(r.department);
     return ['all', ...Array.from(set).sort()];
   }, [raw]);
 
-  // 6) Transform rows -> Recharts data [{project, <severity1>, <severity2>, ..., total}]
   const chartData = useMemo(() => {
     if (!raw.length) return [];
 
-    // Apply filters
     const filtered = raw.filter(r => {
       const okProject = projectId === 'all' ? true : r.projectId === projectId;
       const okDept = department === 'all' ? true : r.department === department;
       return okProject && okDept;
     });
 
-    // Group by project (using Redux name if available)
     const byProject = new Map();
     for (const row of filtered) {
       const label =
@@ -140,11 +123,9 @@ function InjuryChartForm({ dark = false }) {
       bucket.total += val;
     }
 
-    // Sort alphabetically by project (or change to total desc if desired)
     return Array.from(byProject.values()).sort((a, b) => a.project.localeCompare(b.project));
   }, [raw, projectId, department, projectNameById, SEVERITIES]);
 
-  // 7) Rendering
   const containerClass = `p-4 rounded shadow-sm ${dark ? 'bg-dark text-light' : 'bg-white'}`;
 
   if (loading) {
@@ -157,7 +138,6 @@ function InjuryChartForm({ dark = false }) {
 
   return (
     <div className="p-3">
-      {/* Filters */}
       <div
         className={`mb-4 p-3 rounded shadow-sm ${dark ? 'bg-secondary text-light' : 'bg-white'}`}
       >
@@ -223,7 +203,6 @@ function InjuryChartForm({ dark = false }) {
         </div>
       )}
 
-      {/* Chart */}
       {!error && chartData.length > 0 && (
         <div className={containerClass}>
           <h5 className="text-center mb-3">Injuries by Severity per Project</h5>
