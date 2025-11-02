@@ -44,7 +44,7 @@ export const assignAtoms = (studentId, atoms, note) => {
     try {
       const payload = {
         studentId,
-        atom_types: atoms || [],
+        atomTypes: atoms || [],
         note: note || '',
       };
 
