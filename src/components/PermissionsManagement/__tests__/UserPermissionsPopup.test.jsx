@@ -237,7 +237,7 @@ describe('UserPermissionsPopup component', () => {
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith(
         `
-        Permission updated failed. ${mockObject}
+          Permission update failed. ${mockObject}
         `,
         {
           autoClose: 10000,
