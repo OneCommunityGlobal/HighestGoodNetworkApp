@@ -4,16 +4,16 @@ import styles from './DistributionLaborHours.module.css';
 
 const COLORS = ['#f9f3e3', '#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbbff'];
 
-const CustomTooltip = ({ active, payload, total }) => {
+const CustomTooltip = ({ active, payload, total, darkMode }) => {
   if (active && payload && payload.length) {
     const category = payload[0].name;
     const value = payload[0].value;
     const percent = ((value / total) * 100).toFixed(1);
     return (
-      <div className={styles.tooltip}>
-        <p>{category}</p>
-        <p>{`Hours: ${value} hrs`}</p>
-        <p>{`Percentage: ${percent}%`}</p>
+      <div className={`${styles.tooltip} ${darkMode ? styles.darkMode : ''}`}>
+        <p className={darkMode ? 'text-light' : ''}>{category}</p>
+        <p className={darkMode ? 'text-light' : ''}>{`Hours: ${value} hrs`}</p>
+        <p className={darkMode ? 'text-light' : ''}>{`Percentage: ${percent}%`}</p>
       </div>
     );
   }
@@ -68,6 +68,9 @@ export default function DistributionLaborHours({ darkMode }) {
             type="date"
             value={dateRange.from}
             onChange={e => setDateRange({ ...dateRange, from: e.target.value })}
+            className={`${styles.toolsHorizontalBarChartDatePicker} ${
+              darkMode ? styles.darkDate : ''
+            }`}
           />
         </label>
         <label className={`${darkMode ? 'text-light' : ''}`}>
@@ -76,11 +79,18 @@ export default function DistributionLaborHours({ darkMode }) {
             type="date"
             value={dateRange.to}
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
+            className={`${styles.toolsHorizontalBarChartDatePicker} ${
+              darkMode ? styles.darkDate : ''
+            }`}
           />
         </label>
         <label className={`${darkMode ? 'text-light' : ''}`}>
           Project:
-          <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
+          <select
+            onChange={e => setProjectFilter(e.target.value)}
+            value={projectFilter}
+            className={darkMode ? styles.selectDarkMode : styles.selectLightMode}
+          >
             <option value="">All</option>
             <option value="Project A">Project A</option>
             <option value="Project B">Project B</option>
@@ -88,13 +98,20 @@ export default function DistributionLaborHours({ darkMode }) {
         </label>
         <label className={`${darkMode ? 'text-light' : ''}`}>
           Member:
-          <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
+          <select
+            onChange={e => setMemberFilter(e.target.value)}
+            value={memberFilter}
+            className={darkMode ? styles.selectDarkMode : styles.selectLightMode}
+          >
             <option value="">All</option>
             <option value="Member 1">Member 1</option>
             <option value="Member 2">Member 2</option>
           </select>
         </label>
-        <button className={styles.button} onClick={() => window.location.reload()}>
+        <button
+          className={`${styles.button} ${darkMode ? 'bg-azure text-light' : ''}`}
+          onClick={() => window.location.reload()}
+        >
           Submit
         </button>
       </div>
@@ -128,7 +145,7 @@ export default function DistributionLaborHours({ darkMode }) {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip total={totalHours} />} />
+              <Tooltip content={<CustomTooltip total={totalHours} darkMode={darkMode} />} />
             </PieChart>
           </ResponsiveContainer>
         </div>
