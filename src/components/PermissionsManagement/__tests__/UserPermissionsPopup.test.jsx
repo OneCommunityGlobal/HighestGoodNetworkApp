@@ -153,7 +153,7 @@ describe('UserPermissionsPopup component', () => {
         email: 'Test2.Manager@gmail.com',
       },
     });
-    axios.put.mockResolvedValue({ status: 200 });
+    axios.patch.mockResolvedValue({ status: 200 });
 
     render(
       <Provider store={store}>
@@ -187,7 +187,7 @@ describe('UserPermissionsPopup component', () => {
         email: 'Test2.Manager@gmail.com',
       },
     });
-    axios.put.mockResolvedValue({ status: 200 });
+    axios.patch.mockResolvedValue({ status: 200 });
 
     render(
       <Provider store={store}>
@@ -220,7 +220,7 @@ describe('UserPermissionsPopup component', () => {
         email: 'Test2.Manager@gmail.com',
       },
     });
-    axios.put.mockRejectedValue({ err: 'server error' });
+    axios.patch.mockRejectedValue({ err: 'server error' });
     render(
       <Provider store={store}>
         <ModalContext.Provider value={mockModalContext}>
