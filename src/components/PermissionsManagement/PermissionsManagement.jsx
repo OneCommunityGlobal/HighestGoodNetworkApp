@@ -58,7 +58,6 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
 
   useEffect(() => {
     if (reminderUser !== null) {
-      // console.log(reminderUser);
     }
   }, [reminderUser]);
 
@@ -114,8 +113,8 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
       <div
         key={`${role}+permission`}
         className={`${styles['permissions-management']} ${
-          darkMode ? `bg-yinmn-blue ${styles['dark-box-shadow']}` : ''
-        }`}
+          darkMode ? styles['bg-yinmn-blue'] : ''
+        } ${darkMode ? styles['dark-box-shadow'] : ''}`}
       >
         <h1 className={styles['permissions-management__title']}>
           User Roles
@@ -160,11 +159,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
                       onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                       key={roleName}
                       type="button"
-                      className={`${styles['role-btn']} ${darkMode ? 'text-light' : ''}`}
+                      className={`${styles['role-btn']} ${darkMode ? styles['text-light'] : ''}`}
                     >
                       {roleName}
                     </button>
-                    <div className={styles['infos']}>
+                    <div className="infos">
                       <EditableInfoModal
                         role={role}
                         areaName={`${roleName} Info`}
@@ -184,7 +183,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
             <div className={styles['buttons-container']}>
               {canPostRole && (
                 <Button
-                  className="permissions-management__button"
+                  className={styles['permissions-management__button']}
                   type="button"
                   color="success"
                   onClick={() => togglePopUpNewRole()}
@@ -196,7 +195,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
               {canManageUserPermissions && (
                 <Button
                   color="primary"
-                  className="permissions-management__button"
+                  className={styles['permissions-management__button']}
                   type="button"
                   onClick={() => {
                     togglePopUpUserPermissions();
@@ -213,8 +212,8 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
           <Modal
             isOpen={isNewRolePopUpOpen}
             toggle={togglePopUpNewRole}
-            id="modal-content__new-role"
-            className={darkMode ? 'dark-mode text-light' : ''}
+            id={styles['modal-content__new-role']}
+            className={darkMode ? styles['dark-mode text-light'] : ''}
           >
             <ModalHeader
               toggle={togglePopUpNewRole}
@@ -224,7 +223,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
               Create New Role
             </ModalHeader>
             <ModalBody
-              id="modal-body_new-role--padding"
+              id={styles['modal-body_new-role--padding']}
               className={darkMode ? 'bg-yinmn-blue' : ''}
             >
               <CreateNewRolePopup
@@ -237,7 +236,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
           <Modal
             isOpen={isUserPermissionsOpen}
             toggle={togglePopUpUserPermissions}
-            id="modal-content__new-role"
+            id={styles['modal-content__new-role']}
             className={darkMode ? 'text-light dark-mode' : ''}
           >
             <ModalHeader
@@ -248,7 +247,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
               Manage User Permissions
             </ModalHeader>
             <ModalBody
-              id="modal-body_new-role--padding"
+              id={styles['modal-body_new-role--padding']}
               className={darkMode ? 'bg-yinmn-blue-light' : ''}
             >
               <UserPermissionsPopUp

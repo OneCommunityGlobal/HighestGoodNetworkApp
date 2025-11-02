@@ -145,28 +145,19 @@ function UserPermissionsPopUp({
           darkMode={darkMode}
         />
       )}
-      {isSubmitting && (
-        <div className={`${styles['modal-loader-overlay']} ${darkMode ? styles['dark-mode'] : ''}`}>
-          <div className={styles['modal-loader-spinner']}>
-            <div className={`spinner-border text-primary`} role="status">
-              <span className="sr-only">Updating permissions...</span>
-            </div>
-            <p className={`${styles['modal-loader-text']} ${darkMode ? styles['text-light'] : ''}`}>
-              Updating permissions...
-            </p>
-          </div>
-        </div>
-      )}
       <Form
-        id="manage__user-permissions"
+        id={styles['manage__user-permissions']}
         onSubmit={e => {
           updateProfileOnSubmit(e);
         }}
         autoComplete="off"
       >
-        <div className={styles['user-search-container']}>
+        <div
+          className={darkMode ? styles['text-space-cadet'] : ''}
+          style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
+        >
           <h4 className={styles['user-permissions-pop-up__title']}>
-            User name<span className={styles['red-asterisk']}>* </span>:
+            User name<span className="red-asterisk">* </span>:
           </h4>
           <Button
             type="button"
@@ -202,7 +193,7 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
-            className={darkMode ? `${styles['bg-darkmode-liblack']} text-light border-0` : ''}
+            className={darkMode ? styles['bg-darkmode-liblack text-light border-0'] : ''}
             autoComplete="off"
             name="user-search"
           />
@@ -212,7 +203,7 @@ function UserPermissionsPopUp({
               role="menu"
               aria-hidden="false"
               className={`dropdown-menu${isOpen ? ` show ${styles['dropdown__user-perms']}` : ''} ${
-                darkMode ? `${styles['bg-darkmode-liblack']} text-light` : ''
+                darkMode ? styles['bg-darkmode-liblack text-light'] : ''
               }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
@@ -261,7 +252,7 @@ function UserPermissionsPopUp({
             <></>
           )}
         </Dropdown>
-        <div className={styles['modal-permission-list-container']}>
+        <div>
           <h4
             className={`${styles['user-permissions-pop-up__title']} ${
               darkMode ? styles['text-space-cadet'] : ''
@@ -269,7 +260,7 @@ function UserPermissionsPopUp({
           >
             Permissions:
           </h4>
-          <ul className="user-role-tab__permission-list">
+          <ul className={styles['user-role-tab__permission-list']}>
             <PermissionList
               rolePermissions={userPermissions}
               immutablePermissions={actualUserRolePermission}
