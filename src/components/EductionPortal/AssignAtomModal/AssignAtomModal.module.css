@@ -234,6 +234,83 @@
   }
 }
 
+/* Student Search Styles */
+.studentSearchContainer {
+  position: relative;
+}
+
+.user__auto-complete {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #e9ecef;
+  transition: background-color 0.2s;
+}
+
+.user__auto-complete:hover {
+  background-color: #f8f9fa;
+}
+
+.user__auto-complete:last-child {
+  border-bottom: none;
+}
+
+.dropdown__user-perms {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Atom Selection Styles */
+.atomsContainer {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  padding: 15px;
+  background-color: #fff;
+}
+
+.atomsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.atomItem {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.atomItem:hover {
+  background-color: #f8f9fa;
+}
+
+.loadingMessage {
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+  padding: 20px;
+}
+
+.selectedSummary {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #28a745;
+}
+
+.selectedSummary strong {
+  color: #495057;
+  display: block;
+  margin-bottom: 10px;
+}
+
 /* Dark mode styles */
 .darkMode .modalTitle {
   color: #fff;
@@ -285,6 +362,38 @@
 
 .darkMode .buttonGroup {
   border-top-color: #6c757d;
+}
+
+.darkMode .user__auto-complete {
+  color: #fff;
+  border-bottom-color: #6c757d;
+}
+
+.darkMode .user__auto-complete:hover {
+  background-color: #495057;
+}
+
+.darkMode .dropdown__user-perms {
+  background-color: #343a40;
+  border-color: #6c757d;
+}
+
+.darkMode .atomsContainer {
+  background-color: #343a40;
+  border-color: #6c757d;
+}
+
+.darkMode .atomItem:hover {
+  background-color: #495057;
+}
+
+.darkMode .selectedSummary {
+  background-color: #343a40;
+  border-left-color: #28a745;
+}
+
+.darkMode .selectedSummary strong {
+  color: #fff;
 }
 
 /* Responsive design */

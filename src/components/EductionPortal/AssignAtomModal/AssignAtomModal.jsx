@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import {
@@ -11,7 +11,12 @@ import {
   Label,
   Input,
   FormFeedback,
+  Dropdown,
+  Table,
+  CustomInput,
 } from 'reactstrap';
+import axios from 'axios';
+import { ENDPOINTS } from '~/utils/URL';
 import styles from './AssignAtomModal.module.css';
 import {
   fetchAvailableAtoms,
@@ -48,6 +53,16 @@ const AssignAtomModal = ({
   const [localNote, setLocalNote] = useState('');
   const [validationError, setValidationError] = useState('');
 
+  // Student search state
+  const [searchText, setSearchText] = useState('');
+  const [allUsers, setAllUsers] = useState([]);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isInputFocus, setIsInputFocus] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+
+  const userSearchRef = useRef();
+
   // Sync local note with Redux state
   useEffect(() => {
     setLocalNote(note);
@@ -59,6 +74,35 @@ const AssignAtomModal = ({
       fetchAvailableAtoms();
     }
   }, [isModalOpen, availableAtoms.length, fetchAvailableAtoms]);
+
+  // Load users when modal opens
+  useEffect(() => {
+    if (isModalOpen && allUsers.length === 0) {
+      fetchAllUsers();
+    }
+  }, [isModalOpen, allUsers.length]);
+
+  // Set selected student when studentId changes
+  useEffect(() => {
+    if (studentId && studentName) {
+      setSelectedStudent({ _id: studentId, name: studentName });
+      setSearchText(studentName);
+    }
+  }, [studentId, studentName]);
+
+  // Fetch all users for search
+  const fetchAllUsers = async () => {
+    setIsLoadingUsers(true);
+    try {
+      const response = await axios.get(`${ENDPOINTS.APIEndpoint()}/userprofile`);
+      setAllUsers(response.data);
+    } catch (error) {
+      // Handle error silently or show toast
+      // console.error('Failed to fetch users:', error);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
 
   const handleAtomToggle = useCallback(
     atomId => {
@@ -82,6 +126,19 @@ const AssignAtomModal = ({
     [setNote],
   );
 
+  // Student selection handlers
+  const handleStudentSelect = user => {
+    setSelectedStudent(user);
+    setSearchText(`${user.firstName} ${user.lastName}`);
+    setIsUserDropdownOpen(false);
+    setIsInputFocus(false);
+  };
+
+  const handleSearchChange = value => {
+    setSearchText(value);
+    setIsUserDropdownOpen(true);
+  };
+
   const handleSubmit = useCallback(async () => {
     // Validation
     if (selectedAtoms.length === 0) {
@@ -89,33 +146,48 @@ const AssignAtomModal = ({
       return;
     }
 
-    if (!studentId) {
-      setValidationError('Student ID is required');
+    if (!selectedStudent) {
+      setValidationError('Please select a student');
       return;
     }
 
     setValidationError('');
 
     try {
-      await assignAtoms(studentId, selectedAtoms, localNote);
+      await assignAtoms(selectedStudent._id, selectedAtoms, localNote);
       hideModal();
     } catch (error) {
       // Error is handled by the action
       // console.error('Assignment failed:', error);
     }
-  }, [selectedAtoms, localNote, studentId, assignAtoms, hideModal]);
+  }, [selectedAtoms, localNote, selectedStudent, assignAtoms, hideModal]);
 
   const handleCancel = useCallback(() => {
-    if (selectedAtoms.length > 0 || localNote.trim()) {
+    if (selectedAtoms.length > 0 || localNote.trim() || selectedStudent) {
       // eslint-disable-next-line no-alert
       if (window.confirm('You have unsaved changes. Are you sure you want to cancel?')) {
         clearForm();
+        setSelectedStudent(null);
+        setSearchText('');
         hideModal();
       }
     } else {
       hideModal();
     }
-  }, [selectedAtoms.length, localNote, clearForm, hideModal]);
+  }, [selectedAtoms.length, localNote, selectedStudent, clearForm, hideModal]);
+
+  // Filter users based on search text
+  const filteredUsers = allUsers.filter(user => {
+    if (!searchText.trim()) return false;
+    const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+    const searchLower = searchText.toLowerCase();
+    return (
+      (user.firstName.toLowerCase().includes(searchLower) ||
+        user.lastName.toLowerCase().includes(searchLower) ||
+        fullName.includes(searchLower)) &&
+      user.isActive
+    );
+  });
 
   const handleClose = useCallback(() => {
     handleCancel();
@@ -128,7 +200,7 @@ const AssignAtomModal = ({
     return '';
   };
 
-  const isSubmitDisabled = isSubmitting || selectedAtoms.length === 0;
+  const isSubmitDisabled = isSubmitting || selectedAtoms.length === 0 || !selectedStudent;
 
   return (
     <Modal
@@ -142,60 +214,112 @@ const AssignAtomModal = ({
       </ModalHeader>
 
       <ModalBody className={styles.modalContent}>
-        {/* Student Information */}
-        <div className={styles.studentInfo}>
-          <div className={styles.studentLabel}>Student:</div>
-          <div className={styles.studentName}>{studentName || 'Unknown Student'}</div>
-        </div>
+        {/* Student Selection */}
+        <FormGroup className={styles.formGroup}>
+          <Label className={styles.formLabel}>Select Student:</Label>
+          <div className={styles.studentSearchContainer}>
+            <Dropdown
+              isOpen={isUserDropdownOpen}
+              toggle={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+              style={{ width: '100%', marginRight: '5px' }}
+            >
+              <Input
+                type="search"
+                value={searchText}
+                innerRef={userSearchRef}
+                onFocus={() => {
+                  setIsInputFocus(true);
+                  setIsUserDropdownOpen(true);
+                }}
+                onChange={e => handleSearchChange(e.target.value)}
+                placeholder="Search for a student..."
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+                autoComplete="off"
+                name="student-search"
+              />
+              {isInputFocus || (searchText !== '' && allUsers && allUsers.length > 0) ? (
+                <div
+                  tabIndex="-1"
+                  role="menu"
+                  aria-hidden="false"
+                  className={`dropdown-menu${
+                    isUserDropdownOpen ? ' show dropdown__user-perms' : ''
+                  } ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
+                  style={{ marginTop: '0px', width: '100%' }}
+                >
+                  {isLoadingUsers ? (
+                    <div className="user__auto-complete">Loading users...</div>
+                  ) : filteredUsers.length > 0 ? (
+                    filteredUsers.map(user => (
+                      <div
+                        className="user__auto-complete"
+                        key={user._id}
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => handleStudentSelect(user)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            handleStudentSelect(user);
+                          }
+                        }}
+                      >
+                        {user.firstName} {user.lastName}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="user__auto-complete">No users found</div>
+                  )}
+                </div>
+              ) : null}
+            </Dropdown>
+          </div>
+        </FormGroup>
 
         {/* Associated Atoms */}
         <FormGroup className={styles.formGroup}>
-          <Label className={styles.formLabel}>Associated Atoms:</Label>
-          <div className={styles.dropdownContainer}>
-            <Input
-              type="select"
-              multiple
-              className={styles.dropdown}
-              value={selectedAtoms}
-              onChange={e => {
-                const values = Array.from(e.target.selectedOptions, option => option.value);
-                // Clear current selections and set new ones
-                selectedAtoms.forEach(atomId => deselectAtom(atomId));
-                values.forEach(atomId => selectAtom(atomId));
-              }}
-              disabled={isLoadingAtoms}
-            >
-              {isLoadingAtoms ? (
-                <option>Loading atoms...</option>
-              ) : (
-                availableAtoms.map(atom => (
-                  <option key={atom._id} value={atom._id}>
-                    {atom.name || atom.title || atom.atomName}
-                  </option>
-                ))
-              )}
-            </Input>
+          <Label className={styles.formLabel}>Select Atoms:</Label>
+          <div className={styles.atomsContainer}>
+            {isLoadingAtoms ? (
+              <div className={styles.loadingMessage}>Loading atoms...</div>
+            ) : (
+              <div className={styles.atomsList}>
+                {availableAtoms.map(atom => (
+                  <div key={atom._id} className={styles.atomItem}>
+                    <CustomInput
+                      type="checkbox"
+                      id={`atom-${atom._id}`}
+                      label={atom.name || atom.title || atom.atomName}
+                      checked={selectedAtoms.includes(atom._id)}
+                      onChange={() => handleAtomToggle(atom._id)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Selected Atoms Display */}
+          {/* Selected Atoms Summary */}
           {selectedAtoms.length > 0 && (
-            <div className={styles.selectedItems}>
-              {selectedAtoms.map(atomId => {
-                const atom = availableAtoms.find(a => a._id === atomId);
-                return (
-                  <div key={atomId} className={styles.selectedItem}>
-                    {atom?.name || atom?.title || atom?.atomName || 'Unknown Atom'}
-                    <button
-                      type="button"
-                      className={styles.removeItem}
-                      onClick={() => deselectAtom(atomId)}
-                      aria-label={`Remove ${atom?.name || 'atom'}`}
-                    >
-                      ×
-                    </button>
-                  </div>
-                );
-              })}
+            <div className={styles.selectedSummary}>
+              <strong>Selected Atoms ({selectedAtoms.length}):</strong>
+              <div className={styles.selectedItems}>
+                {selectedAtoms.map(atomId => {
+                  const atom = availableAtoms.find(a => a._id === atomId);
+                  return (
+                    <div key={atomId} className={styles.selectedItem}>
+                      {atom?.name || atom?.title || atom?.atomName || 'Unknown Atom'}
+                      <button
+                        type="button"
+                        className={styles.removeItem}
+                        onClick={() => deselectAtom(atomId)}
+                        aria-label={`Remove ${atom?.name || 'atom'}`}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </FormGroup>

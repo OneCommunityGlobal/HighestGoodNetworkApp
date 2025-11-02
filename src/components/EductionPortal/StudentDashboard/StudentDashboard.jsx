@@ -7,7 +7,9 @@ import TaskCardView from './TaskCardView';
 import TaskListView from './TaskListView';
 import NavigationBar from './NavigationBar';
 import SummaryCards from './SummaryCards';
+import AssignAtomModal from '../AssignAtomModal';
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
+import { showModal } from '~/actions/educationPortal/atomActions';
 
 const StudentDashboard = () => {
   const [viewMode, setViewMode] = useState('card'); // 'card' or 'list'
@@ -77,6 +79,14 @@ const StudentDashboard = () => {
     setViewMode(prev => (prev === 'card' ? 'list' : 'card'));
   };
 
+  // Handle opening assign atoms modal
+  const handleAssignAtoms = () => {
+    const studentId = authUser?._id || authUser?.id;
+    const studentName =
+      `${authUser?.firstName || ''} ${authUser?.lastName || ''}`.trim() || 'Student';
+    dispatch(showModal(studentId, studentName));
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -104,8 +114,21 @@ const StudentDashboard = () => {
       <Container className={styles.mainContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <h1 className={styles.title}>Student Dashboard</h1>
-          <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+          <div className={styles.headerContent}>
+            <div className={styles.headerText}>
+              <h1 className={styles.title}>Student Dashboard</h1>
+              <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+            </div>
+            <div className={styles.headerActions}>
+              <Button
+                color="primary"
+                onClick={handleAssignAtoms}
+                className={styles.assignAtomsButton}
+              >
+                Assign Atoms
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -167,6 +190,9 @@ const StudentDashboard = () => {
           )}
         </div>
       </Container>
+
+      {/* Assign Atoms Modal */}
+      <AssignAtomModal />
     </div>
   );
 };
