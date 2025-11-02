@@ -18,7 +18,7 @@ export const ENDPOINTS = {
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-  
+
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () => `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
   BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () => `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
@@ -144,18 +144,18 @@ export const ENDPOINTS = {
     `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
-  
-POPULARITY: (range, roles, start, end) => {
-  let url = `${APIEndpoint}/popularity?`;
-  if (range) url += `range=${range}&`;
-  if (roles && roles.length > 0) {
-    url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
-  }
-  if (start) url += `start=${encodeURIComponent(start)}&`;
-  if (end) url += `end=${encodeURIComponent(end)}&`;
-  return url.slice(0, -1); 
-},
-POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
+
+  POPULARITY: (range, roles, start, end) => {
+    let url = `${APIEndpoint}/popularity?`;
+    if (range) url += `range=${range}&`;
+    if (roles && roles.length > 0) {
+      url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
+    }
+    if (start) url += `start=${encodeURIComponent(start)}&`;
+    if (end) url += `end=${encodeURIComponent(end)}&`;
+    return url.slice(0, -1);
+  },
+  POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
 
   // titles endpoints
@@ -438,6 +438,10 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
+
+  LESSON_PLANS: `${APIEndpoint}/education/lesson-plans`,
+  SAVE_INTEREST: `${APIEndpoint}/education/student/saved-interests`,
+  GET_SAVED: `${APIEndpoint}/education/student/saved-interests`,
 
 };
 
