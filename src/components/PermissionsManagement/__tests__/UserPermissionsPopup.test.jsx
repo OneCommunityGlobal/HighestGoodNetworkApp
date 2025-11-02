@@ -168,8 +168,8 @@ describe('UserPermissionsPopup component', () => {
     await waitFor(() => {
       expect(toast.success).toHaveBeenCalledWith(
         `
-        Permissions have been updated successfully. 
-        Please inform the user to log out and log back in for the new permissions to take effect.`,
+            Permissions have been updated successfully. 
+            Please inform the user to log out and log back in for the new permissions to take effect.`,
         {
           autoClose: 10000,
         },
@@ -201,8 +201,8 @@ describe('UserPermissionsPopup component', () => {
     await waitFor(() => {
       expect(toast.success).not.toHaveBeenCalledWith(
         `
-        Permissions have been updated successfully. 
-        Please inform the user to log out and log back in for the new permissions to take effect.`,
+            Permissions have been updated successfully. 
+            Please inform the user to log out and log back in for the new permissions to take effect.`,
         {
           autoClose: 10000,
         },
