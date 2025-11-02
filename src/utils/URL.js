@@ -18,12 +18,14 @@ export const ENDPOINTS = {
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-  
+
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () => `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
   BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () => `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
+
+  GET_JOB_FORMS: `${APIEndpoint}/jobForms`,
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
@@ -47,6 +49,8 @@ export const ENDPOINTS = {
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
+  JOB_ANALYTICS: `${APIEndpoint}/jobAnalytics/data`,
+  JOB_ANALYTICS_REALTIME: `${APIEndpoint}/jobAnalytics/realtime`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   PROJECT_MEMBER_SEARCH: (projectId, query) =>
@@ -83,6 +87,7 @@ export const ENDPOINTS = {
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
+  TIMELOG_TRACKING: userId => `${APIEndpoint}/timelogTracking/${userId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
@@ -98,6 +103,7 @@ export const ENDPOINTS = {
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
   TASK_UPDATE_STATUS: taskId => `${APIEndpoint}/task/updateStatus/${taskId}`,
+  TASK_CHANGE_LOGS: taskId => `${APIEndpoint}/task/${taskId}/changeLogs`,
   DELETE_CHILDREN: taskId => `${APIEndpoint}/task/delete/children/${taskId}`,
   GET_USER_BY_NAME: name => `${APIEndpoint}/userprofile/name/${name}`,
   FIX_TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
@@ -112,6 +118,7 @@ export const ENDPOINTS = {
   DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
   EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
   GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  GET_SPECIAL_WARNINGS: userId => `${APIEndpoint}/warnings/${userId}/special`,
   POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
@@ -144,6 +151,19 @@ export const ENDPOINTS = {
     `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
+  
+POPULARITY: (range, roles, start, end) => {
+  let url = `${APIEndpoint}/popularity?`;
+  if (range) url += `range=${range}&`;
+  if (roles && roles.length > 0) {
+    url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
+  }
+  if (start) url += `start=${encodeURIComponent(start)}&`;
+  if (end) url += `end=${encodeURIComponent(end)}&`;
+  return url.slice(0, -1); 
+},
+POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
+
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
@@ -159,6 +179,10 @@ export const ENDPOINTS = {
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
+
+  // Student Tasks (Education Portal)
+  STUDENT_TASKS: () => `${APIEndpoint}/student/tasks`,
+  STUDENT_TASK_MARK_DONE: taskId => `${APIEndpoint}/student/tasks/${taskId}/mark-done`,
 
   TIMER_SERVICE: new URL('/timer-service', APIEndpoint.replace('http', 'ws')).toString(),
   TIMEZONE_LOCATION: location => `${APIEndpoint}/timezone/${location}`,
