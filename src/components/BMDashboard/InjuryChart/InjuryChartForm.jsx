@@ -89,9 +89,15 @@ function InjuryChartForm({ dark = false }) {
   }, [bmSeverities]);
 
   const departments = useMemo(() => {
-    const set = new Set();
-    for (const r of raw) if (r?.department) set.add(r.department);
-    return ['all', ...Array.from(set).sort()];
+    const seen = new Set();
+    const ordered = [];
+    for (const r of raw) {
+      if (r?.department && !seen.has(r.department)) {
+        seen.add(r.department);
+        ordered.push(r.department);
+      }
+    }
+    return ['all', ...ordered];
   }, [raw]);
 
   const chartData = useMemo(() => {
