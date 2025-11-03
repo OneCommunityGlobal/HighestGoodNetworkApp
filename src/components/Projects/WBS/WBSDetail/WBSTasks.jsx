@@ -28,6 +28,7 @@ function WBSTasks(props) {
   // states from hooks
   const [filterState, setFilterState] = useState('all');
   const [openAll, setOpenAll] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   // const [isLoading, setIsLoading] = useState(true);
   const [isDeleted, setIsDeleted] = useState(false);
   const [levelOneTasks, setLevelOneTasks] = useState([]);
@@ -36,7 +37,9 @@ function WBSTasks(props) {
   const [copiedTask, setCopiedTask] = useState(null);
   const myRef = useRef(null);
 
-  const { tasks, isLoading, error, refresh } = useFetchWbsTasks(wbsId);
+  // Pass projectId to the hook so it can watch for category changes
+  const { tasks, isLoading, refresh } = useFetchWbsTasks(wbsId, projectId);
+  
 
   useEffect(() => {
     if(!isLoading){
@@ -97,149 +100,170 @@ function WBSTasks(props) {
     };
   }, []);
 
+  // Extract breadcrumb component to reduce complexity
+  const renderBreadcrumb = () => (
+    <nav aria-label="breadcrumb">
+      <ol
+        className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+          <button
+            type="button"
+            className="btn btn-secondary mr-2"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            <i className="fa fa-chevron-circle-left" aria-hidden="true" />
+          </button>
+          <span style={{ marginLeft: '1px' }}>Return to WBS List: {projectName}</span>
+        </NavItem>
+        <div
+          id="member_project__name"
+          style={{
+            flex: '1',
+            textAlign: 'center',
+            fontWeight: 'bold',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {' '}
+          WBS Name: {wbsName}
+        </div>
+      </ol>
+    </nav>
+  );
+
+  // Extract button group component to reduce complexity
+  const renderButtonGroup = () => (
+    <div className="mb-2 wbs-button-group" style={{}}>
+      {canPostTask && (
+        <AddTaskModal
+          copiedTask={copiedTask}
+          key="task_modal_null"
+          taskNum={null}
+          taskId={null}
+          wbsId={wbsId}
+          projectId={projectId}
+          load={refresh}
+          pageLoadTime={pageLoadTime}
+          darkMode={darkMode}
+          tasks={tasks} 
+        />
+      )}
+
+      {!isLoading && showImport && (
+        <ImportTask
+          wbsId={wbsId}
+          projectId={projectId}
+          load={refresh}
+          setIsLoading={() => {}}
+          darkMode={darkMode}
+        />
+      )}
+      
+      <Button
+        color={isLoading ? 'warning' : 'success'}
+        size="sm"
+        onClick={refresh}
+        style={darkMode ? boxStyleDark : boxStyle}
+        disabled={isLoading}
+      >
+        <i className={`fa fa-refresh ${isLoading ? 'fa-spin' : ''}`} /> Refresh
+      </Button>
+      
+      <Button
+        color="light"
+        size="sm"
+        className="ml-2"
+        onClick={() => setOpenAll(!openAll)}
+        style={darkMode ? boxStyleDark : boxStyle}
+        disabled={isLoading}
+      >
+        {openAll ? 'Fold All' : 'Unfold All'}
+      </Button>
+      
+      <Button
+        color="info"
+        size="sm"
+        className="ml-2"
+        onClick={() => setShowImport(!showImport)}
+        style={darkMode ? boxStyleDark : boxStyle}
+        disabled={isLoading}
+      >
+        <i className="fa fa-upload" aria-hidden="true" /> {showImport ? 'Hide Import' : 'Import Tasks'}
+      </Button>
+      
+      <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />
+    </div>
+  );
+
+  // Extract table header component to reduce complexity
+  const renderTableHeader = () => (
+    <thead>
+      <tr className={darkMode ? 'bg-space-cadet' : ''}>
+        <th scope="col" className="tasks-detail-header tasks-detail-actions" data-tip="Action" colSpan="2">
+          Action
+        </th>
+        <th scope="col" data-tip="WBS ID" colSpan="1" className='tasks-detail-header'>
+          #
+        </th>
+        <th scope="col" data-tip="Task Name" className="tasks-detail-header tasks-detail-task-name task-name">
+          Task
+        </th>
+        <th scope="col" data-tip="Priority" className='tasks-detail-header'>
+          <i className="fa fa-star" aria-hidden="true" />
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Resources">
+          <i className="fa fa-users" aria-hidden="true" />
+        </th>
+        <th scope="col" data-tip="Assigned" className='tasks-detail-header'>
+          <i className="fa fa-user-circle-o" aria-hidden="true" />
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Status">
+          <i className="fa fa-tasks" aria-hidden="true" />
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Best">
+          <i className="fa fa-hourglass-start" aria-hidden="true" />
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Worst">
+          <i className="fa fa-hourglass" aria-hidden="true" />
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Most">
+          <i className="fa fa-hourglass-half" aria-hidden="true" />
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Estimated Hours">
+          <i className="fa fa-clock-o" aria-hidden="true" />
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Start Date">
+          <i className="fa fa-calendar-check-o" aria-hidden="true" /> Start
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Due Date">
+          <i className="fa fa-calendar-times-o" aria-hidden="true" /> End
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Links">
+          <i className="fa fa-link" aria-hidden="true" />
+        </th>
+        <th className="tasks-detail-header desktop-view" scope="col" data-tip="Details">
+          <i className="fa fa-question" aria-hidden="true" />
+        </th>
+      </tr>
+    </thead>
+  );
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <ReactTooltip delayShow={300} />
       <div className="container-tasks m-0 p-2">
-        <nav aria-label="breadcrumb">
-          <ol
-            className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button
-                type="button"
-                className="btn btn-secondary mr-2"
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                <i className="fa fa-chevron-circle-left" aria-hidden="true" />
-              </button>
-              <span style={{ marginLeft: '1px' }}>Return to WBS List: {projectName}</span>
-            </NavItem>
-            <div
-              id="member_project__name"
-              style={{
-                flex: '1',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              {' '}
-              WBS Name: {wbsName}
-            </div>
-          </ol>
-        </nav>
-        <div
-          className="mb-2 wbs-button-group" // Group the buttons
-          style={{}}
-        >
-          {/* <span> */}
-          {canPostTask ? (
-            <AddTaskModal
-              copiedTask={copiedTask}
-              key="task_modal_null"
-              taskNum={null}
-              taskId={null}
-              wbsId={wbsId}
-              projectId={projectId}
-              // load={load}
-              load={refresh}
-              pageLoadTime={pageLoadTime}
-              darkMode={darkMode}
-              tasks={tasks} 
-            />
-          ) : null}
-
-          {!isLoading ? (
-            <ImportTask
-              wbsId={wbsId}
-              projectId={projectId}
-              // load={load}
-              load={refresh}
-              setIsLoading={() => {}}
-              // setIsLoading={setIsLoading}
-              darkMode={darkMode}
-            />
-          ) : null}
-          <Button
-            color={isLoading ? 'warning' : 'success'}
-            size="sm"
-            onClick={refresh}
-            style={darkMode ? boxStyleDark : boxStyle}
-            disabled={isLoading}
-          >
-            <i className={`fa fa-refresh ${isLoading ? 'fa-spin' : ''}`} /> Refresh
-          </Button>
-          <Button
-            color="light"
-            size="sm"
-            className="ml-2"
-            onClick={() => setOpenAll(!openAll)}
-            style={darkMode ? boxStyleDark : boxStyle}
-            disabled={isLoading}
-          >
-            {openAll ? 'Fold All' : 'Unfold All'}
-          </Button>
-          <FilterBar currentFilter={filterState} onChange={setFilterState} isLoading={isLoading} />
-          {/* </span> */}
-        </div>
+        {renderBreadcrumb()}
+        {renderButtonGroup()}
 
         <table
           className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`}
           ref={myRef}
         >
-          <thead>
-            <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th scope="col" className="tasks-detail-header tasks-detail-actions" data-tip="Action" colSpan="2">
-                Action
-              </th>
-              <th scope="col" data-tip="WBS ID" colSpan="1" className='tasks-detail-header'>
-                #
-              </th>
-              <th scope="col" data-tip="Task Name" className="tasks-detail-header tasks-detail-task-name task-name">
-                Task
-              </th>
-              <th scope="col" data-tip="Priority" className='tasks-detail-header'>
-                <i className="fa fa-star" aria-hidden="true" />
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Resources">
-                <i className="fa fa-users" aria-hidden="true" />
-              </th>
-              <th scope="col" data-tip="Assigned" className='tasks-detail-header'>
-                <i className="fa fa-user-circle-o" aria-hidden="true" />
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Status">
-                <i className="fa fa-tasks" aria-hidden="true" />
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Best">
-                <i className="fa fa-hourglass-start" aria-hidden="true" />
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Worst">
-                <i className="fa fa-hourglass" aria-hidden="true" />
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Hours-Most">
-                <i className="fa fa-hourglass-half" aria-hidden="true" />
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Estimated Hours">
-                <i className="fa fa-clock-o" aria-hidden="true" />
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Start Date">
-                <i className="fa fa-calendar-check-o" aria-hidden="true" /> Start
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Due Date">
-                <i className="fa fa-calendar-times-o" aria-hidden="true" /> End
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Links">
-                <i className="fa fa-link" aria-hidden="true" />
-              </th>
-              <th className="tasks-detail-header desktop-view" scope="col" data-tip="Details">
-                <i className="fa fa-question" aria-hidden="true" />
-              </th>
-            </tr>
-          </thead>
+          {renderTableHeader()}
           <tbody>
             {filterTasks(
               tasks.filter(task => task.level === 1),
