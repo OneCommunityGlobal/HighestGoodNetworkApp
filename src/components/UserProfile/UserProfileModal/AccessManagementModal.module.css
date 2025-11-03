@@ -725,3 +725,242 @@
     align-items: center;
     min-height: 100vh;
 }
+
+/* GitHub Teams and Roles Selection Styles */
+
+.accessManagementModal .selectionGroup {
+    margin-bottom: 16px;
+}
+
+.accessManagementModal .selectionGroup:last-child {
+    margin-bottom: 0;
+}
+
+.accessManagementModal .selectionRow {
+    margin-bottom: 16px;
+}
+
+.accessManagementModal .selectionRow:last-child {
+    margin-bottom: 0;
+}
+
+.accessManagementModal .selectionLabel {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+}
+
+
+
+.accessManagementModal .chipContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.accessManagementModal .chipWrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.accessManagementModal .chipTooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    white-space: normal;
+    max-width: 250px;
+    text-align: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.1s ease, visibility 0.1s ease;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.accessManagementModal .chipWrapper:hover .chipTooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.accessManagementModal .chipTooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #333;
+}
+
+
+.accessManagementModal .ml1 {
+    margin-left: 4px;
+}
+
+.accessManagementModal .required {
+    color: #dc3545;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+
+.accessManagementModal .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #495057;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    user-select: none;
+    margin: 2px;
+}
+
+.accessManagementModal .chip:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    transform: translateY(-1px);
+}
+
+.accessManagementModal .chipSelected {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: #ffffff;
+}
+
+.accessManagementModal .chipSelected:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Dark mode styles for GitHub selection */
+
+.accessManagementModal.darkMode .selectionLabel {
+    color: #f8f9fa;
+}
+
+.accessManagementModal.darkMode .chip {
+    background-color: #395886;
+    border-color: #6c757d;
+    color: #f8f9fa;
+}
+
+.accessManagementModal.darkMode .chip:hover {
+    background-color: #495057;
+    border-color: #8a8a8a;
+}
+
+.accessManagementModal.darkMode .chipSelected {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #ffffff;
+}
+
+.accessManagementModal.darkMode .chipSelected:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+}
+
+.accessManagementModal.darkMode .chipTooltip {
+    background-color: #1a1a1a;
+    color: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.accessManagementModal.darkMode .chipTooltip::after {
+    border-top-color: #1a1a1a;
+}
+
+/* Default team styles - keep chip same as others, only change tag color */
+.accessManagementModal .defaultBadge {
+    background-color: #ff6b35;
+    color: #ffffff;
+    font-size: 0.65rem;
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-left: 4px;
+    font-weight: 500;
+}
+
+.accessManagementModal .defaultTooltip {
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid #555;
+    font-size: 0.7rem;
+    color: #ff6b35;
+    font-weight: 500;
+}
+
+/* Dark mode default team styles */
+.accessManagementModal.darkMode .defaultBadge {
+    background-color: #ff8c42;
+    color: #ffffff;
+}
+
+.accessManagementModal.darkMode .defaultTooltip {
+    border-top-color: #666;
+    color: #ff8c42;
+}
+
+/* Enhanced UX Styles */
+.accessManagementModal .selectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+
+
+
+
+/* Enhanced chip styles */
+
+/* Dark mode enhancements */
+.accessManagementModal.darkMode .searchToggle {
+    color: #adb5bd;
+}
+
+.accessManagementModal.darkMode .searchToggle:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+.accessManagementModal.darkMode .searchInput {
+    background-color: #395886;
+    border-color: #6c757d;
+    color: #f8f9fa;
+}
+
+.accessManagementModal.darkMode .searchInput:focus {
+    background-color: #495057;
+    border-color: #0d6efd;
+    color: #f8f9fa;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.accessManagementModal.darkMode .clearSearch {
+    color: #adb5bd;
+}
+
+.accessManagementModal.darkMode .clearSearch:hover {
+    background-color: #495057;
+    color: #f8f9fa;
+}
+
+.accessManagementModal.darkMode .required {
+    color: #ff6b6b;
+}
