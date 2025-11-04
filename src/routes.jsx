@@ -147,6 +147,7 @@ import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/Hours
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+import { JobsHitsApplicationsChart } from './components/JobAnalytics/JobsHitsApplicationsChart/JobsHitsApplicationsChart';
 
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
@@ -589,6 +590,12 @@ export default (
             UserRole.Organizer,
             UserRole.Facilitator,
           ]}
+        />
+
+        <ProtectedRoute
+          path="/analytics/roles-hits-and-applications"
+          exact
+          component={JobsHitsApplicationsChart}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}

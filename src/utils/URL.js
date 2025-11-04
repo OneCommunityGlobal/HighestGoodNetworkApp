@@ -403,6 +403,7 @@ export const ENDPOINTS = {
 
   // job analytics
   HOURS_PLEDGED: `${APIEndpoint}/analytics/hours-pledged`,
+  JOB_HITS_AND_APPLICATIONS: `${APIEndpoint}/analytics/job-hits-and-applications`,
 
   // Saved Filters endpoints
   SAVED_FILTERS: () => `${APIEndpoint}/savedFilters`,
