@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import './Leaderboard.css';
+import './Leaderboard.module.css';
 import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
@@ -275,7 +275,9 @@ function LeaderBoard({
 
   const [isLoading, setIsLoading] = useState(false);
   // add state hook for the popup the personal's dashboard from leaderboard
-  const [isDashboardOpen, setIsDashboardOpen] = useState(false);
+  const [isDashboardOpen, setIsDashboardOpen] = useState(null);
+  const openDashboardModal = personId => setIsDashboardOpen(personId);
+  const closeDashboardModal = () => setIsDashboardOpen(null);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
   const dashboardClose = () => setIsDashboardOpen(false);
 
@@ -882,18 +884,67 @@ function LeaderBoard({
                               if (e.key === 'Enter') {
                                 handleDashboardAccess(item);
                               }
+                      {/* Put the modal OUTSIDE the table rows to avoid JSX nesting issues */}
+                      <Modal
+                        isOpen={isDashboardOpen === item.personId}
+                        toggle={closeDashboardModal}
+                        className={darkMode ? 'text-light dark-mode' : ''}
+                        style={darkMode ? boxStyleDark : {}}
+                      >
+                        <ModalHeader
+                          toggle={closeDashboardModal}
+                          className={darkMode ? 'bg-space-cadet' : ''}
+                        >
+                          Jump to personal Dashboard
+                        </ModalHeader>
+                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                          <p className={darkMode ? 'text-light' : ''}>
+                            Are you sure you wish to view this {item.name} dashboard?
+                          </p>
+                        </ModalBody>
+                        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                          <Button variant="primary" onClick={() => showDashboard(item)}>
+                            Ok
+                          </Button>{' '}
+                          <Button variant="secondary" onClick={closeDashboardModal}>
+                            Cancel
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
+
+                      {/* First row - status + name */}
+                      <tr
+                        className={`${
+                          darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'
+                        } user-row-first`}
+                        data-user-id={item.personId}
+                        onMouseEnter={() => {
+                          document
+                            .querySelectorAll(`[data-user-id="${item.personId}"]`)
+                            .forEach(el => el.classList.add('row-hover'));
+                        }}
+                        onMouseLeave={() => {
+                          document
+                            .querySelectorAll(`[data-user-id="${item.personId}"]`)
+                            .forEach(el => el.classList.remove('row-hover'));
+                        }}
+                      >
+                        <td className="align-middle status-cell">
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: hasSummaryIndicatorPermission
+                                ? 'space-between'
+                                : 'center',
                             }}
                           >
                             <div
                               role="button"
                               tabIndex={0}
-                              onClick={() => {
-                                dashboardToggle(item);
-                              }}
+                              onClick={() => openDashboardModal(item.personId)}
                               onKeyDown={e => {
-                                if (e.key === 'Enter') {
-                                  dashboardToggle(item);
-                                }
+                                if (e.key === 'Enter') openDashboardModal(item.personId);
                               }}
                             >
                               {hasLeaderboardPermissions(item.role) &&
@@ -952,7 +1003,7 @@ function LeaderBoard({
                           </div>
                         </td>
 
-                        {/* Extended Name cell spanning multiple columns - only name and visibility */}
+                        {/* name cell spanning columns */}
                         <td className="align-middle extended-name-cell" colSpan="6">
                           <Link
                             to={`/userprofile/${item.personId}`}
@@ -975,7 +1026,7 @@ function LeaderBoard({
                         </td>
                       </tr>
 
-                      {/* Second row - All other details aligned with columns */}
+                      {/* second row - actual columns */}
                       <tr
                         className={`${
                           darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'
@@ -984,24 +1035,18 @@ function LeaderBoard({
                         onMouseEnter={() => {
                           document
                             .querySelectorAll(`[data-user-id="${item.personId}"]`)
-                            .forEach(el => {
-                              el.classList.add('row-hover');
-                            });
+                            .forEach(el => el.classList.add('row-hover'));
                         }}
                         onMouseLeave={() => {
                           document
                             .querySelectorAll(`[data-user-id="${item.personId}"]`)
-                            .forEach(el => {
-                              el.classList.remove('row-hover');
-                            });
+                            .forEach(el => el.classList.remove('row-hover'));
                         }}
                       >
-                        <td></td> {/* Empty status cell */}
+                        <td /> {/* empty status cell to align */}
                         <td className="align-middle name-details-cell">
-                          {/* All the additional elements moved here */}
-                          {isAllowedOtherThanOwner || isOwner || item.personId === userId
-                            ? timeOffIndicator(item.personId)
-                            : null}
+                          {(isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                            timeOffIndicator(item.personId)}
                           &nbsp;&nbsp;&nbsp;
                           {hasLeaderboardPermissions(loggedInUser.role) && showTrophy && (
                             <i
@@ -1020,27 +1065,26 @@ function LeaderBoard({
                               </p>
                             </i>
                           )}
-                          <div>
-                            <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
-                              <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
-                              <ModalBody>
-                                <p>Are you sure you have followed up this icon?</p>
-                              </ModalBody>
-                              <ModalFooter>
-                                <Button variant="secondary" onClick={trophyIconToggle}>
-                                  Cancel
-                                </Button>{' '}
-                                <Button
-                                  color="primary"
-                                  onClick={() => {
-                                    handleChangingTrophyIcon(item, true);
-                                  }}
-                                >
-                                  Confirm
-                                </Button>
-                              </ModalFooter>
-                            </Modal>
-                          </div>
+                          {/* trophy modal stays here, it's local to this row */}
+                          <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
+                            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+                            <ModalBody>
+                              <p>Are you sure you have followed up this icon?</p>
+                            </ModalBody>
+                            <ModalFooter>
+                              <Button variant="secondary" onClick={trophyIconToggle}>
+                                Cancel
+                              </Button>{' '}
+                              <Button
+                                color="primary"
+                                onClick={() => {
+                                  handleChangingTrophyIcon(item, true);
+                                }}
+                              >
+                                Confirm
+                              </Button>
+                            </ModalFooter>
+                          </Modal>
                           {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
                             <span
                               style={{
@@ -1105,10 +1149,7 @@ function LeaderBoard({
                         <td className="align-middle" id={`id${item.personId}`}>
                           <span title="Tangible time">{item.tangibletime}</span>
                         </td>
-                        <td
-                          className="align-middle"
-                          aria-label="Description or purpose of the cell"
-                        >
+                        <td className="align-middle">
                           <Link
                             to={`/timelog/${item.personId}`}
                             title={`TangibleEffort: ${item.tangibletime} hours`}
