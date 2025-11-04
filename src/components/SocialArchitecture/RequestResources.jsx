@@ -16,6 +16,7 @@ function RequestResources() {
   });
 
   const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleChange = e => {
     const { name, value } = e.target;
@@ -30,6 +31,23 @@ function RequestResources() {
     e.preventDefault();
     if (!validateForm()) return;
     alert('Form validated successfully!');
+    if (validateForm()) {
+      console.log(formData);
+      setSuccessMessage('Your resource request has been submitted successfully.');
+      setFormData({
+        eventName: '',
+        organizerName: '',
+        itemName: '',
+        requestQuantity: '',
+        requestedDate: '',
+        returnDate: '',
+        countryCode: '+1',
+        phoneNumber: '',
+        notes: '',
+        materialImage: null,
+      });
+      setErrors({});
+    }
   };
 
   const validateForm = () => {
@@ -48,6 +66,7 @@ function RequestResources() {
   return (
     <div className={styles.requestResourceContainer}>
       <h2 className={styles.formTitle}>REQUEST MATERIAL</h2>
+      {successMessage && <div className={styles.success}>{successMessage}</div>}
       <form className={styles.requestResourceForm} onSubmit={handleSubmit}>
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
           <label htmlFor="eventName">Event Name</label>
