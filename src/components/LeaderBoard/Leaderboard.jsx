@@ -315,6 +315,37 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
+  const manager = 'Manager';
+  const adm = 'Administrator';
+  const owner = 'Owner';
+
+  const handleDashboardAccess = item => {
+    // check the logged in user is manager and if the dashboard is admin and owner
+    if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
+      // check the logged in user is admin and if dashboard is owner
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    }
+    // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
+    else if (
+      loggedInUser.role !== manager &&
+      loggedInUser.role !== adm &&
+      loggedInUser.role !== owner
+    ) {
+      if ([manager, adm, owner].includes(item.role)) {
+        // prevent access
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else {
+        // allow access to the painel
+        dashboardToggle(item);
+      }
+    } else {
+      // allow access to the painel
+      dashboardToggle(item);
+    }
+  };
+
   // For Monthly and yearly anniversaries
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -814,34 +845,43 @@ function LeaderBoard({
                               className={darkMode ? 'text-light dark-mode' : ''}
                               style={darkMode ? boxStyleDark : {}}
                             >
-                              <ModalHeader
-                                toggle={dashboardToggle}
-                                className={darkMode ? 'bg-space-cadet' : ''}
-                              >
-                                Jump to personal Dashboard
-                              </ModalHeader>
-                              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                                <p className={darkMode ? 'text-light' : ''}>
-                                  Are you sure you wish to view this {item.name} dashboard?
-                                </p>
-                              </ModalBody>
-                              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                                <Button variant="primary" onClick={() => showDashboard(item)}>
-                                  Ok
-                                </Button>{' '}
-                                <Button variant="secondary" onClick={dashboardToggle}>
-                                  Cancel
-                                </Button>
-                              </ModalFooter>
-                            </Modal>
-                          </div>
+                              Jump to personal Dashboard
+                            </ModalHeader>
+                            <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                              <p className={darkMode ? 'text-light' : ''}>
+                                Are you sure you wish to view the dashboard for {item.name}?
+                              </p>
+                            </ModalBody>
+                            <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                              <Button color="primary" onClick={() => showDashboard(item)}>
+                                Ok
+                              </Button>
+                              <Button color="danger" onClick={dashboardToggle}>
+                                Cancel
+                              </Button>
+                            </ModalFooter>
+                          </Modal>
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: hasSummaryIndicatorPermission
+                              ? 'space-between'
+                              : 'center',
+                          }}
+                        >
+                          {/* <Link to={`/dashboard/${item.personId}`}> */}
                           <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: hasSummaryIndicatorPermission
-                                ? 'space-between'
-                                : 'center',
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => {
+                              handleDashboardAccess(item);
+                            }}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') {
+                                handleDashboardAccess(item);
+                              }
                             }}
                           >
                             <div
@@ -1086,9 +1126,71 @@ function LeaderBoard({
                           >
                             {item.totaltime}
                           </span>
-                        </td>
-                      </tr>
-                    </React.Fragment>
+                        )}
+                      </td>
+                      <td className="align-middle">
+                        <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
+                          {displayDaysLeft(item.endDate)}
+                        </span>
+                      </td>
+                      <td className="align-middle">
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {hasTimeOff && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const data = {
+                                  requests: [...allRequests[item.personId]],
+                                  name: item.name,
+                                  leaderboard: true,
+                                };
+                                handleTimeOffModalOpen(data);
+                              }}
+                              style={{ width: '35px', height: 'auto' }}
+                              aria-label="View Time Off Requests"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="22"
+                                height="19"
+                                viewBox="0 0 448 512"
+                                className="show-time-off-calender-svg"
+                              >
+                                <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                      <td className="align-middle" id={`id${item.personId}`}>
+                        <span title="Tangible time">{item.tangibletime}</span>
+                      </td>
+                      <td className="align-middle" aria-label="Description or purpose of the cell">
+                        <Link
+                          to={`/timelog/${item.personId}#currentWeek`}
+                          title={`TangibleEffort: ${item.tangibletime} hours`}
+                        >
+                          <Progress value={item.barprogress} color={item.barcolor} />
+                        </Link>
+                      </td>
+                      <td className="align-middle">
+                        <span
+                          title={mouseoverTextValue}
+                          id="Total time"
+                          className={
+                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                          }
+                        >
+                          {item.totaltime}
+                        </span>
+                      </td>
+                    </tr>
                   );
                 })}
               </tbody>

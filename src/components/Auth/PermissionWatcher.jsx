@@ -9,7 +9,7 @@ import { getUserProfile } from '../../actions/userProfile';
 
 function PermissionWatcher() {
   const dispatch = useDispatch();
-  const { isAuthenticated, forceLogoutAt } = useSelector(state => state.auth);
+  const { isAuthenticated, forceLogoutAt } = useSelector(state => state.auth || {});
   const userProfile = useSelector(state => state.userProfile);
   const isAcknowledged = userProfile?.permissions?.isAcknowledged !== false;
   const [isAckLoading, setIsAckLoading] = useState(false);
