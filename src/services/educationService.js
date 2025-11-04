@@ -11,7 +11,7 @@ export const getEducatorStudentProgress = async studentId => {
     const response = await axios.get(ENDPOINTS.PROGRESS_EDUCATOR_STUDENT(studentId));
     return response.data;
   } catch (error) {
-    throw error;
+    throw new Error('Failed to fetch student progress data');
   }
 };
 
@@ -25,7 +25,7 @@ export const getStudentTasks = async studentId => {
     const response = await axios.get(ENDPOINTS.EDUCATION_TASKS_BY_STUDENT(studentId));
     return response.data;
   } catch (error) {
-    throw error;
+    throw new Error('Failed to fetch student tasks');
   }
 };
 
@@ -40,7 +40,7 @@ export const updateTaskStatus = async (taskId, status) => {
     const response = await axios.patch(ENDPOINTS.EDUCATION_TASK_STATUS(taskId), { status });
     return response.data;
   } catch (error) {
-    throw error;
+    throw new Error('Failed to update task status');
   }
 };
 
@@ -58,6 +58,6 @@ export const submitTaskUploads = async (taskId, uploadUrls) => {
     });
     return response.data;
   } catch (error) {
-    throw error;
+    throw new Error('Failed to submit task uploads');
   }
 };
