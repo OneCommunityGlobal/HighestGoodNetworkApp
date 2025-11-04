@@ -15,6 +15,8 @@ function RequestResources() {
     materialImage: null,
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -26,8 +28,21 @@ function RequestResources() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    // console.log(formData);
-    // alert('Form submitted successfully!');
+    if (!validateForm()) return;
+    alert('Form validated successfully!');
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.eventName) newErrors.eventName = 'Event name is required';
+    if (!formData.organizerName) newErrors.organizerName = 'Organizer name is required';
+    if (!formData.itemName) newErrors.itemName = 'Item name is required';
+    if (!formData.requestQuantity) newErrors.requestQuantity = 'Quantity is required';
+    if (!formData.requestedDate) newErrors.requestedDate = 'Requested date is required';
+    if (!formData.returnDate) newErrors.returnDate = 'Return date is required';
+    if (!formData.phoneNumber) newErrors.phoneNumber = 'Phone number is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   return (
@@ -45,6 +60,7 @@ function RequestResources() {
             placeholder="Event Name"
             required
           />
+          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
@@ -58,6 +74,7 @@ function RequestResources() {
             placeholder="Name"
             required
           />
+          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
@@ -71,6 +88,7 @@ function RequestResources() {
             placeholder="Name of item you want to request"
             required
           />
+          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
@@ -85,6 +103,7 @@ function RequestResources() {
             min="1"
             required
           />
+          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.Date}`}>
@@ -97,6 +116,7 @@ function RequestResources() {
             onChange={handleChange}
             required
           />
+          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.Date}`}>
@@ -109,6 +129,7 @@ function RequestResources() {
             onChange={handleChange}
             required
           />
+          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={styles.formGroup}>
@@ -123,6 +144,7 @@ function RequestResources() {
               placeholder="+1"
               required
             />
+            {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
             <input
               type="tel"
               id="phoneNumber"
@@ -132,6 +154,7 @@ function RequestResources() {
               placeholder="XXX-XXX-XXXX"
               required
             />
+            {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
           </div>
         </div>
 
@@ -144,6 +167,7 @@ function RequestResources() {
             onChange={handleFileChange}
             accept="image/*"
           />
+          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={styles.formGroup}>
@@ -156,6 +180,7 @@ function RequestResources() {
             placeholder="Describe your material in detail."
             rows="4"
           />
+          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={styles.buttonGroup}>
