@@ -36,7 +36,7 @@ const StudentProgressChart = ({ subject, completedAtoms, inProgressAtoms, notSta
         name: `${subject} Atom ${i + allAtoms.length + 1}`,
         description: `Learning objective for ${subject}`,
         difficulty: difficulties[i % difficulties.length],
-        status: statuses[Math.floor(Math.random() * statuses.length)],
+        status: statuses[i % statuses.length],
         subject: subject,
         isDemo: true,
       });
