@@ -37,6 +37,96 @@ const ISSUE_TYPE_MAPPING = {
   'Materials Issues': 'materialIssues',
 };
 
+/**
+ * Generate react-select custom styles based on dark mode
+ * @param {boolean} darkMode - Whether dark mode is enabled
+ * @returns {object} Custom styles object for react-select
+ */
+const getSelectStyles = darkMode => {
+  if (darkMode) {
+    return {
+      control: baseStyles => ({
+        ...baseStyles,
+        backgroundColor: '#2c3344',
+        borderColor: '#364156',
+        minHeight: '38px',
+        fontSize: '14px',
+      }),
+      menu: baseStyles => ({
+        ...baseStyles,
+        backgroundColor: '#2c3344',
+        fontSize: '14px',
+      }),
+      option: (baseStyles, state) => ({
+        ...baseStyles,
+        backgroundColor: state.isSelected ? '#0d55b3' : state.isFocused ? '#364156' : '#2c3344',
+        color: state.isSelected ? '#fff' : '#e0e0e0',
+        fontSize: '14px',
+      }),
+      multiValue: baseStyles => ({
+        ...baseStyles,
+        backgroundColor: '#375071',
+        borderRadius: '6px',
+      }),
+      multiValueLabel: baseStyles => ({
+        ...baseStyles,
+        color: '#fff',
+        fontSize: '12px',
+      }),
+      multiValueRemove: baseStyles => ({
+        ...baseStyles,
+        color: '#fff',
+        ':hover': {
+          backgroundColor: '#0d55b3',
+          color: '#fff',
+        },
+      }),
+      singleValue: baseStyles => ({
+        ...baseStyles,
+        color: '#e0e0e0',
+      }),
+      placeholder: baseStyles => ({
+        ...baseStyles,
+        color: '#aaaaaa',
+      }),
+    };
+  }
+
+  return {
+    control: baseStyles => ({
+      ...baseStyles,
+      minHeight: '38px',
+      fontSize: '14px',
+    }),
+    menu: baseStyles => ({
+      ...baseStyles,
+      fontSize: '14px',
+    }),
+    option: baseStyles => ({
+      ...baseStyles,
+      fontSize: '14px',
+    }),
+    multiValue: baseStyles => ({
+      ...baseStyles,
+      backgroundColor: '#e2e7ee',
+      borderRadius: '6px',
+    }),
+    multiValueLabel: baseStyles => ({
+      ...baseStyles,
+      color: '#333',
+      fontSize: '12px',
+    }),
+    multiValueRemove: baseStyles => ({
+      ...baseStyles,
+      color: '#333',
+      ':hover': {
+        backgroundColor: '#0d55b3',
+        color: '#fff',
+      },
+    }),
+  };
+};
+
 export default function IssuesBreakdownChart() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -380,92 +470,7 @@ export default function IssuesBreakdownChart() {
               placeholder="Select Projects"
               isClearable
               isDisabled={availableProjects.length === 0}
-              styles={
-                darkMode
-                  ? {
-                      control: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#2c3344',
-                        borderColor: '#364156',
-                        minHeight: '38px',
-                        fontSize: '14px',
-                      }),
-                      menu: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#2c3344',
-                        fontSize: '14px',
-                      }),
-                      option: (baseStyles, state) => ({
-                        ...baseStyles,
-                        backgroundColor: state.isSelected
-                          ? '#0d55b3'
-                          : state.isFocused
-                          ? '#364156'
-                          : '#2c3344',
-                        color: state.isSelected ? '#fff' : '#e0e0e0',
-                        fontSize: '14px',
-                      }),
-                      multiValue: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#375071',
-                        borderRadius: '6px',
-                      }),
-                      multiValueLabel: baseStyles => ({
-                        ...baseStyles,
-                        color: '#fff',
-                        fontSize: '12px',
-                      }),
-                      multiValueRemove: baseStyles => ({
-                        ...baseStyles,
-                        color: '#fff',
-                        ':hover': {
-                          backgroundColor: '#0d55b3',
-                          color: '#fff',
-                        },
-                      }),
-                      singleValue: baseStyles => ({
-                        ...baseStyles,
-                        color: '#e0e0e0',
-                      }),
-                      placeholder: baseStyles => ({
-                        ...baseStyles,
-                        color: '#aaaaaa',
-                      }),
-                    }
-                  : {
-                      control: baseStyles => ({
-                        ...baseStyles,
-                        minHeight: '38px',
-                        fontSize: '14px',
-                      }),
-                      menu: baseStyles => ({
-                        ...baseStyles,
-                        fontSize: '14px',
-                      }),
-                      option: baseStyles => ({
-                        ...baseStyles,
-                        fontSize: '14px',
-                      }),
-                      multiValue: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#e2e7ee',
-                        borderRadius: '6px',
-                      }),
-                      multiValueLabel: baseStyles => ({
-                        ...baseStyles,
-                        color: '#333',
-                        fontSize: '12px',
-                      }),
-                      multiValueRemove: baseStyles => ({
-                        ...baseStyles,
-                        color: '#333',
-                        ':hover': {
-                          backgroundColor: '#0d55b3',
-                          color: '#fff',
-                        },
-                      }),
-                    }
-              }
+              styles={getSelectStyles(darkMode)}
             />
           </div>
 
@@ -508,92 +513,7 @@ export default function IssuesBreakdownChart() {
               onChange={handleIssueTypeChange}
               placeholder="Select Issue Types"
               isClearable
-              styles={
-                darkMode
-                  ? {
-                      control: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#2c3344',
-                        borderColor: '#364156',
-                        minHeight: '38px',
-                        fontSize: '14px',
-                      }),
-                      menu: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#2c3344',
-                        fontSize: '14px',
-                      }),
-                      option: (baseStyles, state) => ({
-                        ...baseStyles,
-                        backgroundColor: state.isSelected
-                          ? '#0d55b3'
-                          : state.isFocused
-                          ? '#364156'
-                          : '#2c3344',
-                        color: state.isSelected ? '#fff' : '#e0e0e0',
-                        fontSize: '14px',
-                      }),
-                      multiValue: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#375071',
-                        borderRadius: '6px',
-                      }),
-                      multiValueLabel: baseStyles => ({
-                        ...baseStyles,
-                        color: '#fff',
-                        fontSize: '12px',
-                      }),
-                      multiValueRemove: baseStyles => ({
-                        ...baseStyles,
-                        color: '#fff',
-                        ':hover': {
-                          backgroundColor: '#0d55b3',
-                          color: '#fff',
-                        },
-                      }),
-                      singleValue: baseStyles => ({
-                        ...baseStyles,
-                        color: '#e0e0e0',
-                      }),
-                      placeholder: baseStyles => ({
-                        ...baseStyles,
-                        color: '#aaaaaa',
-                      }),
-                    }
-                  : {
-                      control: baseStyles => ({
-                        ...baseStyles,
-                        minHeight: '38px',
-                        fontSize: '14px',
-                      }),
-                      menu: baseStyles => ({
-                        ...baseStyles,
-                        fontSize: '14px',
-                      }),
-                      option: baseStyles => ({
-                        ...baseStyles,
-                        fontSize: '14px',
-                      }),
-                      multiValue: baseStyles => ({
-                        ...baseStyles,
-                        backgroundColor: '#e2e7ee',
-                        borderRadius: '6px',
-                      }),
-                      multiValueLabel: baseStyles => ({
-                        ...baseStyles,
-                        color: '#333',
-                        fontSize: '12px',
-                      }),
-                      multiValueRemove: baseStyles => ({
-                        ...baseStyles,
-                        color: '#333',
-                        ':hover': {
-                          backgroundColor: '#0d55b3',
-                          color: '#fff',
-                        },
-                      }),
-                    }
-              }
+              styles={getSelectStyles(darkMode)}
             />
           </div>
         </div>
