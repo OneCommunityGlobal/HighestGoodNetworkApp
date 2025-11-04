@@ -74,7 +74,8 @@
   display: flex;
   flex-direction: column;
   min-width: 250px;
-  flex: 1;
+  flex: 1 1 300px;
+  max-width: 100%;
 }
 
 .filterLabel {
@@ -354,7 +355,15 @@
 
 /* ===================== RESPONSIVE DESIGN ===================== */
 
-/* Tablet and smaller screens */
+/* Large tablets and medium screens - prevent filter overlap */
+@media (max-width: 1280px) {
+  .filterGroup {
+    min-width: 220px;
+    flex: 1 1 280px;
+  }
+}
+
+/* Tablet screens - tighter spacing */
 @media (max-width: 1024px) {
   .filtersRow {
     gap: 16px;
@@ -362,6 +371,15 @@
 
   .filterGroup {
     min-width: 200px;
+    flex: 1 1 250px;
+  }
+}
+
+/* Small tablets - prevent overlap by wrapping earlier */
+@media (max-width: 900px) {
+  .filterGroup {
+    min-width: 180px;
+    flex: 1 1 220px;
   }
 }
 
@@ -385,6 +403,7 @@
   .filterGroup {
     min-width: 100%;
     width: 100%;
+    flex: 1 1 100%;
   }
 
   .datePickerGroup {
