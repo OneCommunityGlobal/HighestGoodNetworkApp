@@ -9,7 +9,6 @@ const AddTeamsAutoComplete = React.memo((props) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const darkMode = useSelector((state) => state.theme.darkMode);
 
-  console.log("Teams data", teamsData)
 
   // Accept both shapes: { allTeams: [...] } OR just [...]
   const allTeamsRaw = teamsData?.allTeams ?? teamsData ?? [];
@@ -47,7 +46,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
       <Input
         type="text"
         value={searchText}
-        autoFocus
+        autoFocus // eslint-disable-line jsx-a11y/no-autofocus
         onFocus={() => setIsOpen(true)}
         onBlur={() => setTimeout(() => setIsOpen(false), 120)}
         onChange={(e) => {
@@ -74,6 +73,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
             </div>
           ) : (
             suggestions.slice(0, 100).map((item) => (
+               // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
               <div
                 key={item._id}
                 className="team-auto-complete"
@@ -86,6 +86,7 @@ const AddTeamsAutoComplete = React.memo((props) => {
           )}
 
           {showCreateNew && (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
             <div
               className="team-auto-complete"
               onMouseDown={(e) => e.preventDefault()}

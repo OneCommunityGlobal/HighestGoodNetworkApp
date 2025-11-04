@@ -18,6 +18,7 @@ import * as types from '../constants/task';
 import { ENDPOINTS } from '~/utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
 import { fetchTaskEditSuggestions } from '../components/TaskEditSuggestions/thunks';
+import { incrementDashboardTaskCount } from './dashboardActions';
 
 const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
@@ -236,8 +237,17 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
     }
     if (hasPermission) {
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
-      const userIds = updatedTask.resources.map(resource => resource.userID);
-      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+      
+      // Only create task notification if resources actually changed
+      const oldResourceIds = oldTask.resources?.map(r => r.userID).sort().join(',') || '';
+      const newResourceIds = updatedTask.resources?.map(r => r.userID).sort().join(',') || '';
+      
+      if (oldResourceIds !== newResourceIds) {
+        const userIds = updatedTask.resources.map(resource => resource.userID);
+        await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+      }
+      
+      dispatch(incrementDashboardTaskCount(taskId));
     } else {
       await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask).then(
         () => {
