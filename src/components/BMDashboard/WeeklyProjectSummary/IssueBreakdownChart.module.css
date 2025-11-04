@@ -230,6 +230,12 @@
   width: 100%;
 }
 
+:global(.dark-mode) .errorMessage {
+  background: rgba(244, 67, 54, 0.15);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #ff6b6b;
+}
+
 .errorMessage i {
   font-size: 16px;
 }
@@ -238,11 +244,15 @@
   width: 100%;
   height: 500px;
   margin-top: 20px;
-  background: var(--section-bg, transparent);
+  background: var(--section-bg, #ffffff);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+:global(.dark-mode) .chartContainer {
+  background: #253342;
 }
 
 .loadingContainer {
@@ -260,6 +270,10 @@
   color: var(--text-color, #666);
   font-size: 16px;
   font-weight: 500;
+}
+
+:global(.dark-mode) .loadingText {
+  color: #d1d5db;
 }
 
 .errorContainer {
@@ -280,10 +294,19 @@
   opacity: 0.7;
 }
 
+:global(.dark-mode) .errorContainer i {
+  color: #ff6b6b;
+  opacity: 0.8;
+}
+
 .errorText {
   color: var(--text-color, #333);
   font-size: 16px;
   font-weight: 500;
+}
+
+:global(.dark-mode) .errorText {
+  color: #ffffff;
 }
 
 .emptyContainer {
@@ -304,16 +327,29 @@
   opacity: 0.5;
 }
 
+:global(.dark-mode) .emptyContainer i {
+  color: #d1d5db;
+  opacity: 0.7;
+}
+
 .emptyText {
   color: var(--text-color, #666);
   font-size: 18px;
   font-weight: 500;
 }
 
+:global(.dark-mode) .emptyText {
+  color: #ffffff;
+}
+
 .emptySubtext {
   color: var(--text-color, #999);
   font-size: 14px;
   margin-top: 4px;
+}
+
+:global(.dark-mode) .emptySubtext {
+  color: #d1d5db;
 }
 
 /* ===================== RESPONSIVE DESIGN ===================== */

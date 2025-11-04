@@ -60,10 +60,12 @@ export default function IssuesBreakdownChart() {
   // Ref for abort controller to cancel API calls on unmount
   const abortControllerRef = useRef(null);
 
-  const rootStyles = getComputedStyle(document.body);
-  const textColor = rootStyles.getPropertyValue('--text-color') || '#666';
-  const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');
-  const tooltipBg = rootStyles.getPropertyValue('--section-bg') || '#fff';
+  // Dark mode colors for chart elements
+  const textColor = darkMode ? '#ffffff' : '#666';
+  const gridColor = darkMode ? 'rgba(255, 255, 255, 0.1)' : '#e0e0e0';
+  const tooltipBg = darkMode ? '#1b2a41' : '#ffffff';
+  const tooltipTextColor = darkMode ? '#ffffff' : '#333';
+  const tooltipBorderColor = darkMode ? 'rgba(255, 255, 255, 0.2)' : '#ddd';
 
   /**
    * Process API response data to map to three fixed issue types
@@ -646,9 +648,15 @@ export default function IssuesBreakdownChart() {
               <Tooltip
                 contentStyle={{
                   backgroundColor: tooltipBg,
-                  border: 'none',
+                  border: `1px solid ${tooltipBorderColor}`,
                   borderRadius: '8px',
-                  color: textColor,
+                  color: tooltipTextColor,
+                }}
+                labelStyle={{
+                  color: tooltipTextColor,
+                }}
+                itemStyle={{
+                  color: tooltipTextColor,
                 }}
               />
               {/* Fixed three bars: Equipment Issues, Labor Issues, Materials Issues */}
