@@ -74,8 +74,16 @@
   display: flex;
   flex-direction: column;
   min-width: 250px;
-  flex: 1 1 300px;
+  flex: 1 1 350px;
   max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure react-select doesn't overflow */
+.filterGroup :global(.customSelect__control) {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .filterLabel {
@@ -89,6 +97,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .datePicker {
@@ -100,7 +110,10 @@
   background: var(--section-bg, #fff);
   color: var(--text-color, #333);
   min-height: 38px;
+  min-width: 0;
+  max-width: 100%;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
   /* Ensure browser adapts native controls to dark mode */
   color-scheme: light dark;
 }
@@ -355,38 +368,42 @@
 
 /* ===================== RESPONSIVE DESIGN ===================== */
 
-/* Large tablets and medium screens - prevent filter overlap */
-@media (max-width: 1280px) {
+/* At 1155px, force issue type filter to wrap to next line */
+@media (max-width: 1155px) {
   .filterGroup {
-    min-width: 220px;
-    flex: 1 1 280px;
+    /* Increase flex-basis to force wrapping */
+    flex: 1 1 370px;
   }
 }
 
-/* Tablet screens - tighter spacing */
+/* Tablet screens - reduce size for better fit */
 @media (max-width: 1024px) {
   .filtersRow {
     gap: 16px;
   }
 
   .filterGroup {
-    min-width: 200px;
-    flex: 1 1 250px;
+    min-width: 220px;
+    flex: 1 1 300px;
   }
 }
 
-/* Small tablets - prevent overlap by wrapping earlier */
+/* Transition to vertical layout at 900px to prevent overflow */
 @media (max-width: 900px) {
   .filterGroup {
-    min-width: 180px;
-    flex: 1 1 220px;
+    min-width: 0;
+    flex: 1 1 calc(50% - 8px);
   }
 }
 
-/* Mobile devices */
+/* Mobile and smaller tablets - single column layout */
 @media (max-width: 768px) {
   .container {
-    padding: 20px;
+    padding: 16px;
+  }
+
+  .inner {
+    width: 100%;
   }
 
   .heading {
@@ -395,24 +412,31 @@
 
   .filtersRow {
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     margin-top: 20px;
     margin-bottom: 16px;
   }
 
   .filterGroup {
-    min-width: 100%;
+    min-width: 0;
     width: 100%;
-    flex: 1 1 100%;
+    flex: 1 1 auto;
   }
 
   .datePickerGroup {
     flex-direction: row;
     align-items: center;
+    width: 100%;
   }
 
   .datePicker {
     min-width: 0;
+    width: auto;
+    flex: 1;
+  }
+
+  .dateSeparator {
+    flex-shrink: 0;
   }
 
   .resetButtonContainer {
@@ -434,7 +458,7 @@
 /* Small mobile devices */
 @media (max-width: 480px) {
   .container {
-    padding: 16px;
+    padding: 12px;
   }
 
   .heading {
@@ -443,17 +467,23 @@
   }
 
   .legend {
-    gap: 16px;
+    gap: 12px;
     justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .legendLabel {
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .filtersRow {
-    gap: 16px;
+    gap: 12px;
     margin-top: 16px;
+  }
+
+  .filterGroup {
+    min-width: 0;
+    width: 100%;
   }
 
   .filterLabel {
@@ -461,12 +491,20 @@
   }
 
   .datePickerGroup {
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .datePicker {
+    min-width: 0;
+    width: 100%;
   }
 
   .dateSeparator {
-    width: 100%;
+    width: auto;
     text-align: center;
+    margin: 0;
   }
 
   .chartContainer {
