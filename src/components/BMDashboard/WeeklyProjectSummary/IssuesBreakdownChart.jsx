@@ -274,9 +274,11 @@ export default function IssuesBreakdownChart() {
         return;
       }
 
-      // Fetch from API if not in Redux
+      // Fetch from API if not in Redux - only fetch projects with issues
       try {
-        const response = await httpService.get(`${process.env.REACT_APP_APIENDPOINT}/projects`);
+        const response = await httpService.get(
+          `${process.env.REACT_APP_APIENDPOINT}/bm/projectsNames?withIssuesOnly=true`,
+        );
         if (response.data && Array.isArray(response.data)) {
           setAvailableProjects(response.data);
         }
