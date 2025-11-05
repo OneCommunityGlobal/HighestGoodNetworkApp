@@ -13,6 +13,9 @@
   /* extras you want */
   font-weight: 600;
   align-self: flex-start;
+  background-color: #c9d6c6 !important;
+  border-color: #285739 !important;
+  color: #285739 !important;
 }
 
 .review-button-dropdown {
