@@ -9,7 +9,6 @@ const wait = (ms = 300) => new Promise(r => setTimeout(r, ms));
 const NS = 'hgn_event_mock_v1:'; // storage namespace version
 
 const todayISO = () => new Date().toISOString();
-const randomPick = arr => arr[Math.floor(Math.random() * arr.length)];
 const clone = x => JSON.parse(JSON.stringify(x));
 
 function keyFor(id) {
@@ -205,7 +204,13 @@ export async function upsertScheduleSlot(activityId, date, slot /* {id?,start,en
   const next = clone(evt);
   const list = next.scheduleByDate[date] ?? [];
   if (!slot.id) {
-    slot.id = crypto.randomUUID ? crypto.randomUUID() : `slot_${Date.now()}`;
+    slot.id = crypto?.randomUUID
+      ? crypto.randomUUID()
+      : (() => {
+          const a = new Uint32Array(4);
+          crypto?.getRandomValues?.(a);
+          return `slot_${[...a].map(x => x.toString(16).padStart(8, '0')).join('')}`;
+        })();
     list.push(slot);
   } else {
     const idx = list.findIndex(s => s.id === slot.id);
@@ -278,7 +283,13 @@ export async function upsertResource(activityId, res /* {id?,type,title,url,size
   const next = clone(evt);
   const list = next.resources ?? [];
   if (!res.id) {
-    res.id = crypto.randomUUID ? crypto.randomUUID() : `res_${Date.now()}`;
+    res.id = crypto?.randomUUID
+      ? crypto.randomUUID()
+      : (() => {
+          const a = new Uint32Array(4);
+          crypto?.getRandomValues?.(a);
+          return `res_${[...a].map(x => x.toString(16).padStart(8, '0')).join('')}`;
+        })();
     list.push(res);
   } else {
     const idx = list.findIndex(r => r.id === res.id);

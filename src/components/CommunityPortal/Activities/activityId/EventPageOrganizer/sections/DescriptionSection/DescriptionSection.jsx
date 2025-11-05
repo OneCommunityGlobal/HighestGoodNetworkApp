@@ -4,6 +4,20 @@ import { Button } from '../../components/ui/button';
 import { Textarea } from '../../components/ui/textarea';
 import styles from './DescriptionSection.module.css';
 
+const genId = () => {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+
+  if (typeof crypto !== 'undefined' && typeof crypto.getRandomValues === 'function') {
+    const a = new Uint32Array(4);
+    crypto.getRandomValues(a);
+    return [...a].map(x => x.toString(16).padStart(8, '0')).join('');
+  }
+
+  return `id_${Date.now().toString(36)}_${Math.trunc(performance.now()).toString(36)}`;
+};
+
 export const DescriptionSection = ({
   activityId = 'test-event',
   initialDescription = '',
@@ -27,9 +41,7 @@ export const DescriptionSection = ({
         try {
           const uploads = await Promise.all(files.map(f => uploadMediaFn(activityId, f)));
           const newMedia = uploads.map(u => ({
-            id: Math.random()
-              .toString(36)
-              .substr(2, 9),
+            id: genId(),
             url: u.url,
             name: u.name,
             size: u.size,
@@ -44,9 +56,7 @@ export const DescriptionSection = ({
       } else {
         // fallback: use local preview URLs
         const newMedia = files.map(file => ({
-          id: Math.random()
-            .toString(36)
-            .substr(2, 9),
+          id: genId(),
           url: URL.createObjectURL(file),
           name: file.name,
           size: file.size,
