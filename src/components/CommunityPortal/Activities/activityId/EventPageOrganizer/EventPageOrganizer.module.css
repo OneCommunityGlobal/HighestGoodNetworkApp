@@ -61,7 +61,7 @@
 }
 
 .statusText {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 500;
   color: black;
   font-size: 2rem;
@@ -82,7 +82,7 @@
 }
 
 .eventType {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 1rem;
@@ -90,7 +90,7 @@
 }
 
 .eventTitle {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 600;
   color: black;
   font-size: 39.7px;
@@ -110,7 +110,7 @@
 }
 
 .linkLabel {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 15.9px;
@@ -118,7 +118,7 @@
 }
 
 .linkValue {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 400;
   color: #008dff;
   font-size: 15.9px;
@@ -150,7 +150,7 @@
 }
 
 .detailLabelText {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 1rem;
@@ -158,7 +158,7 @@
 }
 
 .detailValue {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 600;
   color: black;
   font-size: 1rem;
@@ -166,7 +166,7 @@
 }
 
 .capacityValue {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 600;
   font-size: 1rem;
   line-height: 1.5rem;
@@ -212,7 +212,7 @@
 }
 
 .moreCountText {
-  font-family: 'Inter', Helvetica;
+  font-family: 'Inter', Helvetica, sans-serif;
   font-weight: 400;
   color: black;
   font-size: 10px;
