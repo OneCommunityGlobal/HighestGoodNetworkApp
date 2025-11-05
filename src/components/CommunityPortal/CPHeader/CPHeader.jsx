@@ -207,7 +207,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem>
-                  <NavLink tag={Link} to="/communityportal">
+                  <NavLink tag={Link} to="/dashboard">
                     <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
