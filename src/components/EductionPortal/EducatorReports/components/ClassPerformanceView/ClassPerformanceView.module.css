@@ -1,0 +1,484 @@
+/* ClassPerformanceView.module.css */
+
+.classPerformance {
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.classPerformance.darkMode {
+  color: #ffffff;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.emptyState.darkMode {
+  color: #ffffff;
+}
+
+.emptyContent {
+  text-align: center;
+  max-width: 400px;
+}
+
+.emptyContent i {
+  font-size: 4rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.darkMode .emptyContent i {
+  color: #6b7280;
+}
+
+.emptyContent h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.darkMode .emptyContent h3 {
+  color: #f9fafb;
+}
+
+.emptyContent p {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.darkMode .emptyContent p {
+  color: #9ca3af;
+}
+
+/* Metrics Row */
+.metricsRow {
+  margin-bottom: 2rem;
+}
+
+.metricCol {
+  margin-bottom: 1rem;
+}
+
+/* Report Cards */
+.reportCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.reportCard.darkMode {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.reportCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.darkMode .reportCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Card Headers */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.darkMode .cardHeader {
+  border-bottom-color: #374151;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.darkMode .cardTitle {
+  color: #f9fafb;
+}
+
+/* Chart Styles */
+.chartCol {
+  margin-bottom: 1.5rem;
+}
+
+.chartContainer {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.darkMode .legend {
+  border-top-color: #374151;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.darkMode .legendItem {
+  color: #d1d5db;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legendColor.highlyEffective {
+  background-color: #10b981;
+}
+
+.legendColor.effective {
+  background-color: #3b82f6;
+}
+
+.legendColor.needsImprovement {
+  background-color: #ef4444;
+}
+
+.legendColor.veryGood {
+  background-color: #10b981;
+}
+
+.legendColor.good {
+  background-color: #10b981;
+}
+
+.legendColor.moderate {
+  background-color: #fbbf24;
+}
+
+.legendColor.low {
+  background-color: #fbbf24;
+}
+
+/* Loading States */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.darkMode .loading {
+  color: #9ca3af;
+}
+
+.loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.loading p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Insights Section */
+.insightsContainer {
+  margin-top: 1rem;
+}
+
+.insightAlert {
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.insightAlert:last-child {
+  margin-bottom: 0;
+}
+
+.insightContent {
+  line-height: 1.6;
+}
+
+.insightHeader {
+  margin-bottom: 0.5rem;
+}
+
+.insightHeader strong {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.insightMessage {
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.darkMode .insightMessage {
+  color: #d1d5db;
+}
+
+.insightAction {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.darkMode .insightAction {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.actionButton {
+  background-color: #4f46e5;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.actionButton:hover {
+  background-color: #3730a3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
+.actionButton:active {
+  transform: translateY(0);
+}
+
+.darkMode .actionButton {
+  background-color: #4338ca;
+}
+
+.darkMode .actionButton:hover {
+  background-color: #3730a3;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .classPerformance {
+    padding: 1rem;
+  }
+
+  .metricsRow {
+    margin-bottom: 1.5rem;
+  }
+
+  .chartCol {
+    margin-bottom: 1.5rem;
+  }
+
+  .legend {
+    gap: 0.75rem;
+  }
+
+  .legendItem {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .classPerformance {
+    padding: 0.5rem;
+  }
+
+  .reportCard {
+    margin: 0 -0.5rem 1.5rem -0.5rem;
+  }
+
+  .cardTitle {
+    font-size: 1.125rem;
+  }
+
+  .legend {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .legendItem {
+    justify-content: center;
+  }
+
+  .metricCol {
+    margin-bottom: 1rem;
+  }
+
+  .insightAction {
+    justify-content: center;
+  }
+
+  .actionButton {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .emptyContent i {
+    font-size: 3rem;
+  }
+
+  .emptyContent h3 {
+    font-size: 1.25rem;
+  }
+
+  .emptyContent p {
+    font-size: 0.9rem;
+  }
+
+  .cardTitle {
+    font-size: 1rem;
+  }
+
+  .legendColor {
+    width: 10px;
+    height: 10px;
+  }
+
+  .legendItem {
+    font-size: 0.75rem;
+  }
+
+  .actionButton {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .classPerformance {
+    background: white !important;
+    color: black !important;
+  }
+
+  .reportCard {
+    background: white !important;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  .legend {
+    display: none;
+  }
+
+  .insightAlert {
+    background: transparent !important;
+    border: 1px solid currentColor;
+  }
+
+  .actionButton {
+    background: transparent !important;
+    color: black !important;
+    border: 1px solid black;
+  }
+}
+
+/* Accessibility */
+.reportCard:focus-within {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .reportCard:focus-within {
+  outline-color: #818cf8;
+}
+
+.actionButton:focus {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .actionButton:focus {
+  outline-color: #818cf8;
+}
+
+/* Chart-specific adjustments */
+.chartContainer canvas {
+  max-height: 350px;
+}
+
+/* Strategy effectiveness colors for consistency */
+.strategyBar.highlyEffective {
+  background-color: #10b981;
+}
+
+.strategyBar.effective {
+  background-color: #3b82f6;
+}
+
+.strategyBar.needsImprovement {
+  background-color: #ef4444;
+}
+
+/* Impact colors for life strategies */
+.impactBar.veryGood {
+  background-color: #10b981;
+}
+
+.impactBar.good {
+  background-color: #10b981;
+}
+
+.impactBar.moderate {
+  background-color: #fbbf24;
+}
+
+.impactBar.low {
+  background-color: #fbbf24;
+}
