@@ -62,7 +62,6 @@ const TeamMemberTask = React.memo(
     const owner = 'Owner';
 
     const handleDashboardAccess = () => {
-      // null checks
       if (!user || !userRole || !user.role) {
         toast.error('User information not available to determine dashboard access.');
         return;
@@ -150,9 +149,9 @@ const TeamMemberTask = React.memo(
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const colorsObjs = {
-      'Assistant Manager': '#849ced', // blue
-      Manager: '#90e766', // green
-      Mentor: '#e9dd57', // yellow
+      'Assistant Manager': '#849ced',
+      Manager: '#90e766',
+      Mentor: '#e9dd57',
     };
 
     function getInitials(name) {
@@ -255,7 +254,6 @@ const TeamMemberTask = React.memo(
             <Table className={styles['no-bottom-margin']}>
               <tbody>
                 <tr className="remove-child-borders">
-                  {/* green if member has met committed hours for the week, red if not */}
                   <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
                     <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column' }}>
                       <div className={styles['member-links-wrapper']}>
@@ -414,7 +412,7 @@ const TeamMemberTask = React.memo(
                                       style={{
                                         width: '22px',
                                         height: '22px',
-                                        marginTop: '-2px', // 🔧 fixes the slight vertical offset of the R icon
+                                        marginTop: '-2px',
                                       }}
                                     />
                                   </Link>
@@ -498,7 +496,6 @@ const TeamMemberTask = React.memo(
                                     }`}
                                   >
                                     <div className={styles['inner-task-align']}>
-                                      {/*  */}
                                       <div className={styles['team-member-tasks-content']}>
                                         <Link
                                           className={styles['team-member-tasks-content-link']}
@@ -506,8 +503,6 @@ const TeamMemberTask = React.memo(
                                           data-testid={`${task.taskName}`}
                                           style={{ color: darkMode ? '#339CFF' : undefined }}
                                         >
-                                          {/* <span>aaaaaaaa aaaaaaaaaa aaaaaa aaaaaaaaaaaaaaaa aaaa aaaaaaaaaaaaaaa aaa aaaaaa aaaa aaaaaaa aaaaaaaa aaaaaaaa aaaaaa aa bb</span> */}
-
                                           <span>{`${task.num} ${task.taskName}`} </span>
                                         </Link>
                                         <CopyToClipboard
@@ -515,7 +510,6 @@ const TeamMemberTask = React.memo(
                                           message="Task Copied!"
                                         />
                                       </div>
-                                      {/*  */}
                                       <div className={styles['team-member-tasks-icons']}>
                                         {task.taskNotifications.length > 0 &&
                                         task.taskNotifications.some(
@@ -577,7 +571,6 @@ const TeamMemberTask = React.memo(
                                           <TeamMemberTaskIconsInfo />
                                         </div>
                                       </div>
-                                      {/*  */}
                                       <div className={styles['team-member-task-review-button']}>
                                         <ReviewButton
                                           user={user}
@@ -728,7 +721,6 @@ const TeamMemberTask = React.memo(
             </Table>
           </div>
         </td>
-        {/* Task Change Log Modal */}
         {selectedTaskForChangeLog && (
           <TaskChangeLogModal
             isOpen={showChangeLogModal}

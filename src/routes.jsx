@@ -113,6 +113,9 @@ import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
+// Event Management Page (Organizer View)
+import EventManagementPage from './components/CommunityPortal/Activities/activityId/EventManagementPage/EventManagementPage';
+
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
 // Activity Feedback Modal
@@ -734,6 +737,11 @@ export default (
           path="/communityportal/Activities/Register/:activityId"
           exact
           component={Register}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/event"
+          exact
+          component={EventManagementPage}
         />
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
