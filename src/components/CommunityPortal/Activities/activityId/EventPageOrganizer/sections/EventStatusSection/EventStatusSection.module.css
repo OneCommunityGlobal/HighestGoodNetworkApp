@@ -1,0 +1,53 @@
+.header {
+  width: 100%;
+  height: 69px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #353a3f;
+  padding: 0 27px;
+}
+
+.logo {
+  font-family: 'Inter', Helvetica;
+  font-weight: 700;
+  color: white;
+  font-size: 0.875rem;
+  text-align: center;
+  line-height: normal;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 42px;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar {
+  width: 2rem;
+  height: 2rem;
+}
+
+.welcomeText {
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  color: white;
+  font-size: 0.875rem;
+  text-align: right;
+  line-height: normal;
+}

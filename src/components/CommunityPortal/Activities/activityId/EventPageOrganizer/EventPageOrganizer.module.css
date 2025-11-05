@@ -1,0 +1,272 @@
+.container {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background-color: white;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 2.5rem;
+}
+
+.contentWrapper {
+  width: 100%;
+  max-width: 1360px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  transform: translateY(-1rem);
+  animation: fadeIn 1s ease forwards;
+  opacity: 0;
+}
+
+.eventCard {
+  position: relative;
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid #c9c9c9;
+  padding: 2rem;
+  transform: translateY(-1rem);
+  animation: fadeIn 1s 0.2s ease forwards;
+  opacity: 0;
+}
+
+.eventCardContent {
+  display: flex;
+  gap: 2rem;
+}
+
+.eventImageSection {
+  flex-shrink: 0;
+  width: 323px;
+}
+
+.eventImage {
+  width: 100%;
+  height: 332px;
+  background-color: #d9d9d9;
+  border-radius: 0.5rem;
+}
+
+.statusBadge {
+  margin-top: 1rem;
+  width: 100%;
+  height: 72px;
+  background-color: #c7c7c7;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statusText {
+  font-family: 'Inter', Helvetica;
+  font-weight: 500;
+  color: black;
+  font-size: 2rem;
+  line-height: 3rem;
+}
+
+.eventDetailsSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.eventHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.eventType {
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  color: black;
+  font-size: 1rem;
+  line-height: normal;
+}
+
+.eventTitle {
+  font-family: 'Inter', Helvetica;
+  font-weight: 600;
+  color: black;
+  font-size: 39.7px;
+  line-height: normal;
+}
+
+.eventLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.linkRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.linkLabel {
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  color: black;
+  font-size: 15.9px;
+  line-height: normal;
+}
+
+.linkValue {
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  color: #008dff;
+  font-size: 15.9px;
+  line-height: normal;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #e5e5e5;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem 1.5rem;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detailLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detailLabelText {
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  color: black;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.detailValue {
+  font-family: 'Inter', Helvetica;
+  font-weight: 600;
+  color: black;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.capacityValue {
+  font-family: 'Inter', Helvetica;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}
+
+.capacityUsed {
+  color: #f96d6d;
+}
+
+.capacityTotal {
+  color: black;
+}
+
+.statusActive {
+  color: #58df88;
+}
+
+.attendeesRow {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid white;
+}
+
+.avatarOverlap {
+  margin-left: -0.5rem;
+}
+
+.moreCount {
+  width: 27px;
+  height: 1.75rem;
+  margin-left: -0.5rem;
+  background-color: white;
+  border-radius: 9999px;
+  border: 1px solid #c9c9c9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moreCountText {
+  font-family: 'Inter', Helvetica;
+  font-weight: 400;
+  color: black;
+  font-size: 10px;
+  line-height: normal;
+}
+
+.calendarSection {
+  flex-shrink: 0;
+  width: 238px;
+  position: relative;
+}
+
+.statusIndicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  background-color: #f3f3f3;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+
+.statusDot {
+  width: 19px;
+  height: 19px;
+  background-color: #f96d6d;
+  border-radius: 9999px;
+}
+
+.calendarDivider {
+  position: absolute;
+  top: 98px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #e5e5e5;
+}
+
+.tabsContainer {
+  width: 100%;
+  transform: translateY(-1rem);
+  animation: fadeIn 1s 0.4s ease forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
