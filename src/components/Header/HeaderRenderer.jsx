@@ -13,9 +13,10 @@ export function HeaderRenderer(props) {
   const isKitchenAndInventory = location.pathname.startsWith('/kitchenandinventory');
   const isCommunityPortal = location.pathname.startsWith('/communityportal');
   const isEducationEvaluation = location.pathname.startsWith('/educationportal/evaluation-results');
+  const isEducatorReports = location.pathname.startsWith('/educator');
 
   // Hide header for education portal evaluation results page
-  if (isEducationEvaluation) {
+  if (isEducationEvaluation || isEducatorReports) {
     return null;
   }
 
@@ -24,7 +25,7 @@ export function HeaderRenderer(props) {
     return <KIHeader {...props} />;
   }
 
-// eslint-disable-next-line react/jsx-props-no-spreading
+  // eslint-disable-next-line react/jsx-props-no-spreading
   return isCommunityPortal ? <CPHeader {...props} /> : <Header {...props}/>;
 }
 

@@ -171,6 +171,7 @@ import InsightWidget from './components/EductionPortal/AnalyticsDashboard/Insigh
 import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
 import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
 import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
+import EducatorReports from './components/EductionPortal/EducatorReports';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
@@ -818,6 +819,7 @@ export default (
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <Route path="/educationportal/reportButton" component={ReportDownloadButton} />
         <Route path="/educator/groups" exact component={GroupList} />
+        <EPProtectedRoute path="/educator/reports" exact component={EducatorReports} />
         <EPProtectedRoute
           path="/educationportal/tasks/intermediate"
           exact
