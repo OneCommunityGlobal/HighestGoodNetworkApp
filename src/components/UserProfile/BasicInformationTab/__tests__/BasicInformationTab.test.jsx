@@ -462,7 +462,7 @@ it('Test case 4: Renders the Email component as expected  ', () => {
   expect(screen.getByText('emailSubscription')).toBeInTheDocument(); // toggle button
 
 });
-
+//test case 5
 it('Test case 5: Renders the Phone component as expected  ', () => {
   render(
     <Provider store={store}>
