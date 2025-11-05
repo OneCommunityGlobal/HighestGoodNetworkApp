@@ -1,37 +1,36 @@
 .requestResourceContainer {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 30px;
-  background-color: #f9fbfc;
-  border: 1px solid #dfe3e8;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 700px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .formTitle {
-  text-align: left;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #333;
-  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .requestResourceForm {
   display: flex;
   flex-direction: column;
-  gap:4px;
+  gap: 4px;
 }
 
 .formGroup {
+  margin-bottom: 1rem;
   display: flex;
   flex-direction: column;
 }
 
 .formGroup label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 5px;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
 }
 
 .formGroup input,
@@ -40,10 +39,14 @@
   font-size: 14px;
   border: 1px solid #ccd1d9;
   border-radius: 5px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
 }
 
-textarea {
-  resize: none;
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: #0078d4;
 }
 
 .formGroup.largeWidth input {
@@ -80,7 +83,6 @@ textarea {
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
   border-top: 5px solid #555;
-  /* Arrow color */
   pointer-events: none;
 }
 
@@ -88,26 +90,40 @@ textarea {
   flex: 1;
 }
 
+/* 🔴 Error message styling */
+.error {
+  color: #d93025; /* Google-style red */
+  font-size: 0.9rem;
+  margin-top: 4px;
+  margin-left: 2px;
+  font-weight: 500;
+}
+
+/* 🟢 Success message */
+.success {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 0.8rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* 🩶 Buttons */
 .buttonGroup {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
-}
-
-.cancelButton,
-.submitButton {
-  width: auto;
-  padding: 8px 30px;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
+  margin-top: 1.5rem;
 }
 
 .cancelButton {
-  background-color: #f8f9fa;
-  border: 1px solid #dfe3e8;
-  color: #555;
+  background-color: #ccc;
+  color: #333;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .cancelButton:hover {
@@ -115,12 +131,37 @@ textarea {
 }
 
 .submitButton {
-  background-color: #183d65;
-  color: #fff;
+  background-color: #0078d4;
+  color: white;
   border: none;
-  border-radius: 12px;
+  padding: 0.7rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .submitButton:hover {
   background-color: #0056b3;
+}
+
+/* 🌙 Dark mode */
+[data-theme='dark'] .requestResourceContainer {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+[data-theme='dark'] input,
+[data-theme='dark'] textarea {
+  background-color: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+[data-theme='dark'] .success {
+  background-color: #064e3b;
+  color: #a7f3d0;
+}
+
+/* 🔴 Dark mode error color */
+[data-theme='dark'] .error {
+  color: #f87171;
 }

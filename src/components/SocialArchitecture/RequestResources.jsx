@@ -77,7 +77,6 @@ function RequestResources() {
             value={formData.eventName}
             onChange={handleChange}
             placeholder="Event Name"
-            required
           />
           {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
@@ -91,9 +90,8 @@ function RequestResources() {
             value={formData.organizerName}
             onChange={handleChange}
             placeholder="Name"
-            required
           />
-          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
+          {errors.organizerName && <p className={styles.error}>{errors.organizerName}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
@@ -105,9 +103,8 @@ function RequestResources() {
             value={formData.itemName}
             onChange={handleChange}
             placeholder="Name of item you want to request"
-            required
           />
-          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
+          {errors.itemName && <p className={styles.error}>{errors.itemName}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.largeWidth}`}>
@@ -120,9 +117,8 @@ function RequestResources() {
             onChange={handleChange}
             placeholder="Qty"
             min="1"
-            required
           />
-          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
+          {errors.requestQuantity && <p className={styles.error}>{errors.requestQuantity}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.Date}`}>
@@ -133,9 +129,8 @@ function RequestResources() {
             name="requestedDate"
             value={formData.requestedDate}
             onChange={handleChange}
-            required
           />
-          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
+          {errors.requestedDate && <p className={styles.error}>{errors.requestedDate}</p>}
         </div>
 
         <div className={`${styles.formGroup} ${styles.Date}`}>
@@ -146,9 +141,8 @@ function RequestResources() {
             name="returnDate"
             value={formData.returnDate}
             onChange={handleChange}
-            required
           />
-          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
+          {errors.returnDate && <p className={styles.error}>{errors.returnDate}</p>}
         </div>
 
         <div className={styles.formGroup}>
@@ -161,9 +155,8 @@ function RequestResources() {
               value={formData.countryCode}
               onChange={handleChange}
               placeholder="+1"
-              required
             />
-            {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
+            {errors.countryCode && <p className={styles.error}>{errors.countryCode}</p>}
             <input
               type="tel"
               id="phoneNumber"
@@ -171,9 +164,8 @@ function RequestResources() {
               value={formData.phoneNumber}
               onChange={handleChange}
               placeholder="XXX-XXX-XXXX"
-              required
             />
-            {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
+            {errors.phoneNumber && <p className={styles.error}>{errors.phoneNumber}</p>}
           </div>
         </div>
 
@@ -186,7 +178,6 @@ function RequestResources() {
             onChange={handleFileChange}
             accept="image/*"
           />
-          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={styles.formGroup}>
@@ -199,7 +190,6 @@ function RequestResources() {
             placeholder="Describe your material in detail."
             rows="4"
           />
-          {errors.eventName && <p className={styles.error}>{errors.eventName}</p>}
         </div>
 
         <div className={styles.buttonGroup}>
