@@ -1091,5 +1091,34 @@ BasicInformationTab.propTypes = {
   darkMode: PropTypes.bool,
   hasPermission: PropTypes.func.isRequired,
 };
+Name.propTypes = {
+  userProfile: PropTypes.object.isRequired,
+  setUserProfile: PropTypes.func.isRequired,
+  formValid: PropTypes.object.isRequired,
+  setFormValid: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool,
+  desktopDisplay: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
+
+Email.propTypes = {
+  userProfile: PropTypes.object.isRequired,
+  setUserProfile: PropTypes.func.isRequired,
+  formValid: PropTypes.object.isRequired,
+  setFormValid: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool,
+  desktopDisplay: PropTypes.bool,
+  darkMode: PropTypes.bool,
+  handleUserProfile: PropTypes.func.isRequired,
+};
+
+Phone.propTypes = {
+  userProfile: PropTypes.object.isRequired,
+  setUserProfile: PropTypes.func.isRequired,
+  handleUserProfile: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool,
+  desktopDisplay: PropTypes.bool,
+  darkMode: PropTypes.bool,
+};
 
 export default connect(null, { hasPermission })(BasicInformationTab);

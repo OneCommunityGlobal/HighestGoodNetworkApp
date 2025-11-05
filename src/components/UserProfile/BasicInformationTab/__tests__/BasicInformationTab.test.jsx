@@ -3,7 +3,7 @@
 import React from 'react';
 import BasicInformationTab, { Name, Title, Email, formatPhoneNumber, Phone, TimeZoneDifference } from '../BasicInformationTab';
 
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
@@ -253,7 +253,7 @@ it('Test case 3 : Verify  if phone number  is not displayed if privacy settings 
     canEdit: true,
     desktopDisplay: true,
     handleUserProfile:vi.fn(),
-  };  //render(<Email {...testProps} />);
+  };  
   render(<Phone {...testProps} />);
   
   expect(screen.queryByText((testProps.userProfile.phoneNumber).trim())).not.toBeInTheDocument();
@@ -302,31 +302,14 @@ describe('Test suite for TimeZoneDifference component ', () => {
   it('Test case 2 : Renders timezone offset when user is not self', () => {
     testProps.isUserSelf=false;
     render(<TimeZoneDifference {...testProps} />);
-    //expect(screen.getByText(/[-+]?\d+ hours/)).toBeInTheDocument(); 
     expect(screen.getByText(/[+-]?\d{1,3}\s+hours/)).toBeInTheDocument();
 
    
 
   });
 
-//  it('Test case 3 : Renders error message if the component has encountered error for the first time', async () => {
-//   testProps = {
-//     isUserSelf: false,
-//     errorOccurred: false,
-//     setErrorOccurred: vi.fn(),
-//     desktopDisplay: true,
-//     userProfile: {
-//       timeZone: 'America/New_York',
-//     },
-//   };
-  
-//   render(<TimeZoneDifference {...testProps} />);
-  
-//   // Wait for async operations to complete
-//   await waitFor(() => {
-//     expect(toast.error).toHaveBeenCalledWith('Error occurred while trying to calculate offset between timezones');
-//   });
-// });
+
+
 it('Test case 3 : Renders error message if the component has encountered error for the first time', async () => {
   testProps = {
     isUserSelf: false,
@@ -339,10 +322,6 @@ it('Test case 3 : Renders error message if the component has encountered error f
   };
  
     render(<TimeZoneDifference {...testProps} />);
-
-  
-  //render(<TimeZoneDifference {...testProps} />);
-  
   // Wait for async operations and potential error
   await waitFor(() => {
     expect(toast.error).toHaveBeenCalledWith('Error occurred while trying to calculate offset between timezones');
@@ -372,18 +351,6 @@ it('Test case 4: Does not render error message if errorOccurred is true', () => 
   );
 });
  
-
-
-
-  // it('Test case 5 : verify if the timezone difference calculation works correctly ',()=>{
-  //   testProps.userProfile.timeZone='America/New_York';
-  //   render(<TimeZoneDifference {...testProps} />);
-  //   expect(screen.getByText(/[-+]3+ hours/)).toBeInTheDocument(); 
-  //   testProps.userProfile.timeZone='Europe/London';
-  //   render(<TimeZoneDifference {...testProps} />);
-  //   expect(screen.getByText(/[-+]8+ hours/)).toBeInTheDocument(); 
-
-  // });
 
 });
 /*********************************************************************** */
@@ -506,7 +473,6 @@ it('Test case 5: Renders the Phone component as expected  ', () => {
     </Provider>,
   );
   expect(screen.getByText("Phone")).toBeInTheDocument();// Label
-  //expect(screen.queryByText('ph-input-style')).toBeInTheDocument();// Toggle
   expect(screen.getByTestId('phoneinput')).toBeInTheDocument();
   expect(screen.getByText('phone')).toBeInTheDocument();// PhoneInput 
  
@@ -658,8 +624,3 @@ const mockOnClickGetTimeZone = vi.fn();
 });
 
 });
-
-  
-  // expect(screen.getByText("Time Zone")).toBeInTheDocument();
-  // expect(screen.getByText("Difference in this Time Zone from Your Local")).toBeInTheDocument();
-  // expect(screen.getByText("Status")).toBeInTheDocument();
