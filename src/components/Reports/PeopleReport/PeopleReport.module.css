@@ -357,8 +357,9 @@ body {
   flex-wrap: nowrap; 
   align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
+  gap: 10px;
   width: 100%;
+  padding: 1.5rem;
 }
 
 .peopleReportWrapper {
@@ -398,10 +399,11 @@ body {
   flex-direction: column;
   justify-content: space-between;
   background-color: white;
-  padding: 1.5rem;
+  padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
-  height: 620px;
+  height: 698px;
+  margin-top: 2rem;
 }
 
 @media (max-width: 1260px) {
