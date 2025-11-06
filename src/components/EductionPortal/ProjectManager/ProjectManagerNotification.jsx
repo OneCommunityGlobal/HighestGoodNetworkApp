@@ -16,9 +16,9 @@ function getToken() {
 
 async function POST(url, data) {
   const token = getToken();
+  const headers = token ? { Authorization: token } : {};
   try {
-    const res = await api.post(url, data, { headers: token ? { Authorization: token } : {} });
-    return res;
+    return await api.post(url, data, { headers });
   } catch (err) {
     if (err?.response?.status === 401) {
       const body = new URLSearchParams();
@@ -33,30 +33,36 @@ async function POST(url, data) {
   }
 }
 
-async function sendNotification({ educatorIds, message }) {
-  const payload = { educatorIds, message };
+async function previewNotification(payload) {
+  const res = await POST("/pm/notifications/preview", payload);
+  return res?.data;
+}
+
+async function sendNotification(payload) {
   const res = await POST("/pm/notifications", payload);
   return res?.data ?? { ok: true };
 }
 
 export default function ProjectManagerNotification({ educators, onClose, onSent }) {
-  const darkMode = useSelector((state) => state.theme?.darkMode);
+  const darkMode = useSelector((s) => s.theme?.darkMode);
+
   const [selected, setSelected] = React.useState([]);
   const [message, setMessage] = React.useState("");
   const [sending, setSending] = React.useState(false);
   const [error, setError] = React.useState(null);
 
+
   React.useEffect(() => {
     const saved = localStorage.getItem(DRAFT_KEY);
     if (saved) setMessage(saved);
   }, []);
-
   React.useEffect(() => {
     localStorage.setItem(DRAFT_KEY, message);
   }, [message]);
 
+
   React.useEffect(() => {
-    function onKey(e) { if (e.key === "Escape") onClose(); }
+    const onKey = (e) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
@@ -64,15 +70,32 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
   const allChecked = selected.length === educators.length && educators.length > 0;
   const someChecked = selected.length > 0 && selected.length < educators.length;
 
-  function toggleAll() { setSelected(allChecked ? [] : educators.map((e) => e.id)); }
-  function toggleOne(id) { setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])); }
+  const toggleAll = () => setSelected(allChecked ? [] : educators.map((e) => e.id));
+  const toggleOne = (id) =>
+    setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
   async function handleSend() {
     setSending(true);
     setError(null);
     try {
       const trimmed = message.trim();
-      if (!selected.length || !trimmed) throw new Error("Select at least one educator and enter a message.");
+      if (!trimmed) throw new Error("Enter a message.");
+      if (selected.length === 0) throw new Error("Select at least one educator.");
+
+      const preview = await previewNotification({ educatorIds: selected, message: trimmed });
+      const mode = preview?.mode;
+      const validLen = preview?.summary?.willSendTo ?? preview?.summary?.validIds?.length ?? 0;
+      const allFlag = !!preview?.summary?.all;
+
+      if (mode === "real" && validLen === 0 && !allFlag) {
+        const unknown = preview?.summary?.unknownIds || [];
+        throw new Error(
+          unknown.length
+            ? `No valid recipients. Unknown IDs: ${unknown.join(", ")}`
+            : "No valid recipients."
+        );
+      }
+
       const resp = await sendNotification({ educatorIds: selected, message: trimmed });
       localStorage.removeItem(DRAFT_KEY);
       onSent({ educatorIds: selected, message: trimmed, resp });
@@ -84,7 +107,12 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
   }
 
   return (
-    <div className={`${styles.overlay} ${darkMode ? styles.dark : ""}`} role="dialog" aria-modal="true" aria-labelledby="composer-title">
+    <div
+      className={`${styles.overlay} ${darkMode ? styles.dark : ""}`}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="composer-title"
+    >
       <div className={styles.modal}>
         <div className={styles.header}>
           <h3 id="composer-title" className={styles.title}>New Announcement</h3>
@@ -94,15 +122,25 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
         <div className={styles.body}>
           <div className={styles.section}>
             <div className={styles.sectionLabel}>Recipients</div>
+
             <label className={styles.checkAll}>
-              <input type="checkbox" checked={allChecked} ref={(el) => el && (el.indeterminate = someChecked)} onChange={toggleAll} />
+              <input
+                type="checkbox"
+                checked={allChecked}
+                ref={(el) => el && (el.indeterminate = someChecked)}
+                onChange={toggleAll}
+              />
               Select all
             </label>
 
             <div className={styles.list}>
               {educators.map((e) => (
                 <label key={e.id} className={styles.item}>
-                  <input type="checkbox" checked={selected.includes(e.id)} onChange={() => toggleOne(e.id)} />
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(e.id)}
+                    onChange={() => toggleOne(e.id)}
+                  />
                   <span className={styles.itemText}>
                     <span className={styles.itemName}>{e.name}</span>
                     <span className={styles.itemMeta}> • {e.subject}</span>
@@ -114,7 +152,15 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
 
           <div className={styles.section}>
             <div className={styles.sectionLabel}>Message</div>
-            <textarea className={styles.textarea} placeholder="Write your announcement to teachers…" rows={6} value={message} onChange={(e) => setMessage(e.target.value)} maxLength={1000} autoFocus />
+            <textarea
+              className={styles.textarea}
+              placeholder="Write your announcement to teachers…"
+              rows={6}
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              maxLength={1000}
+              autoFocus
+            />
             <div className={styles.counter}>{message.length}/1000</div>
           </div>
 
@@ -122,8 +168,12 @@ export default function ProjectManagerNotification({ educators, onClose, onSent 
         </div>
 
         <div className={styles.footer}>
-          <button className={styles.cancelBtnNotify} onClick={onClose} disabled={sending}>Cancel</button>
-          <button className={styles.primaryBtn} onClick={handleSend} disabled={sending}>{sending ? "Sending…" : "Send Announcement"}</button>
+          <button className={styles.cancelBtnNotify} onClick={onClose} disabled={sending}>
+            Cancel
+          </button>
+          <button className={styles.primaryBtn} onClick={handleSend} disabled={sending}>
+            {sending ? "Sending…" : "Send Announcement"}
+          </button>
         </div>
       </div>
     </div>
