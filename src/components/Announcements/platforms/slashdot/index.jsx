@@ -88,6 +88,13 @@ const buildPreview = ({ headline, sourceUrl, dept, tags, intro }) =>
     tags.length ? tags.join(', ') : '—'
   }\n\nIntro / Summary\n${intro?.trim() || '—'}\n`;
 
+const padTimeUnit = value => String(value).padStart(2, '0');
+
+const formatLocalDate = date =>
+  `${date.getFullYear()}-${padTimeUnit(date.getMonth() + 1)}-${padTimeUnit(date.getDate())}`;
+
+const formatLocalTime = date => `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
+
 const topCardActions = () => ({
   display: 'flex',
   flexWrap: 'wrap',
@@ -143,6 +150,8 @@ function SlashdotAutoPoster({ platform }) {
   const [intro, setIntro] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('make');
   const [scheduledDraft, setScheduledDraft] = useState('');
+  const [scheduledDate, setScheduledDate] = useState(() => formatLocalDate(new Date()));
+  const [scheduledTime, setScheduledTime] = useState(() => formatLocalTime(new Date()));
 
   const subTabs = useMemo(
     () => [
@@ -210,6 +219,9 @@ function SlashdotAutoPoster({ platform }) {
   };
 
   const handleScheduleClick = () => {
+    const now = new Date();
+    setScheduledDate(formatLocalDate(now));
+    setScheduledTime(formatLocalTime(now));
     setScheduledDraft(preview);
     setActiveSubTab('schedule');
     toast.success('Draft moved to Schedule tab.');
@@ -219,7 +231,34 @@ function SlashdotAutoPoster({ platform }) {
     const remaining = tags.filter(tag => tag !== tagToRemove);
     setTagsText(remaining.join(', '));
   };
+  const now = new Date();
+  const today = formatLocalDate(now);
+  const currentTime = formatLocalTime(now);
+  const scheduleTimeMin = scheduledDate === today ? currentTime : '00:00';
 
+  const handleScheduleDateChange = event => {
+    const nextDateRaw = event.target.value;
+    if (!nextDateRaw) return;
+    const nextDate = nextDateRaw < today ? today : nextDateRaw;
+    setScheduledDate(nextDate);
+    if (nextDate === today) {
+      const refreshedNow = new Date();
+      const refreshedTime = formatLocalTime(refreshedNow);
+      setScheduledTime(prev => (prev && prev >= refreshedTime ? prev : refreshedTime));
+    }
+  };
+
+  const handleScheduleTimeChange = event => {
+    const nextTimeRaw = event.target.value;
+    if (!nextTimeRaw) return;
+    if (scheduledDate === today) {
+      const refreshedNow = new Date();
+      const refreshedTime = formatLocalTime(refreshedNow);
+      setScheduledTime(nextTimeRaw >= refreshedTime ? nextTimeRaw : refreshedTime);
+      return;
+    }
+    setScheduledTime(nextTimeRaw);
+  };
   return (
     <div className={classNames(styles['slashdot-autoposter'], { [styles.dark]: darkMode })}>
       <div className={classNames(styles['slashdot-subtabs'], { [styles.dark]: darkMode })}>
@@ -549,6 +588,30 @@ function SlashdotAutoPoster({ platform }) {
             Draft content captured from the composer. Scheduling controls will live here—edit the
             copy below or switch back to Make Post for more changes.
           </p>
+          <div className={styles['slashdot-scheduler__controls']}>
+            <div className={styles['slashdot-scheduler__field']}>
+              <label htmlFor="slashdot-schedule-date">Scheduled date</label>
+              <input
+                id="slashdot-schedule-date"
+                type="date"
+                value={scheduledDate}
+                min={today}
+                onChange={handleScheduleDateChange}
+                className={styles['slashdot-field__input']}
+              />
+            </div>
+            <div className={styles['slashdot-scheduler__field']}>
+              <label htmlFor="slashdot-schedule-time">Scheduled time</label>
+              <input
+                id="slashdot-schedule-time"
+                type="time"
+                value={scheduledTime}
+                min={scheduleTimeMin}
+                onChange={handleScheduleTimeChange}
+                className={styles['slashdot-field__input']}
+              />
+            </div>
+          </div>
           <label htmlFor="slashdot-schedule-content">Scheduled draft</label>
           <textarea
             id="slashdot-schedule-content"
