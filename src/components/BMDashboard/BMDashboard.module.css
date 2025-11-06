@@ -5,7 +5,7 @@
 
 .bm-dashboard-container.bm-dashboard-dark {
   background-color: #1b2a41;
-  color: #e0e0e0;
+  color: #ffffff;
 }
 
 /* Header Styles */
@@ -14,16 +14,58 @@
   text-align: center;
   margin-top: 2em;
   transition: color 0.3s ease;
+  color: #333333;
 }
 
 .bm-dashboard__header-dark h1 {
   color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Main Content Dark Mode */
 .bm-dashboard-main-dark {
   background-color: #1b2a41;
-  color: #e0e0e0;
+  color: #ffffff;
+}
+
+/* Enhanced text visibility for all BMDashboard dark mode elements */
+.bm-dashboard-dark * {
+  color: #ffffff !important;
+}
+
+.bm-dashboard-dark h1, 
+.bm-dashboard-dark h2, 
+.bm-dashboard-dark h3,
+.bm-dashboard-dark h4, 
+.bm-dashboard-dark h5, 
+.bm-dashboard-dark h6 {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.bm-dashboard-dark p, 
+.bm-dashboard-dark span, 
+.bm-dashboard-dark div,
+.bm-dashboard-dark label, 
+.bm-dashboard-dark a, 
+.bm-dashboard-dark li,
+.bm-dashboard-dark td,
+.bm-dashboard-dark th {
+  color: #ffffff !important;
+}
+
+.bm-dashboard-dark .text-muted {
+  color: #b8c5d1 !important;
+}
+
+.bm-dashboard-dark .form-control {
+  background-color: #2e5061 !important;
+  border-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+.bm-dashboard-dark .form-control::placeholder {
+  color: #b8c5d1 !important;
 }
 
 /* Button Styles */
@@ -331,125 +373,6 @@
 
 .bm-dashboard-dark .projects-list::-webkit-scrollbar-thumb:hover {
   background: #6a8aab;
-}
-
-/* Dark Mode Utility Classes */
-.bm-dashboard-dark .text-muted {
-  color: #b5bac5 !important;
-}
-
-.bm-dashboard-dark .text-info {
-  color: #6af1ea !important;
-}
-
-.bm-dashboard-dark .text-primary {
-  color: #007bff !important;
-}
-
-.bm-dashboard-dark .text-secondary {
-  color: #6c757d !important;
-}
-
-.bm-dashboard-dark .text-success {
-  color: #28a745 !important;
-}
-
-.bm-dashboard-dark .text-warning {
-  color: #ffc107 !important;
-}
-
-.bm-dashboard-dark .text-danger {
-  color: #dc3545 !important;
-}
-
-/* Dark Mode Card Styles */
-.bm-dashboard-dark .card {
-  background-color: #1c2541;
-  border-color: #3a506b;
-  color: #e0e0e0;
-}
-
-.bm-dashboard-dark .card-header {
-  background-color: #2a3f5f;
-  border-bottom-color: #3a506b;
-  color: #ffffff;
-}
-
-.bm-dashboard-dark .card-body {
-  background-color: #1c2541;
-  color: #e0e0e0;
-}
-
-.bm-dashboard-dark .card-footer {
-  background-color: #2a3f5f;
-  border-top-color: #3a506b;
-  color: #b5bac5;
-}
-
-/* Dark Mode Table Styles */
-.bm-dashboard-dark .table {
-  color: #e0e0e0;
-}
-
-.bm-dashboard-dark .table th,
-.bm-dashboard-dark .table td {
-  border-color: #3a506b;
-}
-
-.bm-dashboard-dark .table thead th {
-  background-color: #2a3f5f;
-  color: #ffffff;
-  border-color: #3a506b;
-}
-
-.bm-dashboard-dark .table-striped tbody tr:nth-of-type(odd) {
-  background-color: rgba(58, 80, 107, 0.1);
-}
-
-.bm-dashboard-dark .table-hover tbody tr:hover {
-  background-color: rgba(58, 80, 107, 0.2);
-}
-
-/* Dark Mode Modal Styles */
-.bm-dashboard-dark .modal-content {
-  background-color: #1c2541;
-  border-color: #3a506b;
-  color: #e0e0e0;
-}
-
-.bm-dashboard-dark .modal-header {
-  background-color: #2a3f5f;
-  border-bottom-color: #3a506b;
-  color: #ffffff;
-}
-
-.bm-dashboard-dark .modal-footer {
-  background-color: #2a3f5f;
-  border-top-color: #3a506b;
-}
-
-.bm-dashboard-dark .modal-backdrop {
-  background-color: rgba(0, 0, 0, 0.7);
-}
-
-/* Dark Mode Dropdown Styles */
-.bm-dashboard-dark .dropdown-menu {
-  background-color: #1c2541;
-  border-color: #3a506b;
-}
-
-.bm-dashboard-dark .dropdown-item {
-  color: #e0e0e0;
-}
-
-.bm-dashboard-dark .dropdown-item:hover,
-.bm-dashboard-dark .dropdown-item:focus {
-  background-color: #3a506b;
-  color: #ffffff;
-}
-
-.bm-dashboard-dark .dropdown-divider {
-  border-color: #3a506b;
 }
 
 /* Projects specific dark mode styles */
