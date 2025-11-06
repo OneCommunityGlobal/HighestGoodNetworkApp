@@ -12,6 +12,7 @@ import {
   ReferenceLine,
 } from 'recharts';
 import styles from './CostPredictionChart.module.css';
+
 import projectCostService from '../../../services/projectCostService';
 
 // Custom dot renderer (unchanged)
@@ -122,7 +123,6 @@ function CostPredictionChart({ projectId }) {
   const tickColor = darkMode ? '#e5e7eb' : '#9ca3af'; // tick text
   const axisLineCol = darkMode ? '#e5e7eb' : '#9ca3af'; // axis baseline & tick marks
   const legendColor = darkMode ? '#e5e7eb' : '#9ca3af'; // legend text
-  console.log('ticl', tickColor);
   return (
     <div className={styles.titleContainer}>
       <h2 className={styles.title}>Planned Vs Actual costs tracking</h2>
@@ -140,18 +140,28 @@ function CostPredictionChart({ projectId }) {
           {/* Axes: tick text, tick marks, baseline lines */}
           <XAxis
             dataKey="month"
-            tick={({ x, y, payload }) => (
-              <text
-                x={x}
-                y={y + 15} // push text down so it doesn’t overlap axis line
-                textAnchor="middle"
-                fill={darkMode ? '#e5e7eb' : '#9ca3af'}
-              >
-                {payload.value}
-              </text>
-            )}
-            tickMargin={0} // apply margin at XAxis level, not inside <text>
+            tick={({ x, y, payload }) => {
+              // Converts "February 2024" to "Feb 24"
+              const shortLabel = payload.value.replace(
+                /(\w{3})\w*\s(\d{4})/,
+                (_, m, y) => `${m} ${y.slice(-2)}`,
+              );
+
+              return (
+                <text
+                  x={x}
+                  y={y + 15} // push text down so it doesn’t overlap axis line
+                  textAnchor="middle"
+                  fill={darkMode ? '#e5e7eb' : '#9ca3af'}
+                  fontSize={15}
+                >
+                  {shortLabel}
+                </text>
+              );
+            }}
+            tickMargin={10}
           />
+
           <YAxis
             tick={({ x, y, payload }) => (
               <text x={x} y={y} textAnchor="end" fill={darkMode ? '#e5e7eb' : '#9ca3af'}>
@@ -160,7 +170,10 @@ function CostPredictionChart({ projectId }) {
             )}
           />
           {/* Tooltip & Legend */}
-          <Tooltip />
+          <Tooltip
+            labelFormatter={label => ` ${label}`}
+            formatter={(value, name) => [`$${Number(value).toLocaleString()}`, name]}
+          />
           <Legend
             verticalAlign="bottom"
             height={48}
