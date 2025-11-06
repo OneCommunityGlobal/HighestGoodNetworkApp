@@ -1,5 +1,9 @@
 /* FAQSection.module.css */
 
+.faqContainer {
+  margin-top: 2rem;
+}
+
 .faqTwoColumn {
   display: flex;
   gap: 2rem;
@@ -12,6 +16,7 @@
 
 .faqRight {
   flex: 1;
+  min-width: 0; /* Prevents flex item from overflowing */
 }
 
 .faqItem {
@@ -20,6 +25,7 @@
 
 .faqQuestion {
   font-weight: bold;
+  margin-bottom: 0.5em;
 }
 
 .faqAnswer {
@@ -28,10 +34,37 @@
 
 .videoWrapper {
   margin-top: 1em;
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
 }
 
 .videoIframe {
-  width: 400px;
-  height: 225px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   border: none;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .faqTwoColumn {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .faqLeft {
+    flex: none;
+  }
+  
+  .faqRight {
+    flex: none;
+  }
+  
+  .videoWrapper {
+    padding-bottom: 56.25%; /* Maintain 16:9 aspect ratio on mobile */
+  }
 }
