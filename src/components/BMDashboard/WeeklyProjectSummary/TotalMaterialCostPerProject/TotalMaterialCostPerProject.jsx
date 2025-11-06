@@ -214,14 +214,14 @@ function TotalMaterialCostPerProject() {
         whiteSpace: 'nowrap',
         maxWidth: '100%',
         position: 'relative',
-        scrollbarWidth: 'thin',
+        scrollbarWidth: 'none',
       }),
     }),
     [darkMode],
   );
 
   return (
-    <div style={{ maxWidth: '300px', minWidth: '200px' }}>
+    <div>
       <div className={styles.totalMaterialCostPerProjectChartTitle}>
         Total Material Cost Per Project
       </div>

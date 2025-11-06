@@ -247,7 +247,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'large',
+        className: 'full',
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
@@ -474,7 +474,7 @@ function WeeklyProjectSummary() {
   };
 
   return (
-    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
       <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
