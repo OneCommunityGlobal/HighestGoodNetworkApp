@@ -49,8 +49,8 @@ export default function SelectItem({
                 All
               </option>
               {itemSet.map(item => (
-                <option key={`item-${item.id || item.name}`} value={item.name}>
-                  {item.name}
+                <option key={`item-${item}`} value={item}>
+                  {item}
                 </option>
               ))}
             </>
