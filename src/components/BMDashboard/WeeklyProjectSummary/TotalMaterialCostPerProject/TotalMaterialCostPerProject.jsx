@@ -83,15 +83,15 @@ function TotalMaterialCostPerProject() {
     const fetchData = async () => {
       setDataLoaded(false);
       try {
-        const projectsResponse = await axios.get(ENDPOINTS.BM_PROJECTS_LIST_FOR_MATERIALS_COST);
+        const projectsResponse = await axios.get(ENDPOINTS.BM_PROJECTS);
         if (projectsResponse.status < 200 || projectsResponse.status >= 300) {
           throw new Error(
             `API request to get projects list failed with status ${projectsResponse.status}`,
           );
         }
         const projectsFilteredData = projectsResponse.data.map(project => ({
-          value: project.projectId,
-          label: project.projectName,
+          value: project._id,
+          label: project.name,
         }));
         setSelectedProjects(projectsFilteredData);
         setAllProjects(projectsFilteredData);
@@ -103,7 +103,7 @@ function TotalMaterialCostPerProject() {
           );
         }
         const projectCostsData = costResponse.data.reduce((acc, item) => {
-          acc[item.projectId] = item.totalCostK;
+          acc[item.project] = item.totalCostK;
           return acc;
         }, {});
         setProjectCosts(projectCostsData);
@@ -145,6 +145,8 @@ function TotalMaterialCostPerProject() {
         minHeight: 38,
         boxShadow: 'none',
         borderRadius: 8,
+        overflowX: 'auto',
+        whiteSpace: 'nowrap',
       }),
       menu: base => ({
         ...base,
@@ -183,6 +185,8 @@ function TotalMaterialCostPerProject() {
         borderRadius: 6,
         fontSize: 12,
         marginRight: 4,
+        maxWidth: 'none',
+        flexShrink: 0,
       }),
       multiValueLabel: base => ({
         ...base,
@@ -200,12 +204,24 @@ function TotalMaterialCostPerProject() {
         borderRadius: 4,
         padding: 2,
       }),
+      valueContainer: provided => ({
+        ...provided,
+        overflowX: 'auto',
+        flexWrap: 'nowrap',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-start',
+        whiteSpace: 'nowrap',
+        maxWidth: '100%',
+        position: 'relative',
+        scrollbarWidth: 'thin',
+      }),
     }),
     [darkMode],
   );
 
   return (
-    <div>
+    <div style={{ maxWidth: '300px', minWidth: '200px' }}>
       <div className={styles.totalMaterialCostPerProjectChartTitle}>
         Total Material Cost Per Project
       </div>
@@ -219,7 +235,6 @@ function TotalMaterialCostPerProject() {
               value={selectedProjects}
               onChange={setSelectedProjects}
               classNamePrefix="select"
-              className={styles.selectValueContainer}
               styles={selectStyles}
               menuPortalTarget={document.body}
               menuPosition="fixed"
