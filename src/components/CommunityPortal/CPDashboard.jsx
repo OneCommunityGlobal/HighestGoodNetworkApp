@@ -7,6 +7,9 @@ export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
 
+  // Get today's date in YYYY-MM-DD format for min date restriction
+  const today = new Date().toISOString().split('T')[0];
+
   useEffect(() => {
     const mockEvents = [
       {
@@ -79,7 +82,7 @@ export function CPDashboard() {
                   <Input type="radio" name="dates" /> This Weekend
                 </div>
               </div>
-              <Input type="date" placeholder="Ending After" className="date-filter" />
+              <Input type="date" placeholder="Ending After" className="date-filter" min={today} />
             </div>
             <div className="filter-item">
               <label htmlFor="online-only">Online</label>
