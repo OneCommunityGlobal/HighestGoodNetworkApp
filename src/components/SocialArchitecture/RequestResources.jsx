@@ -20,7 +20,18 @@ function RequestResources() {
 
   const handleChange = e => {
     const { name, value } = e.target;
+
+    // Update form data
     setFormData({ ...formData, [name]: value });
+
+    // Clear error for this specific field when user types or selects a valid value
+    if (errors[name]) {
+      setErrors(prevErrors => {
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors[name];
+        return updatedErrors;
+      });
+    }
   };
 
   const handleFileChange = e => {
