@@ -1,126 +1,214 @@
 .requestResourceContainer {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 30px;
-  background-color: #f9fbfc;
-  border: 1px solid #dfe3e8;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f5fbff; /* Light pastel background */
+  color: #1f2937;
+  border-radius: 12px;
+  padding: 2rem 3rem;
+  max-width: 500px;
+  margin: 2rem auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .formTitle {
-  text-align: left;
-  margin-bottom: 20px;
-  font-size: 24px;
-  color: #333;
-  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1f2937;
 }
 
 .requestResourceForm {
   display: flex;
   flex-direction: column;
-  gap:4px;
+  gap: 1rem;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
+  gap: 0.3rem;
 }
 
 .formGroup label {
-  font-size: 14px;
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 5px;
+  font-weight: 500;
+  color: #374151;
+  font-size: 0.95rem;
 }
 
 .formGroup input,
 .formGroup textarea {
-  padding: 8px;
-  font-size: 14px;
-  border: 1px solid #ccd1d9;
-  border-radius: 5px;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #111827;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-textarea {
-  resize: none;
+.formGroup input:focus,
+.formGroup textarea:focus {
+  border-color: #2563eb;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 
-.formGroup.largeWidth input {
-  width: 450px;
-}
-
-.formGroup.Date input {
-  width: 150px;
+input[type="date"] {
+  font-family: inherit;
 }
 
 .phoneInput {
   display: flex;
+  gap: 8px;
   align-items: center;
-  gap: 10px;
-  width: 200px;
-  position: relative;
 }
 
-.phoneInput #countryCode {
-  width: 60px;
-  text-align: center;
-  position: relative;
-  padding-right: 20px;
-}
-
-.phoneInput #countryCode::after {
-  content: '';
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid #555;
-  /* Arrow color */
-  pointer-events: none;
-}
-
-.phoneInput #phoneNumber {
+.phoneInput input {
   flex: 1;
 }
 
-.buttonGroup {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+textarea {
+  resize: none;
+  min-height: 80px;
 }
 
-.cancelButton,
-.submitButton {
-  width: auto;
-  padding: 8px 30px;
-  font-size: 16px;
-  border-radius: 5px;
+/* 🖼️ Upload Box */
+.uploadBox {
+  border: 2px dashed #cbd5e1;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: #f9fafb;
+  transition: all 0.25s ease-in-out;
+  font-size: 0.95rem;
+  color: #6b7280;
   cursor: pointer;
 }
 
+.uploadBox:hover {
+  border-color: #2563eb;
+  background-color: #eef6ff;
+  color: #2563eb;
+}
+
+.uploadBox input[type="file"] {
+  display: none;
+}
+
+.uploadPreview {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.uploadPreview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+/* ✅ Buttons */
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
 .cancelButton {
-  background-color: #f8f9fa;
-  border: 1px solid #dfe3e8;
-  color: #555;
+  background-color: #e5e7eb;
+  color: #374151;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
 .cancelButton:hover {
-  background-color: #e4e6e9;
+  background-color: #d1d5db;
 }
 
 .submitButton {
-  background-color: #183d65;
-  color: #fff;
+  background-color: #1e3a8a;
+  color: #ffffff;
   border: none;
-  border-radius: 12px;
+  padding: 0.6rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
 }
 
 .submitButton:hover {
-  background-color: #0056b3;
+  background-color: #1e40af;
+}
+
+/* ⚠️ Error + ✅ Success */
+.error {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin-top: -0.3rem;
+}
+
+.success {
+  background-color: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+  padding: 0.8rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* 📱 Responsive */
+@media (max-width: 600px) {
+  .requestResourceContainer {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .cancelButton,
+  .submitButton {
+    width: 100%;
+  }
+}
+
+/* 🌙 Dark Mode */
+[data-theme="dark"] .requestResourceContainer {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea {
+  background-color: #374151;
+  color: #f9fafb;
+  border-color: #4b5563;
+}
+
+[data-theme="dark"] .uploadBox {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .uploadBox:hover {
+  background-color: #1e293b;
+  border-color: #60a5fa;
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .error {
+  color: #f87171;
+}
+
+[data-theme="dark"] .success {
+  background-color: #064e3b;
+  color: #a7f3d0;
 }
