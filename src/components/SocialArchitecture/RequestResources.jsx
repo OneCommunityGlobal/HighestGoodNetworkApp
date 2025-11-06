@@ -171,13 +171,23 @@ function RequestResources() {
 
         <div className={styles.formGroup}>
           <label htmlFor="materialImage">Upload Material Picture</label>
-          <input
-            type="file"
-            id="materialImage"
-            name="materialImage"
-            onChange={handleFileChange}
-            accept="image/*"
-          />
+          <label htmlFor="materialImage" className={styles.uploadBox}>
+            Drag and drop your picture here
+            <input
+              type="file"
+              id="materialImage"
+              name="materialImage"
+              onChange={handleFileChange}
+              accept="image/*"
+            />
+          </label>
+
+          {formData.materialImage && (
+            <div className={styles.uploadPreview}>
+              <img src={URL.createObjectURL(formData.materialImage)} alt="Preview" />
+            </div>
+          )}
+          {errors.materialImage && <p className={styles.error}>{errors.materialImage}</p>}
         </div>
 
         <div className={styles.formGroup}>
