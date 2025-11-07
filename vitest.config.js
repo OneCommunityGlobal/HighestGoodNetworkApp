@@ -13,6 +13,9 @@ export default defineConfig({
 
   test: {
     environment: 'jsdom',
+    environmentOptions: {
+      url: 'http://localhost/'
+    },
     globals: true,
     setupFiles: ['./src/setupTests.js'],
     
