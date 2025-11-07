@@ -18,6 +18,24 @@ export default defineConfig({
     },
     globals: true,
     setupFiles: ['./src/setupTests.js'],
+
+    // Clear mocks automatically between tests
+    clearMocks: true,
+    mockReset: true,
+    restoreMocks: true,
+    unstubEnvs: true,
+    unstubGlobals: true,
+    
+    // Isolate tests to prevent memory leaks
+    isolate: true,
+    
+    // Use forks instead of threads for better memory cleanup
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true, // More aggressive - runs one test file at a time
+      }
+    },
     
     // INCLUDE ALL YOUR TEST PATTERNS
     include: [
