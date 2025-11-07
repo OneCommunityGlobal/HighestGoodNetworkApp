@@ -172,7 +172,7 @@ function SameFolderTasks(props) {
                   <td className="desktop-view">
                     {e.resources &&
                       e.resources.map((element, key) => {
-                        try {
+                        
                           if (element.profilePic) {
                             return (
                               <a
@@ -200,9 +200,7 @@ function SameFolderTasks(props) {
                               <span className="dot">{element.name.substring(0, 2)}</span>
                             </a>
                           );
-                        } catch (error) { 
-                          return null;
-                        }
+                        
                       })}
                   </td>
                   <td>

@@ -967,11 +967,9 @@ const onAssignProject = assignedProject => {
   // eslint-disable-next-line
   useEffect(() => {
     const helper = async () => {
-      try {
+      
         await updateProjectTouserProfile();
-      } catch (error) {
-        // eslint-disable-next-line no-console
-      }
+      
     };
     helper();
   }, [projects]);
