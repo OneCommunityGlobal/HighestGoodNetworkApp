@@ -13,9 +13,8 @@ import Select from 'react-select';
 import httpService from '../../../services/httpService';
 import { useSelector } from 'react-redux';
 import styles from './ProjectRiskProfileOverview.module.css';
-import { get } from 'lodash';
 
-export default function ProjectRiskProfileOverview() {
+export default function ProjectRiskProfileOverview({ selectStyles }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -46,69 +45,6 @@ export default function ProjectRiskProfileOverview() {
     }
     return darkMode ? '#fff' : '#232323';
   };
-
-  const selectStyles = useMemo(
-    () => ({
-      control: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        borderColor: darkMode ? '#375071' : '#ccc',
-        color: darkMode ? '#fff' : '#232323',
-        minHeight: 38,
-        boxShadow: 'none',
-        borderRadius: 8,
-      }),
-      menu: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        fontSize: 12,
-        zIndex: 10001,
-        borderRadius: 8,
-        marginTop: 2,
-        color: darkMode ? '#fff' : '#232323',
-      }),
-      menuList: base => ({
-        ...base,
-        maxHeight: 400,
-        overflowY: 'auto',
-        backgroundColor: darkMode ? '#22272e' : '#fff',
-        color: darkMode ? '#fff' : '#232323',
-        padding: 0,
-      }),
-      option: (base, state) => ({
-        ...base,
-        backgroundColor: getBackgroundColor(state, darkMode),
-        color: getTextColor(state, darkMode),
-        fontSize: 13,
-        padding: '10px 16px',
-        cursor: 'pointer',
-      }),
-      multiValue: base => ({
-        ...base,
-        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
-        borderRadius: 6,
-        fontSize: 12,
-        marginRight: 4,
-      }),
-      multiValueLabel: base => ({
-        ...base,
-        color: darkMode ? '#fff' : '#333',
-        fontSize: 12,
-        padding: '2px 6px',
-      }),
-      multiValueRemove: base => ({
-        ...base,
-        color: darkMode ? '#fff' : '#333',
-        ':hover': {
-          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
-          color: '#fff',
-        },
-        borderRadius: 4,
-        padding: 2,
-      }),
-    }),
-    [darkMode],
-  );
 
   useEffect(() => {
     async function fetchData() {
