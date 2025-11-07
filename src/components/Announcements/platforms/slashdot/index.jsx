@@ -262,6 +262,7 @@ function SlashdotAutoPoster({ platform }) {
     setScheduledTime(formatLocalTime(now));
     setScheduledDraft(preview);
     setActiveSubTab('schedule');
+    setEditingScheduleId(null);
     setIsScheduleDraftDirty(false);
     toast.success('Draft moved to Schedule tab.');
   };
@@ -321,8 +322,10 @@ function SlashdotAutoPoster({ platform }) {
       toast.warn('Add content to the schedule before saving.');
       return;
     }
+    const isEditing = Boolean(editingScheduleId);
+    const recordId = isEditing ? editingScheduleId : createScheduleId();
     const record = {
-      id: editingScheduleId || createScheduleId(),
+      id: recordId,
       headline,
       sourceUrl,
       dept,
@@ -339,10 +342,15 @@ function SlashdotAutoPoster({ platform }) {
       const remaining = prev.filter(item => item.id !== record.id);
       return [record, ...remaining];
     });
-    setScheduledDraft(record.scheduledDraft);
-    setIsScheduleDraftDirty(record.isCustomDraft);
-    setEditingScheduleId(record.id);
-    toast.success(editingScheduleId ? 'Scheduled post updated.' : 'Scheduled post saved.');
+    const toastMessage = isEditing ? 'Scheduled post updated.' : 'Scheduled post saved.';
+    toast.success(toastMessage);
+    handleReset();
+    setScheduledDraft('');
+    setScheduledDate('');
+    setScheduledTime('');
+    setIsScheduleDraftDirty(true);
+    setEditingScheduleId(null);
+    setActiveSubTab('make');
   };
 
   const handleEditSchedule = scheduleId => {
@@ -701,10 +709,7 @@ function SlashdotAutoPoster({ platform }) {
             className={classNames(styles['slashdot-card'], styles['slashdot-card--scheduler'])}
           >
             <h3>Schedule Slashdot Post</h3>
-            <p>
-              Draft content captured from the composer. Scheduling controls will live here—edit the
-              copy below or switch back to Make Post for more changes.
-            </p>
+            <p>Scheduling controls, copy below or switch back to Make Post changes.</p>
             {editingSchedule && (
               <p className={styles['slashdot-scheduler__note']}>
                 Editing saved schedule “{editingSchedule.headline || 'Untitled draft'}”. Saving will
@@ -744,7 +749,7 @@ function SlashdotAutoPoster({ platform }) {
                 styles['slashdot-field__input'],
                 styles['slashdot-scheduler__textarea'],
               )}
-              placeholder="Click “Schedule this post” in the composer to load content here."
+              placeholder="Click “Schedule this post” in the Make Post tab to load content here."
               rows={8}
             />
             <div className={styles['slashdot-scheduler__actions']}>
