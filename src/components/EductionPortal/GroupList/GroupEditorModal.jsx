@@ -1,5 +1,5 @@
-// ...existing code...
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './GroupList.module.css';
 
 export default function GroupEditorModal({
@@ -18,6 +18,8 @@ export default function GroupEditorModal({
   const overlayRef = useRef(null);
   const modalRef = useRef(null);
   const firstInputRef = useRef(null);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     setName(group?.name || '');
@@ -123,7 +125,7 @@ export default function GroupEditorModal({
 
   return (
     <div
-      className={styles.overlay}
+      className={`${styles.overlay} ${darkMode ? styles.dark : ''}`}
       ref={overlayRef}
       onClick={handleOverlayClick}
       onKeyDown={handleOverlayKey}

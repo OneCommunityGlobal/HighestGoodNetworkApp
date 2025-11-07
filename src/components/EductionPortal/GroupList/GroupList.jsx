@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo, memo } from 'react';
 import styles from './GroupList.module.css';
 import GroupEditorModal from './GroupEditorModal.jsx';
+import { useSelector } from 'react-redux';
 
 function useLocalStorage(key, initialValue) {
   const [state, setState] = useState(() => {
@@ -52,6 +53,8 @@ export default function GroupList() {
   const [learners] = useState(() => (Array.isArray(learnersSeed) ? learnersSeed : []));
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const totalGroups = useMemo(() => groups.length, [groups]);
 
@@ -105,7 +108,10 @@ export default function GroupList() {
   );
 
   return (
-    <section className={styles.container} aria-labelledby="groups-heading">
+    <section
+      className={`${styles.container} ${darkMode ? styles.dark : ''}`}
+      aria-labelledby="groups-heading"
+    >
       <header className={styles.header}>
         <div>
           <h2 id="groups-heading" className={styles.title}>

@@ -14,6 +14,102 @@
   --gap: 1rem;
 }
 
+.dark {
+  --bg: #181a1b;
+  --muted: #b0b3b8;
+  --primary: #60a5fa;
+  --primary-600: #2563eb;
+  --danger: #f87171;
+  --card: #23272a;
+  --glass: rgba(96, 165, 250, 0.08);
+  --surface-border: #23272a;
+  --text: #f3f4f6;
+  --shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+
+.dark .container {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.dark .list {
+  background: var(--card);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow);
+}
+
+.dark .item {
+  border-bottom: 1px solid #23272a;
+}
+
+.dark .item:hover {
+  background: var(--glass);
+}
+
+.dark .itemName,
+.dark .checkLabel {
+  color: var(--text);
+}
+
+.dark .count,
+.dark .subtitle,
+.dark .fieldLabel,
+.dark .empty {
+  color: var(--muted);
+}
+
+.dark .editButton,
+.dark .cancel {
+  border: 1px solid #23272a;
+  color: var(--text);
+  background: transparent;
+}
+
+.dark .editButton:hover,
+.dark .cancel:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.dark .danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.dark .primary {
+  background: linear-gradient(180deg, var(--primary), var(--primary-600));
+  color: #fff;
+}
+
+.dark .modal {
+  background: var(--card);
+  border: 1px solid #23272a;
+  color: var(--text);
+}
+
+.dark .input {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid #23272a;
+}
+
+.dark .input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 6px 18px rgba(96, 165, 250, 0.12);
+}
+
+.dark .checklist {
+  background: var(--bg);
+  border: 1px solid #23272a;
+}
+
+.dark .checkItem:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.dark .fieldError {
+  color: var(--danger);
+}
+
 .container {
   padding: 1.25rem;
   font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
