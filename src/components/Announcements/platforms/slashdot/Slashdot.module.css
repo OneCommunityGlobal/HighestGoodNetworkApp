@@ -268,6 +268,27 @@
   width: 100%;
 }
 
+.slashdot-scheduler__grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.slashdot-card--saved {
+  max-width: 100%;
+}
+
+.slashdot-scheduler__note {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 12px;
+}
+
+.slashdot-autoposter.dark .slashdot-scheduler__note {
+  color: #9aa9c6;
+}
+
 .slashdot-scheduler__controls {
   display: flex;
   flex-wrap: wrap;
@@ -291,6 +312,97 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 18px;
+}
+
+.slashdot-scheduler__empty {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin: 8px 0 0;
+}
+
+.slashdot-autoposter.dark .slashdot-scheduler__empty {
+  color: #9aa9c6;
+}
+
+.slashdot-saved__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.slashdot-saved__item {
+  border: 1px solid #d6dde7;
+  border-radius: 10px;
+  background: #f4f7fd;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.slashdot-autoposter.dark .slashdot-saved__item {
+  border-color: #2b3b55;
+  background: #0f1c2d;
+}
+
+.slashdot-saved__item--active {
+  border-color: #0d6efd;
+  box-shadow: 0 0 0 1px rgba(13, 110, 253, 0.24);
+}
+
+.slashdot-autoposter.dark .slashdot-saved__item--active {
+  border-color: #4785ff;
+  box-shadow: 0 0 0 1px rgba(71, 133, 255, 0.32);
+}
+
+.slashdot-saved__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.slashdot-saved__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #1b1f29;
+}
+
+.slashdot-autoposter.dark .slashdot-saved__title {
+  color: #dbe6ff;
+}
+
+.slashdot-saved__meta {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.slashdot-autoposter.dark .slashdot-saved__meta {
+  color: #9aa9c6;
+}
+
+.slashdot-saved__excerpt {
+  font-size: 0.9rem;
+  color: #4f5a73;
+  margin: 0;
+}
+
+.slashdot-autoposter.dark .slashdot-saved__excerpt {
+  color: #cfd9f8;
+}
+
+.slashdot-saved__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 960px) {
+  .slashdot-scheduler__grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {

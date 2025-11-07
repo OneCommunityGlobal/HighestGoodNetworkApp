@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
@@ -95,6 +95,36 @@ const formatLocalDate = date =>
 
 const formatLocalTime = date => `${padTimeUnit(date.getHours())}:${padTimeUnit(date.getMinutes())}`;
 
+const createScheduleId = () =>
+  `schedule-${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+
+const formatDisplayDateTime = (dateString, timeString) => {
+  if (!dateString) return '—';
+  try {
+    const composed = `${dateString}T${timeString || '00:00'}`;
+    const parsed = new Date(composed);
+    if (Number.isNaN(parsed.getTime())) {
+      return `${dateString}${timeString ? `, ${timeString}` : ''}`;
+    }
+    const formattedDate = parsed.toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+    const formattedTime = timeString
+      ? parsed.toLocaleTimeString(undefined, {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '';
+    return formattedTime ? `${formattedDate} • ${formattedTime}` : formattedDate;
+  } catch (error) {
+    return `${dateString}${timeString ? `, ${timeString}` : ''}`;
+  }
+};
+
 const topCardActions = () => ({
   display: 'flex',
   flexWrap: 'wrap',
@@ -152,6 +182,9 @@ function SlashdotAutoPoster({ platform }) {
   const [scheduledDraft, setScheduledDraft] = useState('');
   const [scheduledDate, setScheduledDate] = useState(() => formatLocalDate(new Date()));
   const [scheduledTime, setScheduledTime] = useState(() => formatLocalTime(new Date()));
+  const [savedSchedules, setSavedSchedules] = useState([]);
+  const [editingScheduleId, setEditingScheduleId] = useState(null);
+  const [isScheduleDraftDirty, setIsScheduleDraftDirty] = useState(false);
 
   const subTabs = useMemo(
     () => [
@@ -189,6 +222,11 @@ function SlashdotAutoPoster({ platform }) {
     tags,
     intro,
   ]);
+  const scheduleHasDraft = scheduledDraft.trim().length > 0;
+  const editingSchedule = useMemo(
+    () => savedSchedules.find(schedule => schedule.id === editingScheduleId) || null,
+    [editingScheduleId, savedSchedules],
+  );
 
   const copyText = async (text, label) => {
     const value = text?.trim();
@@ -224,6 +262,7 @@ function SlashdotAutoPoster({ platform }) {
     setScheduledTime(formatLocalTime(now));
     setScheduledDraft(preview);
     setActiveSubTab('schedule');
+    setIsScheduleDraftDirty(false);
     toast.success('Draft moved to Schedule tab.');
   };
 
@@ -259,6 +298,83 @@ function SlashdotAutoPoster({ platform }) {
     }
     setScheduledTime(nextTimeRaw);
   };
+
+  useEffect(() => {
+    if (activeSubTab !== 'schedule') return;
+    if (isScheduleDraftDirty) return;
+    if (scheduledDraft === preview) return;
+    setScheduledDraft(preview);
+  }, [activeSubTab, isScheduleDraftDirty, preview, scheduledDraft]);
+
+  const handleScheduleContentChange = event => {
+    setIsScheduleDraftDirty(true);
+    setScheduledDraft(event.target.value);
+  };
+
+  const handleBackToMake = () => {
+    setIsScheduleDraftDirty(false);
+    setActiveSubTab('make');
+  };
+
+  const handleSaveSchedule = () => {
+    if (!scheduleHasDraft) {
+      toast.warn('Add content to the schedule before saving.');
+      return;
+    }
+    const record = {
+      id: editingScheduleId || createScheduleId(),
+      headline,
+      sourceUrl,
+      dept,
+      tagsText,
+      tags: [...tags],
+      intro,
+      scheduledDraft: scheduledDraft.trim(),
+      scheduledDate,
+      scheduledTime,
+      isCustomDraft: isScheduleDraftDirty,
+      updatedAt: new Date().toISOString(),
+    };
+    setSavedSchedules(prev => {
+      const remaining = prev.filter(item => item.id !== record.id);
+      return [record, ...remaining];
+    });
+    setScheduledDraft(record.scheduledDraft);
+    setIsScheduleDraftDirty(record.isCustomDraft);
+    setEditingScheduleId(record.id);
+    toast.success(editingScheduleId ? 'Scheduled post updated.' : 'Scheduled post saved.');
+  };
+
+  const handleEditSchedule = scheduleId => {
+    const target = savedSchedules.find(schedule => schedule.id === scheduleId);
+    if (!target) return;
+    const refreshedToday = formatLocalDate(new Date());
+    let nextDate = target.scheduledDate || refreshedToday;
+    if (nextDate < refreshedToday) {
+      nextDate = refreshedToday;
+    }
+    let nextTime = target.scheduledTime || '00:00';
+    if (nextDate === refreshedToday) {
+      const refreshedNow = new Date();
+      const refreshedTime = formatLocalTime(refreshedNow);
+      if (!nextTime || nextTime < refreshedTime) {
+        nextTime = refreshedTime;
+      }
+    }
+    setHeadline(target.headline || '');
+    setSourceUrl(target.sourceUrl || '');
+    setDept(target.dept || '');
+    setTagsText(target.tagsText || '');
+    setIntro(target.intro || '');
+    setScheduledDraft(target.scheduledDraft || '');
+    setScheduledDate(nextDate);
+    setScheduledTime(nextTime);
+    setIsScheduleDraftDirty(Boolean(target.isCustomDraft));
+    setEditingScheduleId(target.id);
+    setActiveSubTab('schedule');
+    toast.info('Loaded scheduled post for editing.');
+  };
+
   return (
     <div className={classNames(styles['slashdot-autoposter'], { [styles.dark]: darkMode })}>
       <div className={classNames(styles['slashdot-subtabs'], { [styles.dark]: darkMode })}>
@@ -580,67 +696,140 @@ function SlashdotAutoPoster({ platform }) {
           </section>
         </>
       ) : (
-        <section
-          className={classNames(styles['slashdot-card'], styles['slashdot-card--scheduler'])}
-        >
-          <h3>Schedule Slashdot Post</h3>
-          <p>
-            Draft content captured from the composer. Scheduling controls will live here—edit the
-            copy below or switch back to Make Post for more changes.
-          </p>
-          <div className={styles['slashdot-scheduler__controls']}>
-            <div className={styles['slashdot-scheduler__field']}>
-              <label htmlFor="slashdot-schedule-date">Scheduled date</label>
-              <input
-                id="slashdot-schedule-date"
-                type="date"
-                value={scheduledDate}
-                min={today}
-                onChange={handleScheduleDateChange}
-                className={styles['slashdot-field__input']}
-              />
-            </div>
-            <div className={styles['slashdot-scheduler__field']}>
-              <label htmlFor="slashdot-schedule-time">Scheduled time</label>
-              <input
-                id="slashdot-schedule-time"
-                type="time"
-                value={scheduledTime}
-                min={scheduleTimeMin}
-                onChange={handleScheduleTimeChange}
-                className={styles['slashdot-field__input']}
-              />
-            </div>
-          </div>
-          <label htmlFor="slashdot-schedule-content">Scheduled draft</label>
-          <textarea
-            id="slashdot-schedule-content"
-            value={scheduledDraft}
-            onChange={e => setScheduledDraft(e.target.value)}
-            className={classNames(
-              styles['slashdot-field__input'],
-              styles['slashdot-scheduler__textarea'],
+        <div className={styles['slashdot-scheduler__grid']}>
+          <section
+            className={classNames(styles['slashdot-card'], styles['slashdot-card--scheduler'])}
+          >
+            <h3>Schedule Slashdot Post</h3>
+            <p>
+              Draft content captured from the composer. Scheduling controls will live here—edit the
+              copy below or switch back to Make Post for more changes.
+            </p>
+            {editingSchedule && (
+              <p className={styles['slashdot-scheduler__note']}>
+                Editing saved schedule “{editingSchedule.headline || 'Untitled draft'}”. Saving will
+                overwrite the existing entry.
+              </p>
             )}
-            placeholder="Click “Schedule this post” in the composer to load content here."
-            rows={8}
-          />
-          <div className={styles['slashdot-scheduler__actions']}>
-            <button
-              type="button"
-              style={buttonStyle('ghost', darkMode)}
-              onClick={() => copyText(scheduledDraft, 'Scheduled draft')}
-            >
-              Copy scheduled draft
-            </button>
-            <button
-              type="button"
-              style={buttonStyle('outline', darkMode)}
-              onClick={() => setActiveSubTab('make')}
-            >
-              Back to Make Post
-            </button>
-          </div>
-        </section>
+            <div className={styles['slashdot-scheduler__controls']}>
+              <div className={styles['slashdot-scheduler__field']}>
+                <label htmlFor="slashdot-schedule-date">Scheduled date</label>
+                <input
+                  id="slashdot-schedule-date"
+                  type="date"
+                  value={scheduledDate}
+                  min={today}
+                  onChange={handleScheduleDateChange}
+                  className={styles['slashdot-field__input']}
+                />
+              </div>
+              <div className={styles['slashdot-scheduler__field']}>
+                <label htmlFor="slashdot-schedule-time">Scheduled time</label>
+                <input
+                  id="slashdot-schedule-time"
+                  type="time"
+                  value={scheduledTime}
+                  min={scheduleTimeMin}
+                  onChange={handleScheduleTimeChange}
+                  className={styles['slashdot-field__input']}
+                />
+              </div>
+            </div>
+            <label htmlFor="slashdot-schedule-content">Scheduled draft</label>
+            <textarea
+              id="slashdot-schedule-content"
+              value={scheduledDraft}
+              onChange={handleScheduleContentChange}
+              className={classNames(
+                styles['slashdot-field__input'],
+                styles['slashdot-scheduler__textarea'],
+              )}
+              placeholder="Click “Schedule this post” in the composer to load content here."
+              rows={8}
+            />
+            <div className={styles['slashdot-scheduler__actions']}>
+              <button
+                type="button"
+                style={buttonStyle('primary', darkMode)}
+                onClick={handleSaveSchedule}
+                disabled={!scheduleHasDraft}
+              >
+                {editingScheduleId ? 'Update scheduled post' : 'Save scheduled post'}
+              </button>
+              <button
+                type="button"
+                style={buttonStyle('ghost', darkMode)}
+                onClick={() => copyText(scheduledDraft, 'Scheduled draft')}
+                disabled={!scheduleHasDraft}
+              >
+                Copy scheduled draft
+              </button>
+              <button
+                type="button"
+                style={buttonStyle('outline', darkMode)}
+                onClick={handleBackToMake}
+              >
+                Back to Make Post
+              </button>
+            </div>
+          </section>
+
+          <section className={classNames(styles['slashdot-card'], styles['slashdot-card--saved'])}>
+            <h3>Saved scheduled posts</h3>
+            <p className={styles['slashdot-field__hint']}>
+              Choose a saved entry to continue editing or submit it to Slashdot.
+            </p>
+            <div className={styles['slashdot-saved__list']}>
+              {savedSchedules.length === 0 ? (
+                <p className={styles['slashdot-scheduler__empty']}>
+                  No saved scheduled posts yet. Save one to see it listed here.
+                </p>
+              ) : (
+                savedSchedules.map(schedule => {
+                  const isActive = schedule.id === editingScheduleId;
+                  const excerpt =
+                    schedule.scheduledDraft && schedule.scheduledDraft.length > 140
+                      ? `${schedule.scheduledDraft.slice(0, 140).trim()}...`
+                      : schedule.scheduledDraft || 'No summary captured.';
+                  return (
+                    <article
+                      key={schedule.id}
+                      className={classNames(styles['slashdot-saved__item'], {
+                        [styles['slashdot-saved__item--active']]: isActive,
+                      })}
+                    >
+                      <div className={styles['slashdot-saved__header']}>
+                        <h4 className={styles['slashdot-saved__title']}>
+                          {schedule.headline || 'Untitled draft'}
+                        </h4>
+                        <span className={styles['slashdot-saved__meta']}>
+                          {formatDisplayDateTime(schedule.scheduledDate, schedule.scheduledTime)}
+                        </span>
+                      </div>
+                      <p className={styles['slashdot-saved__excerpt']}>{excerpt}</p>
+                      <div className={styles['slashdot-saved__actions']}>
+                        <button
+                          type="button"
+                          style={buttonStyle('ghost', darkMode)}
+                          onClick={() => handleEditSchedule(schedule.id)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          style={buttonStyle('outline', darkMode)}
+                          onClick={openSlashdotSubmit}
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })
+              )}
+            </div>
+          </section>
+        </div>
       )}
     </div>
   );
