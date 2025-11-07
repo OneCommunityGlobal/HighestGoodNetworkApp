@@ -1,5 +1,6 @@
 .leaderboard {
   font-size: 1rem;
+  min-width: 750px;   
 } /*1rem = 16px*/
 
 .my-custom-scrollbar {
@@ -7,12 +8,44 @@
   margin-bottom: 1rem;
 }
 
+.leaderboard-panel {
+  padding-left: 1rem;             
+  border-left: 1px solid #dbe2ea; 
+}
+
+.leaderboard-panel h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+
 .leaderboard thead th {
   top: 0;
   border-top: 10px solid #dee2e6;
   border-top-width: 1px;
   border-top-style: solid;
   border-top-color: rgb(222, 226, 230);
+}
+
+.leaderboard-scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;        
+  width: 100%;
+}
+
+.leaderboard-name-wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 220px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .leaderboard-name-wrapper {
+    max-width: 150px;
+  }
 }
 
 .leaderboard tbody tr td, 
@@ -133,6 +166,7 @@
 
 .user-row-second {
   border-top: none !important;
+  border-bottom: 1px solid #dee2e6 !important;
 }
 
 /* Ensure no border spacing */
@@ -149,11 +183,6 @@
   border-bottom: none !important;
 }
 
-/* Add a subtle separator only after the second row */
-.user-row-second {
-  border-bottom: 1px solid #dee2e6 !important;
-}
-
 .dark-mode .user-row-second {
   border-bottom: 1px solid #495057 !important;
 }
@@ -165,14 +194,9 @@
   transition: background-color 0.2s ease;
 }
 
-.user-row-second:hover,
 .user-row-second:hover {
   background-color: rgba(0, 123, 255, 0.1) !important;
   transition: background-color 0.2s ease;
-}
-
-/* When hovering second row, also highlight the previous row */
-.user-row-second:hover {
   background-color: rgba(0, 123, 255, 0.1) !important;
 }
 

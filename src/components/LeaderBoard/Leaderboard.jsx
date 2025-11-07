@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import './Leaderboard.module.css';
+import styles from './Leaderboard.module.css';
 import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
@@ -505,7 +505,7 @@ function LeaderBoard({
   };
 
   return (
-    <div>
+    <div className={styles['leaderboard-panel']}>
       <h3>
         <div className="d-flex align-items-center">
           <span className="mr-2">Leaderboard</span>
@@ -515,7 +515,7 @@ function LeaderBoard({
             title="Click to refresh the leaderboard"
             style={{ fontSize: 24, cursor: 'pointer' }}
             aria-hidden="true"
-            className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
+            className={`fa fa-refresh ${isLoading ? styles.animation : ''}`}
             onClick={updateLeaderboardHandler}
           />
           &nbsp;
@@ -529,96 +529,98 @@ function LeaderBoard({
           />
         </div>
       </h3>
-      {userRole === 'Administrator' ||
-        (userRole === 'Owner' && (
-          <section className="d-flex flex-row flex-wrap mb-3">
-            <UncontrolledDropdown className=" mr-3">
-              {/* Display selected team or default text */}
-              <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
 
-              {/* prettier-ignore */}
-              <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
+      {(userRole === 'Administrator' || userRole === 'Owner') && (
+        <section className="d-flex flex-row flex-wrap mb-3">
+          <UncontrolledDropdown className="mr-3">
+            <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
 
-              <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
+            <DropdownMenu style={{ width: '27rem' }} className={darkMode ? 'bg-dark' : ''}>
+              <div className={darkMode ? 'text-white' : ''} style={{ width: '100%' }}>
                 {teams.length === 0 ? (
-                  <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
+                  <p className={`${darkMode ? 'text-white' : ''} text-center`}>
                     Please, create a team to use the filter.
                   </p>
                 ) : (
                   <>
+                    <div className="align-items-center d-flex flex-column">
+                      <Input
+                        onChange={e => handleInputSearchTeams(e)}
+                        style={{
+                          width: '90%',
+                          marginBottom: '1rem',
+                          backgroundColor: darkMode ? '#e0e0e0' : 'white',
+                        }}
+                        placeholder="Search teams"
+                        value={refInput.current}
+                      />
+                    </div>
 
-                  <div className='align-items-center d-flex flex-column'>
-                    <Input
-                      onChange={e => handleInputSearchTeams(e)}
-                      style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
-                      placeholder="Search teams"
-                      value={refInput.current}
-                    />
-                  </div>
+                    <div
+                      className="overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle"
+                      style={{ height: teams.length > 8 ? '30rem' : 'auto', width: '100%' }}
+                    >
+                      <h5 className="text-center">My Teams</h5>
 
-                    <div className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
-                     style={{ height: teams.length > 8? '30rem' : 'auto', width: '100%' }}
-                     >
-                    <h5 className="text-center">My Teams</h5>
-
-                    {teams.map(team => {
-                      return (
-                        <div key={team._id}>
-                       { team._id !== 1?
-                       <DropdownItem key={`dropdown-${team._id}`} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
-                        onClick={() => TeamSelected(team)}
-                       >
-                        <ul
-                          className={`${darkMode ? '  text-light' : ''}`}
-                        >
-                           <li>{dropdownName(team.teamName, team.teamName.length)}</li>
-                        </ul>
-                        </DropdownItem>
-                        :
-                        <div className='align-items-center d-flex flex-column'>
-                        <Alert color="danger"style={{ width: '90%' }} >
-                          {dropdownName(team.teamName, team.teamName.length)}
-                         </Alert>
-                        </div>
-                        }
-                        </div>
-                      );
-                    })}
+                      {teams.map(team => {
+                        return (
+                          <div key={team._id}>
+                            {team._id !== 1 ? (
+                              <DropdownItem
+                                key={`dropdown-${team._id}`}
+                                className={darkMode ? 'dropdown-item-hover' : ''}
+                                onClick={() => TeamSelected(team)}
+                              >
+                                <ul className={darkMode ? 'text-light' : ''}>
+                                  <li>{dropdownName(team.teamName, team.teamName.length)}</li>
+                                </ul>
+                              </DropdownItem>
+                            ) : (
+                              <div className="align-items-center d-flex flex-column">
+                                <Alert color="danger" style={{ width: '90%' }}>
+                                  {dropdownName(team.teamName, team.teamName.length)}
+                                </Alert>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
 
                     <h5 className="ml-4 text-center">All users</h5>
-                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`}
-                      onClick={() => TeamSelected('Show all')}>
-                    <ul
-                      className={`${darkMode ? '  text-light' : ''}`}
+                    <DropdownItem
+                      className={darkMode ? 'dropdown-item-hover' : ''}
+                      onClick={() => TeamSelected('Show all')}
                     >
+                      <ul className={darkMode ? 'text-light' : ''}>
                         <li>Show all</li>
-                    </ul>
+                      </ul>
                     </DropdownItem>
                   </>
                 )}
               </div>
             </DropdownMenu>
-            </UncontrolledDropdown>
+          </UncontrolledDropdown>
 
-            {teams.length === 0 ? (
-              <Link to="/teams">
-                <Button color="success" className="fw-bold" boxstyle={boxStyle}>
-                  Create Team
-                </Button>
-              </Link>
-            ) : (
-              <Button
-                color="primary"
-                onClick={filteredUsers.length > 0 ? handleToggleButtonClick : toastError}
-                disabled={isLoadingTeams}
-                boxstyle={boxStyle}
-              >
-                {isLoadingTeams ? <Spinner animation="border" size="sm" /> : 'My Team'}
+          {teams.length === 0 ? (
+            <Link to="/teams">
+              <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                Create Team
               </Button>
-            )}
-          </section>
-        ))}
+            </Link>
+          ) : (
+            <Button
+              color="primary"
+              onClick={filteredUsers.length > 0 ? handleToggleButtonClick : toastError}
+              disabled={isLoadingTeams}
+              boxstyle={boxStyle}
+            >
+              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : 'My Team'}
+            </Button>
+          )}
+        </section>
+      )}
+
       {leaderBoardData.length !== 0 ? (
         <div>
           {isDisplayAlert && (
@@ -643,7 +645,11 @@ function LeaderBoard({
               </div>
             </Alert>
           )}
-          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+
+          <div
+            id="leaderboard"
+            className={`${styles['my-custom-scrollbar']} ${styles['table-wrapper-scroll-y']} ${styles['leaderboard-scroll-x']}`}
+          >
             <div className="search-container mx-1">
               <input
                 className={`form-control col-12 mb-2 ${
@@ -655,13 +661,14 @@ function LeaderBoard({
                 onChange={handleSearch}
               />
             </div>
+
             <Table
               data-testid="dark-mode-table"
-              className={`leaderboard table-fixed ${
+              className={`${styles.leaderboard} table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-              } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
+              } ${isAbbreviatedView ? styles['abbreviated-mode'] : ''}`}
             >
-              <thead className="responsive-font-size">
+              <thead className={styles['responsive-font-size']}>
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
                   <th style={darkModeStyle}>
                     <span>{isAbbreviatedView ? 'Stat.' : 'Status'}</span>
@@ -707,14 +714,22 @@ function LeaderBoard({
                   </th>
                 </tr>
               </thead>
-              <tbody className="my-custome-scrollbar responsive-font-size">
-                <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+
+              <tbody
+                className={`${styles['my-custom-scrollbar']} ${styles['responsive-font-size']}`}
+              >
+                {/* totals row */}
+                <tr
+                  className={
+                    darkMode ? styles['dark-leaderboard-row'] : styles['light-leaderboard-row']
+                  }
+                >
                   {isAbbreviatedView ? (
                     <td colSpan={2}>
-                      <div className="leaderboard-totals-container text-center">
+                      <div className={`${styles['leaderboard-totals-container']} text-center`}>
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles['leaderboard-totals-title']}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -725,10 +740,10 @@ function LeaderBoard({
                   ) : (
                     <>
                       <td aria-label="Placeholder" />
-                      <td className="leaderboard-totals-container">
+                      <td className={styles['leaderboard-totals-container']}>
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
-                          <span className="leaderboard-totals-title">
+                          <span className={styles['leaderboard-totals-title']}>
                             0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
@@ -776,6 +791,7 @@ function LeaderBoard({
                   <td aria-label="Placeholder" />
                 </tr>
 
+                {/* user rows */}
                 {filteredUsers.map(item => {
                   const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
                     item.personId,
@@ -787,7 +803,6 @@ function LeaderBoard({
 
                   return (
                     <React.Fragment key={item.personId}>
-                      {/* Put the modal OUTSIDE the table rows to avoid JSX nesting issues */}
                       <Modal
                         isOpen={isDashboardOpen === item.personId}
                         toggle={closeDashboardModal}
@@ -814,9 +829,13 @@ function LeaderBoard({
                           </Button>
                         </ModalFooter>
                       </Modal>
-                      {/* one row per user */}
+
                       <tr
-                        className={`${darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}`}
+                        className={
+                          darkMode
+                            ? styles['dark-leaderboard-row']
+                            : styles['light-leaderboard-row']
+                        }
                         data-user-id={item.personId}
                         onMouseEnter={() => {
                           document
@@ -830,7 +849,7 @@ function LeaderBoard({
                         }}
                       >
                         {/* status cell */}
-                        <td className="align-middle status-cell">
+                        <td className="align-middle">
                           <div
                             style={{
                               display: 'flex',
@@ -905,12 +924,12 @@ function LeaderBoard({
                         </td>
 
                         {/* name + icons */}
-                        <td className="align-middle leaderboard-name-cell">
-                          <div className="leaderboard-name-wrapper">
+                        <td className={`align-middle ${styles['leaderboard-name-cell']}`}>
+                          <div className={styles['leaderboard-name-wrapper']}>
                             <Link
                               to={`/userprofile/${item.personId}`}
                               title="View Profile"
-                              className="leaderboard-name-link"
+                              className={styles['leaderboard-name-link']}
                               style={{
                                 color:
                                   isCurrentlyOff ||
@@ -929,8 +948,7 @@ function LeaderBoard({
                             )}
                           </div>
 
-                          {/* small badges next to name */}
-                          <div className="leaderboard-name-badges">
+                          <div className={styles['leaderboard-name-badges']}>
                             {(isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
                               timeOffIndicator(item.personId)}
                             {hasLeaderboardPermissions(loggedInUser.role) && showTrophy && (
@@ -1029,7 +1047,9 @@ function LeaderBoard({
                           <span
                             title={mouseoverTextValue}
                             className={
-                              item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                              item.totalintangibletime_hrs > 0
+                                ? styles['leaderboard-totals-title']
+                                : null
                             }
                           >
                             {item.totaltime}
