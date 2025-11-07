@@ -1,5 +1,5 @@
 import { Pie } from 'react-chartjs-2';
-import styles from './ReviewsInsight.module.css';
+import sharedStyles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
 import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -14,7 +14,7 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
   }
 
   if (!qualityData || Object.keys(qualityData).length === 0) {
-    return <div className={styles.noData}>No data available for Quality Graph.</div>;
+    return <div className={sharedStyles.noData}>No data available for Quality Graph.</div>;
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
@@ -79,15 +79,15 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
   };
 
   return (
-    <div className={styles.riQualityGraph}>
-      <h2 className={`${styles.heading} ${darkMode ? styles.darkModeForeground : ''}`}>
+    <div className={sharedStyles.riQualityGraph}>
+      <h2 className={`${sharedStyles.heading} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
         PR Quality Distribution
       </h2>
 
-      <div className={`${styles.riCharts}`}>
+      <div className={`${sharedStyles.riCharts}`}>
         {teamsToDisplay.map(team => (
-          <div key={team} className={`${styles.riChart} ${darkMode ? styles.riChartDarkMode : ''}`}>
-            <h3 className={`${styles.heading} ${darkMode ? styles.darkModeForeground : ''}`}>
+          <div key={team} className={`${sharedStyles.riChart} ${darkMode ? sharedStyles.riChartDarkMode : ''}`}>
+            <h3 className={`${sharedStyles.heading} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
               {team}
             </h3>
             <Pie data={generateChartData(team)} options={options} />
