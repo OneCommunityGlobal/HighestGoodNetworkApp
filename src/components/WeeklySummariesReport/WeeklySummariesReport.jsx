@@ -86,6 +86,7 @@ const initialState = {
   teamCodes: [],
   colorOptions: [],
   auth: [],
+  selectedLoggedHoursRange: '',
   selectedOverTime: false,
   selectedBioStatus: false,
   selectedTrophies: false,
@@ -169,7 +170,7 @@ const CustomMenuList = props => {
 
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
-  const { loading, infoCollections, getInfoCollections } = props;
+  const { loading, getInfoCollections } = props;
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
@@ -253,11 +254,11 @@ const WeeklySummariesReport = props => {
 
   const intialInfoCollections = async summariesCopy => {
     try {
-      await getInfoCollections();
+      const infoCollectionsData = await getInfoCollections();
       const roleInfoNames = getAllRoles(summariesCopy);
       const allRoleInfo = [];
-      if (Array.isArray(infoCollections)) {
-        infoCollections.forEach(info => {
+      if (Array.isArray(infoCollectionsData)) {
+        infoCollectionsData.forEach(info => {
           if (roleInfoNames?.includes(info.infoName)) {
             const visible =
               info.visibility === '0' ||
@@ -564,6 +565,7 @@ const WeeklySummariesReport = props => {
       const {
         selectedCodes,
         selectedColors,
+        selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
         selectedBioStatus,
@@ -625,7 +627,7 @@ const WeeklySummariesReport = props => {
           !selectedOverTime ||
           (summary.weeklycommittedHours > 0 &&
             hoursLogged > 0 &&
-            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
 
         // Add trophy filter logic
         const summarySubmissionDate = moment()
@@ -642,6 +644,25 @@ const WeeklySummariesReport = props => {
         const matchesSpecialColor =
           activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
 
+        let matchesLoggedHoursRange = true;
+        if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
+          matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
+            switch (range.value) {
+              case '=0':
+                return hoursLogged === 0;
+              case '0-10':
+                return hoursLogged > 0 && hoursLogged <= 10;
+              case '10-20':
+                return hoursLogged > 10 && hoursLogged <= 20;
+              case '20-40':
+                return hoursLogged > 20 && hoursLogged <= 40;
+              case '>40':
+                return hoursLogged > 40;
+              default:
+                return true;
+            }
+          });
+        }
         return (
           (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
           (selectedColorsArray.length === 0 ||
@@ -649,7 +670,8 @@ const WeeklySummariesReport = props => {
           matchesSpecialColor &&
           isOverHours &&
           isBio &&
-          hasTrophy
+          hasTrophy &&
+          matchesLoggedHoursRange
         );
       });
 
@@ -1337,6 +1359,7 @@ const WeeklySummariesReport = props => {
     }
   }, [
     state.selectedOverTime,
+    state.selectedLoggedHoursRange,
     state.selectedCodes,
     state.selectedBioStatus,
     state.selectedColors,
@@ -1764,6 +1787,46 @@ const WeeklySummariesReport = props => {
           </div>
         </Col>
       </Row>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col lg={{ size: 5, offset: 6 }} md={{ size: 6 }} xs={{ size: 12 }}>
+          <div>Logged Hours Range</div>
+          <Select
+            isMulti
+            placeholder="Select range..."
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
+            options={[
+              { value: '0', label: '0' },
+              { value: '0-10', label: '0-10' },
+              { value: '10-20', label: '10-20' },
+              { value: '20-40', label: '20-40' },
+              { value: '>40', label: '>40' },
+            ]}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
+            closeMenuOnSelect={false}
+            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              menuList: base => ({
+                ...base,
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }),
+              option: (base, state) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: state.isFocused ? '#eee' : 'white',
+              }),
+            }}
+            value={state.selectedLoggedHoursRange}
+            onChange={selectedOption =>
+              setState({ ...state, selectedLoggedHoursRange: selectedOption })
+            }
+          />
+        </Col>
+      </Row>
 
       {state.chartShow && (
         <Row className={styles['mx-max-sm-0']}>
@@ -1963,7 +2026,7 @@ const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: weekIndex => dispatch(getWeeklySummariesReport(weekIndex)),
   hasPermission: permission => dispatch(hasPermission(permission)),
-  getInfoCollections: () => getInfoCollections(),
+  getInfoCollections: () => dispatch(getInfoCollections()),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
