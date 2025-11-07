@@ -1,5 +1,8 @@
 .injury-chart-container {
   padding: 1rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .injury-chart-title {
@@ -16,13 +19,51 @@
   margin-bottom: 2rem;
 }
 
+.filter {
+  display: flex;
+  flex-direction: column;
+}
+
+.injury-chart-label {
+  color: #444;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.error {
+  color: #d9534f;
+}
+
+.empty {
+  color: #888;
+  text-align: center;
+  margin-top: 1rem;
+}
+
 /* ------------------- DARK MODE STYLES ------------------- */
+.darkMode {
+  background-color: #0f1824;
+  color: white;
+}
+
+.darkMode .injury-chart-container {
+  background-color: #0f1824;
+  color: white;
+}
+
 .darkMode .injury-chart-title {
   color: white;
 }
 
 .darkMode .injury-chart-label {
   color: white;
+}
+
+.darkMode .injury-chart-filters {
+  background-color: #142237;
+  color: black;
+  border-radius: 8px;
+  padding: 1rem;
 }
 
 .darkMode .injury-select__control {
@@ -54,3 +95,10 @@
   border-radius: 4px;
 }
 
+.darkMode .error {
+  color: #ff6b6b;
+}
+
+.darkMode .empty {
+  color: #ccc;
+}
