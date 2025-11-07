@@ -101,7 +101,6 @@ module.exports = [
         beforeEach: 'readonly',
         afterEach: 'readonly',
         module: 'readonly',
-        require: 'readonly',
         __dirname: 'readonly',
         describe: 'readonly',
         it: 'readonly',
