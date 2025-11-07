@@ -36,6 +36,12 @@ export default defineConfig({
         singleFork: true, // More aggressive - runs one test file at a time
       }
     },
+
+    // ADD THESE for CI memory management
+    maxConcurrency: 1, // Run test files one at a time
+    sequence: {
+      concurrent: false,
+    },
     
     // INCLUDE ALL YOUR TEST PATTERNS
     include: [
