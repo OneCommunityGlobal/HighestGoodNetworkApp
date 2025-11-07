@@ -27,7 +27,6 @@ import {
   viewZeroHouraMembers,
 } from '~/utils/leaderboardPermissions';
 import hasPermission from '~/utils/permissions';
-import './Leaderboard.css';
 import './Leaderboard.module.css';
 // import MouseoverTextTotalTimeEditButton from '~/components/mouseoverText/MouseoverTextTotalTimeEditButton';
 import axios from 'axios';
