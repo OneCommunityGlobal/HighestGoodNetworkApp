@@ -187,30 +187,18 @@ it('Test case 5 : Verify  if email is not displayed if privacy settings is false
 
 });
 
-/***************************************************************************** */
-describe(' Test Suite for formatPhoneNumber', () => {
-  it('Test case 1 : Formats a domestic (USA) phone number', () => {
-    expect(formatPhoneNumber("1234567890")).toBe("( 123 ) 456 - 7890");
-  });
+describe('Test Suite for formatPhoneNumber', () => {
+  const cases = [
+    { input: "1234567890", expected: "( 123 ) 456 - 7890", desc: "domestic (USA) phone number" },
+    { input: "+11234567890", expected: "+1( 123 ) 456 - 7890", desc: "international phone number" },
+    { input: "12345", expected: "12345", desc: "less than 10 digits" },
+    { input: "123456789012", expected: "123456789012", desc: "more than 11 digits" },
+    { input: "123-456-7890", expected: "( 123 ) 456 - 7890", desc: "with non-numeric characters" },
+    { input: "  1234567890  ", expected: "( 123 ) 456 - 7890", desc: "with leading/trailing whitespace" },
+  ];
 
-  it('Test case 2 : Formats an international phone number', () => {
-    expect(formatPhoneNumber("+11234567890")).toBe("+1( 123 ) 456 - 7890");
-  });
-
-  it('Test case 3 : Returns unconventional phone number (less than 10 digits) as is', () => {
-    expect(formatPhoneNumber("12345")).toBe("12345");
-  });
-
-  it('Test case 4 : Returns unconventional phone number (more than 11 digits) as is', () => {
-    expect(formatPhoneNumber("123456789012")).toBe("123456789012");
-  });
-
-  it('Test case 5 : Formats phone number with non-numeric characters', () => {
-    expect(formatPhoneNumber("123-456-7890")).toBe("( 123 ) 456 - 7890");
-  });
-
-  it('Test case 6 : Formats phone number with leading or trailing whitespace', () => {
-    expect(formatPhoneNumber("  1234567890  ")).toBe("( 123 ) 456 - 7890");
+  test.each(cases)('Formats $desc correctly', ({ input, expected }) => {
+    expect(formatPhoneNumber(input)).toBe(expected);
   });
 });
 
