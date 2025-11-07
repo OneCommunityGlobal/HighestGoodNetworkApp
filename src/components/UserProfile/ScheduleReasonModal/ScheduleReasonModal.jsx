@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { Container, Row, Col, Modal as NestedModal, ModalBody, ModalFooter } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +10,7 @@ import ScheduleReasonModalCard from './ScheduleReasonModalCard';
 import {
   addTimeOffRequestThunk,
   deleteTimeOffRequestThunk,
+  updateTimeOffRequestThunk,
 } from '../../../actions/timeOffRequestAction';
 import 'react-datepicker/dist/react-datepicker.css';
 import './ScheduleReasonModal.css';
@@ -22,6 +23,7 @@ const ScheduleReasonModal = ({
   canManageTimeOffRequests,
   checkIfUserCanScheduleTimeOff,
   darkMode,
+  selectedRequest,
 }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
@@ -63,6 +65,22 @@ const ScheduleReasonModal = ({
   const [allowedDurationData, setAllowedDurationData] = useState({});
   const [requestTodelete, setRequestTodelete] = useState('');
   const [showStartWeekModal, setShowStartWeekModal] = useState(false);
+  const [editingRequest, setEditingRequest] = useState(null);
+
+  useEffect(() => {
+    if (selectedRequest) {
+      setEditingRequest(selectedRequest);
+      setRequestData({
+        dateOfLeave: new Date(selectedRequest.startingDate),
+        numberOfWeeks: Number(selectedRequest.duration),
+        reasonForLeave: selectedRequest.reason || '',
+      });
+    } else {
+      setEditingRequest(null);
+      setRequestData(initialRequestData);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRequest]);
 
   const ContainerMaxHeight = checkIfUserCanScheduleTimeOff() ? '160px' : '600px';
 
@@ -75,6 +93,10 @@ const ScheduleReasonModal = ({
     allRequests[userId]?.forEach(element => {
       scheduledVacation += Number(element.duration);
     });
+
+    if (editingRequest) {
+      scheduledVacation -= Number(editingRequest.duration);
+    }
 
     const infringementsAndScheduledTimeOff = scheduledVacation + blueSquares;
     const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
@@ -153,6 +175,7 @@ const ScheduleReasonModal = ({
 
     if (allRequests[userId]?.length > 0) {
       const isAnyOverlapingRequests = allRequests[userId].some(request => {
+        if (editingRequest && request._id === editingRequest._id) return false;
         const requestStartingDate = moment(request.startingDate.split('T')[0]).startOf('day');
         const requestEndingDate = moment(request.endingDate.split('T')[0]).startOf('day');
 
@@ -300,7 +323,18 @@ const ScheduleReasonModal = ({
       startingDate: getDateWithoutTimeZone(requestData.dateOfLeave),
       duration: requestData.numberOfWeeks,
     };
-    dispatch(addTimeOffRequestThunk(data));
+
+    if (editingRequest) {
+      const updateData = {
+        reason: data.reason,
+        startingDate: data.startingDate,
+        duration: data.duration,
+      };
+      dispatch(updateTimeOffRequestThunk(editingRequest._id, updateData));
+    } else {
+      dispatch(addTimeOffRequestThunk(data));
+    }
+
     setRequestData(initialRequestData);
     toggleConfirmationModal();
   };
@@ -320,6 +354,15 @@ const ScheduleReasonModal = ({
     const momentA = moment(a.startingDate, 'YYYY-MM-DD');
     const momentB = moment(b.startingDate, 'YYYY-MM-DD');
     return momentA - momentB;
+  };
+
+  const onEditRequest = (request) => {
+    setEditingRequest(request);
+    setRequestData({
+      dateOfLeave: new Date(request.startingDate),
+      numberOfWeeks: Number(request.duration),
+      reasonForLeave: request.reason || '',
+    });
   };
 
   const durationExplanationText = data => {
@@ -358,7 +401,7 @@ const ScheduleReasonModal = ({
         <>
           <Modal.Header closeButton={true} className={darkMode ? 'bg-space-cadet' : ''}>
             <Modal.Title className="centered-container">
-              <div className="centered-text mt-0 p1">Choose to Use a Blue Square</div>
+              <div className="centered-text mt-0 p1">{editingRequest ? 'Edit Scheduled Time Off' : 'Choose to Use a Blue Square'}</div>
             </Modal.Title>
           </Modal.Header>
           <Form onSubmit={handleSaveReason}>
@@ -457,7 +500,7 @@ const ScheduleReasonModal = ({
                   <Container>
                     <Row>
                       <Col className="mb-1">
-                        The time off will be scheduled for the following
+                        The time off will be {editingRequest ? 'updated to cover' : 'scheduled for the following'}
                         {confirmationModalData.offTimeWeeks?.length > 1 ? ` weeks:` : ` week:`}
                       </Col>
                     </Row>
@@ -593,6 +636,7 @@ const ScheduleReasonModal = ({
                     key={request._id}
                     request={request}
                     handleDeleteRequest={handleDeleteRequest}
+                    handleEditRequest={onEditRequest}
                   />
                 ))}
             </Container>
