@@ -2,6 +2,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { isValid } from 'date-fns';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
+import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
@@ -18,6 +19,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getProjectDetail } from '../../../../../actions/project';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
+import { fetchAllProjects } from '../../../../../actions/projects';
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
@@ -120,7 +122,7 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { copiedTask, allMembers, allProjects, error, darkMode, projectById } = props;
+  const { copiedTask, allMembers, allProjects, error, darkMode, projectById, fetchAllProjects } = props;
   const tasksList = Array.isArray(props.tasks) ? props.tasks : [];
 
   const handleBestHoursChange = e => {
@@ -149,37 +151,37 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
-   const activeMembers = useMemo(() => {
-        const members = Array.isArray(allMembers) ? allMembers : [];
-        const filtered = members.filter(u => {
-          if (!u) return false;
-          // Treat only explicit “inactive” as excluded; accept truthy/unknown as active
-          const isInactive =
-            u.status === 'Inactive' ||
-            u.isActive === false ||
-            String(u?.isActive).toLowerCase() === 'false';
-          return !isInactive;
-        });
-        return filtered.length ? filtered : members; // fallback so the list isn't empty
-      }, [allMembers]);
+  const activeMembers = useMemo(() => {
+    const members = Array.isArray(allMembers) ? allMembers : [];
+    const filtered = members.filter(u => {
+      if (!u) return false;
+      // Treat only explicit "inactive" as excluded; accept truthy/unknown as active
+      const isInactive =
+        u.status === 'Inactive' ||
+        u.isActive === false ||
+        String(u?.isActive).toLowerCase() === 'false';
+      return !isInactive;
+    });
+    return filtered.length ? filtered : members; // fallback so the list isn't empty
+  }, [allMembers]);
 
-const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
-const defaultCategory = useMemo(() => {
-  if (props.taskId) {
-    const task = tasksList.find(t => t?._id === props.taskId);
-    return task?.category ?? 'Unspecified';
-  }
-  if (props.projectId) {
-    // Prefer the category from projectById if available (covers page refresh case)
-    const categoryFromProjectById = projectById?.category;
-    if (typeof categoryFromProjectById === 'string' && categoryFromProjectById.length) {
-      return categoryFromProjectById;
+  const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
+  const defaultCategory = useMemo(() => {
+    if (props.taskId) {
+      const task = tasksList.find(t => t?._id === props.taskId);
+      return task?.category ?? 'Unspecified';
     }
-    const project = projectsList.find(p => p?._id === props.projectId);
-    return project?.category ?? 'Unspecified';
-  }
-  return 'Unspecified';
-}, [props.taskId, props.projectId, projectById?.category, tasksList.length, projectsList.length]);
+    if (props.projectId) {
+      // Prefer the category from projectById if available (covers page refresh case)
+      const categoryFromProjectById = projectById?.category;
+      if (typeof categoryFromProjectById === 'string' && categoryFromProjectById.length) {
+        return categoryFromProjectById;
+      }
+      const project = projectsList.find(p => p?._id === props.projectId);
+      return project?.category ?? 'Unspecified';
+    }
+    return 'Unspecified';
+  }, [props.taskId, props.projectId, projectById?.category, tasksList.length, projectsList.length]);
 
 
   const [taskName, setTaskName] = useState('');
@@ -194,7 +196,7 @@ const defaultCategory = useMemo(() => {
   const [hasNegativeHours, setHasNegativeHours] = useState(false);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
-  const [category, setCategory] = useState(defaultCategory);
+  const [category, setCategory] = useState('Unspecified');
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
@@ -210,6 +212,7 @@ const defaultCategory = useMemo(() => {
   const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
   const priorityRef = useRef(null);
+
 
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
@@ -338,6 +341,12 @@ const defaultCategory = useMemo(() => {
       setHoursWarning(false);
     }
   };
+
+  useEffect(() => {
+    if (!allProjects?.fetched && !allProjects?.fetching) {
+      fetchAllProjects();
+    }
+  }, [allProjects?.fetched, allProjects?.fetching, fetchAllProjects]);
 
   useEffect(() => {
     if (hoursBest < 0 || hoursWorst < 0 || hoursMost < 0 || hoursEstimate < 0) {
@@ -546,7 +555,6 @@ const defaultCategory = useMemo(() => {
   useEffect(() => {
     setCategory(defaultCategory);
   }, [defaultCategory]);
-  
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -1057,6 +1065,55 @@ const defaultCategory = useMemo(() => {
   );
 }
 
+// PropTypes validation
+AddTaskModal.propTypes = {
+  copiedTask: PropTypes.object,
+  allMembers: PropTypes.array,
+  allProjects: PropTypes.shape({
+    projects: PropTypes.array,
+    fetched: PropTypes.bool,
+    fetching: PropTypes.bool,
+  }),
+  error: PropTypes.string,
+  darkMode: PropTypes.bool,
+  tasks: PropTypes.array,
+  projectById: PropTypes.object,
+  fetchAllProjects: PropTypes.func.isRequired,
+  addNewTask: PropTypes.func.isRequired,
+  fetchAllMembers: PropTypes.func.isRequired,
+  getProjectDetail: PropTypes.func.isRequired,
+  projectId: PropTypes.string,
+  taskId: PropTypes.string,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      projectId: PropTypes.string,
+      wbsId: PropTypes.string,
+    }),
+  }),
+};
+
+// Default props
+AddTaskModal.defaultProps = {
+  copiedTask: null,
+  allMembers: [],
+  allProjects: {
+    projects: [],
+    fetched: false,
+    fetching: false,
+  },
+  error: null,
+  darkMode: false,
+  tasks: [],
+  projectId: '',
+  taskId: '',
+  match: {
+    params: {
+      projectId: '',
+      wbsId: '',
+    },
+  },
+};
+
 const mapStateToProps = state => ({
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
@@ -1070,6 +1127,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   addNewTask,
   fetchAllMembers,
+  fetchAllProjects,
   getProjectDetail,
 };
 

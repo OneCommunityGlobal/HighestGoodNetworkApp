@@ -2,6 +2,8 @@ import {
   faCheckCircle,
   faExclamationTriangle,
   faFolder,
+  faUsers,
+  faLock,
   faInfoCircle,
   faSync,
   faTimesCircle,
@@ -29,6 +31,9 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
   const [teamFolders, setTeamFolders] = useState([]);
   const [selectedTeamFolder, setSelectedTeamFolder] = useState('');
   const [teamFoldersLoading, setTeamFoldersLoading] = useState(false);
+  const [githubTeams, setGithubTeams] = useState([]);
+  const [selectedGithubTeams, setSelectedGithubTeams] = useState([]);
+  const [githubTeamsLoading, setGithubTeamsLoading] = useState(false);
   const [detailsModal, setDetailsModal] = useState({
     isOpen: false,
     app: null,
@@ -73,6 +78,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     if (isOpen && userProfile?._id) {
       fetchAccessData();
       fetchTeamFolders();
+      fetchGithubTeams();
       setCredentialsInput({
         github: '',
         dropbox: userProfile.email || '',
@@ -87,6 +93,8 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       setTeamFolders([]);
       setSelectedTeamFolder('');
       setTeamFolderTouched(false);
+      setGithubTeams([]);
+      setSelectedGithubTeams([]);
       setInviteLoading({});
       setRevokeLoading({});
       setDetailsModal({ isOpen: false, app: null, data: null, loading: false, credentials: null });
@@ -149,6 +157,30 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     }
   };
 
+  const fetchGithubTeams = async () => {
+    setGithubTeamsLoading(true);
+    try {
+      const response = await axios.post(`${ENDPOINTS.APIEndpoint()}/github/teams`, {
+        requestor: { role: userProfile.role }
+      });
+      const teams = response.data.data || [];
+      setGithubTeams(teams);
+      
+      // Automatically select ALL default teams
+      const defaultTeams = teams.filter(team => team.isDefault);
+      if (defaultTeams.length > 0) {
+        setSelectedGithubTeams(defaultTeams);
+      }
+    } catch (error) {
+      // console.error('Error fetching GitHub teams:', error);
+      toast.error('Failed to fetch GitHub teams');
+      setGithubTeams([]);
+    } finally {
+      setGithubTeamsLoading(false);
+    }
+  };
+
+
   const getStatusIcon = status => {
     switch (status) {
       case 'invited':
@@ -196,6 +228,20 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     setInputTouched(prev => ({ ...prev, [app]: true }));
   };
 
+  // Handle GitHub team selection
+  const handleGithubTeamToggle = (team) => {
+    setSelectedGithubTeams(prev => {
+      const isSelected = prev.some(t => t.id === team.id);
+      if (isSelected) {
+        return prev.filter(t => t.id !== team.id);
+      } else {
+        return [...prev, team];
+      }
+    });
+  };
+
+
+
   // Get apps that can be invited (no access and valid credentials)
   const getInvitableApps = () => {
     return Object.keys(appConfigs).filter(appName => {
@@ -212,6 +258,11 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       if (appName === 'dropbox') {
         const isValidTeamFolder = teamFolders.some(folder => folder.key === selectedTeamFolder);
         return basicValidation && isValidTeamFolder;
+      }
+
+      // Additional validation for GitHub: must have at least one team selected
+      if (appName === 'github') {
+        return basicValidation && selectedGithubTeams.length > 0;
       }
 
       return basicValidation;
@@ -348,7 +399,11 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_ADD;
-          payload = { username, targetUser: { targetUserId } };
+          payload = { 
+            username, 
+            targetUser: { targetUserId },
+            teamIds: selectedGithubTeams.map(team => team.id)
+          };
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_CREATE_ADD;
@@ -446,6 +501,9 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
         const isValidTeamFolder = teamFolders.some(folder => folder.key === selectedTeamFolder);
         return !isValidTeamFolder;
       }
+      if (isGithub) {
+        return selectedGithubTeams.length === 0;
+      }
       return false;
     };
 
@@ -532,44 +590,123 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                   {userProfile?.lastName}
                 </div>
               )}
+
+              {/* GitHub Username Field */}
+              {isGithub && (
+                <div className={`${styles.inputGroup} ${styles.mb2}`}>
+                  <input
+                    type="text"
+                    className={`form-control ${styles.uniformInput}`}
+                    placeholder="GitHub Username"
+                    value={credentialValue}
+                    onChange={e => handleCredentialChange(appName, e.target.value)}
+                    onBlur={() => setInputTouched(prev => ({ ...prev, [appName]: true }))}
+                    required
+                  />
+                </div>
+              )}
+
+              {/* GitHub Teams and Roles Selection */}
+              {isGithub && (
+                <div className={`${styles.selectionGroup} ${styles.mb2}`}>
+                  {/* Teams Section with Enhanced UX */}
+                  <div className={`${styles.selectionRow} ${styles.mb2}`}>
+                    <label className={styles.selectionLabel}>
+                      <FontAwesomeIcon icon={faUsers} className={styles.mr1} />
+                      Teams ({selectedGithubTeams.length} selected):
+                    </label>
+                    <div className={styles.chipContainer}>
+                      {githubTeamsLoading ? (
+                        <div className={`${styles.textMuted} ${styles.small} ${styles.loadingContainer}`}>
+                          <Spinner size="sm" className={styles.mr1} />
+                          Loading teams...
+                        </div>
+                      ) : githubTeams.length === 0 ? (
+                        <div className={`${styles.textMuted} ${styles.small}`}>
+                          No teams available.
+                        </div>
+                      ) : (
+                        githubTeams.map(team => (
+                          <div key={team.id} className={styles.chipWrapper}>
+                            <button
+                              type="button"
+                              className={`${styles.chip} ${
+                                selectedGithubTeams.some(t => t.id === team.id) ? styles.chipSelected : ''
+                              }`}
+                              onClick={() => handleGithubTeamToggle(team)}
+                            >
+                              {team.name}
+                              {team.isDefault && (
+                                <span className={styles.defaultBadge}>Default</span>
+                              )}
+                              {team.privacy === 'secret' && (
+                                <FontAwesomeIcon icon={faLock} className={styles.ml2} />
+                              )}
+                            </button>
+                            {team.description && (
+                              <div className={styles.chipTooltip}>
+                                {team.description}
+                                {team.isDefault && (
+                                  <div className={styles.defaultTooltip}>
+                                    This team is selected by default
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+              {/* Other Apps Input Group */}
+              {!isGithub && (
+                <div className={`${styles.inputGroup} ${styles.mb2}`}>
+                  <input
+                    type="text"
+                    className={`form-control ${styles.uniformInput}`}
+                    placeholder="Email Address"
+                    value={credentialValue}
+                    onChange={e => handleCredentialChange(appName, e.target.value)}
+                    onBlur={() => setInputTouched(prev => ({ ...prev, [appName]: true }))}
+                    required
+                  />
+                  {isDropbox && (
+                    <select
+                      className={`form-control ${styles.uniformInput} ${styles.ml2}`}
+                      value={selectedTeamFolder}
+                      onChange={e => {
+                        setSelectedTeamFolder(e.target.value);
+                        setTeamFolderTouched(true);
+                      }}
+                      onBlur={() => setTeamFolderTouched(true)}
+                      disabled={teamFoldersLoading}
+                    >
+                      <option value="">
+                        {teamFoldersLoading
+                          ? 'Loading team folders...'
+                          : 'Select Dropbox Team Folder'}
+                      </option>
+                      {!teamFoldersLoading &&
+                        teamFolders.map(folder => (
+                          <option key={folder.key} value={folder.key}>
+                            {folder.name} {folder.isDefault ? '(Default)' : ''}
+                          </option>
+                        ))}
+                    </select>
+                  )}
+                </div>
+              )}
+
+              {/* Invite Button */}
               <div className={`${styles.inputGroup} ${styles.mb2}`}>
-                <input
-                  type="text"
-                  className={`form-control ${styles.uniformInput}`}
-                  placeholder={isGithub ? 'GitHub Username' : 'Email Address'}
-                  value={credentialValue}
-                  onChange={e => handleCredentialChange(appName, e.target.value)}
-                  onBlur={() => setInputTouched(prev => ({ ...prev, [appName]: true }))}
-                  required
-                />
-                {isDropbox && (
-                  <select
-                    className={`form-control ${styles.uniformInput} ${styles.ml2}`}
-                    value={selectedTeamFolder}
-                    onChange={e => {
-                      setSelectedTeamFolder(e.target.value);
-                      setTeamFolderTouched(true);
-                    }}
-                    onBlur={() => setTeamFolderTouched(true)}
-                    disabled={teamFoldersLoading}
-                  >
-                    <option value="">
-                      {teamFoldersLoading
-                        ? 'Loading team folders...'
-                        : 'Select Dropbox Team Folder'}
-                    </option>
-                    {!teamFoldersLoading &&
-                      teamFolders.map(folder => (
-                        <option key={folder.key} value={folder.key}>
-                          {folder.name} {folder.isDefault ? '(Default)' : ''}
-                        </option>
-                      ))}
-                  </select>
-                )}
                 <Button
                   color="primary"
                   size="sm"
-                  className={`${styles.btnAction} ${styles.ml2}`}
+                  className={styles.btnAction}
                   onClick={() => handleInviteApp(appName)}
                   disabled={isInviteButtonDisabled()}
                 >
@@ -608,6 +745,17 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                     {teamFolders.length === 0
                       ? 'No team folders available. Please try refreshing the page.'
                       : 'Please select a Dropbox team folder'}
+                  </div>
+                )}
+
+              {isGithub &&
+                !githubTeamsLoading &&
+                (touched && isCredentialValid) &&
+                selectedGithubTeams.length === 0 && (
+                  <div className={`${styles.textDanger} ${styles.small}`}>
+                    {githubTeams.length === 0
+                      ? 'No teams available. Please try refreshing the page.'
+                      : 'Please select at least one GitHub team'}
                   </div>
                 )}
             </div>
@@ -788,6 +936,12 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                         <FontAwesomeIcon icon={faFolder} className={styles.folderIcon} />
                         <strong>User folder:</strong> {userProfile?.firstName}{' '}
                         {userProfile?.lastName}
+                      </div>
+                    )}
+                    {appName === 'github' && selectedGithubTeams.length > 0 && (
+                      <div className={`${styles.textInfo} ${styles.small} ${styles.mt1}`}>
+                        <FontAwesomeIcon icon={faUsers} className={styles.mr1} />
+                        <strong>Teams:</strong> {selectedGithubTeams.map(t => t.name).join(', ')}
                       </div>
                     )}
                   </li>

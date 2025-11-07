@@ -2,6 +2,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import AddTaskModal from '../AddTask/AddTaskModal';
 
 // Mock Redux actions
@@ -9,8 +10,17 @@ vi.mock('../../../../../actions/task', () => ({
   addNewTask: vi.fn(),
 }));
 
-vi.mock('@fortawesome/free-solid-svg-icons', () => ({
-  faPlusCircle: {},
+vi.mock('../../../../../actions/projects', () => ({
+  fetchAllProjects: vi.fn(() => () => Promise.resolve()),
+}));
+
+vi.mock('../../../../../actions/projectMembers', () => ({
+  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
+  findProjectMembers: vi.fn(() => ({ type: 'FIND_PROJECT_MEMBERS_TEST_DUMMY' })),
+}));
+
+vi.mock('../../../../../actions/project', () => ({
+  getProjectDetail: vi.fn(() => ({ type: 'GET_PROJECT_DETAIL_TEST_DUMMY' })),
 }));
 
 vi.mock('@tinymce/tinymce-react', () => ({
@@ -23,22 +33,7 @@ vi.mock('@tinymce/tinymce-react', () => ({
   ),
 }));
 
-// Mock Redux actions
-vi.mock('../../../../../actions/task', () => ({
-  addNewTask: vi.fn(),
-}));
-
-vi.mock('../../../../../actions/projectMembers', () => ({
-  // Return a plain action so redux-mock-store accepts it
-  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
-}));
-
-vi.mock('../../../../../actions/projectMembers', () => ({
-  fetchAllMembers: vi.fn(() => ({ type: 'FETCH_MEMBERS_TEST_DUMMY' })),
-  findProjectMembers: vi.fn(() => ({ type: 'FIND_PROJECT_MEMBERS_TEST_DUMMY' })),
-}));
-
-const mockStore = configureStore();
+const mockStore = configureStore([thunk]);
 const initialState = {
   tasks: {
     taskItems: [],
@@ -55,7 +50,10 @@ const initialState = {
   },
   allProjects: {
     projects: [],
+    fetched: false,
+    fetching: false,
   },
+  projectById: null,
   theme: {
     darkMode: false,
   },
