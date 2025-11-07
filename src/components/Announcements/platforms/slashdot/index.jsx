@@ -215,13 +215,14 @@ function SlashdotAutoPoster({ platform }) {
   const highlightDept = trimmedDept.length > 0 && !deptValid;
   const highlightSummary = trimmedIntro.length > 0 && !summaryValid;
 
-  const preview = useMemo(() => buildPreview({ headline, sourceUrl, dept, tags, intro }), [
-    headline,
-    sourceUrl,
-    dept,
-    tags,
-    intro,
-  ]);
+  const hasAnyInput = Boolean(
+    trimmedHeadline || trimmedUrl || trimmedDept || trimmedIntro || tagsText.trim(),
+  );
+
+  const preview = useMemo(() => {
+    if (!hasAnyInput) return '';
+    return buildPreview({ headline, sourceUrl, dept, tags, intro });
+  }, [dept, headline, hasAnyInput, intro, sourceUrl, tags]);
   const scheduleHasDraft = scheduledDraft.trim().length > 0;
   const editingSchedule = useMemo(
     () => savedSchedules.find(schedule => schedule.id === editingScheduleId) || null,
@@ -257,6 +258,20 @@ function SlashdotAutoPoster({ platform }) {
   };
 
   const handleScheduleClick = () => {
+    if (!hasAnyInput) {
+      toast.error('Nothing to schedule yet. Add details in Make Post first.');
+      return;
+    }
+    const missingFields = [];
+    if (!trimmedHeadline) missingFields.push('Headline');
+    if (!trimmedUrl) missingFields.push('Source URL');
+    if (!trimmedDept) missingFields.push('Dept');
+    if (tags.length === 0) missingFields.push('Tags');
+    if (!trimmedIntro) missingFields.push('Intro / Summary');
+    if (missingFields.length > 0) {
+      toast.error(`Add ${missingFields.join(', ')} before scheduling.`);
+      return;
+    }
     const now = new Date();
     setScheduledDate(formatLocalDate(now));
     setScheduledTime(formatLocalTime(now));
