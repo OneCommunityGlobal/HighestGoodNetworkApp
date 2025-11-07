@@ -13,6 +13,7 @@ import Select from 'react-select';
 import httpService from '../../../services/httpService';
 import { useSelector } from 'react-redux';
 import styles from './ProjectRiskProfileOverview.module.css';
+import { get } from 'lodash';
 
 export default function ProjectRiskProfileOverview() {
   const [data, setData] = useState([]);
@@ -31,6 +32,20 @@ export default function ProjectRiskProfileOverview() {
 
   const tooltipBg = darkMode ? '#3a506b' : '#fff';
   const textColor = darkMode ? '#ffffff' : '#000000ff';
+
+  const getBackgroundColor = (state, darkMode) => {
+    if (state.isSelected || state.isFocused) {
+      return '#0d55b3';
+    }
+    return darkMode ? '#22272e' : '#fff';
+  };
+
+  const getTextColor = (state, darkMode) => {
+    if (state.isSelected) {
+      return '#fff';
+    }
+    return darkMode ? '#fff' : '#232323';
+  };
 
   const selectStyles = useMemo(
     () => ({
@@ -62,14 +77,8 @@ export default function ProjectRiskProfileOverview() {
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected
-          ? '#0d55b3'
-          : state.isFocused
-          ? '#0d55b3'
-          : darkMode
-          ? '#22272e'
-          : '#fff',
-        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
+        backgroundColor: getBackgroundColor(state, darkMode),
+        color: getTextColor(state, darkMode),
         fontSize: 13,
         padding: '10px 16px',
         cursor: 'pointer',
