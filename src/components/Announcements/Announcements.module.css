@@ -1,27 +1,27 @@
-/* EmailUpdateComponent.css */
+/* Announcements.module.css */
 
-h2,
-h3 {
+:global(h2),
+:global(h3) {
   color: #4285f4;
 }
 
-label {
+:global(label) {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
   color: #333;
 }
 
-.text-light {
+.textLight {
   color: #fff; /* White text for dark mode */
 }
 
-.text-dark {
+.textDark {
   color: #333; /* Default dark text for light mode */
 }
 
-.input-text-for-announcement,
-textarea {
+.inputTextForAnnouncement,
+:global(textarea) {
   margin-top: 5px; /* Space above input fields */
   width: 100%;
   padding: 12px; /* Increased padding */
@@ -30,13 +30,13 @@ textarea {
   box-sizing: border-box; /* Ensures padding is included in width */
 }
 
-.input-file-upload {
+.inputFileUpload {
   margin-top: 5px;
 }
 
-button.send-button {
+button.sendButton {
   background-color: #4285f4;
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 4px;
   padding: 12px 24px; /* Increased padding */
@@ -45,15 +45,15 @@ button.send-button {
   box-sizing: border-box; /* Ensures padding is included in width */
 }
 
-button.send-button:hover {
+button.sendButton:hover {
   background-color: #357ae8;
 }
 
-.ck-editor__editable {
+:global(.ck-editor__editable) {
   min-height: 500px;
 }
 
-.email-update-container {
+.emailUpdateContainer {
   padding: 70px;
   display: flex;
   justify-content: space-between;
@@ -68,13 +68,15 @@ button.send-button:hover {
   /* Add some spacing between editor and email inputs */
 }
 
-.editor h2 {
+.editor :global(h2) {
   margin-top: 0;
   /* Remove top margin for the heading */
 }
-.editor h3 {
+
+.editor :global(h3) {
   color: #4285f4;
 }
+
 .emails {
   margin-top: 65px;
   padding: 24px; /* Increased padding */
@@ -85,25 +87,25 @@ button.send-button:hover {
   /* Set a fixed width for the email inputs container */
 }
 
-.emails h3 {
+.emails :global(h3) {
   margin-top: 0;
   /* Remove top margin for the email input headings */
 }
 
-.email-content-preview-section {
+.emailContentPreviewSection {
   margin: 2rem;
   color: #333;
   border: 1px solid #ccc;
   border-radius: 5px;
 }
 
-.email-content-preview {
+.emailContentPreview {
   padding: 20px;
   margin-top: 20px;
   position: relative;
 }
 
-.email-content-preview-title {
+.emailContentPreviewTitle {
   background: #fff;
   color: #000;
   padding: 0 10px;
@@ -112,53 +114,58 @@ button.send-button:hover {
 
 /* Responsive design: Adjusts the preview section on smaller screens. */
 @media (max-width: 768px) {
-  .email-content-preview {
+  .emailContentPreview {
     margin-top: 10px;
     /* Reduce margin top on smaller screens */
   }
 }
+
 /* Responsive design: Adjust the layout for smaller screens */
 @media (max-width: 800px) {
-  .email-update-container {
+  .emailUpdateContainer {
     display: flex;
     flex-direction: column;
     padding: 20px;
     box-sizing: border-box; /* Ensures padding is included in width */
   }
+  
   .editor {
     width: 100%;
     margin-right: 0;
     margin-bottom: 20px;
   }
+  
   .emails {
     width: 100%;
     margin-top: 20px;
     padding: 20px 12px; /* Adjust padding for smaller screens */
     box-sizing: border-box; /* Ensures padding is included in width */
   }
-  .send-button {
+  
+  .sendButton {
     width: 100%;
     margin-bottom: 10px;
     padding: 12px; /* Ensures padding is consistent */
     box-sizing: border-box; /* Ensures padding is included in width */
   }
-  .input-text-for-announcement,
-  textarea {
+  
+  .inputTextForAnnouncement,
+  :global(textarea) {
     width: 100%;
     padding: 12px; /* Ensures padding is consistent */
     box-sizing: border-box; /* Ensures padding is included in width */
   }
 }
 
-summary {
+:global(summary) {
   list-style: none;
 }
 
-summary::-webkit-details-marker {
+:global(summary::-webkit-details-marker) {
   display: none;
 }
 
-.tab-nav-container {
+.tabNavContainer {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: -1px;
@@ -166,14 +173,14 @@ summary::-webkit-details-marker {
   z-index: 1;
 }
 
-.tab-nav-item {
+.tabNavItem {
   border: 1px solid #ccc;
   border-bottom: none;
   background: linear-gradient(to bottom, #f3f3f3, #ddd);
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   margin-right: 4px;
-  padding: 8px 12px;
+  
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -185,7 +192,7 @@ summary::-webkit-details-marker {
   min-height: 72px;
 }
 
-.tab-nav-item.active {
+.tabNavItem.active {
   background: white;
   border-color: #aaa;
   color: #222;
@@ -194,7 +201,7 @@ summary::-webkit-details-marker {
   border-bottom: 1px solid white;
 }
 
-.tab-icon {
+.tabIcon {
   width: 28px;
   height: 28px;
   object-fit: contain;
@@ -202,35 +209,35 @@ summary::-webkit-details-marker {
   display: block;
 }
 
-.tab-label {
+.tabLabel {
   font-size: 0.75rem;
   text-align: center;
   margin-top: 6px;
   line-height: 1rem;
 }
 
-.tab-nav-item.dark {
+.tabNavItem.dark {
   background: linear-gradient(to bottom, #2b3b50, #1e2d44);
   color: #ddd;
   border-color: #2b3b50;
 }
 
-.tab-nav-item.dark .tab-label {
+.tabNavItem.dark .tabLabel {
   color: #ddd;
 }
 
-.tab-nav-item.active.dark {
+.tabNavItem.active.dark {
   background: #14233a;
   color: #fff;
   border-bottom: 1px solid #14233a;
   border-color: #4a5568;
 }
 
-.tab-nav-item.active.dark .tab-label {
+.tabNavItem.active.dark .tabLabel {
   color: #fff;
 }
 
-.tab-grid {
+.tabGrid {
   display: grid !important;
   gap: 8px;
   overflow-x: auto;
@@ -240,73 +247,74 @@ summary::-webkit-details-marker {
   scrollbar-color: #888 #f1f1f1;
 }
 
-.tab-grid::-webkit-scrollbar {
+.tabGrid::-webkit-scrollbar {
   height: 8px;
 }
 
-.tab-grid::-webkit-scrollbar-track {
+.tabGrid::-webkit-scrollbar-track {
   background: #f1f1f1;
   border-radius: 4px;
 }
 
-.tab-grid::-webkit-scrollbar-thumb {
+.tabGrid::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 4px;
 }
 
-.tab-grid::-webkit-scrollbar-thumb:hover {
+.tabGrid::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
-.tab-grid.dark {
+.tabGrid.dark {
   border-bottom: 1px solid #2b3b50;
 }
 
-.tab-grid.dark > .nav-item .tab-nav-item {
+.tabGrid.dark > .navItem .tabNavItem {
   box-shadow:
     -2px 0 6px rgba(0,0,0,0.25),
      2px 0 6px rgba(0,0,0,0.25);
 }
 
-.tab-grid.dark > .nav-item:nth-child(-n+11) .tab-nav-item {
+.tabGrid.dark > .navItem:nth-child(-n+12) .tabNavItem {
   box-shadow:
     -2px 0 6px rgba(0,0,0,0.25),
      2px 0 6px rgba(0,0,0,0.25),
      0 6px 6px rgba(0,0,0,0.35);
 }
 
-.tab-grid.dark::-webkit-scrollbar-track {
+.tabGrid.dark::-webkit-scrollbar-track {
   background: #2b3b50;
 }
 
-.tab-grid.dark::-webkit-scrollbar-thumb {
+.tabGrid.dark::-webkit-scrollbar-thumb {
   background: #4a5568;
 }
 
-.tab-grid.dark::-webkit-scrollbar-thumb:hover {
+.tabGrid.dark::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
 
-.tab-grid > .nav-item:nth-child(n + 12) {
+.tabGrid > .navItem:nth-child(n + 13) {
   margin-top: -15px;
   z-index: 2;
   position: relative;
   transform: translateX(8px);
 }
 
-.tab-grid > .nav-item:nth-child(-n + 11) {
+.tabGrid > .navItem:nth-child(-n + 12) {
   z-index: 1;
   position: relative;
 }
 
-.tab-grid > .nav-item {
+.tabGrid > .navItem {
   width: auto;
   margin: 0;
   min-width: 95px;
   flex-shrink: 0;
+  position: relative;
 }
 
-.tab-grid .nav-link.tab-nav-item {
+.tabGrid .navLink.tabNavItem {
   width: 100%;
   height: 100%;
   display: flex;
@@ -321,110 +329,119 @@ summary::-webkit-details-marker {
   transition: all 0.2s ease;
 }
 
-.tab-grid .nav-link.tab-nav-item.active {
+.tabGrid .navLink.tabNavItem.active {
   background: white;
   border-color: #aaa;
   z-index: 10;
 }
 
-.tab-grid .nav-link.tab-nav-item.active.dark {
+.tabGrid .navLink.tabNavItem.active.dark {
   background: #14233a;
   border-color: #4a5568;
   color: #fff;
 }
 
-.tab-grid .nav-link.tab-nav-item.dark:hover {
+.tabGrid .navLink.tabNavItem.dark:hover {
   background: linear-gradient(to bottom, #3a4b60, #2b3b50);
   filter: brightness(1.1);
 }
 
-.tab-grid .nav-link.tab-nav-item.dark {
+.tabGrid .navLink.tabNavItem.dark {
   background: linear-gradient(to bottom, #2b3b50, #1e2d44);
   border-color: #2b3b50;
   color: #ddd;
 }
 
-.tab-grid.two-rows > .nav-item:nth-child(n + calc(var(--cols, 12) + 1)) {
+.tabGrid.twoRows > .navItem:nth-child(n + calc(var(--cols, 12) + 1)) {
   margin-top: -12px;
   transform: translateY(8px);
   z-index: 0;
 }
 
-.tab-grid .nav-link.tab-nav-item:hover {
+.tabGrid .navLink.tabNavItem:hover {
   filter: brightness(1.05);
 }
 
 @media (max-width: 1024px) {
-  .tab-grid { 
+  .tabGrid { 
     grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     grid-template-columns: repeat(auto, minmax(110px, 120px));
   }
 }
 
 @media (max-width: 700px) {
-  .tab-grid { 
+  .tabGrid { 
     grid-template-columns: repeat(auto, minmax(95px, 100px));
   }
- .tab-grid .nav-link.tab-nav-item { min-height: 64px; }
+  
+  .tabGrid .navLink.tabNavItem { 
+    min-height: 64px; 
+  }
 }
 
 @media (max-width: 460px) {
-  .tab-label { display: none; }
-  .tab-icon { width: 32px; height: 32px; }
+  .tabLabel { 
+    display: none; 
+  }
+  
+  .tabIcon { 
+    width: 32px; 
+    height: 32px; 
+  }
 
-  .tab-grid { 
+  .tabGrid { 
     grid-template-columns: repeat(auto, minmax(70px, 80px));
   }
   
-  .tab-grid > .nav-item {
+  .tabGrid > .navItem {
     min-width: 70px;
   }
 }
 
-.tab-grid > .nav-item { position: relative; }
-
-.tab-grid > .nav-item:nth-child(n+2):nth-child(-n+11),
-.tab-grid > .nav-item:nth-child(n+12):not(:nth-child(12)) {
+.tabGrid > .navItem:nth-child(n+2):nth-child(-n+12),
+.tabGrid > .navItem:nth-child(n+13):not(:nth-child(13)) {
   margin-left: -20px;
 }
 
-.tab-grid > .nav-item:nth-child(1)  { z-index: 11; }
-.tab-grid > .nav-item:nth-child(2)  { z-index: 10; }
-.tab-grid > .nav-item:nth-child(3)  { z-index: 9; }
-.tab-grid > .nav-item:nth-child(4)  { z-index: 8; }
-.tab-grid > .nav-item:nth-child(5)  { z-index: 7; }
-.tab-grid > .nav-item:nth-child(6)  { z-index: 6; }
-.tab-grid > .nav-item:nth-child(7)  { z-index: 5; }
-.tab-grid > .nav-item:nth-child(8)  { z-index: 4; }
-.tab-grid > .nav-item:nth-child(9)  { z-index: 3; }
-.tab-grid > .nav-item:nth-child(10) { z-index: 2; }
-.tab-grid > .nav-item:nth-child(11) { z-index: 1; }
-.tab-grid > .nav-item:nth-child(12) { z-index: 22; }
-.tab-grid > .nav-item:nth-child(13) { z-index: 21; }
-.tab-grid > .nav-item:nth-child(14) { z-index: 20; }
-.tab-grid > .nav-item:nth-child(15) { z-index: 19; }
-.tab-grid > .nav-item:nth-child(16) { z-index: 18; }
-.tab-grid > .nav-item:nth-child(17) { z-index: 17; }
-.tab-grid > .nav-item:nth-child(18) { z-index: 16; }
-.tab-grid > .nav-item:nth-child(19) { z-index: 15; }
-.tab-grid > .nav-item:nth-child(20) { z-index: 14; }
-.tab-grid > .nav-item:nth-child(21) { z-index: 13; }
-.tab-grid > .nav-item:nth-child(22) { z-index: 12; }
+.tabGrid > .navItem:nth-child(1)  { z-index: 12; }
+.tabGrid > .navItem:nth-child(2)  { z-index: 11; }
+.tabGrid > .navItem:nth-child(3)  { z-index: 10; }
+.tabGrid > .navItem:nth-child(4)  { z-index: 9; }
+.tabGrid > .navItem:nth-child(5)  { z-index: 8; }
+.tabGrid > .navItem:nth-child(6)  { z-index: 7; }
+.tabGrid > .navItem:nth-child(7)  { z-index: 6; }
+.tabGrid > .navItem:nth-child(8)  { z-index: 5; }
+.tabGrid > .navItem:nth-child(9)  { z-index: 4; }
+.tabGrid > .navItem:nth-child(10) { z-index: 3; }
+.tabGrid > .navItem:nth-child(11) { z-index: 2; }
+.tabGrid > .navItem:nth-child(12) { z-index: 1; }
+.tabGrid > .navItem:nth-child(13) { z-index: 24; }
+.tabGrid > .navItem:nth-child(14) { z-index: 23; }
+.tabGrid > .navItem:nth-child(15) { z-index: 22; }
+.tabGrid > .navItem:nth-child(16) { z-index: 21; }
+.tabGrid > .navItem:nth-child(17) { z-index: 20; }
+.tabGrid > .navItem:nth-child(18) { z-index: 19; }
+.tabGrid > .navItem:nth-child(19) { z-index: 18; }
+.tabGrid > .navItem:nth-child(20) { z-index: 17; }
+.tabGrid > .navItem:nth-child(21) { z-index: 16; }
+.tabGrid > .navItem:nth-child(22) { z-index: 15; }
+.tabGrid > .navItem:nth-child(23) { z-index: 14; }
+.tabGrid > .navItem:nth-child(24) { z-index: 13; }
 
-.tab-grid .tab-nav-item:hover,
-.tab-grid .tab-nav-item.active {
+.tabGrid .tabNavItem:hover,
+.tabGrid .tabNavItem.active {
   z-index: 100;
   position: relative;
 }
 
-.tab-grid > .nav-item .tab-nav-item {
+.tabGrid > .navItem .tabNavItem {
   /* left + right only */
   box-shadow:
     -2px 0 6px rgba(0,0,0,0.12),
      2px 0 6px rgba(0,0,0,0.12);
 }
 
-.tab-grid > .nav-item:nth-child(-n+11) .tab-nav-item {
+.tabGrid > .navItem:nth-child(-n+12) .tabNavItem {
   box-shadow:
     -2px 0 6px rgba(0,0,0,0.12),
      2px 0 6px rgba(0,0,0,0.12),
