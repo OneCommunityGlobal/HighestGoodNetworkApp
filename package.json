@@ -132,7 +132,7 @@
     "build": "vite build",
     "test": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=4096 vitest --coverage --config vitest.config.js",
     "test:watch": "vitest --reporter=verbose",
-    "test:coverage": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=4096 vitest --coverage --reporter=verbose",
+    "test:coverage": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=8192 vitest --coverage --reporter=verbose",
     "test:changed": "vitest NODE_OPTIONS=--max-old-space-size=4096 --changed origin/development --reporter=verbose",
     "start:local": "vite",
     "lint": "eslint \"**/*.{js,jsx}\"",
