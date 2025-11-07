@@ -50,12 +50,15 @@ function Badge(props) {
   const generateBadgeText = (totalBadges, badgeCollection, personalBestMaxHrs) => {
     if (!totalBadges) return 'You have no badges. ';
 
-    const newBadges = badgeCollection.filter(
-      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
-    );
+    const newBadges = (Array.isArray(badgeCollection) ? badgeCollection : [])
+      .filter(b => b && b.lastModified)
+      .filter(b => {
+        const t = new Date(b.lastModified).getTime();
+        return Number.isFinite(t) && Date.now() - t <= WEEK_DIFF;
+      });
 
     const roundedHours = Math.floor(personalBestMaxHrs);
-    const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max') && (
+    const personalMaxText = newBadges.find(badgeObj => badgeObj?.badge?.type === 'Personal Max') && (
       <>
         {' and have a personal best of '}
         <span
@@ -100,7 +103,7 @@ function Badge(props) {
         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
           count += 1;
         } else {
-          count += Number(badge.count);
+          count += Number(badge?.count);
         }
       });
       setTotalBadge(Math.round(count));

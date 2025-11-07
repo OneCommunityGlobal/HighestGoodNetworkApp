@@ -485,7 +485,7 @@ function BiddingHomepage() {
         <Row className="property-listings mb-3">
           {currentProperties.length > 0 ? (
             currentProperties.map(property => (
-              <Col md={4} key={property.id} className="property-card-col">
+              <Col key={property.id} className="property-card-col">
                 <div className={`property-card property-card-gray ${darkMode ? 'dark-mode' : ''}`}>
                   <div className="property-image">
                     <img src={property.image} alt={property.title} />
@@ -518,7 +518,10 @@ function BiddingHomepage() {
         {filteredProperties.length > itemsPerPage && (
           <Row className="justify-content-center mb-4">
             <Col xs="auto">
-              <Pagination className={`custom-pagination ${darkMode ? 'dark-mode' : ''}`}>
+              <Pagination
+                className={`custom-pagination ${darkMode ? 'dark-mode' : ''}`}
+                style={darkMode ? { backgroundColor: '#2B3E59' } : {}}
+              >
                 <PaginationItem disabled={currentPage === 1}>
                   <PaginationLink onClick={handlePrevPage}>
                     <FaChevronLeft />
