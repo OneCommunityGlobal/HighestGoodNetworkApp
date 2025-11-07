@@ -24,16 +24,21 @@ import { toast } from 'react-toastify';
 import { ENDPOINTS } from '~/utils/URL';
 import { hasPermissionSimple } from '~/utils/permissions';
 
-const QuestionSetManager = ({ isOpen, toggle, onQuestionSetSelect, currentFormId }) => {
+const QuestionSetManager = ({
+  isOpen,
+  toggle,
+  onQuestionSetSelect,
+  onCreateQuestionSet,
+  onEditQuestionSet,
+  currentFormId,
+}) => {
   const [questionSets, setQuestionSets] = useState([]);
   const [filteredQuestionSets, setFilteredQuestionSets] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingQuestionSet, setEditingQuestionSet] = useState(null);
 
-  const { auth, role } = useSelector(state => state);
+  const { auth } = useSelector(state => state);
   const userPermissions = auth?.user?.permissions?.frontPermissions || [];
   const userRole = auth?.user?.role;
 
@@ -255,7 +260,12 @@ const QuestionSetManager = ({ isOpen, toggle, onQuestionSetSelect, currentFormId
                 color="warning"
                 size="sm"
                 className="mr-2"
-                onClick={() => setEditingQuestionSet(questionSet)}
+                onClick={() => {
+                  if (onEditQuestionSet) {
+                    onEditQuestionSet(questionSet);
+                  }
+                  toggle();
+                }}
               >
                 Edit
               </Button>
@@ -336,7 +346,15 @@ const QuestionSetManager = ({ isOpen, toggle, onQuestionSetSelect, currentFormId
         </ModalBody>
         <ModalFooter>
           {canCreateQuestionSets() && (
-            <Button color="success" onClick={() => setShowCreateModal(true)}>
+            <Button
+              color="success"
+              onClick={() => {
+                if (onCreateQuestionSet) {
+                  onCreateQuestionSet();
+                }
+                toggle();
+              }}
+            >
               Create New Question Set
             </Button>
           )}

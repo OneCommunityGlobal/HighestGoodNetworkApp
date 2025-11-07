@@ -213,7 +213,7 @@ const PermissionsManagement = lazy(() =>
 );
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
-const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
+const JobFormBuilder = lazy(() => import('./components/JobFormManagement/EnhancedJobFormBuilder'));
 
 export default (
   <Switch>

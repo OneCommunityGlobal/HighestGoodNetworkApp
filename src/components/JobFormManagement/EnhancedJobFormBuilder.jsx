@@ -80,32 +80,46 @@ const EnhancedJobFormBuilder = () => {
     loadFirstAvailableForm();
   }, []);
 
+  const formatFormData = form => ({
+    title: form.title || '',
+    description: form.description || '',
+    category: form.category || 'General',
+    fixedFields: form.fixedFields || {
+      includePersonalInfo: true,
+      includeBasicInfo: true,
+      includeExperience: true,
+      includeAvailability: true,
+    },
+    jobLinks: form.jobLinks || { specificJobLink: '', generalLinks: [] },
+    questions: form.questions || [],
+    questionSets: form.questionSets || [],
+    settings: form.settings || {
+      allowDuplicateSubmissions: false,
+      requireLogin: false,
+      autoSaveProgress: true,
+      showProgressBar: true,
+    },
+  });
+
+  const loadFormById = async formId => {
+    try {
+      if (!formId) return;
+      const response = await axios.get(ENDPOINTS.GET_JOB_FORM(formId));
+      if (response.data?.form) {
+        setFormData(formatFormData(response.data.form));
+      }
+    } catch (error) {
+      toast.error('Failed to refresh form details');
+    }
+  };
+
   const loadFirstAvailableForm = async () => {
     try {
       const response = await axios.get(ENDPOINTS.GET_ALL_JOB_FORMS);
       if (response.data && response.data.length > 0) {
         const firstForm = response.data[0];
         setCurrentFormId(firstForm._id);
-        setFormData({
-          title: firstForm.title || '',
-          description: firstForm.description || '',
-          category: firstForm.category || 'General',
-          fixedFields: firstForm.fixedFields || {
-            includePersonalInfo: true,
-            includeBasicInfo: true,
-            includeExperience: true,
-            includeAvailability: true,
-          },
-          jobLinks: firstForm.jobLinks || { specificJobLink: '', generalLinks: [] },
-          questions: firstForm.questions || [],
-          questionSets: firstForm.questionSets || [],
-          settings: firstForm.settings || {
-            allowDuplicateSubmissions: false,
-            requireLogin: false,
-            autoSaveProgress: true,
-            showProgressBar: true,
-          },
-        });
+        setFormData(formatFormData(firstForm));
       }
     } catch (error) {
       // Error loading forms - could be logged to error reporting service
@@ -202,6 +216,9 @@ const EnhancedJobFormBuilder = () => {
       }
 
       toast.success('Form saved successfully');
+      if (response?.data?.form?._id) {
+        await loadFormById(response.data.form._id);
+      }
     } catch (error) {
       // Error saving form - could be logged to error reporting service
       toast.error('Failed to save form');
@@ -734,9 +751,21 @@ const EnhancedJobFormBuilder = () => {
         isOpen={showQuestionSetManager}
         toggle={() => setShowQuestionSetManager(false)}
         currentFormId={currentFormId}
-        onQuestionSetSelect={questionSet => {
+        onQuestionSetSelect={() => {
           // Refresh form data after import
-          loadFirstAvailableForm();
+          if (currentFormId) {
+            loadFormById(currentFormId);
+          } else {
+            loadFirstAvailableForm();
+          }
+        }}
+        onCreateQuestionSet={() => {
+          setEditingQuestionSet(null);
+          setShowQuestionSetEditor(true);
+        }}
+        onEditQuestionSet={questionSet => {
+          setEditingQuestionSet(questionSet);
+          setShowQuestionSetEditor(true);
         }}
       />
 
@@ -745,7 +774,12 @@ const EnhancedJobFormBuilder = () => {
         isOpen={showQuestionSetEditor}
         toggle={() => setShowQuestionSetEditor(false)}
         questionSet={editingQuestionSet}
-        onSave={handleQuestionSetSaved}
+        onSave={savedQuestionSet => {
+          handleQuestionSetSaved();
+          if (currentFormId) {
+            loadFormById(currentFormId);
+          }
+        }}
       />
     </Container>
   );
