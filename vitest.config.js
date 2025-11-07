@@ -36,6 +36,7 @@ export default defineConfig({
         'src/**/*.{js,jsx,ts,tsx}'
       ],
       exclude: [
+        'node_modules/**',
         'src/**/*.test.{js,jsx,ts,tsx}',
         'src/**/*.spec.{js,jsx,ts,tsx}',
         'src/__tests__/**',
