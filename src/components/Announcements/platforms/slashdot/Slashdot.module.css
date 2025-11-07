@@ -114,7 +114,14 @@
 .slashdot-autoposter.dark .slashdot-field__meta {
   color: #9aa9c6;
 }
+.slashdot-field__required {
+  color: #d9534f;
+  margin-left: 4px;
+}
 
+.slashdot-autoposter.dark .slashdot-field__required {
+  color: #ff9384;
+}
 .slashdot-field__input {
   width: 100%;
   border: 1px solid #c7d1e5;
@@ -131,6 +138,16 @@
   color: #e4edff;
 }
 
+
+.slashdot-field__input--invalid {
+  border-color: #d9534f;
+  box-shadow: 0 0 0 1px rgba(217, 83, 79, 0.2);
+}
+
+.slashdot-autoposter.dark .slashdot-field__input--invalid {
+  border-color: #ff9384;
+  box-shadow: 0 0 0 1px rgba(255, 147, 132, 0.3);
+}
 .slashdot-field__textarea {
   resize: vertical;
   min-height: 110px;

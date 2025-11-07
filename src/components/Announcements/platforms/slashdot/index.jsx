@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
@@ -184,7 +184,7 @@ function SlashdotAutoPoster({ platform }) {
   const [scheduledTime, setScheduledTime] = useState(() => formatLocalTime(new Date()));
   const [savedSchedules, setSavedSchedules] = useState([]);
   const [editingScheduleId, setEditingScheduleId] = useState(null);
-  const [isScheduleDraftDirty, setIsScheduleDraftDirty] = useState(false);
+  const [scheduleAttemptedSave, setScheduleAttemptedSave] = useState(false);
 
   const subTabs = useMemo(
     () => [
@@ -262,8 +262,7 @@ function SlashdotAutoPoster({ platform }) {
     setScheduledTime(formatLocalTime(now));
     setScheduledDraft(preview);
     setActiveSubTab('schedule');
-    setEditingScheduleId(null);
-    setIsScheduleDraftDirty(false);
+    setScheduleAttemptedSave(false);
     toast.success('Draft moved to Schedule tab.');
   };
 
@@ -281,6 +280,7 @@ function SlashdotAutoPoster({ platform }) {
     if (!nextDateRaw) return;
     const nextDate = nextDateRaw < today ? today : nextDateRaw;
     setScheduledDate(nextDate);
+    setScheduleAttemptedSave(false);
     if (nextDate === today) {
       const refreshedNow = new Date();
       const refreshedTime = formatLocalTime(refreshedNow);
@@ -295,31 +295,26 @@ function SlashdotAutoPoster({ platform }) {
       const refreshedNow = new Date();
       const refreshedTime = formatLocalTime(refreshedNow);
       setScheduledTime(nextTimeRaw >= refreshedTime ? nextTimeRaw : refreshedTime);
+      setScheduleAttemptedSave(false);
       return;
     }
     setScheduledTime(nextTimeRaw);
-  };
-
-  useEffect(() => {
-    if (activeSubTab !== 'schedule') return;
-    if (isScheduleDraftDirty) return;
-    if (scheduledDraft === preview) return;
-    setScheduledDraft(preview);
-  }, [activeSubTab, isScheduleDraftDirty, preview, scheduledDraft]);
-
-  const handleScheduleContentChange = event => {
-    setIsScheduleDraftDirty(true);
-    setScheduledDraft(event.target.value);
+    setScheduleAttemptedSave(false);
   };
 
   const handleBackToMake = () => {
-    setIsScheduleDraftDirty(false);
+    setScheduleAttemptedSave(false);
     setActiveSubTab('make');
   };
 
   const handleSaveSchedule = () => {
+    setScheduleAttemptedSave(true);
     if (!scheduleHasDraft) {
       toast.warn('Add content to the schedule before saving.');
+      return;
+    }
+    if (!scheduledDate || !scheduledTime) {
+      toast.error('Choose a schedule date and time.');
       return;
     }
     const isEditing = Boolean(editingScheduleId);
@@ -335,7 +330,6 @@ function SlashdotAutoPoster({ platform }) {
       scheduledDraft: scheduledDraft.trim(),
       scheduledDate,
       scheduledTime,
-      isCustomDraft: isScheduleDraftDirty,
       updatedAt: new Date().toISOString(),
     };
     setSavedSchedules(prev => {
@@ -348,7 +342,7 @@ function SlashdotAutoPoster({ platform }) {
     setScheduledDraft('');
     setScheduledDate('');
     setScheduledTime('');
-    setIsScheduleDraftDirty(true);
+    setScheduleAttemptedSave(false);
     setEditingScheduleId(null);
     setActiveSubTab('make');
   };
@@ -377,7 +371,7 @@ function SlashdotAutoPoster({ platform }) {
     setScheduledDraft(target.scheduledDraft || '');
     setScheduledDate(nextDate);
     setScheduledTime(nextTime);
-    setIsScheduleDraftDirty(Boolean(target.isCustomDraft));
+    setScheduleAttemptedSave(false);
     setEditingScheduleId(target.id);
     setActiveSubTab('schedule');
     toast.info('Loaded scheduled post for editing.');
@@ -718,39 +712,55 @@ function SlashdotAutoPoster({ platform }) {
             )}
             <div className={styles['slashdot-scheduler__controls']}>
               <div className={styles['slashdot-scheduler__field']}>
-                <label htmlFor="slashdot-schedule-date">Scheduled date</label>
+                <label htmlFor="slashdot-schedule-date">
+                  Scheduled date <span className={styles['slashdot-field__required']}>*</span>
+                </label>
                 <input
                   id="slashdot-schedule-date"
                   type="date"
                   value={scheduledDate}
                   min={today}
-                  onChange={handleScheduleDateChange}
-                  className={styles['slashdot-field__input']}
+                  className={classNames(styles['slashdot-field__input'], {
+                    [styles['slashdot-field__input--invalid']]:
+                      scheduleAttemptedSave && !scheduledDate,
+                  })}
+                  aria-invalid={scheduleAttemptedSave && !scheduledDate}
                 />
+                {scheduleAttemptedSave && !scheduledDate && (
+                  <p className={styles['slashdot-field__error']}>Select a schedule date.</p>
+                )}
               </div>
               <div className={styles['slashdot-scheduler__field']}>
-                <label htmlFor="slashdot-schedule-time">Scheduled time</label>
+                <label htmlFor="slashdot-schedule-time">
+                  Scheduled time <span className={styles['slashdot-field__required']}>*</span>
+                </label>
                 <input
                   id="slashdot-schedule-time"
                   type="time"
                   value={scheduledTime}
                   min={scheduleTimeMin}
-                  onChange={handleScheduleTimeChange}
-                  className={styles['slashdot-field__input']}
+                  className={classNames(styles['slashdot-field__input'], {
+                    [styles['slashdot-field__input--invalid']]:
+                      scheduleAttemptedSave && !scheduledTime,
+                  })}
+                  aria-invalid={scheduleAttemptedSave && !scheduledTime}
                 />
+                {scheduleAttemptedSave && !scheduledTime && (
+                  <p className={styles['slashdot-field__error']}>Select a schedule time.</p>
+                )}
               </div>
             </div>
             <label htmlFor="slashdot-schedule-content">Scheduled draft</label>
             <textarea
               id="slashdot-schedule-content"
               value={scheduledDraft}
-              onChange={handleScheduleContentChange}
               className={classNames(
                 styles['slashdot-field__input'],
                 styles['slashdot-scheduler__textarea'],
               )}
               placeholder="Click “Schedule this post” in the Make Post tab to load content here."
               rows={8}
+              readOnly
             />
             <div className={styles['slashdot-scheduler__actions']}>
               <button
