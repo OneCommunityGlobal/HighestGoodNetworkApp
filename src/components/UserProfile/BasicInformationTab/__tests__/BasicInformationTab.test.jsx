@@ -24,7 +24,17 @@ vi.mock('../../EditableModal/EditableInfoModal', () => ({
   default: () => React.createElement('div', { 'data-testid': 'editablemodel' }, 'RoleInfo'),
 }));
 
-
+// -------------------- Helper function --------------------
+const renderBasicInformationTab = (store, props = {}, additionalProps = {}) => {
+  return render(
+    <Provider store={store}>
+      <BasicInformationTab
+        {...props}
+        {...additionalProps}
+      />
+    </Provider>
+  );
+};
 
 //Test Suites 
 describe('Test Suite for Name component', () => {
@@ -394,77 +404,43 @@ afterEach(() => {
 
 
 
-it('Test case 1: verify Basic rendering ', () => {
-  render(
-    <Provider store={store}>
-      <BasicInformationTab
-       {...testProps}
-       addDeleteEditOwners={addDeleteEditOwners}
-      />
-    </Provider>,
-  );
+it('Test case 1: verify Basic rendering', () => {
+  renderBasicInformationTab(store, testProps, { addDeleteEditOwners });
   expect(screen.getByText("Name")).toBeInTheDocument();
 });
 
-it('Test case 2: Renders the Name component as expected  ', () => {
-  render(
-    <Provider store={store}>
-      <BasicInformationTab
-       {...testProps}
-       addDeleteEditOwners={addDeleteEditOwners}
-      />
-    </Provider>,
-  );
-  expect(screen.getByText("Name")).toBeInTheDocument(); // label
-  expect(screen.getByTestId("info-name")).toBeInTheDocument();// tooltip
-  expect(screen.getByTestId("firstName")).toBeInTheDocument(); // input field
-  expect(screen.getByTestId("lastName")).toBeInTheDocument(); //input field 
-});
-it(  'Test case 3: Renders the Title component as expected  ', () => {
-  render(
-    <Provider store={store}>
-      <BasicInformationTab
-       {...testProps}
-       addDeleteEditOwners={addDeleteEditOwners}
-      />
-    </Provider>,
-  );
-  expect(screen.getByText("Title")).toBeInTheDocument();// Label
-  expect(screen.getByTestId("info-title")).toBeInTheDocument();//tooltip
-  expect(screen.getByTestId("jobTitle")).toBeInTheDocument();//input field 
+it('Test case 2: Renders the Name component as expected', () => {
+  renderBasicInformationTab(store, testProps, { addDeleteEditOwners });
+  expect(screen.getByText("Name")).toBeInTheDocument();
+  expect(screen.getByTestId("info-name")).toBeInTheDocument();
+  expect(screen.getByTestId("firstName")).toBeInTheDocument();
+  expect(screen.getByTestId("lastName")).toBeInTheDocument();
 });
 
-it('Test case 4: Renders the Email component as expected  ', () => {
-  render(
-    <Provider store={store}>
-      <BasicInformationTab
-       {...testProps}
-       addDeleteEditOwners={addDeleteEditOwners}
-      />
-    </Provider>,
-  );
-  expect(screen.getByText("Email")).toBeInTheDocument();// Label
-  expect(screen.getByTestId("info-email")).toBeInTheDocument();// tooltip
-  expect(screen.getByTestId("email")).toBeInTheDocument(); // input field
-  expect(screen.getByText('emailPrivacy')).toBeInTheDocument(); // toggle button
-  expect(screen.getByText('emailSubscription')).toBeInTheDocument(); // toggle button
-
+it('Test case 3: Renders the Title component as expected', () => {
+  renderBasicInformationTab(store, testProps, { addDeleteEditOwners });
+  expect(screen.getByText("Title")).toBeInTheDocument();
+  expect(screen.getByTestId("info-title")).toBeInTheDocument();
+  expect(screen.getByTestId("jobTitle")).toBeInTheDocument();
 });
+
+it('Test case 4: Renders the Email component as expected', () => {
+  renderBasicInformationTab(store, testProps, { addDeleteEditOwners });
+  expect(screen.getByText("Email")).toBeInTheDocument();
+  expect(screen.getByTestId("info-email")).toBeInTheDocument();
+  expect(screen.getByTestId("email")).toBeInTheDocument();
+  expect(screen.getByText('emailPrivacy')).toBeInTheDocument();
+  expect(screen.getByText('emailSubscription')).toBeInTheDocument();
+});
+
 //test case 5
 it('Test case 5: Renders the Phone component as expected  ', () => {
-  render(
-    <Provider store={store}>
-      <BasicInformationTab
-       {...testProps}
-       addDeleteEditOwners={addDeleteEditOwners}
-      />
-    </Provider>,
-  );
+  renderBasicInformationTab(store, testProps, { addDeleteEditOwners });
   expect(screen.getByText("Phone")).toBeInTheDocument();// Label
   expect(screen.getByTestId('phoneinput')).toBeInTheDocument();
   expect(screen.getByText('phone')).toBeInTheDocument();// PhoneInput 
- 
 });
+
 
 it('Test case 6: Renders videoCallPreference component with an editable field when canEdit is true ', () => {
   render(
