@@ -814,12 +814,9 @@ function LeaderBoard({
                           </Button>
                         </ModalFooter>
                       </Modal>
-
-                      {/* First row - status + name */}
+                      {/* one row per user */}
                       <tr
-                        className={`${
-                          darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'
-                        } user-row-first`}
+                        className={`${darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}`}
                         data-user-id={item.personId}
                         onMouseEnter={() => {
                           document
@@ -832,6 +829,7 @@ function LeaderBoard({
                             .forEach(el => el.classList.remove('row-hover'));
                         }}
                       >
+                        {/* status cell */}
                         <td className="align-middle status-cell">
                           <div
                             style={{
@@ -906,116 +904,77 @@ function LeaderBoard({
                           </div>
                         </td>
 
-                        {/* name cell spanning columns */}
-                        <td className="align-middle extended-name-cell" colSpan="6">
-                          <Link
-                            to={`/userprofile/${item.personId}`}
-                            title="View Profile"
-                            style={{
-                              color:
-                                isCurrentlyOff ||
-                                ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
-                                  userOnTimeOff[item.personId]?.isInTimeOff === true)
-                                  ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}`
-                                  : '#007BFF',
-                            }}
-                          >
-                            {item.name}
-                          </Link>
-                          &nbsp;&nbsp;&nbsp;
-                          {hasVisibilityIconPermission && !item.isVisible && (
-                            <i className="fa fa-eye-slash" title="User is invisible" />
-                          )}
-                        </td>
-                      </tr>
+                        {/* name + icons */}
+                        <td className="align-middle leaderboard-name-cell">
+                          <div className="leaderboard-name-wrapper">
+                            <Link
+                              to={`/userprofile/${item.personId}`}
+                              title="View Profile"
+                              className="leaderboard-name-link"
+                              style={{
+                                color:
+                                  isCurrentlyOff ||
+                                  ((isAllowedOtherThanOwner ||
+                                    isOwner ||
+                                    item.personId === userId) &&
+                                    userOnTimeOff[item.personId]?.isInTimeOff === true)
+                                    ? `${darkMode ? '#9499a4' : 'rgba(128, 128, 128, 0.5)'}`
+                                    : '#007BFF',
+                              }}
+                            >
+                              {item.name}
+                            </Link>
+                            {hasVisibilityIconPermission && !item.isVisible && (
+                              <i className="fa fa-eye-slash ml-1" title="User is invisible" />
+                            )}
+                          </div>
 
-                      {/* second row - actual columns */}
-                      <tr
-                        className={`${
-                          darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'
-                        } user-row-second`}
-                        data-user-id={item.personId}
-                        onMouseEnter={() => {
-                          document
-                            .querySelectorAll(`[data-user-id="${item.personId}"]`)
-                            .forEach(el => el.classList.add('row-hover'));
-                        }}
-                        onMouseLeave={() => {
-                          document
-                            .querySelectorAll(`[data-user-id="${item.personId}"]`)
-                            .forEach(el => el.classList.remove('row-hover'));
-                        }}
-                      >
-                        <td /> {/* empty status cell to align */}
-                        <td className="align-middle name-details-cell">
-                          {(isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
-                            timeOffIndicator(item.personId)}
-                          &nbsp;&nbsp;&nbsp;
-                          {hasLeaderboardPermissions(loggedInUser.role) && showTrophy && (
-                            <i
-                              role="button"
-                              tabIndex={0}
-                              className="fa fa-trophy"
-                              style={{
-                                fontSize: '18px',
-                                color: item?.trophyFollowedUp === false ? '#FF0800' : '#ffbb00',
-                              }}
-                              onClick={() => trophyIconToggle(item)}
-                              onKeyDown={() => trophyIconToggle(item)}
-                            >
-                              <p style={{ fontSize: '10px', marginLeft: '1px' }}>
-                                <strong>{iconContent}</strong>
-                              </p>
-                            </i>
-                          )}
-                          {/* trophy modal stays here, it's local to this row */}
-                          <Modal isOpen={modalOpen === item.personId} toggle={trophyIconToggle}>
-                            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
-                            <ModalBody>
-                              <p>Are you sure you have followed up this icon?</p>
-                            </ModalBody>
-                            <ModalFooter>
-                              <Button variant="secondary" onClick={trophyIconToggle}>
-                                Cancel
-                              </Button>{' '}
-                              <Button
-                                color="primary"
-                                onClick={() => {
-                                  handleChangingTrophyIcon(item, true);
-                                }}
-                              >
-                                Confirm
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
-                          {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
-                            <span
-                              style={{
-                                marginLeft: '20px',
-                                color: '#17a2b8',
-                                fontSize: '15px',
-                                justifyItems: 'center',
-                              }}
-                            >
-                              {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                          {/* small badges next to name */}
+                          <div className="leaderboard-name-badges">
+                            {(isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                              timeOffIndicator(item.personId)}
+                            {hasLeaderboardPermissions(loggedInUser.role) && showTrophy && (
                               <i
-                                className="fa fa-info-circle"
-                                style={{ marginLeft: '5px', cursor: 'pointer' }}
-                                data-tip={
-                                  isCurrentlyOff
-                                    ? `${additionalWeeks} additional weeks off`
-                                    : `${additionalWeeks} weeks until next time off`
-                                }
-                              />
-                              <ReactTooltip place="top" type="dark" effect="solid" />
-                            </span>
-                          )}
+                                role="button"
+                                tabIndex={0}
+                                className="fa fa-trophy ml-2"
+                                style={{
+                                  fontSize: '18px',
+                                  color: item?.trophyFollowedUp === false ? '#FF0800' : '#ffbb00',
+                                }}
+                                onClick={() => trophyIconToggle(item)}
+                                onKeyDown={() => trophyIconToggle(item)}
+                              >
+                                <p style={{ fontSize: '10px', marginLeft: '1px' }}>
+                                  <strong>{iconContent}</strong>
+                                </p>
+                              </i>
+                            )}
+                            {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
+                              <span className="ml-2" style={{ color: '#17a2b8', fontSize: '15px' }}>
+                                {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                                <i
+                                  className="fa fa-info-circle ml-1"
+                                  data-tip={
+                                    isCurrentlyOff
+                                      ? `${additionalWeeks} additional weeks off`
+                                      : `${additionalWeeks} weeks until next time off`
+                                  }
+                                />
+                                <ReactTooltip place="top" type="dark" effect="solid" />
+                              </span>
+                            )}
+                          </div>
                         </td>
+
+                        {/* days left */}
                         <td className="align-middle">
-                          <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
+                          <span title={mouseoverTextValue} style={{ color: 'red' }}>
                             {displayDaysLeft(item.endDate)}
                           </span>
                         </td>
+
+                        {/* time off button */}
                         <td className="align-middle">
                           <div
                             style={{
@@ -1049,9 +1008,13 @@ function LeaderBoard({
                             )}
                           </div>
                         </td>
+
+                        {/* tangible */}
                         <td className="align-middle" id={`id${item.personId}`}>
                           <span title="Tangible time">{item.tangibletime}</span>
                         </td>
+
+                        {/* progress */}
                         <td className="align-middle">
                           <Link
                             to={`/timelog/${item.personId}`}
@@ -1060,10 +1023,11 @@ function LeaderBoard({
                             <Progress value={item.barprogress} color={item.barcolor} />
                           </Link>
                         </td>
+
+                        {/* total */}
                         <td className="align-middle">
                           <span
                             title={mouseoverTextValue}
-                            id="Total time"
                             className={
                               item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
                             }
