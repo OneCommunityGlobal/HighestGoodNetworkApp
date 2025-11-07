@@ -130,7 +130,7 @@
     "postinstall": "node ./postinstall.js",
     "start": "vite",
     "build": "vite build",
-    "test": "cross-env CI=true vitest --coverage --config vitest.config.js",
+    "test": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=4096 vitest --coverage --config vitest.config.js",
     "test:watch": "vitest --reporter=verbose",
     "test:coverage": "cross-env CI=true vitest --coverage --reporter=verbose",
     "test:changed": "vitest --changed origin/development --reporter=verbose",
@@ -139,7 +139,7 @@
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
     "prepare": "husky install",
     "test:coverage:watch": "react-scripts test --coverage",
-    "test:ci": "cross-env CI=true vitest --coverage --config vitest.config.js",
+    "test:ci": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=4096 vitest --coverage --config vitest.config.js",
     "lint:css": "stylelint \"**/*.{css,scss,sass}\""
   },
   "browserslist": [
