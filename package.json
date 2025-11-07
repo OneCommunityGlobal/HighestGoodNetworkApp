@@ -139,7 +139,7 @@
     "lint:fix": "eslint --fix \"**/*.{js,jsx}\"",
     "prepare": "husky install",
     "test:coverage:watch": "react-scripts test --coverage",
-    "test:ci": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=8192 vitest --coverage --config vitest.config.js",
+    "test:ci": "cross-env CI=true NODE_OPTIONS=--max-old-space-size=16384 vitest --coverage --config vitest.config.js",
     "lint:css": "stylelint \"**/*.{css,scss,sass}\""
   },
   "browserslist": [
