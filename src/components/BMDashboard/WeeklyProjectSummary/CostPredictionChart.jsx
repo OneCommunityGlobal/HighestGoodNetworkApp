@@ -70,6 +70,9 @@ function CostPredictionChart({ projectId }) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // Date filters
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const darkMode = useSelector(state => state.theme.darkMode);
   const legendItems = [
     { label: 'Planned Cost', color: '#7acba6', type: 'circle' },
@@ -118,16 +121,37 @@ function CostPredictionChart({ projectId }) {
     year: 'numeric',
   });
 
+  //  Filter data by date range
+  const filteredData = chartData.filter(item => {
+    const itemDate = new Date(item.month);
+    const start = startDate ? new Date(startDate) : null;
+    const end = endDate ? new Date(endDate) : null;
+    return (!start || itemDate >= start) && (!end || itemDate <= end);
+  });
+
   // THEME COLORS — only for grid, axis ticks/lines, legend
   const gridColor = darkMode ? '#e5e7eb' : '#9ca3af'; // grid lines
   const tickColor = darkMode ? '#e5e7eb' : '#9ca3af'; // tick text
   const axisLineCol = darkMode ? '#e5e7eb' : '#9ca3af'; // axis baseline & tick marks
   const legendColor = darkMode ? '#e5e7eb' : '#9ca3af'; // legend text
+
   return (
     <div className={styles.titleContainer}>
       <h2 className={styles.title}>Planned Vs Actual costs tracking</h2>
+      {/* Date Filters */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+        <div>
+          <label htmlFor="startDate">Start Date: </label>
+          <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} />
+        </div>
+        <div>
+          <label htmlFor="endDate">End Date: </label>
+          <input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} />
+        </div>
+      </div>
+
       <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
+        <LineChart data={filteredData} margin={{ top: 20, right: 30, left: 20, bottom: 40 }}>
           {/* Grid */}
           <CartesianGrid
             strokeDasharray="3 3"
