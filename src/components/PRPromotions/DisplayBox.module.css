@@ -81,21 +81,32 @@
   font-weight: bold;
 }
 
+/* VIBGYOR color scheme: Violet, Indigo, Blue, Green, Yellow, Orange, Red (lighter shades) */
 .color-0 {
-  background-color: rgb(154, 93, 181);
+  background-color: #b19cd9; /* Light Violet */
 }
+
 .color-1 {
-  background-color: rgb(77, 82, 174);
+  background-color: #9370db; /* Light Indigo */
 }
 
 .color-2 {
-  background-color: rgb(87, 150, 198);
+  background-color: #87ceeb; /* Light Blue */
 }
 
 .color-3 {
-  background-color: rgb(95, 191, 95);
+  background-color: #90ee90; /* Light Green */
 }
 
 .color-4 {
-  background-color: #cbe360;
+  background-color: #ffffe0; /* Light Yellow */
 }
+
+.color-5 {
+  background-color: #ffb347; /* Light Orange */
+}
+
+.color-6 {
+  background-color: #ff6b6b; /* Light Red */
+}
+
