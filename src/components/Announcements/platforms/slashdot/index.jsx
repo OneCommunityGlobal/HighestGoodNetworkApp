@@ -276,8 +276,8 @@ function SlashdotAutoPoster({ platform }) {
     setScheduledDate(formatLocalDate(now));
     setScheduledTime(formatLocalTime(now));
     setScheduledDraft(preview);
-    setActiveSubTab('schedule');
     setScheduleAttemptedSave(false);
+    setActiveSubTab('schedule');
     toast.success('Draft moved to Schedule tab.');
   };
 
@@ -735,6 +735,7 @@ function SlashdotAutoPoster({ platform }) {
                   type="date"
                   value={scheduledDate}
                   min={today}
+                  onChange={handleScheduleDateChange}
                   className={classNames(styles['slashdot-field__input'], {
                     [styles['slashdot-field__input--invalid']]:
                       scheduleAttemptedSave && !scheduledDate,
@@ -754,6 +755,7 @@ function SlashdotAutoPoster({ platform }) {
                   type="time"
                   value={scheduledTime}
                   min={scheduleTimeMin}
+                  onChange={handleScheduleTimeChange}
                   className={classNames(styles['slashdot-field__input'], {
                     [styles['slashdot-field__input--invalid']]:
                       scheduleAttemptedSave && !scheduledTime,
