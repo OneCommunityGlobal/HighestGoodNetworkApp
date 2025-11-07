@@ -3,15 +3,13 @@ import { Tooltip, UncontrolledTooltip } from 'reactstrap';
 import { connect, useSelector, useDispatch} from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
-// import { Link, useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { useHistory, Link } from 'react-router-dom';
 import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
-// import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
-// import { UserStatus, FinalDay } from '../../utils/enums';
 import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import TimeDifference from './TimeDifference';
@@ -607,5 +605,33 @@ const mapStateToProps = state => ({
   auth: state.auth,
   authEmail: state.auth.user.email,
 });
+UserTableDataComponent.propTypes = {
+  hasPermission: PropTypes.func.isRequired, // must be a function
+  user: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    role: PropTypes.string,
+    jobTitle: PropTypes.string,
+    email: PropTypes.string,
+    weeklycommittedHours: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    infringementCount: PropTypes.number,
+    isActive: PropTypes.bool,
+    reactivationDate: PropTypes.string,
+  }).isRequired,
+  index: PropTypes.number,
+  isActive: PropTypes.bool,
+  resetLoading: PropTypes.bool,
+  authEmail: PropTypes.string,
+  auth: PropTypes.object,
+  onReset: PropTypes.func,
+  onPauseResumeClick: PropTypes.func,
+  onDeleteClick: PropTypes.func,
+  onLogTimeOffClick: PropTypes.func,
+  onUserUpdate: PropTypes.func,
+  timeOffRequests: PropTypes.array,
+};
 
 export default connect(mapStateToProps, { hasPermission })(UserTableData);
