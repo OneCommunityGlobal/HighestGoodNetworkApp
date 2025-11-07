@@ -66,6 +66,7 @@ import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
 import PermissionWatcher from '../Auth/PermissionWatcher';
 import DisplayBox from '../PRPromotions/DisplayBox';
+import PropTypes from 'prop-types';
 
 export function Header(props) {
   const location = useLocation();
@@ -681,7 +682,28 @@ const mapStateToProps = state => ({
   notification: state.notification,
   darkMode: state.theme.darkMode,
 });
-
+Header.propTypes = {
+  hasPermission: PropTypes.func.isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    user: PropTypes.shape({
+      userid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      role: PropTypes.string
+    }),
+    firstName: PropTypes.string,
+    profilePic: PropTypes.string
+  }),
+  getHeaderData: PropTypes.func,
+  getAllRoles: PropTypes.func,
+  getWeeklySummaries: PropTypes.func,
+  role: PropTypes.shape({
+    roles: PropTypes.array
+  }),
+  notification: PropTypes.object,
+  userProfile: PropTypes.object,
+  darkMode: PropTypes.bool,
+  taskEditSuggestionCount: PropTypes.number,
+};
 export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,

@@ -327,7 +327,7 @@ UserTableHeaderComponent.propTypes = {
   disableEditUserInfo: PropTypes.func.isRequired,
   isMobile: PropTypes.bool,
   mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  hasPermission: PropTypes.func, // ✅ this fixes the SonarCloud issue
+ 
 };
 
 const UserTableHeader = React.memo(UserTableHeaderComponent);
