@@ -5,7 +5,7 @@ import { Bar } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
 import { MultiSelect } from 'react-multi-select-component';
 import 'react-datepicker/dist/react-datepicker.css';
-import './ReturnedLateChart.css';
+import styles from './ReturnedLateChart.module.css';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -195,13 +195,13 @@ export default function ReturnedLateChart() {
   const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
 
   return (
-    <div className={`returned-late-chart ${isOxfordBlue} `}>
-      <h1 className={darkMode ? `text-white` : ``}>Percent of Tools Returned Late</h1>
-      <div className="returned-late-filters">
-        <div className="returned-late-filter-group">
+    <div className={`${styles['returned-late-chart']} ${isOxfordBlue}`}>
+      <h1 className={darkMode ? 'text-white' : ''}>Percent of Tools Returned Late</h1>
+      <div className={styles['returned-late-filters']}>
+        <div className={styles['returned-late-filter-group']}>
           <label
             htmlFor="project-select"
-            className={`returned-late-filter-label ${darkMode ? 'text-white' : ''}`}
+            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
           >
             Project:
           </label>
@@ -209,7 +209,7 @@ export default function ReturnedLateChart() {
             id="project-select"
             value={selectedProject}
             onChange={handleProjectChange}
-            className="returned-late-project-select"
+            className={styles['returned-late-project-select']}
           >
             <option value="All">All Projects</option>
             {availableProjects.map(p => (
@@ -219,14 +219,14 @@ export default function ReturnedLateChart() {
             ))}
           </select>
         </div>
-        <div className="returned-late-filter-group">
+        <div className={styles['returned-late-filter-group']}>
           <label
             htmlFor="tools-select"
-            className={`returned-late-filter-label ${darkMode ? 'text-white' : ''}`}
+            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
           >
             Tools:
           </label>
-          <div id="tools-select" className="returned-late-tools-select">
+          <div id="tools-select" className={styles['returned-late-tools-select']}>
             <MultiSelect
               options={availableTools}
               value={selectedTools}
@@ -235,10 +235,10 @@ export default function ReturnedLateChart() {
             />
           </div>
         </div>
-        <div className="returned-late-filter-group">
+        <div className={styles['returned-late-filter-group']}>
           <label
             htmlFor="start-date-picker"
-            className={`returned-late-filter-label ${darkMode ? 'text-white' : ''}`}
+            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
           >
             From:
           </label>
@@ -246,13 +246,13 @@ export default function ReturnedLateChart() {
             id="start-date-picker"
             selected={dateRange.startDate}
             onChange={handleStartDateChange}
-            className="returned-late-date-picker"
+            className={styles['returned-late-date-picker']}
           />
         </div>
-        <div className="returned-late-filter-group">
+        <div className={styles['returned-late-filter-group']}>
           <label
             htmlFor="end-date-picker"
-            className={`returned-late-filter-label ${darkMode ? 'text-white' : ''}`}
+            className={`${styles['returned-late-filter-label']} ${darkMode ? 'text-white' : ''}`}
           >
             To:
           </label>
@@ -260,19 +260,19 @@ export default function ReturnedLateChart() {
             id="end-date-picker"
             selected={dateRange.endDate}
             onChange={handleEndDateChange}
-            className="returned-late-date-picker"
+            className={styles['returned-late-date-picker']}
           />
         </div>
       </div>
-      <div className="returned-late-chart-container text-white">
+      <div className={`${styles['returned-late-chart-container']} text-white`}>
         {loading && (
-          <div className={`returned-late-loading ${darkMode ? 'text-white' : ''}`}>Loading...</div>
+          <div className={`${styles['returned-late-loading']} ${darkMode ? 'text-white' : ''}`}>Loading...</div>
         )}
         {error && (
-          <div className={`returned-late-error ${darkMode ? 'text-white' : ''}`}>{error}</div>
+          <div className={`${styles['returned-late-error']} ${darkMode ? 'text-white' : ''}`}>{error}</div>
         )}
         {!loading && !error && chartData.labels.length === 0 && (
-          <div className={`returned-late-no-data ${darkMode ? 'text-white' : ''}`}>
+          <div className={`${styles['returned-late-no-data']} ${darkMode ? 'text-white' : ''}`}>
             No data for selected filters
           </div>
         )}
