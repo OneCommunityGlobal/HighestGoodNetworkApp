@@ -17,7 +17,7 @@ import { boxStyle } from '../../styles';
 import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
 import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
 import SetUpFinalDayButton from './SetUpFinalDayButton';
-import PropTypes from "prop-types";
+
 /**
  * The body row of the user table
  */
