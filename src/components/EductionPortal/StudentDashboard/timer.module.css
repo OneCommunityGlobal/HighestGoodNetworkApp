@@ -1,0 +1,150 @@
+.timerBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  font-weight: 600;
+}
+
+.timerBtn:hover {
+  background: #e2e8f0;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 320px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .25);
+  padding: 16px;
+  animation: pop .14s ease-out;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(.98);
+    opacity: 0
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.iconBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+}
+
+.iconBtn:hover {
+  background: #f3f4f6;
+}
+
+.clockRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 12px;
+  margin: 6px 0 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.col {
+  display: grid;
+  grid-template-rows: auto auto auto auto;
+  justify-items: center;
+  gap: 6px;
+}
+
+.step {
+  all: unset;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: #eaeef3;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.step:hover {
+  background: #e2e8f0;
+}
+
+.timeInput {
+  width: 64px;
+  height: 64px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+}
+
+.sep {
+  font-size: 28px;
+  font-weight: 700;
+  padding: 0 2px;
+}
+
+.label {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.primary,
+.secondary {
+  all: unset;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.primary {
+  background: #111827;
+  color: #fff;
+}
+
+.primary:hover {
+  opacity: .9;
+}
+
+.secondary {
+  background: #f3f4f6;
+}
+
+.secondary:hover {
+  background: #e5e7eb;
+}
