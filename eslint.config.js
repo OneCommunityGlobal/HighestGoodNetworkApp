@@ -1,6 +1,7 @@
 // ...existing code...
 const { FlatCompat } = require('@eslint/eslintrc');
 const js = require('@eslint/js');
+const { wrap, at } = require('lodash');
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
@@ -72,6 +73,14 @@ const sharedGlobals = {
   reduxTests: 'readonly',
   open: 'readonly',
   weeklyCommittedHours: 'readonly',
+  expect: 'readonly',
+  globalThis: 'readonly',
+  card: 'readonly',
+  chart: 'readonly',
+  wrapper: 'readonly',
+  startDate: 'readonly',
+  performance: 'readonly',
+  atob: 'readonly',
 };
 
 // Exported config
