@@ -1,8 +1,18 @@
+:root {
+  --purple-1: #a78bfa;
+  /* light purple */
+  --purple-2: #7c6cff;
+  /* accent */
+  --purple-3: #6d5df3;
+  /* darker accent */
+  --ink: #111827;
+}
+
 .timerBtn {
   all: unset;
   cursor: pointer;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
   font-weight: 600;
@@ -12,6 +22,7 @@
   background: #e2e8f0;
 }
 
+/* Backdrop */
 .backdrop {
   position: fixed;
   inset: 0;
@@ -21,13 +32,157 @@
   z-index: 1000;
 }
 
-.modal {
-  width: 320px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, .25);
-  padding: 16px;
+/* Card styled like the mock: small, rounded, purple tint */
+.card {
+  width: 280px;
+  border-radius: 24px;
+  background:
+    radial-gradient(120% 100% at 0% 0%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, .95) 50%, #ffffff 100%),
+    linear-gradient(135deg, rgba(167, 139, 250, .25), rgba(124, 108, 255, .25));
+  box-shadow:
+    0 18px 45px rgba(0, 0, 0, .25),
+    inset 0 0 0 1px rgba(124, 108, 255, .20);
+  padding: 16px 14px 12px;
+  position: relative;
   animation: pop .14s ease-out;
+}
+
+/* Header */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.iconGhost {
+  all: unset;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  color: #6b7280;
+}
+
+.iconGhost:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Time grid */
+.timeGrid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(167, 139, 250, .20), rgba(124, 108, 255, .10));
+  border: 1px solid rgba(124, 108, 255, .25);
+}
+
+/* Single time slot (HH or MM) */
+.slot {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  justify-items: center;
+  gap: 6px;
+}
+
+.stepBtn {
+  all: unset;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 28px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #4b5563;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .04);
+}
+
+.stepBtn:hover {
+  background: #f8fafc;
+}
+
+.digitBox {
+  width: 84px;
+  height: 66px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border-radius: 14px;
+  border: 1px solid rgba(124, 108, 255, .35);
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+}
+
+.digitBox:focus {
+  box-shadow: 0 0 0 3px rgba(124, 108, 255, .25);
+}
+
+.colon {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+/* Footer controls */
+.footer {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+}
+
+.ctrlBtn {
+  all: unset;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: var(--purple-3);
+  border: 1px solid rgba(124, 108, 255, .35);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, .04);
+}
+
+.ctrlBtn:hover {
+  background: #f6f7ff;
+}
+
+.okBtn {
+  all: unset;
+  cursor: pointer;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--purple-2), var(--purple-3));
+  box-shadow: 0 6px 14px rgba(124, 108, 255, .35);
+}
+
+.okBtn:hover {
+  filter: brightness(1.02);
 }
 
 @keyframes pop {
@@ -40,111 +195,4 @@
     transform: scale(1);
     opacity: 1
   }
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.iconBtn {
-  all: unset;
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 8px;
-}
-
-.iconBtn:hover {
-  background: #f3f4f6;
-}
-
-.clockRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 12px;
-  margin: 6px 0 12px;
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
-}
-
-.col {
-  display: grid;
-  grid-template-rows: auto auto auto auto;
-  justify-items: center;
-  gap: 6px;
-}
-
-.step {
-  all: unset;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 8px;
-  background: #eaeef3;
-  font-size: 12px;
-  line-height: 1;
-}
-
-.step:hover {
-  background: #e2e8f0;
-}
-
-.timeInput {
-  width: 64px;
-  height: 64px;
-  text-align: center;
-  font-size: 32px;
-  font-weight: 700;
-  border-radius: 12px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-}
-
-.sep {
-  font-size: 28px;
-  font-weight: 700;
-  padding: 0 2px;
-}
-
-.label {
-  font-size: 12px;
-  color: #6b7280;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-.primary,
-.secondary {
-  all: unset;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.primary {
-  background: #111827;
-  color: #fff;
-}
-
-.primary:hover {
-  opacity: .9;
-}
-
-.secondary {
-  background: #f3f4f6;
-}
-
-.secondary:hover {
-  background: #e5e7eb;
 }
