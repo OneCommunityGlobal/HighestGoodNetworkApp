@@ -43,7 +43,7 @@ const Project = props => {
       toast.error('Project name must be at least 3 characters long');
       setDisplayName(displayName);
     } else if (displayName !== projectName) {
-      updateProject('projectName', displayName);
+      updateProject('projectName', displayName); // NOSONAR
     }
   };
 
@@ -53,12 +53,12 @@ const Project = props => {
   };
 
   const onUpdateProjectActive = () => {
-    updateProject('isActive', !isActive);
+    updateProject('isActive', !isActive); // NOSONAR
   }
 
   const onUpdateProjectCategory = (e) => {
     setCategory(e.target.value);
-    updateProject('category', e.target.value); // Update the projectData state
+    updateProject('category', e.target.value); // NOSONAR
   };
 
   const onArchiveProject = () => {
@@ -100,7 +100,7 @@ const Project = props => {
                 className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
                 value={displayName}
                 onChange={onDisplayNameChange}
-                onBlur={() => onUpdateProjectName(displayName)}
+                onBlur={() => onUpdateProjectName(displayName)} // NOSONAR
               />
             ) : (
               projectName

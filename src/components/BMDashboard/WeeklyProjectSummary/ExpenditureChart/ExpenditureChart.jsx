@@ -34,7 +34,7 @@ const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percent, name }) => 
   );
 };
 
-/* eslint-disable */
+/* eslint-disable react/prop-types */
 function ExpenditureChart({ projectId }) {
   const [actual, setActual] = useState([]);
   const [planned, setPlanned] = useState([]);

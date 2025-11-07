@@ -23,7 +23,7 @@ function Issue() {
 
   const dropdownOptions = ['Safety', 'METs quality / functionality', 'Labor', 'Weather', 'Other'];
   const userData = localStorage.getItem('token');
-  /* eslint-disable-next-line */
+  /* eslint-disable-next-line no-unsafe-optional-chaining */
   const userId = JSON.parse(atob(userData?.split('.')[1]))?.userid;
 
   const safetyCheckboxOptions = [
