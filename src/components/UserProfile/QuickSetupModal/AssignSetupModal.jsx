@@ -160,7 +160,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           <Label className={fontColor}>
             <h6>Google Doc: </h6>
           </Label>
-          <Input type="text" onChange={e => setGoogleDoc(e.target.value)}></Input>
+          <Input type="text" onChange={e => setGoogleDoc(e.target.value)} />
           {!isGoogleDocValid || googleDoc === ""?  <p className="text-danger">{warning.googleDoc}</p> : null}
 
           <h6>Team Code: {title?.teamCode}</h6>

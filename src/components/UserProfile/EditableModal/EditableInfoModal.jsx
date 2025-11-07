@@ -60,10 +60,10 @@ export class EditableInfoModal extends Component {
     } 
 
     content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
-    let CanRead = (visible === '0') ||
+    const CanRead = (visible === '0') ||
       (visible === '1' && (role === 'Owner' || role === 'Administrator')) ||
       (visible === '2' && (role !== 'Volunteer'));
-    let CanEdit = role === 'Owner';
+    const CanEdit = role === 'Owner';
 
     if(this._isMounted){
       this.setState({

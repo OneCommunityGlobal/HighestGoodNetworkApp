@@ -9,6 +9,7 @@ import {
   LabelList,
 } from 'recharts';
 import styles from './ApplicationChart.module.css';
+
 const data = [
   { ageGroup: '18 - 21', applicants: 25, change: 10 },
   { ageGroup: '21 - 24', applicants: 60, change: -5 },

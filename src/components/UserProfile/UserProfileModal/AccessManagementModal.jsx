@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Badge, Spinner } from 'reactstrap';
-import axios from 'axios';
-import { toast } from 'react-toastify';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckCircle,
-  faTimesCircle,
   faExclamationTriangle,
-  faUserPlus,
-  faUserMinus,
-  faSync,
   faFolder,
   faUsers,
   faLock,
   faInfoCircle,
+  faSync,
+  faTimesCircle,
+  faUserMinus,
+  faUserPlus,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { Badge, Button, Modal, ModalBody, ModalFooter, ModalHeader, Spinner } from 'reactstrap';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './AccessManagementModal.module.css';
 
@@ -518,7 +518,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
               >
                 <img
                   src={config.icon}
-                  alt={config.name + ' icon'}
+                  alt={`${config.name  } icon`}
                   style={{ width: 32, height: 32, objectFit: 'contain' }}
                 />
               </span>

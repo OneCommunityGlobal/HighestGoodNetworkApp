@@ -17,7 +17,7 @@ const FoundUser = props => {
           <div>{props.index + 1}</div>
         </th>
         <td className="foundUsers__order">
-          <a href={`/userprofile/${props.uid}`} className={darkMode ? 'text-azure' : ''}>{props.firstName + ' ' + props.lastName}</a>
+          <a href={`/userprofile/${props.uid}`} className={darkMode ? 'text-azure' : ''}>{`${props.firstName  } ${  props.lastName}`}</a>
         </td>
         <td className="foundUsers__email">{props.email}</td>
         <td className="foundUsers__assign">
@@ -41,7 +41,7 @@ const FoundUser = props => {
               }}
               style={darkMode ? {} : boxStyle}
             >
-              <i className="fa fa-plus" aria-hidden="true"></i>
+              <i className="fa fa-plus" aria-hidden="true" />
             </button>
           )}
         </td>

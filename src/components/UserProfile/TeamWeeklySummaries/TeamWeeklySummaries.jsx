@@ -35,7 +35,7 @@ function TeamWeeklySummaries({ name, i, data, darkMode }) {
       </div>
       {data.summary && (
         <div className="team-weekly-summary-container">
-          <div className="team-week-summary-text">  {darkMode?  parse('<span class=darkSpan >' + data.summary + "</span>") : parse(data.summary)}</div>
+          <div className="team-week-summary-text">  {darkMode?  parse(`<span class=darkSpan >${  data.summary  }</span>`) : parse(data.summary)}</div>
       
           <FontAwesomeIcon
             icon={faCopy}

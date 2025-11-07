@@ -34,7 +34,7 @@ const BadgeImage = props => {
           <img
             data-testid={`badge-image-${props.index}`}
             src={props?.badgeData?.imageUrl}
-            id={'popover_' + props.time + props.index.toString()}
+            id={`popover_${  props.time  }${props.index.toString()}`}
             alt=""
           />
 
@@ -53,7 +53,7 @@ const BadgeImage = props => {
         trigger="hover"
         isOpen={isOpen}
         toggle={toggle}
-        target={'popover_' + props.time + props.index.toString()}
+        target={`popover_${  props.time  }${props.index.toString()}`}
       >
         <Card className="text-center">
           <CardImg className="badge_image_lg" src={props?.badgeData?.imageUrl} />

@@ -1,83 +1,82 @@
-import React, { useState, useEffect, useRef, useId } from 'react';
+import axios from 'axios';
+import classnames from 'classnames';
+import moment from 'moment';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'react-bootstrap/Image';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { Link, useHistory } from 'react-router-dom';
+import Select from 'react-select';
 import {
-  Row,
-  Input,
-  Col,
+  Button,
   Container,
-  TabContent,
-  TabPane,
+  Input,
   List,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
+  ModalHeader,
   Nav,
   NavItem,
   NavLink,
-  Button,
+  Row,
+  TabContent,
+  TabPane
 } from 'reactstrap';
-import Select from 'react-select';
-import Image from 'react-bootstrap/Image';
-import { Link, useHistory } from 'react-router-dom';
-import classnames from 'classnames';
-import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
-import axios from 'axios';
-import { boxStyle, boxStyleDark } from '~/styles';
 import { v4 as uuidv4 } from 'uuid';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDateLocal } from '~/utils/formatDate';
+import { ENDPOINTS } from '~/utils/URL';
+import { getAllTeamCode, getAllUserTeams } from '../../actions/allTeamsAction';
+import { fetchAllProjects } from '../../actions/projects';
+import { toggleVisibility, updateRehireableStatus, updateUserStatus } from '../../actions/userManagement';
+import { updateUserProfile } from "../../actions/userProfile";
+import { UserStatus } from '../../utils/enums';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
-import ActiveCell from '../UserManagement/ActiveCell';
-import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
-import UserProfileModal from './UserProfileModal';
-import './UserProfile.scss';
 import teamStyles from '../TeamMemberTasks/style.module.css';
-import TeamsTab from './TeamsAndProjects/TeamsTab';
-import ProjectsTab from './TeamsAndProjects/ProjectsTab';
-import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
-import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
-import SaveButton from './UserProfileEdit/SaveButton';
-import UserLinkLayout from './UserLinkLayout';
-import TabToolTips from './ToolTips/TabToolTips';
-import BasicToolTips from './ToolTips/BasicTabTips';
-import TeamsTabTips from './ToolTips/TeamsTabTips';
+import ActiveCell from '../UserManagement/ActiveCell';
+import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
-import { getAllTeamCode , getAllUserTeams } from '../../actions/allTeamsAction';
-import TimeEntryEditHistory from './TimeEntryEditHistory';
-import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
-import { updateUserProfile } from "../../actions/userProfile";
-import { UserStatus } from '../../utils/enums';
+import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
 import BlueSquareLayout from './BlueSquareLayout';
-import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { formatDateLocal } from '~/utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
-import { fetchAllProjects } from '../../actions/projects';
+import ProjectsTab from './TeamsAndProjects/ProjectsTab';
+import TeamsTab from './TeamsAndProjects/TeamsTab';
+import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
+import TimeEntryEditHistory from './TimeEntryEditHistory';
+import BasicToolTips from './ToolTips/BasicTabTips';
+import TabToolTips from './ToolTips/TabToolTips';
+import TeamsTabTips from './ToolTips/TeamsTabTips';
+import UserLinkLayout from './UserLinkLayout';
+import './UserProfile.scss';
+import SaveButton from './UserProfileEdit/SaveButton';
+import UserProfileModal from './UserProfileModal';
+import VolunteeringTimeTab from './VolunteeringTimeTab/VolunteeringTimeTab';
 
 import { toast } from 'react-toastify';
+import {
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from '~/utils/constants';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from '~/utils/constants';
 
+import { formatDateYYYYMMDD } from '~/utils/formatDate.js';
 import {
   getTimeEndDateEntriesByPeriod,
-  getTimeStartDateEntriesByPeriod,
   getTimeEntriesForWeek,
+  getTimeStartDateEntriesByPeriod,
 } from '../../actions/timeEntries.js';
-import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
-import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
+import { getSpecialWarnings, postWarningByUserId } from '../../actions/warnings';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
-import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
+import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 
 function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -290,6 +289,7 @@ function UserProfile(props) {
       //submitted a summary, maybe didn't complete their hours just yet
       const memberSubmitted = await Promise.all(
         activeMembers
+        // eslint-disable-next-line
           .filter(member => member.weeklySummaries[0].summary !== '')
           .map(async member => {
             const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
@@ -403,7 +403,7 @@ function UserProfile(props) {
     if (!allRequests[personId]) {
       return false;
     }
-    let hasTimeOff = false;
+    const hasTimeOff = false;
     const sortedRequests = allRequests[personId].sort((a, b) =>
       moment(a.startingDate).diff(moment(b.startingDate)),
     );
@@ -762,7 +762,9 @@ const onAssignProject = assignedProject => {
             toast.error('Failed to add Blue Square!');
           });
       }
+      // eslint-disable-next-line
     } else if (operation === 'update') {
+      // eslint-disable-next-line
       const currentBlueSquares = [...userProfile?.infringements] || [];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
@@ -779,9 +781,11 @@ const onAssignProject = assignedProject => {
           toast.error('Failed to update Blue Square!');
         });
       toast.success('Blue Square Updated!');
+      // eslint-disable-next-line
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
+      // eslint-disable-next-line
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
@@ -960,11 +964,12 @@ const onAssignProject = assignedProject => {
     userProfileRef.current = userProfile;
   });
 
+  // eslint-disable-next-line
   useEffect(() => {
     const helper = async () => {
-      try {
+      
         await updateProjectTouserProfile();
-      } catch (error) {}
+      
     };
     helper();
   }, [projects]);

@@ -1,25 +1,24 @@
-import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
-import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-import moment from 'moment';
-import PhoneInput from 'react-phone-input-2';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import { useEffect, useRef, useState } from 'react';
+import PhoneInput from 'react-phone-input-2';
+import { Button, Col, FormFeedback, FormGroup, Input, Label, Row } from 'reactstrap';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 // import 'react-phone-input-2/lib/style.css';
-import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
-import TimeZoneDropDown from '../TimeZoneDropDown';
-import { connect , useDispatch } from 'react-redux';
-import hasPermission from '~/utils/permissions';
-import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
-import './BasicInformationTab.css';
-import { boxStyle, boxStyleDark } from '~/styles';
-import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDateLocal } from '~/utils/formatDate';
-import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
+import { connect, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
+import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { formatDateLocal } from '~/utils/formatDate';
+import hasPermission from '~/utils/permissions';
+import { ENDPOINTS } from '~/utils/URL';
+import TimeZoneDropDown from '../TimeZoneDropDown';
+import './BasicInformationTab.css';
 
 
 const Name = props => {
@@ -411,10 +410,10 @@ const TimeZoneDifference = props => {
       }
     };
 
-    let date = new Date();
+    const date = new Date();
     const offset = getOffsetBetweenTimezonesForDate(date, viewingTimeZone, yourLocalTimeZone);
     const offsetInHours = offset / 3600000;
-    setSignedOffset(offsetInHours > 0 ? '+' + offsetInHours : '' + offsetInHours);
+    setSignedOffset(offsetInHours > 0 ? `+${  offsetInHours}` : `${  offsetInHours}`);
   }, [isUserSelf, setErrorOccurred, errorOccurred, viewingTimeZone, yourLocalTimeZone]);
 
   if (!isUserSelf) {
@@ -850,7 +849,7 @@ const BasicInformationTab = props => {
             {userProfile.isActive
               ? 'Active'
               : userProfile.reactivationDate
-              ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+              ? `Paused until ${  formatDateLocal(userProfile.reactivationDate)}`
               : 'Inactive'}
           </Label>
           {canEdit && canEditStatus && (
@@ -903,7 +902,7 @@ const BasicInformationTab = props => {
           {userProfile.isActive
             ? 'Active'
             : userProfile.reactivationDate
-            ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+            ? `Paused until ${  formatDateLocal(userProfile.reactivationDate)}`
             : 'Inactive'}
         </Label>
         &nbsp;
@@ -953,32 +952,32 @@ const BasicInformationTab = props => {
           <>
             <Row>
               {nameComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row>
               {titleComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row>
               {emailComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row>
               {phoneComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row>
               {videoCallPreferenceComponent}
-              <Col md="1" lg="1"></Col>
+              <Col md="1" lg="1" />
             </Row>
             <Row style={{ marginBottom: '10px' }}>{roleComponent}</Row>
             <Row style={{  marginBottom: '10px' }}>
               {locationComponent}
-              <Col md="1"></Col>
+              <Col md="1" />
             </Row>
             <Row style={{ marginTop: '15px', marginBottom: '10px' }}>
               {timeZoneComponent}
-              <Col md="1"></Col>
+              <Col md="1" />
             </Row>
             <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}</Row>
             <Row style={{ marginBottom: '10px' }}>{statusComponent}</Row>

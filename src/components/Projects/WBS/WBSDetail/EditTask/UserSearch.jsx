@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FormControl } from 'react-bootstrap';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { useUserSearch } from './useUserSearch';
@@ -26,7 +26,7 @@ function UserSearch({ addedUsers, onAddUser }) {
         type="text"
         placeholder="Search users..."
         value={searchTerm}
-        onChange={()=>handleInputChange(event.target.value)}
+        onChange={(event)=>handleInputChange(event.target.value)}
       />
 
       {show && (

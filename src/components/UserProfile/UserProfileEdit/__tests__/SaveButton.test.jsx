@@ -7,7 +7,7 @@ import SaveButton from '../SaveButton';
 describe('<SaveButton />', () => {
   // Test Case 1: It should render the save changes button with the correct props
   it('renders the save changes button', () => {
-    let props = {
+    const props = {
       handleSubmit: vi.fn(),
       disabled: true,
       userProfile: userProfileMock,
@@ -22,7 +22,7 @@ describe('<SaveButton />', () => {
   describe('Behavior', () => {
     // Test Case 2: It should render the save changes button in disabled state
     it('renders the save changes button as disabled by default', () => {
-      let props = {
+      const props = {
         handleSubmit: vi.fn(),
         disabled: true,
         userProfile: userProfileMock,
@@ -37,7 +37,7 @@ describe('<SaveButton />', () => {
 
     // Test Case 2: It should render the modal after clicking save changes button
     it('renders modal after save changes button is clicked', async () => {
-      let props = {
+      const props = {
         handleSubmit: vi.fn(),
         disabled: false,
         userProfile: userProfileMock,

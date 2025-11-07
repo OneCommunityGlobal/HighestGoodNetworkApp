@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
 import styles from './ExpenditureChart.module.css';
 
 const COLORS = ['#6777EF', '#A0CD61', '#F5CD4B'];
@@ -34,6 +34,7 @@ const renderCustomLabel = ({ cx, cy, midAngle, outerRadius, percent, name }) => 
   );
 };
 
+/* eslint-disable react/prop-types */
 function ExpenditureChart({ projectId }) {
   const [actual, setActual] = useState([]);
   const [planned, setPlanned] = useState([]);

@@ -1,27 +1,27 @@
 /* eslint-disable import/no-unresolved */
-import { useState, useEffect, useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { v4 as uuidv4 } from 'uuid';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
-import CostPredictionChart from './CostPredictionChart';
-import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
-import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
-import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
-import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
-import IssuesBreakdownChart from './IssuesBreakdownChart';
-import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
-import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
-import ExpenseBarChart from './Financials/ExpenseBarChart';
-import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
-import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
-import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
-import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
+import CostPredictionChart from './CostPredictionChart';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import ExpenseBarChart from './Financials/ExpenseBarChart';
+import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
+import IssuesBreakdownChart from './IssuesBreakdownChart';
+import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
+import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
+import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
+import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
+import ToolsHorizontalBarChart from './Tools/ToolsHorizontalBarChart';
+import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
+import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
+import styles from './WeeklyProjectSummary.module.css';
+import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 
 const projectStatusButtons = [
   {
@@ -122,6 +122,7 @@ const projectStatusButtons = [
   },
 ];
 
+/* eslint-disable */
 export function WeeklyProjectSummaryContent() {
   const dispatch = useDispatch();
   const materials = useSelector(state => state.materials?.materialslist || []);

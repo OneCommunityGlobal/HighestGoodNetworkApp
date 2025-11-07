@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Button, Label, Input, Form, FormGroup, Row, Col } from 'reactstrap';
-import { toast } from 'react-toastify';
-import { useHistory, useParams } from 'react-router-dom';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Button, Col, Form, FormGroup, Input, Label, Row } from 'reactstrap';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './Issue.module.css';
 
@@ -23,6 +23,7 @@ function Issue() {
 
   const dropdownOptions = ['Safety', 'METs quality / functionality', 'Labor', 'Weather', 'Other'];
   const userData = localStorage.getItem('token');
+  /* eslint-disable-next-line no-unsafe-optional-chaining */
   const userId = JSON.parse(atob(userData?.split('.')[1]))?.userid;
 
   const safetyCheckboxOptions = [

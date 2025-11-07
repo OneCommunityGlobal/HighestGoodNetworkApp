@@ -73,8 +73,8 @@ function Task(props) {
       const motherTaskName = motherTask.taskName;
       const grandMotherTaskNames = motherTask.mother ? getAncestorNames(motherTask.mother) : '';
       return grandMotherTaskNames
-        ? grandMotherTaskNames + ' <br /> ' + motherTaskName + ' /'
-        : motherTaskName + ' /';
+        ? `${grandMotherTaskNames  } <br /> ${  motherTaskName  } /`
+        : `${motherTaskName  } /`;
     } else {
       return '';
     }
@@ -119,10 +119,10 @@ function Task(props) {
       '#800000', // maroon
       '#808000', // olive
     ];
-    let colors = {};
-    let colorIndex = {};
+    const colors = {};
+    const colorIndex = {};
 
-    for (let name of names) {
+    for (const name of names) {
       const initials = getInitials(name);
       // If the initials haven't been encountered yet, assign a base color
       if (!colorIndex[initials]) {
@@ -134,7 +134,7 @@ function Task(props) {
       } else {
         // If initials have been encountered, assign a new color
         colors[name] = {
-          color: colorsHex[Math.floor(Math.random() * colorsHex.length)] + '30',
+          color: `${colorsHex[Math.floor(Math.random() * colorsHex.length)]  }30`,
           initials: initials,
         };
         colorIndex[initials]++;
@@ -186,7 +186,7 @@ function Task(props) {
             <td
               className={`tag_color tag_color_${props.num?.length > 0 ? props.num.split('.')[0] : props.num
                 } tag_color_lv_${props.level}`}
-            ></td>
+             />
             <td>
               <Button
                 color="primary"
@@ -224,7 +224,7 @@ function Task(props) {
                     className={props.hasChildren ? 'has_children' : ''}
                   >
                     {props.hasChildren ? (
-                      <i className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true"></i>
+                      <i className={`fa fa-folder${isOpen ? '-open' : ''}`} aria-hidden="true" />
                     ) : (
                       ''
                     )}{' '}
@@ -360,7 +360,7 @@ function Task(props) {
               <i className="fa fa-book" aria-hidden="true" data-tip="More info" />
             </td>
             <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
-              <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}></ModalHeader>
+              <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''} />
               <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <h6>WHY THIS TASK IS IMPORTANT:</h6>
                 <Editor

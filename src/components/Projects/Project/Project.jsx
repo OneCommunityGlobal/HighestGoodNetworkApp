@@ -1,15 +1,14 @@
-import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { NavItem } from 'reactstrap';
+import { boxStyle } from '~/styles';
+import hasPermission from '~/utils/permissions';
+import { modifyProject } from '../../../actions/projects';
 import { ARCHIVE } from './../../../languages/en/ui';
 import './../projects.css';
-import { Link } from 'react-router-dom';
-import { NavItem } from 'reactstrap';
-import { connect } from 'react-redux';
-import hasPermission from '~/utils/permissions';
-import { boxStyle } from '~/styles';
-import { toast } from 'react-toastify';
-import { modifyProject } from '../../../actions/projects';
-import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 
 const Project = props => {
   const { darkMode, index } = props;
@@ -94,7 +93,7 @@ const Project = props => {
 
   return (
       <>
-        <tr className="projects__tr" id={'tr_' + props.projectId}>
+        <tr className="projects__tr" id={`tr_${  props.projectId}`}>
 
           <th className="projects__order--input" scope="row">
             <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
@@ -148,11 +147,11 @@ const Project = props => {
           <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onProjectStatusChange : null}>
             {isActive ? (
               <div className="isActive">
-                <i className="fa fa-circle" aria-hidden="true"></i>
+                <i className="fa fa-circle" aria-hidden="true" />
               </div>
             ) : (
               <div className="isNotActive">
-                <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'></i>
+                <i className="fa fa-circle" aria-hidden="true" color='#dee2e6' />
               </div>
             )}
           </td>
@@ -160,7 +159,7 @@ const Project = props => {
             <NavItem tag={Link} to={`/inventory/${projectId}`}>
               <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
                 {' '}
-                <i className="fa fa-archive" aria-hidden="true"></i>
+                <i className="fa fa-archive" aria-hidden="true" />
               </button>
             </NavItem>
           </td>
@@ -168,7 +167,7 @@ const Project = props => {
             <NavItem tag={Link} to={`/project/members/${projectId}`}>
               <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
                 {' '}
-                <i className="fa fa-users" aria-hidden="true"></i>
+                <i className="fa fa-users" aria-hidden="true" />
               </button>
             </NavItem>
           </td>
@@ -176,7 +175,7 @@ const Project = props => {
           <td>
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
               <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
-                <i className="fa fa-tasks" aria-hidden="true"></i>
+                <i className="fa fa-tasks" aria-hidden="true" />
               </button>
             </NavItem>
           </td>

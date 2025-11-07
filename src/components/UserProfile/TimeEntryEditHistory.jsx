@@ -22,9 +22,9 @@ const TimeEntryEditHistory = props => {
     let h = new String(Math.floor(seconds / 3600));
     let m = new String(Math.floor((seconds % 3600) / 60));
     let s = new String(Math.floor((seconds % 3600) % 60));
-    if (h.length === 1) h = '0' + h;
-    if (m.length === 1) m = '0' + m;
-    if (s.length === 1) s = '0' + s;
+    if (h.length === 1) h = `0${  h}`;
+    if (m.length === 1) m = `0${  m}`;
+    if (s.length === 1) s = `0${  s}`;
     return `${h}:${m}:${s}`;
   };
 
@@ -59,7 +59,7 @@ const TimeEntryEditHistory = props => {
               <br />
               (HH:MM:SS)
             </th>
-            {canDeleteTimeEntry && editHistory.length > 0 && <th className={darkMode ? 'bg-space-cadet' : ''}></th>}
+            {canDeleteTimeEntry && editHistory.length > 0 && <th className={darkMode ? 'bg-space-cadet' : ''} />}
           </tr>
         </thead>
         <tbody style={tabletView ? {fontSize: "10px"} : {}}>

@@ -1,24 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { connect, useSelector } from 'react-redux';
 
-import ReactTooltip from 'react-tooltip';
 import axios from 'axios';
-import { NavItem, Button, Modal, ModalBody } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
+import { Button, Modal, ModalBody, NavItem } from 'reactstrap';
 
 import { Editor } from '@tinymce/tinymce-react';
 import { Link, useHistory } from 'react-router-dom';
-import { ENDPOINTS } from '~/utils/URL';
 import { getUserProfile } from '~/actions/userProfile';
-import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
-import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
-import ModalDelete from '../../../common/Modal';
-import { deleteTask } from '../../../../actions/task';
-import * as Message from '../../../../languages/en/messages';
-import { getPopupById } from '../../../../actions/popupEditorAction';
-import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { formatDate } from '~/utils/formatDate';
+import hasPermission from '~/utils/permissions';
+import { ENDPOINTS } from '~/utils/URL';
+import { getPopupById } from '../../../../actions/popupEditorAction';
+import { deleteTask } from '../../../../actions/task';
+import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
+import * as Message from '../../../../languages/en/messages';
+import ModalDelete from '../../../common/Modal';
+import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 
 const TINY_MCE_INIT_OPTIONS =
 {
@@ -226,7 +226,9 @@ function SingleTask(props) {
                           </a>
                         );
 
-                      } catch (err) { }
+                      } catch (err) { 
+                        return null;
+                      }
                     })}
                 </td>
                 <td>

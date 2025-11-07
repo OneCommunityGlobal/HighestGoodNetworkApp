@@ -1,34 +1,34 @@
-import React, { useState, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
-  faCircle,
   faCheckCircle,
-  faTimesCircle,
-  faExpandArrowsAlt,
+  faCircle,
   faCompressArrowsAlt,
+  faExpandArrowsAlt,
+  faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useRef, useState } from 'react';
+import { Modal, ModalBody, ModalFooter, ModalHeader, Progress, Table } from 'reactstrap';
 import CopyToClipboard from '~/components/common/Clipboard/CopyToClipboard';
-import { Table, Progress, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
 
+import moment from 'moment-timezone';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { getUserProfile } from '~/actions/userProfile.js';
+import Warning from '~/components/Warnings/Warnings';
 import hasPermission from '~/utils/permissions';
 import styles from './style.module.css';
-import { getUserProfile } from '~/actions/userProfile.js';
-import { toast } from 'react-toastify';
-import Warning from '~/components/Warnings/Warnings';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment-timezone';
 
-import ReviewButton from './ReviewButton';
-import { getProgressColor, getProgressValue } from '../../utils/effortColors';
-import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
+import * as messages from '../../constants/followUpConstants';
+import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import TaskChangeLogModal from './components/TaskChangeLogModal';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
-import TaskChangeLogModal from './components/TaskChangeLogModal';
-import * as messages from '../../constants/followUpConstants';
+import ReviewButton from './ReviewButton';
+import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -56,7 +56,6 @@ const TeamMemberTask = React.memo(
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
 
     const [isDashboardModalOpen, setIsDashboardModalOpen] = useState(false);
-    const dashboardToggle = item => setIsDashboardOpen(item.personId);
     const manager = 'Manager';
     const adm = 'Administrator';
     const owner = 'Owner';

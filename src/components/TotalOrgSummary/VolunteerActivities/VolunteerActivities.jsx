@@ -3,6 +3,7 @@ import { normalizeVolunteerActivities } from '~/utils/totalOrgSummary';
 import Loading from '~/components/common/Loading';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
 import styles from '../TotalOrgSummary.module.css';
+
 function VolunteerActivities({
   isLoading,
   totalSummariesSubmitted,

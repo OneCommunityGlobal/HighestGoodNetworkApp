@@ -26,7 +26,7 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
 
   const updateProfileImage= async ()=>{
     try {
-      let image=getImageSource(selectedImage);
+      const image=getImageSource(selectedImage);
       await axios.put(ENDPOINTS.USERS_UPDATE_PROFILE_FROM_WEBSITE,{'selectedImage':image,'user_id':userProfile._id})
       toast.success("Profile Image Updated")
     }    

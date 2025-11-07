@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { addEventFeedback } from '../../../actions/communityPortal/eventFeedback';
 import styles from './Feedbackform.module.css';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Spinner } from 'reactstrap';
+
 const isValidName = name => {
   if (!name || name.trim() === '') return false;
   const allowedChars = new Set("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ -'");
-  for (let chr of name) {
+  for (const chr of name) {
     if (!allowedChars.has(chr)) return false;
   }
   return true;
@@ -48,6 +49,7 @@ const isValidEmail = email => {
   if (!email || email.includes(' ')) return false;
   const trimmed = email.trim();
   // Reject control/invisible characters
+  // eslint-disable-next-line no-control-regex
   if (/[\x00-\x1F\x7F\u200B-\u200F]/.test(trimmed)) return false;
 
   // Basic structure check

@@ -1,29 +1,28 @@
-import React, { useState, useEffect, useRef , useMemo } from 'react';
-import PropTypes from 'prop-types';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
-import { connect } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
-import { DayPicker } from 'react-day-picker';
-import 'react-day-picker/dist/style.css';
 import { Editor } from '@tinymce/tinymce-react';
+import { isValid } from 'date-fns';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-import { isValid } from 'date-fns';
+import PropTypes from 'prop-types';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { DayPicker } from 'react-day-picker';
+import 'react-day-picker/dist/style.css';
+import { connect } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { addNewTask } from '../../../../../actions/task';
-import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
-  START_DATE_ERROR_MESSAGE,
+import {
   END_DATE_ERROR_MESSAGE,
+  START_DATE_ERROR_MESSAGE
 } from '../../../../../languages/en/messages';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getProjectDetail } from '../../../../../actions/project';
+import { fetchAllMembers } from '../../../../../actions/projectMembers';
+import { fetchAllProjects } from '../../../../../actions/projects';
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
-import { fetchAllMembers } from '../../../../../actions/projectMembers';
-import { fetchAllProjects } from '../../../../../actions/projects';
-import { getProjectDetail } from '../../../../../actions/project';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 /** small v8 DateInput - manual control without useInput **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
@@ -53,6 +52,7 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
   const handleDaySelect = (date) => {
     if (date) {
       // format back to your MM/dd/yy
+      /* eslint-disable */
       const f = dateFnsFormat(date, FORMAT);
       onChange(f);
       setIsOpen(false);

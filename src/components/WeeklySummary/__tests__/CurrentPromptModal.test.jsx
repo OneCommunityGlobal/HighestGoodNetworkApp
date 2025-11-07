@@ -14,6 +14,7 @@ vi.mock('react-toastify', () => ({
   },
 }));
 import { toast } from 'react-toastify';
+
 vi.mock('axios');
 
 import CurrentPromptModal from '~/components/WeeklySummary/CurrentPromptModal';

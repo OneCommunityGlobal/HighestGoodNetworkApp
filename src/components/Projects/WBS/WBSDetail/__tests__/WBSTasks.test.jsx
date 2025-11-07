@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+
 const setState = vi.fn();
 
 vi.mock('react', async importOriginal => {
