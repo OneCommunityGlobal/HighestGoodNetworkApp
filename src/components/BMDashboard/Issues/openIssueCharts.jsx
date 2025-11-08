@@ -18,7 +18,8 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
-import './issueCharts.css';
+//import styles from 'issueChart.module.css'; // ✅ changed import
+import styles from './issueChart.module.css';
 
 function IssueCharts() {
   const dispatch = useDispatch();
@@ -28,6 +29,8 @@ function IssueCharts() {
   const [endDate, setEndDate] = useState(null);
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
+
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -57,7 +60,7 @@ function IssueCharts() {
       }
     }
     window.addEventListener('resize', handleResize);
-    handleResize(); // Initial set
+    handleResize();
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -70,9 +73,7 @@ function IssueCharts() {
     label: project.name,
   }));
 
-  // Calculate margins and YAxis width based on container width
   const getChartLayout = () => {
-    // Margins and YAxis width scale with container width
     const leftRightMargin = Math.max(20, Math.min(200, containerWidth * 0.12));
     const yAxisWidth = Math.max(60, Math.min(180, containerWidth * 0.13));
     return {
@@ -87,15 +88,15 @@ function IssueCharts() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="issue-chart-container">
+    <div className={styles.issueChartContainer} data-theme={darkMode ? 'dark' : 'light'}>
       <h2>Longest Open Issues</h2>
 
-      <div className="filters-container">
-        <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+      <div className={styles.filtersContainer}>
+        <div className={styles.filter}>
+          <label className={styles.issueChartLabel} htmlFor="start-date">
             Date Range:
           </label>
-          <div className="date-range-picker">
+          <div className={styles.dateRangePicker}>
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -106,7 +107,7 @@ function IssueCharts() {
               maxDate={endDate}
               placeholderText="Start Date"
               isClearable
-              className="filter-select"
+              className={styles.filterSelect}
             />
             <span>to</span>
             <DatePicker
@@ -119,31 +120,31 @@ function IssueCharts() {
               maxDate={new Date()}
               placeholderText="End Date"
               isClearable
-              className="filter-select"
+              className={styles.filterSelect}
             />
           </div>
         </div>
 
-        <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+        <div className={styles.filter}>
+          <label className={styles.issueChartLabel} htmlFor="project-select">
             Projects:
           </label>
           <Select
-            id="start-date"
+            inputId="project-select"
             isMulti
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            className="filter-select"
+            className={styles.filterSelect}
             classNamePrefix="select"
           />
         </div>
       </div>
 
-      <div className="chart-container" ref={chartContainerRef}>
+      <div className={styles.chartContainer} ref={chartContainerRef}>
         {!issues || issues.length === 0 ? (
-          <div className="no-data-message">
-            <div className="no-data-content">
+          <div className={styles.noDataMessage}>
+            <div className={styles.noDataContent}>
               <h3>No Open Issues Found</h3>
               <p>There are currently no open issues matching your selected criteria.</p>
               <p>Try adjusting your date range or project filters to see more results.</p>
@@ -172,7 +173,7 @@ function IssueCharts() {
                   dataKey="durationOpen"
                   position="right"
                   formatter={v => `${v} mo`}
-                  className="recharts-label"
+                  className={styles.rechartsLabel}
                 />
               </Bar>
             </BarChart>

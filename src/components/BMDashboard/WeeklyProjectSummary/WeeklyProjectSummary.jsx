@@ -314,13 +314,11 @@ function WeeklyProjectSummary() {
         className: 'large',
         content: (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small financial-chart">
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.financialSmall} ${styles.financialChart}`}
+            >
               <ExpenseBarChart />
             </div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-small">📊 Card</div>
-            <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
           </div>
         ),
       },
@@ -474,24 +472,32 @@ function WeeklyProjectSummary() {
   };
 
   return (
-    <div className={`weekly-project-summary-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? 'dark-mode' : ''}`}>
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
-      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
-        <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
+      <div className={styles.weeklyProjectSummaryDashboardContainer}>
+        <div className={styles.weeklyProjectSummaryDashboardGrid}>
           {sections.map(({ title, key, className, content }) => (
             <div
               key={key}
-              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
+              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]} ${
+                darkMode ? 'dark-mode' : ''
+              }`}
             >
               <button
                 type="button"
-                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+                className={`${styles.weeklyProjectSummaryDashboardCategoryTitle} ${
+                  darkMode ? 'dark-mode' : ''
+                }`}
                 onClick={() => toggleSection(key)}
               >
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                <div
+                  className={`${styles.weeklyProjectSummaryDashboardCategoryContent} ${
+                    darkMode ? 'dark-mode' : ''
+                  }`}
+                >
                   {content}
                 </div>
               )}

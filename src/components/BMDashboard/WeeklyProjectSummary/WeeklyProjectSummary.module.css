@@ -12,11 +12,6 @@
   padding: 0;
 }
 
-.weeklyProjectSummaryDashboardContainer {
-  width: 100%;
-  background: var(--bg-color);
-}
-
 .weeklyProjectSummaryHeaderWrapper {
   background-color: var(--bg-color) !important;
 }
@@ -81,6 +76,7 @@
   white-space: nowrap;
   border-radius: 8px !important;
   transition: background 0.2s ease-in-out;
+  width: 100%;
 }
 
 .weeklySummaryShareBtn:hover {
@@ -120,13 +116,6 @@
 }
 
 /* ---------------- CARDS ---------------- */
-.projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-}
-
 .weeklyProjectSummaryCard {
   background: var(--card-bg);
   padding: 10px;
@@ -135,18 +124,21 @@
   box-shadow: 0 2px 5px var(--card-shadow);
 }
 
-.darkMode .weeklyProjectSummaryCard {
+:global(.dark-mode) .weeklyProjectSummaryCard {
   background: var(--card-bg);
   box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
 }
 
-.financialSmall {
-  min-height: 100px;
-  max-height: 120px;
-  margin-top: 20px;
-  grid-column: span 1;
-}
+:global(.dark-mode) .weeklyProjectSummaryDashboardSection { background: #1b2a41; }
+.weeklyProjectSummaryDashboardSection.dark-mode { background: #1b2a41; }
 
+.financialSmall {
+  grid-column: span 1;
+  min-height: 320px;
+  height: auto;
+  max-height: none;
+  margin-top: 0;     
+}
 
 .weekly-project-summary-card.financial-big {
   grid-column: span 4;
@@ -165,7 +157,6 @@
   margin: 0;
   font-weight: normal;
   font-size: 24px;
-
 }
 
 .fullCard {
@@ -253,7 +244,7 @@
 }
 
 /* ---------------- DARK MODE STYLES ---------------- */
-.darkMode {
+:global(.dark-mode) {
   --bg-color: #1b2a41;
   --text-color: #ffffff;
   --card-bg: #2b3e59;
@@ -265,38 +256,32 @@
   --button-hover: #f5b13a;
 }
 
-.darkMode .weeklyProjectSummaryDashboardCategoryTitle {
+:global(.dark-mode) .weeklyProjectSummaryDashboardCategoryTitle {
   color: #ffffff;
   background: #2d4059;
 }
 
-.darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
+:global(.dark-mode) .weeklyProjectSummaryDashboardCategoryTitle:hover {
   background: #3a506b;
 }
 
-.darkMode .weeklyProjectSummaryDashboardCategoryContent {
+:global(.dark-mode) .weeklyProjectSummaryDashboardCategoryContent {
   background-color: var(--section-bg);
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.darkMode .weeklySummaryHeaderContainer {
+:global(.dark-mode) .weeklySummaryHeaderContainer {
   background: var(--section-bg);
   color: var(--text-color);
 }
 
-.weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
-}
-
-.weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
-}
-
 /* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
-  max-height: 80vh !important; /* Limit to 80% of viewport height */
-  overflow-y: auto !important; /* Enable vertical scrolling */
-  padding-right: 15px !important; /* Add some padding for the scrollbar */
+  max-height: 80vh !important;
+  overflow-y: auto !important;
+  padding-right: 15px !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
 /* Style the scrollbar for better visibility */
@@ -314,24 +299,34 @@
   border-radius: 4px;
 }
 
-/* Support for Firefox */
-.quantityOfMaterialsUsedChartTooltip {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
-}
-
 /* Additional adjustments for dark mode if needed */
-.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
+:global(.dark-mode) .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
+:global(.dark-mode) .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.3);
 }
 
-.darkMode .quantityOfMaterialsUsedChartTooltip {
+:global(.dark-mode) .quantityOfMaterialsUsedChartTooltip {
   scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
 }
+
+/* === Inline-style equivalents from JSX === */
+/* Support both hyphenated and camelCase container classes */
+.weekly-project-summary-container,
+.weeklyProjectSummaryContainer {
+  background-color: var(--bg-color);
+}
+
+/* Container bg (dark) */
+.dark-mode .weekly-project-summary-container,
+.darkMode .weekly-project-summary-container,
+.dark-mode .weeklyProjectSummaryContainer,
+.darkMode .weeklyProjectSummaryContainer {
+  background-color: #1b2a41;
+}
+
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 
 /* Medium Screens - Wrap Items */
@@ -367,11 +362,6 @@
 
   /* Make Dropdowns Full Width */
   .weeklySummaryHeaderControls select {
-    width: 100%;
-  }
-
-  /* Make Button Full Width */
-  .weeklySummaryShareBtn {
     width: 100%;
   }
 
