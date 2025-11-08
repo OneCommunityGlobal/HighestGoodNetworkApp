@@ -101,7 +101,7 @@ export default function DistributionLaborHours() {
           />
         </label>
         <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
-          Project:
+          Project:{' '}
           <select
             onChange={e => setProjectFilter(e.target.value)}
             value={projectFilter}
@@ -113,7 +113,7 @@ export default function DistributionLaborHours() {
           </select>
         </label>
         <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
-          Member:
+          Member:{' '}
           <select
             onChange={e => setMemberFilter(e.target.value)}
             value={memberFilter}
