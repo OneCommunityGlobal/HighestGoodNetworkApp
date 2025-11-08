@@ -240,7 +240,7 @@ function ExpenseBarChart({ darkMode }) {
   );
 }
 
-ExpenseBarChart.PropTypes = {
+ExpenseBarChart.propTypes = {
   darkMode: PropTypes.bool.isRequired,
 };
 
