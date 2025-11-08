@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, CardBody, Row, Col, Button } from 'reactstrap';
 import moment from 'moment-timezone';
 
-function ScheduleReasonModalCard({ request , handleDeleteRequest }) {
+function ScheduleReasonModalCard({ request , handleDeleteRequest, handleEditRequest }) {
   const [showFullText, setShowFullText] = useState(false);
   const toggleShowText = () => {
     setShowFullText(!showFullText);
@@ -45,6 +45,7 @@ function ScheduleReasonModalCard({ request , handleDeleteRequest }) {
 
         <Row>
           <Col>
+            {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}
             <p className={`${!showFullText ? 'text-truncate' : ''}`} onClick={toggleShowText}>
               <strong>Reason: </strong>
               {request.reason}
@@ -53,6 +54,9 @@ function ScheduleReasonModalCard({ request , handleDeleteRequest }) {
         </Row>
         <Row>
           <Col>
+            <Button color="primary" className="mr-1" onClick={() => handleEditRequest(request)}>
+              Edit
+            </Button>
             <Button className="btn btn-danger" onClick={() => handleDeleteRequest(request._id)}>
               Delete
             </Button>

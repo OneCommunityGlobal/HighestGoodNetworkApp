@@ -3,7 +3,7 @@ import './BlueSquareStats.css';
 import Loading from '~/components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
-function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
+function BlueSquareStats({ isLoading, blueSquareStats, comparisonType, darkMode }) {
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
@@ -53,6 +53,7 @@ function BlueSquareStats({ isLoading, blueSquareStats, comparisonType }) {
           data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
           comparisonType={comparisonType}
+          darkMode={darkMode}
         />
       </div>
     </section>
