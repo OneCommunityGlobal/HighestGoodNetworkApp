@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import {
   Button,
   Modal,
@@ -20,6 +21,40 @@ import MembersAutoComplete from './MembersAutoComplete';
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
 
+/* ---------- small helpers to reduce cognitive complexity ---------- */
+
+function labelForFilter(mode) {
+  switch (mode) {
+    case 'active':
+      return 'Active';
+    case 'inactive':
+      return 'In Active';
+    default:
+      return 'All';
+  }
+}
+
+function bgForFilter(mode) {
+  switch (mode) {
+    case 'active':
+      return 'limegreen';
+    case 'inactive':
+      return '#ccc';
+    default:
+      return 'dodgerblue';
+  }
+}
+
+function textForFilter(mode) {
+  return mode === 'inactive' ? 'black' : 'white';
+}
+
+function applyStatusFilter(list, mode) {
+  if (mode === 'active') return list.filter(u => u?.isActive === true);
+  if (mode === 'inactive') return list.filter(u => u?.isActive !== true);
+  return list;
+}
+
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
@@ -34,28 +69,13 @@ export const TeamMembersPopup = React.memo(props => {
   const [deletedPopup, setDeletedPopup] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
 
-  // Normalize the members prop
-  const normalizedMembers = useMemo(() => {
+  // Normalize members
+  const validation = useMemo(() => {
     const raw = props.members;
     if (Array.isArray(raw)) return raw.filter(Boolean);
     if (raw && Array.isArray(raw.teamMembers)) return raw.teamMembers.filter(Boolean);
     return [];
   }, [props.members]);
-
-  // Keep validation super simple now that we fetch before open
-  const validation = normalizedMembers;
-
-  const nextLabelFor = m => (m === 'active' ? 'Active' : m === 'all' ? 'All' : 'In Active');
-  const colorForMode = m =>
-    m === 'inactive' ? '#ccc' : m === 'active' ? 'limegreen' : 'dodgerblue';
-  const textColorForMode = m => (m === 'inactive' ? 'black' : 'white');
-
-  const applyStatusFilter = (list, mode) => {
-    const isTrue = v => v === true;
-    if (mode === 'active') return list.filter(u => isTrue(u?.isActive));
-    if (mode === 'inactive') return list.filter(u => !isTrue(u?.isActive));
-    return list;
-  };
 
   const sortByPermission = useCallback((a, b) => {
     const order = [
@@ -79,10 +99,16 @@ export const TeamMembersPopup = React.memo(props => {
   const sortedMembers = useMemo(() => {
     const src = validation;
 
+    // permission → alpha
     if (sortOrder === 0) {
       const grouped = src.reduce((pre, cur) => {
-        const role = (cur.role || '').toString().toLowerCase();
-        (pre[role] ||= []).push(cur);
+        const roleKey = (cur.role || '').toString().toLowerCase();
+        let arr = pre[roleKey];
+        if (!arr) {
+          arr = [];
+          pre[roleKey] = arr;
+        }
+        arr.push(cur);
         return pre;
       }, {});
       return Object.keys(grouped)
@@ -90,7 +116,7 @@ export const TeamMembersPopup = React.memo(props => {
         .flatMap(role => [...grouped[role]].sort(sortByAlpha));
     }
 
-    // date sort then alpha (null dates go last)
+    // date → alpha (null last)
     const byDate = [...src].sort((a, b) => {
       const da = a?.addDateTime ? moment(a.addDateTime) : null;
       const db = b?.addDateTime ? moment(b.addDateTime) : null;
@@ -99,13 +125,21 @@ export const TeamMembersPopup = React.memo(props => {
       if (!db) return -1;
       return da.diff(db) * -sortOrder;
     });
+
     const buckets = byDate.reduce((pre, cur) => {
-      const k = cur?.addDateTime ? moment(cur.addDateTime).format('MMM-DD-YY') : '__NO_DATE__';
-      (pre[k] ||= []).push(cur);
+      const key = cur?.addDateTime ? moment(cur.addDateTime).format('MMM-DD-YY') : '__NO_DATE__';
+      let arr = pre[key];
+      if (!arr) {
+        arr = [];
+        pre[key] = arr;
+      }
+      arr.push(cur);
       return pre;
     }, {});
     const out = [];
-    Object.values(buckets).forEach(list => out.push(...[...list].sort(sortByAlpha)));
+    for (const list of Object.values(buckets)) {
+      out.push(...[...list].sort(sortByAlpha));
+    }
     return out;
   }, [validation, sortOrder, sortByPermission, sortByAlpha]);
 
@@ -113,9 +147,9 @@ export const TeamMembersPopup = React.memo(props => {
     const teamsData = props.teamData;
     const map = {};
     if (Array.isArray(teamsData) && teamsData.length > 0) {
-      (teamsData[0]?.members || []).forEach(m => {
+      for (const m of teamsData[0]?.members || []) {
         map[m.userId] = m.visible;
-      });
+      }
     }
     return map;
   }, [props.teamData]);
@@ -125,38 +159,42 @@ export const TeamMembersPopup = React.memo(props => {
     setDuplicateUserAlert(false);
   }, [props.open]);
 
+  const toggleInfoModal = () => setInfoModal(p => !p);
   const closeDeletedPopup = () => setDeletedPopup(p => !p);
+
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
   };
+
   const closePopup = () => {
     props.onClose();
     setSortOrder(0);
     setFilterMode('all');
   };
+
   const selectUser = user => {
     setSelectedUser(user);
     setIsValidUser(true);
     setDuplicateUserAlert(false);
   };
-  const toggleInfoModal = () => setInfoModal(p => !p);
 
+  // avoid negated condition
   const onAddUser = () => {
     if (selectedUser) {
       const isDuplicate = validation.some(x => x?._id === selectedUser._id);
-      if (!isDuplicate) {
+      if (isDuplicate) {
+        setSearchText('');
+        setDuplicateUserAlert(true);
+      } else {
         props.onAddUser(selectedUser);
         setSearchText('');
         setDuplicateUserAlert(false);
-      } else {
-        setSearchText('');
-        setDuplicateUserAlert(true);
       }
-    } else {
-      setDuplicateUserAlert(false);
-      setIsValidUser(false);
+      return;
     }
+    setDuplicateUserAlert(false);
+    setIsValidUser(false);
   };
 
   const UpdateTeamMembersVisibility = (userId, choice) => {
@@ -168,7 +206,7 @@ export const TeamMembersPopup = React.memo(props => {
     '0': { icon: faSort, style: { color: 'lightgrey' } },
     '1': { icon: faSortDown },
   };
-  const toggleOrder = useCallback(() => setSortOrder(pre => (pre !== -1 ? pre - 1 : 1)), []);
+  const toggleOrder = useCallback(() => setSortOrder(pre => (pre === -1 ? 1 : pre - 1)), []);
 
   const emptyState = (
     <tr>
@@ -178,8 +216,100 @@ export const TeamMembersPopup = React.memo(props => {
     </tr>
   );
 
-  // Spinner only if the list is truly not ready yet (should be rare now)
   const showTableSpinner = props.open && props.fetching && validation.length === 0;
+
+  const cycleFilter = () => {
+    let next = 'all';
+    if (filterMode === 'all') next = 'active';
+    else if (filterMode === 'active') next = 'inactive';
+    setFilterMode(next);
+  };
+
+  /* ------- row renderer (extracting logic lowers complexity) ------- */
+  const renderRow = (user, index) => {
+    const uid = user?._id ?? `row-${index}`;
+    const first = user?.firstName ?? '';
+    const last = user?.lastName ?? '';
+    const role = user?.role ?? '';
+    const dateTxt = user?.addDateTime ? moment(user.addDateTime).format('MMM-DD-YY') : '-';
+    const isActiveDot = user?.isActive === true;
+
+    const nameCell = ['Manager', 'Mentor', 'Assistant Manager'].includes(role) ? (
+      <b>
+        {first} {last} ({role})
+      </b>
+    ) : (
+      <span>
+        {first} {last} ({role})
+      </span>
+    );
+
+    return (
+      <tr key={`${props.selectedTeamName}-${uid}`}>
+        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+          <div className={isActiveDot ? 'isActive' : 'isNotActive'}>
+            <i className="fa fa-circle" aria-hidden="true" />
+          </div>
+        </td>
+        <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+          {index + 1}
+        </td>
+        <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+          {nameCell}{' '}
+          {hasVisibilityIconPermission &&
+            props &&
+            props.selectedTeamName &&
+            user?.isVisible === false && (
+              <i className="fa fa-eye-slash" title="User is invisible" />
+            )}
+        </td>
+        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>{dateTxt}</td>
+        <td
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+          }}
+        >
+          <ToggleSwitch
+            key={`${props.selectedTeamName}-${uid}`}
+            switchType="limit-visibility"
+            userId={user?._id || null}
+            choice={memberVisibility[user?._id]}
+            UpdateTeamMembersVisibility={user?._id ? UpdateTeamMembersVisibility : () => {}}
+          />
+        </td>
+        {canAssignTeamToUsers && (
+          <td style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}>
+            <Button
+              color="danger"
+              onClick={() => user?._id && handleDelete(user._id)}
+              disabled={!user?._id}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Delete
+            </Button>
+          </td>
+        )}
+      </tr>
+    );
+  };
+
+  const renderBody = () => {
+    if (showTableSpinner) {
+      return (
+        <tr>
+          <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
+            <Spinner color={`${darkMode ? 'light' : 'dark'}`} animation="border" size="sm" />
+          </td>
+        </tr>
+      );
+    }
+    const visibleList = applyStatusFilter(sortedMembers, filterMode);
+    if (!visibleList.length) return emptyState;
+    return visibleList.map((u, i) => renderRow(u, i));
+  };
 
   return (
     <Container fluid>
@@ -188,7 +318,6 @@ export const TeamMembersPopup = React.memo(props => {
       <Modal
         isOpen={props.open}
         toggle={closePopup}
-        // autoFocus={false}
         size="lg"
         className={`${darkMode ? 'dark-mode text-light' : ''} ${
           props.open ? ' open-team-members-popup-modal' : ''
@@ -256,14 +385,10 @@ export const TeamMembersPopup = React.memo(props => {
                 >
                   <button
                     type="button"
-                    onClick={() =>
-                      setFilterMode(m =>
-                        m === 'all' ? 'active' : m === 'active' ? 'inactive' : 'all',
-                      )
-                    }
+                    onClick={cycleFilter}
                     style={{
-                      backgroundColor: colorForMode(filterMode),
-                      color: textColorForMode(filterMode),
+                      backgroundColor: bgForFilter(filterMode),
+                      color: textForFilter(filterMode),
                       border: 'none',
                       padding: '6px 12px',
                       borderRadius: '5px',
@@ -273,7 +398,7 @@ export const TeamMembersPopup = React.memo(props => {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {nextLabelFor(filterMode)}
+                    {labelForFilter(filterMode)}
                   </button>
                 </th>
 
@@ -331,101 +456,7 @@ export const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
 
-            <tbody>
-              {showTableSpinner ? (
-                <tr>
-                  <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
-                    <Spinner
-                      color={`${darkMode ? 'light' : 'dark'}`}
-                      animation="border"
-                      size="sm"
-                    />
-                  </td>
-                </tr>
-              ) : (
-                (() => {
-                  const visibleList = applyStatusFilter(sortedMembers, filterMode);
-                  if (!visibleList.length) return emptyState;
-
-                  return visibleList.map((user, index) => {
-                    const uid = user?._id ?? `row-${index}`;
-                    const first = user?.firstName ?? '';
-                    const last = user?.lastName ?? '';
-                    const role = user?.role ?? '';
-                    const dateTxt = user?.addDateTime
-                      ? moment(user.addDateTime).format('MMM-DD-YY')
-                      : '-';
-                    const isActiveDot = user?.isActive === true;
-
-                    return (
-                      <tr key={`${props.selectedTeamName}-${uid}`}>
-                        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                          <div className={isActiveDot ? 'isActive' : 'isNotActive'}>
-                            <i className="fa fa-circle" aria-hidden="true" />
-                          </div>
-                        </td>
-                        <td
-                          className="def-width"
-                          style={{ verticalAlign: 'middle', textAlign: 'center' }}
-                        >
-                          {index + 1}
-                        </td>
-                        <td
-                          className="def-width"
-                          style={{ verticalAlign: 'middle', textAlign: 'center' }}
-                        >
-                          {['Manager', 'Mentor', 'Assistant Manager'].includes(role) ? (
-                            <b>
-                              {first} {last} ({role})
-                            </b>
-                          ) : (
-                            <span>
-                              {first} {last} ({role})
-                            </span>
-                          )}{' '}
-                          {hasVisibilityIconPermission && user && user.isVisible === false && (
-                            <i className="fa fa-eye-slash" title="User is invisible" />
-                          )}
-                        </td>
-                        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>{dateTxt}</td>
-                        <td
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            height: '100%',
-                          }}
-                        >
-                          <ToggleSwitch
-                            key={`${props.selectedTeamName}-${uid}`}
-                            switchType="limit-visibility"
-                            userId={user?._id || null}
-                            choice={memberVisibility[user?._id]}
-                            UpdateTeamMembersVisibility={
-                              user?._id ? UpdateTeamMembersVisibility : () => {}
-                            }
-                          />
-                        </td>
-                        {canAssignTeamToUsers && (
-                          <td
-                            style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}
-                          >
-                            <Button
-                              color="danger"
-                              onClick={() => user?._id && handleDelete(user._id)}
-                              disabled={!user?._id}
-                              style={darkMode ? boxStyleDark : boxStyle}
-                            >
-                              Delete
-                            </Button>
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  });
-                })()
-              )}
-            </tbody>
+            <tbody>{renderBody()}</tbody>
           </table>
         </ModalBody>
 
@@ -460,9 +491,36 @@ export const TeamMembersPopup = React.memo(props => {
 });
 
 TeamMembersPopup.displayName = 'TeamMembersPopup';
+
+TeamMembersPopup.propTypes = {
+  open: PropTypes.bool.isRequired,
+  fetching: PropTypes.bool,
+  members: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.object),
+    PropTypes.shape({ teamMembers: PropTypes.arrayOf(PropTypes.object) }),
+  ]),
+  teamData: PropTypes.arrayOf(
+    PropTypes.shape({
+      members: PropTypes.arrayOf(
+        PropTypes.shape({
+          userId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          visible: PropTypes.bool,
+        }),
+      ),
+    }),
+  ),
+  usersdata: PropTypes.arrayOf(PropTypes.object),
+  selectedTeamName: PropTypes.string.isRequired,
+  onDeleteClick: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onAddUser: PropTypes.func.isRequired,
+  onUpdateTeamMemberVisibility: PropTypes.func.isRequired,
+};
+
 TeamMembersPopup.defaultProps = {
   members: [],
   teamData: [],
+  usersdata: [],
   fetching: false,
 };
 
