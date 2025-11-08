@@ -17,7 +17,6 @@
   background: var(--bg-color);
   margin: auto;
   padding: 20px;
-  background: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -69,7 +68,6 @@
   min-width: 200px;
   font-size: 14px;
   background: var(--section-bg);
-  /* color: var(--text-color); */
 }
 
 /* Dropdown Hover */
