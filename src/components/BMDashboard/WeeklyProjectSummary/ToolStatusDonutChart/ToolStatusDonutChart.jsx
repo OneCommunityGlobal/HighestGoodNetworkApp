@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
 import styles from './ToolStatusDonutChart.module.css';
+import PropTypes from 'prop-types';
 
 const COLORS = {
   AVAILABLE: '#220F57',
@@ -124,7 +125,7 @@ const CustomTooltip = ({
   );
 };
 
-export default function ToolStatusDonutChart() {
+function ToolStatusDonutChart() {
   const dispatch = useDispatch();
   const toolslist = useSelector(state => state.tools.toolslist);
   const availabilityData = useSelector(state => state.toolAvailability.availabilityData);
@@ -363,3 +364,16 @@ export default function ToolStatusDonutChart() {
     </div>
   );
 }
+
+ToolStatusDonutChart.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
+  total: PropTypes.number,
+  hasNoData: PropTypes.bool,
+  toolName: PropTypes.string,
+  projectName: PropTypes.string,
+  toolId: PropTypes.string,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+export default ToolStatusDonutChart;

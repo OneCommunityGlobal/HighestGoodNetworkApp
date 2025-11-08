@@ -13,8 +13,9 @@ import Select from 'react-select';
 import httpService from '../../../services/httpService';
 import { useSelector } from 'react-redux';
 import styles from './ProjectRiskProfileOverview.module.css';
+import PropTypes from 'prop-types';
 
-export default function ProjectRiskProfileOverview({ selectStyles }) {
+function ProjectRiskProfileOverview({ selectStyles }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -31,20 +32,6 @@ export default function ProjectRiskProfileOverview({ selectStyles }) {
 
   const tooltipBg = darkMode ? '#3a506b' : '#fff';
   const textColor = darkMode ? '#ffffff' : '#000000ff';
-
-  const getBackgroundColor = (state, darkMode) => {
-    if (state.isSelected || state.isFocused) {
-      return '#0d55b3';
-    }
-    return darkMode ? '#22272e' : '#fff';
-  };
-
-  const getTextColor = (state, darkMode) => {
-    if (state.isSelected) {
-      return '#fff';
-    }
-    return darkMode ? '#fff' : '#232323';
-  };
 
   useEffect(() => {
     async function fetchData() {
@@ -192,3 +179,9 @@ export default function ProjectRiskProfileOverview({ selectStyles }) {
     </div>
   );
 }
+
+ProjectRiskProfileOverview.propTypes = {
+  selectStyles: PropTypes.object.isRequired,
+};
+
+export default ProjectRiskProfileOverview;

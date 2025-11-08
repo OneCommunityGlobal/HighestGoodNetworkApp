@@ -21,6 +21,7 @@ import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './QuantityOfMaterialsUsed.module.css';
+import PropTypes from 'prop-types';
 
 ChartJS.register(
   BarElement,
@@ -958,5 +959,9 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
     </div>
   );
 }
+
+QuantityOfMaterialsUsed.propTypes = {
+  selectStyles: PropTypes.object.isRequired,
+};
 
 export default QuantityOfMaterialsUsed;
