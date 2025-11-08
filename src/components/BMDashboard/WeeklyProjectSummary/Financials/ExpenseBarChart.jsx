@@ -1,20 +1,13 @@
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  LabelList,
-  ResponsiveContainer,
-  CartesianGrid,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, LabelList, ResponsiveContainer } from 'recharts';
 import { useState, useEffect } from 'react';
 
 const categories = ['Plumbing', 'Electrical', 'Structural', 'Mechanical'];
 const projects = ['Project A', 'Project B', 'Project C'];
 
 import styles from './ExpectedVsActualBarChart.module.css';
+import PropTypes from 'prop-types';
 
-export default function ExpenseBarChart({ darkMode }) {
+function ExpenseBarChart({ darkMode }) {
   const [projectId, setProjectId] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('ALL');
   const [startDate, setStartDate] = useState('');
@@ -246,3 +239,9 @@ export default function ExpenseBarChart({ darkMode }) {
     </div>
   );
 }
+
+ExpenseBarChart.PropTypes = {
+  darkMode: PropTypes.bool.isRequired,
+};
+
+export default ExpenseBarChart;
