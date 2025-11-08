@@ -473,7 +473,7 @@ const UserTableDataComponent = (props) => {
       <td>
         {!isCurrentUser && (
           <>
-            {!canSetFinalDay ? (
+            {canSetFinalDay ? (
               <Tooltip
                 placement="bottom"
                 isOpen={tooltipFinalDayOpen}
