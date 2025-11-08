@@ -1,74 +1,170 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { v4 as uuidv4 } from 'uuid';
-import getApplicationData from './api';
+import { ENDPOINTS } from '../../utils/URL';
+import httpService from '../../services/httpService';
 import styles from './ApplicationTimeChart.module.css';
 
 function ApplicationTimeChart() {
   const [dateFilter, setDateFilter] = useState('all');
   const [selectedRole, setSelectedRole] = useState('all');
+  const [data, setData] = useState([]);
+  const [availableRoles, setAvailableRoles] = useState(['all']);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const rawData = getApplicationData();
+  // Get dark mode state from Redux
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
+
+  // Fetch available roles from backend
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        // Construct roles endpoint URL: /api/analytics/application-time/roles
+        const baseUrl = ENDPOINTS.APPLICATION_TIME_DATA('', '', []);
+        const rolesUrl = baseUrl.split('?')[0] + '/roles';
+        const response = await httpService.get(rolesUrl);
+        if (response.data && response.data.data && Array.isArray(response.data.data)) {
+          setAvailableRoles(['all', ...response.data.data.sort()]);
+        } else if (response.data && response.data.success && Array.isArray(response.data.data)) {
+          setAvailableRoles(['all', ...response.data.data.sort()]);
+        }
+      } catch (err) {
+        console.error('Error fetching available roles:', err);
+        // Keep default 'all' option on error
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
+  // Fetch data from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Prepare query parameters
+        let startDate = null;
+        let endDate = null;
+
+        if (dateFilter !== 'all') {
+          const now = new Date();
+
+          switch (dateFilter) {
+            case 'weekly':
+              startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+              break;
+            case 'monthly':
+              startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+              break;
+            case 'yearly':
+              startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+              break;
+            default:
+              break;
+          }
+
+          if (startDate) {
+            endDate = now;
+          }
+        }
+
+        const url = ENDPOINTS.APPLICATION_TIME_DATA(
+          startDate ? startDate.toISOString() : null,
+          endDate ? endDate.toISOString() : null,
+          selectedRole !== 'all' ? [selectedRole] : [],
+        );
+
+        const response = await httpService.get(url);
+
+        // Backend returns { data: [], message: "", summary: {} }
+        if (response.data && response.data.data && Array.isArray(response.data.data)) {
+          setData(response.data.data);
+        } else if (response.data && Array.isArray(response.data)) {
+          // Fallback for direct array response
+          setData(response.data);
+        } else {
+          console.error('Backend returned unexpected data format:', response.data);
+          setError('Unexpected data format from server');
+          setData([]);
+        }
+      } catch (err) {
+        console.error('Error fetching application time data:', err);
+        setError(err.message || 'Failed to fetch data from server');
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [dateFilter, selectedRole]);
 
   const processedData = useMemo(() => {
-    let filtered = [...rawData];
-
-    filtered = filtered.filter(item => item.timeToApply <= 30);
-
-    if (dateFilter !== 'all') {
-      const now = new Date();
-      filtered = filtered.filter(item => {
-        const itemDate = new Date(item.timestamp);
-        const daysAgo = Math.floor((now.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24));
-
-        switch (dateFilter) {
-          case 'weekly':
-            return daysAgo <= 7;
-          case 'monthly':
-            return daysAgo <= 30;
-          case 'yearly':
-            return daysAgo <= 365;
-          default:
-            return true;
-        }
-      });
+    // Backend already filters outliers and applies date/role filters
+    // Backend returns data in format: { role, timeToApplyMinutes, timeToApplyFormatted, totalApplications }
+    // The data is already aggregated by role with average times
+    if (!Array.isArray(data) || data.length === 0) {
+      return [];
     }
 
-    if (selectedRole !== 'all') {
-      filtered = filtered.filter(item => item.role === selectedRole);
-    }
-
-    const roleGroups = {};
-    filtered.forEach(item => {
-      if (!roleGroups[item.role]) roleGroups[item.role] = [];
-      roleGroups[item.role].push(item.timeToApply);
-    });
-
-    const chartData = Object.entries(roleGroups)
-      .map(([role, times]) => {
-        const avg = times.reduce((a, b) => a + b, 0) / times.length;
-        return {
-          role,
-          avgTime: Math.round(avg * 10) / 10,
-          count: times.length,
-        };
-      })
-      .sort((a, b) => b.avgTime - a.avgTime);
+    // Map backend response to chart data format
+    // Backend returns timeToApplyMinutes (average time in minutes)
+    const chartData = data
+      .map(item => ({
+        role: item.role,
+        avgTime: item.timeToApplyMinutes || (item.timeToApply ? item.timeToApply / 60 : 0),
+        count: item.totalApplications || 1,
+        formattedTime:
+          item.timeToApplyFormatted ||
+          `${Math.round((item.timeToApplyMinutes || 0) * 10) / 10} min`,
+      }))
+      .sort((a, b) => b.avgTime - a.avgTime); // Sort highest to lowest (most time-consuming first)
 
     return chartData;
-  }, [rawData, dateFilter, selectedRole]);
-
-  const roles = useMemo(() => {
-    const uniqueRoles = [...new Set(rawData.map(item => item.role))];
-    return ['all', ...uniqueRoles];
-  }, [rawData]);
+  }, [data]);
 
   const maxTime = Math.max(...processedData.map(item => item.avgTime), 10);
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
+          <h2 className={`${styles.title} ${darkMode ? styles.darkMode : ''}`}>
+            Comparing the Average Time Taken to Fill an Application by Role
+          </h2>
+          <div className={`${styles.noData} ${darkMode ? styles.darkMode : ''}`}>
+            Loading application time data...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
+        <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
+          <h2 className={`${styles.title} ${darkMode ? styles.darkMode : ''}`}>
+            Comparing the Average Time Taken to Fill an Application by Role
+          </h2>
+          <div className={`${styles.noData} ${darkMode ? styles.darkMode : ''}`}>
+            Error loading data: {error}. Please try again later.
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.darkMode : ''}`}>
       {/* Chart Container */}
-      <div className={styles.chartCard}>
-        <h2 className={styles.title}>
+      <div className={`${styles.chartCard} ${darkMode ? styles.darkMode : ''}`}>
+        <h2 className={`${styles.title} ${darkMode ? styles.darkMode : ''}`}>
           Comparing the Average Time Taken to Fill an Application by Role
         </h2>
 
@@ -78,7 +174,7 @@ function ApplicationTimeChart() {
             <>
               {/* Grid Lines */}
               <div
-                className={styles.grid}
+                className={`${styles.grid} ${darkMode ? styles.darkMode : ''}`}
                 style={{
                   backgroundSize: `${100 / 6}% ${100 / processedData.length}%`,
                 }}
@@ -89,7 +185,7 @@ function ApplicationTimeChart() {
                 {processedData.map(item => (
                   <div
                     key={uuidv4()}
-                    className={styles.yAxisItem}
+                    className={`${styles.yAxisItem} ${darkMode ? styles.darkMode : ''}`}
                     style={{ height: `${100 / processedData.length}%` }}
                   >
                     {item.role}
@@ -98,21 +194,31 @@ function ApplicationTimeChart() {
               </div>
 
               {/* X-axis */}
-              <div className={styles.xAxis}>
-                {[0, 5, 10, 15, 20, 25, 30].map(tick => (
-                  <div
-                    key={tick}
-                    style={{
-                      position: 'absolute',
-                      left: `${(tick / maxTime) * 100}%`,
-                      fontSize: '12px',
-                      color: '#5f6368',
-                      transform: 'translateX(-50%)',
-                    }}
-                  >
-                    {tick <= maxTime ? tick : ''}
-                  </div>
-                ))}
+              <div className={`${styles.xAxis} ${darkMode ? styles.darkMode : ''}`}>
+                {(() => {
+                  // Generate dynamic ticks based on maxTime
+                  const tickCount = 6;
+                  const ticks = [];
+                  for (let i = 0; i <= tickCount; i++) {
+                    const tickValue = Math.round(((maxTime * i) / tickCount) * 10) / 10;
+                    ticks.push(tickValue);
+                  }
+                  return ticks.map(tick => (
+                    <div
+                      key={tick}
+                      className={darkMode ? styles.darkMode : ''}
+                      style={{
+                        position: 'absolute',
+                        left: `${(tick / maxTime) * 100}%`,
+                        fontSize: '12px',
+                        color: darkMode ? '#e0e0e0' : '#5f6368',
+                        transform: 'translateX(-50%)',
+                      }}
+                    >
+                      {tick}
+                    </div>
+                  ));
+                })()}
               </div>
 
               {/* Bars */}
@@ -124,28 +230,32 @@ function ApplicationTimeChart() {
                     style={{ height: `${100 / processedData.length}%` }}
                   >
                     <div
-                      className={styles.bar}
+                      className={`${styles.bar} ${darkMode ? styles.darkMode : ''}`}
                       style={{ width: `${(item.avgTime / maxTime) * 100}%` }}
                     >
-                      <div className={styles.dataLabel}>{item.avgTime} min</div>
+                      <div className={`${styles.dataLabel} ${darkMode ? styles.darkMode : ''}`}>
+                        {item.formattedTime || `${Math.round(item.avgTime * 10) / 10} min`}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* X-axis Label */}
-              <div className={styles.xAxisLabel}>
+              <div className={`${styles.xAxisLabel} ${darkMode ? styles.darkMode : ''}`}>
                 Average Time taken to fill application (in minutes)
               </div>
             </>
           ) : (
-            <div className={styles.noData}>No data available for the selected filters</div>
+            <div className={`${styles.noData} ${darkMode ? styles.darkMode : ''}`}>
+              No data available for the selected filters
+            </div>
           )}
         </div>
 
         {/* Summary Info */}
         {processedData.length > 0 && (
-          <div className={styles.summary}>
+          <div className={`${styles.summary} ${darkMode ? styles.darkMode : ''}`}>
             <div>
               <strong>Showing:</strong> {processedData.length} role(s)
             </div>
@@ -163,12 +273,12 @@ function ApplicationTimeChart() {
       {/* Filters Panel */}
       <div className={styles.filters}>
         {/* Dates Filter */}
-        <div className={styles.filterCard}>
-          <div className={styles.filterTitle}>Dates</div>
+        <div className={`${styles.filterCard} ${darkMode ? styles.darkMode : ''}`}>
+          <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Dates</div>
           <select
             value={dateFilter}
             onChange={e => setDateFilter(e.target.value)}
-            className={styles.select}
+            className={`${styles.select} ${darkMode ? styles.darkMode : ''}`}
           >
             <option value="all">ALL</option>
             <option value="weekly">Last 7 Days</option>
@@ -178,14 +288,14 @@ function ApplicationTimeChart() {
         </div>
 
         {/* Role Filter */}
-        <div className={styles.filterCard}>
-          <div className={styles.filterTitle}>Role</div>
+        <div className={`${styles.filterCard} ${darkMode ? styles.darkMode : ''}`}>
+          <div className={`${styles.filterTitle} ${darkMode ? styles.darkMode : ''}`}>Role</div>
           <select
             value={selectedRole}
             onChange={e => setSelectedRole(e.target.value)}
-            className={styles.select}
+            className={`${styles.select} ${darkMode ? styles.darkMode : ''}`}
           >
-            {roles.map(role => (
+            {availableRoles.map(role => (
               <option key={role} value={role}>
                 {role === 'all' ? 'ALL' : role}
               </option>
