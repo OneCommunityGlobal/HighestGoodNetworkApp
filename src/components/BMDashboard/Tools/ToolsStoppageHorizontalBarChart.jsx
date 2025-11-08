@@ -15,7 +15,7 @@ import {
 } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar } from 'react-chartjs-2';
-import axios from 'axios';
+import httpService from '../../../services/httpService';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './ToolsStoppageHorizontalBarChart.module.css';
 
@@ -46,7 +46,7 @@ export default function ToolsStoppageHorizontalBarChart() {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get(ENDPOINTS.BM_TOOL_PROJECTS);
+        const response = await httpService.get(ENDPOINTS.BM_TOOL_PROJECTS);
         const responseData = response.data;
 
         // Handle new structured response format
@@ -92,7 +92,7 @@ export default function ToolsStoppageHorizontalBarChart() {
             formattedStart,
             formattedEnd,
           );
-          const response = await axios.get(url);
+          const response = await httpService.get(url);
           const responseData = response.data;
 
           // Handle new structured response format
@@ -122,7 +122,7 @@ export default function ToolsStoppageHorizontalBarChart() {
           const firstProject = projects[0];
           setSelectedProject({ value: firstProject.projectId, label: firstProject.projectName });
           const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(firstProject.projectId, null, null);
-          const response = await axios.get(url);
+          const response = await httpService.get(url);
           const responseData = response.data;
 
           // Handle new structured response format
