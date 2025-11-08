@@ -19,6 +19,7 @@ import {
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
 import './issueCharts.css';
+import PropTypes from 'prop-types';
 
 function IssueCharts({ darkMode }) {
   const dispatch = useDispatch();
@@ -188,5 +189,9 @@ function IssueCharts({ darkMode }) {
     </div>
   );
 }
+
+IssueCharts.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+};
 
 export default IssueCharts;
