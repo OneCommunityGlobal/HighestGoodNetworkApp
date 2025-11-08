@@ -16,6 +16,7 @@ import {
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar } from 'react-chartjs-2';
 import httpService from '../../../services/httpService';
+import logService from '../../../services/logService';
 import { ENDPOINTS } from '../../../utils/URL';
 import styles from './ToolsStoppageHorizontalBarChart.module.css';
 
@@ -60,7 +61,7 @@ export default function ToolsStoppageHorizontalBarChart() {
         const projectsData = responseData.data || responseData;
         setProjects(Array.isArray(projectsData) ? projectsData : []);
       } catch (err) {
-        console.error('Failed to load projects:', err);
+        logService.logError(err);
         if (err.response?.data?.message) {
           setError(err.response.data.message);
         } else if (err.response?.status === 401 || err.response?.status === 403) {
@@ -141,7 +142,7 @@ export default function ToolsStoppageHorizontalBarChart() {
           setError(message);
         }
       } catch (err) {
-        console.error('Failed to load tools stoppage data:', err);
+        logService.logError(err);
         setData(emptyData);
 
         // Enhanced error handling
