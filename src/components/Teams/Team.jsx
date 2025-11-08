@@ -36,7 +36,11 @@ export function Team(props) {
   const canPutTeam = props.hasPermission('putTeam');
 
   // Keep a raw id for callbacks (number stays number in tests)
-  const teamIdRaw = props.teamId;
+  const teamIdRaw =
+    typeof props.teamId === 'string' && /^\d+$/.test(props.teamId)
+      ? Number(props.teamId)
+      : props.teamId;
+
   // string key for cache/DOM ids
   const teamIdKey = String(props.teamId ?? '');
 
@@ -60,16 +64,18 @@ export function Team(props) {
   const members = localMembers ?? props.team?.members ?? [];
   const { total, active, inactive } = computeCounts(members, loading, localMembers);
 
-  const handleOpenMembers = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey);
-      setLocalMembers(data);
-    } finally {
-      setLoading(false);
-      // IMPORTANT: pass the raw value so tests get number 1 (not "1")
+  // Team.jsx
+  const handleOpenMembers = () => {
+    // call immediately so tests (and UI) see it right away
+    if (typeof props.onMembersClick === 'function') {
       props.onMembersClick(teamIdRaw, props.name, props.teamCode);
     }
+
+    setLoading(true);
+    fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
+      .then(setLocalMembers)
+      .catch(() => {})
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -91,7 +97,7 @@ export function Team(props) {
               props.onStatusClick(props.name, teamIdRaw, props.active, props.teamCode);
             }
           }}
-          style={{ boxStyle }}
+          style={boxStyle}
           aria-label={`Change status for team ${props.name}`}
         >
           <div className={props.active ? 'isActive' : 'isNotActive'}>
