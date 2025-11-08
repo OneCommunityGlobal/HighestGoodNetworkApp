@@ -13,6 +13,7 @@ export default function BrowseLessonPlan() {
   const { plans, loading, error, saved, saving } = useSelector(
     state => state.browseLessonPlanReducer,
   );
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [search, setSearch] = useState('');
   const [subject, setSubject] = useState('all');
   const studentId = localStorage.getItem('studentId') || null;
@@ -65,7 +66,7 @@ export default function BrowseLessonPlan() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${darkMode ? styles.dark : ''}`}>
       <h2 className={styles.title}>Lesson Plan Library</h2>
 
       <div className={styles.controls}>
@@ -102,6 +103,7 @@ export default function BrowseLessonPlan() {
               onSave={() => handleSave(plan.id || plan._id)}
               isSaved={savedIds.has(plan.id || plan._id)}
               saving={saving}
+              darkMode={darkMode}
             />
           ))
         )}
