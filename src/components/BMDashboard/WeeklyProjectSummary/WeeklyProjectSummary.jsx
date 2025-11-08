@@ -22,6 +22,7 @@ import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import { get } from 'lodash';
 
 const projectStatusButtons = [
   {
@@ -173,6 +174,13 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const getOptionBackground = (state, darkMode) => {
+    if (state.isSelected) return '#0d55b3';
+    if (state.isFocused) return '#0d55b3';
+    return darkMode ? '#22272e' : '#fff';
+  };
+
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
@@ -209,13 +217,7 @@ function WeeklyProjectSummary() {
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected
-          ? '#0d55b3'
-          : state.isFocused
-          ? '#0d55b3'
-          : darkMode
-          ? '#22272e'
-          : '#fff',
+        backgroundColor: getOptionBackground(state, darkMode),
         color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
         fontSize: 13,
         padding: '10px 16px',
