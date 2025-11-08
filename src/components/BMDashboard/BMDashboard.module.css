@@ -617,4 +617,27 @@
   color: #ffffff !important;
 }
 
+/* Image clarity improvements for BMDashboard */
+.bm-dashboard-container img,
+.bm-dashboard-dark img,
+.bm-dashboard-light img {
+  image-rendering: auto !important;
+  -webkit-filter: none !important;
+  filter: none !important;
+  backface-visibility: hidden !important;
+  transform: translateZ(0) !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+.bm-dashboard-container .single-card__img img,
+.bm-dashboard-dark .single-card__img img,
+.bm-dashboard-light .single-card__img img {
+  object-fit: cover !important;
+  object-position: center !important;
+  max-width: 100% !important;
+  height: auto !important;
+  image-rendering: auto !important;
+}
+
 

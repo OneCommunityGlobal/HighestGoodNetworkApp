@@ -191,12 +191,19 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+  background-color: #ffffff;
+  border-radius: 5px 5px 0 0;
 }
 
 .single-card__img img {
   max-width: 100%;
   height: auto;
-  object-fit: contain;
+  object-fit: cover;
+  image-rendering: auto;
+  filter: none;
+  -webkit-filter: none;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .single-card:hover {
