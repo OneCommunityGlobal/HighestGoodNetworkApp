@@ -67,8 +67,13 @@ export default function ToolsStoppageHorizontalBarChart() {
           setError('Session expired. Please log in again.');
         } else if (!err.response) {
           setError('Network error. Please check your connection.');
+        } else if (err.response?.status >= 500) {
+          setError('Server error. Please try again later.');
         } else {
-          setError('Failed to load projects. Please try again.');
+          setError(
+            `Failed to load projects. Please try again. (Status: ${err.response?.status ||
+              'unknown'})`,
+          );
         }
       } finally {
         setLoading(false);
@@ -149,7 +154,10 @@ export default function ToolsStoppageHorizontalBarChart() {
         } else if (err.response?.status >= 500) {
           setError('Server error. Please try again later.');
         } else {
-          setError('Failed to load tools stoppage reason data. Please try again.');
+          setError(
+            `Failed to load tools stoppage reason data. Please try again. (Status: ${err.response
+              ?.status || 'unknown'})`,
+          );
         }
       } finally {
         setLoading(false);
