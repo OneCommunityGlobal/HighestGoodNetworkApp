@@ -36,13 +36,23 @@ function TeamTableHeaderComponent({
         #
       </th>
       <th scope="col" className="team-name-col">
-        <button type="button" onClick={onTeamNameSort} className={darkMode ? 'text-light' : ''}>
+        <button
+          type="button"
+          onClick={onTeamNameSort}
+          className={darkMode ? 'text-light' : ''}
+          aria-label="Team Name"
+        >
           {getSortIcon(sortTeamNameState)}
-          {TEAM_NAME} {'(All | Active | In Active)'}
+          {TEAM_NAME} <span aria-hidden="true">{' (All | Active | In Active)'}</span>
         </button>
       </th>
       <th scope="col" id="teams__active">
-        <button type="button" onClick={onTeamActiveSort} className={darkMode ? 'text-light' : ''}>
+        <button
+          type="button"
+          onClick={onTeamActiveSort}
+          className={darkMode ? 'text-light' : ''}
+          aria-label="Active"
+        >
           {getSortIcon(sortTeamActiveState)}
           {ACTIVE}
         </button>
