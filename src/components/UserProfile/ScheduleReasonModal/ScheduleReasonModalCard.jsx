@@ -7,6 +7,15 @@ function ScheduleReasonModalCard({ request , handleDeleteRequest, handleEditRequ
   const toggleShowText = () => {
     setShowFullText(!showFullText);
   };
+    const REASON_TYPE_LABELS = {
+    vacationTime: "Vacation Time",
+    missingHours: "Missing Hours",
+    missingSummary: "Missing Summary",
+    missingBothHoursAndSummary: "Missing Both Hours and Summary",
+    other: "Other"
+  };
+  console.log("ScheduleReasonModalCard request:", request);
+
   return (
     <Card className="mb-2">
       <CardBody>
@@ -25,6 +34,15 @@ function ScheduleReasonModalCard({ request , handleDeleteRequest, handleEditRequ
 
           </Col>
         </Row>
+         <Row>
+          <Col>
+            <p>
+              <strong>Reason Type: </strong>
+              {REASON_TYPE_LABELS[request.reasonType] || request.reasonType}
+            </p>
+          </Col>
+        </Row>
+
         <Row>
           <Col>
             {/* eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions */}

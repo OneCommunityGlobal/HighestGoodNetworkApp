@@ -41,7 +41,15 @@ const ScheduleReasonModal = ({
     dateOfLeave: nextSunday,
     numberOfWeeks: 1,
     reasonForLeave: '',
+    reasonType: 'vacation',
   };
+  const REASON_TYPES = [
+  { value: 'vacationTime', label: 'Vacation Time' },
+  { value: 'missingHours', label: 'Missing Hours' },
+  { value: 'missingSummary', label: 'Missing Summary' },
+  { value: 'missingBothHoursAndSummary', label: 'Missing Both Hours and Summary' },
+  { value: 'other', label: 'Other' },
+];
 
   const initialRequestDataErrors = {
     dateOfLeaveError: '',
@@ -452,6 +460,25 @@ const ScheduleReasonModal = ({
                     }
                   }}
                 />
+             
+  <Form.Label className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
+    Type of Time Off:
+  </Form.Label>
+  <Form.Control
+    as="select"
+    name="reasonType"
+    value={requestData.reasonType}
+    onChange={handleAddRequestDataChange}
+    className="mb-3"
+  >
+    {REASON_TYPES.map(type => (
+      <option key={type.value} value={type.value}>
+        {type.label}
+      </option>
+    ))}
+  </Form.Control>
+
+
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.numberOfWeeksError}
                 </Form.Text>
@@ -518,6 +545,18 @@ const ScheduleReasonModal = ({
                         </Col>
                       </Row>
                     )}
+                    <Row>
+  <Col>Type of Absence:</Col>
+</Row>
+<Row className="pl-2">
+  <Col className="mb-2 font-italic">
+    <li>
+      <strong>
+        {REASON_TYPES.find(type => type.value === requestData.reasonType)?.label}
+      </strong>
+    </li>
+  </Col>
+</Row>
 
                     <Row>
                       <Col>Due to the reason of:</Col>
