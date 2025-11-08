@@ -80,23 +80,18 @@ class Teams extends React.PureComponent {
     const teamsChanged = !isEqual(prevTeams, currTeams);
 
     if (teamsChanged || filterChanged) {
-      // teams: fetching -> null, otherwise rebuild rows
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(() => ({
-        teams: fetching ? null : this.buildTeamRows(currTeams),
-      }));
+      this.setState({ teams: fetching ? null : this.buildTeamRows(currTeams) });
     }
 
     const sortChanged =
       prevState.teams !== this.state.teams ||
       prevState.sortTeamNameState !== this.state.sortTeamNameState ||
       prevState.sortTeamActiveState !== this.state.sortTeamActiveState;
-    
+
     if (sortChanged) {
       // eslint-disable-next-line react/no-did-update-set-state
-      this.setState(prev => ({
-        sortedTeams: this.sortRows(prev.teams, prev),
-      }));
+      this.setState({ sortedTeams: this.sortRows(this.state.teams, this.state) });
     }
   }
 
@@ -485,26 +480,25 @@ class Teams extends React.PureComponent {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
   };
 
+  // Safe functional setState; no nested ternaries (Sonar S3358)
   toggleTeamNameSort = () => {
     this.setState(prev => {
-      const step = { none: 'ascending', ascending: 'descending', descending: 'none' };
-      return {
-        sortTeamNameState: step[prev.sortTeamNameState] || 'none',
-        sortTeamActiveState: 'none',
-      };
-    });
-  };
-  
-  toggleTeamActiveSort = () => {
-    this.setState(prev => {
-      const step = { none: 'ascending', ascending: 'descending', descending: 'none' };
-      return {
-        sortTeamActiveState: step[prev.sortTeamActiveState] || 'none',
-        sortTeamNameState: 'none',
-      };
+      let next = 'none';
+      if (prev.sortTeamNameState === 'none') next = 'ascending';
+      else if (prev.sortTeamNameState === 'ascending') next = 'descending';
+      else next = 'none';
+      return { sortTeamNameState: next, sortTeamActiveState: 'none' };
     });
   };
 
+  toggleTeamActiveSort = () => {
+    this.setState(prev => {
+      let next = 'none';
+      if (prev.sortTeamActiveState === 'none') next = 'ascending';
+      else if (prev.sortTeamActiveState === 'ascending') next = 'descending';
+      else next = 'none';
+      return { sortTeamActiveState: next, sortTeamNameState: 'none' };
+    });
   };
 }
 
