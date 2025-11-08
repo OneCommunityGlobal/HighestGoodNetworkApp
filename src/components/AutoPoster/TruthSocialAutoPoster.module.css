@@ -1,0 +1,746 @@
+/* Truth Social AutoPoster Styles */
+.truthsocialautoposter {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header */
+.tsheader {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.tsheader h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.tsheader p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Tabs Container */
+.tstabscontainer {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.tstabsheader {
+  display: flex;
+  border-bottom: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.tstabbutton {
+  padding: 16px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tstabbutton:hover {
+  color: #111827;
+  background-color: #f3f4f6;
+}
+
+.tstabbutton.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+  background-color: #ffffff;
+}
+
+.tstabcontent {
+  padding: 24px;
+}
+
+/* Alerts */
+.tsalert {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  border: 1px solid;
+}
+
+.tsalert strong {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.tsalert p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.tsalert ol {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+.tsalertinfo {
+  background-color: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e40af;
+}
+
+.tsalertwarning {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+  color: #92400e;
+}
+
+/* Form Groups */
+.tsformgroup {
+  margin-bottom: 20px;
+}
+
+.tslabel {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.tsinput,
+.tstextarea,
+.tsselect {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #111827;
+  transition: border-color 0.2s;
+}
+
+.tsinput:focus,
+.tstextarea:focus,
+.tsselect:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.tstextarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.tsinput.error,
+.tstextarea.error {
+  border-color: #ef4444;
+}
+
+.tsformgroup small {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Character Counter */
+.charcounter {
+  text-align: right;
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.charcounter.warning {
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+.charcounter.danger {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* Error Messages */
+.tserror {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+/* Tag Suggestions */
+.tstagsuggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tstagsuggestion {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: none;
+  border-radius: 9999px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.tstagsuggestion:hover {
+  background-color: #bfdbfe;
+}
+
+/* Checkbox */
+.tscheckboxlabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+}
+
+.tscheckboxlabel input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Schedule Section */
+.tsschedulesection {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.tsschedulesection h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+.tsscheduleinputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Action Buttons */
+.tsactions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.tsbuttonprimary,
+.tsbuttonsecondary,
+.tsbuttoncopy {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tsbuttonprimary {
+  background-color: #3b82f6;
+  color: #ffffff;
+}
+
+.tsbuttonprimary:hover:not(:disabled) {
+  background-color: #2563eb;
+}
+
+.tsbuttonsecondary {
+  background-color: #10b981;
+  color: #ffffff;
+}
+
+.tsbuttonsecondary:hover:not(:disabled) {
+  background-color: #059669;
+}
+
+.tsbuttoncopy {
+  background-color: #6b7280;
+  color: #ffffff;
+  flex: 0.5;
+}
+
+.tsbuttoncopy:hover {
+  background-color: #4b5563;
+}
+
+.tsbuttonprimary:disabled,
+.tsbuttonsecondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Scheduled Posts */
+.tsscheduledtab h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 20px 0;
+}
+
+.tsemptystate {
+  text-align: center;
+  padding: 60px 20px;
+  color: #6b7280;
+}
+
+.tsemptystate p {
+  font-size: 16px;
+  margin: 0 0 8px 0;
+}
+
+.tsemptystate small {
+  font-size: 14px;
+  color: #9ca3af;
+}
+
+.tsscheduledlist {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tsscheduledpost {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #f9fafb;
+}
+
+.tsscheduledpost-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tsscheduleddate {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.tsstatus {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.tsstatuspending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.tsstatusposted {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.tsbuttondelete {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #ef4444;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+
+.tsbuttondelete:hover {
+  color: #dc2626;
+}
+
+.tsscheduledpost-content {
+  font-size: 14px;
+  color: #111827;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin-bottom: 12px;
+}
+
+.tsscheduledpost-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tstag {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #dbeafe;
+  color: #1e40af;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Settings Tab */
+.tssettingstab h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.tssettingstab > p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 24px 0;
+}
+
+.tsapiinfo {
+  margin-top: 32px;
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.tsapiinfo h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 12px 0;
+}
+
+.tsinfoitem {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.tsinfoitem strong {
+  color: #111827;
+  margin-right: 8px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .truthsocialautoposter {
+    padding: 12px;
+  }
+
+  .tsheader {
+    padding: 16px;
+  }
+
+  .tstabcontent {
+    padding: 16px;
+  }
+
+  .tstabsheader {
+    overflow-x: auto;
+  }
+
+  .tstabbutton {
+    padding: 12px 16px;
+    white-space: nowrap;
+  }
+
+  .tsscheduleinputs {
+    grid-template-columns: 1fr;
+  }
+
+  .tsactions {
+    flex-direction: column;
+  }
+
+  .tsbuttoncopy {
+    flex: 1;
+  }
+}
+
+/* ============================================ */
+/* DARK MODE STYLES */
+/* ============================================ */
+
+/* ============================================ */
+/* DARK MODE STYLES */
+/* ============================================ */
+
+.darkmode.truthsocialautoposter {
+  background-color: #0f1419;
+  color: #e7e9ea;
+}
+
+/* Header */
+.darkmode .tsheader {
+  background-color: #16181c;
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+.darkmode .tsheader h1 {
+  color: #e7e9ea;
+}
+
+.darkmode .tsheader p {
+  color: #71767b;
+}
+
+/* Tabs Container */
+.darkmode .tstabscontainer {
+  background-color: #16181c;
+  box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+.darkmode .tstabsheader {
+  background-color: #1c1f26;
+  border-bottom: 1px solid #2f3336;
+}
+
+.darkmode .tstabbutton {
+  color: #71767b;
+}
+
+.darkmode .tstabbutton:hover {
+  color: #e7e9ea;
+  background-color: #1c1f26;
+}
+
+.darkmode .tstabbutton.active {
+  color: #1d9bf0;
+  border-bottom-color: #1d9bf0;
+  background-color: #16181c;
+}
+
+.darkmode .tstabcontent {
+  background-color: #16181c;
+}
+
+/* Alerts */
+.darkmode .tsalertinfo {
+  background-color: #0d2847;
+  border-color: #1d4ed8;
+  color: #93c5fd;
+}
+
+.darkmode .tsalertwarning {
+  background-color: #451a03;
+  border-color: #b45309;
+  color: #fcd34d;
+}
+
+/* Form Elements */
+.darkmode .tslabel {
+  color: #e7e9ea;
+}
+
+.darkmode .tsinput,
+.darkmode .tstextarea,
+.darkmode .tsselect {
+  background-color: #1c1f26;
+  border-color: #2f3336;
+  color: #e7e9ea;
+}
+
+.darkmode .tsinput:focus,
+.darkmode .tstextarea:focus,
+.darkmode .tsselect:focus {
+  border-color: #1d9bf0;
+  box-shadow: 0 0 0 3px rgba(29, 155, 240, 0.1);
+}
+
+.darkmode .tsinput::placeholder,
+.darkmode .tstextarea::placeholder {
+  color: #71767b;
+}
+
+/* Date and Time Input Icons - WHITE */
+.darkmode .tsinput[type="date"]::-webkit-calendar-picker-indicator,
+.darkmode .tsinput[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(100);
+  cursor: pointer;
+}
+
+.darkmode .tsinput[type="date"]::-moz-calendar-picker-indicator,
+.darkmode .tsinput[type="time"]::-moz-calendar-picker-indicator {
+  filter: invert(1) brightness(100);
+  cursor: pointer;
+}
+
+.darkmode .tsformgroup small {
+  color: #71767b;
+}
+
+/* Character Counter */
+.darkmode .charcounter {
+  color: #71767b;
+}
+
+.darkmode .charcounter.warning {
+  color: #fbbf24;
+}
+
+.darkmode .charcounter.danger {
+  color: #f87171;
+}
+
+/* Error Messages */
+.darkmode .tserror {
+  color: #f87171;
+}
+
+.darkmode .tsinput.error,
+.darkmode .tstextarea.error {
+  border-color: #ef4444;
+}
+
+/* Tag Suggestions */
+.darkmode .tstagsuggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.darkmode .tstagsuggestion {
+  background-color: #0d2847;
+  color: #93c5fd;
+}
+
+.darkmode .tstagsuggestion:hover {
+  background-color: #1e40af;
+}
+
+/* Checkbox */
+.darkmode .tscheckboxlabel {
+  color: #e7e9ea;
+}
+
+/* Schedule Section */
+.darkmode .tsschedulesection {
+  border-top-color: #2f3336;
+}
+
+.darkmode .tsschedulesection h3 {
+  color: #e7e9ea;
+}
+
+/* Buttons */
+.darkmode .tsbuttonprimary {
+  background-color: #1d9bf0;
+  color: #ffffff;
+}
+
+.darkmode .tsbuttonprimary:hover:not(:disabled) {
+  background-color: #1a8cd8;
+}
+
+.darkmode .tsbuttonsecondary {
+  background-color: #059669;
+  color: #ffffff;
+}
+
+.darkmode .tsbuttonsecondary:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.darkmode .tsbuttoncopy {
+  background-color: #2f3336;
+  color: #e7e9ea;
+}
+
+.darkmode .tsbuttoncopy:hover {
+  background-color: #3d4145;
+}
+
+/* Scheduled Posts */
+.darkmode .tsscheduledtab h2,
+.darkmode .tssettingstab h2 {
+  color: #e7e9ea;
+}
+
+.darkmode .tsemptystate {
+  color: #71767b;
+}
+
+.darkmode .tsemptystate small {
+  color: #5b7083;
+}
+
+.darkmode .tsscheduledpost {
+  background-color: #1c1f26;
+  border-color: #2f3336;
+}
+
+.darkmode .tsscheduleddate {
+  color: #71767b;
+}
+
+.darkmode .tsstatuspending {
+  background-color: #451a03;
+  color: #fcd34d;
+}
+
+.darkmode .tsstatusposted {
+  background-color: #022c22;
+  color: #6ee7b7;
+}
+
+.darkmode .tsstatusfailed {
+  background-color: #450a0a;
+  color: #fca5a5;
+}
+
+.darkmode .tsbuttondelete {
+  color: #f87171;
+}
+
+.darkmode .tsbuttondelete:hover {
+  color: #ef4444;
+}
+
+.darkmode .tsscheduledpost-content {
+  color: #e7e9ea;
+}
+
+.darkmode .tstag {
+  background-color: #0d2847;
+  color: #93c5fd;
+}
+
+/* Settings Tab */
+.darkmode .tssettingstab > p {
+  color: #71767b;
+}
+
+.darkmode .tsapiinfo {
+  background-color: #1c1f26;
+  border-color: #2f3336;
+}
+
+.darkmode .tsapiinfo h3 {
+  color: #e7e9ea;
+}
+
+.darkmode .tsinfoitem {
+  color: #e7e9ea;
+}
+
+.darkmode .tsinfoitem strong {
+  color: #e7e9ea;
+}
