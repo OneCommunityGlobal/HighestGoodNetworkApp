@@ -22,7 +22,6 @@ import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import EditableInfoModal from './components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from './components/UserProfile/EditableModal/RoleInfoModal';
 import PRDashboard from './components/PRDashboard';
-import ApplicantsAgeChart from './components/ApplicantsChart';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
@@ -137,7 +136,11 @@ import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLe
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
+import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
+import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -145,29 +148,6 @@ import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
-import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
-import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-import Register from './components/CommunityPortal/Activities/Register/Register';
-import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
-import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
-
-import Resources from './components/CommunityPortal/Activities/activityId/Resources';
-import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
-import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
-import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
-
-import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
-import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
-import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
-
-// Community Portal
-import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
-import CPLogin from './components/CommunityPortal/Login';
-import CPDashboard from './components/CommunityPortal';
-import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
@@ -344,7 +324,7 @@ export default (
       <ToastContainer />
       <Switch>
         <ProtectedRoute path="/weekly-summary" exact component={WeeklySummaryPage} />
-        <ProtectedRoute path="/help" component={HelpPage} />
+        <ProtectedRoute path="/hgnhelp" component={HelpPage} />
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
@@ -384,13 +364,6 @@ export default (
             UserRole.Mentor,
           ]}
           routePermissions={RoutePermissions.weeklySummariesReport}
-        />
-        <ProtectedRoute
-          path="/pr-dashboard"
-          exact
-          component={PRDashboard}
-          fallback
-          routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute
           path="/pr-dashboard"
