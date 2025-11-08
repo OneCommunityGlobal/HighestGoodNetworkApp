@@ -663,8 +663,18 @@ class PeopleReport extends Component {
                     {firstName} {lastName}
                   </Link>
                 </p>
-                <p>Role: {role}</p>
-                <p>Title: {jobTitle}</p>
+                <div className={styles.dateInfo}>
+                  <div>
+                    <p>Role</p>
+                    <h4>{role}</h4>
+                  </div>
+                  </div>
+                  <div className={styles.dateInfo}>
+                  <div>
+                    <p>Title</p>
+                    <h4>{jobTitle}</h4>
+                  </div>
+                </div>
 
                 {/* {endDate ? ( */}
                 <div className={styles.rehireable}>
@@ -680,12 +690,12 @@ class PeopleReport extends Component {
                 </div>
                 <div className={styles.dateInfo}>
                   <div>
-                    <h4>{formatDate(startDate)}</h4>
                     <p>Start Date</p>
+                    <h4>{formatDate(startDate)}</h4>
                   </div>
                   <div>
-                    <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
                     <p>End Date</p>
+                    <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
                   </div>
                 </div>
               </div>
