@@ -191,11 +191,10 @@ export const permissionLabels = [
         description:
           'Gives the user permission to use the "Pause" button to pause user activity on their profile page.',
       },
-      {
-        label: 'Set Final Day for User',
-        key: 'setUserFinalDay',
-        description:
-          'Gives the user permission to use the "Set Final Day" button to set a final working day for a user on their profile page.',
+       {
+        label: 'Set Final Day',
+        key: 'setFinalDay',
+        description: 'Gives the user permission to set the final working day.',
       },
       {
         label: 'Tracking Management',
