@@ -593,10 +593,10 @@ const UserTableDataComponent = (props) => {
     </tr>
   );
 };
-UserTableData.propTypes = {
-  hasPermission: PropTypes.func, // or PropTypes.bool depending on what it is
-  user: PropTypes.object,        // if you access user or user._id
-};
+// UserTableData.propTypes = {
+//   hasPermission: PropTypes.func, // or PropTypes.bool depending on what it is
+//   user: PropTypes.object,        // if you access user or user._id
+// };
 
 const UserTableData = React.memo(UserTableDataComponent);
 UserTableData.displayName = 'UserTableData';
@@ -626,7 +626,6 @@ UserTableDataComponent.propTypes = {
   resetLoading: PropTypes.bool,
   authEmail: PropTypes.string,
   auth: PropTypes.object,
-  onReset: PropTypes.func,
   onPauseResumeClick: PropTypes.func,
   onDeleteClick: PropTypes.func,
   onLogTimeOffClick: PropTypes.func,
