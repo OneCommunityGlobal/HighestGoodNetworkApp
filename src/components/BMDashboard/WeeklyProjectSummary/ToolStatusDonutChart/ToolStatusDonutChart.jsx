@@ -365,7 +365,7 @@ function ToolStatusDonutChart() {
   );
 }
 
-ToolStatusDonutChart.propTypes = {
+CustomTooltip.propTypes = {
   active: PropTypes.bool,
   payload: PropTypes.array,
   total: PropTypes.number,
