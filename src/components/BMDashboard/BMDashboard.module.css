@@ -1,6 +1,13 @@
 /* BMDashboard Main Container */
 .bm-dashboard-container {
   transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.bm-dashboard-container.bm-dashboard-light {
+  background-color: #ffffff;
+  color: #333333;
 }
 
 .bm-dashboard-container.bm-dashboard-dark {
@@ -15,6 +22,12 @@
   margin-top: 2em;
   transition: color 0.3s ease;
   color: #333333;
+  font-weight: 600;
+}
+
+.bm-dashboard__header-light h1 {
+  color: #333333 !important;
+  text-shadow: none !important;
 }
 
 .bm-dashboard__header-dark h1 {
@@ -22,15 +35,58 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* Main Content Dark Mode */
+/* Main Content Styles */
+.bm-dashboard-main {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.bm-dashboard-main-light {
+  background-color: #ffffff;
+  color: #333333;
+}
+
 .bm-dashboard-main-dark {
   background-color: #1b2a41;
   color: #ffffff;
 }
 
-/* Enhanced text visibility for all BMDashboard dark mode elements */
-.bm-dashboard-dark * {
+/* Light Mode Text Visibility - Ensure Dark Text */
+.bm-dashboard-container:not(.bm-dashboard-dark) * {
+  color: #333333 !important;
+}
+
+.bm-dashboard-container:not(.bm-dashboard-dark) h1, 
+.bm-dashboard-container:not(.bm-dashboard-dark) h2, 
+.bm-dashboard-container:not(.bm-dashboard-dark) h3,
+.bm-dashboard-container:not(.bm-dashboard-dark) h4, 
+.bm-dashboard-container:not(.bm-dashboard-dark) h5, 
+.bm-dashboard-container:not(.bm-dashboard-dark) h6 {
+  color: #333333 !important;
+  text-shadow: none !important;
+  font-weight: 600 !important;
+}
+
+.bm-dashboard-container:not(.bm-dashboard-dark) p, 
+.bm-dashboard-container:not(.bm-dashboard-dark) span, 
+.bm-dashboard-container:not(.bm-dashboard-dark) div,
+.bm-dashboard-container:not(.bm-dashboard-dark) label, 
+.bm-dashboard-container:not(.bm-dashboard-dark) a, 
+.bm-dashboard-container:not(.bm-dashboard-dark) li,
+.bm-dashboard-container:not(.bm-dashboard-dark) td,
+.bm-dashboard-container:not(.bm-dashboard-dark) th,
+.bm-dashboard-container:not(.bm-dashboard-dark) button,
+.bm-dashboard-container:not(.bm-dashboard-dark) .btn {
+  color: #333333 !important;
+  text-shadow: none !important;
+}
+
+/* Enhanced text visibility for all BMDashboard dark mode elements - NUCLEAR LEVEL */
+.bm-dashboard-dark *,
+.bm-dashboard-dark *:before,
+.bm-dashboard-dark *:after {
   color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8) !important;
 }
 
 .bm-dashboard-dark h1, 
@@ -40,7 +96,8 @@
 .bm-dashboard-dark h5, 
 .bm-dashboard-dark h6 {
   color: #ffffff !important;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8) !important;
+  font-weight: 600 !important;
 }
 
 .bm-dashboard-dark p, 
@@ -50,28 +107,43 @@
 .bm-dashboard-dark a, 
 .bm-dashboard-dark li,
 .bm-dashboard-dark td,
-.bm-dashboard-dark th {
+.bm-dashboard-dark th,
+.bm-dashboard-dark button,
+.bm-dashboard-dark .btn {
   color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6) !important;
 }
 
-.bm-dashboard-dark .text-muted {
-  color: #b8c5d1 !important;
+.bm-dashboard-dark .text-muted,
+.bm-dashboard-dark .text-secondary,
+.bm-dashboard-dark .text-light {
+  color: #ffffff !important;
+  opacity: 0.9 !important;
 }
 
 .bm-dashboard-dark .form-control {
   background-color: #2e5061 !important;
   border-color: #3a506b !important;
   color: #ffffff !important;
+  text-shadow: none !important;
 }
 
 .bm-dashboard-dark .form-control::placeholder {
-  color: #b8c5d1 !important;
+  color: #ffffff !important;
+  opacity: 0.7 !important;
 }
 
 /* Button Styles */
 .bm-dashboard__button.btn.btn-secondary {
-  background-color: #2e5061;
+  background-color: #6c757d;
+  color: #ffffff;
+  border-color: #6c757d;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.bm-dashboard__button.btn.btn-secondary:hover {
+  background-color: #545b62;
+  border-color: #545b62;
 }
 
 .bm-dashboard-dark .bm-dashboard__button.btn.btn-secondary {
@@ -118,35 +190,39 @@
   margin: 1em auto;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  color: #333333;
 }
 
 .bm-dashboard-dark .projects-list {
   background-color: #1c2541;
   border-color: #3a506b;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  color: #e0e0e0;
+  color: #ffffff;
 }
 
 /* Project Summary Styles */
 .project-summary {
-  background-color: #e8f4f9;
+  background-color: #f8f9fa;
   margin: 1em;
   padding: 1em;
   border-radius: 5px;
+  border: 1px solid #e9ecef;
   transition: transform 0.2s, background-color 0.3s ease, color 0.3s ease;
+  color: #333333;
 }
 
 .bm-dashboard-dark .project-summary {
   background-color: #2a3f5f;
-  color: #e0e0e0;
+  color: #ffffff;
   border: 1px solid #3a506b;
 }
 
 .project-summary:hover {
   transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .bm-dashboard-dark .project-summary:hover {
@@ -161,6 +237,7 @@
   text-align: center;
   justify-content: center;
   transition: color 0.3s ease;
+  color: #333333;
 }
 
 .bm-dashboard-dark .project-summary_header {
@@ -174,6 +251,7 @@
   margin: 0;
   font-size: clamp(0.9em, 2.5vw, 1em);
   transition: color 0.3s ease;
+  color: #495057;
 }
 
 .bm-dashboard-dark .project-summary_content {
@@ -188,6 +266,7 @@
 .project-summary_label {
   margin-right: 1px;
   transition: color 0.3s ease;
+  color: #6c757d;
 }
 
 .bm-dashboard-dark .project-summary_label {
@@ -195,7 +274,7 @@
 }
 
 .project-summary_span {
-  color: #3ea0cb;
+  color: #007bff;
   font-weight: bold;
   display: inline-block;
   white-space: nowrap;
@@ -237,6 +316,8 @@
   border: 1px solid #ccc;
   border-radius: 40px;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  background-color: #ffffff;
+  color: #333333;
 }
 
 .bm-dashboard-dark .inv-form-page-container {
@@ -263,7 +344,9 @@
 .inv-form input,
 .inv-form select,
 .inv-form textarea {
-  background-color: rgb(249, 249, 249);
+  background-color: #ffffff;
+  color: #333333;
+  border-color: #ced4da;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
@@ -275,9 +358,22 @@
   border-color: #3a506b;
 }
 
+.inv-form input::placeholder,
+.inv-form textarea::placeholder {
+  color: #6c757d;
+}
+
 .bm-dashboard-dark .inv-form input::placeholder,
 .bm-dashboard-dark .inv-form textarea::placeholder {
   color: #b5bac5;
+}
+
+.inv-form input:focus,
+.inv-form select:focus,
+.inv-form textarea:focus {
+  background-color: #ffffff;
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .bm-dashboard-dark .inv-form input:focus,
@@ -298,6 +394,14 @@
 .inv-form-btn-group button {
   width: 50%;
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  background-color: #007bff;
+  color: #ffffff;
+  border-color: #007bff;
+}
+
+.inv-form-btn-group button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
 }
 
 .bm-dashboard-dark .inv-form-btn-group button {
@@ -410,3 +514,107 @@
   border-color: #1c2541 !important;
   opacity: 0.6;
 }
+
+/* ULTIMATE TEXT VISIBILITY OVERRIDE - NUCLEAR LEVEL */
+.bm-dashboard-dark,
+.bm-dashboard-dark > *,
+.bm-dashboard-dark > * > *,
+.bm-dashboard-dark > * > * > *,
+.bm-dashboard-dark > * > * > * > *,
+.bm-dashboard-dark > * > * > * > * > *,
+.bm-dashboard-dark .container,
+.bm-dashboard-dark .container *,
+.bm-dashboard-dark .projects-list,
+.bm-dashboard-dark .projects-list *,
+.bm-dashboard-dark .project-summary,
+.bm-dashboard-dark .project-summary *,
+.bm-dashboard-dark .project-select-form,
+.bm-dashboard-dark .project-select-form *,
+.bm-dashboard-dark header,
+.bm-dashboard-dark header *,
+.bm-dashboard-dark main,
+.bm-dashboard-dark main * {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Force background colors for better contrast */
+.bm-dashboard-dark .container,
+.bm-dashboard-dark .projects-list,
+.bm-dashboard-dark .project-summary,
+.bm-dashboard-dark .inv-form-page-container,
+.bm-dashboard-dark .bm-error-page {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+/* Override any Bootstrap or other framework styles */
+.bm-dashboard-dark .text-primary,
+.bm-dashboard-dark .text-secondary,
+.bm-dashboard-dark .text-success,
+.bm-dashboard-dark .text-info,
+.bm-dashboard-dark .text-warning,
+.bm-dashboard-dark .text-danger,
+.bm-dashboard-dark .text-light,
+.bm-dashboard-dark .text-dark,
+.bm-dashboard-dark .text-body,
+.bm-dashboard-dark .text-muted {
+  color: #ffffff !important;
+}
+
+/* Force all buttons and interactive elements */
+.bm-dashboard-dark button,
+.bm-dashboard-dark .btn,
+.bm-dashboard-dark .btn-primary,
+.bm-dashboard-dark .btn-secondary,
+.bm-dashboard-dark .btn-success,
+.bm-dashboard-dark .btn-info,
+.bm-dashboard-dark .btn-warning,
+.bm-dashboard-dark .btn-danger,
+.bm-dashboard-dark .btn-light,
+.bm-dashboard-dark .btn-dark,
+.bm-dashboard-dark .btn-outline-primary,
+.bm-dashboard-dark .btn-outline-secondary {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+  border-color: #5a7a9b !important;
+}
+
+.bm-dashboard-dark button:hover,
+.bm-dashboard-dark .btn:hover {
+  background-color: #4a607b !important;
+  color: #ffffff !important;
+  border-color: #6a8aab !important;
+}
+
+/* LogBar specific overrides for BMDashboard */
+.bm-dashboard-dark .log-bar,
+.bm-dashboard-dark .log-bar-dark {
+  background-color: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+.bm-dashboard-dark .log-bar h2,
+.bm-dashboard-dark .log-bar-dark h2,
+.bm-dashboard-dark .log-bar__section h2 {
+  color: #ffffff !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7) !important;
+}
+
+.bm-dashboard-dark .log-bar .button.btn,
+.bm-dashboard-dark .log-bar-dark .button.btn {
+  color: #ffffff !important;
+}
+
+/* Light mode LogBar overrides */
+.bm-dashboard-container:not(.bm-dashboard-dark) .log-bar h2,
+.bm-dashboard-container:not(.bm-dashboard-dark) .log-bar__section h2 {
+  color: #333333 !important;
+  text-shadow: none !important;
+}
+
+.bm-dashboard-container:not(.bm-dashboard-dark) .log-bar .button.btn {
+  color: #ffffff !important;
+}
+
+
