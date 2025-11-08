@@ -78,74 +78,62 @@ export default function ToolsStoppageHorizontalBarChart() {
     fetchProjects();
   }, []);
 
+  // Auto-select first project when projects load
+  useEffect(() => {
+    if (!selectedProject && projects.length > 0) {
+      const firstProject = projects[0];
+      setSelectedProject({
+        value: firstProject.projectId,
+        label: firstProject.projectName,
+      });
+    }
+  }, [projects, selectedProject]);
+
+  // Fetch tools stoppage data when project or date filters change
   useEffect(() => {
     const fetchToolsStoppageData = async () => {
+      // Early return if no project selected
+      if (!selectedProject) {
+        setData(emptyData);
+        return;
+      }
+
       setLoading(true);
       setError(null);
       const formattedStart = startDate ? new Date(startDate).toISOString() : null;
       const formattedEnd = endDate ? new Date(endDate).toISOString() : null;
 
       try {
-        if (selectedProject) {
-          const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(
-            selectedProject?.value,
-            formattedStart,
-            formattedEnd,
-          );
-          const response = await httpService.get(url);
-          const responseData = response.data;
+        const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(
+          selectedProject.value,
+          formattedStart,
+          formattedEnd,
+        );
+        const response = await httpService.get(url);
+        const responseData = response.data;
 
-          // Handle new structured response format
-          if (responseData.success === false) {
-            setError(responseData.message || 'Failed to load stoppage data.');
-            setData(emptyData);
-            return;
-          }
+        // Handle new structured response format
+        if (responseData.success === false) {
+          setError(responseData.message || 'Failed to load stoppage data.');
+          setData(emptyData);
+          return;
+        }
 
-          // Extract data array from structured response
-          const stoppageData = responseData.data || responseData;
+        // Extract data array from structured response
+        const stoppageData = responseData.data || responseData;
 
-          if (stoppageData && Array.isArray(stoppageData) && stoppageData.length > 0) {
-            const sortedData = [...stoppageData].map(item => ({
-              ...item,
-              name: item.toolName || item.name,
-            }));
-            setData(sortedData);
-          } else {
-            setData(emptyData);
-            // Use message from API if available
-            const message =
-              responseData.message || 'No tool stoppage reason data found for this project.';
-            setError(message);
-          }
-        } else if (projects.length > 0) {
-          const firstProject = projects[0];
-          setSelectedProject({ value: firstProject.projectId, label: firstProject.projectName });
-          const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(firstProject.projectId, null, null);
-          const response = await httpService.get(url);
-          const responseData = response.data;
-
-          // Handle new structured response format
-          if (responseData.success === false) {
-            setError(responseData.message || 'Failed to load stoppage data.');
-            setData(emptyData);
-            return;
-          }
-
-          // Extract data array from structured response
-          const stoppageData = responseData.data || responseData;
-
-          if (stoppageData && Array.isArray(stoppageData) && stoppageData.length > 0) {
-            const sortedData = [...stoppageData].map(item => ({
-              ...item,
-              name: item.toolName || item.name,
-            }));
-            setData(sortedData);
-          } else {
-            setData(emptyData);
-          }
+        if (stoppageData && Array.isArray(stoppageData) && stoppageData.length > 0) {
+          const sortedData = [...stoppageData].map(item => ({
+            ...item,
+            name: item.toolName || item.name,
+          }));
+          setData(sortedData);
         } else {
           setData(emptyData);
+          // Use message from API if available
+          const message =
+            responseData.message || 'No tool stoppage reason data found for this project.';
+          setError(message);
         }
       } catch (err) {
         console.error('Failed to load tools stoppage data:', err);
@@ -169,7 +157,7 @@ export default function ToolsStoppageHorizontalBarChart() {
     };
 
     fetchToolsStoppageData();
-  }, [selectedProject, startDate, endDate, projects]);
+  }, [selectedProject, startDate, endDate]);
 
   const projectOptions = projects.map(project => ({
     value: project.projectId,
