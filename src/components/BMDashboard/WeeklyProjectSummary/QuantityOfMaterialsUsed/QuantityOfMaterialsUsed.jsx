@@ -75,7 +75,9 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
   const [dateRangeOne, setDateRangeOne] = useState([null, null]);
   const [dateRangeTwo, setDateRangeTwo] = useState([null, null]);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const textColor = darkMode ? 'text-light' : '';
+  const darkModeObject = darkMode
+    ? { textColor: 'text-light', gridColor: 'rgba(255,255,255,0.1)' }
+    : { textColor: '', gridColor: 'rgba(0,0,0,0.1)' };
   const selectedOrg = useSelector(state => state.weeklyProjectSummary.projectFilter);
   const [legendColors, setLegendColors] = useState([]);
   const chartContainerRef = useRef(null);
@@ -596,7 +598,8 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
           </li>
           <li>Hover over bars or dots to view exact quantities.</li>
           <li>
-            <strong className={textColor}>Click on a bar </strong> to view detailed usage:
+            <strong className={darkModeObject.textColor}>Click on a bar </strong> to view detailed
+            usage:
             <ul style={{ paddingLeft: '16px' }}>
               <li>Usage timeline (date-wise quantity)</li>
               <li>Project where it was used the most</li>
@@ -620,13 +623,13 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
             Legend colors match chart bars. Dots are color-coded based on change:
             <ul style={{ paddingLeft: '16px' }}>
               <li>
-                <strong className={textColor}>Red</strong> – Increase in usage
+                <strong className={darkModeObject.textColor}>Red</strong> – Increase in usage
               </li>
               <li>
-                <strong className={textColor}>Green</strong> – Decrease in usage
+                <strong className={darkModeObject.textColor}>Green</strong> – Decrease in usage
               </li>
               <li>
-                <strong className={textColor}>Gray</strong> – No change
+                <strong className={darkModeObject.textColor}>Gray</strong> – No change
               </li>
             </ul>
           </li>
@@ -807,7 +810,7 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
                       display: false,
                     },
                     grid: {
-                      color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                      color: darkModeObject.gridColor,
                     },
                   },
                   y: {
@@ -816,7 +819,7 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
                       color: darkMode ? '#ccc' : '#333',
                     },
                     grid: {
-                      color: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                      color: darkModeObject.gridColor,
                     },
                   },
                 },
@@ -870,7 +873,7 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
             color: 'var(--text-color)',
           }}
         >
-          <strong className={textColor}>
+          <strong className={darkModeObject.textColor}>
             Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
           </strong>
           {chartData.datasets[0].data
@@ -928,21 +931,23 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
 
               return (
                 <>
-                  <p className={textColor}>
-                    <strong className={textColor}>Highest Usage in:</strong> {details.project}
+                  <p className={darkModeObject.textColor}>
+                    <strong className={darkModeObject.textColor}>Highest Usage in:</strong>{' '}
+                    {details.project}
                   </p>
-                  <p className={textColor}>
-                    <strong className={textColor}>Total Quantity:</strong> {details.total}
+                  <p className={darkModeObject.textColor}>
+                    <strong className={darkModeObject.textColor}>Total Quantity:</strong>{' '}
+                    {details.total}
                   </p>
 
                   <h4 className={`${styles.quantityModalSubheading}`}>📅 Usage Timeline</h4>
                   <div className={`${styles.quantityModalTimeline}`}>
                     {details.timeline.map(item => (
                       <div key={uuidv4()} className={`${styles.timelineRow}`}>
-                        <span className={`${styles.timelineDate} ${darkMode ? ' text-light' : ''}`}>
+                        <span className={`${styles.timelineDate} ${darkModeObject.textColor}`}>
                           {item.date}
                         </span>
-                        <span className={`${styles.timelineQty} ${darkMode ? ' text-light' : ''}`}>
+                        <span className={`${styles.timelineQty} ${darkModeObject.textColor}`}>
                           {item.quantity}
                         </span>
                       </div>
