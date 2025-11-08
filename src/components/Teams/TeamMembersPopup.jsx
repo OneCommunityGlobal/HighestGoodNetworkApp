@@ -23,6 +23,17 @@ import InfoModal from './InfoModal';
 
 /* ---------- small helpers to reduce cognitive complexity ---------- */
 
+function ValidationAlerts({ duplicateUserAlert, isValidUser }) {
+  if (duplicateUserAlert) {
+    return <Alert color="danger">Member is already a part of this team.</Alert>;
+  }
+  if (isValidUser === false) {
+    return <Alert color="danger">Please choose a valid user.</Alert>;
+  }
+  return null;
+}
+
+
 function labelForFilter(mode) {
   switch (mode) {
     case 'active':
@@ -256,12 +267,9 @@ export const TeamMembersPopup = React.memo(props => {
         </td>
         <td className="def-width" style={{ verticalAlign: 'middle', textAlign: 'center' }}>
           {nameCell}{' '}
-          {hasVisibilityIconPermission &&
-            props &&
-            props.selectedTeamName &&
-            user?.isVisible === false && (
-              <i className="fa fa-eye-slash" title="User is invisible" />
-            )}
+          {hasVisibilityIconPermission && props?.selectedTeamName && user?.isVisible === false && (
+            <i className="fa fa-eye-slash" title="User is invisible" />
+          )}
         </td>
         <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>{dateTxt}</td>
         <td
@@ -307,7 +315,7 @@ export const TeamMembersPopup = React.memo(props => {
       );
     }
     const visibleList = applyStatusFilter(sortedMembers, filterMode);
-    if (!visibleList.length) return emptyState;
+    if (visibleList.length === 0) return emptyState;
     return visibleList.map((u, i) => renderRow(u, i));
   };
 
@@ -352,12 +360,7 @@ export const TeamMembersPopup = React.memo(props => {
           className={darkMode ? 'bg-yinmn-blue' : ''}
           style={{ textAlign: 'center', overflowX: 'auto' }}
         >
-          {duplicateUserAlert && (
-            <Alert color="danger">Member is already a part of this team.</Alert>
-          )}
-          {!duplicateUserAlert && isValidUser === false && (
-            <Alert color="danger">Please choose a valid user.</Alert>
-          )}
+          <ValidationAlerts duplicateUserAlert={duplicateUserAlert} isValidUser={isValidUser} />
 
           <div>
             <p style={{ fontWeight: 600 }}>
