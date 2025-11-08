@@ -44,6 +44,10 @@ const CustomTooltip = ({
   toolId,
   darkMode,
 }) => {
+  darkModeObject = darkMode
+    ? { backgroundColor: 'rgba(58, 80, 107, .95)', color: '#ffffff' }
+    : { backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000000ff' };
+
   if (!active || !payload || !payload.length) {
     return null;
   }
@@ -53,20 +57,18 @@ const CustomTooltip = ({
     return (
       <div
         style={{
-          backgroundColor: darkMode ? 'rgba(58, 80, 107, .95)' : 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: darkModeObject.backgroundColor,
           border: '1px solid #ccc',
           borderRadius: '4px',
           padding: '8px 12px',
           fontSize: '14px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
           maxWidth: '200px',
-          color: darkMode ? '#ffffff' : '#000000ff',
+          color: darkModeObject.color,
         }}
       >
-        <div style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#333' }}>
-          📊 No Tools Match
-        </div>
-        <div style={{ color: darkMode ? '#ffffff' : '#666', fontSize: '12px' }}>
+        <div style={{ fontWeight: '600', color: darkModeObject.color }}>📊 No Tools Match</div>
+        <div style={{ color: darkModeObject.color, fontSize: '12px' }}>
           No tools match the selected combination
         </div>
       </div>
@@ -78,17 +80,17 @@ const CustomTooltip = ({
     return (
       <div
         style={{
-          backgroundColor: darkMode ? 'rgba(58, 80, 107, .95)' : 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: darkModeObject.backgroundColor,
           border: '1px solid #ccc',
           borderRadius: '4px',
           padding: '8px 12px',
           fontSize: '14px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
           maxWidth: '200px',
-          color: darkMode ? '#ffffff' : '#000000ff',
+          color: darkModeObject.color,
         }}
       >
-        <div style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#333' }}>{toolName}</div>
+        <div style={{ fontWeight: '600', color: darkModeObject.color }}>{toolName}</div>
         <div style={{ color: '#666', fontSize: '12px' }}>❌ Not used in this project</div>
       </div>
     );
@@ -109,13 +111,13 @@ const CustomTooltip = ({
         maxWidth: '200px',
       }}
     >
-      <div style={{ fontWeight: '600', color: darkMode ? '#ffffff' : '#333', marginBottom: '4px' }}>
+      <div style={{ fontWeight: '600', color: darkModeObject.color, marginBottom: '4px' }}>
         {toolName || 'All Tools'}
       </div>
-      <div style={{ color: darkMode ? '#ffffff' : '#666', marginBottom: '2px' }}>
+      <div style={{ color: darkModeObject.color, marginBottom: '2px' }}>
         Count: <strong>{data.value}</strong>
       </div>
-      <div style={{ color: darkMode ? '#ffffff' : '#666' }}>
+      <div style={{ color: darkModeObject.color }}>
         Percentage: <strong>{percentage}%</strong>
       </div>
     </div>
