@@ -266,10 +266,14 @@ export default function ReturnedLateChart() {
       </div>
       <div className={`${styles['returned-late-chart-container']} text-white`}>
         {loading && (
-          <div className={`${styles['returned-late-loading']} ${darkMode ? 'text-white' : ''}`}>Loading...</div>
+          <div className={`${styles['returned-late-loading']} ${darkMode ? 'text-white' : ''}`}>
+            Loading...
+          </div>
         )}
         {error && (
-          <div className={`${styles['returned-late-error']} ${darkMode ? 'text-white' : ''}`}>{error}</div>
+          <div className={`${styles['returned-late-error']} ${darkMode ? 'text-white' : ''}`}>
+            {error}
+          </div>
         )}
         {!loading && !error && chartData.labels.length === 0 && (
           <div className={`${styles['returned-late-no-data']} ${darkMode ? 'text-white' : ''}`}>
