@@ -15,24 +15,28 @@ export function Team(props) {
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
-  const teamId = String(props.teamId || '');
+  // Keep a raw id for callbacks (number stays number in tests)
+  const teamIdRaw = props.teamId;
+  // Use a string key for cache/DOM ids to be safe
+  const teamIdKey = String(props.teamId ?? '');
 
-  const [localMembers, setLocalMembers] = useState(() => getCachedTeamMembers(teamId) || null);
+  const [localMembers, setLocalMembers] = useState(() => getCachedTeamMembers(teamIdKey) || null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const cached = getCachedTeamMembers(teamId);
+    const cached = getCachedTeamMembers(teamIdKey);
+
     if (cached && !localMembers) setLocalMembers(cached);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamId]);
+  }, [teamIdKey]);
 
   useEffect(() => {
-    if (!getCachedTeamMembers(teamId) && teamId) {
-      fetchTeamMembersCached(dispatch, getTeamMembers, teamId)
+    if (!getCachedTeamMembers(teamIdKey) && teamIdKey) {
+      fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
         .then(setLocalMembers)
         .catch(() => {});
     }
-  }, [dispatch, teamId]);
+  }, [dispatch, teamIdKey]);
 
   const members = localMembers ?? props.team?.members ?? [];
 
@@ -58,18 +62,19 @@ export function Team(props) {
   }, [members, loading, localMembers]);
 
   const handleOpenMembers = async () => {
+    // IMPORTANT: pass the raw value so tests get `1` (number), not "1" (string)
+    props.onMembersClick(teamIdRaw, props.name, props.teamCode);
     setLoading(true);
     try {
-      const data = await fetchTeamMembersCached(dispatch, getTeamMembers, teamId);
+      const data = await fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey);
       setLocalMembers(data);
     } finally {
       setLoading(false);
-      props.onMembersClick(props.teamId, props.name, props.teamCode);
     }
   };
 
   return (
-    <tr className="teams__tr" id={`tr_${teamId}`}>
+    <tr className="teams__tr" id={`tr_${teamIdKey}`}>
       <th className="teams__order--input" scope="row">
         <div>{(props.index ?? 0) + 1}</div>
       </th>
@@ -84,7 +89,7 @@ export function Team(props) {
           type="button"
           onClick={() => {
             if (canDeleteTeam || canPutTeam) {
-              props.onStatusClick(props.name, teamId, props.active, props.teamCode);
+              props.onStatusClick(props.name, teamIdRaw, props.active, props.teamCode);
             }
           }}
           style={{ boxStyle }}
@@ -102,8 +107,8 @@ export function Team(props) {
           type="button"
           className="btn btn-outline-info"
           onMouseEnter={() => {
-            if (!getCachedTeamMembers(teamId)) {
-              fetchTeamMembersCached(dispatch, getTeamMembers, teamId)
+            if (!getCachedTeamMembers(teamIdKey)) {
+              fetchTeamMembersCached(dispatch, getTeamMembers, teamIdKey)
                 .then(setLocalMembers)
                 .catch(() => {});
             }
@@ -122,7 +127,7 @@ export function Team(props) {
           <span className="usermanagement-actions-cell">
             <Button
               color="success"
-              onClick={() => props.onEditTeam(props.name, teamId, props.active, props.teamCode)}
+              onClick={() => props.onEditTeam(props.name, teamIdRaw, props.active, props.teamCode)}
               style={darkMode ? {} : boxStyle}
               disabled={!canPutTeam}
             >
@@ -132,7 +137,9 @@ export function Team(props) {
           <span className="usermanagement-actions-cell">
             <Button
               color="danger"
-              onClick={() => props.onDeleteClick(props.name, teamId, props.active, props.teamCode)}
+              onClick={() =>
+                props.onDeleteClick(props.name, teamIdRaw, props.active, props.teamCode)
+              }
               style={darkMode ? boxStyleDark : boxStyle}
               disabled={!canDeleteTeam}
             >
