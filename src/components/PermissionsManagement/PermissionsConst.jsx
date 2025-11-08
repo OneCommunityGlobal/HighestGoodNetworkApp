@@ -194,7 +194,7 @@ export const permissionLabels = [
       {
         label: 'Set Final Day',
         key: 'setFinalDay',
-        description:'Gives the user permission to use the set the final working day.',
+        description: 'Gives the user permission to use the set the final working day.',
       },
       {
         label: 'Tracking Management',
