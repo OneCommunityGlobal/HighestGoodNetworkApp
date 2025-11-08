@@ -2,12 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
-
 import './TeamsOverview.css';
 
-/**
- * The header row of the team table.
- */
 function TeamTableHeaderComponent({
   onTeamNameSort,
   onTeamActiveSort,
@@ -36,14 +32,9 @@ function TeamTableHeaderComponent({
         #
       </th>
       <th scope="col" className="team-name-col">
-        <button
-          type="button"
-          onClick={onTeamNameSort}
-          className={darkMode ? 'text-light' : ''}
-          aria-label="Team Name"
-        >
-          {getSortIcon(sortTeamNameState)}
-          {TEAM_NAME} <span aria-hidden="true">{' (All | Active | In Active)'}</span>
+        <button type="button" onClick={onTeamNameSort} className={darkMode ? 'text-light' : ''}>
+          <span aria-hidden="true">{getSortIcon(sortTeamNameState)}</span>
+          {TEAM_NAME} <span aria-hidden="true">(All | Active | In Active)</span>
         </button>
       </th>
       <th scope="col" id="teams__active">
@@ -53,7 +44,7 @@ function TeamTableHeaderComponent({
           className={darkMode ? 'text-light' : ''}
           aria-label="Active"
         >
-          {getSortIcon(sortTeamActiveState)}
+          <span aria-hidden="true">{getSortIcon(sortTeamActiveState)}</span>
           {ACTIVE}
         </button>
       </th>
@@ -68,7 +59,5 @@ function TeamTableHeaderComponent({
 }
 
 TeamTableHeaderComponent.displayName = 'TeamTableHeader';
-
 export const TeamTableHeader = React.memo(TeamTableHeaderComponent);
-
 export default connect(null, { hasPermission })(TeamTableHeader);

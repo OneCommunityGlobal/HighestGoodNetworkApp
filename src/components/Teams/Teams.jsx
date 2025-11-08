@@ -27,7 +27,7 @@ import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import lo from 'lodash';
-import { getCachedTeamMembers, isTeamMembersResolved } from './teamMembersCache';
+import { getCachedTeamMembers } from './teamMembersCache';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -43,7 +43,7 @@ class Teams extends React.PureComponent {
       selectedTeam: '',
       isActive: '',
       selectedTeamCode: '',
-      teams: null,
+      teams: null, // null = loading, [] = empty, [...Team rows] = ready
       sortedTeams: [],
       sortTeamNameState: 'none',
       sortTeamActiveState: 'none',
@@ -55,7 +55,6 @@ class Teams extends React.PureComponent {
   }
 
   componentDidMount() {
-    // this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
     this.props.getAllUserTeams('all');
     this.props.getAllUserProfile();
   }
@@ -185,8 +184,7 @@ class Teams extends React.PureComponent {
   }
 
   teamTableElements = allTeams => {
-    if (!Array.isArray(allTeams)) return [];
-    if (allTeams.length === 0) return [];
+    if (!Array.isArray(allTeams) || allTeams.length === 0) return [];
     let teamSearchData = this.filteredTeamList(allTeams);
 
     if (this.state.selectedFilter === 'active') {
@@ -237,11 +235,7 @@ class Teams extends React.PureComponent {
   teampopupElements = allTeams => {
     const { selectedTeamId, initialMembersForPopup, membersFetching } = this.state;
 
-    // pick the freshest list available:
-    // 1) if cache has a list for this team, use it
-    // 2) else use the snapshot we captured on click
-    // 3) else fallback to the Redux slice
-    const cachedNow = getCachedTeamMembers(selectedTeamId);
+    const cachedNow = getCachedTeamMembers(String(selectedTeamId));
     const sliceMembers = this.props.state ? this.props.state.teamsTeamMembers : [];
     const members =
       (Array.isArray(cachedNow) && cachedNow) ||
@@ -252,10 +246,6 @@ class Teams extends React.PureComponent {
     const selectedTeamData = allTeams
       ? allTeams.filter(team => team.teamName === this.state.selectedTeam)
       : [];
-
-    // If you don’t have a per-team fetching flag, just pass false so 0-member teams never show a spinner
-    const fetchingMembers =
-      this.props.state?.allTeamsData?.fetchingMembersById?.[selectedTeamId] ?? false;
 
     return (
       <>
@@ -319,7 +309,6 @@ class Teams extends React.PureComponent {
   };
 
   onTeamMembersPopupShow = (teamId, teamName, teamCode, initialSnapshot = []) => {
-    // open immediately with snapshot
     this.setState({
       teamMembersPopupOpen: true,
       selectedTeamId: teamId,
@@ -327,7 +316,6 @@ class Teams extends React.PureComponent {
       selectedTeamCode: teamCode,
       initialMembersForPopup: Array.isArray(initialSnapshot) ? initialSnapshot : [],
     });
-    // kick off background refresh (don’t block the UI)
     this.props.getTeamMembers(teamId);
   };
 
@@ -465,24 +453,30 @@ class Teams extends React.PureComponent {
     this.setState({ sortedTeams });
   };
 
+  // SONAR: use functional setState because we depend on previous state
   toggleTeamNameSort = () => {
-    const next =
-      this.state.sortTeamNameState === 'none'
-        ? 'ascending'
-        : this.state.sortTeamNameState === 'ascending'
-        ? 'descending'
-        : 'none';
-    this.setState({ sortTeamNameState: next, sortTeamActiveState: 'none' });
+    this.setState(prev => {
+      const next =
+        prev.sortTeamNameState === 'none'
+          ? 'ascending'
+          : prev.sortTeamNameState === 'ascending'
+          ? 'descending'
+          : 'none';
+      return { sortTeamNameState: next, sortTeamActiveState: 'none' };
+    });
   };
 
+  // SONAR: use functional setState because we depend on previous state
   toggleTeamActiveSort = () => {
-    const next =
-      this.state.sortTeamActiveState === 'none'
-        ? 'ascending'
-        : this.state.sortTeamActiveState === 'ascending'
-        ? 'descending'
-        : 'none';
-    this.setState({ sortTeamActiveState: next, sortTeamNameState: 'none' });
+    this.setState(prev => {
+      const next =
+        prev.sortTeamActiveState === 'none'
+          ? 'ascending'
+          : prev.sortTeamActiveState === 'ascending'
+          ? 'descending'
+          : 'none';
+      return { sortTeamActiveState: next, sortTeamNameState: 'none' };
+    });
   };
 }
 
