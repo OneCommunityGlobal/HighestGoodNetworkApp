@@ -44,7 +44,7 @@ const CustomTooltip = ({
   toolId,
   darkMode,
 }) => {
-  darkModeObject = darkMode
+  let darkModeObject = darkMode
     ? { backgroundColor: 'rgba(58, 80, 107, .95)', color: '#ffffff' }
     : { backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000000ff' };
 
