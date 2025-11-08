@@ -22,6 +22,7 @@ import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import styles from './QuantityOfMaterialsUsed.module.css';
 import PropTypes from 'prop-types';
+import { data } from 'jquery';
 
 ChartJS.register(
   BarElement,
@@ -964,6 +965,7 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
 }
 
 QuantityOfMaterialsUsed.propTypes = {
+  data: PropTypes.array.isRequired,
   selectStyles: PropTypes.object.isRequired,
 };
 
