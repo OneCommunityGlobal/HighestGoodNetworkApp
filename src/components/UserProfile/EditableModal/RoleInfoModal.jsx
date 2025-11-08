@@ -4,8 +4,10 @@ import { useDispatch, useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Col, Row} from 'reactstrap';
 import { updateInfoCollection, addInfoCollection } from '../../../actions/information'
 import { boxStyle, boxStyleDark } from '~/styles';
+
 import { toast } from 'react-toastify';
 import RichTextEditor from './RichTextEditor';
+import styles from './RoleInfoModal.module.css';
 
 const RoleInfoModal = ({ info, auth, roleName}) => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -61,7 +63,7 @@ const RoleInfoModal = ({ info, auth, roleName}) => {
       e.preventDefault();
     }
 
-    const updateInfo = {infoContent: infoContentModal}
+    const updateInfo = {infoContent: infoContentModal};
     let saveResult;
 
     // If info doesn't exist in database, create new record
@@ -106,6 +108,7 @@ const RoleInfoModal = ({ info, auth, roleName}) => {
                 <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} darkMode={darkMode}/> :
                 // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                 <div
+                  className={`${styles['role-info-content']} ${darkMode ? styles['dark-mode'] : ''}`}
                   style={{ paddingLeft: '20px' }}
                   dangerouslySetInnerHTML={{ __html: infoContentModal }}
                   onClick={() => setIsEditing(true)}
