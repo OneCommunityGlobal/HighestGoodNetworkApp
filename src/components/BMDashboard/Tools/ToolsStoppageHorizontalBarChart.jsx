@@ -47,9 +47,29 @@ export default function ToolsStoppageHorizontalBarChart() {
       setError(null);
       try {
         const response = await axios.get(ENDPOINTS.BM_TOOL_PROJECTS);
-        setProjects(response.data);
+        const responseData = response.data;
+
+        // Handle new structured response format
+        if (responseData.success === false) {
+          setError(responseData.message || 'Failed to load projects.');
+          setProjects([]);
+          return;
+        }
+
+        // Extract data array from structured response
+        const projectsData = responseData.data || responseData;
+        setProjects(Array.isArray(projectsData) ? projectsData : []);
       } catch (err) {
-        setError('Failed to load projects. Please try again.');
+        console.error('Failed to load projects:', err);
+        if (err.response?.data?.message) {
+          setError(err.response.data.message);
+        } else if (err.response?.status === 401 || err.response?.status === 403) {
+          setError('Session expired. Please log in again.');
+        } else if (!err.response) {
+          setError('Network error. Please check your connection.');
+        } else {
+          setError('Failed to load projects. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
@@ -75,15 +95,28 @@ export default function ToolsStoppageHorizontalBarChart() {
           const response = await axios.get(url);
           const responseData = response.data;
 
-          if (responseData && responseData.length > 0) {
-            const sortedData = [...responseData].map(item => ({
+          // Handle new structured response format
+          if (responseData.success === false) {
+            setError(responseData.message || 'Failed to load stoppage data.');
+            setData(emptyData);
+            return;
+          }
+
+          // Extract data array from structured response
+          const stoppageData = responseData.data || responseData;
+
+          if (stoppageData && Array.isArray(stoppageData) && stoppageData.length > 0) {
+            const sortedData = [...stoppageData].map(item => ({
               ...item,
               name: item.toolName || item.name,
             }));
             setData(sortedData);
           } else {
             setData(emptyData);
-            setError('No tool stoppage reason data found for this project.');
+            // Use message from API if available
+            const message =
+              responseData.message || 'No tool stoppage reason data found for this project.';
+            setError(message);
           }
         } else if (projects.length > 0) {
           const firstProject = projects[0];
@@ -92,8 +125,18 @@ export default function ToolsStoppageHorizontalBarChart() {
           const response = await axios.get(url);
           const responseData = response.data;
 
-          if (responseData && responseData.length > 0) {
-            const sortedData = [...responseData].map(item => ({
+          // Handle new structured response format
+          if (responseData.success === false) {
+            setError(responseData.message || 'Failed to load stoppage data.');
+            setData(emptyData);
+            return;
+          }
+
+          // Extract data array from structured response
+          const stoppageData = responseData.data || responseData;
+
+          if (stoppageData && Array.isArray(stoppageData) && stoppageData.length > 0) {
+            const sortedData = [...stoppageData].map(item => ({
               ...item,
               name: item.toolName || item.name,
             }));
@@ -105,8 +148,21 @@ export default function ToolsStoppageHorizontalBarChart() {
           setData(emptyData);
         }
       } catch (err) {
+        console.error('Failed to load tools stoppage data:', err);
         setData(emptyData);
-        setError('Failed to load tools stoppage reason data. Please try again.');
+
+        // Enhanced error handling
+        if (err.response?.data?.message) {
+          setError(err.response.data.message);
+        } else if (err.response?.status === 401 || err.response?.status === 403) {
+          setError('Session expired. Please log in again.');
+        } else if (!err.response) {
+          setError('Network error. Please check your connection.');
+        } else if (err.response?.status >= 500) {
+          setError('Server error. Please try again later.');
+        } else {
+          setError('Failed to load tools stoppage reason data. Please try again.');
+        }
       } finally {
         setLoading(false);
       }
