@@ -91,7 +91,6 @@ class Teams extends React.PureComponent {
       prevState.teams !== this.state.teams ||
       prevState.sortTeamNameState !== this.state.sortTeamNameState ||
       prevState.sortTeamActiveState !== this.state.sortTeamActiveState;
-    
     if (sortChanged) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState(prev => ({
@@ -494,7 +493,6 @@ class Teams extends React.PureComponent {
       };
     });
   };
-  
   toggleTeamActiveSort = () => {
     this.setState(prev => {
       const step = { none: 'ascending', ascending: 'descending', descending: 'none' };
@@ -504,9 +502,7 @@ class Teams extends React.PureComponent {
       };
     });
   };
-
-  };
-
+}
 
 Teams.propTypes = {
   // connected redux state

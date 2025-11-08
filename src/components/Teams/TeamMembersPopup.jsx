@@ -32,8 +32,6 @@ function ValidationAlerts({ duplicateUserAlert, isValidUser }) {
   }
   return null;
 }
-
-
 function labelForFilter(mode) {
   switch (mode) {
     case 'active':
