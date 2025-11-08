@@ -1,4 +1,8 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/sort-comp */
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { toast } from 'react-toastify';
@@ -26,7 +30,7 @@ import TeamStatusPopup from './TeamStatusPopup';
 import isEqual from 'lodash/isEqual';
 import { getCachedTeamMembers } from './teamMembersCache';
 
-// constants (avoid magic strings / duplication)
+// constants
 const FILTER_ALL = 'all';
 const FILTER_ACTIVE = 'active';
 const FILTER_INACTIVE = 'inactive';
@@ -45,7 +49,7 @@ class Teams extends React.PureComponent {
       selectedTeam: '',
       isActive: '',
       selectedTeamCode: '',
-      teams: null, // null = loading, [] = empty, [...Team rows] = ready
+      teams: null, // null = loading; [] = empty; [...rows] = ready
       sortedTeams: [],
       sortTeamNameState: 'none', // 'none' | 'ascending' | 'descending'
       sortTeamActiveState: 'none', // 'none' | 'ascending' | 'descending'
@@ -57,7 +61,6 @@ class Teams extends React.PureComponent {
   }
 
   componentDidMount() {
-    // single fetch on mount
     this.props.getAllUserTeams(FILTER_ALL);
     this.props.getAllUserProfile();
   }
@@ -69,7 +72,6 @@ class Teams extends React.PureComponent {
     const currTeams = currSlice?.allTeams ?? [];
     const fetching = Boolean(currSlice?.fetching);
 
-    // Rebuild visible rows if source teams changed or user-chosen filters changed
     const filterChanged =
       prevState.teamNameSearchText !== this.state.teamNameSearchText ||
       prevState.wildCardSearchText !== this.state.wildCardSearchText ||
@@ -78,13 +80,10 @@ class Teams extends React.PureComponent {
     const teamsChanged = !isEqual(prevTeams, currTeams);
 
     if (teamsChanged || filterChanged) {
-      // Guarded setState (no nested setStates without conditions)
-      // teams: null while fetching, else build rows now
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ teams: fetching ? null : this.buildTeamRows(currTeams) });
     }
 
-    // Re-sort when rows or sort states change
     const sortChanged =
       prevState.teams !== this.state.teams ||
       prevState.sortTeamNameState !== this.state.sortTeamNameState ||
@@ -96,7 +95,7 @@ class Teams extends React.PureComponent {
     }
   }
 
-  // ───────────────────────────────────────────── helpers ─────────────────────────────────────────────
+  // ───────────────────────── helpers ─────────────────────────
 
   setFilter = filter => this.setState({ selectedFilter: filter });
 
@@ -104,14 +103,14 @@ class Teams extends React.PureComponent {
     const { teamNameSearchText, wildCardSearchText } = this.state;
     return allTeams.filter(team => {
       const name = team?.teamName || '';
-      const wild = wildCardSearchText.trim();
-
       if (!name) return false;
 
-      const matchByName = searchWithAccent(name, teamNameSearchText);
+      const matchByName = teamNameSearchText ? searchWithAccent(name, teamNameSearchText) : true;
+
+      const wild = wildCardSearchText.trim();
       const matchByWild = wild ? searchWithAccent(name, wild) : true;
 
-      return (teamNameSearchText ? matchByName : true) && matchByWild;
+      return matchByName && matchByWild;
     });
   };
 
@@ -119,7 +118,7 @@ class Teams extends React.PureComponent {
     const { selectedFilter } = this.state;
     if (selectedFilter === FILTER_ACTIVE) return teams.filter(t => t.isActive === true);
     if (selectedFilter === FILTER_INACTIVE) return teams.filter(t => t.isActive === false);
-    return teams; // all
+    return teams;
   };
 
   buildTeamRows = allTeams => {
@@ -127,7 +126,6 @@ class Teams extends React.PureComponent {
 
     const filtered = this.applyFilter(this.filteredTeamList(allTeams));
 
-    // sort by modifiedDatetime descending by default (stable)
     const byModified = [...filtered].sort((a, b) => {
       const da = new Date(a?.modifiedDatetime || 0).getTime();
       const db = new Date(b?.modifiedDatetime || 0).getTime();
@@ -170,14 +168,13 @@ class Teams extends React.PureComponent {
       if (sortTeamActiveState === 'ascending') return activeA - activeB;
       if (sortTeamActiveState === 'descending') return activeB - activeA;
 
-      return dateB - dateA; // default
+      return dateB - dateA;
     });
 
-    // re-index after sort (no mutation of existing elements)
     return sorted.map((el, i) => ({ ...el, props: { ...el.props, index: i } }));
   };
 
-  // ───────────────────────────────────────────── render ─────────────────────────────────────────────
+  // ───────────────────────── render ─────────────────────────
 
   render() {
     const { allTeams = [], fetching = false } = this.props.state.allTeamsData || {};
@@ -342,7 +339,7 @@ class Teams extends React.PureComponent {
     );
   };
 
-  // ───────────────────────────────────────── event handlers ─────────────────────────────────────────
+  // ───────────────────────── handlers ─────────────────────────
 
   onAddUser = user => {
     this.props.addTeamMember(
@@ -359,7 +356,7 @@ class Teams extends React.PureComponent {
     this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userId, visibility);
   };
 
-  // NOTE: Team component now calls (id, name, code) immediately (open-first UX)
+  // NOTE: Team component calls (id, name, code) and we open immediately
   onTeamMembersPopupShow = (teamId, teamName, teamCode, initialSnapshot = []) => {
     this.setState({
       teamMembersPopupOpen: true,
@@ -368,8 +365,7 @@ class Teams extends React.PureComponent {
       selectedTeamCode: teamCode,
       initialMembersForPopup: Array.isArray(initialSnapshot) ? initialSnapshot : [],
     });
-    // refresh in background
-    this.props.getTeamMembers(teamId);
+    this.props.getTeamMembers(teamId); // refresh in background
   };
 
   onTeamMembersPopupClose = () => {
@@ -484,31 +480,53 @@ class Teams extends React.PureComponent {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
   };
 
-  // sort toggles with safe functional setState (no nested setState smells)
+  // Safe functional setState; no nested ternaries (Sonar S3358)
   toggleTeamNameSort = () => {
     this.setState(prev => {
-      const next =
-        prev.sortTeamNameState === 'none'
-          ? 'ascending'
-          : prev.sortTeamNameState === 'ascending'
-          ? 'descending'
-          : 'none';
+      let next = 'none';
+      if (prev.sortTeamNameState === 'none') next = 'ascending';
+      else if (prev.sortTeamNameState === 'ascending') next = 'descending';
+      else next = 'none';
       return { sortTeamNameState: next, sortTeamActiveState: 'none' };
     });
   };
 
   toggleTeamActiveSort = () => {
     this.setState(prev => {
-      const next =
-        prev.sortTeamActiveState === 'none'
-          ? 'ascending'
-          : prev.sortTeamActiveState === 'ascending'
-          ? 'descending'
-          : 'none';
+      let next = 'none';
+      if (prev.sortTeamActiveState === 'none') next = 'ascending';
+      else if (prev.sortTeamActiveState === 'ascending') next = 'descending';
+      else next = 'none';
       return { sortTeamActiveState: next, sortTeamNameState: 'none' };
     });
   };
 }
+
+Teams.propTypes = {
+  // connected redux state
+  state: PropTypes.shape({
+    allTeamsData: PropTypes.shape({
+      allTeams: PropTypes.array,
+      fetching: PropTypes.bool,
+    }),
+    theme: PropTypes.shape({
+      darkMode: PropTypes.bool,
+    }),
+    teamsTeamMembers: PropTypes.array,
+    allUserProfiles: PropTypes.array,
+  }).isRequired,
+
+  // actions (all required by usage)
+  getAllUserTeams: PropTypes.func.isRequired,
+  getAllUserProfile: PropTypes.func.isRequired,
+  postNewTeam: PropTypes.func.isRequired,
+  deleteTeam: PropTypes.func.isRequired,
+  updateTeam: PropTypes.func.isRequired,
+  getTeamMembers: PropTypes.func.isRequired,
+  deleteTeamMember: PropTypes.func.isRequired,
+  addTeamMember: PropTypes.func.isRequired,
+  updateTeamMemeberVisibility: PropTypes.func.isRequired,
+};
 
 const mapStateToProps = state => ({ state });
 

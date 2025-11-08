@@ -1,12 +1,13 @@
 /* eslint-disable react/destructuring-assignment */
 import './Team.css';
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { connect, useSelector, useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import hasPermission from '~/utils/permissions';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { DELETE } from '../../languages/en/ui';
 import { getTeamMembers } from '../../actions/allTeamsAction';
-import { useEffect, useState } from 'react';
 import { fetchTeamMembersCached, getCachedTeamMembers } from './teamMembersCache';
 
 function computeCounts(members, loading, localMembers) {
@@ -64,9 +65,8 @@ export function Team(props) {
   const members = localMembers ?? props.team?.members ?? [];
   const { total, active, inactive } = computeCounts(members, loading, localMembers);
 
-  // Team.jsx
+  // Fire callback immediately (keeps tests & UX snappy), then refresh members
   const handleOpenMembers = () => {
-    // call immediately so tests (and UI) see it right away
     if (typeof props.onMembersClick === 'function') {
       props.onMembersClick(teamIdRaw, props.name, props.teamCode);
     }
@@ -97,7 +97,7 @@ export function Team(props) {
               props.onStatusClick(props.name, teamIdRaw, props.active, props.teamCode);
             }
           }}
-          style={boxStyle}
+          // style={boxStyle}
           aria-label={`Change status for team ${props.name}`}
         >
           <div className={props.active ? 'isActive' : 'isNotActive'}>
@@ -156,5 +156,58 @@ export function Team(props) {
     </tr>
   );
 }
+
+Team.propTypes = {
+  // injected by connect
+  hasPermission: PropTypes.func.isRequired,
+
+  // basic identity/labels
+  teamId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  name: PropTypes.string.isRequired,
+  teamCode: PropTypes.string,
+  index: PropTypes.number,
+
+  // status flags
+  active: PropTypes.bool,
+
+  // callbacks
+  onMembersClick: PropTypes.func,
+  onStatusClick: PropTypes.func,
+  onEditTeam: PropTypes.func,
+  onDeleteClick: PropTypes.func,
+
+  // optional team object (used for members & modifiedDatetime)
+  team: PropTypes.shape({
+    _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    teamName: PropTypes.string,
+    teamCode: PropTypes.string,
+    isActive: PropTypes.bool,
+    members: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+        firstName: PropTypes.string,
+        lastName: PropTypes.string,
+        isActive: PropTypes.bool,
+        active: PropTypes.bool,
+      }),
+    ),
+    modifiedDatetime: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.instanceOf(Date),
+    ]),
+  }),
+};
+
+Team.defaultProps = {
+  teamCode: '',
+  index: 0,
+  active: false,
+  onMembersClick: undefined,
+  onStatusClick: undefined,
+  onEditTeam: undefined,
+  onDeleteClick: undefined,
+  team: undefined,
+};
 
 export default connect(null, { hasPermission })(Team);
