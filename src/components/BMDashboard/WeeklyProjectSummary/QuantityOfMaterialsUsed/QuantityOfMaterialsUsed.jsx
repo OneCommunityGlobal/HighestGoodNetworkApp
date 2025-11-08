@@ -75,6 +75,7 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
   const [dateRangeOne, setDateRangeOne] = useState([null, null]);
   const [dateRangeTwo, setDateRangeTwo] = useState([null, null]);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const textColor = darkMode ? 'text-light' : '';
   const selectedOrg = useSelector(state => state.weeklyProjectSummary.projectFilter);
   const [legendColors, setLegendColors] = useState([]);
   const chartContainerRef = useRef(null);
@@ -595,8 +596,7 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
           </li>
           <li>Hover over bars or dots to view exact quantities.</li>
           <li>
-            <strong className={darkMode ? 'text-light' : ''}>Click on a bar </strong> to view
-            detailed usage:
+            <strong className={textColor}>Click on a bar </strong> to view detailed usage:
             <ul style={{ paddingLeft: '16px' }}>
               <li>Usage timeline (date-wise quantity)</li>
               <li>Project where it was used the most</li>
@@ -620,13 +620,13 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
             Legend colors match chart bars. Dots are color-coded based on change:
             <ul style={{ paddingLeft: '16px' }}>
               <li>
-                <strong className={darkMode ? 'text-light' : ''}>Red</strong> – Increase in usage
+                <strong className={textColor}>Red</strong> – Increase in usage
               </li>
               <li>
-                <strong className={darkMode ? 'text-light' : ''}>Green</strong> – Decrease in usage
+                <strong className={textColor}>Green</strong> – Decrease in usage
               </li>
               <li>
-                <strong className={darkMode ? 'text-light' : ''}>Gray</strong> – No change
+                <strong className={textColor}>Gray</strong> – No change
               </li>
             </ul>
           </li>
@@ -870,7 +870,7 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
             color: 'var(--text-color)',
           }}
         >
-          <strong className={darkMode ? 'text-light' : ''}>
+          <strong className={textColor}>
             Visible Top {Math.min(10, visibleRange[1] - visibleRange[0])} of {selectedDate}:{' '}
           </strong>
           {chartData.datasets[0].data
@@ -928,13 +928,11 @@ function QuantityOfMaterialsUsed({ data, selectStyles }) {
 
               return (
                 <>
-                  <p className={darkMode ? 'text-light' : ''}>
-                    <strong className={darkMode ? 'text-light' : ''}>Highest Usage in:</strong>{' '}
-                    {details.project}
+                  <p className={textColor}>
+                    <strong className={textColor}>Highest Usage in:</strong> {details.project}
                   </p>
-                  <p className={darkMode ? 'text-light' : ''}>
-                    <strong className={darkMode ? 'text-light' : ''}>Total Quantity:</strong>{' '}
-                    {details.total}
+                  <p className={textColor}>
+                    <strong className={textColor}>Total Quantity:</strong> {details.total}
                   </p>
 
                   <h4 className={`${styles.quantityModalSubheading}`}>📅 Usage Timeline</h4>
