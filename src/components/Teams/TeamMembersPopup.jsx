@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Button,
   Modal,
@@ -15,52 +15,136 @@ import '../Header/DarkMode.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { connect, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import MembersAutoComplete from './MembersAutoComplete';
-
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
+  const canAssignTeamToUsers = hasPermission('assignTeamToUsers');
 
-  const [filterMode, setFilterMode] = useState('active'); // 'active' | 'all' | 'inactive'
-  const nextLabelFor = m => (m === 'active' ? 'See All' : m === 'all' ? 'Inactive' : 'Active');
-  const colorForMode = m =>
-    m === 'inactive' ? '#ccc' : m === 'active' ? 'limegreen' : 'dodgerblue';
-  const textColorForMode = m => (m === 'inactive' ? 'black' : 'white');
-
+  const [filterMode, setFilterMode] = useState('all');
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
-  const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
 
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const validation = props.members.teamMembers || props.members;
+  // Normalize the members prop
+  const normalizedMembers = useMemo(() => {
+    const raw = props.members;
+    if (Array.isArray(raw)) return raw.filter(Boolean);
+    if (raw && Array.isArray(raw.teamMembers)) return raw.teamMembers.filter(Boolean);
+    return [];
+  }, [props.members]);
 
-  const closeDeletedPopup = () => {
-    setDeletedPopup(!deletedPopup);
+  // Keep validation super simple now that we fetch before open
+  const validation = normalizedMembers;
+
+  const nextLabelFor = m => (m === 'active' ? 'Active' : m === 'all' ? 'All' : 'In Active');
+  const colorForMode = m =>
+    m === 'inactive' ? '#ccc' : m === 'active' ? 'limegreen' : 'dodgerblue';
+  const textColorForMode = m => (m === 'inactive' ? 'black' : 'white');
+
+  const applyStatusFilter = (list, mode) => {
+    const isTrue = v => v === true;
+    if (mode === 'active') return list.filter(u => isTrue(u?.isActive));
+    if (mode === 'inactive') return list.filter(u => !isTrue(u?.isActive));
+    return list;
   };
 
+  const sortByPermission = useCallback((a, b) => {
+    const order = [
+      'owner',
+      'administrator',
+      'core team',
+      'manager',
+      'mentor',
+      'assistant manager',
+      'volunteer',
+    ];
+    return order.indexOf(a.toLowerCase()) - order.indexOf(b.toLowerCase());
+  }, []);
+
+  const sortByAlpha = useCallback((a, b) => {
+    const nameA = `${a?.firstName || ''} ${a?.lastName || ''}`.toLowerCase();
+    const nameB = `${b?.firstName || ''} ${b?.lastName || ''}`.toLowerCase();
+    return nameA.localeCompare(nameB);
+  }, []);
+
+  const sortedMembers = useMemo(() => {
+    const src = validation;
+
+    if (sortOrder === 0) {
+      const grouped = src.reduce((pre, cur) => {
+        const role = (cur.role || '').toString().toLowerCase();
+        (pre[role] ||= []).push(cur);
+        return pre;
+      }, {});
+      return Object.keys(grouped)
+        .sort(sortByPermission)
+        .flatMap(role => [...grouped[role]].sort(sortByAlpha));
+    }
+
+    // date sort then alpha (null dates go last)
+    const byDate = [...src].sort((a, b) => {
+      const da = a?.addDateTime ? moment(a.addDateTime) : null;
+      const db = b?.addDateTime ? moment(b.addDateTime) : null;
+      if (!da && !db) return 0;
+      if (!da) return 1;
+      if (!db) return -1;
+      return da.diff(db) * -sortOrder;
+    });
+    const buckets = byDate.reduce((pre, cur) => {
+      const k = cur?.addDateTime ? moment(cur.addDateTime).format('MMM-DD-YY') : '__NO_DATE__';
+      (pre[k] ||= []).push(cur);
+      return pre;
+    }, {});
+    const out = [];
+    Object.values(buckets).forEach(list => out.push(...[...list].sort(sortByAlpha)));
+    return out;
+  }, [validation, sortOrder, sortByPermission, sortByAlpha]);
+
+  const memberVisibility = useMemo(() => {
+    const teamsData = props.teamData;
+    const map = {};
+    if (Array.isArray(teamsData) && teamsData.length > 0) {
+      (teamsData[0]?.members || []).forEach(m => {
+        map[m.userId] = m.visible;
+      });
+    }
+    return map;
+  }, [props.teamData]);
+
+  useEffect(() => {
+    setIsValidUser(true);
+    setDuplicateUserAlert(false);
+  }, [props.open]);
+
+  const closeDeletedPopup = () => setDeletedPopup(p => !p);
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
   };
-
   const closePopup = () => {
-    setMemberList([]);
     props.onClose();
     setSortOrder(0);
-    setFilterMode('active');
+    setFilterMode('all');
   };
+  const selectUser = user => {
+    setSelectedUser(user);
+    setIsValidUser(true);
+    setDuplicateUserAlert(false);
+  };
+  const toggleInfoModal = () => setInfoModal(p => !p);
+
   const onAddUser = () => {
     if (selectedUser) {
-      const isDuplicate = validation.some(x => x._id === selectedUser._id);
+      const isDuplicate = validation.some(x => x?._id === selectedUser._id);
       if (!isDuplicate) {
         props.onAddUser(selectedUser);
         setSearchText('');
@@ -74,86 +158,9 @@ export const TeamMembersPopup = React.memo(props => {
       setIsValidUser(false);
     }
   };
-  const selectUser = user => {
-    setSelectedUser(user);
-    setIsValidUser(true);
-    setDuplicateUserAlert(false);
-  };
 
-  const applyStatusFilter = (list, mode) => {
-    if (mode === 'active') return list.filter(u => u.isActive);
-    if (mode === 'inactive') return list.filter(u => !u.isActive);
-    return list; // 'all'
-  };
-
-  const sortByPermission = useCallback((a, b) => {
-    const rolesPermission = [
-      'owner',
-      'administrator',
-      'core team',
-      'manager',
-      'mentor',
-      'assistant manager',
-      'volunteer',
-    ];
-    return rolesPermission.indexOf(a.toLowerCase()) - rolesPermission.indexOf(b.toLowerCase());
-  }, []);
-
-  const sortByAlpha = useCallback((a, b) => {
-    const nameA = `${a.firstName} ${a.lastName}`.toLowerCase();
-    const nameB = `${b.firstName} ${b.lastName}`.toLowerCase();
-    return nameA.localeCompare(nameB);
-  }, []);
-
-  /**
-   * Sort the member list
-   * @param {-1 | 0 | 1} [sort = 0]
-   * -1: ascending order by date
-   * 0: alphabetized order by name
-   * 1: descending order by date
-   */
-  const sortList = (sort = 0) => {
-    let sortedList = [];
-
-    if (sort === 0) {
-      const groupByPermissionList = validation.reduce((pre, cur) => {
-        const { role } = cur;
-        return {
-          ...pre,
-          [role]: pre[role] ? [...pre[role], cur] : [cur],
-        };
-      }, {});
-      sortedList = Object.keys(groupByPermissionList)
-        .sort(sortByPermission)
-        .map(key => groupByPermissionList[key])
-        .map(list => [...list].sort(sortByAlpha))
-        .flat();
-    } else {
-      const sortByDateList = [...validation].sort((a, b) => {
-        return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
-      });
-
-      const dataList = Object.values(
-        sortByDateList.reduce((pre, cur) => {
-          const date = moment(cur.addDateTime).format('MMM-DD-YY');
-          return {
-            ...pre,
-            [date]: pre[date] ? [...pre[date], cur] : [cur],
-          };
-        }, {}),
-      );
-
-      dataList.forEach(item => {
-        sortedList.push(...[...item].sort(sortByAlpha));
-      });
-    }
-    setMemberList(sortedList);
-  };
-
-  const returnUserRole = user => {
-    const rolesArr = ['Manager', 'Mentor', 'Assistant Manager'];
-    if (rolesArr.includes(user.role)) return true;
-    return false;
+  const UpdateTeamMembersVisibility = (userId, choice) => {
+    props.onUpdateTeamMemberVisibility(userId, choice);
   };
 
   const icons = {
@@ -161,47 +168,7 @@ export const TeamMembersPopup = React.memo(props => {
     '0': { icon: faSort, style: { color: 'lightgrey' } },
     '1': { icon: faSortDown },
   };
-
-  const toggleOrder = useCallback(() => {
-    setSortOrder(pre => {
-      if (pre !== -1) {
-        return pre - 1;
-      }
-      return 1;
-    });
-  }, []);
-
-  const [memberVisibility, setMemberVisibility] = useState({});
-  const getMemberVisibility = () => {
-    const teamsData = props.teamData;
-    const newMemberVisibility = {};
-    if (teamsData !== null && teamsData !== undefined && teamsData.length !== 0) {
-      teamsData[0]?.members.forEach(member => {
-        newMemberVisibility[member.userId] = member.visible;
-      });
-    }
-    return newMemberVisibility;
-  };
-
-  useEffect(() => {
-    sortList(sortOrder);
-    const newMemberVisibility = getMemberVisibility();
-    setMemberVisibility(newMemberVisibility);
-  }, [validation, sortOrder]);
-
-  useEffect(() => {
-    setIsValidUser(true);
-    setDuplicateUserAlert(false);
-  }, [props.open]);
-
-  // call the handler to update the team member's visibility
-  const UpdateTeamMembersVisibility = (userId, choice) => {
-    props.onUpdateTeamMemberVisibility(userId, choice);
-  };
-
-  const toggleInfoModal = () => {
-    setInfoModal(!infoModal);
-  };
+  const toggleOrder = useCallback(() => setSortOrder(pre => (pre !== -1 ? pre - 1 : 1)), []);
 
   const emptyState = (
     <tr>
@@ -211,6 +178,9 @@ export const TeamMembersPopup = React.memo(props => {
     </tr>
   );
 
+  // Spinner only if the list is truly not ready yet (should be rare now)
+  const showTableSpinner = props.open && props.fetching && validation.length === 0;
+
   return (
     <Container fluid>
       <InfoModal isOpen={infoModal} toggle={toggleInfoModal} />
@@ -218,17 +188,16 @@ export const TeamMembersPopup = React.memo(props => {
       <Modal
         isOpen={props.open}
         toggle={closePopup}
-        /* eslint-disable-next-line jsx-a11y/no-autofocus */
-        autoFocus={false}
+        // autoFocus={false}
         size="lg"
         className={`${darkMode ? 'dark-mode text-light' : ''} ${
           props.open ? ' open-team-members-popup-modal' : ''
         }`}
       >
-        <ModalHeader
-          className={darkMode ? 'bg-space-cadet' : ''}
-          toggle={closePopup}
-        >{`Members of ${props.selectedTeamName}`}</ModalHeader>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+          {`Members of ${props.selectedTeamName}`}
+        </ModalHeader>
+
         <div className={darkMode ? 'bg-space-cadet' : ''}>
           {canAssignTeamToUsers && (
             <div className="input-group-prepend" style={{ margin: '10px' }}>
@@ -249,6 +218,7 @@ export const TeamMembersPopup = React.memo(props => {
             </div>
           )}
         </div>
+
         <ModalBody
           className={darkMode ? 'bg-yinmn-blue' : ''}
           style={{ textAlign: 'center', overflowX: 'auto' }}
@@ -259,6 +229,14 @@ export const TeamMembersPopup = React.memo(props => {
           {!duplicateUserAlert && isValidUser === false && (
             <Alert color="danger">Please choose a valid user.</Alert>
           )}
+
+          <div>
+            <p style={{ fontWeight: 600 }}>
+              {`All : ${applyStatusFilter(validation, 'all').length}, `}
+              {`Active : ${applyStatusFilter(validation, 'active').length}, `}
+              {`In Active : ${applyStatusFilter(validation, 'inactive').length}`}
+            </p>
+          </div>
 
           <table
             className={`table table-bordered table-responsive-xlg ${
@@ -278,11 +256,11 @@ export const TeamMembersPopup = React.memo(props => {
                 >
                   <button
                     type="button"
-                    onClick={() => {
+                    onClick={() =>
                       setFilterMode(m =>
-                        m === 'active' ? 'all' : m === 'all' ? 'inactive' : 'active',
-                      );
-                    }}
+                        m === 'all' ? 'active' : m === 'active' ? 'inactive' : 'all',
+                      )
+                    }
                     style={{
                       backgroundColor: colorForMode(filterMode),
                       color: textColorForMode(filterMode),
@@ -341,6 +319,7 @@ export const TeamMembersPopup = React.memo(props => {
                     onClick={toggleInfoModal}
                   />
                 </th>
+
                 {canAssignTeamToUsers && (
                   <th
                     style={{ width: 120, textAlign: 'center', verticalAlign: 'middle' }}
@@ -351,99 +330,112 @@ export const TeamMembersPopup = React.memo(props => {
                 )}
               </tr>
             </thead>
+
             <tbody>
-              {(() => {
-                if (props.fetching) {
-                  return (
-                    <tr>
-                      <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
-                        <Spinner
-                          color={`${darkMode ? 'light' : 'dark'}`}
-                          animation="border"
-                          size="sm"
-                        />
-                      </td>
-                    </tr>
-                  );
-                }
+              {showTableSpinner ? (
+                <tr>
+                  <td align="center" colSpan={canAssignTeamToUsers ? 6 : 5}>
+                    <Spinner
+                      color={`${darkMode ? 'light' : 'dark'}`}
+                      animation="border"
+                      size="sm"
+                    />
+                  </td>
+                </tr>
+              ) : (
+                (() => {
+                  const visibleList = applyStatusFilter(sortedMembers, filterMode);
+                  if (!visibleList.length) return emptyState;
 
-                const visibleList = applyStatusFilter(memberList, filterMode);
-                if (!visibleList.length) {
-                  return emptyState;
-                }
+                  return visibleList.map((user, index) => {
+                    const uid = user?._id ?? `row-${index}`;
+                    const first = user?.firstName ?? '';
+                    const last = user?.lastName ?? '';
+                    const role = user?.role ?? '';
+                    const dateTxt = user?.addDateTime
+                      ? moment(user.addDateTime).format('MMM-DD-YY')
+                      : '-';
+                    const isActiveDot = user?.isActive === true;
 
-                return visibleList.map((user, index) => (
-                  <tr key={`${props.selectedTeamName}-${user._id}`}>
-                    <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                      <div className={user.isActive ? 'isActive' : 'isNotActive'}>
-                        <i className="fa fa-circle" aria-hidden="true" />
-                      </div>
-                    </td>
-                    <td
-                      className="def-width"
-                      style={{ verticalAlign: 'middle', textAlign: 'center' }}
-                    >
-                      {index + 1}
-                    </td>
-                    <td
-                      className="def-width"
-                      style={{ verticalAlign: 'middle', textAlign: 'center' }}
-                    >
-                      {returnUserRole(user) ? (
-                        <b>
-                          {user.firstName} {user.lastName} ({user.role})
-                        </b>
-                      ) : (
-                        <span>
-                          {user.firstName} {user.lastName} ({user.role})
-                        </span>
-                      )}{' '}
-                      {hasVisibilityIconPermission && !user.isVisible && (
-                        <i className="fa fa-eye-slash" title="User is invisible" />
-                      )}
-                    </td>
-                    <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
-                      {moment(user.addDateTime).format('MMM-DD-YY')}
-                    </td>
-                    <td
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        height: '100%',
-                      }}
-                    >
-                      <ToggleSwitch
-                        key={`${props.selectedTeamName}-${user._id}`}
-                        switchType="limit-visibility"
-                        userId={user._id}
-                        choice={memberVisibility[user._id]}
-                        UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
-                      />
-                    </td>
-                    {canAssignTeamToUsers && (
-                      <td style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}>
-                        <Button
-                          color="danger"
-                          onClick={() => handleDelete(user._id)}
-                          style={darkMode ? boxStyleDark : boxStyle}
+                    return (
+                      <tr key={`${props.selectedTeamName}-${uid}`}>
+                        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>
+                          <div className={isActiveDot ? 'isActive' : 'isNotActive'}>
+                            <i className="fa fa-circle" aria-hidden="true" />
+                          </div>
+                        </td>
+                        <td
+                          className="def-width"
+                          style={{ verticalAlign: 'middle', textAlign: 'center' }}
                         >
-                          Delete
-                        </Button>
-                      </td>
-                    )}
-                  </tr>
-                ));
-              })()}
+                          {index + 1}
+                        </td>
+                        <td
+                          className="def-width"
+                          style={{ verticalAlign: 'middle', textAlign: 'center' }}
+                        >
+                          {['Manager', 'Mentor', 'Assistant Manager'].includes(role) ? (
+                            <b>
+                              {first} {last} ({role})
+                            </b>
+                          ) : (
+                            <span>
+                              {first} {last} ({role})
+                            </span>
+                          )}{' '}
+                          {hasVisibilityIconPermission && user && user.isVisible === false && (
+                            <i className="fa fa-eye-slash" title="User is invisible" />
+                          )}
+                        </td>
+                        <td style={{ verticalAlign: 'middle', textAlign: 'center' }}>{dateTxt}</td>
+                        <td
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            height: '100%',
+                          }}
+                        >
+                          <ToggleSwitch
+                            key={`${props.selectedTeamName}-${uid}`}
+                            switchType="limit-visibility"
+                            userId={user?._id || null}
+                            choice={memberVisibility[user?._id]}
+                            UpdateTeamMembersVisibility={
+                              user?._id ? UpdateTeamMembersVisibility : () => {}
+                            }
+                          />
+                        </td>
+                        {canAssignTeamToUsers && (
+                          <td
+                            style={{ whiteSpace: 'nowrap', minWidth: '100px', textAlign: 'center' }}
+                          >
+                            <Button
+                              color="danger"
+                              onClick={() => user?._id && handleDelete(user._id)}
+                              disabled={!user?._id}
+                              style={darkMode ? boxStyleDark : boxStyle}
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  });
+                })()
+              )}
             </tbody>
           </table>
         </ModalBody>
+
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
             Close
           </Button>
         </ModalFooter>
       </Modal>
+
       <Modal
         isOpen={deletedPopup}
         toggle={closeDeletedPopup}
@@ -468,5 +460,10 @@ export const TeamMembersPopup = React.memo(props => {
 });
 
 TeamMembersPopup.displayName = 'TeamMembersPopup';
+TeamMembersPopup.defaultProps = {
+  members: [],
+  teamData: [],
+  fetching: false,
+};
 
-export default connect(null, { hasPermission })(TeamMembersPopup);
+export default TeamMembersPopup;

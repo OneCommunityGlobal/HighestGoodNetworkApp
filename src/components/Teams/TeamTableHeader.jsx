@@ -38,7 +38,7 @@ function TeamTableHeaderComponent({
       <th scope="col" className="team-name-col">
         <button type="button" onClick={onTeamNameSort} className={darkMode ? 'text-light' : ''}>
           {getSortIcon(sortTeamNameState)}
-          {TEAM_NAME}
+          {TEAM_NAME} {'(All | Active | In Active)'}
         </button>
       </th>
       <th scope="col" id="teams__active">
