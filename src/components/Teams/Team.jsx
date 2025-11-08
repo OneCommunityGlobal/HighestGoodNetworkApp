@@ -9,6 +9,35 @@ import { getTeamMembers } from '../../actions/allTeamsAction';
 import { useEffect, useMemo, useState } from 'react';
 import { fetchTeamMembersCached, getCachedTeamMembers } from './teamMembersCache';
 
+function computeTeamCounts(members, { loading, hasLocal }) {
+  // show ellipses only on the very first load
+  if (loading && !hasLocal) return { total: '…', active: '…', inactive: '…' };
+
+  const list = Array.isArray(members) ? members : [];
+  const total = list.length;
+
+  // empty list: deterministic zeros
+  if (total === 0) return { total: 0, active: 0, inactive: 0 };
+
+  // compute active count and whether we ever saw a boolean flag
+  const { activeCount, sawFlag } = list.reduce(
+    (acc, m) => {
+      const v = m?.isActive ?? m?.active;
+      if (typeof v === 'boolean') {
+        acc.sawFlag = true;
+        if (v) acc.activeCount += 1;
+      }
+      return acc;
+    },
+    { activeCount: 0, sawFlag: false },
+  );
+
+  // if no boolean flags exist yet, keep counts unknown
+  if (!sawFlag) return { total, active: '…', inactive: '…' };
+
+  return { total, active: activeCount, inactive: total - activeCount };
+}
+
 export function Team(props) {
   const dispatch = useDispatch();
   const darkMode = useSelector(s => s.theme.darkMode);
@@ -40,26 +69,10 @@ export function Team(props) {
 
   const members = localMembers ?? props.team?.members ?? [];
 
-  const { total, active, inactive } = useMemo(() => {
-    const list = Array.isArray(members) ? members : [];
-    const tot = list.length;
-
-    let haveFlag = false,
-      act = 0;
-    for (const m of list) {
-      const flag = m?.isActive ?? m?.active;
-      if (typeof flag === 'boolean') {
-        haveFlag = true;
-        if (flag) act += 1;
-      }
-    }
-    const firstLoad = loading && localMembers == null;
-    return {
-      total: firstLoad ? '…' : tot,
-      active: firstLoad ? '…' : tot === 0 ? 0 : haveFlag ? act : '…',
-      inactive: firstLoad ? '…' : tot === 0 ? 0 : haveFlag ? tot - act : '…',
-    };
-  }, [members, loading, localMembers]);
+  const { total, active, inactive } = useMemo(
+    () => computeTeamCounts(members, { loading, hasLocal: localMembers != null }),
+    [members, loading, localMembers],
+  );
 
   const handleOpenMembers = async () => {
     // IMPORTANT: pass the raw value so tests get `1` (number), not "1" (string)
