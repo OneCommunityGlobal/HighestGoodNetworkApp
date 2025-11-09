@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { ARCHIVE } from './../../../languages/en/ui';
 import './../projects.css';
 import { Link } from 'react-router-dom';
@@ -13,7 +14,6 @@ import { CONFIRM_ARCHIVE, CONFIRM_UNARCHIVE } from './../../../languages/en/mess
 
 const Project = props => {
   const { darkMode, index } = props;
-  const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
   const { projectName, isActive,isArchived = false, _id: projectId } = projectData;
   // const { projectName, isActive, isArchived, _id: projectId } = projectData;
@@ -31,7 +31,7 @@ const Project = props => {
 
   const onCloseModal = () => {
     setModalData(initialModalData);
-    props.clearError();
+    if(props.clearError) props.clearError();
   };
 
   const canPutProject = props.hasPermission('putProject');
@@ -40,13 +40,35 @@ const Project = props => {
   const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
   const canEditCategoryAndStatus = props.hasPermission('editProject');
 
-  const updateProject = ({ updatedProject, status }) => async dispatch => {
+  const persistProjectUpdate = async (field, value) => {
+    if (!projectData) return;
+
+    const previousProject = projectData;
+    const updatedProject = {
+      ...projectData,
+      [field]: value,
+    };
+    setProjectData(updatedProject);
+
     try {
-      dispatch(updateProject({ updatedProject, status }));
+      if (props.onUpdateProject) {
+        await props.onUpdateProject(updatedProject);
+      } else if (props.modifyProject) {
+        await props.modifyProject(updatedProject);
+      }
     } catch (err) {
-      const status = err?.response?.status || 500;
-      const error = err?.response?.data || { message: 'An error occurred' };
-      dispatch(updateProject({ status, error }));
+      setProjectData(previousProject);
+
+      if (field === 'category') {
+        setCategory(previousProject?.category || 'Unspecified');
+      }
+
+      if (field === 'projectName') {
+        setDisplayName(previousProject?.projectName || '');
+      }
+
+      const errorMessage = err?.response?.data?.message || 'An error occurred while updating the project';
+      toast.error(errorMessage);
     }
   };
 
@@ -54,12 +76,12 @@ const Project = props => {
     setDisplayName(e.target.value);
   }
 
-  const onUpdateProjectName = () => {
+  const onUpdateProjectName = async () => {
     if (displayName.length < 3) {
       toast.error('Project name must be at least 3 characters long');
       setDisplayName(displayName);
     } else if (displayName !== projectName) {
-      updateProject('projectName', displayName);
+      await persistProjectUpdate('projectName', displayName);
     }
   };
 
@@ -68,13 +90,10 @@ const Project = props => {
     props.onClickProjectStatusBtn(projectData); // This will open the modal
   };
 
-  const onUpdateProjectActive = () => {
-    updateProject('isActive', !isActive);
-  }
-
   const onUpdateProjectCategory = (e) => {
-    setCategory(e.target.value);
-    updateProject('category', e.target.value); // Update the projectData state
+    const newCategory = e.target.value;
+    setCategory(newCategory);
+    persistProjectUpdate('category', newCategory);
   };
 
   const onArchiveProject = () => {
@@ -132,22 +151,13 @@ const Project = props => {
   };
 
   useEffect(() => {
-    const onUpdateProject = async () => {
-      if (firstLoad) {
-        setFirstLoad(false);
-      } else {
-        await props.modifyProject(projectData);
-      }
-      if (props.projectData.category) {
-        setCategory(props.projectData.category);
-      }
-    };
-
-    onUpdateProject();
+    setProjectData(props.projectData);
+    setDisplayName(props.projectData?.projectName || '');
+    setCategory(props.projectData?.category || props.category || 'Unspecified');
     if (props.projectData.category) {
       setCategory(props.projectData.category);
     }
-  }, [projectData]);
+  }, [props.projectData, props.category]);
 
   return (
       <>
@@ -167,7 +177,7 @@ const Project = props => {
                 className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
                 value={displayName}
                 onChange={onDisplayNameChange}
-                onBlur={() => onUpdateProjectName(displayName)}
+                onBlur={onUpdateProjectName}
               />
             ) : (
               projectName
@@ -280,5 +290,38 @@ const Project = props => {
       </>
   );
 };
+
+// PropTypes validation
+Project.propTypes = {
+  darkMode: PropTypes.bool,
+  index: PropTypes.number.isRequired,
+  projectData: PropTypes.shape({
+    projectName: PropTypes.string,
+    isActive: PropTypes.bool,
+    isArchived: PropTypes.bool,
+    _id: PropTypes.string,
+    category: PropTypes.string,
+  }),
+  category: PropTypes.string,
+  onUpdateProject: PropTypes.func,
+  modifyProject: PropTypes.func,
+  hasPermission: PropTypes.func.isRequired,
+  onClickProjectStatusBtn: PropTypes.func,
+  onClickArchiveBtn: PropTypes.func,
+  projectId: PropTypes.string,
+};
+
+// Default props
+Project.defaultProps = {
+  darkMode: false,
+  projectData: null,
+  category: 'Unspecified',
+  onUpdateProject: null,
+  modifyProject: null,
+  onClickProjectStatusBtn: () => {},
+  onClickArchiveBtn: () => {},
+  projectId: '',
+};
+
 const mapStateToProps = state => state;
 export default connect(mapStateToProps, { hasPermission, modifyProject, clearError })(Project);
