@@ -4,7 +4,7 @@ import Card from 'react-bootstrap/Card';
 import Nav from 'react-bootstrap/Nav';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-regular-svg-icons';
-import parse from 'html-react-parser';
+import ReactHtmlParser from 'html-react-parser';
 import { formatDateAndTime } from '~/utils/formatDate';
 import DeleteLessonCardPopUp from './DeleteLessonCardPopUp';
 import styles from './LessonCard.module.css';
@@ -76,7 +76,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
     handleLike(lessonId, userId);
   };
 
-  const lessonCards = filteredLessons.map(lesson => {
+  const lessonCards = (filteredLessons || []).map(lesson => {
     const { isLiked, totalLikes } = getLikeStatus(lesson._id);
     return (
       <Card key={`${lesson._id} + ${lesson.title} `} className={`${styles.lessonCard}`}>
@@ -98,9 +98,9 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
               <Nav.Item className={`${styles.lessonCardTag}`}>
                 {lesson.tags &&
                   lesson.tags.length > 0 &&
-                  lesson.tags.map(tag => (
+                  lesson.tags.map((tag, index) => (
                     <span
-                      key={`tag-in-header-${tag}-${lesson._id}`}
+                      key={`tag-in-header-${tag}-${lesson._id}-${index}`}
                       className={`text-muted ${styles.tagItem}`}
                     >
                       {`#${tag}`}
@@ -117,9 +117,9 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 Tags:{' '}
                 {lesson.tags &&
                   lesson.tags.length > 0 &&
-                  lesson.tags.map(tag => (
+                  lesson.tags.map((tag, index) => (
                     <span
-                      key={`tag-in-body-${tag}-${lesson._id}`}
+                      key={`tag-in-body-${tag}-${lesson._id}-${index}`}
                       className={`text-muted ${styles.tagItem}`}
                     >
                       {`#${tag}`}
@@ -219,6 +219,14 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
       </Card>
     );
   });
+
+  if (!filteredLessons || filteredLessons.length === 0) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <p>No lessons found. Please add lessons to the database or adjust your filters.</p>
+      </div>
+    );
+  }
 
   return (
     <div>
