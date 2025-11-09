@@ -15,13 +15,11 @@
   max-width: 800px;
   width: 100%;
   border: 6px solid black;
-  border-radius: 8px;
 }
 
 .popup-heading {
   text-align: center;
   font-size: 20px;
-  /* font-weight: bold; */
   margin-bottom: 16px;
   color: black;
 }
@@ -81,32 +79,31 @@
   font-weight: bold;
 }
 
-/* VIBGYOR color scheme: Violet, Indigo, Blue, Green, Yellow, Orange, Red (lighter shades) */
 .color-0 {
-  background-color: #b19cd9; /* Light Violet */
+  background-color: #b19cd9;
 }
 
 .color-1 {
-  background-color: #9370db; /* Light Indigo */
+  background-color: #9370db;
 }
 
 .color-2 {
-  background-color: #87ceeb; /* Light Blue */
+  background-color: #87ceeb;
 }
 
 .color-3 {
-  background-color: #90ee90; /* Light Green */
+  background-color: #90ee90;
 }
 
 .color-4 {
-  background-color: #ffffe0; /* Light Yellow */
+  background-color: #ffffe0;
 }
 
 .color-5 {
-  background-color: #ffb347; /* Light Orange */
+  background-color: #ffb347;
 }
 
 .color-6 {
-  background-color: #ff6b6b; /* Light Red */
+  background-color: #ff6b6b;
 }
 

@@ -31,7 +31,7 @@ export default function DisplayBox({ onClose }) {
     },
   ];
 
-  const [checkedItems, setCheckedItems] = useState(Array(mockPromotionData.length).fill(true));
+  const [checkedItems, setCheckedItems] = useState(new Array(mockPromotionData.length).fill(true));
   const allChecked = checkedItems.every(Boolean);
 
   const handleCheckedBoxChange = index => {
@@ -41,7 +41,7 @@ export default function DisplayBox({ onClose }) {
   };
 
   const handleSelectAll = () => {
-    setCheckedItems(Array(mockPromotionData.length).fill(!allChecked));
+    setCheckedItems(new Array(mockPromotionData.length).fill(!allChecked));
   };
 
   return (
