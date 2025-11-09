@@ -15,6 +15,7 @@ import {
   CardBody,
 } from 'reactstrap';
 import ReviewWordCloud from './ReviewWordCloud/ReviewWordCloud';
+import { ComparePieChart } from './PieChart/ComparePieChart';
 import styles from './LBDashboard.module.css';
 
 const METRIC_OPTIONS = {
@@ -25,10 +26,10 @@ const METRIC_OPTIONS = {
   ],
   REVENUE: [
     { key: 'avgBid', label: 'Average Bid' },
-    { key: 'finalPrice', label: 'Final Price / Income' }, // default for Revenue
+    { key: 'finalPrice', label: 'Final Price / Income' },
   ],
   VACANCY: [
-    { key: 'occupancyRate', label: 'Occupancy Rate (% days not vacant)' }, // default for Vacancy
+    { key: 'occupancyRate', label: 'Occupancy Rate (% days not vacant)' },
     { key: 'avgStay', label: 'Average Duration of Stay' },
   ],
 };
@@ -38,6 +39,15 @@ const DEFAULTS = {
   REVENUE: 'finalPrice',
   VACANCY: 'occupancyRate',
 };
+
+// Dummy data for the pie chart - matching the image specifications
+const VILLAGE_COMPARISON_DATA = [
+  { name: 'Earthbag', value: 10 },
+  { name: 'Straw Bale', value: 50 },
+  { name: 'Cob Village', value: 60 },
+  { name: 'Tree House', value: 10 },
+  { name: 'Recycle Materials', value: 70 },
+];
 
 function GraphCard({ title, metricLabel, darkMode }) {
   return (
@@ -195,10 +205,13 @@ export function LBDashboard() {
                 />
               </Col>
               <Col>
-                <GraphCard
+                <ComparePieChart
                   title="Comparing Villages"
-                  metricLabel={metricLabel}
+                  data={VILLAGE_COMPARISON_DATA}
                   darkMode={darkMode}
+                  showMetricPill={true}
+                  metricLabel={metricLabel}
+                  height={380}
                 />
               </Col>
             </Row>
