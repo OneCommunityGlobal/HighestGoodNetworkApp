@@ -60,8 +60,6 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
       } else {
         return updateState({ status: 404, error: 'Project not found.' });
       }
-
-      return updateState({ status: 404, error: 'Project not found.' });
     }
 
     case types.DELETE_PROJECT: {

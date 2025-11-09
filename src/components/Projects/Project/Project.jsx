@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ARCHIVE } from './../../../languages/en/ui';
-import './../projects.css';
+import './../projects.module.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
