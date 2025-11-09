@@ -74,6 +74,7 @@ import injuriesReducer from './injuries';
 
 import { weeklyProjectSummaryReducer } from './bmdashboard/weeklyProjectSummaryReducer';
 import messageReducer from './listBidDashboard/messagingReducer';
+// eslint-disable import/no-named-as-default
 import userPreferencesReducer from './listBidDashboard/userPreferencesReducer';
 import userSkillsReducer from './userSkillsReducer';
 // community portalgit

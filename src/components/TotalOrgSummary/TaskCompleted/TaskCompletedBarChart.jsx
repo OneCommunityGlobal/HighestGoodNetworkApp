@@ -73,6 +73,7 @@ export default function TaskCompletedBarChart({ isLoading, data, darkMode }) {
   // --- Export CSV helper ---
   const exportCSV = () => {
     if (!raw?.current?.length && !raw?.comparison?.length) {
+      // eslint-disable no-alert
       alert('No raw data available to export.');
       return;
     }

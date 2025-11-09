@@ -4,6 +4,7 @@ import { BrowserRouter as Router , Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+/* eslint-disable import/no-named-as-default */
 import configureStore from 'redux-mock-store';
 import TimelogNavbar from '../TimelogNavbar';
 import { renderWithRouterMatch } from '../../../__tests__/utils';

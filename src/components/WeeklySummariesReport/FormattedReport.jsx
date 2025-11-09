@@ -324,7 +324,6 @@ function ReportDetails({
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
-  // const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const totalSecondsArray = summary.totalSeconds || [];
   const promisedHoursArray = summary.promisedHoursByWeek || [];
   const hoursLogged = ((totalSecondsArray[weekIndex] || 0) / 3600).toFixed(2);
@@ -424,7 +423,6 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     );
   }
 
-  // const weeklySummaries = Array.isArray(summary?.weeklySummaries) ? summary.weeklySummaries : [];
   const weeklySummaries = summary?.weeklySummaries || [];
   const currentSummary = weeklySummaries[weekIndex];
 
@@ -1111,22 +1109,50 @@ function Index({
   );
 }
 
-FormattedReport.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
-  weekIndex: PropTypes.number.isRequired,
+// FormattedReport.propTypes = {
+//   // eslint-disable-next-line react/forbid-prop-types
+//   summaries: PropTypes.arrayOf(PropTypes.object).isRequired,
+//   weekIndex: PropTypes.number.isRequired,
 
-  // Adding these to clarify structure for Sonar:
-  // summary: PropTypes.shape({
-  //   _id: PropTypes.string,
-  //   filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
-  //   promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
-  //   weeklySummaries: PropTypes.arrayOf(
-  //     PropTypes.shape({
-  //       summary: PropTypes.string,
-  //     }),
-  //   ),
-  // }),
+//   // Adding these to clarify structure for Sonar:
+//   // summary: PropTypes.shape({
+//   //   _id: PropTypes.string,
+//   //   filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+//   //   promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+//   //   weeklySummaries: PropTypes.arrayOf(
+//   //     PropTypes.shape({
+//   //       summary: PropTypes.string,
+//   //     }),
+//   //   ),
+//   // }),
+// };
+
+FormattedReport.propTypes = {
+  summaries: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.string,
+      filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+      promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+      totalSeconds: PropTypes.number,
+      weeklySummaries: PropTypes.arrayOf(
+        PropTypes.shape({
+          summary: PropTypes.string,
+        }),
+      ),
+    }),
+  ).isRequired,
+  weekIndex: PropTypes.number.isRequired,
+  summary: PropTypes.shape({
+    _id: PropTypes.string,
+    filterColor: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
+    promisedHoursByWeek: PropTypes.arrayOf(PropTypes.number),
+    totalSeconds: PropTypes.number,
+    weeklySummaries: PropTypes.arrayOf(
+      PropTypes.shape({
+        summary: PropTypes.string,
+      }),
+    ),
+  }),
 };
 
 export default FormattedReport;

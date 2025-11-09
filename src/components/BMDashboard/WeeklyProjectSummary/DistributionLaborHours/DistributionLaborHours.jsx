@@ -1,18 +1,25 @@
 /* eslint-disable no-alert */
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { useSelector } from 'react-redux';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import styles from './DistributionLaborHours.module.css';
 
-const COLORS = ['#f9f3e3', '#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbbff'];
+const COLORS = ['#2a647c', '#2e8ea3', '#ffab91', '#ffccbb', '#bbbbbb', '#f9f3e3'];
 
-const CustomTooltip = ({ active, payload, total }) => {
+const CustomTooltip = ({ active, payload, total, darkMode }) => {
   if (active && payload && payload.length) {
-    const category = payload[0].name;
-    const value = payload[0].value;
+    const { name, value } = payload[0];
     const percent = ((value / total) * 100).toFixed(1);
     return (
-      <div className={styles.tooltip}>
-        <p>{category}</p>
+      <div
+        className={styles.tooltip}
+        style={{
+          backgroundColor: darkMode ? '#2E3E5A' : '#fff',
+          color: darkMode ? '#fff' : '#000',
+          border: darkMode ? '1px solid #555' : '1px solid #ccc',
+        }}
+      >
+        <p>{name}</p>
         <p>{`Hours: ${value} hrs`}</p>
         <p>{`Percentage: ${percent}%`}</p>
       </div>
@@ -22,6 +29,8 @@ const CustomTooltip = ({ active, payload, total }) => {
 };
 
 export default function DistributionLaborHours() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [originalData, setOriginalData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [dateRange, setDateRange] = useState({ from: '', to: '' });
@@ -57,11 +66,20 @@ export default function DistributionLaborHours() {
   const totalHours = filteredData.reduce((sum, item) => sum + item.value, 0);
 
   return (
-    <div className={styles.container}>
-      <h3 className={styles.title}>Distribution of Labor Hours</h3>
+    <div
+      className={styles.container}
+      style={{
+        backgroundColor: darkMode ? '#2E3E5A' : '#fff',
+        color: darkMode ? '#f5f5f5' : '#000',
+      }}
+    >
+      <h3 className={styles.title} style={{ color: darkMode ? '#ffffff' : '#000000' }}>
+        Distribution of Labor Hours
+      </h3>
 
+      {/* Filters */}
       <div className={styles.filters}>
-        <label>
+        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
           From:
           <input
             type="date"
@@ -69,7 +87,7 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, from: e.target.value })}
           />
         </label>
-        <label>
+        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
           To:
           <input
             type="date"
@@ -77,7 +95,7 @@ export default function DistributionLaborHours() {
             onChange={e => setDateRange({ ...dateRange, to: e.target.value })}
           />
         </label>
-        <label>
+        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
           Project:
           <select onChange={e => setProjectFilter(e.target.value)} value={projectFilter}>
             <option value="">All</option>
@@ -85,7 +103,7 @@ export default function DistributionLaborHours() {
             <option value="Project B">Project B</option>
           </select>
         </label>
-        <label>
+        <label style={{ color: darkMode ? '#ffffff' : '#000000' }}>
           Member:
           <select onChange={e => setMemberFilter(e.target.value)} value={memberFilter}>
             <option value="">All</option>
@@ -93,11 +111,10 @@ export default function DistributionLaborHours() {
             <option value="Member 2">Member 2</option>
           </select>
         </label>
-        <button className={styles.button} onClick={() => window.location.reload()}>
-          Submit
-        </button>
+        <button className={styles.button}>Submit</button>
       </div>
 
+      {/* Chart + Legend */}
       <div className={styles.chartWrapper}>
         <div className={styles.legend}>
           {filteredData.map((entry, index) => (
@@ -106,7 +123,9 @@ export default function DistributionLaborHours() {
                 className={styles.colorBox}
                 style={{ backgroundColor: COLORS[index % COLORS.length] }}
               />
-              {entry.name}: {entry.value} hrs
+              <span style={{ color: darkMode ? '#f5f5f5' : '#000' }}>
+                {entry.name}: {entry.value} hrs
+              </span>
             </div>
           ))}
         </div>
@@ -121,13 +140,14 @@ export default function DistributionLaborHours() {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                onClick={data => alert(`Drilldown for: ${data.name}`)}
+                labelLine={false}
+                label={({ value }) => `${((value / totalHours) * 100).toFixed(1)}%`}
               >
                 {filteredData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip content={<CustomTooltip total={totalHours} />} />
+              <Tooltip content={<CustomTooltip total={totalHours} darkMode={darkMode} />} />
             </PieChart>
           </ResponsiveContainer>
         </div>
