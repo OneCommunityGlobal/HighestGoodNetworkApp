@@ -14,6 +14,7 @@ import Logout from './components/Logout/Logout';
 import ForgotPassword from './components/Login/ForgotPassword';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import UpdatePassword from './components/UpdatePassword';
+import MemberList from './components/QuestionnaireDashboard/MemberList';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 
 import SetupProfile from './components/SetupProfile/SetupProfile';
@@ -116,7 +117,6 @@ import Collaboration from './components/Collaboration';
 import SuggestedJobsList from './components/Collaboration/SuggestedJobsList';
 
 import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
-import MemberList from './components/QuestionnaireDashboard/MemberList';
 import EventPopularity from './components/EventPopularity/EventPopularity';
 import ApplicantVolunteerRatio from './components/ApplicantVolunteerRatio/ApplicantVolunteerRatio';
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute/LBProtectedRoute';
@@ -169,6 +169,7 @@ import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTo
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+import ReviewersStackedBarChart from './components/HGNPRDashboard/ReviewersStackedBarChart/ReviewersStackedBarChart';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
@@ -190,9 +191,6 @@ const PurchaseMaterials = lazy(() =>
 const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
-// const PurchaseEquipment = lazy(() =>
-//   import('./components/BMDashboard/PurchaseRequests/EquipmentPurchaseRequest'),
-// );
 const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
@@ -850,6 +848,11 @@ export default (
           path="/pr-dashboard/promotion-eligibility"
           exact
           component={PromotionEligibility}
+        />
+        <ProtectedRoute
+          path="/pr-team-analytics/reviewers-stacked-bar-chart"
+          exact
+          component={ReviewersStackedBarChart}
         />
         <Route path="*" component={NotFoundPage} />
       </Switch>
