@@ -25,6 +25,7 @@ import UnansweredFaqs from '~/components/Faq/UnansweredFaqs';
 import HeaderRenderer from '~/components/Header/HeaderRenderer';
 import IssueDashboard from '~/components/BMDashboard/Issues/IssueDashboard';
 import { ExperienceDonutChart } from '~/components/ExperienceDonutChart';
+import ActualCostBreakdown from '~/components/ActualCostBreakdown';
 import LessonForm from '~/components/BMDashboard/Lesson/LessonForm';
 import Page1 from './components/HGNForm/pages/Page1';
 import Page2 from './components/HGNForm/pages/Page2';
@@ -712,6 +713,7 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
+        <ProtectedRoute path="/actual-cost-breakdown" component={ActualCostBreakdown} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
 
         <ProtectedRoute path="/" exact component={Dashboard} />

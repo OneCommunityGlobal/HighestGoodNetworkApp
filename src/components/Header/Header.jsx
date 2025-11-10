@@ -49,6 +49,7 @@ import {
   TOTAL_ORG_SUMMARY,
   TOTAL_CONSTRUCTION_SUMMARY,
   PR_PROMOTIONS,
+  ACTUAL_COST_BREAKDOWN,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -453,6 +454,9 @@ export function Header(props) {
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
+                      <DropdownItem tag={Link} to="/actual-cost-breakdown" className={fontColor}>
+                        {ACTUAL_COST_BREAKDOWN}
+                      </DropdownItem>
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>

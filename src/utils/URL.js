@@ -107,10 +107,9 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
-      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+    ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
-      customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -382,6 +381,9 @@ export const ENDPOINTS = {
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
+
+  // actual cost endpoints
+  ACTUAL_COST_BREAKDOWN: projectId => `${APIEndpoint}/projects/${projectId}/actual-cost-breakdown`,
 };
 
 export const ApiEndpoint = APIEndpoint;
