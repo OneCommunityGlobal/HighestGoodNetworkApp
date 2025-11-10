@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
+import CreateEventModal from './CreateEventModal';
 
 function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
@@ -166,7 +168,11 @@ function MyCases() {
               <option value="thisMonth">This Month</option>
             </select>
           </div>
-          <button type="button" className={`create-new-global ${styles.createNew}`}>
+          <button
+            type="button"
+            className={`create-new-global ${styles.createNew}`}
+            onClick={() => setIsCreateModalOpen(true)}
+          >
             + Create New
           </button>
           {filteredEvents.length > 10 && !isExporting && (
@@ -185,6 +191,10 @@ function MyCases() {
         {view === 'list' && renderListView()}
         {view === 'calendar' && renderCalendarView()}
       </main>
+      <CreateEventModal
+        isOpen={isCreateModalOpen}
+        toggle={() => setIsCreateModalOpen(!isCreateModalOpen)}
+      />
     </div>
   );
 }
