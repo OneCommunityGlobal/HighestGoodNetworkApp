@@ -168,6 +168,9 @@ import { UserRole } from './utils/enums';
 
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 
+// High Good Education
+import BadgeGallery from './components/BadgeGallery/BadgeGallery';
+
 // Social Architecture
 
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
@@ -794,6 +797,13 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <ProtectedRoute
+          path="/student/profile/badges"
+          exact
+          component={BadgeGallery}
+          fallback
+        />{' '}
+        {/*Student Page Badge component*/}
         <ProtectedRoute path="/memberlist" exact component={MemberList} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
