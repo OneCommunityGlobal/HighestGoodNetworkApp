@@ -7,10 +7,12 @@ import styles from './CommunityCalendar.module.css';
 
 function CommunityCalendar() {
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
 
-  const mockEvents = [
+  const events = useMemo(
+    () => [
     {
       id: 1,
       title: 'Event 1',
@@ -61,17 +63,19 @@ function CommunityCalendar() {
       status: 'Filling Fast',
       description: 'Detailed description of Event 5.',
     },
-  ];
+    ],
+    [],
+  );
 
   // Memoized filtered events - only recalculates when filter changes
   const filteredEvents = useMemo(() => {
-    return mockEvents.filter(
+    return events.filter(
       event =>
         (filter.type === 'all' || event.type === filter.type) &&
         (filter.location === 'all' || event.location === filter.location) &&
         (filter.status === 'all' || event.status === filter.status),
     );
-  }, [filter, mockEvents]);
+  }, [events, filter]);
 
   // Enhanced event caching by date - memoized for performance
   const eventCache = useMemo(() => {
@@ -98,12 +102,12 @@ function CommunityCalendar() {
 
   // Memoized unique filter values for dropdowns
   const uniqueFilterValues = useMemo(() => {
-    const types = [...new Set(mockEvents.map(event => event.type))];
-    const locations = [...new Set(mockEvents.map(event => event.location))];
-    const statuses = [...new Set(mockEvents.map(event => event.status))];
+    const types = [...new Set(events.map(event => event.type))];
+    const locations = [...new Set(events.map(event => event.location))];
+    const statuses = [...new Set(events.map(event => event.status))];
 
     return { types, locations, statuses };
-  }, [mockEvents]);
+  }, [events]);
 
   // Memoized helper function to get events for a specific date
   const getEventsForDate = useCallback(
@@ -113,7 +117,40 @@ function CommunityCalendar() {
     [eventCache],
   );
 
-  // Handle event click
+  const selectedDateEvents = useMemo(() => {
+    const dateKey = selectedDate?.toDateString();
+    if (!dateKey) {
+      return [];
+    }
+    return filteredEvents.filter(event => event.date.toDateString() === dateKey);
+  }, [filteredEvents, selectedDate]);
+
+  const formattedSelectedDate = useMemo(() => {
+    if (!selectedDate) {
+      return '';
+    }
+    return selectedDate.toLocaleDateString(undefined, {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  }, [selectedDate]);
+
+  const handleDateSelect = useCallback(
+    date => {
+      setSelectedDate(date);
+      const eventsForDate = getEventsForDate(date);
+      if (eventsForDate.length > 0) {
+        setSelectedEvent(eventsForDate[0]);
+      } else {
+        setSelectedEvent(null);
+      }
+      setShowEventModal(false);
+    },
+    [getEventsForDate],
+  );
+
   const handleEventClick = useCallback(event => {
     setSelectedEvent(event);
     setShowEventModal(true);
@@ -181,12 +218,16 @@ function CommunityCalendar() {
   // Memoized tile class name function - optimized for performance
   const tileClassName = useCallback(
     ({ date, view }) => {
+      const classNames = [];
       if (view === 'month' && eventCountByDate.has(date.toDateString())) {
-        return styles.hasEvents;
+        classNames.push(styles.hasEvents);
       }
-      return null;
+      if (view === 'month' && selectedDate && date.toDateString() === selectedDate.toDateString()) {
+        classNames.push(styles.selectedDate);
+      }
+      return classNames.join(' ') || null;
     },
-    [eventCountByDate],
+    [eventCountByDate, selectedDate],
   );
 
   // Memoized filter change handlers to prevent unnecessary re-renders
@@ -201,6 +242,27 @@ function CommunityCalendar() {
   const handleStatusFilterChange = useCallback(e => {
     setFilter(prev => ({ ...prev, status: e.target.value }));
   }, []);
+
+  useEffect(() => {
+    const eventsForDate = getEventsForDate(selectedDate);
+    if (eventsForDate.length === 0) {
+      if (selectedEvent !== null) {
+        setSelectedEvent(null);
+      }
+      if (showEventModal) {
+        setShowEventModal(false);
+      }
+      return;
+    }
+
+    const hasSelectedEvent = eventsForDate.some(event => event.id === selectedEvent?.id);
+    if (!hasSelectedEvent) {
+      setSelectedEvent(eventsForDate[0]);
+      if (showEventModal) {
+        setShowEventModal(false);
+      }
+    }
+  }, [getEventsForDate, selectedDate, selectedEvent, showEventModal]);
 
   // Memoized dark mode selector to prevent unnecessary re-renders
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -273,7 +335,69 @@ function CommunityCalendar() {
               className={calendarClasses.reactCalendar}
               tileContent={tileContent}
               tileClassName={tileClassName}
+              onClickDay={handleDateSelect}
+              value={selectedDate}
             />
+            <section
+              className={`${styles.selectedDatePanel} ${
+                darkMode ? styles.selectedDatePanelDarkMode : ''
+              }`}
+              aria-live="polite"
+            >
+              <div className={styles.selectedDateHeader}>
+                <div>
+                  <h2>{formattedSelectedDate || 'Select a date'}</h2>
+                  <p className={styles.selectedDateSummary}>
+                    {selectedDateEvents.length > 0
+                      ? `${selectedDateEvents.length} ${
+                          selectedDateEvents.length === 1 ? 'event' : 'events'
+                        } scheduled`
+                      : 'No events scheduled for this date'}
+                  </p>
+                </div>
+              </div>
+
+              {selectedDateEvents.length > 0 ? (
+                <ul className={styles.selectedEventList}>
+                  {selectedDateEvents.map(event => {
+                    const isActive = selectedEvent?.id === event.id;
+                    return (
+                      <li key={event.id}>
+                        <article
+                          className={`${styles.selectedEventCard} ${
+                            darkMode ? styles.selectedEventCardDarkMode : ''
+                          } ${isActive ? styles.selectedEventCardActive : ''}`}
+                        >
+                          <header className={styles.selectedEventHeader}>
+                            <div>
+                              <h3>{event.title}</h3>
+                              <div className={styles.selectedEventMeta}>
+                                <span>{event.time}</span>
+                                <span>{event.location}</span>
+                                <span>{event.type}</span>
+                                <span>{event.status}</span>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              className={styles.eventDetailButton}
+                              onClick={() => handleEventClick(event)}
+                            >
+                              View full details
+                            </button>
+                          </header>
+                          <p className={styles.selectedEventDescription}>{event.description}</p>
+                        </article>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <div className={styles.noEventsMessage}>
+                  <p>Select a different date or adjust the filters to see scheduled events.</p>
+                </div>
+              )}
+            </section>
           </div>
         </div>
       </main>
