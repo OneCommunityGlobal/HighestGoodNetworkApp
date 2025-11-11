@@ -292,7 +292,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
       {data.length > 0 ? (
         <div className="tools-horizontal-bar-chart-content">
-          <ResponsiveContainer width="100%" height={200}>
+          <ResponsiveContainer width="100%" height={280}>
             <BarChart
               layout="vertical"
               data={data}

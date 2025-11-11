@@ -93,11 +93,11 @@ export default function ToolStatusDonutChart() {
   } else if (windowWidth <= 768) {
     innerRadius = 45;
     outerRadius = 75;
-    chartHeight = 260;
+    chartHeight = 280;
   } else {
     innerRadius = 70;
     outerRadius = 100;
-    chartHeight = 320;
+    chartHeight = 300; // Match other charts
   }
 
   return (
