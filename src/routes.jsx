@@ -169,7 +169,7 @@ import { UserRole } from './utils/enums';
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 
 // High Good Education
-import BadgeGallery from './components/BadgeGallery/BadgeGallery';
+import StudentBadgeGallery from './components/StudentBadgeGallery/StudentBadgeGallery';
 
 // Social Architecture
 
@@ -800,7 +800,7 @@ export default (
         <ProtectedRoute
           path="/student/profile/badges"
           exact
-          component={BadgeGallery}
+          component={StudentBadgeGallery}
           fallback
         />{' '}
         {/*Student Page Badge component*/}
