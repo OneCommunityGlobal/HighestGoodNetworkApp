@@ -43,6 +43,7 @@ import {
 import {
   fetchEmailTemplates,
   clearEmailTemplateError,
+  previewEmailTemplate,
 } from '../../../actions/emailTemplateActions';
 import './IntegratedEmailSender.css';
 
@@ -222,10 +223,9 @@ const IntegratedEmailSender = ({
   templates,
   loading,
   error,
-  sendingEmail,
-  emailSent,
   fetchEmailTemplates,
   clearEmailTemplateError,
+  previewEmailTemplate,
   onClose,
   initialContent = '',
   initialSubject = '',
@@ -235,6 +235,7 @@ const IntegratedEmailSender = ({
   const history = useHistory();
   const location = useLocation();
   const darkMode = useSelector(state => state.theme.darkMode);
+  const currentUser = useSelector(state => state.auth?.user);
 
   // Get current mode from URL query params, default to 'template'
   const getCurrentModeFromURL = useCallback(() => {
@@ -257,7 +258,7 @@ const IntegratedEmailSender = ({
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [recipientList, setRecipientList] = useState([]);
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
@@ -266,8 +267,10 @@ const IntegratedEmailSender = ({
   const [editorError, setEditorError] = useState(null);
   const [showRetryOptions, setShowRetryOptions] = useState(false);
   const [lastSuccessfulLoad, setLastSuccessfulLoad] = useState(null);
-  const [customSendingEmail, setCustomSendingEmail] = useState(false);
   const [fullTemplateContent, setFullTemplateContent] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState(null);
+  const [backendPreviewData, setBackendPreviewData] = useState(null);
 
   // Refs for performance optimization
   const abortControllerRef = useRef(null);
@@ -411,7 +414,6 @@ const IntegratedEmailSender = ({
     setApiError(null);
     setRetryCount(0);
     setIsRetrying(false);
-    setCustomSendingEmail(false);
   }, []);
 
   // Update useTemplate when URL changes (e.g., browser back/forward)
@@ -505,24 +507,8 @@ const IntegratedEmailSender = ({
   }, [preSelectedTemplate, templates]);
 
   // Removed auto-clear of errors - errors should persist until manually handled
-
-  useEffect(() => {
-    if (emailSent) {
-      const timer = setTimeout(() => {
-        clearEmailTemplateError();
-        // Clear everything when email is sent successfully
-        resetAllStates();
-        if (onClose) {
-          onClose();
-        }
-      }, 3000); // Reduced from 5000ms for better UX
-
-      // Store timeout ref for cleanup
-      timeoutRefs.current.push(timer);
-
-      return () => clearTimeout(timer);
-    }
-  }, [emailSent, clearEmailTemplateError, onClose, resetAllStates]);
+  // Email sent handling removed - emails are now sent via emailController endpoints
+  // Success/error handling is done in confirmSendEmail callback
 
   // Cleanup effect to reset states when component unmounts
   useEffect(() => {
@@ -652,21 +638,21 @@ const IntegratedEmailSender = ({
   }, []);
 
   // Function to fetch full template content
+  // Backend returns: { success: true, template: {...} }
   const fetchFullTemplateContent = useCallback(async templateId => {
     try {
       const response = await axios.get(ENDPOINTS.EMAIL_TEMPLATE_BY_ID(templateId));
-      // console.log('Full template content fetched:', response.data);
 
-      // Extract template data from the response structure
-      const templateData = response.data.success ? response.data.template : response.data;
-      // console.log('Extracted template data:', templateData);
-
-      setFullTemplateContent(templateData);
-      return templateData;
+      if (response.data.success && response.data.template) {
+        setFullTemplateContent(response.data.template);
+        return response.data.template;
+      } else {
+        throw new Error(response.data.message || 'Template not found');
+      }
     } catch (error) {
       // console.error('Failed to fetch full template content:', error);
       setFullTemplateContent(null);
-      return null;
+      throw error;
     }
   }, []);
 
@@ -849,19 +835,24 @@ const IntegratedEmailSender = ({
     return Object.keys(errors).length === 0;
   }, [useTemplate, selectedTemplate, customContent, customSubject, variableValues]);
 
-  const handleSendEmail = useCallback(() => {
-    if (!validateForm()) {
-      return;
-    }
-    setShowConfirmModal(true);
-  }, [validateForm]);
-
+  // Get preview content - use backend API if template is selected, otherwise client-side
   const getPreviewContent = useCallback(() => {
-    if (useTemplate && selectedTemplate) {
-      const templateData = fullTemplateContent || selectedTemplate;
-      return buildRenderedEmailFromTemplate(templateData, variableValues);
+    // For custom emails, use client-side content
+    if (!useTemplate || !selectedTemplate) {
+      return { subject: customSubject, content: customContent };
     }
-    return { subject: customSubject, content: customContent };
+
+    // If backend preview data is available, use it
+    if (backendPreviewData) {
+      return {
+        subject: backendPreviewData.subject || customSubject,
+        content: backendPreviewData.htmlContent || backendPreviewData.html_content || customContent,
+      };
+    }
+
+    // Fallback to client-side rendering if backend preview is not available
+    const templateData = fullTemplateContent || selectedTemplate;
+    return buildRenderedEmailFromTemplate(templateData, variableValues);
   }, [
     useTemplate,
     selectedTemplate,
@@ -869,10 +860,65 @@ const IntegratedEmailSender = ({
     variableValues,
     customSubject,
     customContent,
+    backendPreviewData,
   ]);
 
-  const confirmSendEmail = useCallback(async () => {
-    setShowConfirmModal(false);
+  // Handle preview with backend API for templates
+  const handlePreview = useCallback(async () => {
+    if (!validateForPreview()) {
+      toast.warning('Please fix validation errors before previewing', {
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    // For custom emails, just show preview modal
+    if (!useTemplate || !selectedTemplate) {
+      setShowPreviewModal(true);
+      return;
+    }
+
+    // For templates, try to use backend API if template has an ID
+    if (selectedTemplate._id) {
+      setPreviewLoading(true);
+      setPreviewError(null);
+      setBackendPreviewData(null);
+
+      try {
+        const preview = await previewEmailTemplate(selectedTemplate._id, variableValues);
+        setBackendPreviewData(preview);
+        setShowPreviewModal(true);
+      } catch (error) {
+        // If backend preview fails, fallback to client-side preview
+        setPreviewError(error.message || 'Failed to preview template');
+        toast.warning('Preview failed, using basic preview', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        // Clear backend preview data to use client-side fallback
+        setBackendPreviewData(null);
+        setShowPreviewModal(true);
+      } finally {
+        setPreviewLoading(false);
+      }
+    } else {
+      // Template doesn't have an ID, use client-side preview
+      setShowPreviewModal(true);
+    }
+  }, [useTemplate, selectedTemplate, variableValues, validateForPreview, previewEmailTemplate]);
+
+  // Handle send email - opens preview modal which also allows sending
+  const handleSendEmail = useCallback(() => {
+    if (!validateForm()) {
+      return;
+    }
+    // Open preview modal - user can review and send from there
+    handlePreview();
+  }, [validateForm, handlePreview]);
+
+  // Send email from preview modal
+  const handleSendFromPreview = useCallback(async () => {
+    setIsSending(true);
 
     try {
       if (useTemplate && selectedTemplate) {
@@ -907,52 +953,87 @@ const IntegratedEmailSender = ({
                 html: rendered.content,
               };
 
+        // Get current user for requestor (required by backend)
+        if (!currentUser || !currentUser.userid) {
+          throw new Error('User authentication required to send emails');
+        }
+
+        const requestor = {
+          requestorId: currentUser.userid,
+          email: currentUser.email,
+          role: currentUser.role,
+        };
+
+        // Add requestor to payload
+        const payloadWithRequestor = {
+          ...payload,
+          requestor,
+        };
+
         if (emailDistribution === 'broadcast') {
-          await axios.post(ENDPOINTS.BROADCAST_EMAILS, payload);
+          await axios.post(ENDPOINTS.BROADCAST_EMAILS, payloadWithRequestor);
         } else {
-          await axios.post(ENDPOINTS.POST_EMAILS, payload);
+          await axios.post(ENDPOINTS.POST_EMAILS, payloadWithRequestor);
         }
         const recipientCount =
           emailDistribution === 'broadcast'
             ? 'all subscribers'
             : `${recipientList.length} recipient(s)`;
-        toast.success(`Email sent successfully to ${recipientCount}`);
+        toast.success(`Email created successfully for ${recipientCount}. Processing started.`);
+        // Close preview modal after successful send
+        setShowPreviewModal(false);
+        setBackendPreviewData(null);
+        setPreviewError(null);
         resetAllStates();
       } else {
-        // Send custom email - Set sending state for progress indicator
-        setCustomSendingEmail(true);
-
-        try {
-          if (emailDistribution === 'broadcast') {
-            // Use existing broadcast functionality for custom emails
-            await axios.post(ENDPOINTS.BROADCAST_EMAILS, {
-              subject: customSubject,
-              html: customContent,
-            });
-          } else {
-            // Use existing send email functionality for specific recipients
-            await axios.post(ENDPOINTS.POST_EMAILS, {
-              to: recipientList,
-              subject: customSubject,
-              html: customContent,
-            });
-          }
-
-          // Show success message
-          const recipientCount =
-            emailDistribution === 'broadcast'
-              ? 'all subscribers'
-              : `${recipientList.length} recipient(s)`;
-          toast.success(`Email sent successfully to ${recipientCount}`);
-          resetAllStates();
-        } finally {
-          setCustomSendingEmail(false);
+        // Send custom email
+        // Get current user for requestor (required by backend)
+        if (!currentUser || !currentUser.userid) {
+          throw new Error('User authentication required to send emails');
         }
+
+        const requestor = {
+          requestorId: currentUser.userid,
+          email: currentUser.email,
+          role: currentUser.role,
+        };
+
+        if (emailDistribution === 'broadcast') {
+          // Use existing broadcast functionality for custom emails
+          await axios.post(ENDPOINTS.BROADCAST_EMAILS, {
+            subject: customSubject,
+            html: customContent,
+            requestor,
+          });
+        } else {
+          // Use existing send email functionality for specific recipients
+          await axios.post(ENDPOINTS.POST_EMAILS, {
+            to: recipientList,
+            subject: customSubject,
+            html: customContent,
+            requestor,
+          });
+        }
+
+        // Show success message
+        const recipientCount =
+          emailDistribution === 'broadcast'
+            ? 'all subscribers'
+            : `${recipientList.length} recipient(s)`;
+        toast.success(`Email created successfully for ${recipientCount}. Processing started.`);
+        // Close preview modal after successful send
+        setShowPreviewModal(false);
+        setBackendPreviewData(null);
+        setPreviewError(null);
+        resetAllStates();
       }
     } catch (error) {
       // console.error('Email sending failed:', error);
-      toast.error(`Failed to send email: ${error.message || 'Unknown error'}`);
-      setValidationErrors({ general: error.message || 'Failed to send email' });
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
+      toast.error(`Failed to send email: ${errorMessage}`);
+      setValidationErrors({ general: errorMessage });
+    } finally {
+      setIsSending(false);
     }
   }, [
     useTemplate,
@@ -965,10 +1046,17 @@ const IntegratedEmailSender = ({
     customSubject,
     customContent,
     resetAllStates,
+    currentUser,
   ]);
 
   // Memoized TinyMCE configuration for performance
   const TINY_MCE_INIT_OPTIONS = useMemo(() => getEmailSenderConfig(darkMode), [darkMode]);
+
+  // Clear backend preview data when variables or template change (to force fresh preview)
+  useEffect(() => {
+    setBackendPreviewData(null);
+    setPreviewError(null);
+  }, [variableValues, selectedTemplate?._id]);
 
   // Memoized preview content to prevent unnecessary re-renders
   const previewContent = useMemo(() => getPreviewContent(), [getPreviewContent]);
@@ -1059,38 +1147,11 @@ const IntegratedEmailSender = ({
 
           <div className="action-buttons">
             <Button
-              color="outline-secondary"
-              onClick={() => {
-                if (validateForPreview()) {
-                  setShowPreviewModal(true);
-                } else {
-                  toast.warning('Please fix validation errors before previewing', {
-                    autoClose: 3000,
-                  });
-                }
-              }}
-              disabled={
-                (!useTemplate && !customContent) ||
-                (useTemplate &&
-                  (!selectedTemplate ||
-                    Object.keys(validationErrors).some(key =>
-                      selectedTemplate?.variables?.some(
-                        v => v?.name === key && !!validationErrors[key],
-                      ),
-                    )))
-              }
-              aria-label="Preview email content"
-              title="Preview how the email will look before sending"
-            >
-              <FaEye className="me-1" />
-              Preview
-            </Button>
-            <Button
               color="primary"
               onClick={handleSendEmail}
               disabled={
-                sendingEmail ||
-                customSendingEmail ||
+                previewLoading ||
+                isSending ||
                 isRetrying ||
                 (useTemplate &&
                   selectedTemplate &&
@@ -1098,20 +1159,22 @@ const IntegratedEmailSender = ({
                     selectedTemplate?.variables?.some(
                       v => v?.name === key && !!validationErrors[key],
                     ),
-                  ))
+                  )) ||
+                (!useTemplate && !customContent) ||
+                (useTemplate && !selectedTemplate)
               }
-              aria-label={sendingEmail || customSendingEmail ? 'Sending email...' : 'Send email'}
-              className={sendingEmail || customSendingEmail ? 'sending-email-btn' : ''}
+              aria-label="Preview and send email"
+              title="Preview and send email"
             >
-              {sendingEmail || customSendingEmail ? (
+              {previewLoading ? (
                 <>
-                  <Spinner size="sm" className="me-1" />
-                  Sending Email...
+                  <FaSpinner className="fa-spin me-1" />
+                  Loading Preview...
                 </>
               ) : (
                 <>
-                  <FaPaperPlane className="me-1" />
-                  Send Email
+                  <FaEye className="me-1" />
+                  Preview & Send
                 </>
               )}
             </Button>
@@ -1124,26 +1187,6 @@ const IntegratedEmailSender = ({
           </div>
         </div>
       </div>
-
-      {/* Email Sending Progress */}
-      {(sendingEmail || customSendingEmail) && (
-        <div className="email-sending-progress">
-          <div className="progress-container">
-            <div className="progress-header">
-              <FaPaperPlane className="me-2" />
-              <span className="progress-title">Sending Email</span>
-            </div>
-            <div className="progress-bar-container">
-              <div className="progress-bar-sending">
-                <div className="progress-bar-fill"></div>
-              </div>
-            </div>
-            <div className="progress-text">
-              <small className="text-muted">Please wait while we process your email...</small>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* General Validation Error Alert */}
       {validationErrors.general && (
@@ -1234,10 +1277,7 @@ const IntegratedEmailSender = ({
                         })`}
                         style={{ padding: '8px', whiteSpace: 'normal' }}
                       >
-                        {template.name} (created by{' '}
-                        {template.created_by
-                          ? `${template.created_by.firstName} ${template.created_by.lastName}`
-                          : 'Unknown'}
+                        {template.name}
                       </option>
                     ))
                   ) : (
@@ -1529,83 +1569,165 @@ const IntegratedEmailSender = ({
         </FormGroup>
       </Form>
 
-      {/* Preview Modal */}
+      {/* Preview & Send Modal - Light Mode Only */}
       <Modal
         isOpen={showPreviewModal}
-        toggle={() => setShowPreviewModal(false)}
+        toggle={() => {
+          if (!isSending) {
+            setShowPreviewModal(false);
+            setBackendPreviewData(null);
+            setPreviewError(null);
+          }
+        }}
         size="lg"
-        className="email-preview-modal"
+        centered
+        backdrop={isSending ? 'static' : true}
+        keyboard={!isSending}
       >
-        <ModalHeader toggle={() => setShowPreviewModal(false)} className="email-preview-header">
-          Email Preview
+        <ModalHeader
+          toggle={() => {
+            if (!isSending) {
+              setShowPreviewModal(false);
+              setBackendPreviewData(null);
+              setPreviewError(null);
+            }
+          }}
+        >
+          {previewLoading ? (
+            <>
+              <FaSpinner className="fa-spin me-2" />
+              Loading Preview...
+            </>
+          ) : isSending ? (
+            <>
+              <FaSpinner className="fa-spin me-2" />
+              Sending Email...
+            </>
+          ) : (
+            'Preview & Send Email'
+          )}
         </ModalHeader>
-        <ModalBody className="email-preview-body">
-          <div className="preview-info">
-            <div className="preview-field">
-              <strong>Subject:</strong> {previewContent.subject}
+        <ModalBody>
+          {previewLoading ? (
+            <div className="text-center">
+              <FaSpinner className="fa-spin me-2" />
+              <div className="mt-2">Loading email preview...</div>
             </div>
-            <div className="preview-field">
-              <strong>Distribution:</strong>{' '}
-              {emailDistribution === 'broadcast'
-                ? 'Broadcast to all subscribed users'
-                : `Send to specific recipients (${parseRecipients(recipients).length} recipients)`}
-            </div>
-          </div>
-          <div className="preview-content">
-            {previewContent.content ? (
-              <div dangerouslySetInnerHTML={{ __html: previewContent.content }} />
-            ) : (
-              <div className="empty-content-message">
-                <p className="text-muted">
-                  <i className="fas fa-info-circle me-2"></i>
-                  No content available for preview.
-                  {useTemplate
-                    ? ' Please fill in all template variables.'
-                    : ' Please add some content to your email.'}
-                </p>
-              </div>
-            )}
-          </div>
-        </ModalBody>
-        <ModalFooter className="email-preview-footer">
-          <Button color="secondary" onClick={() => setShowPreviewModal(false)}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
+          ) : (
+            <>
+              {previewError && (
+                <Alert color="warning" className="mb-3">
+                  <FaExclamationTriangle className="me-2" />
+                  {previewError}
+                  {useTemplate &&
+                    selectedTemplate &&
+                    !selectedTemplate._id &&
+                    ' (Using client-side preview)'}
+                </Alert>
+              )}
 
-      {/* Confirmation Modal */}
-      <Modal
-        isOpen={showConfirmModal}
-        toggle={() => setShowConfirmModal(false)}
-        className="email-confirm-modal"
-      >
-        <ModalHeader toggle={() => setShowConfirmModal(false)} className="email-confirm-header">
-          Confirm Send Email
-        </ModalHeader>
-        <ModalBody className="email-confirm-body">
-          <p>Are you sure you want to send this email?</p>
-          <div className="confirm-info">
-            <div className="confirm-field">
-              <strong>Subject:</strong> {previewContent.subject}
-            </div>
-            <div className="confirm-field">
-              <strong>Recipients:</strong>{' '}
-              {emailDistribution === 'broadcast'
-                ? 'All users'
-                : `${parseRecipients(recipients).length} recipients`}
-            </div>
-          </div>
-          <div className="alert alert-warning confirm-warning">
-            <small>This action cannot be undone. The email will be sent immediately.</small>
-          </div>
+              <div className="mb-3">
+                <strong>Subject:</strong> {previewContent.subject || 'No subject'}
+              </div>
+
+              <div className="mb-3">
+                <strong>Distribution:</strong>{' '}
+                {emailDistribution === 'broadcast' ? (
+                  <>
+                    <Badge color="primary" className="me-2">
+                      Broadcast
+                    </Badge>
+                    All subscribed users
+                  </>
+                ) : (
+                  <>
+                    <Badge color="secondary" className="me-2">
+                      Specific
+                    </Badge>
+                    {parseRecipients(recipients).length} recipient(s)
+                    {parseRecipients(recipients).length > 0 &&
+                      parseRecipients(recipients).length <= 5 && (
+                        <div className="mt-2">
+                          <small className="text-muted d-block">Recipients:</small>
+                          <small className="text-break">
+                            {parseRecipients(recipients).join(', ')}
+                          </small>
+                        </div>
+                      )}
+                  </>
+                )}
+              </div>
+
+              {useTemplate && selectedTemplate && backendPreviewData && (
+                <div className="mb-3">
+                  <Badge color="success" className="d-inline-flex align-items-center">
+                    <FaCheckCircle className="me-1" />
+                    Server-rendered preview
+                  </Badge>
+                  <small className="text-muted ms-2">
+                    This preview matches exactly what will be sent
+                  </small>
+                </div>
+              )}
+
+              {previewContent.content ? (
+                <div className="mb-3">
+                  <strong>Content Preview:</strong>
+                  <div
+                    className="mt-2 p-3 border rounded"
+                    style={{ maxHeight: '400px', overflow: 'auto' }}
+                    dangerouslySetInnerHTML={{ __html: previewContent.content }}
+                  />
+                </div>
+              ) : (
+                <div className="mb-3">
+                  <strong>Content Preview:</strong>
+                  <div className="mt-2 p-3 border rounded text-center text-muted">
+                    <FaInfoCircle className="me-2" />
+                    No content available for preview.
+                    {useTemplate
+                      ? ' Please fill in all template variables.'
+                      : ' Please add some content to your email.'}
+                  </div>
+                </div>
+              )}
+
+              <Alert color="warning" className="mb-0">
+                <FaExclamationTriangle className="me-2" />
+                <strong>Please review your email carefully.</strong> Once sent, this action cannot
+                be undone. The email will be processed immediately.
+              </Alert>
+            </>
+          )}
         </ModalBody>
-        <ModalFooter className="email-confirm-footer">
-          <Button color="secondary" onClick={() => setShowConfirmModal(false)}>
+        <ModalFooter>
+          <Button
+            color="secondary"
+            onClick={() => {
+              setShowPreviewModal(false);
+              setBackendPreviewData(null);
+              setPreviewError(null);
+            }}
+            disabled={isSending || previewLoading}
+          >
             Cancel
           </Button>
-          <Button color="primary" onClick={confirmSendEmail}>
-            Send Email
+          <Button
+            color="primary"
+            onClick={handleSendFromPreview}
+            disabled={isSending || previewLoading || !previewContent.content}
+          >
+            {isSending ? (
+              <>
+                <FaSpinner className="fa-spin me-2" />
+                Sending...
+              </>
+            ) : (
+              <>
+                <FaPaperPlane className="me-2" />
+                Send Email
+              </>
+            )}
           </Button>
         </ModalFooter>
       </Modal>
@@ -1635,12 +1757,12 @@ IntegratedEmailSender.propTypes = {
   ),
   loading: PropTypes.bool,
   error: PropTypes.string,
-  sendingEmail: PropTypes.bool,
-  emailSent: PropTypes.bool,
+  // sendingEmail and emailSent removed - emails are now sent via emailController endpoints
   // Redux actions
   fetchEmailTemplates: PropTypes.func.isRequired,
   // removed sendEmailWithTemplate; template emails are rendered client-side and sent via emailController
   clearEmailTemplateError: PropTypes.func.isRequired,
+  previewEmailTemplate: PropTypes.func,
   // Component props
   onClose: PropTypes.func,
   initialContent: PropTypes.string,
@@ -1654,8 +1776,6 @@ IntegratedEmailSender.defaultProps = {
   templates: [],
   loading: false,
   error: null,
-  sendingEmail: false,
-  emailSent: false,
   onClose: null,
   initialContent: '',
   initialSubject: '',
@@ -1667,13 +1787,13 @@ const mapStateToProps = state => ({
   templates: state.emailTemplates.templates,
   loading: state.emailTemplates.loading,
   error: state.emailTemplates.error,
-  sendingEmail: state.emailTemplates.sendingEmail,
-  emailSent: state.emailTemplates.emailSent,
+  // sendingEmail and emailSent removed - emails are now sent via emailController endpoints
 });
 
 const mapDispatchToProps = {
   fetchEmailTemplates,
   clearEmailTemplateError,
+  previewEmailTemplate,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(IntegratedEmailSender);

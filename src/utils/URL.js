@@ -336,6 +336,8 @@ export const ENDPOINTS = {
   // Email Template endpoints
   EMAIL_TEMPLATES: `${APIEndpoint}/email-templates`,
   EMAIL_TEMPLATE_BY_ID: id => `${APIEndpoint}/email-templates/${id}`,
+  EMAIL_TEMPLATE_PREVIEW: id => `${APIEndpoint}/email-templates/${id}/preview`,
+  EMAIL_TEMPLATE_VALIDATE: id => `${APIEndpoint}/email-templates/${id}/validate`,
   // Removed: Template sending is handled by emailController endpoints after processing variables client-side
 
   JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,

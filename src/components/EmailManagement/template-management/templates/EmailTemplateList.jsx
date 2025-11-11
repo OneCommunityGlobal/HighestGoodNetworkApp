@@ -115,16 +115,19 @@ const EmailTemplateList = ({
 
     try {
       // Fetch full template data including variables
+      // Backend returns: { success: true, template: {...} }
       const response = await axios.get(`${ENDPOINTS.EMAIL_TEMPLATES}/${template._id}`);
-      if (response.data && response.data.template) {
+      if (response.data.success && response.data.template) {
         setTemplateToShow(response.data.template);
       } else {
-        throw new Error('Invalid response format');
+        throw new Error(response.data.message || 'Invalid response format');
       }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching template details:', error);
-      toast.error('Failed to load template details');
+      const errorMessage =
+        error.response?.data?.message || error.message || 'Failed to load template details';
+      toast.error(errorMessage);
       setTemplateToShow(null);
     } finally {
       setLoadingTemplateInfo(false);

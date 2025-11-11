@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EMAIL BATCH DASHBOARD BUTTON STYLES - TEMPLATE MANAGEMENT STYLE
+   EMAIL OUTBOX BUTTON STYLES - TEMPLATE MANAGEMENT STYLE
    ========================================================================== */
 
 /* Base button container */
@@ -244,3 +244,4 @@ body.dark .inline-filters-modal .card {
     background-color: #1f2937;
     border-color: #374151;
 }
+

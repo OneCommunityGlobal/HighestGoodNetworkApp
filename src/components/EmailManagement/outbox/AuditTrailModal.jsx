@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   fetchEmailAuditTrail,
   fetchEmailBatchAuditTrail,
-} from '../../../actions/emailBatchActions';
+} from '../../../actions/emailOutboxActions';
 import {
   Modal,
   ModalHeader,
@@ -28,7 +28,7 @@ import './AuditTrailModal.css';
 const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email' }) => {
   const dispatch = useDispatch();
   const { emailAuditTrail, emailBatchAuditTrail, loading, error } = useSelector(
-    state => state.emailBatches,
+    state => state.emailOutbox,
   );
 
   const [refreshing, setRefreshing] = useState(false);
@@ -68,7 +68,7 @@ const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email'
       case 'EMAIL_BATCH_SENT':
         return <FaCheckCircle className="text-success" />;
       case 'EMAIL_SENDING':
-      case 'EMAIL_BATCH_QUEUED':
+      case 'EMAIL_BATCH_PENDING':
         return <FaClock className="text-info" />;
       case 'EMAIL_PROCESSED':
         return <FaCheckCircle className="text-success" />;
@@ -88,7 +88,7 @@ const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email'
       case 'EMAIL_PROCESSED':
         return 'success';
       case 'EMAIL_SENDING':
-      case 'EMAIL_BATCH_QUEUED':
+      case 'EMAIL_BATCH_PENDING':
         return 'info';
       case 'EMAIL_FAILED':
       case 'EMAIL_BATCH_FAILED':
@@ -208,14 +208,21 @@ const AuditTrailModal = ({ isOpen, toggle, emailId, emailBatchId, type = 'email'
           </div>
         )}
 
-        {/* Empty State */}
+        {/* Empty State - Audit logging was removed from backend */}
         {!loadingState && (!auditData || !auditData.length || auditData.length === 0) && (
           <div className="text-center py-5">
             <FaHistory size={48} className="text-muted mb-3" />
-            <h5 className="text-muted">No audit entries found</h5>
-            <p className="text-muted">
-              No audit trail available for this {type === 'email' ? 'email' : 'email batch'}.
-            </p>
+            <h5 className="text-muted">Audit Logging Removed</h5>
+            <Alert color="info" className="mt-3">
+              <FaInfoCircle className="me-2" />
+              <div>
+                <strong>Audit logging has been removed from the backend.</strong>
+                <p className="mb-0 mt-2">
+                  Error details are now captured directly in EmailBatch records. You can view error
+                  information (lastError, errorCode, lastErrorAt) in the email batch details.
+                </p>
+              </div>
+            </Alert>
           </div>
         )}
       </ModalBody>

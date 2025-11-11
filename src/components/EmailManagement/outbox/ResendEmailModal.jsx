@@ -60,8 +60,8 @@ const ResendEmailModal = ({ isOpen, toggle, email, onResend }) => {
         <ModalBody>
           <Alert color="info" className="mb-4">
             <FaInfoCircle className="me-2" />
-            This will create a copy of the email and queue it for sending to the selected
-            recipients.
+            This will create a copy of the email and send it immediately to the selected recipients.
+            Processing will start as soon as the email is created.
           </Alert>
 
           <FormGroup>

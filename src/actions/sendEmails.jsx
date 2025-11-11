@@ -30,21 +30,21 @@ export const sendEmail = (
         html,
         fromName,
         fromEmail,
-        useBatch: true, // Enable batch system
-        requestor, // Add proper requestor for permission checking
+        requestor, // Required for permission checking
       });
 
-      // Display a success toast
-      toast.success('Email successfully sent', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      // Backend returns: { success: true, message: '...' }
+      const successMessage = response.data.message || 'Email created successfully. Processing started.';
+      toast.success(successMessage, {
+        position: 'top-right',
+        autoClose: 3000,
       });
     } catch (error) {
       // Display an error toast
       const errorMessage = error.response?.data?.message || error.message || 'Error sending email';
       toast.error(errorMessage, {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 5000, // Close the toast after 5 seconds for error messages
+        position: 'top-right',
+        autoClose: 5000,
       });
       // eslint-disable-next-line no-console
       console.error('Email sending error:', error);
@@ -75,21 +75,21 @@ export const broadcastEmailsToAll = (
         html,
         fromName,
         fromEmail,
-        useBatch: true, // Enable batch system
-        requestor, // Add proper requestor for permission checking
+        requestor, // Required for permission checking
       });
 
-      // Display a success toast
-      toast.success('Email successfully sent', {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
+      // Backend returns: { success: true, message: '...' }
+      const successMessage = response.data.message || 'Broadcast email created successfully. Processing started.';
+      toast.success(successMessage, {
+        position: 'top-right',
+        autoClose: 3000,
       });
     } catch (error) {
       // Display an error toast
       const errorMessage = error.response?.data?.message || error.message || 'Error sending email';
       toast.error(errorMessage, {
-        position: 'top-right', // You can adjust the position as needed
-        autoClose: 5000, // Close the toast after 5 seconds for error messages
+        position: 'top-right',
+        autoClose: 5000,
       });
       // eslint-disable-next-line no-console
       console.error('Email sending error:', error);

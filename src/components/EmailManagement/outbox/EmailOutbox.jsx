@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
-import { fetchEmails, resendEmail } from '../../../actions/emailBatchActions';
+import { fetchEmails, resendEmail } from '../../../actions/emailOutboxActions';
 import httpService from '../../../services/httpService';
 import {
   Card,
@@ -17,7 +17,6 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Progress,
   Alert,
   Input,
   FormGroup,
@@ -33,25 +32,22 @@ import {
   FaEnvelope,
   FaUser,
   FaCalendar,
-  // FaFilter removed
   FaSync,
   FaCheckCircle,
   FaExclamationTriangle,
-  FaHistory,
   FaPaperPlane,
 } from 'react-icons/fa';
-import './EmailBatchDashboard.css';
+import './EmailOutbox.css';
 import './StatsChips.css';
 import './ButtonStyles.css';
-import AuditTrailModal from './AuditTrailModal';
 import ResendEmailModal from './ResendEmailModal';
-import WorkerStatus from './WorkerStatus';
 
-const EmailBatchDashboard = () => {
+const EmailOutbox = () => {
   const dispatch = useDispatch();
 
-  // Redux state
-  const { emails, loading, error } = useSelector(state => state.emailBatches);
+  // Redux state - updated to use emailOutbox
+  const { emails, loading, error } = useSelector(state => state.emailOutbox);
+  const currentUser = useSelector(state => state.auth?.user);
 
   // Local state
   const [selectedEmail, setSelectedEmail] = useState(null);
@@ -60,10 +56,6 @@ const EmailBatchDashboard = () => {
   const [loadingItems, setLoadingItems] = useState(false);
   const [showEmailPreview, setShowEmailPreview] = useState(false);
   const [previewBatch, setPreviewBatch] = useState(null);
-  // Filters removed
-  const [showAuditTrail, setShowAuditTrail] = useState(false);
-  const [auditTrailType, setAuditTrailType] = useState('batch');
-  const [auditTrailId, setAuditTrailId] = useState(null);
   const [showResendModal, setShowResendModal] = useState(false);
   const [emailToResend, setEmailToResend] = useState(null);
 
@@ -110,8 +102,6 @@ const EmailBatchDashboard = () => {
             toast.error('Failed to fetch emails');
           }
         }
-
-        // dashboard stats removed
 
         isRefreshingRef.current = false;
         setRefreshState(prev => ({
@@ -240,31 +230,77 @@ const EmailBatchDashboard = () => {
     setLoadingItems(true);
 
     try {
-      const response = await httpService.get(`/api/email-batches/emails/${email._id}`);
+      const response = await httpService.get(`/api/email-outbox/${email._id}`);
 
-      if (response.data.success) {
-        setSelectedEmail(response.data.data.email);
-        setEmailBatches(response.data.data.batches || []); // Child EmailBatch items
+      if (response.data.success && response.data.data) {
+        // Backend returns: { success: true, data: { email, batches } }
+        const emailData = response.data.data.email || email;
+        const batches = response.data.data.batches || [];
+
+        // Calculate statistics from batches for better UX
+        const totalRecipients = batches.reduce(
+          (sum, batch) => sum + (batch.recipients?.length || 0),
+          0,
+        );
+        const sentBatches = batches.filter(b => b.status === 'SENT');
+        const failedBatches = batches.filter(b => b.status === 'FAILED');
+        const sentRecipients = sentBatches.reduce(
+          (sum, batch) => sum + (batch.recipients?.length || 0),
+          0,
+        );
+        const failedRecipients = failedBatches.reduce(
+          (sum, batch) => sum + (batch.recipients?.length || 0),
+          0,
+        );
+        const progress =
+          totalRecipients > 0 ? Math.round((sentRecipients / totalRecipients) * 100) : 0;
+
+        // Add calculated statistics to email data
+        const emailWithStats = {
+          ...emailData,
+          totalEmails: totalRecipients,
+          sentEmails: sentRecipients,
+          failedEmails: failedRecipients,
+          progress,
+        };
+
+        setSelectedEmail(emailWithStats);
+        setEmailBatches(batches); // Child EmailBatch items
+      } else {
+        throw new Error(response.data.message || 'Failed to fetch email details');
       }
     } catch (error) {
       console.error('Error fetching email details:', error);
-      toast.error('Failed to fetch email details');
+      const errorMessage =
+        error.response?.data?.message || error.message || 'Failed to fetch email details';
+      toast.error(errorMessage);
     } finally {
       setLoadingItems(false);
     }
   };
 
-  // Filter handlers removed
-
-  // Handle retry Email - queues all failed EmailBatch items for retry
+  // Handle retry Email - resets all failed EmailBatch items to PENDING and processes immediately
   const handleRetryEmail = async emailId => {
     try {
-      const response = await httpService.post(`/api/email-batches/emails/${emailId}/retry`);
+      // Get current user for requestor (required by backend)
+      if (!currentUser || !currentUser.userid) {
+        toast.error('User authentication required to retry emails');
+        return;
+      }
+
+      const requestor = {
+        requestorId: currentUser.userid,
+        email: currentUser.email,
+        role: currentUser.role,
+      };
+
+      const response = await httpService.post(`/api/email-outbox/${emailId}/retry`, { requestor });
       if (response.data.success) {
+        const failedItemsRetried = response.data.data?.failedItemsRetried || 0;
         const message =
-          response.data.data.failedItemsRetried > 0
-            ? `Queued ${response.data.data.failedItemsRetried} failed batch items for retry. They will be processed shortly.`
-            : 'No failed items to retry';
+          failedItemsRetried > 0
+            ? `Reset ${failedItemsRetried} failed batch items for retry. Processing started.`
+            : response.data.message || 'No failed items to retry';
         toast.success(message);
 
         // Refresh the email details
@@ -274,10 +310,14 @@ const EmailBatchDashboard = () => {
 
         // Also refresh the main emails list to update status
         await dispatch(fetchEmails());
+      } else {
+        throw new Error(response.data.message || 'Failed to retry email');
       }
     } catch (error) {
       console.error('Error retrying Email:', error);
-      toast.error('Failed to retry Email');
+      const errorMessage =
+        error.response?.data?.message || error.message || 'Failed to retry Email';
+      toast.error(errorMessage);
     }
   };
 
@@ -302,19 +342,6 @@ const EmailBatchDashboard = () => {
     }
   };
 
-  // Handle audit trail
-  const handleViewAuditTrail = (id, type = 'email') => {
-    setAuditTrailId(id);
-    setAuditTrailType(type);
-    setShowAuditTrail(true);
-  };
-
-  const handleCloseAuditTrail = () => {
-    setShowAuditTrail(false);
-    setAuditTrailId(null);
-    setAuditTrailType('email');
-  };
-
   // Handle view recipients
   const handleViewRecipients = recipients => {
     // Show recipients in a modal or alert
@@ -331,12 +358,11 @@ const EmailBatchDashboard = () => {
   // Get status badge color
   const getStatusBadge = status => {
     const colors = {
-      QUEUED: 'warning',
+      PENDING: 'warning',
       SENDING: 'info',
       SENT: 'success',
       PROCESSED: 'info', // Mixed results - processing finished
       FAILED: 'danger',
-      CANCELLED: 'secondary',
     };
     return colors[status] || 'secondary';
   };
@@ -349,12 +375,11 @@ const EmailBatchDashboard = () => {
   // Get status icon
   const getStatusIcon = status => {
     const icons = {
-      QUEUED: <FaClock className="text-warning" />,
+      PENDING: <FaClock className="text-warning" />,
       SENDING: <FaClock className="text-info fa-spin" />,
       SENT: <FaCheck className="text-success" />,
       PROCESSED: <FaCheck className="text-info" />, // Mixed results - processing finished
       FAILED: <FaTimes className="text-danger" />,
-      CANCELLED: <FaTimes className="text-secondary" />,
     };
     return icons[status] || <FaEnvelope className="text-muted" />;
   };
@@ -374,9 +399,8 @@ const EmailBatchDashboard = () => {
       {/* Header */}
       <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4">
         <div className="flex-grow-1 mb-3 mb-lg-0">
-          <h2 className="page-title mb-2">Email Dashboard</h2>
+          <h2 className="page-title mb-2">Email Outbox</h2>
           <div className="d-flex flex-column gap-1">
-            <WorkerStatus />
             {refreshState.lastRefresh && (
               <small className="text-muted d-flex align-items-center">
                 <FaClock className="mr-1" size={12} />
@@ -422,8 +446,6 @@ const EmailBatchDashboard = () => {
               {refreshState.isRefreshing ? 'Refreshing...' : 'Refresh'}
             </span>
           </Button>
-          {/* Auto Refresh button removed */}
-          {/* Filters button removed */}
         </div>
       </div>
 
@@ -431,11 +453,6 @@ const EmailBatchDashboard = () => {
       <Tooltip target="refresh-tooltip" placement="bottom">
         {refreshState.isRefreshing ? 'Refreshing data...' : 'Manually refresh data'}
       </Tooltip>
-      {/* Auto refresh tooltip removed */}
-
-      {/* Filters modal removed */}
-
-      {/* Stats removed */}
 
       {/* Error Message */}
       {error.emails && (
@@ -474,7 +491,6 @@ const EmailBatchDashboard = () => {
                           >
                             <FaEye size={12} />
                           </Button>
-                          {/* counts removed from compact view */}
                           <div className="d-md-none mt-1">
                             <small className="text-muted">
                               <FaCalendar className="me-1" size={12} />
@@ -540,7 +556,7 @@ const EmailBatchDashboard = () => {
                               color="warning"
                               onClick={() => handleRetryEmail(email._id)}
                               className="d-flex align-items-center"
-                              title="Queue failed EmailBatch items for retry"
+                              title="Reset failed batches to PENDING and process immediately"
                             >
                               <FaRedo className="me-1" size={12} />
                               <span className="d-none d-sm-inline">Retry</span>
@@ -558,15 +574,6 @@ const EmailBatchDashboard = () => {
                               <span className="d-none d-sm-inline">Resend</span>
                             </Button>
                           )}
-                          <Button
-                            size="sm"
-                            color="outline-secondary"
-                            onClick={() => handleViewAuditTrail(email._id, 'email')}
-                            className="d-flex align-items-center"
-                          >
-                            <FaHistory className="me-1" size={12} />
-                            <span className="d-none d-sm-inline">Audit</span>
-                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -597,128 +604,125 @@ const EmailBatchDashboard = () => {
             Email Details: {selectedEmail.subject}
           </ModalHeader>
           <ModalBody className="p-4">
-            <div className="d-flex flex-column flex-md-row gap-5">
-              <div className="flex-fill">
-                <Card className="h-100">
-                  <CardHeader className="bg-light">
-                    <h6 className="mb-0">Email Information</h6>
-                  </CardHeader>
-                  <CardBody className="p-3">
-                    <div className="d-flex flex-column gap-2">
-                      <div>
-                        <strong>Email ID:</strong>
-                        <div className="text-primary font-monospace small">{selectedEmail._id}</div>
-                      </div>
-                      <div>
-                        <strong>Status:</strong>
-                        <div>
-                          <Badge color={getStatusBadge(selectedEmail.status)} className="ms-2">
-                            {selectedEmail.status}
-                          </Badge>
-                        </div>
-                      </div>
-                      <div>
-                        <strong>Created By:</strong>
-                        <div className="text-muted">
-                          {selectedEmail.createdBy?.firstName && selectedEmail.createdBy?.lastName
-                            ? `${selectedEmail.createdBy.firstName} ${selectedEmail.createdBy.lastName}`
-                            : selectedEmail.createdBy?.firstName || 'System'}
-                        </div>
-                      </div>
-                      <div>
-                        <strong>Created:</strong>
-                        <div className="text-muted">{formatDate(selectedEmail.createdAt)}</div>
-                      </div>
-                      {selectedEmail.startedAt && (
-                        <div>
-                          <strong>Started:</strong>
-                          <div className="text-info">{formatDate(selectedEmail.startedAt)}</div>
-                        </div>
-                      )}
-                      {selectedEmail.completedAt && (
-                        <div>
-                          <strong>Completed:</strong>
-                          <div className="text-success">
-                            {formatDate(selectedEmail.completedAt)}
-                          </div>
-                        </div>
-                      )}
-                      <div>
-                        <strong>Last Updated:</strong>
-                        <div className="text-muted">{formatDate(selectedEmail.updatedAt)}</div>
+            <Card className="mb-3">
+              <CardHeader className="bg-light">
+                <h6 className="mb-0">Email Information</h6>
+              </CardHeader>
+              <CardBody className="p-3">
+                <div className="row g-3">
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Email ID:</strong>
+                      <div className="text-primary font-monospace small mt-1">
+                        {selectedEmail._id}
                       </div>
                     </div>
-                  </CardBody>
-                </Card>
-              </div>
-              <div className="flex-fill">
-                <Card className="h-100">
-                  <CardHeader className="bg-light">
-                    <h6 className="mb-0">Email Statistics</h6>
-                  </CardHeader>
-                  <CardBody className="p-3">
-                    <div className="d-flex flex-column gap-2">
-                      <div className="d-flex justify-content-between">
-                        <span>
-                          <strong>Total Emails:</strong>
-                        </span>
-                        <span className="text-primary fw-bold">
-                          {selectedEmail.totalEmails || 0}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span>
-                          <strong>Sent:</strong>
-                        </span>
-                        <span className="text-success fw-bold">
-                          {selectedEmail.sentEmails || 0}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span>
-                          <strong>Failed:</strong>
-                        </span>
-                        <span className="text-danger fw-bold">
-                          {selectedEmail.failedEmails || 0}
-                        </span>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                        <span>
-                          <strong>Success Rate:</strong>
-                        </span>
-                        <span className="text-secondary fw-bold">
-                          {selectedEmail.totalEmails > 0
-                            ? Math.round(
-                                (selectedEmail.sentEmails / selectedEmail.totalEmails) * 100,
-                              )
-                            : 0}
-                          %
-                        </span>
-                      </div>
-                      <div className="mt-3">
-                        <div className="d-flex justify-content-between mb-1">
-                          <small>Progress</small>
-                          <small>{selectedEmail.progress || 0}%</small>
-                        </div>
-                        <Progress
-                          value={selectedEmail.progress || 0}
-                          color={getStatusBadge(selectedEmail.status)}
-                          style={{ height: '8px' }}
-                        />
+                  </div>
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Subject:</strong>
+                      <div className="text-muted mt-1">{selectedEmail.subject || 'No subject'}</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Status:</strong>
+                      <div className="mt-1">
+                        <Badge color={getStatusBadge(selectedEmail.status)}>
+                          {selectedEmail.status}
+                        </Badge>
                       </div>
                     </div>
-                  </CardBody>
-                </Card>
-              </div>
-            </div>
+                  </div>
+                  {selectedEmail.templateId && (
+                    <div className="col-md-6">
+                      <div>
+                        <strong>Template ID:</strong>
+                        <div className="text-primary font-monospace small mt-1">
+                          {selectedEmail.templateId}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Created By:</strong>
+                      <div className="text-muted mt-1">
+                        {selectedEmail.createdBy?.firstName && selectedEmail.createdBy?.lastName
+                          ? `${selectedEmail.createdBy.firstName} ${selectedEmail.createdBy.lastName}`
+                          : selectedEmail.createdBy?.firstName || 'System'}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Created:</strong>
+                      <div className="text-muted mt-1">{formatDate(selectedEmail.createdAt)}</div>
+                    </div>
+                  </div>
+                  {selectedEmail.startedAt && (
+                    <div className="col-md-6">
+                      <div>
+                        <strong>Started:</strong>
+                        <div className="text-info mt-1">{formatDate(selectedEmail.startedAt)}</div>
+                      </div>
+                    </div>
+                  )}
+                  {selectedEmail.completedAt && (
+                    <div className="col-md-6">
+                      <div>
+                        <strong>Completed:</strong>
+                        <div className="text-success mt-1">
+                          {formatDate(selectedEmail.completedAt)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Last Updated:</strong>
+                      <div className="text-muted mt-1">{formatDate(selectedEmail.updatedAt)}</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Total Batches:</strong>
+                      <div className="text-primary fw-bold mt-1">{emailBatches.length}</div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Total Recipients:</strong>
+                      <div className="text-primary fw-bold mt-1">
+                        {selectedEmail.totalEmails || 0}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Sent Recipients:</strong>
+                      <div className="text-success fw-bold mt-1">
+                        {selectedEmail.sentEmails || 0}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Failed Recipients:</strong>
+                      <div className="text-danger fw-bold mt-1">
+                        {selectedEmail.failedEmails || 0}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardBody>
+            </Card>
 
             <hr />
 
             <Card className="mt-3">
               <CardHeader className="bg-light">
-                <h6 className="mb-0">
-                  Email Batches ({emailBatches.length}) - Up to 1000 recipients per batch
-                </h6>
+                <h6 className="mb-0">Email Batches ({emailBatches.length})</h6>
               </CardHeader>
               <CardBody className="p-0">
                 {loadingItems ? (
@@ -815,24 +819,14 @@ const EmailBatchDashboard = () => {
                                     <FaEye size={12} className="me-1" />
                                     <span className="d-none d-sm-inline">View</span>
                                   </Button>
-                                  <Button
-                                    size="sm"
-                                    color="outline-secondary"
-                                    onClick={() => handleViewAuditTrail(item._id, 'emailBatch')}
-                                    className="d-flex align-items-center"
-                                  >
-                                    <FaHistory size={12} className="me-1" />
-                                    <span className="d-none d-sm-inline">Audit</span>
-                                  </Button>
                                 </div>
-                                {item.error &&
-                                  (item.status === 'FAILED' || item.status === 'QUEUED') && (
-                                    <small className="text-danger" title={item.error}>
-                                      {item.error.length > 50
-                                        ? `${item.error.substring(0, 50)}...`
-                                        : item.error}
-                                    </small>
-                                  )}
+                                {item.lastError && item.status === 'FAILED' && (
+                                  <small className="text-danger" title={item.lastError}>
+                                    {item.lastError.length > 50
+                                      ? `${item.lastError.substring(0, 50)}...`
+                                      : item.lastError}
+                                  </small>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -891,15 +885,6 @@ const EmailBatchDashboard = () => {
         </Modal>
       )}
 
-      {/* Audit Trail Modal */}
-      <AuditTrailModal
-        isOpen={showAuditTrail}
-        toggle={handleCloseAuditTrail}
-        emailId={auditTrailType === 'email' ? auditTrailId : null}
-        emailBatchId={auditTrailType === 'emailBatch' ? auditTrailId : null}
-        type={auditTrailType}
-      />
-
       {/* Resend Email Modal */}
       <ResendEmailModal
         isOpen={showResendModal}
@@ -911,4 +896,4 @@ const EmailBatchDashboard = () => {
   );
 };
 
-export default EmailBatchDashboard;
+export default EmailOutbox;

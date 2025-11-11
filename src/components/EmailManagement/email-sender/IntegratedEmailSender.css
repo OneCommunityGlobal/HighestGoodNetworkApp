@@ -644,7 +644,9 @@
   padding: 1rem 1.5rem;
 }
 
-/* Preview Modal Specific Styles */
+/* Preview & Send Modal - Uses standard Bootstrap modal styling (matching template info modal) */
+
+/* Legacy Preview Modal Styles (for backward compatibility) */
 .email-sender .preview-info {
   background: #f8f9fa;
   border-radius: 8px;
@@ -673,40 +675,6 @@
   padding: 1rem;
   min-height: 200px;
   color: #495057;
-}
-
-/* Confirmation Modal Specific Styles */
-.email-sender .confirm-info {
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.email-sender .confirm-field {
-  margin-bottom: 0.75rem;
-  color: #495057;
-}
-
-.email-sender .confirm-field:last-child {
-  margin-bottom: 0;
-}
-
-.email-sender .confirm-field strong {
-  color: #495057;
-  font-weight: 600;
-}
-
-.email-sender .confirm-warning {
-  border: 1px solid #ffeaa7;
-  background: #fff3cd;
-  border-radius: 8px;
-  margin: 0;
-}
-
-.email-sender .confirm-warning small {
-  color: #856404;
-  font-weight: 500;
 }
 
 /* Dark Mode - Simple and Bulletproof */
@@ -772,6 +740,8 @@
 .email-sender.dark-mode .confirm-warning small {
   color: #f6e05e !important;
 }
+
+/* Preview & Send Modal - Dark mode handled by Bootstrap's dark mode classes */
 
 /* Dark Mode Buttons */
 .email-sender.dark-mode .btn-secondary {

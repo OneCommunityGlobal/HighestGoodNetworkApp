@@ -7,8 +7,8 @@ import {
   EmailTemplateManager,
   IntegratedEmailSender,
   ErrorBoundary,
+  EmailOutbox,
 } from '../../../EmailManagement';
-import EmailBatchDashboard from '../../../EmailManagement/batch-dashboard/EmailBatchDashboard';
 import './EmailPanel.css';
 
 export default function EmailPanel({ title, initialEmail }) {
@@ -158,7 +158,7 @@ export default function EmailPanel({ title, initialEmail }) {
               </p>
             </button>
 
-            {/* Email Dashboard Card */}
+            {/* Email Outbox Card */}
             <button
               className="platform-card"
               type="button"
@@ -182,7 +182,7 @@ export default function EmailPanel({ title, initialEmail }) {
             >
               <FaChartLine style={{ fontSize: '3rem', color: '#6f42c1', marginBottom: '1rem' }} />
               <h3 style={{ color: darkMode ? '#fff' : '#000', marginBottom: '1rem' }}>
-                Email Dashboard
+                Email Outbox
               </h3>
               <p style={{ color: darkMode ? '#ccc' : '#666' }}>
                 Monitor and manage emails with real-time tracking and analytics
@@ -251,7 +251,7 @@ export default function EmailPanel({ title, initialEmail }) {
           aria-live="polite"
         >
           <ErrorBoundary>
-            <EmailBatchDashboard key="emails" />
+            <EmailOutbox key="emails" />
           </ErrorBoundary>
         </div>
       </div>

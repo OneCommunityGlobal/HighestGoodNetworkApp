@@ -6,8 +6,18 @@ const initialState = {
   loading: false,
   error: null,
   searchTerm: '',
-  sendingEmail: false,
-  emailSent: false,
+  // sendingEmail and emailSent removed - templates are now sent via emailController endpoints
+  preview: {
+    data: null,
+    loading: false,
+    error: null,
+  },
+  validation: {
+    isValid: null,
+    errors: [],
+    loading: false,
+    error: null,
+  },
 };
 
 const emailTemplateReducer = (state = initialState, action) => {
@@ -132,30 +142,8 @@ const emailTemplateReducer = (state = initialState, action) => {
         error: action.payload,
       };
 
-    // Send email
-    case EMAIL_TEMPLATE_ACTIONS.SEND_EMAIL_START:
-      return {
-        ...state,
-        sendingEmail: true,
-        emailSent: false,
-        error: null,
-      };
-
-    case EMAIL_TEMPLATE_ACTIONS.SEND_EMAIL_SUCCESS:
-      return {
-        ...state,
-        sendingEmail: false,
-        emailSent: true,
-        error: null,
-      };
-
-    case EMAIL_TEMPLATE_ACTIONS.SEND_EMAIL_ERROR:
-      return {
-        ...state,
-        sendingEmail: false,
-        emailSent: false,
-        error: action.payload,
-      };
+    // Send email actions removed - templates are now rendered client-side
+    // and sent via emailController endpoints (sendEmail/broadcastEmail)
 
     // Set search term
     case EMAIL_TEMPLATE_ACTIONS.SET_SEARCH_TERM:
@@ -196,6 +184,69 @@ const emailTemplateReducer = (state = initialState, action) => {
         ...state,
         currentTemplate: null,
         error: null,
+      };
+
+    // Preview template
+    case EMAIL_TEMPLATE_ACTIONS.PREVIEW_EMAIL_TEMPLATE_START:
+      return {
+        ...state,
+        preview: {
+          ...state.preview,
+          loading: true,
+          error: null,
+        },
+      };
+
+    case EMAIL_TEMPLATE_ACTIONS.PREVIEW_EMAIL_TEMPLATE_SUCCESS:
+      return {
+        ...state,
+        preview: {
+          data: action.payload,
+          loading: false,
+          error: null,
+        },
+      };
+
+    case EMAIL_TEMPLATE_ACTIONS.PREVIEW_EMAIL_TEMPLATE_ERROR:
+      return {
+        ...state,
+        preview: {
+          ...state.preview,
+          loading: false,
+          error: action.payload,
+        },
+      };
+
+    // Validate template
+    case EMAIL_TEMPLATE_ACTIONS.VALIDATE_EMAIL_TEMPLATE_START:
+      return {
+        ...state,
+        validation: {
+          ...state.validation,
+          loading: true,
+          error: null,
+        },
+      };
+
+    case EMAIL_TEMPLATE_ACTIONS.VALIDATE_EMAIL_TEMPLATE_SUCCESS:
+      return {
+        ...state,
+        validation: {
+          isValid: action.payload.isValid,
+          errors: action.payload.errors || [],
+          loading: false,
+          error: null,
+        },
+      };
+
+    case EMAIL_TEMPLATE_ACTIONS.VALIDATE_EMAIL_TEMPLATE_ERROR:
+      return {
+        ...state,
+        validation: {
+          ...state.validation,
+          loading: false,
+          error: action.payload,
+        },
       };
 
     default:

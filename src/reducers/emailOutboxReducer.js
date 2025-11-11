@@ -1,34 +1,35 @@
-import { EMAIL_BATCH_ACTIONS } from '../actions/emailBatchActions';
+import { EMAIL_OUTBOX_ACTIONS } from '../actions/emailOutboxActions';
 
 const initialState = {
   emails: [], // Parent Email records
   pagination: {},
-  // dashboardStats removed
-  emailAuditTrail: [], // Audit trail for parent Email
-  emailBatchAuditTrail: [], // Audit trail for child EmailBatch
+  // Audit trail removed - error details are now captured directly in EmailBatch records
+  // Keeping these for backward compatibility but they will always be empty
+  emailAuditTrail: [], // @deprecated - Audit trail removed from backend
+  emailBatchAuditTrail: [], // @deprecated - Audit trail removed from backend
   loading: {
     emails: false,
-    emailAudit: false,
-    emailBatchAudit: false,
+    emailAudit: false, // @deprecated
+    emailBatchAudit: false, // @deprecated
   },
   error: {
     emails: null,
-    emailAudit: null,
-    emailBatchAudit: null,
+    emailAudit: null, // @deprecated
+    emailBatchAudit: null, // @deprecated
   },
 };
 
-const emailBatchReducer = (state = initialState, action) => {
+const emailOutboxReducer = (state = initialState, action) => {
   switch (action.type) {
     // Fetch emails (parent Email records)
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAILS_START:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAILS_START:
       return {
         ...state,
         loading: { ...state.loading, emails: true },
         error: { ...state.error, emails: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAILS_SUCCESS:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAILS_SUCCESS:
       return {
         ...state,
         loading: { ...state.loading, emails: false },
@@ -36,7 +37,7 @@ const emailBatchReducer = (state = initialState, action) => {
         error: { ...state.error, emails: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAILS_ERROR:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAILS_ERROR:
       return {
         ...state,
         loading: { ...state.loading, emails: false },
@@ -46,14 +47,14 @@ const emailBatchReducer = (state = initialState, action) => {
     // Dashboard stats removed
 
     // Fetch email audit trail (parent Email)
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_START:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_AUDIT_START:
       return {
         ...state,
         loading: { ...state.loading, emailAudit: true },
         error: { ...state.error, emailAudit: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_SUCCESS:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_AUDIT_SUCCESS:
       return {
         ...state,
         loading: { ...state.loading, emailAudit: false },
@@ -61,7 +62,7 @@ const emailBatchReducer = (state = initialState, action) => {
         error: { ...state.error, emailAudit: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_AUDIT_ERROR:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_AUDIT_ERROR:
       return {
         ...state,
         loading: { ...state.loading, emailAudit: false },
@@ -69,14 +70,14 @@ const emailBatchReducer = (state = initialState, action) => {
       };
 
     // Fetch email batch audit trail (child EmailBatch)
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_START:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_START:
       return {
         ...state,
         loading: { ...state.loading, emailBatchAudit: true },
         error: { ...state.error, emailBatchAudit: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_SUCCESS:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_SUCCESS:
       return {
         ...state,
         loading: { ...state.loading, emailBatchAudit: false },
@@ -84,7 +85,7 @@ const emailBatchReducer = (state = initialState, action) => {
         error: { ...state.error, emailBatchAudit: null },
       };
 
-    case EMAIL_BATCH_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_ERROR:
+    case EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_ERROR:
       return {
         ...state,
         loading: { ...state.loading, emailBatchAudit: false },
@@ -96,4 +97,4 @@ const emailBatchReducer = (state = initialState, action) => {
   }
 };
 
-export default emailBatchReducer;
+export default emailOutboxReducer;

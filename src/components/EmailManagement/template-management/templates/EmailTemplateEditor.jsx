@@ -37,6 +37,8 @@ import {
   fetchEmailTemplate,
   clearEmailTemplateError,
   clearCurrentTemplate,
+  previewEmailTemplate,
+  validateEmailTemplate,
 } from '../../../../actions/emailTemplateActions';
 import './EmailTemplateEditor.css';
 
@@ -49,6 +51,8 @@ const EmailTemplateEditor = ({
   fetchEmailTemplate,
   clearEmailTemplateError,
   clearCurrentTemplate,
+  previewEmailTemplate,
+  validateEmailTemplate,
   onClose,
   onSave,
   templateId = null, // For editing existing templates
@@ -77,6 +81,9 @@ const EmailTemplateEditor = ({
   const [editingVariableIndex, setEditingVariableIndex] = useState(null);
   const [retryAttempts, setRetryAttempts] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [previewData, setPreviewData] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewError, setPreviewError] = useState(null);
 
   // Effect to load template data when in edit mode
   useEffect(() => {
@@ -338,6 +345,23 @@ const EmailTemplateEditor = ({
       return;
     }
 
+    // Validate template structure with backend if template is saved
+    if (templateId) {
+      try {
+        const validation = await validateEmailTemplate(templateId);
+        if (!validation.isValid && validation.errors && validation.errors.length > 0) {
+          toast.warning(`Template validation warnings: ${validation.errors.join(', ')}`, {
+            position: 'top-right',
+            autoClose: 5000,
+          });
+          // Continue with save despite warnings (user can decide)
+        }
+      } catch (error) {
+        // Validation error is not blocking, but log it
+        console.warn('Template validation error:', error);
+      }
+    }
+
     setSaving(true);
     try {
       if (templateId) {
@@ -377,7 +401,15 @@ const EmailTemplateEditor = ({
     } finally {
       setSaving(false);
     }
-  }, [validateForm, templateId, formData, updateEmailTemplate, createEmailTemplate, onSave]);
+  }, [
+    validateForm,
+    templateId,
+    formData,
+    validateEmailTemplate,
+    updateEmailTemplate,
+    createEmailTemplate,
+    onSave,
+  ]);
 
   const handleOpenVariableModal = useCallback(() => {
     setNewVariable({ name: '', type: 'text' });
@@ -496,7 +528,8 @@ const EmailTemplateEditor = ({
     }
   }, [fetchEmailTemplate, templateId, isRetrying]);
 
-  const getPreviewContent = useMemo(() => {
+  // Client-side preview fallback (for unsaved templates)
+  const getClientSidePreview = useMemo(() => {
     if (!formData.html_content) return '';
 
     let content = formData.html_content;
@@ -511,6 +544,62 @@ const EmailTemplateEditor = ({
     }
     return content;
   }, [formData.html_content, formData.variables]);
+
+  // Handle preview with backend API if template is saved, otherwise use client-side
+  const handlePreview = useCallback(async () => {
+    // If template is not saved yet, use client-side preview
+    if (!templateId) {
+      setPreviewData({
+        subject: formData.subject || '',
+        htmlContent: getClientSidePreview,
+      });
+      setShowPreviewModal(true);
+      return;
+    }
+
+    // For saved templates, use backend API with placeholder values
+    setPreviewLoading(true);
+    setPreviewError(null);
+    try {
+      // Build variable values object with placeholder values for preview
+      const variableValues = {};
+      if (formData.variables && Array.isArray(formData.variables)) {
+        formData.variables.forEach(variable => {
+          if (variable && variable.name) {
+            // Use placeholder values based on variable type
+            if (variable.type === 'image') {
+              variableValues[variable.name] = 'https://example.com/placeholder-image.jpg';
+            } else if (variable.type === 'number') {
+              variableValues[variable.name] = '123';
+            } else if (variable.type === 'email') {
+              variableValues[variable.name] = 'example@email.com';
+            } else {
+              variableValues[variable.name] = `[${variable.name}]`;
+            }
+          }
+        });
+      }
+
+      const preview = await previewEmailTemplate(templateId, variableValues);
+      setPreviewData(preview);
+      setShowPreviewModal(true);
+    } catch (error) {
+      // If preview fails, show error but still allow viewing client-side preview
+      setPreviewError(error.message || 'Failed to preview template');
+      toast.warning('Preview failed, showing basic preview', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+      // Fallback to client-side preview
+      setPreviewData({
+        subject: formData.subject || '',
+        htmlContent: getClientSidePreview,
+      });
+      setShowPreviewModal(true);
+    } finally {
+      setPreviewLoading(false);
+    }
+  }, [templateId, formData, previewEmailTemplate, getClientSidePreview]);
 
   const tinyMCEConfig = useMemo(() => getTemplateEditorConfig(darkMode, formData), [
     darkMode,
@@ -606,11 +695,20 @@ const EmailTemplateEditor = ({
             <div className="action-buttons">
               <Button
                 color="outline-secondary"
-                onClick={() => setShowPreviewModal(true)}
-                disabled={!formData.html_content}
+                onClick={handlePreview}
+                disabled={!formData.html_content || previewLoading}
               >
-                <FaEye className="me-1" />
-                Preview
+                {previewLoading ? (
+                  <>
+                    <FaSpinner className="fa-spin me-1" />
+                    Loading...
+                  </>
+                ) : (
+                  <>
+                    <FaEye className="me-1" />
+                    Preview
+                  </>
+                )}
               </Button>
               <Button color="primary" onClick={handleSave} disabled={saving}>
                 {saving ? <FaSpinner className="fa-spin me-1" /> : <FaSave className="me-1" />}
@@ -807,31 +905,49 @@ const EmailTemplateEditor = ({
       <Modal isOpen={showPreviewModal} toggle={() => setShowPreviewModal(false)} size="lg" centered>
         <ModalHeader toggle={() => setShowPreviewModal(false)}>Email Preview</ModalHeader>
         <ModalBody>
-          <div>
-            <div className="mb-3">
-              <strong>Subject:</strong> {formData.subject}
-            </div>
-            <div className="mb-3">
-              <strong>Variables:</strong> {formData.variables.length}
-              {formData.variables.length > 0 && (
-                <div className="mt-2">
-                  {formData.variables.map((variable, index) => (
-                    <Badge key={index} color="secondary" className="me-1 mb-1">
-                      {variable.name} ({variable.type})
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
+          {previewError && (
+            <Alert color="warning" className="mb-3">
+              <FaExclamationTriangle className="me-2" />
+              {previewError}
+              {!templateId && ' (Using client-side preview for unsaved template)'}
+            </Alert>
+          )}
+          {previewData ? (
             <div>
-              <strong>Content Preview:</strong>
-              <div
-                className="mt-2 p-3 border rounded"
-                style={{ maxHeight: '400px', overflow: 'auto' }}
-                dangerouslySetInnerHTML={{ __html: getPreviewContent }}
-              />
+              <div className="mb-3">
+                <strong>Subject:</strong>{' '}
+                {previewData.subject || formData.subject || '(No subject)'}
+              </div>
+              <div className="mb-3">
+                <strong>Variables:</strong> {formData.variables.length}
+                {formData.variables.length > 0 && (
+                  <div className="mt-2">
+                    {formData.variables.map((variable, index) => (
+                      <Badge key={index} color="secondary" className="me-1 mb-1">
+                        {variable.name} ({variable.type})
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div>
+                <strong>Content Preview:</strong>
+                <div
+                  className="mt-2 p-3 border rounded"
+                  style={{ maxHeight: '400px', overflow: 'auto' }}
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      previewData.htmlContent || previewData.html_content || getClientSidePreview,
+                  }}
+                />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-4">
+              <FaSpinner className="fa-spin me-2" />
+              Loading preview...
+            </div>
+          )}
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" onClick={() => setShowPreviewModal(false)}>
@@ -964,6 +1080,8 @@ const mapDispatchToProps = {
   fetchEmailTemplate,
   clearEmailTemplateError,
   clearCurrentTemplate,
+  previewEmailTemplate,
+  validateEmailTemplate,
 };
 
 // PropTypes for type checking

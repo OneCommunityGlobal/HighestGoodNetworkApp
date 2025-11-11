@@ -8,8 +8,8 @@ export {
 // Email sending components
 export { IntegratedEmailSender } from './email-sender';
 
-// Batch dashboard components
-export { EmailBatchDashboard } from './batch-dashboard';
+// Email outbox components
+export { EmailOutbox } from './outbox';
 
 // Shared components
 export { ErrorBoundary, getTemplateEditorConfig, getEmailSenderConfig } from './shared';
