@@ -310,7 +310,7 @@
 
 .wideCard {
   width: 100%;
-  min-height: 250px;
+  min-height: auto; /* Let content determine height instead of forcing 250px */
   grid-column: span 2;
 }
 
@@ -324,6 +324,7 @@
   max-width: 100%;
   min-height: 250px;
   box-sizing: border-box;
+  min-height: auto; /* Let content determine height instead of forcing 250px */
 }
 
 .mapCard {
@@ -363,6 +364,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
+  align-items: start; /* Prevent cards from stretching to match tallest card */
   border-top: 1px solid var(--card-shadow);
   animation: fade-in 0.3s ease-in-out;
   background: var(--section-bg);
