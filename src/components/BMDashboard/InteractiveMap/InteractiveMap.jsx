@@ -2,14 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import {
-  MapContainer,
-  TileLayer,
-  CircleMarker,
-  Popup,
-  Tooltip,
-  useMap
-} from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, Tooltip, useMap } from 'react-leaflet';
 
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import axios from 'axios';
@@ -35,29 +28,27 @@ function MapThemeUpdater({ darkMode }) {
 ----------------------------------------------------- */
 function Legend() {
   const map = useMap();
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    const legend = L.control({ position: "bottomright" });
+    const legend = L.control({ position: 'bottomright' });
 
     legend.onAdd = () => {
-    const div = L.DomUtil.create("div", "info legend");
-    div.style.transform = "translate(-5px, -50px)";
-    div.style.backgroundColor = darkMode ? "#1e2a3a" : "white";
-    div.style.color = darkMode ? "white" : "#222";
-    div.style.padding = "10px 12px";
-    div.style.borderRadius = "8px";
-    div.style.boxShadow = darkMode
-      ? "0 0 12px rgba(0,0,0,0.4)"
-      : "0 0 12px rgba(0,0,0,0.15)";
+      const div = L.DomUtil.create('div', 'info legend');
+      div.style.transform = 'translate(-5px, -50px)';
+      div.style.backgroundColor = darkMode ? '#1e2a3a' : 'white';
+      div.style.color = darkMode ? 'white' : '#222';
+      div.style.padding = '10px 12px';
+      div.style.borderRadius = '8px';
+      div.style.boxShadow = darkMode ? '0 0 12px rgba(0,0,0,0.4)' : '0 0 12px rgba(0,0,0,0.15)';
 
-    div.style.position = "relative";     // avoids clipping inside overflow:hidden
-    div.style.zIndex = 1000;
+      div.style.position = 'relative'; // avoids clipping inside overflow:hidden
+      div.style.zIndex = 1000;
 
-    const statuses = ["active", "delayed", "completed"];
-    const colors = ["#DE6A6A", "#E3D270", "#6ACFDE"];
+      const statuses = ['active', 'delayed', 'completed'];
+      const colors = ['#DE6A6A', '#E3D270', '#6ACFDE'];
 
-    div.innerHTML = `
+      div.innerHTML = `
       <h4 style="margin:0 0 6px;font-size:14px;">Project Status</h4>
       ${statuses
         .map(
@@ -69,13 +60,12 @@ function Legend() {
             margin-right:6px;
           "></span>
           <span>${s}</span>
-        </div>`
+        </div>`,
         )
-        .join("")}
+        .join('')}
       `;
       return div;
     };
-
 
     legend.addTo(map);
 
@@ -85,12 +75,11 @@ function Legend() {
   return null;
 }
 
-
 /* -----------------------------------------------------
    MAIN INTERACTIVE MAP
 ----------------------------------------------------- */
 export default function InteractiveMap() {
-  const darkMode = useSelector((state) => state.theme.darkMode);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const history = useHistory();
 
   const [orgs, setOrgs] = useState([]);
@@ -104,7 +93,7 @@ export default function InteractiveMap() {
   /* -----------------------------------------
      COLORS
   ----------------------------------------- */
-  const getStatusColor = (status) => {
+  const getStatusColor = status => {
     switch (status?.toLowerCase()) {
       case 'active':
         return '#DE6A6A';
@@ -132,26 +121,61 @@ export default function InteractiveMap() {
       const data = response.data.data || [];
 
       // Print fetched data to check if backend is correct
-      console.log("Backend data fetched:", data);
+      console.log('Backend data fetched:', data);
 
       setOrgs(data);
       setFilteredOrgs(data);
     } catch (e) {
-      console.error("Error fetching data:", e);
+      console.error('Error fetching data:', e);
     } finally {
       setLoading(false);
     }
   };
+
+  // Pseudo test data
+  const pseudoOrgs = [
+    {
+      orgId: 9991,
+      name: 'Test Project Alpha',
+      status: 'active',
+      country: 'United States', // corporate address
+      latitude: 34.1185,
+      longitude: -118.0743,
+      startDate: '2025-11-01',
+      remark: 'This is a remark for Project Alpha.',
+    },
+    {
+      orgId: 9992,
+      name: 'Test Project Beta',
+      status: 'completed',
+      country: 'Germany',
+      latitude: 52.52, // Berlin
+      longitude: 13.405,
+      startDate: '2023-12-10',
+      endDate: '2024-12-10',
+      remark: 'Beta testing completed successfully.',
+    },
+    {
+      orgId: 9993,
+      name: 'Test Project Gamma',
+      status: 'delayed',
+      country: 'Japan',
+      latitude: 35.6895, // Tokyo
+      longitude: 139.6917,
+      startDate: '2025-06-01',
+      remark: 'Awaiting equipment shipment.',
+    },
+  ];
 
   /* -----------------------------------------
      FILTERING
   ----------------------------------------- */
   const applyDateFilters = () => {
     if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
-      setErrMsg("End date cannot be earlier than start date");
+      setErrMsg('End date cannot be earlier than start date');
       return;
     }
-    setErrMsg("");
+    setErrMsg('');
 
     let filtered = [...orgs];
     if (startDate) filtered = filtered.filter(o => new Date(o.startDate) >= new Date(startDate));
@@ -167,14 +191,17 @@ export default function InteractiveMap() {
     setFilteredOrgs(orgs);
   };
 
-  const handleProjectClick = (org) =>
-    history.push(`/bmdashboard/projects/${org.orgId}`);
+  const handleProjectClick = org => history.push(`/bmdashboard/projects/${org.orgId}`);
 
   /* -----------------------------------------
      EFFECTS
   ----------------------------------------- */
-  useEffect(() => { fetchOrgs(); }, []);
-  useEffect(() => { setMapKey(k => k + 1); }, [darkMode]);
+  useEffect(() => {
+    fetchOrgs();
+  }, []);
+  useEffect(() => {
+    setMapKey(k => k + 1);
+  }, [darkMode]);
 
   /* -----------------------------------------
      LAYOUT STYLES
@@ -185,7 +212,7 @@ export default function InteractiveMap() {
       flexDirection: 'column',
       width: '100%',
       height: '100%',
-      background: darkMode ? '#0d1b2a' : 'white'
+      background: darkMode ? '#0d1b2a' : 'white',
     },
 
     topBar: {
@@ -193,7 +220,7 @@ export default function InteractiveMap() {
       justifyContent: 'flex-end',
       padding: '12px 15px',
       gap: '12px',
-      flexWrap: 'wrap'
+      flexWrap: 'wrap',
     },
 
     mapArea: {
@@ -215,32 +242,31 @@ export default function InteractiveMap() {
       fontSize: '12px',
       backdropFilter: 'blur(6px)',
       color: darkMode ? 'white' : '#222',
-      zIndex: 1000
+      zIndex: 1000,
     },
 
     headerRow: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "12px 15px",
-      gap: "12px",
-      flexWrap: "wrap", 
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '12px 15px',
+      gap: '12px',
+      flexWrap: 'wrap',
     },
 
     titleText: {
       margin: 0,
-      fontSize: "20px",
+      fontSize: '20px',
       fontWeight: 600,
-      color: darkMode ? "white" : "#222",
+      color: darkMode ? 'white' : '#222',
     },
 
     filterRow: {
-      display: "flex",
-      alignItems: "center",
-      gap: "10px",
-      flexWrap: "wrap", 
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px',
+      flexWrap: 'wrap',
     },
-
   };
 
   /* -----------------------------------------
@@ -250,9 +276,7 @@ export default function InteractiveMap() {
     <div style={S.container}>
       {/* HEADER ROW — Title (left) + Filters (right) */}
       <div style={S.headerRow}>
-        <h2 style={S.titleText}>
-          Global Distribution and Project Status Overview
-        </h2>
+        <h2 style={S.titleText}>Global Distribution and Project Status Overview</h2>
 
         <div style={S.filterRow}>
           <input
@@ -275,13 +299,10 @@ export default function InteractiveMap() {
           </button>
 
           {errMsg && (
-            <span style={{ color: "#DE6A6A", fontSize: "12px", paddingTop: "5px" }}>
-              {errMsg}
-            </span>
+            <span style={{ color: '#DE6A6A', fontSize: '12px', paddingTop: '5px' }}>{errMsg}</span>
           )}
         </div>
       </div>
-
 
       {/* MAP — full width, flexible height */}
       <div style={S.mapArea}>
@@ -313,7 +334,7 @@ export default function InteractiveMap() {
             <Legend />
 
             <MarkerClusterGroup maxClusterRadius={70} chunkedLoading>
-              {filteredOrgs.map((org, index) => (
+              {pseudoOrgs.map((org, index) => (
                 <CircleMarker
                   key={org.orgId || index}
                   center={[org.latitude, org.longitude]}
@@ -322,7 +343,7 @@ export default function InteractiveMap() {
                     fillColor: getStatusColor(org.status),
                     fillOpacity: 0.85,
                     color: 'white',
-                    weight: 1
+                    weight: 1,
                   }}
                 >
                   <Tooltip>View Project #{org.orgId}</Tooltip>
