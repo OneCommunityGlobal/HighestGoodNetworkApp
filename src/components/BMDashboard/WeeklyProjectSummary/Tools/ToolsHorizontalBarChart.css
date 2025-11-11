@@ -3,12 +3,12 @@
   background-color: var(--card-bg, #ffffff);
   border-radius: 8px;
   padding: 16px;
-  height: 100%;
+  height: auto; /* Let card size to content instead of stretching to 100% */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
-  min-height: 280px;
+  min-height: 280px; /* Keep min-height for empty/loading states */
 }
 
 .tools-horizontal-bar-chart-card:hover {

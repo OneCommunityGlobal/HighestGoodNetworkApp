@@ -95,6 +95,21 @@
   background-color: #007bff!important;
 }
 
+/* Override min-height for tools-availability-page when used in card context */
+:global(.tools-availability-page) {
+  min-height: auto !important; /* Override 100vh from ToolsAvailabilityPage.css */
+  height: auto; /* Let content determine height */
+  padding: 8px; /* Remove excessive padding (24px) since card already has padding */
+}
+
+/* Chart container - prevent extra vertical space */
+:global(.tools-horizontal-chart-container) {
+  width: 100%;
+  height: auto; /* Ensure container doesn't force height */
+  display: flex;
+  flex-direction: column;
+}
+
 /* Filter controls layout for small screens */
 @media (max-width: 768px) {
   :global(.datepickerWrapper) {

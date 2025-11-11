@@ -5,6 +5,9 @@
   max-width: 400px;
   margin: 0 auto;
   text-align: center;
+  height: auto; /* Ensure wrapper doesn't stretch */
+  display: flex;
+  flex-direction: column; /* Stack content vertically */
 }
 
 .dark-mode.tool-donut-wrapper {
