@@ -9,7 +9,7 @@
 .fu-tooltip {
   position: fixed;              /* not clipped by ancestors */
   z-index: 3000;                /* above tables/modals */
-  width: 440px;                 /* desktop width; clamped by max-width inline */
+  width: 640px;                 /* desktop width; clamped by max-width inline */
   padding: 15px;
   border-radius: 6px;
   box-shadow: 0 8px 24px rgba(0,0,0,.35);
@@ -32,53 +32,3 @@
   }
 }
 /* ===== Generic “i” tooltip used elsewhere (not the follow-up one) ===== */
-
-.followup-tooltip-container {
-  position: relative;
-  display: inline-block;
-}
-
-/* Hide by default */
-.followup-tooltip {
-  position: absolute;           /* stays next to the icon */
-  top: calc(100% + 8px);        /* below the button */
-  left: 0;
-  z-index: 2000;
-
-  /* box */
-  background: #333;
-  color: #fff;
-  padding: 12px 14px;
-  border-radius: 6px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
-
-  /* size: “a little big”, then scroll if needed */
-  max-width: 640px;
-  max-height: 85vh;             /* bigger before scrolling */
-  overflow: auto;               /* only scroll when necessary */
-  white-space: normal;
-  text-align: left;
-
-  /* hide/show */
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity .2s ease, visibility .2s ease;
-  pointer-events: none;         /* prevents accidental hover traps when hidden */
-}
-
-/* Show on hover or focus (keyboard accessible) */
-.followup-tooltip-container:hover .followup-tooltip,
-.followup-tooltip-container:focus-within .followup-tooltip {
-  visibility: visible;
-  opacity: 1;
-  pointer-events: auto;
-}
-
-@media (max-width: 768px) {
-  .followup-tooltip {
-    right: 0;          /* allow it to align within narrow screens */
-    left: auto;
-    width: min(90vw, 440px);
-    max-height: 60vh;  /* still roomy on mobile */
-  }
-}

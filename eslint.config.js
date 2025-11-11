@@ -31,7 +31,6 @@ module.exports = [
       // Ignore test files inside /src/components
       'src/components/Reports/PeopleReport/components/PeopleTasksPieChart.test.jsx',
       // Ignore entire component folders
-      'src/components/Badge/**',
     ],
   },
 

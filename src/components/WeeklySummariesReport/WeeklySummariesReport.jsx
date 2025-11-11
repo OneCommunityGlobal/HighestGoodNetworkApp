@@ -202,6 +202,27 @@ const WeeklySummariesReport = props => {
     );
   };
 
+  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
+    // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
+    const weekStartLA = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const weekEndLA = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const summaryStart = new Date(startDateStr);
+    const summaryEnd = new Date(endDateStr);
+
+    // keep if it overlaps that week
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
+  };
+
   /**
    * Get the roleNames
    * @param {*} summaries
@@ -615,7 +636,10 @@ const WeeklySummariesReport = props => {
         //     return false; // Skip inactive members unless their summary is from last week
         //   }
         // }
-        if (summary?.isActive === false && !isLastWeekReport(summary.startDate, summary.endDate)) {
+        if (
+          summary?.isActive === false &&
+          !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+        ) {
           return false;
         }
         const isMeetCriteria =
@@ -828,9 +852,13 @@ const WeeklySummariesReport = props => {
       // Save in session storage
       sessionStorage.setItem('tabSelection', tab);
 
-      // Check if we already have data for this tab
-      if (state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
-        // Use cached data
+      const weekIndex = navItems.indexOf(tab);
+
+      // Always refetch for "Last Week" so late submissions show up
+      const shouldForceFetch = tab === 'Last Week';
+
+      if (!shouldForceFetch && state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
+        // use cache
         setState(prevState => ({
           ...prevState,
           summaries: prevState.summariesByTab[tab],
@@ -842,35 +870,27 @@ const WeeklySummariesReport = props => {
           },
         }));
       } else {
-        // Fetch new data
-        const weekIndex = navItems.indexOf(tab);
-
+        // fetch fresh
         props
           .getWeeklySummariesReport(weekIndex)
           .then(res => {
             if (res && res.data) {
-              // Process data
               let summariesCopy = [...res.data];
               summariesCopy = alphabetize(summariesCopy);
-
-              // Add promised hours data
               summariesCopy = summariesCopy.map(summary => {
                 const promisedHoursByWeek = weekDates.map(weekDate =>
                   getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
                 );
-
                 const filterColor = summary.filterColor || null;
-
                 return { ...summary, promisedHoursByWeek, filterColor };
               });
 
-              // Update state
               setState(prevState => ({
                 ...prevState,
                 summaries: summariesCopy,
                 filteredSummaries: summariesCopy,
                 badges: props.allBadgeData || prevState.badges,
-                loadedTabs: [...prevState.loadedTabs, tab],
+                loadedTabs: [...new Set([...prevState.loadedTabs, tab])],
                 summariesByTab: {
                   ...prevState.summariesByTab,
                   [tab]: summariesCopy,
@@ -891,7 +911,6 @@ const WeeklySummariesReport = props => {
             }
           })
           .catch(() => {
-            // console.error('Error loading tab data:', error);
             setState(prevState => ({
               ...prevState,
               tabsLoading: {
