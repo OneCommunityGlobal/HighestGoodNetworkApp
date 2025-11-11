@@ -214,7 +214,7 @@ export default function ToolStatusDonutChart() {
   } else {
     innerRadius = 35;
     outerRadius = 60;
-    chartHeight = 220;
+    chartHeight = 300;
   }
 
   const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;

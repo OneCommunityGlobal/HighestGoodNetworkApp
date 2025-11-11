@@ -213,19 +213,19 @@ export default function ToolsStoppageHorizontalBarChart() {
         label: 'Used its lifetime',
         data: data.map(item => item.usedForLifetime || 0),
         backgroundColor: '#4589FF',
-        barThickness: 30,
+        maxBarThickness: 25, // Max thickness, allows scaling
       },
       {
         label: 'Damaged',
         data: data.map(item => item.damaged || 0),
         backgroundColor: '#FF0000',
-        barThickness: 30,
+        maxBarThickness: 25,
       },
       {
         label: 'Lost',
         data: data.map(item => item.lost || 0),
         backgroundColor: '#FFB800',
-        barThickness: 30,
+        maxBarThickness: 25,
       },
     ],
   };
@@ -258,6 +258,8 @@ export default function ToolsStoppageHorizontalBarChart() {
         stacked: true,
         grid: { display: false },
         ticks: { color: darkMode ? '#e0e0e0' : '#000' },
+        categoryPercentage: 0.6, // Reduce spacing between categories (default 0.8)
+        barPercentage: 0.9, // Increase bar width within category (default 0.9)
       },
     },
   };
@@ -318,7 +320,7 @@ export default function ToolsStoppageHorizontalBarChart() {
         {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
 
         {!loading && selectedProject && data.length > 0 && (
-          <Bar data={chartData} options={chartOptions} height={600} />
+          <Bar data={chartData} options={chartOptions} height={300} />
         )}
 
         {!loading && selectedProject && data.length === 0 && (
