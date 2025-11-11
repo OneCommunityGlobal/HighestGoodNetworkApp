@@ -176,7 +176,7 @@
 
 .wideCard {
   width: 100%;
-  min-height: 250px;
+  min-height: auto; /* Let content determine height instead of forcing 250px */
   grid-column: span 2;
 }
 
@@ -187,7 +187,7 @@
 
 .normalCard {
   width: 100%;
-  min-height: 250px;
+  min-height: auto; /* Let content determine height instead of forcing 250px */
 }
 
 .weeklyProjectSummaryDashboardSection {
@@ -218,6 +218,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
+  align-items: start; /* Prevent cards from stretching to match tallest card */
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
