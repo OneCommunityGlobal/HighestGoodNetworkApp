@@ -38,7 +38,6 @@ import {
   FaPaperPlane,
 } from 'react-icons/fa';
 import './EmailOutbox.css';
-import './StatsChips.css';
 import './ButtonStyles.css';
 import ResendEmailModal from './ResendEmailModal';
 

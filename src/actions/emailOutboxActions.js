@@ -7,13 +7,6 @@ export const EMAIL_OUTBOX_ACTIONS = {
   FETCH_EMAILS_START: 'FETCH_EMAILS_START',
   FETCH_EMAILS_SUCCESS: 'FETCH_EMAILS_SUCCESS',
   FETCH_EMAILS_ERROR: 'FETCH_EMAILS_ERROR',
-  // Audit trail actions kept for backward compatibility but return empty arrays
-  FETCH_EMAIL_AUDIT_START: 'FETCH_EMAIL_AUDIT_START',
-  FETCH_EMAIL_AUDIT_SUCCESS: 'FETCH_EMAIL_AUDIT_SUCCESS',
-  FETCH_EMAIL_AUDIT_ERROR: 'FETCH_EMAIL_AUDIT_ERROR',
-  FETCH_EMAIL_BATCH_AUDIT_START: 'FETCH_EMAIL_BATCH_AUDIT_START',
-  FETCH_EMAIL_BATCH_AUDIT_SUCCESS: 'FETCH_EMAIL_BATCH_AUDIT_SUCCESS',
-  FETCH_EMAIL_BATCH_AUDIT_ERROR: 'FETCH_EMAIL_BATCH_AUDIT_ERROR',
 };
 
 // Fetch emails (parent Email records) - Outbox list
@@ -46,32 +39,6 @@ export const fetchEmails = () => async (dispatch) => {
     toast.error(errorMessage);
     throw error;
   }
-};
-
-// Alias for backward compatibility
-export const fetchBatches = fetchEmails;
-
-// Audit trail functions - deprecated (audit logging removed from backend)
-// Error details are now captured directly in EmailBatch records (lastError, errorCode, etc.)
-// These functions return empty arrays for backward compatibility
-export const fetchEmailAuditTrail = (emailId) => async (dispatch) => {
-  dispatch({ type: EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_AUDIT_START });
-  // Audit trail removed - return empty array
-  dispatch({
-    type: EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_AUDIT_SUCCESS,
-    payload: [],
-  });
-  return [];
-};
-
-export const fetchEmailBatchAuditTrail = (emailBatchId) => async (dispatch) => {
-  dispatch({ type: EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_START });
-  // Audit trail removed - return empty array
-  dispatch({
-    type: EMAIL_OUTBOX_ACTIONS.FETCH_EMAIL_BATCH_AUDIT_SUCCESS,
-    payload: [],
-  });
-  return [];
 };
 
 // Resend email with selected recipient option
