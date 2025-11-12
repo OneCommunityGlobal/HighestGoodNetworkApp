@@ -715,6 +715,19 @@
   .weeklyProjectSummaryDashboardGrid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* Tools and Equipment Tracking - 2 column layout on tablet */
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 12px;
+  }
+
+  /* Cards span full width on tablet */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard,
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 2;
+  }
 }
 
 /* Small Screens */
