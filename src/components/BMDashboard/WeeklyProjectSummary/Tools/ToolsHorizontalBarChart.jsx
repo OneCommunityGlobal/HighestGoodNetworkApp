@@ -71,6 +71,7 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const [allTools, setAllTools] = useState([]);
   const [selectedTools, setSelectedTools] = useState([]);
   const [isPreviewHovering, setIsPreviewHovering] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const currentDate = new Date();
   const startDate12MonthsAgo = new Date(currentDate.getFullYear() - 1, currentDate.getMonth(), 1);
@@ -79,6 +80,56 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
   const [startDate, setStartDate] = useState(startDate12MonthsAgo.toISOString().split('T')[0]);
   const [endDate, setEndDate] = useState(endOfCurrentMonth.toISOString().split('T')[0]);
 
+  // Responsive height calculation
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Calculate responsive chart height: 240px mobile, 260px tablet, 280px desktop
+  const getChartHeight = () => {
+    if (windowWidth <= 768) {
+      return 240; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 260; // Tablet
+    }
+    return 280; // Desktop
+  };
+
+  // Calculate responsive margins: mobile {5,5,15,5}, tablet {8,15,25,8}, desktop {10,30,40,10}
+  const getChartMargins = () => {
+    if (windowWidth <= 768) {
+      return { top: 5, right: 5, left: 15, bottom: 5 }; // Mobile
+    } else if (windowWidth <= 1024) {
+      return { top: 8, right: 15, left: 25, bottom: 8 }; // Tablet
+    }
+    return { top: 10, right: 30, left: 40, bottom: 10 }; // Desktop
+  };
+
+  // Calculate responsive Y-axis width: mobile 20, tablet 28, desktop 35
+  const getYAxisWidth = () => {
+    if (windowWidth <= 768) {
+      return 20; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 28; // Tablet
+    }
+    return 35; // Desktop
+  };
+
+  // Calculate responsive font size: mobile 10, tablet 11, desktop 12
+  const getYAxisFontSize = () => {
+    if (windowWidth <= 768) {
+      return 10; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 11; // Tablet
+    }
+    return 12; // Desktop
+  };
+
+  // Date range logging removed for production
+
+  // Fetch projects list
   useEffect(() => {
     const fetchProjects = async () => {
       try {
@@ -495,8 +546,11 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
               <YAxis
                 type="category"
                 dataKey="name"
-                tick={{ fill: darkMode ? '#e0e0e0' : '#333', fontSize: 12 }}
-                width={80}
+                tick={{
+                  fill: darkMode ? '#e0e0e0' : '#333',
+                  fontSize: getYAxisFontSize(),
+                }}
+                width={getYAxisWidth()}
                 axisLine={false}
                 tickLine={false}
               />
