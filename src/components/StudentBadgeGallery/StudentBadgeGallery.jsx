@@ -16,6 +16,9 @@ function StudentBadgeGallery({ darkMode }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
+    // ============================================================
+    // 🔒 TEMPORARY FRONTEND MOCK (REMOVE AFTER BACKEND IS READY)
+    // ============================================================
     const mockData = [
       {
         id: 1,
@@ -47,6 +50,45 @@ function StudentBadgeGallery({ darkMode }) {
     ];
     setBadges(mockData);
     setLoading(false);
+
+    // ============================================================
+    // 🚀 REAL BACKEND INTEGRATION (UNCOMMENT AFTER API IS READY)
+    // ============================================================
+    /*
+    fetch('/student/badges', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // ✅ if authentication cookie/session needed
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch student badges');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // ⚙️ Expected API format:
+        // [
+        //   {
+        //     id: number,
+        //     badgeName: string,
+        //     description: string,
+        //     type: string,
+        //     imageUrl: string,
+        //     count: number,
+        //     earned: boolean
+        //   }
+        // ]
+        setBadges(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error('❌ Error fetching badges:', err);
+        setLoading(false);
+      });
+    */
   }, []);
 
   const openModal = badge => {
@@ -59,13 +101,16 @@ function StudentBadgeGallery({ darkMode }) {
   return (
     <div className={styles.galleryContainer}>
       <Row
-        className={`${darkMode ? 'badge-box-shadow-dark bg-space-cadet' : 'bagde-box-shadow'}`}
-        style={{ margin: '0 2px' }}
+        className="bagde-box-shadow"
+        style={{
+          margin: '0 2px',
+          backgroundColor: '#ffffff', // lock to light mode
+        }}
       >
         <Col className="px-0">
           <Card
             style={{
-              backgroundColor: darkMode ? '#1C2541' : '#fafafa',
+              backgroundColor: '#fafafa',
               borderRadius: 0,
               minWidth: '100%',
             }}

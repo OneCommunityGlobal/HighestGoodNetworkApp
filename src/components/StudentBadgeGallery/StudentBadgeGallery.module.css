@@ -1,25 +1,44 @@
-/* ========== Disable Dark Mode for This Component ========== */
-:global(.dark) {
-  --bg-secondary: #fafafa;
-  --text-primary: #285739;
-  --text-secondary: #555;
+/* =========================================================
+   🔒 Force Light Mode Styling (Even in Dark Mode)
+   ========================================================= */
+:global(.dark) .galleryContainer {
+  background-color: #ffffff !important;
+  color: #285739 !important;
 }
 
-/* Ensure global dark mode has no effect here */
-:global(.dark) .galleryContainer,
-:global(.dark) .card,
-:global(.dark) .cardHeader,
+:global(.dark) .card {
+  background-color: #fafafa !important;
+  color: #285739 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+:global(.dark) .cardHeader {
+  background-color: #eaeaea !important;
+  color: #285739 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
 :global(.dark) .badgeName,
 :global(.dark) .badgeDesc,
-:global(.dark) .badgeLabel,
-:global(.dark) .icon {
-  background-color: inherit !important;
-  color: inherit !important;
-  filter: none !important;
-  box-shadow: inherit !important;
+:global(.dark) .badgeLabel {
+  color: #285739 !important;
 }
 
-/* ========== Layout Container ========== */
+:global(.dark) .icon {
+  filter: none !important;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2) !important;
+  background-color: #fafafa !important;
+}
+
+:global(.dark) .unearned {
+  opacity: 0.55 !important;
+  filter: grayscale(100%) !important;
+}
+
+/* =========================================================
+   🎨 Layout & Structure
+   ========================================================= */
 .galleryContainer {
   padding: 20px;
   display: flex;
@@ -27,7 +46,6 @@
   align-items: center;
 }
 
-/* ========== Title / Header ========== */
 .title {
   font-size: 1.5rem;
   font-weight: 600;
@@ -44,18 +62,23 @@
   padding: 12px 20px;
 }
 
-/* ========== Badge Grid / Gallery ========== */
+/* =========================================================
+   🧩 Badge Grid
+   ========================================================= */
 .badge_history_container,
 .grid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 24px;
+  align-items: flex-start; /* ensures labels show below icons */
+  gap: 28px;
   padding: 16px 0;
   overflow-y: auto;
 }
 
-/* ========== Badge Card ========== */
+/* =========================================================
+   🏅 Badge Card Container
+   ========================================================= */
 .card {
   position: relative;
   background-color: var(--bg-secondary, #fafafa);
@@ -64,12 +87,13 @@
   text-align: center;
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  width: 190px;   
-  height: 210px; 
+  width: 190px;
+  height: 210px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* 👈 show label below */
+  padding-bottom: 1rem;
 }
 
 .card:hover {
@@ -77,19 +101,37 @@
   box-shadow: 2px 6px 12px rgba(0, 0, 0, 0.25);
 }
 
-
-/* ========== Badge Icon ========== */
-.icon {
-  border-radius: 50%;
-  height: 100px;   
-  width: 100px;   
-  margin-bottom: 0.6rem;
-  object-fit: cover;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+/* =========================================================
+   🖼️ Badge Image Container
+   ========================================================= */
+.badge_image_container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  width: 130px;
+  margin: 10px;
 }
 
+/* --- Badge image itself --- */
+.badge_image_container img,
+.icon {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: contain;
+  margin-bottom: 10px; /* 👈 ensures space between image and label */
+  transition: transform 0.2s ease;
+}
 
-/* ========== Badge Text ========== */
+.badge_image_container img:hover,
+.icon:hover {
+  transform: scale(1.08);
+}
+
+/* =========================================================
+   ✍️ Text Styles
+   ========================================================= */
 .badgeName {
   font-weight: 600;
   color: var(--text-primary, #285739);
@@ -107,11 +149,18 @@
 
 .badgeLabel {
   margin-top: 6px;
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #285739;
   text-align: center;
+  line-height: 1.2;
+  min-height: 22px; 
+  display: block;
 }
 
-/* ========== Button Wrapper ========== */
+/* =========================================================
+   🖱️ Button
+   ========================================================= */
 .badgeButton {
   background: none;
   border: none;
@@ -124,18 +173,22 @@
   border-radius: 10px;
 }
 
-/* ========== Unearned / Locked Style ========== */
+/* =========================================================
+   🔒 Unearned / Locked Badges
+   ========================================================= */
 .unearned {
   opacity: 0.55;
   filter: grayscale(100%);
 }
 
-/* ========== Responsive Design ========== */
+/* =========================================================
+   📱 Responsive Design
+   ========================================================= */
 @media screen and (max-width: 768px) {
   .badge_history_container,
   .grid {
     justify-content: center;
-    gap: 16px;
+    gap: 20px;
     padding: 8px 0;
   }
 
@@ -145,14 +198,14 @@
     padding: 1rem;
   }
 
-  .icon {
-    width: 80px;
-    height: 80px;
+  .icon,
+  .badge_image_container img {
+    width: 90px;
+    height: 90px;
   }
 
   .badgeName {
     font-size: 0.9rem;
-    margin-top: 0.25rem;
   }
 
   .badgeDesc,
@@ -167,14 +220,13 @@
   }
 }
 
-/* Extra small devices (≤480px) */
 @media screen and (max-width: 480px) {
   .badge_history_container,
   .grid {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 12px;
+    gap: 14px;
   }
 
   .card {
@@ -182,14 +234,14 @@
     height: 165px;
   }
 
-  .icon {
-    width: 70px;
-    height: 70px;
+  .icon,
+  .badge_image_container img {
+    width: 75px;
+    height: 75px;
   }
 
-
   .badgeName {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .badgeDesc,

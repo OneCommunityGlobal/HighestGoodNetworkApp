@@ -7,20 +7,29 @@ function StudentBadgeImage({ badgeData, time, index, personalBestMaxHrs, count, 
 
   const toggle = () => setOpen(prev => !prev);
 
-  // 🧩 Sanitize ID to handle names with spaces or special characters
+  // 🧩 Sanitize ID for safe HTML attributes
   const safeId = `popover_${(time || '').replace(/\s+/g, '_').replace(/[^\w-]/g, '')}_${index}`;
 
   return (
     <>
-      <div className="badge_image_container">
-        <div className="badge_image_sm">
-          <img
-            src={badgeData?.imageUrl}
-            id={safeId}
-            alt={badgeData?.badgeName || ''}
-            loading="lazy"
-          />
-        </div>
+      {/* ✅ Only image and badge count here — no nested container */}
+      <div
+        className="badge_image_sm"
+        style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}
+      >
+        <img
+          src={badgeData?.imageUrl}
+          id={safeId}
+          alt={badgeData?.badgeName || ''}
+          loading="lazy"
+          style={{
+            width: '110px',
+            height: '110px',
+            borderRadius: '50%',
+            objectFit: 'contain',
+            display: 'block',
+          }}
+        />
         <BadgeSpan
           badgeType={badgeData.type}
           personalBestMaxHrs={personalBestMaxHrs}
@@ -29,6 +38,7 @@ function StudentBadgeImage({ badgeData, time, index, personalBestMaxHrs, count, 
         />
       </div>
 
+      {/* Hover popover */}
       <Popover trigger="hover" isOpen={isOpen} toggle={toggle} target={safeId}>
         <Card className="text-center">
           <CardImg className="badge_image_lg" src={badgeData?.imageUrl} />
