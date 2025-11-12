@@ -15,8 +15,8 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import dompurify from 'dompurify';
-import './style.css';
-import './reviewButton.css';
+import styles from './style.module.css';
+import style from './reviewButton.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -472,8 +472,7 @@ function ReviewButton({ user, task, updateTask }) {
                     key={sanitizeText(link)}
                     href={handleSafeLink(link)}
                     target="_blank"
-                    rel="noopener noreferrer"
-                    className={darkMode ? 'text-light dark-mode-btn' : ''}
+                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
                   >
                     <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
@@ -515,8 +514,7 @@ function ReviewButton({ user, task, updateTask }) {
                     key={sanitizeText(dropLink)}
                     href={handleSafeLink(dropLink)}
                     target="_blank"
-                    rel="noopener noreferrer"
-                    className={darkMode ? 'text-light dark-mode-btn' : ''}
+                    className={`${darkMode ? 'text-light' : ''} ${style['dark-mode-btn']}`}
                   >
                     <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
