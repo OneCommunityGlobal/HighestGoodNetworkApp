@@ -12,8 +12,8 @@ const COLORS = {
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }) => {
-  const isSmall = width <= 768;
-  if (isSmall) return null;
+  // Hide labels on mobile/tablet for better readability
+  if (width <= 1024) return null;
 
   const radius = outerRadius + 20;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -57,7 +57,6 @@ export default function ToolStatusDonutChart() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const isXS = windowWidth <= 480;
   const chartData = availabilityData?.data || [];
   const total = availabilityData?.total || 0;
 
@@ -83,22 +82,47 @@ export default function ToolStatusDonutChart() {
     ).values(),
   );
 
+  // Responsive sizing aligned with other charts: 240px mobile, 260px tablet, 280px desktop
   let innerRadius;
   let outerRadius;
   let chartHeight;
-  if (isXS) {
-    innerRadius = 35;
-    outerRadius = 60;
+  const isSmall = windowWidth <= 768;
+  if (windowWidth <= 768) {
+    // Mobile
+    innerRadius = 40;
+    outerRadius = 65;
     chartHeight = 240;
-  } else if (windowWidth <= 768) {
-    innerRadius = 45;
-    outerRadius = 75;
-    chartHeight = 280;
+  } else if (windowWidth <= 1024) {
+    // Tablet
+    innerRadius = 50;
+    outerRadius = 80;
+    chartHeight = 260;
   } else {
+    // Desktop
     innerRadius = 70;
     outerRadius = 100;
-    chartHeight = 300; // Match other charts
+    chartHeight = 280;
   }
+
+  // Calculate responsive margins: mobile {20,20,20,20}, tablet {25,25,30,30}, desktop {30,30,40,40}
+  const getChartMargins = () => {
+    if (windowWidth <= 768) {
+      return { top: 20, bottom: 20, left: 20, right: 20 }; // Mobile
+    } else if (windowWidth <= 1024) {
+      return { top: 25, bottom: 25, left: 30, right: 30 }; // Tablet
+    }
+    return { top: 30, bottom: 30, left: 40, right: 40 }; // Desktop
+  };
+
+  // Calculate responsive font size for center text: mobile 10, tablet 12, desktop 14
+  const getCenterTextFontSize = () => {
+    if (windowWidth <= 768) {
+      return 10; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 12; // Tablet
+    }
+    return 14; // Desktop
+  };
 
   return (
     <div className={`tool-donut-wrapper ${darkMode ? 'dark-mode' : ''}`}>
@@ -139,7 +163,7 @@ export default function ToolStatusDonutChart() {
       </div>
 
       <ResponsiveContainer width="100%" height={chartHeight}>
-        <PieChart margin={{ top: 30, bottom: 30, left: isXS ? 30 : 40, right: isXS ? 30 : 40 }}>
+        <PieChart margin={getChartMargins()}>
           <Pie
             data={chartData}
             cx="50%"
@@ -162,7 +186,7 @@ export default function ToolStatusDonutChart() {
             textAnchor="middle"
             dominantBaseline="middle"
             fill="var(--donut-text-color)"
-            fontSize={14}
+            fontSize={getCenterTextFontSize()}
             fontWeight="bold"
           >
             TOTAL: {total}
