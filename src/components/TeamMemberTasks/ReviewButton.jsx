@@ -163,14 +163,28 @@ function ReviewButton({ user, task, updateTask }) {
       // Check minimum length requirement
       if (url.length < 20) return false;
 
-      // More comprehensive URL validation pattern
-      const pattern = /^https?:\/\/(?:[-\w.])+(?:\.[a-zA-Z]{2,})+(?:[\/\w\-._~:/?#[\]@!$&'()*+,;=%]*)?$/;
+      // Secure URL validation pattern that prevents catastrophic backtracking
+      // Split validation into parts to avoid nested quantifiers
+      const protocolPattern = /^https?:\/\//;
+      const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+      const pathPattern = /^[\/\w\-._~:?#[\]@!$&'()*+,;=%]*$/;
 
       // If URL doesn't start with http/https, add https:// for validation
       const urlToTest = url.startsWith('http') ? url : `https://${url}`;
 
-      // Test the pattern
-      if (!pattern.test(urlToTest)) return false;
+      // Test protocol
+      if (!protocolPattern.test(urlToTest)) return false;
+
+      // Extract domain and path parts
+      const urlWithoutProtocol = urlToTest.replace(protocolPattern, '');
+      const slashIndex = urlWithoutProtocol.indexOf('/');
+      const domain =
+        slashIndex === -1 ? urlWithoutProtocol : urlWithoutProtocol.substring(0, slashIndex);
+      const path = slashIndex === -1 ? '' : urlWithoutProtocol.substring(slashIndex);
+
+      // Validate domain and path separately
+      if (!domainPattern.test(domain)) return false;
+      if (path && !pathPattern.test(path)) return false;
 
       // Additional validation using URL constructor
       try {
