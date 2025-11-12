@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-export default function SearchProjectByPerson({ onSearch, suggestions, onSelectSuggestion }) {
+export default function SearchProjectByPerson({
+  onSearch,
+  suggestions,
+  onSelectSuggestion,
+  handleFetchArchivedProjects,
+  showArchived,
+}) {
   const [inputValue, setInputValue] = useState(''); // Keep track of input value
   const [showSuggestions, setShowSuggestions] = useState(false); // Control whether suggestions are shown
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -43,6 +49,11 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
           value={inputValue}
           onChange={handleInputChange} // Trigger input change
         />
+        <div>
+          <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
+            {showArchived ? 'Hide Archived' : 'Show Archived'}
+          </button>
+        </div>
       </form>
 
       {showSuggestions && suggestions?.length > 0 && (
