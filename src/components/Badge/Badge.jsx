@@ -132,7 +132,8 @@ function Badge(props) {
               id="badgesearned"
             >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
-                Badges <i className="fa fa-info-circle" id="BadgeInfo" />{' '}
+                Badges{' '}
+                <i className="fa fa-info-circle" id="BadgeInfo" data-testid="badge-info-icon" />
               </CardHeader>
               <CardBody>
                 <NewBadges
@@ -158,7 +159,7 @@ function Badge(props) {
                     props.userProfile.badgeCollection,
                     props.userProfile.personalBestMaxHrs,
                   )}
-                  <i className="fa fa-info-circle" id="CountInfo" />
+                  <i className="fa fa-info-circle" id="CountInfo" data-testid="count-info-icon" />
                 </CardText>
                 <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard />
               </CardBody>
