@@ -2,7 +2,7 @@
   padding: 40px 20px;
   max-width: 1400px;
   margin: 0 auto;
-  background: #ffffff;
+  background: #fff;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
@@ -13,7 +13,7 @@
   align-items: center;
   margin-bottom: 30px;
   padding: 20px;
-  background: linear-gradient(120deg, #ffffff, #f8f9fa);
+  background: linear-gradient(120deg, #fff, #f8f9fa);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -27,6 +27,7 @@
 
 .darkHeader {
   background: #1b2a41;
+  color: #fff
 }
 
 .dashboardClearBtn {
@@ -70,14 +71,6 @@
 .darkHeader .dashboardSearchContainer {
   border-color: #ffffff;
   background: #1b2a41;
-}
-
-.dashboardSearchInput {
-  width: 100%;
-  border-radius: 999px;
-  border: none;
-  background: transparent;
-  box-sizing: border-box;
 }
 
 .dashboardSearchTextarea {
@@ -172,6 +165,18 @@
   box-shadow: none;
 }
 
+.dashboardControls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dashboardSearch:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
+  outline: none;
+}
+
 .dashboardSidebar {
   padding: 30px;
   background: #f9f9f9;
@@ -181,6 +186,38 @@
 
 .darkSidebar {
   background: #1b2a41;
+}
+
+.darkSidebar .filterItem input:not([type='checkbox']):not([type='radio']),
+.darkSidebar .filterItem select {
+  background-color: #34495e;
+  color: #fff;
+  border: 1px solid #4a6572;
+}
+
+.darkSidebar .filterItem label {
+  color: #ecf0f1;
+}
+
+.darkSidebar input[type="date"] {
+  color-scheme: dark;
+}
+
+.darkSidebar .inputGroup {
+  background-color: #34495e;
+  border-color: #4da3ff;
+}
+
+.darkSidebar .inputGroup input {
+  color: #ffffff;
+}
+
+.darkSidebar .inputGroup input::placeholder {
+  color: #cbd5e1;
+}
+
+.darkSidebar .inputGroupText {
+  color: #cbd5e1;
 }
 
 .filterSection h4 {
@@ -249,6 +286,26 @@
 .filterItem input:not([type="checkbox"]):not([type="radio"]),
 .filterItem select {
   padding: 12px 15px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.filterOptionsVertical {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.dateFilter {
+  margin-top: 10px;
+  padding: 12px 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
   width: 100%;
@@ -277,6 +334,8 @@
   font-weight: 600;
   color: #34495e;
   margin-bottom: 8px;
+  background: #fff;
+  transition: all 0.3s ease;
 }
 
 .radioLabel {
@@ -339,9 +398,28 @@
   outline: none;
 }
 
+.filterItem input:not(#search-events),
+.filterItem select {
+  padding: 12px 15px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.3s ease;
+}
+
+.filterItem input:focus,
+.filterItem select:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  outline: none;
+}
+
 .dashboardMain {
   padding: 30px;
-  background: #ffffff;
+  background: #fff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
@@ -403,13 +481,28 @@
   border-bottom: 3px solid #34495e;
 }
 
+.eventCardImg {
+  width: 100%;
+  height: auto;
+}
+
+.eventIcon {
+  margin-right: 8px;
+}
+
+.noEvents {
+  text-align: center;
+  padding: 40px;
+  color: #555;
+  font-size: 1.2rem;
+}
+
 .eventTitle {
   text-align: center;
   color: #2c3e50;
-  margin: 0 0 15px 0;
+  margin: 10px 0;
   font-weight: bold;
-  font-size: 1.3rem;
-  line-height: 1.4;
+  font-size: 1.5rem;
 }
 
 .eventDate,
@@ -470,7 +563,6 @@
   font-size: 1rem;
 }
 
-/* Dark mode: ensure date, time, location and organizer are readable */
 .darkMain .eventDate,
 .darkMain .eventDate .eventTime,
 .darkMain .eventLocation,
@@ -495,7 +587,7 @@
 
 .showPastEventsBtn {
   background-color: #2c3e50;
-  color: #ffffff;
+  color: #fff;
   border: none;
   padding: 12px 25px;
   font-size: 1rem;
@@ -510,8 +602,6 @@
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-
-
 
 .dateFilterContainer {
   display: flex;
@@ -575,4 +665,60 @@
 }
 .darkMain .noEvents {
   color: #9ca3af;
+}
+.searchFilter {
+  margin-bottom: 1.5rem;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.radioOption input[type='radio'] {
+  accent-color: #2c3e50;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  transform: translateY(1px);
+}
+
+/* --- Fix Search Input Alignment with Icon --- */
+.inputGroup {
+  display: flex;
+  align-items: center;
+  border: 2px solid #d1d5db;
+  border-radius: 999px;
+  overflow: hidden;
+  background-color: #fff;
+  padding: 0 10px;
+}
+
+.inputGroupText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  background-color: #fff;
+  border: none;
+  color: #555;
+  font-size: 1.1rem;
+}
+
+.inputGroup input[type='text'] {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  padding: 10px 12px;
+  font-size: 1rem;
+  background: transparent !important;
+}
+
+.inputGroup input[type='text']:focus {
+  box-shadow: none;
+  border: none;
 }
