@@ -13,7 +13,7 @@ import { Table, Progress, Modal, ModalHeader, ModalFooter, ModalBody } from 'rea
 
 import { Link } from 'react-router-dom';
 import hasPermission from '~/utils/permissions';
-import './style.module.css';
+import styles from './style.module.css';
 import { getUserProfile } from '~/actions/userProfile.js';
 import { toast } from 'react-toastify';
 import Warning from '~/components/Warnings/Warnings';

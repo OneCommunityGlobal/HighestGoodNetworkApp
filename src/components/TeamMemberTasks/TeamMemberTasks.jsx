@@ -7,7 +7,7 @@ import { useDispatch, useSelector, connect } from 'react-redux';
 import { MultiSelect } from 'react-multi-select-component';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { TaskDifferenceModal } from './components/TaskDifferenceModal';
-import './style.css';
+import './style.module.css';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import axios from 'axios';

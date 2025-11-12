@@ -1,4 +1,5 @@
 import { FaExternalLinkAlt } from 'react-icons/fa';
+import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import { useRef, useEffect } from 'react';
 import cs from 'classnames';

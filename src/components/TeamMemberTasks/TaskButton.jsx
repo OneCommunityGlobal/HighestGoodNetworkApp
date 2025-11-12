@@ -3,7 +3,7 @@ import { getAllUserProfile } from '~/actions/userManagement';
 import { deleteSelectedTask } from './reducer';
 import { fetchAllTasks, updateTask } from '~/actions/task';
 import { useDispatch } from 'react-redux';
-import './style.css';
+import './style.module.css';
 
 function TaskButton({ task }) {
   const dispatch = useDispatch();
