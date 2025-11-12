@@ -2,12 +2,13 @@
   --donut-text-color: #000;
   --legend-text-color: #000;
   width: 100%;
-  max-width: 400px;
+  max-width: 100%;
   margin: 0 auto;
   text-align: center;
   height: auto; /* Ensure wrapper doesn't stretch */
   display: flex;
   flex-direction: column; /* Stack content vertically */
+  box-sizing: border-box;
 }
 
 .dark-mode.tool-donut-wrapper {
@@ -110,5 +111,51 @@
   .tools-card-wrap {
     flex: 1 1 100%;
     max-width: 100%;
+  }
+
+  /* Mobile adjustments for donut chart */
+  .tool-donut-wrapper {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .tool-donut-title {
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .tool-donut-filters {
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .filter-item {
+    font-size: 12px;
+  }
+
+  .filter-label {
+    font-size: 12px;
+  }
+
+  .tool-donut-legend {
+    margin-top: 0.8rem;
+    gap: 0.4rem;
+  }
+
+  .tool-donut-legend-item {
+    font-size: 12px;
+    padding: 5px 12px;
+    min-width: 120px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .tool-donut-wrapper {
+    max-width: 100%;
+  }
+
+  .tool-donut-filters {
+    gap: 2rem;
   }
 }

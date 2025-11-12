@@ -13,8 +13,8 @@ const COLORS = {
 
 const RADIAN = Math.PI / 180;
 const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }) => {
-  const isSmall = width <= 768;
-  if (isSmall) return null;
+  // Hide labels on mobile/tablet for better readability
+  if (width <= 1024) return null;
 
   const radius = outerRadius + 20;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -162,7 +162,6 @@ export default function ToolStatusDonutChart() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const isXS = windowWidth <= 480;
   const chartData = availabilityData?.data || [];
   const total = availabilityData?.total || 0;
 
