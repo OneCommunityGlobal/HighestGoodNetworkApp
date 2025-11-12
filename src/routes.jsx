@@ -740,6 +740,11 @@ export default (
           fallback
           component={UserProfile}
         />
+        <CPProtectedRoute
+          path="/communityportal/updatepassword/:userId"
+          fallback
+          component={UpdatePassword}
+        />
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />

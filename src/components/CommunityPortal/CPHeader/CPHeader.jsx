@@ -332,7 +332,7 @@ export function Header(props) {
                     ) && (
                       <DropdownItem
                         tag={Link}
-                        to={`/updatepassword/${user.userid}`}
+                        to={`/communityportal/updatepassword/${user.userid}`}
                         className={darkMode ? 'text-light' : ''}
                       >
                         {UPDATE_PASSWORD}
