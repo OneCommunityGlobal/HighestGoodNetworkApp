@@ -153,7 +153,7 @@ import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTo
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
-
+import ActivityLogs from './components/ActivityLog/DailyLogPage';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 // import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
@@ -529,6 +529,7 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+        <Route path="/ActivityLogs/DailyLog" component={ActivityLogs} />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
