@@ -3,10 +3,11 @@ import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstra
 
 function StudentBadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuffix }) {
   const [isOpen, setOpen] = useState(false);
-  cssSuffix = cssSuffix ? cssSuffix : '';
+  cssSuffix = cssSuffix || '';
+
   const toggle = () => setOpen(prev => !prev);
 
-  // 🧩 Fix: sanitize ID so names like "Team Player" won't break
+  // 🧩 Sanitize ID to handle names with spaces or special characters
   const safeId = `popover_${(time || '').replace(/\s+/g, '_').replace(/[^\w-]/g, '')}_${index}`;
 
   return (
@@ -57,13 +58,13 @@ function BadgeSpan({ badgeType, personalBestMaxHrs, count, cssSuffix }) {
         {Math.floor(personalBestMaxHrs)}
       </span>
     );
-  } else {
-    if (count < 100) {
-      return <span className={'badge_count' + cssSuffix}>{Math.round(count)}</span>;
-    } else {
-      return <span className={'badge_count_3_digit' + cssSuffix}>{Math.round(count)}</span>;
-    }
   }
+
+  if (count < 100) {
+    return <span className={'badge_count' + cssSuffix}>{Math.round(count)}</span>;
+  }
+
+  return <span className={'badge_count_3_digit' + cssSuffix}>{Math.round(count)}</span>;
 }
 
 export default StudentBadgeImage;
