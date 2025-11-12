@@ -90,7 +90,7 @@ function SingleTask(props) {
               </ol>
             </nav>
           )}
-          <div className='tasks-table'>
+          <div className='tasks-table table-responsive mb-5'>
             <table className={`table table-bordered ${darkMode ? 'dark-mode text-light' : ''}`}>
               <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 <tr>
@@ -100,7 +100,7 @@ function SingleTask(props) {
                   <th scope="col" data-tip="task-num" colSpan="1">
                     #
                   </th>
-                  <th scope="col" data-tip="Task Name" className="task-name">
+                  <th scope="col" data-tip="Task Name" style={{ minWidth: '200px' }}>
                     Task Name
                   </th>
                   <th scope="col" data-tip="Priority">
@@ -174,8 +174,6 @@ function SingleTask(props) {
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             Delete
-                            {' '}
-                            <i className="fa fa-trash" aria-hidden="true" />
                           </Button>
                           <ModalDelete
                             isOpen={modalDelete}
@@ -244,7 +242,11 @@ function SingleTask(props) {
                   <td>{parseFloat(task.hoursLogged).toFixed(2)}</td>
                   <td>{task.startedDatetime ? formatDate(task.startedDatetime) : 'N/A'}</td>
                   <td>{task.dueDatetime ? formatDate(task.dueDatetime) : 'N/A'}</td>
-                  <td>{task.links}</td>
+                  <td>
+                    <a href={task.links}>
+                      <i className={`fa fa-link ${darkMode ? 'text-azure' : ''}`} aria-hidden="true" />
+                    </a>
+                  </td>
                   <td onClick={toggleModel}>
                     <i className="fa fa-book" aria-hidden="true" />
                   </td>
