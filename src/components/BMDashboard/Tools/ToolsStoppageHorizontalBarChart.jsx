@@ -40,7 +40,75 @@ export default function ToolsStoppageHorizontalBarChart() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState([]);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const emptyData = [];
+
+  // Responsive height calculation
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Calculate responsive chart height: 240px mobile, 280px tablet, 300px desktop
+  const getChartHeight = () => {
+    if (windowWidth <= 768) {
+      return 240; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 280; // Tablet
+    }
+    return 300; // Desktop
+  };
+
+  // Calculate responsive maxBarThickness: mobile 20, tablet 22, desktop 25
+  const getMaxBarThickness = () => {
+    if (windowWidth <= 768) {
+      return 20; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 22; // Tablet
+    }
+    return 25; // Desktop
+  };
+
+  // Calculate responsive categoryPercentage: mobile 0.5, tablet 0.55, desktop 0.6
+  const getCategoryPercentage = () => {
+    if (windowWidth <= 768) {
+      return 0.5; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 0.55; // Tablet
+    }
+    return 0.6; // Desktop
+  };
+
+  // Calculate responsive barPercentage: mobile 0.85, tablet 0.87, desktop 0.9
+  const getBarPercentage = () => {
+    if (windowWidth <= 768) {
+      return 0.85; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 0.87; // Tablet
+    }
+    return 0.9; // Desktop
+  };
+
+  // Calculate responsive font size: mobile 10, tablet 11, desktop 12
+  const getFontSize = () => {
+    if (windowWidth <= 768) {
+      return 10; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 11; // Tablet
+    }
+    return 12; // Desktop
+  };
+
+  // Calculate responsive title font size: mobile 11, tablet 12, desktop 14
+  const getTitleFontSize = () => {
+    if (windowWidth <= 768) {
+      return 11; // Mobile
+    } else if (windowWidth <= 1024) {
+      return 12; // Tablet
+    }
+    return 14; // Desktop
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -203,7 +271,7 @@ export default function ToolsStoppageHorizontalBarChart() {
     }),
   };
 
-  // ✅ Prepare Chart.js data
+  // Prepare Chart.js data with responsive bar thickness
   const chartData = {
     labels: data.map(item =>
       item.name.length > 20 ? `${item.name.substring(0, 18)}...` : item.name,
@@ -213,24 +281,24 @@ export default function ToolsStoppageHorizontalBarChart() {
         label: 'Used its lifetime',
         data: data.map(item => item.usedForLifetime || 0),
         backgroundColor: '#4589FF',
-        maxBarThickness: 25, // Max thickness, allows scaling
+        maxBarThickness: getMaxBarThickness(),
       },
       {
         label: 'Damaged',
         data: data.map(item => item.damaged || 0),
         backgroundColor: '#FF0000',
-        maxBarThickness: 25,
+        maxBarThickness: getMaxBarThickness(),
       },
       {
         label: 'Lost',
         data: data.map(item => item.lost || 0),
         backgroundColor: '#FFB800',
-        maxBarThickness: 25,
+        maxBarThickness: getMaxBarThickness(),
       },
     ],
   };
 
-  // ✅ Chart.js options for horizontal stacked bars
+  // Chart.js options for horizontal stacked bars with responsive settings
   const chartOptions = {
     indexAxis: 'y',
     maintainAspectRatio: false,
@@ -238,28 +306,43 @@ export default function ToolsStoppageHorizontalBarChart() {
     plugins: {
       legend: {
         position: 'top',
-        labels: { color: darkMode ? '#e0e0e0' : '#000' },
+        labels: {
+          color: darkMode ? '#e0e0e0' : '#000',
+          font: { size: getFontSize() },
+        },
       },
       tooltip: { enabled: true, color: darkMode ? '#FFFFFF' : '#000000' },
       datalabels: {
         display: true,
         color: '#fff',
-        font: { weight: 'bold' },
+        font: { weight: 'bold', size: getFontSize() },
       },
     },
     scales: {
       x: {
         stacked: true,
         grid: { color: darkMode ? '#364156' : '#e0e0e0' },
-        ticks: { color: darkMode ? '#e0e0e0' : '#000' },
+        ticks: {
+          color: darkMode ? '#e0e0e0' : '#000',
+          font: { size: getFontSize() },
+          maxRotation: 0,
+        },
       },
       y: {
-        title: { display: true, text: 'Tools', color: darkMode ? '#FFFFFF' : '#000000' },
+        title: {
+          display: true,
+          text: 'Tools',
+          color: darkMode ? '#FFFFFF' : '#000000',
+          font: { size: getTitleFontSize() },
+        },
         stacked: true,
         grid: { display: false },
-        ticks: { color: darkMode ? '#e0e0e0' : '#000' },
-        categoryPercentage: 0.6, // Reduce spacing between categories (default 0.8)
-        barPercentage: 0.9, // Increase bar width within category (default 0.9)
+        ticks: {
+          color: darkMode ? '#e0e0e0' : '#000',
+          font: { size: getFontSize() },
+        },
+        categoryPercentage: getCategoryPercentage(),
+        barPercentage: getBarPercentage(),
       },
     },
   };
@@ -320,7 +403,9 @@ export default function ToolsStoppageHorizontalBarChart() {
         {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
 
         {!loading && selectedProject && data.length > 0 && (
-          <Bar data={chartData} options={chartOptions} height={300} />
+          <div style={{ width: '100%', maxWidth: '100%', position: 'relative' }}>
+            <Bar data={chartData} options={chartOptions} height={getChartHeight()} />
+          </div>
         )}
 
         {!loading && selectedProject && data.length === 0 && (

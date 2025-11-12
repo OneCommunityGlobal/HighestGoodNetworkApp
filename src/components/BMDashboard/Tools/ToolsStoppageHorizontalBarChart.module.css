@@ -95,27 +95,60 @@
   background-color: #007bff!important;
 }
 
+/* Chart container - prevent extra vertical space */
+:global(.tools-horizontal-chart-container) {
+  width: 100%;
+  max-width: 100%;
+  height: auto; /* Ensure container doesn't force height */
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
 /* Override min-height for tools-availability-page when used in card context */
 :global(.tools-availability-page) {
   min-height: auto !important; /* Override 100vh from ToolsAvailabilityPage.css */
   height: auto; /* Let content determine height */
   padding: 8px; /* Remove excessive padding (24px) since card already has padding */
-}
-
-/* Chart container - prevent extra vertical space */
-:global(.tools-horizontal-chart-container) {
   width: 100%;
-  height: auto; /* Ensure container doesn't force height */
-  display: flex;
-  flex-direction: column;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Filter controls layout for small screens */
 @media (max-width: 768px) {
+  :global(.tools-availability-page) {
+    padding: 6px; /* Further reduce padding on mobile */
+  }
+
+  :global(.tools-chart-title) {
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+  }
+
+  /* Bootstrap Row/Col fixes for mobile */
+  :global(.tools-availability-page .row) {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  :global(.tools-availability-page .col),
+  :global(.tools-availability-page [class*='col-']) {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 8px;
+  }
+
   :global(.datepickerWrapper) {
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    width: 100%;
+    max-width: 100%;
   }
 
   :global(.datepickerWrapper .btn) {
@@ -125,9 +158,22 @@
 
   :global(.customSelect__control) {
     font-size: 10px;
+    width: 100%;
+    max-width: 100%;
   }
 
   :global(.customSelect__multi-value) {
     font-size: 10px;
+  }
+
+  :global(.tools-horizontal-chart-container) {
+    padding: 0;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  :global(.tools-availability-page) {
+    padding: 10px;
   }
 }
