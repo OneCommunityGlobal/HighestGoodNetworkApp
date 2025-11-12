@@ -15,7 +15,7 @@ import {
   Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import './SummaryBar.css';
+import styles from './SummaryBar.module.css';
 import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
 import hasPermission from '~/utils/permissions';
@@ -407,11 +407,11 @@ const SummaryBar = React.forwardRef((props, ref) => {
     if (isAuthUser || canEditData()) {
       return darkMode
         ? 'bg-space-cadet text-light box-shadow-dark'
-        : 'bg--bar text--black box-shadow-light';
+        : `${styles['bg--bar']} ${styles['text--black']} box-shadow-light`;
     }
     return darkMode
-      ? 'bg-space-cadet disabled-bar text-light box-shadow-dark'
-      : 'bg--bar disabled-bar text--black box-shadow-light';
+      ? `bg-space-cadet ${styles['disabled-bar']} text-light box-shadow-dark`
+      : `${styles['bg--bar']} disabled-bar ${styles['text--black']} box-shadow-light`;
   };
 
   const renderSummary = () => {
@@ -419,10 +419,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
       if (weeklySummaryNotReq) {
         return (
           <div
-            className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
+            className={`${styles['border-black']} col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center`}
             style={{ textAlign: 'center' }}
           >
-            <font className="text-center text-light" size="3">
+            <font className={`${styles['text-center']} text-light`} size="3">
               SUMMARY
             </font>
           </div>
@@ -439,7 +439,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
             <div className="d-flex justify-content-center">
               <button
                 onClick={props.toggleSubmitForm}
-                className="summary-toggle large_text_summary text-danger"
+                className={`${styles['summary-toggle']} ${styles['large_text_summary']} text-danger`}
                 style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                 aria-label="Toggle submit form"
                 type="button"
@@ -448,9 +448,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
               </button>
             </div>
           ) : (
-            <p className="text-center summary-toggle large_text_summary text-danger">!</p>
+            <p
+              className={`${styles['text-center']} ${styles['summary-toggle']} ${styles['large_text_summary']} text-danger`}
+            >
+              !
+            </p>
           )}
-          <font className="text-center" size="3">
+          <font className={`${styles['text-center']}`} size="3">
             SUMMARY
           </font>
           <div className="py-2"> </div>
@@ -458,12 +462,12 @@ const SummaryBar = React.forwardRef((props, ref) => {
       );
     }
     return (
-      <div className="border-green col-4 bg--dark-green">
+      <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
         <div className="py-1"> </div>
         <div className="d-flex justify-content-center">
           <button
             onClick={props.toggleSubmitForm}
-            className="text-center large_text_summary summary-toggle"
+            className={`${styles['text-center']} ${styles.large_text_summary} ${styles['summary-toggle']}`}
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             aria-label="Toggle submit form"
             type="button"
@@ -471,7 +475,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
             ✓
           </button>
         </div>
-        <font className="text-center" size="3">
+        <font className={`${styles['text-center']}`} size="3">
           SUMMARY
         </font>
         <div className="py-2"> </div>
@@ -491,7 +495,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
     if (isAuthUser) {
       return (
         <button
-          className="summary-toggle"
+          className={`${styles['summary-toggle']}`}
           type="button"
           onClick={props.toggleSubmitForm}
           style={{
@@ -508,7 +512,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
       );
     }
 
-    return <span className="summary-toggle">{message}</span>;
+    return <span className={`${styles['summary-toggle']}`}>{message}</span>;
   };
 
   const getPlaceholderText = () => {
@@ -544,13 +548,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
             <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
               <div className="font-weight-bold">
                 <span
-                  className="name-segment"
+                  className={`${styles['name-segment']}`}
                   title={userProfile?.firstName || displayUserProfile.firstName}
                 >
                   {(userProfile?.firstName || displayUserProfile.firstName).split(' ')[0]}
                 </span>
                 <span
-                  className="name-segment"
+                  className={`${styles['name-segment']}`}
                   title={userProfile?.firstName || displayUserProfile.firstName}
                 >
                   {(userProfile?.firstName || displayUserProfile.firstName)
@@ -559,7 +563,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                     .join(' ')}
                 </span>
                 <span
-                  className="name-segment"
+                  className={`${styles['name-segment']}`}
                   title={userProfile?.lastName || displayUserProfile.lastName}
                 >
                   {userProfile?.lastName || displayUserProfile.lastName}
@@ -575,18 +579,26 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 className={`border border-danger col-4 ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
               >
                 <div className="py-1"> </div>
-                <p className="text-center large_text_summary text-danger">!</p>
-                <font className="text-center" size="3">
+                <p
+                  className={`${styles['text-center']} ${styles['large_text_summary']} text-danger`}
+                >
+                  !
+                </p>
+                <font className={`${styles['text-center']}`} size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
               </div>
             )}
             {totalEffort >= weeklyCommittedHours && (
-              <div className="border-green col-4 bg--dark-green">
+              <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
                 <div className="py-1"> </div>
-                <p className="text-center large_text_summary text--black">✓</p>
-                <font className="text-center" size="3">
+                <p
+                  className={`${styles['text-center']} ${styles.large_text_summary} ${styles['text--black']}`}
+                >
+                  ✓
+                </p>
+                <font className={`${styles['text-center']}`} size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
@@ -604,7 +616,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                 id="timelogweeklychart"
                 style={{ whiteSpace: 'nowrap', padding: '0px 10px' }}
               >
-                <div className="align-items-center med_text_summary">
+                <div className={`align-items-center ${styles.med_text_summary}`}>
                   Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
                   <Progress
                     value={getProgressValue(totalEffort, weeklyCommittedHours)}
@@ -626,13 +638,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
               }`}
               style={{ border: '1px solid black' }}
             >
-              <div className="m-auto p-2 text-center">
+              <div className={`m-auto p-2 ${styles['text-center']}`}>
                 <span
                   role="button"
                   tabIndex={0}
                   onClick={props.toggleSubmitForm}
                   onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
-                  className="summary-toggle"
+                  className={`${styles['summary-toggle']}`}
                   style={{ cursor: 'pointer', fontSize: '1.1rem' }}
                 >
                   {renderSummaryMessage()}
@@ -643,13 +655,15 @@ const SummaryBar = React.forwardRef((props, ref) => {
         </Col>
 
         <Col
-          className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? 'bg-space-cadet' : ''}`}
+          className={`m-auto mt-2 col-lg-4 col-12 ${styles['badge-list']} ${
+            darkMode ? 'bg-space-cadet' : ''
+          }`}
         >
           <div className="d-flex justify-content-around no-gutters">
             &nbsp;&nbsp;
-            <div className="image_frame">
+            <div className={`${styles.image_frame}`}>
               {tasks > 0 && (
-                <div className="redBackgroup">
+                <div className={`${styles.redBackgroup}`}>
                   <span>{tasks}</span>
                 </div>
               )}
@@ -659,7 +673,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onTaskClick}
-                  className="sum_img"
+                  className={`${styles.sum_img}`}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -669,16 +683,16 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   aria-label="Task"
                   type="button"
                 >
-                  <img className="sum_img" src={TaskIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={TaskIcon} alt="" />
                 </button>
               ) : (
-                <img className="sum_img" src={TaskIcon} alt="" />
+                <img className={`${styles.sum_img}`} src={TaskIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
-            <div className="image_frame">
+            <div className={`${styles.image_frame}`}>
               {props.badgeCount > 0 && (
-                <div className="redBackgroup">
+                <div className={`${styles.redBackgroup}`}>
                   <span>{props.badgeCount}</span>
                 </div>
               )}
@@ -689,7 +703,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onBadgeClick}
-                  className="sum_img"
+                  className={`${styles.sum_img}`}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -699,24 +713,24 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   aria-label="Badge"
                   type="button"
                 >
-                  <img className="sum_img" src={BadgesIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={BadgesIcon} alt="" />
                 </button>
               ) : (
-                <img className="sum_img" src={BadgesIcon} alt="" />
+                <img className={`${styles.sum_img}`} src={BadgesIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
-            <div className="image_frame">
+            <div className={`${styles.image_frame}`}>
               {/* Changed from infringement.length in displayUserProfile to using new value of infringementCount for new ones */}
               {displayUserProfile.infringementCount > 0 && (
-                <div className="redBackgroup">
+                <div className={`${styles.redBackgroup}`}>
                   <span>{displayUserProfile.infringementCount}</span>
                 </div>
               )}
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onBlueSquareClick}
-                  className="sum_img"
+                  className={`${styles.sum_img}`}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -726,23 +740,23 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   aria-label="Blue Square"
                   type="button"
                 >
-                  <img className="sum_img" src={BlueScoreIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={BlueScoreIcon} alt="" />
                 </button>
               ) : (
                 <div>
-                  <img className="sum_img" src={BlueScoreIcon} alt="" />
-                  <div className="redBackgroup">
+                  <img className={`${styles.sum_img}`} src={BlueScoreIcon} alt="" />
+                  <div className={`${styles.redBackgroup}`}>
                     <span>{displayUserProfile.infringementCount}</span>
                   </div>
                 </div>
               )}
             </div>
             &nbsp;&nbsp;
-            <div className="image_frame">
+            <div className={`${styles.image_frame}`}>
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openReport}
-                  className="sum_img"
+                  className={`${styles.sum_img}`}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -752,18 +766,18 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   aria-label="Open Report"
                   type="button"
                 >
-                  <img className="sum_img" src={ReportIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={ReportIcon} alt="" />
                 </button>
               ) : (
-                <img className="sum_img" src={ReportIcon} alt="" />
+                <img className={`${styles.sum_img}`} src={ReportIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
-            <div className="image_frame">
+            <div className={`${styles.image_frame}`}>
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openSuggestionModal}
-                  className="sum_img"
+                  className={`${styles.sum_img}`}
                   style={{
                     background: 'none',
                     border: 'none',
@@ -773,10 +787,10 @@ const SummaryBar = React.forwardRef((props, ref) => {
                   aria-label="Open Suggestions"
                   type="button"
                 >
-                  <img className="sum_img" src={SuggestionsIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={SuggestionsIcon} alt="" />
                 </button>
               ) : (
-                <img className="sum_img" src={SuggestionsIcon} alt="" />
+                <img className={`${styles.sum_img}`} src={SuggestionsIcon} alt="" />
               )}
             </div>
           </div>
@@ -877,13 +891,13 @@ const SummaryBar = React.forwardRef((props, ref) => {
                     )}
                     {editType === 'edit' && (
                       <div
-                        className="sortable-container"
+                        className={`${styles['sortable-container']}`}
                         ref={sortableContainerRef}
                         onDragOver={e => onSortableDragOver(e)}
                       >
                         {suggestionCategory.map(item => (
                           <div
-                            className={`sortable-content ${bodyBg} sortable-draggable`}
+                            className={`${styles['sortable-content']} ${bodyBg} ${styles['sortable-draggable']}`}
                             key={item.id}
                             draggable="true"
                             onDragStart={event => onDragToggleDraggingClass(event)}
@@ -892,7 +906,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
                             <p>{item.value}</p>
                             <button
                               type="button"
-                              className="edit-icon fa fa-edit"
+                              className={`${styles['edit-icon']} fa fa-edit`}
                               onClick={event => handleEditClick(event)}
                               aria-label="Edit item"
                             />
