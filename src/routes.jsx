@@ -174,6 +174,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
+import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/IntermediateTaskList';
 
 // Social Architecture
 
@@ -777,6 +778,11 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educator/tasks/intermediate"
+          exact
+          component={IntermediateTaskList}
+        />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
