@@ -14,6 +14,7 @@ import {
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import dompurify from 'dompurify';
 import styles from './style.module.css';
 import style from './reviewButton.module.css';
 import { boxStyle, boxStyleDark } from '~/styles';
