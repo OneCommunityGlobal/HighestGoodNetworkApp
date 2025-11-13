@@ -169,6 +169,11 @@ import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 
 import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
+
+import SupportLogin from './components/SupportPortal/SupportLogin';
+import SupportDashboard from './components/SupportPortal/SupportDashboard';
+import SupportLogViewer from './components/SupportPortal/SupportLogViewer';
+
 // Social Architecture
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
@@ -806,6 +811,10 @@ export default (
           component={PromotionEligibility}
         />
         <Route path="*" component={NotFoundPage} />
+        {/* /*  for support team*/}
+        <Route path="/support/login" element={<SupportLogin />} />
+        <Route path="/support/dashboard" element={<SupportDashboard />} />
+        <Route path="/support/log/:studentId" element={<SupportLogViewer />} />
       </Switch>
     </>
   </Switch>

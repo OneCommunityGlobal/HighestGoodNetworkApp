@@ -1,0 +1,93 @@
+/* ====== SupportDashboard.module.css ====== */
+
+.container {
+  padding: 2rem;
+  background-color: #f9fafc;
+  min-height: 100vh;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.searchBar {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 250px;
+  transition: all 0.2s ease-in-out;
+}
+
+.searchBar:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 3px rgba(25, 118, 210, 0.4);
+  outline: none;
+}
+
+/* ==== Student List ==== */
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.listItem:hover {
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.studentName {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #1976d2;
+  margin-bottom: 0.3rem;
+}
+
+.studentInfo {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* ==== Empty State ==== */
+.emptyState {
+  text-align: center;
+  color: #999;
+  font-size: 1rem;
+  margin-top: 3rem;
+}
+
+/* ==== Responsive ==== */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .searchBar {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
