@@ -161,9 +161,15 @@ const EducationExperienceDonutChart = () => {
   const chartWrapperClass = `${styles.chartWrapper} ${isMobile ? styles.chartWrapperMobile : ''}`;
 
   return (
-    <div className={pageClass} aria-label="Breakdown of Candidates by Experience and Educational Level" role="img">
+    <div
+      className={pageClass}
+      aria-label="Breakdown of Candidates by Experience and Educational Level"
+      role="img"
+    >
       <div className={wrapperClass}>
-        <h2 className={headingClass}>Breakdown of Candidates by Experience and Educational Level</h2>
+        <h2 className={headingClass}>
+          Breakdown of Candidates by Experience and Educational Level
+        </h2>
 
         {/* Filters */}
         <div className={filtersClass}>
@@ -241,104 +247,104 @@ const EducationExperienceDonutChart = () => {
         ) : (
           <>
             <div className={chartWrapperClass}>
-            <ResponsiveContainer width="100%" height="100%">
-              {/* overflow visible so outside labels aren't clipped */}
-              <PieChart
-                style={{ overflow: 'visible' }}
-                margin={{ top: 16, right: 36, bottom: 16, left: 36 }}
-              >
-                <Pie
-                  data={data}
-                  dataKey="value"
-                  nameKey="category"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={isMobile ? 74 : 95} // slightly larger hole on mobile → more center room
-                  outerRadius={isMobile ? 110 : 140}
-                  labelLine={!isMobile}
-                  label={renderLabel}
+              <ResponsiveContainer width="100%" height="100%">
+                {/* overflow visible so outside labels aren't clipped */}
+                <PieChart
+                  style={{ overflow: 'visible' }}
+                  margin={{ top: 16, right: 36, bottom: 16, left: 36 }}
                 >
-                  {data.map((entry, idx) => (
-                    <Cell key={idx} fill={COLOR_BY_CATEGORY[entry.category]} />
-                  ))}
+                  <Pie
+                    data={data}
+                    dataKey="value"
+                    nameKey="category"
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={isMobile ? 74 : 95} // slightly larger hole on mobile → more center room
+                    outerRadius={isMobile ? 110 : 140}
+                    labelLine={!isMobile}
+                    label={renderLabel}
+                  >
+                    {data.map((entry, idx) => (
+                      <Cell key={idx} fill={COLOR_BY_CATEGORY[entry.category]} />
+                    ))}
 
-                  {/* Center text (roles/dates/total) */}
-                  <Label
-                    position="center"
-                    content={() => (
-                      <text
-                        x="50%"
-                        y="50%"
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                        fill={darkMode ? '#f8fafc' : '#0f172a'}
-                      >
-                        {/* Roles: each on a new line */}
-                        {selectedRoles.length > 0 ? (
-                          selectedRoles.map((role, idx) => (
-                            <tspan
-                              key={role.value}
-                              x="50%"
-                              dy={idx === 0 ? 0 : '1.2em'} // only add vertical offset after first
-                              fontSize={isMobile ? 12 : 14}
-                            >
-                              {role.value}
-                            </tspan>
-                          ))
-                        ) : (
-                          <tspan fontSize={isMobile ? 12 : 14}>ALL ROLES</tspan>
-                        )}
+                    {/* Center text (roles/dates/total) */}
+                    <Label
+                      position="center"
+                      content={() => (
+                        <text
+                          x="50%"
+                          y="50%"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fill={darkMode ? '#f8fafc' : '#0f172a'}
+                        >
+                          {/* Roles: each on a new line */}
+                          {selectedRoles.length > 0 ? (
+                            selectedRoles.map((role, idx) => (
+                              <tspan
+                                key={role.value}
+                                x="50%"
+                                dy={idx === 0 ? 0 : '1.2em'} // only add vertical offset after first
+                                fontSize={isMobile ? 12 : 14}
+                              >
+                                {role.value}
+                              </tspan>
+                            ))
+                          ) : (
+                            <tspan fontSize={isMobile ? 12 : 14}>ALL ROLES</tspan>
+                          )}
 
-                        {/* Dates */}
-                        <tspan x="50%" dy="1.2em" fontSize={isMobile ? 10 : 12}>
-                          {startDate || endDate
-                            ? `${toDateOnlyString(startDate) || '…'} → ${toDateOnlyString(
-                                endDate,
-                              ) || '…'}`
-                            : 'ALL DATES'}
-                        </tspan>
+                          {/* Dates */}
+                          <tspan x="50%" dy="1.2em" fontSize={isMobile ? 10 : 12}>
+                            {startDate || endDate
+                              ? `${toDateOnlyString(startDate) || '…'} → ${toDateOnlyString(
+                                  endDate,
+                                ) || '…'}`
+                              : 'ALL DATES'}
+                          </tspan>
 
-                        {/* Total */}
-                        <tspan x="50%" dy="1.2em" fontSize={isMobile ? 10 : 12}>
-                          Total: {total}
-                        </tspan>
-                      </text>
-                    )}
+                          {/* Total */}
+                          <tspan x="50%" dy="1.2em" fontSize={isMobile ? 10 : 12}>
+                            Total: {total}
+                          </tspan>
+                        </text>
+                      )}
+                    />
+                  </Pie>
+
+                  <Tooltip
+                    formatter={(value, name, { payload }) => {
+                      const pct = total ? ((payload.value / total) * 100).toFixed(1) : '0.0';
+                      return [`${value} (${pct}%)`, name];
+                    }}
                   />
-                </Pie>
-
-                <Tooltip
-                  formatter={(value, name, { payload }) => {
-                    const pct = total ? ((payload.value / total) * 100).toFixed(1) : '0.0';
-                    return [`${value} (${pct}%)`, name];
-                  }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* Mobile: counts list below chart (since slice labels show % only) */}
-          {isMobile && (
-            <div className={styles.mobileList}>
-              {data.map(d => {
-                const pct = total ? ((d.value / total) * 100).toFixed(1) : '0.0';
-                return (
-                  <div key={d.category} className={styles.mobileRow}>
-                    <span className={styles.mobileLabel}>
-                      <span
-                        className={styles.swatch}
-                        style={{ background: COLOR_BY_CATEGORY[d.category] }}
-                      />
-                      {d.category}
-                    </span>
-                    <span className={styles.mobileValue}>
-                      {d.value} ({pct}%)
-                    </span>
-                  </div>
-                );
-              })}
+                </PieChart>
+              </ResponsiveContainer>
             </div>
-          )}
+
+            {/* Mobile: counts list below chart (since slice labels show % only) */}
+            {isMobile && (
+              <div className={styles.mobileList}>
+                {data.map(d => {
+                  const pct = total ? ((d.value / total) * 100).toFixed(1) : '0.0';
+                  return (
+                    <div key={d.category} className={styles.mobileRow}>
+                      <span className={styles.mobileLabel}>
+                        <span
+                          className={styles.swatch}
+                          style={{ background: COLOR_BY_CATEGORY[d.category] }}
+                        />
+                        {d.category}
+                      </span>
+                      <span className={styles.mobileValue}>
+                        {d.value} ({pct}%)
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
       </div>
