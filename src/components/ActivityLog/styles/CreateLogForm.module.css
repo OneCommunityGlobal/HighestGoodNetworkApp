@@ -1,0 +1,192 @@
+.formContainer {
+  padding: 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.roleName {
+  font-weight: 600;
+  color: #6366f1;
+}
+
+.successMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #dcfce7;
+  color: #166534;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  transition: opacity 0.3s;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background-color: #fef2f2;
+  color: #991b1b;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  transition: opacity 0.3s;
+}
+
+.bold {
+  font-weight: 600;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #6366f1;
+}
+
+.input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #4f46e5;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  margin-top: 16px;
+}
+
+.submitBtn:hover {
+  background-color: #4338ca;
+}
+
+.disabledBtn {
+  background-color: #9ca3af;
+  color: #374151;
+  cursor: not-allowed;
+}
+
+/* Dark Mode Overrides */
+.darkMode .formContainer {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.darkMode .title {
+  color: #f3f4f6;
+}
+
+.darkMode .description {
+  color: #d1d5db;
+}
+
+.darkMode .label {
+  color: #e5e7eb;
+}
+
+.darkMode .textarea,
+.darkMode .input,
+.darkMode .select {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.darkMode .submitBtn {
+  background-color: #4f46e5;
+  color: #f3f4f6;
+}
+
+.darkMode .submitBtn:hover {
+  background-color: #4338ca;
+}
+
+.darkMode .disabledBtn {
+  background-color: #4b5563;
+  color: #d1d5db;
+}
+
+.darkMode .icon {
+  color: #f3f4f6;
+}
+
+.darkMode .roleName {
+  color: #818cf8;
+}

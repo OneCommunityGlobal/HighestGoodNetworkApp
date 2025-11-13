@@ -1,0 +1,167 @@
+/* Comment Section */
+.commentSectionContainer {
+  margin-top: 32px;
+}
+
+.commentSectionTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 16px;
+}
+
+.commentList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 16rem;
+  overflow-y: auto;
+  padding-right: 8px;
+  margin-bottom: 16px;
+}
+
+.noComments {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.commentCard {
+  padding: 12px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.commentHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.commentIcon {
+  width: 12px;
+  height: 12px;
+  color: #6366f1;
+}
+
+.commentAuthor {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #111827;
+}
+
+.commentRoleTag {
+  background-color: #e0e7ff;
+  color: #4338ca;
+  padding: 0 6px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+.commentText {
+  color: #374151;
+  font-size: 0.875rem;
+}
+
+/* New Comment Input */
+.commentInputWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.commentTextarea {
+  flex-grow: 1;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #111827;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.commentTextarea:focus {
+  outline: none;
+  border-color: #6366f1;
+  ring: 2px solid #6366f1;
+}
+
+.commentSubmitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #16a34a;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.commentSubmitBtn:hover {
+  background-color: #15803d;
+}
+
+.commentSubmitDisabled {
+  background-color: #9ca3af;
+  color: #374151;
+  cursor: not-allowed;
+}
+
+.submitIcon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Dark Mode Overrides */
+.darkMode .commentSectionTitle {
+  color: #f3f4f6;
+}
+
+.darkMode .commentCard {
+  background-color: #1f2937;
+  border-color: #374151;
+}
+
+.darkMode .commentAuthor {
+  color: #f3f4f6;
+}
+
+.darkMode .commentText {
+  color: #d1d5db;
+}
+
+.darkMode .noComments {
+  color: #d1d5db;
+}
+
+.darkMode .commentTextarea {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f3f4f6;
+}
+
+.darkMode .commentSubmitBtn {
+  background-color: #16a34a;
+  color: #f3f4f6;
+}
+
+.darkMode .commentSubmitBtn:hover {
+  background-color: #15803d;
+}
+
+.darkMode .commentSubmitDisabled {
+  background-color: #4b5563;
+  color: #d1d5db;
+}
+
+.darkMode .submitIcon {
+  color: #f3f4f6;
+}

@@ -1,0 +1,126 @@
+/* Educator Feedback Form */
+.feedbackFormContainer {
+  margin-top: 32px;
+  padding: 24px;
+  background-color: #fef3c7;
+  border-radius: 16px;
+  border: 1px solid #fde68a;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.feedbackFormTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 16px;
+}
+
+.successAlert {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  color: #065f46;
+  background-color: #d1fae5;
+  border-radius: 12px;
+  transition: opacity 0.3s;
+}
+
+.alertIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+}
+
+.alertText {
+  font-weight: 600;
+}
+
+.feedbackTextarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #fcd34d;
+  background-color: #ffffff;
+  color: #111827;
+  font-size: 0.875rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.feedbackTextarea:focus {
+  outline: none;
+  ring: 2px solid #fbbf24;
+  border-color: #fbbf24;
+}
+
+.feedbackSubmitBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 12px;
+  background-color: #d97706;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.feedbackSubmitBtn:hover {
+  background-color: #b45309;
+}
+
+.feedbackSubmitDisabled {
+  background-color: #9ca3af;
+  color: #374151;
+  cursor: not-allowed;
+}
+
+.submitIcon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Dark Mode */
+.darkMode .feedbackFormContainer {
+  background-color: rgba(202, 138, 4, 0.2); /* yellow-900/30 */
+  border-color: #78350f; /* dark yellow border */
+}
+
+.darkMode .feedbackFormTitle {
+  color: #facc15; /* yellow-300 */
+}
+
+.darkMode .successAlert {
+  color: #86efac;
+  background-color: rgba(22, 163, 74, 0.2);
+}
+
+.darkMode .feedbackTextarea {
+  background-color: #374151;
+  border-color: #ca8a04;
+  color: #f3f4f6;
+}
+
+.darkMode .feedbackSubmitBtn {
+  background-color: #d97706;
+  color: #f3f4f6;
+}
+
+.darkMode .feedbackSubmitBtn:hover {
+  background-color: #b45309;
+}
+
+.darkMode .feedbackSubmitDisabled {
+  background-color: #4b5563;
+  color: #d1d5db;
+}
+
+.darkMode .submitIcon {
+  color: #f3f4f6;
+}

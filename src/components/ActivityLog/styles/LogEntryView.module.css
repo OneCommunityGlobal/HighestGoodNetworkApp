@@ -1,0 +1,232 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Header Card */
+.headerCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.headerLeft {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  background-color: #e0e7ff;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #4f46e5;
+}
+
+.avatarIcon {
+  width: 32px;
+  height: 32px;
+}
+
+.studentName {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.assistedTag {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 4px 8px;
+  gap: 6px;
+
+  background-color: #991b1b; /* dark red badge */
+  color: #ffe5e5; /* softer contrast text */
+  border-radius: 6px;
+
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.assistedIcon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.studentRole {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.courseInfo {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #4f46e5;
+  margin-top: 4px;
+}
+
+/* Header Right Buttons */
+.headerRight {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.markAssistedBtn {
+  background-color: #16a34a;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
+}
+
+.markAssistedBtn:hover {
+  background-color: #15803d;
+}
+
+.removeAssistedBtn {
+  background-color: #dc2626;
+  color: #fff;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
+}
+
+.removeAssistedBtn:hover {
+  background-color: #b91c1c;
+}
+
+.printBtn {
+  background-color: #e5e7eb;
+  color: #1f2937;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.2s;
+}
+
+.printBtn:hover {
+  background-color: #d1d5db;
+}
+
+/* Grid for Log Content & Notes */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.gridItem {
+  padding: 24px;
+  background-color: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f3f4f6;
+}
+
+.gridTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.gridContent {
+  color: #374151;
+  white-space: pre-wrap;
+}
+
+.gridContentItalic {
+  color: #374151;
+  font-style: italic;
+}
+
+/* Dark Mode Overrides */
+.darkMode .headerCard,
+.darkMode .gridItem {
+  background-color: #1f2937;
+  border-color: #4b5563;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+}
+
+.darkMode .studentName,
+.darkMode .gridTitle {
+  color: #f3f4f6;
+}
+
+.darkMode .studentRole,
+.darkMode .gridContent,
+.darkMode .gridContentItalic {
+  color: #d1d5db;
+}
+
+.darkMode .courseInfo {
+  color: #818cf8;
+}
+
+.darkMode .markAssistedBtn {
+  background-color: #16a34a;
+  color: #f3f4f6;
+}
+
+.darkMode .markAssistedBtn:hover {
+  background-color: #15803d;
+}
+
+.darkMode .removeAssistedBtn {
+  background-color: #dc2626;
+  color: #f3f4f6;
+}
+
+.darkMode .removeAssistedBtn:hover {
+  background-color: #b91c1c;
+}
+
+.darkMode .printBtn {
+  background-color: #374151;
+  color: #f3f4f6;
+}
+
+.darkMode .printBtn:hover {
+  background-color: #4b5563;
+}
+
+.darkMode .avatar {
+  background-color: #4338ca;
+  color: #c7d2fe;
+}
+
+.darkMode .assistedTag {
+  background-color: #991b1b;
+  color: #fca5a5;
+}
