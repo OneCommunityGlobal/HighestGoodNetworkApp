@@ -37,6 +37,20 @@ const ApplicantSourceDonutChart = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('No token found. Please log in.');
 
+      if (
+        filterStartDate
+        && filterEndDate
+        && filterStartDate instanceof Date
+        && filterEndDate instanceof Date
+        && filterStartDate.getTime() > filterEndDate.getTime()
+      ) {
+        setError('Start date cannot be greater than end date');
+        setLoading(false);
+        setData([]);
+        setComparisonText('');
+        return;
+      }
+
       const url = ENDPOINTS.APPLICANT_SOURCES;
       const params = {};
 
