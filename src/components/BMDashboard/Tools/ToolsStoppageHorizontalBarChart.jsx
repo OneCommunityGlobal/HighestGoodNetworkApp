@@ -30,6 +30,230 @@ ChartJS.register(
   ChartDataLabels,
 );
 
+const CHART_COLORS = {
+  usedForLifetime: '#2E7D32',
+  damaged: '#C62828',
+  lost: '#FFB300',
+};
+
+const formatPercentageValue = value => {
+  if (value === null || value === undefined) {
+    return '0%';
+  }
+
+  const numeric = Number(value);
+  if (Number.isNaN(numeric)) {
+    return '0%';
+  }
+
+  if (Number.isInteger(numeric)) {
+    return `${numeric}%`;
+  }
+
+  return `${numeric.toFixed(1)}%`;
+};
+
+// Helper function to process API response data
+const processResponseData = responseData => {
+  if (responseData && responseData.length > 0) {
+    return [...responseData].map(item => ({
+      ...item,
+      name: item.toolName || item.name,
+    }));
+  }
+  return [];
+};
+
+// Helper function to fetch stoppage data for a project
+const fetchStoppageDataForProject = async (projectId, startDate, endDate) => {
+  const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(projectId, startDate, endDate);
+  const response = await axios.get(url);
+  return processResponseData(response.data);
+};
+
+// Helper function to format dates for API calls
+const formatDatesForAPI = (startDate, endDate) => ({
+  formattedStart: startDate ? new Date(startDate).toISOString() : null,
+  formattedEnd: endDate ? new Date(endDate).toISOString() : null,
+});
+
+// Helper function to handle successful data response
+const handleDataResponse = (sortedData, setData, setError, emptyData) => {
+  setData(sortedData.length > 0 ? sortedData : emptyData);
+  setError(null);
+};
+
+// Helper function to handle project selection and data fetching
+const handleSelectedProjectData = async (
+  selectedProject,
+  startDate,
+  endDate,
+  setData,
+  setError,
+  emptyData,
+) => {
+  const { formattedStart, formattedEnd } = formatDatesForAPI(startDate, endDate);
+  const sortedData = await fetchStoppageDataForProject(
+    selectedProject?.value,
+    formattedStart,
+    formattedEnd,
+  );
+  handleDataResponse(sortedData, setData, setError, emptyData);
+};
+
+// Helper function to handle first project auto-selection
+const handleFirstProjectSelection = async (
+  projects,
+  setSelectedProject,
+  setData,
+  setError,
+  emptyData,
+) => {
+  const firstProject = projects[0];
+  setSelectedProject({ value: firstProject.projectId, label: firstProject.projectName });
+  const sortedData = await fetchStoppageDataForProject(firstProject.projectId, null, null);
+  handleDataResponse(sortedData, setData, setError, emptyData);
+};
+
+// Helper function to handle data fetching logic
+const handleDataFetching = async params => {
+  const {
+    selectedProject,
+    projects,
+    startDate,
+    endDate,
+    setSelectedProject,
+    setData,
+    setError,
+    emptyData,
+  } = params;
+
+  if (selectedProject) {
+    await handleSelectedProjectData(
+      selectedProject,
+      startDate,
+      endDate,
+      setData,
+      setError,
+      emptyData,
+    );
+    return;
+  }
+
+  if (projects.length > 0) {
+    await handleFirstProjectSelection(projects, setSelectedProject, setData, setError, emptyData);
+    return;
+  }
+
+  setData(emptyData);
+  setError(null);
+};
+
+// Helper function to truncate long tool names
+const truncateToolName = name => (name.length > 20 ? `${name.substring(0, 18)}...` : name);
+
+// Helper function to create chart dataset
+const createDataset = (label, dataKey, backgroundColor) => ({
+  label,
+  data: data => data.map(item => Number(item[dataKey] ?? 0)),
+  backgroundColor,
+  barThickness: 30,
+});
+
+// Helper function to get chart data configuration
+const getChartData = data => ({
+  labels: data.map(item => truncateToolName(item.name)),
+  datasets: [
+    {
+      label: 'Used its lifetime',
+      data: data.map(item => Number(item.usedForLifetime ?? 0)),
+      backgroundColor: CHART_COLORS.usedForLifetime,
+      barThickness: 30,
+    },
+    {
+      label: 'Damaged',
+      data: data.map(item => Number(item.damaged ?? 0)),
+      backgroundColor: CHART_COLORS.damaged,
+      barThickness: 30,
+    },
+    {
+      label: 'Lost',
+      data: data.map(item => Number(item.lost ?? 0)),
+      backgroundColor: CHART_COLORS.lost,
+      barThickness: 30,
+    },
+  ],
+});
+
+// Helper functions for render conditions
+const shouldShowChart = (loading, selectedProject, data) =>
+  !loading && selectedProject && data.length > 0;
+const shouldShowEmptyState = (loading, selectedProject, data) =>
+  !loading && selectedProject && data.length === 0;
+
+// Helper function to get chart configuration
+const getChartOptions = darkMode => ({
+  indexAxis: 'y',
+  maintainAspectRatio: false,
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top',
+      labels: { color: darkMode ? '#e0e0e0' : '#000' },
+    },
+    tooltip: {
+      enabled: true,
+      backgroundColor: darkMode ? '#2C3344' : '#FFFFFF',
+      titleColor: darkMode ? '#FFFFFF' : '#000000',
+      bodyColor: darkMode ? '#FFFFFF' : '#000000',
+      callbacks: {
+        label: context => {
+          const label = context.dataset.label || '';
+          const value = context.raw ?? 0;
+          return `${label}: ${formatPercentageValue(value)}`;
+        },
+      },
+    },
+    datalabels: {
+      display: true,
+      color: context =>
+        context.dataset.backgroundColor === CHART_COLORS.lost ? '#1f1f1f' : '#f7f7f7',
+      textStrokeColor: context =>
+        context.dataset.backgroundColor === CHART_COLORS.lost ? 'transparent' : '#1f1f1f',
+      textStrokeWidth: context => (context.dataset.backgroundColor === CHART_COLORS.lost ? 0 : 1),
+      formatter: value => formatPercentageValue(value),
+      font: { weight: 'bold', size: 11 },
+      anchor: 'center',
+      align: 'center',
+      clamp: true,
+    },
+  },
+  scales: {
+    x: {
+      stacked: true,
+      grid: { color: darkMode ? '#364156' : '#e0e0e0' },
+      ticks: {
+        color: darkMode ? '#e0e0e0' : '#000',
+        callback: value => formatPercentageValue(value),
+        maxTicksLimit: 6,
+      },
+      title: {
+        display: true,
+        text: 'Percentage of Tools (%)',
+        color: darkMode ? '#FFFFFF' : '#000000',
+      },
+      min: 0,
+      suggestedMax: 100,
+    },
+    y: {
+      title: { display: true, text: 'Tools Name', color: darkMode ? '#FFFFFF' : '#000000' },
+      stacked: true,
+      grid: { display: false },
+      ticks: { color: darkMode ? '#e0e0e0' : '#000' },
+    },
+  },
+});
+
 export default function ToolsStoppageHorizontalBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [projects, setProjects] = useState([]);
@@ -62,48 +286,18 @@ export default function ToolsStoppageHorizontalBarChart() {
     const fetchToolsStoppageData = async () => {
       setLoading(true);
       setError(null);
-      const formattedStart = startDate ? new Date(startDate).toISOString() : null;
-      const formattedEnd = endDate ? new Date(endDate).toISOString() : null;
 
       try {
-        if (selectedProject) {
-          const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(
-            selectedProject?.value,
-            formattedStart,
-            formattedEnd,
-          );
-          const response = await axios.get(url);
-          const responseData = response.data;
-
-          if (responseData && responseData.length > 0) {
-            const sortedData = [...responseData].map(item => ({
-              ...item,
-              name: item.toolName || item.name,
-            }));
-            setData(sortedData);
-          } else {
-            setData(emptyData);
-            setError('No tool stoppage reason data found for this project.');
-          }
-        } else if (projects.length > 0) {
-          const firstProject = projects[0];
-          setSelectedProject({ value: firstProject.projectId, label: firstProject.projectName });
-          const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(firstProject.projectId, null, null);
-          const response = await axios.get(url);
-          const responseData = response.data;
-
-          if (responseData && responseData.length > 0) {
-            const sortedData = [...responseData].map(item => ({
-              ...item,
-              name: item.toolName || item.name,
-            }));
-            setData(sortedData);
-          } else {
-            setData(emptyData);
-          }
-        } else {
-          setData(emptyData);
-        }
+        await handleDataFetching({
+          selectedProject,
+          projects,
+          startDate,
+          endDate,
+          setSelectedProject,
+          setData,
+          setError,
+          emptyData,
+        });
       } catch (err) {
         setData(emptyData);
         setError('Failed to load tools stoppage reason data. Please try again.');
@@ -151,63 +345,10 @@ export default function ToolsStoppageHorizontalBarChart() {
   };
 
   // ✅ Prepare Chart.js data
-  const chartData = {
-    labels: data.map(item =>
-      item.name.length > 20 ? `${item.name.substring(0, 18)}...` : item.name,
-    ),
-    datasets: [
-      {
-        label: 'Used its lifetime',
-        data: data.map(item => item.usedForLifetime || 0),
-        backgroundColor: '#4589FF',
-        barThickness: 30,
-      },
-      {
-        label: 'Damaged',
-        data: data.map(item => item.damaged || 0),
-        backgroundColor: '#FF0000',
-        barThickness: 30,
-      },
-      {
-        label: 'Lost',
-        data: data.map(item => item.lost || 0),
-        backgroundColor: '#FFB800',
-        barThickness: 30,
-      },
-    ],
-  };
+  const chartData = getChartData(data);
 
   // ✅ Chart.js options for horizontal stacked bars
-  const chartOptions = {
-    indexAxis: 'y',
-    maintainAspectRatio: false,
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: { color: darkMode ? '#e0e0e0' : '#000' },
-      },
-      tooltip: { enabled: true, color: darkMode ? '#FFFFFF' : '#000000' },
-      datalabels: {
-        display: true,
-        color: '#fff',
-        font: { weight: 'bold' },
-      },
-    },
-    scales: {
-      x: {
-        stacked: true,
-        grid: { color: darkMode ? '#364156' : '#e0e0e0' },
-        ticks: { color: darkMode ? '#e0e0e0' : '#000' },
-      },
-      y: {
-        title: { display: true, text: 'Tools', color: darkMode ? '#FFFFFF' : '#000000' },
-        stacked: true,
-        grid: { display: false },
-        ticks: { color: darkMode ? '#e0e0e0' : '#000' },
-      },
-    },
-  };
+  const chartOptions = getChartOptions(darkMode);
 
   return (
     <div className={`tools-availability-page ${darkMode ? 'dark-mode' : ''}`}>
@@ -228,8 +369,15 @@ export default function ToolsStoppageHorizontalBarChart() {
               className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
               calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
             />
-            <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
-              ✕
+            <Button
+              variant="outline-danger"
+              size="sm"
+              onClick={() => {
+                setDateRange([null, null]);
+                setError(null);
+              }}
+            >
+              Clear
             </Button>
           </div>
         </Col>
@@ -253,6 +401,8 @@ export default function ToolsStoppageHorizontalBarChart() {
             onClick={() => {
               setSelectedProject(null);
               setDateRange([null, null]);
+              setData(emptyData);
+              setError(null);
             }}
           >
             Reset
@@ -262,13 +412,13 @@ export default function ToolsStoppageHorizontalBarChart() {
 
       <div className="tools-horizontal-chart-container">
         {error && <div className="tools-chart-error">{error}</div>}
-        {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
+        {loading && <div className="tools-chart-loading">Loading tools stoppage data...</div>}
 
-        {!loading && selectedProject && data.length > 0 && (
+        {shouldShowChart(loading, selectedProject, data) && (
           <Bar data={chartData} options={chartOptions} height={600} />
         )}
 
-        {!loading && selectedProject && data.length === 0 && (
+        {shouldShowEmptyState(loading, selectedProject, data) && (
           <div className="tools-chart-empty">
             <p>No data available for the selected filters.</p>
           </div>
