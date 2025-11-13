@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ApplicantsChart from './components/ApplicantsChart';
+import EducationExperienceDonutChart from './components/EducationExperienceDonutChart/EducationExperienceDonutChart';
 import AutoUpdate from './components/AutoUpdate';
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
@@ -843,6 +844,11 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
+        <ProtectedRoute
+          path="/education-experience-donut-chart"
+          component={EducationExperienceDonutChart}
+          fallback
+        />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
         {/* ----- PR Dashboard  ----- */}
