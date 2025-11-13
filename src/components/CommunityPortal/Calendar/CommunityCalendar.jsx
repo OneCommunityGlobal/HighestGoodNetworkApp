@@ -48,8 +48,12 @@ function CommunityCalendar() {
       for (const [idx, status] of STATUSES.entries()) {
         const capacity = 20;
         // NOTE: Safe usage — this is mock UI data only.
-        // Math.random() is intentionally used for generating placeholder values.
-        const registered = Math.floor(Math.random() * capacity);
+        const getSecureRandomInt = max => {
+          const array = new Uint32Array(1);
+          window.crypto.getRandomValues(array);
+          return array[0] % max;
+        };
+        const registered = getSecureRandomInt(capacity);
         arr.push({
           id: i * 10 + idx + 1,
           title: `Event ${idx + 1}`,
