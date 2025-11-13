@@ -3,6 +3,8 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Label } from 'rechar
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useSelector } from 'react-redux';
+import styles from './EducationExperienceDonutChart.module.css';
 
 /** ---------- Stable color mapping by category ---------- */
 const COLOR_BY_CATEGORY = {
@@ -83,6 +85,7 @@ const EducationExperienceDonutChart = () => {
   const [loading] = useState(false);
   const [error, setError] = useState(null);
   const isMobile = useIsMobile(640);
+  const darkMode = useSelector(state => state.theme?.darkMode);
 
   /** Role dropdown options */
   const roleOptions = useMemo(() => {
@@ -174,76 +177,98 @@ const EducationExperienceDonutChart = () => {
   };
 
   if (error) {
-    return <div style={{ padding: 16, textAlign: 'center' }}>Something went wrong: {error}</div>;
+    return <div className={styles.error}>Something went wrong: {error}</div>;
   }
 
-  return (
-    <div
-      style={{ width: '100%', maxWidth: 1000, margin: '0 auto', padding: '0 8px' }}
-      aria-label="Breakdown of Candidates by Experience and Educational Level"
-      role="img"
-    >
-      <h2 style={{ textAlign: 'center' }}>
-        Breakdown of Candidates by Experience and Educational Level
-      </h2>
+  const wrapperClass = `${styles.wrapper} ${darkMode ? styles.wrapperDark : ''}`;
+  const headingClass = `${styles.heading} ${darkMode ? styles.headingDark : ''}`;
+  const filtersClass = `${styles.filters} ${isMobile ? styles.filtersMobile : ''}`;
+  const sectionClass = `${styles.section} ${isMobile ? styles.sectionFull : ''}`;
+  const titleClass = `${styles.sectionTitle} ${darkMode ? styles.sectionTitleDark : ''}`;
+  const datePickerClass = `${styles.datePicker} ${darkMode ? 'hgn-datepicker-dark' : ''}`;
+  const chartWrapperClass = `${styles.chartWrapper} ${isMobile ? styles.chartWrapperMobile : ''}`;
 
-      {/* Filters */}
-      <div
-        style={{
-          display: 'flex',
-          gap: 16,
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          margin: '20px 0',
-          flexDirection: isMobile ? 'column' : 'row',
-          alignItems: isMobile ? 'stretch' : 'center',
-        }}
-      >
-        <div style={{ width: isMobile ? '100%' : 'auto' }}>
-          <strong>Dates</strong>
-          <div style={{ display: 'flex', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-            <DatePicker
-              selected={startDate}
-              onChange={setStartDate}
-              placeholderText="Start Date"
-              isClearable
-              dateFormat="yyyy-MM-dd"
-              maxDate={endDate || undefined}
-            />
-            <DatePicker
-              selected={endDate}
-              onChange={setEndDate}
-              placeholderText="End Date"
-              isClearable
-              dateFormat="yyyy-MM-dd"
-              minDate={startDate || undefined}
+  return (
+    <div aria-label="Breakdown of Candidates by Experience and Educational Level" role="img">
+      <div className={wrapperClass}>
+        <h2 className={headingClass}>Breakdown of Candidates by Experience and Educational Level</h2>
+
+        {/* Filters */}
+        <div className={filtersClass}>
+          <div className={sectionClass}>
+            <strong className={titleClass}>Dates</strong>
+            <div className={styles.datePickers}>
+              <DatePicker
+                selected={startDate}
+                onChange={setStartDate}
+                placeholderText="Start Date"
+                isClearable
+                dateFormat="yyyy-MM-dd"
+                maxDate={endDate || undefined}
+                className={datePickerClass}
+                calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : undefined}
+              />
+              <DatePicker
+                selected={endDate}
+                onChange={setEndDate}
+                placeholderText="End Date"
+                isClearable
+                dateFormat="yyyy-MM-dd"
+                minDate={startDate || undefined}
+                className={datePickerClass}
+                calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : undefined}
+              />
+            </div>
+          </div>
+
+          <div className={sectionClass}>
+            <strong className={titleClass}>Role</strong>
+            <Select
+              options={roleOptions}
+              isMulti
+              onChange={setSelectedRoles}
+              placeholder="All Roles"
+              value={selectedRoles}
+              classNamePrefix="roles"
+              styles={
+                darkMode
+                  ? {
+                      control: provided => ({
+                        ...provided,
+                        backgroundColor: '#1f2937',
+                        borderColor: '#3b82f6',
+                        color: '#e5e7eb',
+                      }),
+                      menu: provided => ({
+                        ...provided,
+                        backgroundColor: '#111827',
+                        color: '#e5e7eb',
+                      }),
+                      multiValue: provided => ({
+                        ...provided,
+                        backgroundColor: '#2563eb',
+                      }),
+                      multiValueLabel: provided => ({
+                        ...provided,
+                        color: '#f8fafc',
+                      }),
+                    }
+                  : undefined
+              }
             />
           </div>
         </div>
 
-        <div style={{ minWidth: isMobile ? '100%' : 260 }}>
-          <strong>Role</strong>
-          <Select
-            options={roleOptions}
-            isMulti
-            onChange={setSelectedRoles}
-            placeholder="All Roles"
-            value={selectedRoles}
-            classNamePrefix="roles"
-          />
-        </div>
-      </div>
-
-      {/* Chart / Empty / Loading */}
-      {loading ? (
-        <div style={{ padding: 24, textAlign: 'center' }}>Loading…</div>
-      ) : total === 0 ? (
-        <div style={{ padding: 24, textAlign: 'center' }}>
-          No data for the selected filters. Try widening the date range or clearing roles.
-        </div>
-      ) : (
-        <>
-          <div style={{ width: '100%', height: isMobile ? 360 : 500 }}>
+        {/* Chart / Empty / Loading */}
+        {loading ? (
+          <div className={styles.message}>Loading…</div>
+        ) : total === 0 ? (
+          <div className={styles.message}>
+            No data for the selected filters. Try widening the date range or clearing roles.
+          </div>
+        ) : (
+          <>
+            <div className={chartWrapperClass}>
             <ResponsiveContainer width="100%" height="100%">
               {/* overflow visible so outside labels aren't clipped */}
               <PieChart
@@ -269,7 +294,13 @@ const EducationExperienceDonutChart = () => {
                   <Label
                     position="center"
                     content={() => (
-                      <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
+                      <text
+                        x="50%"
+                        y="50%"
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        fill={darkMode ? '#f8fafc' : '#0f172a'}
+                      >
                         {/* Roles: each on a new line */}
                         {selectedRoles.length > 0 ? (
                           selectedRoles.map((role, idx) => (
@@ -316,32 +347,19 @@ const EducationExperienceDonutChart = () => {
 
           {/* Mobile: counts list below chart (since slice labels show % only) */}
           {isMobile && (
-            <div style={{ marginTop: 12, paddingInline: 8 }}>
+            <div className={styles.mobileList}>
               {data.map(d => {
                 const pct = total ? ((d.value / total) * 100).toFixed(1) : '0.0';
                 return (
-                  <div
-                    key={d.category}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: 12,
-                      margin: '4px 0',
-                    }}
-                  >
-                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <div key={d.category} className={styles.mobileRow}>
+                    <span className={styles.mobileLabel}>
                       <span
-                        style={{
-                          width: 10,
-                          height: 10,
-                          background: COLOR_BY_CATEGORY[d.category],
-                          display: 'inline-block',
-                          borderRadius: 2,
-                        }}
+                        className={styles.swatch}
+                        style={{ background: COLOR_BY_CATEGORY[d.category] }}
                       />
                       {d.category}
                     </span>
-                    <span>
+                    <span className={styles.mobileValue}>
                       {d.value} ({pct}%)
                     </span>
                   </div>
@@ -349,8 +367,9 @@ const EducationExperienceDonutChart = () => {
               })}
             </div>
           )}
-        </>
-      )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
