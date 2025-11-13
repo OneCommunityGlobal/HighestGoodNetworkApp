@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { User, BookOpen } from 'lucide-react';
 import styles from './styles/LogEntryView.module.css';
 import { Tag } from './icons';
@@ -44,7 +45,7 @@ const LogEntryView = ({
             </div>
           </div>
 
-          {/* Educator Assisted Tag Toggle (Only visible for Educators) */}
+          {/* Educator Assisted Tag Toggle */}
           <div className={`${styles.headerRight}`}>
             {isEducator && (
               <button
@@ -74,7 +75,6 @@ const LogEntryView = ({
 
         <TeacherFeedback feedbackData={log.teacherFeedback} />
 
-        {/* Educator Feedback Form */}
         {isEducator && (
           <EducatorFeedbackForm
             logId={log.id}
@@ -84,7 +84,6 @@ const LogEntryView = ({
           />
         )}
 
-        {/* Comment/Interaction Section */}
         <CommentSection
           logId={log.id}
           comments={log.comments}
@@ -95,6 +94,36 @@ const LogEntryView = ({
       </div>
     </div>
   );
+};
+
+LogEntryView.propTypes = {
+  log: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    studentName: PropTypes.string.isRequired,
+    studentRole: PropTypes.string.isRequired,
+    teacher: PropTypes.string.isRequired,
+    course: PropTypes.string.isRequired,
+    logContent: PropTypes.string.isRequired,
+    notesToTeacher: PropTypes.string,
+    teacherFeedback: PropTypes.any,
+    assistedBy: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      role: PropTypes.string,
+    }),
+    comments: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        role: PropTypes.string.isRequired,
+        author: PropTypes.string.isRequired,
+        text: PropTypes.string.isRequired,
+      }),
+    ),
+  }).isRequired,
+  currentUserRole: PropTypes.string.isRequired,
+  currentUserName: PropTypes.string.isRequired,
+  toggleAssistedStatus: PropTypes.func.isRequired,
+  handleCommentSubmit: PropTypes.func.isRequired,
+  handleFeedbackSubmit: PropTypes.func.isRequired,
 };
 
 export default LogEntryView;

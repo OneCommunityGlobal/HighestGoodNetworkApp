@@ -50,7 +50,6 @@
 
 .feedbackTextarea:focus {
   outline: none;
-  ring: 2px solid #fbbf24;
   border-color: #fbbf24;
 }
 

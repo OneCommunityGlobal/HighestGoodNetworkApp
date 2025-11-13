@@ -87,7 +87,6 @@
 .commentTextarea:focus {
   outline: none;
   border-color: #6366f1;
-  ring: 2px solid #6366f1;
 }
 
 .commentSubmitBtn {

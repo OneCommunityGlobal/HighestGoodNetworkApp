@@ -152,7 +152,7 @@ const ActivityLogs = () => {
                 <span>View Log:</span>
                 <select
                   value={logToDisplayId}
-                  onChange={e => setLogToDisplayId(parseInt(e.target.value))}
+                  onChange={e => setLogToDisplayId(Number.parseInt(e.target.value))}
                   className={`${styles.select}`}
                 >
                   {[...logs]

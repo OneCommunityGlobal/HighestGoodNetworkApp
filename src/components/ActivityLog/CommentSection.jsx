@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { MessageSquare } from 'lucide-react';
 import styles from './styles/CommentSection.module.css';
@@ -6,8 +7,8 @@ import { useSelector } from 'react-redux';
 
 const CommentSection = ({ logId, comments, userRole, handleCommentSubmit }) => {
   const [newComment, setNewComment] = useState('');
-
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const onSubmit = () => {
     if (newComment.trim()) {
       handleCommentSubmit(logId, newComment);
@@ -20,7 +21,6 @@ const CommentSection = ({ logId, comments, userRole, handleCommentSubmit }) => {
       <div className={`${styles.commentSectionContainer}`}>
         <h2 className={`${styles.commentSectionTitle}`}>Interaction / Comments</h2>
 
-        {/* Display Existing Comments */}
         <div className={`${styles.commentList}`}>
           {comments.length === 0 && (
             <p className={`${styles.noComments}`}>No comments yet. Start the conversation!</p>
@@ -59,6 +59,20 @@ const CommentSection = ({ logId, comments, userRole, handleCommentSubmit }) => {
       </div>
     </div>
   );
+};
+
+CommentSection.propTypes = {
+  logId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  comments: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      role: PropTypes.string.isRequired,
+      author: PropTypes.string.isRequired,
+      text: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
+  userRole: PropTypes.string.isRequired,
+  handleCommentSubmit: PropTypes.func.isRequired,
 };
 
 export default CommentSection;

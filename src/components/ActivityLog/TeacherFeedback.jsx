@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import styles from './styles/TeacherFeedbackForm.module.css';
 import { useSelector } from 'react-redux';
 
@@ -20,6 +21,13 @@ const TeacherFeedback = ({ feedbackData }) => {
       </div>
     </div>
   );
+};
+
+TeacherFeedback.propTypes = {
+  feedbackData: PropTypes.shape({
+    teacherName: PropTypes.string.isRequired,
+    feedback: PropTypes.string.isRequired,
+  }),
 };
 
 export default TeacherFeedback;

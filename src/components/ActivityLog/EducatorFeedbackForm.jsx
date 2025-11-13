@@ -1,7 +1,9 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { CheckCircle, Send } from 'lucide-react';
 import styles from './styles/EducatorFeedback.module.css';
 import { useSelector } from 'react-redux';
+
 const EducatorFeedbackForm = ({
   logId,
   currentTeacherName,
@@ -12,8 +14,8 @@ const EducatorFeedbackForm = ({
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const labelText = logHasFeedback ? 'Update Teacher Feedback' : 'Submit Teacher Feedback';
-
   const darkMode = useSelector(state => state.theme.darkMode);
+
   const handleSubmit = e => {
     e.preventDefault();
     if (feedback.trim()) {
@@ -59,6 +61,13 @@ const EducatorFeedbackForm = ({
       </div>
     </div>
   );
+};
+
+EducatorFeedbackForm.propTypes = {
+  logId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  currentTeacherName: PropTypes.string.isRequired,
+  logHasFeedback: PropTypes.bool.isRequired,
+  handleFeedbackSubmit: PropTypes.func.isRequired,
 };
 
 export default EducatorFeedbackForm;

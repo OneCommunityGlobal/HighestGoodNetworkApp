@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { CheckCircle, Send } from 'lucide-react';
 import styles from './styles/CreateLogForm.module.css';
@@ -82,7 +83,6 @@ const CreateLogForm = ({ userRole, currentUserName, setViewMode, handleAddLog })
         )}
 
         <form onSubmit={handleSubmit} className={`${styles.formGrid}`}>
-          {/* Log Content */}
           <div>
             <label htmlFor="logContent" className={`${styles.label}`}>
               Log Content
@@ -97,7 +97,6 @@ const CreateLogForm = ({ userRole, currentUserName, setViewMode, handleAddLog })
             ></textarea>
           </div>
 
-          {/* Course Selection & Notes */}
           <div className={`${styles.rightColumn}`}>
             <div>
               <label htmlFor="course" className={`${styles.label}`}>
@@ -142,6 +141,13 @@ const CreateLogForm = ({ userRole, currentUserName, setViewMode, handleAddLog })
       </div>
     </div>
   );
+};
+
+CreateLogForm.propTypes = {
+  userRole: PropTypes.string.isRequired,
+  currentUserName: PropTypes.string.isRequired,
+  setViewMode: PropTypes.func,
+  handleAddLog: PropTypes.func.isRequired,
 };
 
 export default CreateLogForm;
