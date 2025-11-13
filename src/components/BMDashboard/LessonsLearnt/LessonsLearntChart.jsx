@@ -1,23 +1,13 @@
-/* eslint-disable */
-/* prettier-ignore */
-
+/* eslint-disable */ /* prettier-ignore */
 import { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Tooltip,
-  Title
-} from 'chart.js';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Title } from 'chart.js';
 import axios from 'axios';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 
+import styles from './LessonsLearntChart.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import './LessonsLearntChart.css';
-
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Title);
 
@@ -53,7 +43,6 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
         setIsLoading(false);
       }
     };
-
     fetchLessons();
   }, [selectedProjects, startDate, endDate]);
 
@@ -61,111 +50,8 @@ const useLessonsData = (selectedProjects, startDate, endDate) => {
 };
 
 function ChartTitle({ title }) {
-  return <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>{title}</h2>;
-};
-
-function Filters({
-  allProjects,
-  selectedProjects,
-  setSelectedProjects,
-  startDate,
-  setStartDate,
-  endDate,
-  setEndDate,
-}) {
-  return (
-    <div className="filter-row">
-      <div className="filter">
-        <label>Project:</label>
-        <Select
-          options={allProjects?.map(p => ({ label: p.name, value: p.id })) || []}
-          isMulti
-          placeholder="All"
-          onChange={setSelectedProjects}
-        />
-      </div>
-      <div className="filter">
-        <label>From:</label>
-        <DatePicker
-          selected={startDate}
-          onChange={setStartDate}
-          selectsStart
-          startDate={startDate}
-          endDate={endDate}
-          placeholderText="Start Date"
-        />
-      </div>
-      <div className="filter">
-        <label>To:</label>
-        <DatePicker
-          selected={endDate}
-          onChange={setEndDate}
-          selectsEnd
-          startDate={startDate}
-          endDate={endDate}
-          placeholderText="End Date"
-        />
-      </div>
-    </div>
-  );
+  return <h2 className={styles.chartTitle}>{title}</h2>;
 }
-
-const PercentageLabels = ({ data }) => {
-  return (
-    <div className="percentage-labels">
-      {data?.map((item) => (
-        <div
-          key={item.id || item.name} // use a stable, unique identifier
-          className="percentage-label"
-          style={{ left: `${(data.indexOf(item) + 0.5) * (100 / data.length)}%` }}
-        >
-          {item.trend > 0 ? `+${item.trend}%` : `${item.trend}%`}
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const LessonsBarChart = ({ data, isLoading }) => {
-  const chartData = {
-    labels: data?.map(item => item.project) || [],
-    datasets: [
-      {
-        label: 'No. of Lessons Learnt',
-        data: data?.map(item => item.count) || [],
-        backgroundColor: '#4F46E5',
-        borderRadius: 4,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label: () => 'Click to view the Tags',
-        },
-      },
-    },
-    onClick: (_, elements) => {
-      if (elements.length > 0) {
-        const index = elements[0].index;
-        const project = chartData.labels[index];
-        window.location.href = `/project-issues/${project}`;
-      }
-    },
-  };
-
-  if (isLoading) return <div className="loading">Loading...</div>;
-
-  return (
-    <div className="chart-wrapper">
-      <Bar data={chartData} options={chartOptions} />
-      <PercentageLabels data={data} />
-    </div>
-  );
-};
 
 const LessonsLearntChart = () => {
   const [selectedProjects, setSelectedProjects] = useState([]);
@@ -175,22 +61,87 @@ const LessonsLearntChart = () => {
   const { allProjects, lessonsData, isLoading } = useLessonsData(
     selectedProjects,
     startDate,
-    endDate
+    endDate,
   );
 
+  const handleProjectChange = selected => {
+    setSelectedProjects(selected || []);
+  };
+
+  const chartData = {
+    labels: lessonsData.map(d => d.projectName),
+    datasets: [
+      {
+        label: 'Lessons Learnt',
+        data: lessonsData.map(d => d.percentage),
+        backgroundColor: '#10b981',
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    plugins: {
+      title: {
+        display: false,
+      },
+    },
+  };
+
   return (
-    <div className="chart-container">
+    <div className={styles.chartContainer}>
       <ChartTitle title="Lessons Learnt" />
-      <Filters
-        allProjects={allProjects}
-        selectedProjects={selectedProjects}
-        setSelectedProjects={setSelectedProjects}
-        startDate={startDate}
-        setStartDate={setStartDate}
-        endDate={endDate}
-        setEndDate={setEndDate}
-      />
-      <LessonsBarChart data={lessonsData} isLoading={isLoading} />
+
+      <div className={styles.filterRow}>
+        <div className={styles.filter}>
+          <label>Select Projects</label>
+          <Select
+            isMulti
+            options={allProjects.map(proj => ({
+              value: proj.id,
+              label: proj.name,
+            }))}
+            value={selectedProjects}
+            onChange={handleProjectChange}
+          />
+        </div>
+        <div className={styles.filter}>
+          <label>From</label>
+          <DatePicker selected={startDate} onChange={date => setStartDate(date)} />
+        </div>
+        <div className={styles.filter}>
+          <label>To</label>
+          <DatePicker selected={endDate} onChange={date => setEndDate(date)} />
+        </div>
+      </div>
+
+      <div className={styles.chartWrapper}>
+        {isLoading ? (
+          <p>Loading...</p>
+        ) : lessonsData.length === 0 ? (
+          <p>No lessons data available for the selected criteria</p>
+        ) : (
+          <>
+            <Bar data={chartData} options={chartOptions} />
+            <div className={styles.percentageLabels}>
+              {lessonsData.map((d, idx) => (
+                <span
+                  key={idx}
+                  className={styles.percentageLabel}
+                  style={{
+                    left:
+                      lessonsData.length > 0
+                        ? `${(idx + 0.5) * (100 / lessonsData.length)}%`
+                        : '0%',
+                  }}
+                >
+                  {d.percentage}%
+                </span>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

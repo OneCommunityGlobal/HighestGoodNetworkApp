@@ -1,0 +1,39 @@
+
+
+
+.title {
+  margin: 0 0 8px 0;
+  text-align: center;
+  font-size: 24px;
+  font-weight: normal;
+  color: var(--text-color);
+}
+
+.titleContainer {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+
+.legendList {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.legendItem {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--text-color);
+}
+
+.legendListItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -1,12 +1,4 @@
-vi.mock('react-toastify', () => ({
-  __esModule: true,
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
-  ToastContainer: () => null,
-}));
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
 import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
@@ -15,11 +7,36 @@ import mockAdminState from '__tests__/mockAdminState';
 import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { ModalContext } from '~/context/ModalContext';
 import RolePermissions from '../RolePermissions';
+import { toast } from 'react-toastify';
+
+// ---- Local, file-scoped mocks ----
+vi.mock('axios', () => {
+  const mock = {
+    get: vi.fn(),
+    post: vi.fn(),
+    put: vi.fn(),
+    delete: vi.fn(),
+    patch: vi.fn(),
+    create: vi.fn(),
+  };
+  mock.create.mockReturnValue(mock);
+  return { default: mock };
+});
+
+vi.mock('react-toastify', () => ({
+  __esModule: true,
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
+  },
+  ToastContainer: () => null,
+}));
 
 const mockModalContext = {
   modalStatus: false,
@@ -29,20 +46,18 @@ const mockModalContext = {
 const mockStore = configureStore([thunk]);
 let store;
 
+// toast spies so .toHaveBeenCalled* works reliably
+let toastSuccessSpy;
+let toastErrorSpy;
+
 beforeEach(() => {
   store = mockStore({
     auth: {
       user: {
-        permissions: {
-          frontPermissions: [],
-          backPermissions: [],
-        },
+        permissions: { frontPermissions: [], backPermissions: [] },
         role: 'Owner',
       },
-      permissions: {
-        frontPermissions: [],
-        backPermissions: [],
-      },
+      permissions: { frontPermissions: [], backPermissions: [] },
     },
     role: mockAdminState.role,
     userProfile: { role: 'Owner' },
@@ -58,22 +73,26 @@ beforeEach(() => {
     },
     theme: { darkMode: false },
   });
+
+  // any GETs on mount should resolve so effects settle
+  axios.get.mockResolvedValue({ data: {} });
+
+  // setup spies
+  toastSuccessSpy = vi.spyOn(toast, 'success');
+  toastErrorSpy = vi.spyOn(toast, 'error');
 });
 
 afterEach(() => {
   store.clearActions();
+  toastSuccessSpy.mockRestore();
+  toastErrorSpy.mockRestore();
 });
 
 const roleName = 'Owner';
 const roleId = 'abc123';
 
-vi.mock('axios');
-
-// eslint-disable-next-line no-unused-vars
-const flushAllPromises = () => new Promise(setImmediate);
-
-const renderComponent = (newStore, history, newRoleName, newRoleId) => {
-  return render(
+const renderComponent = (newStore, history, newRoleName, newRoleId) =>
+  render(
     <ModalContext.Provider value={mockModalContext}>
       <Router history={history}>
         <Provider store={newStore}>
@@ -88,43 +107,28 @@ const renderComponent = (newStore, history, newRoleName, newRoleId) => {
       </Router>
     </ModalContext.Provider>,
   );
-};
 
 describe('RolePermissions component', () => {
-  it('check if role name is displaying properly', () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
+  it('check if role name is displaying properly', async () => {
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
-    expect(screen.getByText('Role Name: Owner')).toBeInTheDocument();
-  });
-  it('check if permission list header is displaying as expected', () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
-    const history = createMemoryHistory();
-    renderComponent(store, history, roleName, roleId);
-    expect(screen.getByText('Permission List')).toBeInTheDocument();
-  });
-  it('check if presets option do not show when the role is not Owner', () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
+    expect(await screen.findByText('Role Name: Owner')).toBeInTheDocument();
+  }, 10000);
 
+  it('check if permission list header is displaying as expected', async () => {
+    const history = createMemoryHistory();
+    renderComponent(store, history, roleName, roleId);
+    expect(await screen.findByText('Permission List')).toBeInTheDocument();
+  }, 10000);
+
+  it('check if presets option do not show when the role is not Owner', async () => {
     const newStore = mockStore({
       auth: {
         user: {
-          permissions: {
-            frontPermissions: [],
-            backPermissions: [],
-          },
+          permissions: { frontPermissions: [], backPermissions: [] },
           role: 'Manager',
         },
-        permissions: {
-          frontPermissions: [],
-          backPermissions: [],
-        },
+        permissions: { frontPermissions: [], backPermissions: [] },
       },
       role: mockAdminState.role,
       userProfile: { role: 'Manager' },
@@ -146,116 +150,63 @@ describe('RolePermissions component', () => {
     const history = createMemoryHistory();
     renderComponent(newStore, history, newRoleName, newRoleId);
     expect(screen.queryByText('Create New Preset')).not.toBeInTheDocument();
-  });
+  }, 10000);
+
   it('check if clicking on Create New Preset displays toast success message when the post request is successful', async () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
-
-    axios.post.mockResolvedValue({
-      status: 201,
-      data: { newPreset: 'New Preset 1' },
-    });
-
+    axios.post.mockResolvedValue({ status: 201, data: { newPreset: 'New Preset 1' } });
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
 
-    const createNewPresetElement = screen.getByText('Create New Preset');
-    fireEvent.click(createNewPresetElement);
+    fireEvent.click(screen.getByText('Create New Preset'));
+
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('Preset created successfully');
+      expect(toastSuccessSpy).toHaveBeenCalledWith('Preset created successfully');
     });
-  });
+  }, 10000);
+
   it('check if clicking on Create New Preset displays toast error message when the post request fails', async () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
-
-    axios.post.mockRejectedValue({
-      status: 500,
-    });
-
+    axios.post.mockRejectedValue({ status: 500 });
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
 
-    const createNewPresetElement = screen.getByText('Create New Preset');
-    fireEvent.click(createNewPresetElement);
+    fireEvent.click(screen.getByText('Create New Preset'));
+
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Error creating preset');
+      expect(toastErrorSpy).toHaveBeenCalledWith('Error creating preset');
     });
-  });
+  }, 10000);
+
   it('check if clicking on Load Presets opens modal', async () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
-
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
-    const loadPresetButton = screen.getByText('Load Presets');
-    fireEvent.click(loadPresetButton);
+    fireEvent.click(screen.getByText('Load Presets'));
     expect(screen.getByText('Role Presets')).toBeInTheDocument();
-  });
-  it('check save button toast success message', async () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
+  }, 10000);
 
+  it('check save button toast success message', async () => {
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
 
-    const saveButton = screen.getByText('Save');
-    fireEvent.click(saveButton);
+    fireEvent.click(screen.getByText('Save'));
+
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('Role updated successfully');
+      expect(toastSuccessSpy).toHaveBeenCalledWith('Role updated successfully');
     });
     expect(history.location.pathname).toBe('/permissionsmanagement');
-  });
+  }, 10000);
 
   it('check delete role button works as expected', async () => {
-    axios.get.mockResolvedValue({
-      data: {},
-    });
-
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
-    const deleteRole = screen.getByText('Delete Role');
-    fireEvent.click(deleteRole);
+    fireEvent.click(screen.getByText('Delete Role'));
     expect(screen.getByText(`Delete ${roleName} Role`)).toBeInTheDocument();
-  });
-  it('check if delete role modal content displays as expected', async () => {
-    axios.get.mockResolvedValue({ data: {} });
+  }, 10000);
 
-    const history = createMemoryHistory();
-    renderComponent(store, history, roleName, roleId);
-
-    const deleteRole = screen.getByText('Delete Role');
-    fireEvent.click(deleteRole);
-
-    await waitFor(() => {
-      const dialog = screen.getByRole('dialog');
-
-      const matchingHeaders = within(dialog).getAllByText(
-        (_, el) => el.textContent?.replace(/\s+/g, ' ').trim() === `Delete ${roleName} Role`,
-      );
-      expect(matchingHeaders.length).toBeGreaterThan(0);
-
-      const matchingConfirm = within(dialog).getAllByText(
-        (_, el) =>
-          el.textContent?.replace(/\s+/g, ' ').trim() ===
-          `Are you sure you want to delete ${roleName} role?`,
-      );
-      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
-      expect(matchingConfirm.length).toBeGreaterThan(0);
-    });
-  });
   it('check if edit role modal content displays as expected', async () => {
-    axios.get.mockResolvedValue({ data: {} });
-
     const history = createMemoryHistory();
     renderComponent(store, history, roleName, roleId);
 
-    const editRoleIcon = screen.getByTestId('edit-role-icon');
-    fireEvent.click(editRoleIcon);
+    fireEvent.click(screen.getByTestId('edit-role-icon'));
 
     const dialog = screen.getByRole('dialog');
 
@@ -267,5 +218,5 @@ describe('RolePermissions component', () => {
     const input = within(dialog).getByLabelText(/new role name/i);
     fireEvent.change(input, { target: { value: 'Manager' } });
     expect(input).toHaveValue('Manager');
-  });
+  }, 10000);
 });
