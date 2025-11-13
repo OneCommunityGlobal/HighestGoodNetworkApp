@@ -53,6 +53,24 @@ const formatPercentageValue = value => {
   return `${numeric.toFixed(1)}%`;
 };
 
+// Helper function to process API response data
+const processResponseData = responseData => {
+  if (responseData && responseData.length > 0) {
+    return [...responseData].map(item => ({
+      ...item,
+      name: item.toolName || item.name,
+    }));
+  }
+  return [];
+};
+
+// Helper function to fetch stoppage data for a project
+const fetchStoppageDataForProject = async (projectId, startDate, endDate) => {
+  const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(projectId, startDate, endDate);
+  const response = await axios.get(url);
+  return processResponseData(response.data);
+};
+
 export default function ToolsStoppageHorizontalBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [projects, setProjects] = useState([]);
@@ -90,41 +108,19 @@ export default function ToolsStoppageHorizontalBarChart() {
 
       try {
         if (selectedProject) {
-          const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(
+          const sortedData = await fetchStoppageDataForProject(
             selectedProject?.value,
             formattedStart,
             formattedEnd,
           );
-          const response = await axios.get(url);
-          const responseData = response.data;
-
-          if (responseData && responseData.length > 0) {
-            const sortedData = [...responseData].map(item => ({
-              ...item,
-              name: item.toolName || item.name,
-            }));
-            setData(sortedData);
-          } else {
-            setData(emptyData);
-            setError(null);
-          }
+          setData(sortedData.length > 0 ? sortedData : emptyData);
+          setError(null);
         } else if (projects.length > 0) {
           const firstProject = projects[0];
           setSelectedProject({ value: firstProject.projectId, label: firstProject.projectName });
-          const url = ENDPOINTS.BM_TOOLS_STOPPAGE_BY_PROJECT(firstProject.projectId, null, null);
-          const response = await axios.get(url);
-          const responseData = response.data;
-
-          if (responseData && responseData.length > 0) {
-            const sortedData = [...responseData].map(item => ({
-              ...item,
-              name: item.toolName || item.name,
-            }));
-            setData(sortedData);
-          } else {
-            setData(emptyData);
-            setError(null);
-          }
+          const sortedData = await fetchStoppageDataForProject(firstProject.projectId, null, null);
+          setData(sortedData.length > 0 ? sortedData : emptyData);
+          setError(null);
         } else {
           setData(emptyData);
           setError(null);
