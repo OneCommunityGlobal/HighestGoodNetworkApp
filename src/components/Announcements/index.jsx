@@ -16,6 +16,7 @@ import {
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
 import EmailPanel from './platforms/email';
+import TruthSocialAutoPoster from '../AutoPoster/TruthSocialAutoPoster.jsx';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -143,6 +144,12 @@ function Announcements({ title, email: initialEmail }) {
             <SocialMediaComposer platform="weeklyreport" />
           </TabPane>
 
+          {/* Truth Social gets its own custom component */}
+          <TabPane tabId="truthsocial">
+            <TruthSocialAutoPoster />
+          </TabPane>
+
+          {/* All other social media platforms use the generic composer */}
           {[
             'x',
             'facebook',
@@ -164,7 +171,6 @@ function Announcements({ title, email: initialEmail }) {
             'livejournal',
             'slashdot',
             'blogger',
-            'truthsocial',
           ].map(platform => (
             <TabPane tabId={platform} key={platform}>
               <SocialMediaComposer platform={platform} />
