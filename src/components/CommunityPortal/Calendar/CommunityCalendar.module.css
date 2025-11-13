@@ -52,12 +52,6 @@
   background: #fff;
 }
 
-.calendarFiltersDarkMode select {
-  background-color: #2d3748;
-  border-color: #555;
-  color: #fff;
-}
-
 .calendarMain {
   display: flex;
   flex-direction: column;
