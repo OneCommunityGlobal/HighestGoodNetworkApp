@@ -4,6 +4,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { sendEmail, broadcastEmailsToAll } from '../../../../actions/sendEmails.jsx';
+import styles from '../../Announcements.module.css';
 
 export default function EmailPanel({ title, initialEmail }) {
   const dispatch = useDispatch();
@@ -142,8 +143,8 @@ export default function EmailPanel({ title, initialEmail }) {
   };
 
   return (
-    <div className="email-update-container">
-      <div className="editor">
+    <div className={styles.emailUpdateContainer}>
+      <div className={styles.editor}>
         {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
         <br />
         {showEditor && (
@@ -159,7 +160,7 @@ export default function EmailPanel({ title, initialEmail }) {
           />
         )}
         <div className="send-buttons" style={{ marginTop: '1rem' }}>
-          <button type="button" onClick={handleBroadcastEmails} className="send-button">
+          <button type="button" onClick={handleBroadcastEmails} className={styles.sendButton}>
             Broadcast Weekly Update
           </button>
         </div>
@@ -167,7 +168,7 @@ export default function EmailPanel({ title, initialEmail }) {
 
       {title ? null : (
         <div
-          className={`emails${darkMode ? ' bg-yinmn-blue text-light' : ''}`}
+          className={`${styles.emails}${darkMode ? ' bg-yinmn-blue text-light' : ''}`}
           style={darkMode ? boxStyleDark : boxStyle}
         >
           <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
@@ -179,13 +180,13 @@ export default function EmailPanel({ title, initialEmail }) {
             value={emailTo}
             onChange={handleEmailListChange}
             placeholder="Enter email addresses (comma-separated)"
-            className={`input-text-for-announcement ${
+            className={`${styles.inputTextForAnnouncement} ${
               darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
             }`}
           />
           <button
             type="button"
-            className="send-button"
+            className={styles.sendButton}
             onClick={handleSendEmails}
             style={darkMode ? boxStyleDark : boxStyle}
           >
@@ -202,13 +203,13 @@ export default function EmailPanel({ title, initialEmail }) {
             value={headerContent}
             onChange={handleHeaderContentChange}
             placeholder="Enter header image URL"
-            className={`input-text-for-announcement ${
+            className={`${styles.inputTextForAnnouncement} ${
               darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
             }`}
           />
           <button
             type="button"
-            className="send-button"
+            className={styles.sendButton}
             onClick={addHeaderToEmailContent}
             style={darkMode ? boxStyleDark : boxStyle}
           >
@@ -223,7 +224,7 @@ export default function EmailPanel({ title, initialEmail }) {
             type="file"
             id="upload-header-input"
             onChange={addImageToEmailContent}
-            className="input-file-upload"
+            className={styles.inputFileUpload}
           />
         </div>
       )}
