@@ -11,13 +11,19 @@
   color: #000 !important;
 }
 
-:global(.datePickerInput) {
+.datepickerWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.datePickerInput {
   font-size: 10px !important;
   padding: 6px 8px;
   border-radius: 4px;
 }
 
-:global(.darkTheme .form-control .datePickerInput) {
+:global(.darkTheme) .datePickerInput {
   background-color: #2b3e59 !important;
   color: #fff !important;
   border: 1px solid #666 !important;
@@ -95,15 +101,27 @@
   background-color: #007bff!important;
 }
 
+/* Title styling */
+:global(.tools-chart-title) {
+  font-size: 1.5rem !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  margin-bottom: 1rem !important;
+}
+
+:global(.dark-mode .tools-chart-title) {
+  color: #e0e0e0 !important;
+}
+
 /* Filter controls layout for small screens */
 @media (max-width: 768px) {
-  :global(.datepickerWrapper) {
+  .datepickerWrapper {
     display: flex;
     flex-direction: column;
     align-items: stretch;
   }
 
-  :global(.datepickerWrapper .btn) {
+  .datepickerWrapper .btn {
     margin-top: 8px;
     width: 100%;
   }

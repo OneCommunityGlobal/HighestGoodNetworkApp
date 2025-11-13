@@ -30,6 +30,29 @@ ChartJS.register(
   ChartDataLabels,
 );
 
+const CHART_COLORS = {
+  usedForLifetime: '#2E7D32',
+  damaged: '#C62828',
+  lost: '#FFB300',
+};
+
+const formatPercentageValue = value => {
+  if (value === null || value === undefined) {
+    return '0%';
+  }
+
+  const numeric = Number(value);
+  if (Number.isNaN(numeric)) {
+    return '0%';
+  }
+
+  if (Number.isInteger(numeric)) {
+    return `${numeric}%`;
+  }
+
+  return `${numeric.toFixed(1)}%`;
+};
+
 export default function ToolsStoppageHorizontalBarChart() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [projects, setProjects] = useState([]);
@@ -83,7 +106,7 @@ export default function ToolsStoppageHorizontalBarChart() {
             setData(sortedData);
           } else {
             setData(emptyData);
-            setError('No tool stoppage reason data found for this project.');
+            setError(null);
           }
         } else if (projects.length > 0) {
           const firstProject = projects[0];
@@ -100,9 +123,11 @@ export default function ToolsStoppageHorizontalBarChart() {
             setData(sortedData);
           } else {
             setData(emptyData);
+            setError(null);
           }
         } else {
           setData(emptyData);
+          setError(null);
         }
       } catch (err) {
         setData(emptyData);
@@ -158,20 +183,20 @@ export default function ToolsStoppageHorizontalBarChart() {
     datasets: [
       {
         label: 'Used its lifetime',
-        data: data.map(item => item.usedForLifetime || 0),
-        backgroundColor: '#4589FF',
+        data: data.map(item => Number(item.usedForLifetime ?? 0)),
+        backgroundColor: CHART_COLORS.usedForLifetime,
         barThickness: 30,
       },
       {
         label: 'Damaged',
-        data: data.map(item => item.damaged || 0),
-        backgroundColor: '#FF0000',
+        data: data.map(item => Number(item.damaged ?? 0)),
+        backgroundColor: CHART_COLORS.damaged,
         barThickness: 30,
       },
       {
         label: 'Lost',
-        data: data.map(item => item.lost || 0),
-        backgroundColor: '#FFB800',
+        data: data.map(item => Number(item.lost ?? 0)),
+        backgroundColor: CHART_COLORS.lost,
         barThickness: 30,
       },
     ],
@@ -187,21 +212,52 @@ export default function ToolsStoppageHorizontalBarChart() {
         position: 'top',
         labels: { color: darkMode ? '#e0e0e0' : '#000' },
       },
-      tooltip: { enabled: true, color: darkMode ? '#FFFFFF' : '#000000' },
+      tooltip: {
+        enabled: true,
+        backgroundColor: darkMode ? '#2C3344' : '#FFFFFF',
+        titleColor: darkMode ? '#FFFFFF' : '#000000',
+        bodyColor: darkMode ? '#FFFFFF' : '#000000',
+        callbacks: {
+          label: context => {
+            const label = context.dataset.label || '';
+            const value = context.raw ?? 0;
+            return `${label}: ${formatPercentageValue(value)}`;
+          },
+        },
+      },
       datalabels: {
         display: true,
-        color: '#fff',
-        font: { weight: 'bold' },
+        color: context =>
+          context.dataset.backgroundColor === CHART_COLORS.lost ? '#1f1f1f' : '#f7f7f7',
+        textStrokeColor: context =>
+          context.dataset.backgroundColor === CHART_COLORS.lost ? 'transparent' : '#1f1f1f',
+        textStrokeWidth: context => (context.dataset.backgroundColor === CHART_COLORS.lost ? 0 : 1),
+        formatter: value => formatPercentageValue(value),
+        font: { weight: 'bold', size: 11 },
+        anchor: 'center',
+        align: 'center',
+        clamp: true,
       },
     },
     scales: {
       x: {
         stacked: true,
         grid: { color: darkMode ? '#364156' : '#e0e0e0' },
-        ticks: { color: darkMode ? '#e0e0e0' : '#000' },
+        ticks: {
+          color: darkMode ? '#e0e0e0' : '#000',
+          callback: value => formatPercentageValue(value),
+          maxTicksLimit: 6,
+        },
+        title: {
+          display: true,
+          text: 'Percentage of Tools (%)',
+          color: darkMode ? '#FFFFFF' : '#000000',
+        },
+        min: 0,
+        suggestedMax: 100,
       },
       y: {
-        title: { display: true, text: 'Tools', color: darkMode ? '#FFFFFF' : '#000000' },
+        title: { display: true, text: 'Tools Name', color: darkMode ? '#FFFFFF' : '#000000' },
         stacked: true,
         grid: { display: false },
         ticks: { color: darkMode ? '#e0e0e0' : '#000' },
@@ -228,8 +284,15 @@ export default function ToolsStoppageHorizontalBarChart() {
               className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
               calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
             />
-            <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
-              ✕
+            <Button
+              variant="outline-danger"
+              size="sm"
+              onClick={() => {
+                setDateRange([null, null]);
+                setError(null);
+              }}
+            >
+              Clear
             </Button>
           </div>
         </Col>
@@ -253,6 +316,8 @@ export default function ToolsStoppageHorizontalBarChart() {
             onClick={() => {
               setSelectedProject(null);
               setDateRange([null, null]);
+              setData(emptyData);
+              setError(null);
             }}
           >
             Reset
@@ -262,7 +327,7 @@ export default function ToolsStoppageHorizontalBarChart() {
 
       <div className="tools-horizontal-chart-container">
         {error && <div className="tools-chart-error">{error}</div>}
-        {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
+        {loading && <div className="tools-chart-loading">Loading tools stoppage data...</div>}
 
         {!loading && selectedProject && data.length > 0 && (
           <Bar data={chartData} options={chartOptions} height={600} />
