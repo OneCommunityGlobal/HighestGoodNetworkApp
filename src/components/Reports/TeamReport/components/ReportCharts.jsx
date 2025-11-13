@@ -6,7 +6,7 @@ import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
 import { generateArrayOfUniqColors } from '../../../common/PieChart/colorsGenerator';
-import '../../../common/PieChart/PieChart.module.css';
+import styles from '../../../common/PieChart/PieChart.module.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
 function ReportCharts({ title, pieChartId }) {
@@ -47,15 +47,15 @@ function ReportCharts({ title, pieChartId }) {
   }, []);
 
   return (
-    <section className="team-report-chart-wrapper">
-      <div className="team-report-chart-teams">
+    <section className={styles['team-report-chart-wrapper']}>
+      <div className={styles['team-report-chart-teams']}>
         <h4>{title}</h4>
-        <div className="team-report-chart-info-wrapper">
-          <div className="team-report-chart-info">
-            <div className="pie-chart-wrapper">
-              <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" data-testid={`pie-chart-container-${pieChartId}`}/>
-              <div className="pie-chart-info-detail">
-                <div className="pie-chart-info-detail-title">
+        <div className={styles['team-report-chart-info-wrapper']}>
+          <div className={styles['team-report-chart-info']}>
+            <div className={styles['pie-chart-wrapper']}>
+              <div id={`pie-chart-container-${pieChartId}`} className={styles['pie-chart']} data-testid={`pie-chart-container-${pieChartId}`}/>
+              <div className={styles['pie-chart-info-detail']}>
+                <div className={styles['pie-chart-info-detail-title']}>
                   <h5>Name</h5>
                   <h5>Hour</h5>
                 </div>
@@ -71,7 +71,7 @@ function ReportCharts({ title, pieChartId }) {
               </div>
             </div>
           </div>
-          <div className="team-report-chart-info" />
+          <div className={styles['team-report-chart-info']} />
         </div>
       </div>
     </section>

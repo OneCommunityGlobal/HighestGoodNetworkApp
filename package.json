@@ -59,6 +59,7 @@
     "html-react-parser": "^1.4.14",
     "html-to-pdfmake": "^2.0.6",
     "html2canvas": "^1.4.1",
+    "jest": "^30.2.0",
     "jquery": "^3.7.1",
     "jspdf": "^3.0.3",
     "jwt-decode": "^2.2.0",

@@ -18,14 +18,14 @@ export function ReportBlock({ className, children, firstColor, secondColor, dark
   return (
     <div
       className={classnames(
-        `${darkMode ? styles['report-block-wrapper-dark'] : styles['report-block-wrapper']}`,
+        `${darkMode ? styles["report-block-wrapper-dark"] : styles["report-block-wrapper"]}`,
         className,
       )}
       data-testid="report-block-wrapper"
       role="generic"
     >
       <div
-        className={styles['report-block-content']}
+        className={styles["report-block-content"]}
         data-testid="report-block-content"
         style={{ background: backgroundColor }}
       >

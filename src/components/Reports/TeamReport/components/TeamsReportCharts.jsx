@@ -5,7 +5,7 @@ import './ReportCharts.css';
 import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
-import '../../../common/PieChart/PieChart.module.css';
+import styles from '../../../common/PieChart/PieChart.module.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
 function TeamsReportCharts({
@@ -71,16 +71,16 @@ function TeamsReportCharts({
   }, [selectedTeamsData, selectedTeamsWeeklyEffort]);
 
   return (
-    <section className="team-report-chart-wrapper">
-      <div className={`team-report-chart-teams ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+    <section className={styles['team-report-chart-wrapper']}>
+      <div className={`${styles['team-report-chart-teams']} ${darkMode ? styles['bg-yinmn-blue'] : ''}`}>
         <h4>{title}</h4>
-        <div className="team-report-chart-info-wrapper">
-          <div className="team-report-chart-info">
+        <div className={styles['team-report-chart-info-wrapper']}>
+          <div className={styles['team-report-chart-info']}>
             {selectedTeamsData.length > 0 ? (
-              <div className="pie-chart-wrapper">
-                <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-                <div className="pie-chart-info-detail">
-                  <div className="pie-chart-info-detail-title">
+              <div className={styles['pie-chart-wrapper']}>
+                <div id={`pie-chart-container-${pieChartId}`} className={styles['pie-chart']} />
+                <div className={styles['pie-chart-info-detail']}>
+                  <div className={styles['pie-chart-info-detail-title']}>
                     <h5>Name</h5>
                     <h5>Hours</h5>
                   </div>
@@ -120,7 +120,7 @@ function TeamsReportCharts({
               <strong>Please select a team. (Max 4)</strong>
             )}
           </div>
-          <div className="team-report-chart-info" />
+          <div className={styles['team-report-chart-info']} />
         </div>
       </div>
     </section>

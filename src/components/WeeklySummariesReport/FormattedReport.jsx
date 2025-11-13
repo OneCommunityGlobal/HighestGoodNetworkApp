@@ -397,7 +397,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   ) {
     return (
       <p>
-        <b>Weekly Summary:</b> Not available for this week!
+        <b>Weekly Summary:</b> <span style={{ color: 'red' }}>Not provided!</span>
       </p>
     );
   }

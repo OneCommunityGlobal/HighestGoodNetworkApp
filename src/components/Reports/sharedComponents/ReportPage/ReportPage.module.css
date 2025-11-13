@@ -3,8 +3,10 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #faf7fd;
-  padding: 40px 0 0 24px;
   align-items: stretch;
+  padding-top: 2rem;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 .report-page-content {
@@ -18,6 +20,16 @@
   align-items: center;
 }
 
+
+.report-page-profile {
+  border-radius: 25px;
+  width: 100%;
+}
+
+.report-page-profile-dark {
+  border-radius: 25px;
+  width: 100%;
+}
 
 @media (max-width: 435px) {
 

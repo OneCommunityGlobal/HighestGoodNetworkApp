@@ -1,6 +1,7 @@
 .pie-chart-wrapper {
     display: flex; 
     align-items: center;
+    justify-content: flex-start;
     
     /* overflow: hidden; */
   }
@@ -24,7 +25,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 24px;
-    font-weight: bold;
+    font-weight: 500;
     padding-bottom: 8px;
   }
   
@@ -146,9 +147,7 @@
   }
   
   .pie-chart-legend-table-wrapper {
-    /* height: 27vh; */
     width: 100%;
-    /* border: 1px solid rgba(0, 0, 0, 0.1); */
     overflow-y: auto;
   }
   
@@ -162,7 +161,6 @@
   .pie-chart-legend-table td {
     padding: 8px;
     text-align: left;
-    /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
   }
   
  
@@ -186,7 +184,6 @@
   .pie-chart-legend-table-dark td {
     padding: 8px;
     text-align: left;
-    /* border-bottom: 1px solid rgba(0, 0, 0, 0.1); */
     color:rgb(236, 233, 233)
   }
   
@@ -201,7 +198,8 @@
     color: white;
   }
 
-  #project-chart-legend{
+  .project-chart-legend{
+    display: inline-block;
     width: 16px;
     height: 16px;
     border-radius: 50%;
@@ -224,8 +222,6 @@
     }
   }
 
-
-  /* remove ANY border/outline around the donut */
 .pie-chart-wrapper,
 .pie-chart-wrapper * {
   outline: none !important;
@@ -241,8 +237,30 @@
   box-shadow: none !important;
 }
 
-/* keep an accessible focus style on the toggle only (optional) */
 .pie-chart-wrapper .switch input:focus-visible {
   outline: 2px solid #1e88e5;
   border-radius: 9999px;
+}
+
+.pie-chart-legend-container table {
+  width: 100%;
+  table-layout: fixed; /* even column widths */
+}
+
+.pie-chart-legend-container th:nth-child(1),
+.pie-chart-legend-container td:nth-child(1) {
+  text-align: center;
+  width: 60px; /* Color */
+}
+
+.pie-chart-legend-container th:nth-child(2),
+.pie-chart-legend-container td:nth-child(2) {
+  text-align: center;
+  width: 60%; /* Name column */
+}
+
+.pie-chart-legend-container th:nth-child(3),
+.pie-chart-legend-container td:nth-child(3) {
+  width: 80px; /* Hours column */
+  text-align: right;
 }
