@@ -196,3 +196,21 @@
     opacity: 1
   }
 }
+.statusRow {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.statusText {
+  white-space: nowrap;
+}
+
+.errorText {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #b91c1c;
+}
