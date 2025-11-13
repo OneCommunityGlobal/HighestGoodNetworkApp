@@ -235,3 +235,66 @@
   font-style: italic;
   font-size: 14px;
 }
+
+/* Dark mode styles */
+.issue-header-container-dark .project-tab {
+  background-color: #374151;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.issue-header-container-dark .project-tab .tab-item {
+  color: #E5E7EB;
+}
+
+.issue-header-container-dark .project-tab .tab-item.active {
+  background-color: #4B5563;
+  color: #FFFFFF;
+}
+
+.issue-header-container-dark .project-tab .tab-item:not(.active):hover {
+  background-color: #4B5563;
+}
+
+.issue-header-container-dark .search-icon {
+  color: #9CA3AF;
+}
+
+.issue-header-container-dark .search-input {
+  background-color: #374151;
+  border: 1px solid #4B5563;
+  color: #E5E7EB;
+}
+
+.issue-header-container-dark .search-input:focus {
+  border-color: #6B7280;
+}
+
+.issue-header-container-dark .search-input::placeholder {
+  color: #9CA3AF;
+}
+
+.issue-header-container-dark .search-results {
+  background-color: #374151;
+  border: 1px solid #4B5563;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.issue-header-container-dark .search-result-item {
+  border-bottom: 1px solid #4B5563;
+}
+
+.issue-header-container-dark .search-result-item:hover {
+  background-color: #4B5563;
+}
+
+.issue-header-container-dark .result-name {
+  color: #E5E7EB;
+}
+
+.issue-header-container-dark .result-category {
+  color: #9CA3AF;
+}
+
+.issue-header-container-dark .search-no-results {
+  color: #9CA3AF;
+}

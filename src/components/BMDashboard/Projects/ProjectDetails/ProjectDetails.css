@@ -15,7 +15,8 @@
 /*   margin-top: 40px;
   margin-bottom: 20px;
  */  font-weight: bold;
-  background-color: #1C1E1C;
+  background-color: #1B2A41;
+  min-height: 100vh;
 }
 
 .project-details-title {
@@ -146,6 +147,41 @@ background-color: rgb(1, 1, 38);
   width: auto;
   max-width: 100%;
   overflow: hidden;
+}
+
+/* Dark mode styles for project dashboard */
+.project-details-dark .card.cards-container {
+  background-color: #374151;
+  color: #E5E7EB;
+  border: 1px solid #4B5563;
+}
+
+.project-details-dark .card.cards-container h2 {
+  color: #60A5FA;
+}
+
+.project-details-dark .single-card {
+  background-color: #4B5563;
+  border: 1px solid #6B7280;
+  color: #E5E7EB;
+}
+
+.project-details-dark .single-card:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.4), 0 6px 20px 0 rgba(0, 0, 0, 0.4);
+}
+
+.project-details-dark .single-card__info {
+  background-color: #92400E;
+  color: #FEF3C7;
+}
+
+.project-details-dark .project-log {
+  background-color: #374151;
+  color: #E5E7EB;
+}
+
+.project-details-dark .project-log thead {
+  background-color: #4B5563;
 }
 
 .cards-container__content {
