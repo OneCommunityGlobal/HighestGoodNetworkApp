@@ -47,6 +47,8 @@ function CommunityCalendar() {
     for (let i = 0; i < 6; i++) {
       for (const [idx, status] of STATUSES.entries()) {
         const capacity = 20;
+        // NOTE: Safe usage — this is mock UI data only.
+        // Math.random() is intentionally used for generating placeholder values.
         const registered = Math.floor(Math.random() * capacity);
         arr.push({
           id: i * 10 + idx + 1,
