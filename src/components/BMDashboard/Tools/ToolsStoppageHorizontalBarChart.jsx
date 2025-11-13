@@ -116,16 +116,18 @@ const handleFirstProjectSelection = async (
 };
 
 // Helper function to handle data fetching logic
-const handleDataFetching = async (
-  selectedProject,
-  projects,
-  startDate,
-  endDate,
-  setSelectedProject,
-  setData,
-  setError,
-  emptyData,
-) => {
+const handleDataFetching = async params => {
+  const {
+    selectedProject,
+    projects,
+    startDate,
+    endDate,
+    setSelectedProject,
+    setData,
+    setError,
+    emptyData,
+  } = params;
+
   if (selectedProject) {
     await handleSelectedProjectData(
       selectedProject,
@@ -286,7 +288,7 @@ export default function ToolsStoppageHorizontalBarChart() {
       setError(null);
 
       try {
-        await handleDataFetching(
+        await handleDataFetching({
           selectedProject,
           projects,
           startDate,
@@ -295,7 +297,7 @@ export default function ToolsStoppageHorizontalBarChart() {
           setData,
           setError,
           emptyData,
-        );
+        });
       } catch (err) {
         setData(emptyData);
         setError('Failed to load tools stoppage reason data. Please try again.');
