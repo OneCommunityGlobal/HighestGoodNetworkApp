@@ -140,7 +140,7 @@ const EducationExperienceDonutChart = () => {
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
         fontSize={12}
-        fill="#111"
+        fill={darkMode ? '#e2e8f0' : '#111'}
       >
         {text}
       </text>
@@ -151,6 +151,7 @@ const EducationExperienceDonutChart = () => {
     return <div className={styles.error}>Something went wrong: {error}</div>;
   }
 
+  const pageClass = `${styles.page} ${darkMode ? styles.pageDark : ''}`;
   const wrapperClass = `${styles.wrapper} ${darkMode ? styles.wrapperDark : ''}`;
   const headingClass = `${styles.heading} ${darkMode ? styles.headingDark : ''}`;
   const filtersClass = `${styles.filters} ${isMobile ? styles.filtersMobile : ''}`;
@@ -160,7 +161,7 @@ const EducationExperienceDonutChart = () => {
   const chartWrapperClass = `${styles.chartWrapper} ${isMobile ? styles.chartWrapperMobile : ''}`;
 
   return (
-    <div aria-label="Breakdown of Candidates by Experience and Educational Level" role="img">
+    <div className={pageClass} aria-label="Breakdown of Candidates by Experience and Educational Level" role="img">
       <div className={wrapperClass}>
         <h2 className={headingClass}>Breakdown of Candidates by Experience and Educational Level</h2>
 
