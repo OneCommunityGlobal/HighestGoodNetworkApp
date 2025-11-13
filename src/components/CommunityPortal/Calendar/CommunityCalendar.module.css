@@ -315,7 +315,7 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #718096;
+  color: #4a5568;
 }
 
 .eventModalDark .modalClose {
@@ -340,7 +340,7 @@
 .detailLabel {
   font-size: 0.8rem;
   font-weight: bold;
-  color: #718096;
+  color: #4a5568;
 }
 
 .eventDescription {

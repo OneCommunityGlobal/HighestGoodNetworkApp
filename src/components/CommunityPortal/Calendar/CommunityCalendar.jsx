@@ -45,10 +45,9 @@ function CommunityCalendar() {
   const mockEvents = useMemo(() => {
     const arr = [];
     for (let i = 0; i < 6; i++) {
-      STATUSES.forEach((status, idx) => {
+      for (const [idx, status] of STATUSES.entries()) {
         const capacity = 20;
         const registered = Math.floor(Math.random() * capacity);
-
         arr.push({
           id: i * 10 + idx + 1,
           title: `Event ${idx + 1}`,
@@ -61,7 +60,7 @@ function CommunityCalendar() {
           description: `Details about ${status.toLowerCase()} - ${i + 1}`,
           date: new Date(currentYear, currentMonth + i, 5 + idx * 5),
         });
-      });
+      }
     }
     return arr;
   }, [currentMonth, currentYear]);
@@ -79,11 +78,11 @@ function CommunityCalendar() {
 
   const eventCache = useMemo(() => {
     const map = new Map();
-    filteredEvents.forEach(e => {
+    for (const e of filteredEvents) {
       const key = e.date.toDateString();
       if (!map.has(key)) map.set(key, []);
       map.get(key).push(e);
-    });
+    }
     return map;
   }, [filteredEvents]);
 
