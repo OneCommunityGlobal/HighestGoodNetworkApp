@@ -100,6 +100,23 @@ export const fetchAllMembers = projectId => {
   };
 };
 
+/**
+ * Call API to get members summary (lightweight, no profile pics)
+ * Used by Members component for better performance
+ */
+export const fetchMembersSummary = projectId => {
+  return async dispatch => {
+    dispatch(setMemberStart());
+    dispatch(foundUsers([])); // Clear found users
+    try {
+      const response = await axios.get(ENDPOINTS.PROJECT_MEMBER_SUMMARY(projectId));
+      dispatch(setMembers(response.data));
+    } catch (err) {
+      dispatch(setMembersError(err));
+    }
+  };
+};
+
 /*
  * Call API to find active members out of
  * the members of one project

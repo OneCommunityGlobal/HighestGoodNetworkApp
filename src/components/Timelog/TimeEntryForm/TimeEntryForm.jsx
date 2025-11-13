@@ -67,7 +67,7 @@ const customImageUploadHandler = () =>
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
- const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile, userProjects } = props;
+ const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile, userProjects, timerConnected } = props;
   // props from store
   const { authUser } = props;
   const dispatch = useDispatch();
@@ -317,6 +317,13 @@ function TimeEntryForm(props) {
   };
 
   const submitTimeEntry = async () => {
+    // Prevent submission when logging timer time but timer is disconnected
+    if (from === 'Timer' && timerConnected === false) {
+      toast.error('Cannot log time entry while timer is disconnected. Please wait for connection to be restored or refresh the page.');
+      setSubmitting(false);
+      return;
+    }
+
     const { hours: formHours, minutes: formMinutes, personId, taskId } = formValues;
     const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
@@ -351,6 +358,13 @@ function TimeEntryForm(props) {
             }),
           );
           break;
+        case 'WeekEnd':
+          // Handle week-end time log completion
+          if (props.onComplete) {
+            await props.onComplete(timeEntry);
+          }
+          clearForm();
+          break;
         case 'TimeLog': {
           const date = moment(formValues.dateOfWork);
           const today = moment().tz('America/Los_Angeles');
@@ -369,7 +383,7 @@ function TimeEntryForm(props) {
           break;
       }
 
-      if (from !== 'Timer' && !reminder.editLimitNotification) {
+      if (from !== 'Timer' && from !== 'WeekEnd' && !reminder.editLimitNotification) {
         setReminder(r => ({
           ...r,
           editLimitNotification: !r.editLimitNotification,
@@ -820,6 +834,7 @@ TimeEntryForm.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.any.isRequired,
   handleStop: PropTypes.func,
+  timerConnected: PropTypes.bool,
 };
 
 const mapStateToProps = state => ({

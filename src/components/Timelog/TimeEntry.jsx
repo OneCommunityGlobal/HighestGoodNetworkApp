@@ -3,7 +3,7 @@ import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
 import parse from 'html-react-parser';
 import moment from 'moment-timezone';
-import './Timelog.css';
+// import {styles} from './Timelog.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import hasPermission, { cantUpdateDevAdminDetails } from '~/utils/permissions';

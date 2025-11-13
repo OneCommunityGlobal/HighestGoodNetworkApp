@@ -11,9 +11,12 @@ import {
   faUserMinus,
   faSync,
   faFolder,
+  faUsers,
+  faLock,
+  faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import { ENDPOINTS } from '../../../utils/URL';
-import './AccessManagementModal.css';
+import styles from './AccessManagementModal.module.css';
 
 const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false }) => {
   const [accessData, setAccessData] = useState(null);
@@ -28,6 +31,16 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
   const [teamFolders, setTeamFolders] = useState([]);
   const [selectedTeamFolder, setSelectedTeamFolder] = useState('');
   const [teamFoldersLoading, setTeamFoldersLoading] = useState(false);
+  const [githubTeams, setGithubTeams] = useState([]);
+  const [selectedGithubTeams, setSelectedGithubTeams] = useState([]);
+  const [githubTeamsLoading, setGithubTeamsLoading] = useState(false);
+  const [detailsModal, setDetailsModal] = useState({
+    isOpen: false,
+    app: null,
+    data: null,
+    loading: false,
+    credentials: null,
+  });
 
   const targetUserId = userProfile._id;
   const role = userProfile.role;
@@ -65,6 +78,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     if (isOpen && userProfile?._id) {
       fetchAccessData();
       fetchTeamFolders();
+      fetchGithubTeams();
       setCredentialsInput({
         github: '',
         dropbox: userProfile.email || '',
@@ -79,10 +93,29 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       setTeamFolders([]);
       setSelectedTeamFolder('');
       setTeamFolderTouched(false);
+      setGithubTeams([]);
+      setSelectedGithubTeams([]);
       setInviteLoading({});
       setRevokeLoading({});
+      setDetailsModal({ isOpen: false, app: null, data: null, loading: false, credentials: null });
     }
   }, [isOpen, userProfile?._id]);
+
+  // Close details modal if app status becomes invalid
+  useEffect(() => {
+    if (detailsModal.isOpen && detailsModal.app && accessData?.data?.apps) {
+      const app = accessData.data.apps.find(a => a.app === detailsModal.app);
+      if (!app || app.status !== 'invited') {
+        setDetailsModal({
+          isOpen: false,
+          app: null,
+          data: null,
+          loading: false,
+          credentials: null,
+        });
+      }
+    }
+  }, [accessData, detailsModal.isOpen, detailsModal.app]);
 
   const fetchAccessData = async () => {
     setLoading(true);
@@ -124,17 +157,41 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     }
   };
 
+  const fetchGithubTeams = async () => {
+    setGithubTeamsLoading(true);
+    try {
+      const response = await axios.post(`${ENDPOINTS.APIEndpoint()}/github/teams`, {
+        requestor: { role: userProfile.role }
+      });
+      const teams = response.data.data || [];
+      setGithubTeams(teams);
+      
+      // Automatically select ALL default teams
+      const defaultTeams = teams.filter(team => team.isDefault);
+      if (defaultTeams.length > 0) {
+        setSelectedGithubTeams(defaultTeams);
+      }
+    } catch (error) {
+      // console.error('Error fetching GitHub teams:', error);
+      toast.error('Failed to fetch GitHub teams');
+      setGithubTeams([]);
+    } finally {
+      setGithubTeamsLoading(false);
+    }
+  };
+
+
   const getStatusIcon = status => {
     switch (status) {
       case 'invited':
-        return <FontAwesomeIcon icon={faCheckCircle} className="text-success" />;
+        return <FontAwesomeIcon icon={faCheckCircle} className={styles.textSuccess} />;
       case 'revoked':
-        return <FontAwesomeIcon icon={faTimesCircle} className="text-danger" />;
+        return <FontAwesomeIcon icon={faTimesCircle} className={styles.textDanger} />;
       case 'failed':
-        return <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" />;
+        return <FontAwesomeIcon icon={faExclamationTriangle} className={styles.textDanger} />;
       case 'none':
       default:
-        return <FontAwesomeIcon icon={faTimesCircle} className="text-muted" />;
+        return <FontAwesomeIcon icon={faTimesCircle} className={styles.textMuted} />;
     }
   };
 
@@ -148,7 +205,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
 
     const config = statusConfig[status] || statusConfig.none;
     return (
-      <Badge color={config.color} className="status-badge">
+      <Badge color={config.color} className={styles.statusBadge}>
         {config.text}
       </Badge>
     );
@@ -171,22 +228,41 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
     setInputTouched(prev => ({ ...prev, [app]: true }));
   };
 
+  // Handle GitHub team selection
+  const handleGithubTeamToggle = (team) => {
+    setSelectedGithubTeams(prev => {
+      const isSelected = prev.some(t => t.id === team.id);
+      if (isSelected) {
+        return prev.filter(t => t.id !== team.id);
+      } else {
+        return [...prev, team];
+      }
+    });
+  };
+
+
+
   // Get apps that can be invited (no access and valid credentials)
   const getInvitableApps = () => {
     return Object.keys(appConfigs).filter(appName => {
       const status = getAppStatus(appName);
       const credential = credentialsInput[appName]?.trim() || '';
-      const app = accessData?.data?.apps?.find(a => a.app === appName);
-      // Don't allow inviting if user has been revoked (has revokedOn date)
-      const hasBeenRevoked = app?.revokedOn;
 
-      // Basic validation: must have 'none' status, credential, and not been revoked
-      const basicValidation = status === 'none' && credential.length > 0 && !hasBeenRevoked;
+      // Allow invitations for users with 'none' status OR 'revoked' status (re-invitations)
+      const canInvite = status === 'none' || status === 'revoked';
+
+      // Basic validation: must be invitable status and have valid credentials
+      const basicValidation = canInvite && credential.length > 0;
 
       // Additional validation for Dropbox: must have Dropbox team folder selected
       if (appName === 'dropbox') {
         const isValidTeamFolder = teamFolders.some(folder => folder.key === selectedTeamFolder);
         return basicValidation && isValidTeamFolder;
+      }
+
+      // Additional validation for GitHub: must have at least one team selected
+      if (appName === 'github') {
+        return basicValidation && selectedGithubTeams.length > 0;
       }
 
       return basicValidation;
@@ -215,16 +291,6 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
         invitableApps.map(appName => handleInviteApp(appName)),
       );
 
-      const successCount = results.filter(result => result.status === 'fulfilled').length;
-      const failCount = results.length - successCount;
-
-      if (successCount > 0) {
-        toast.success(`Successfully invited to ${successCount} app${successCount > 1 ? 's' : ''}`);
-      }
-      if (failCount > 0) {
-        toast.error(`Failed to invite to ${failCount} app${failCount > 1 ? 's' : ''}`);
-      }
-
       await fetchAccessData(); // Refresh data
     } catch (error) {
       //console.error('Error in bulk invite:', error);
@@ -232,6 +298,62 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       toast.error(errorMessage);
     } finally {
       setActionInProgress(false);
+    }
+  };
+
+  // Fetch detailed information for a specific app
+  const fetchAppDetails = async appName => {
+    // Validate that we should fetch details for this app
+    const app = accessData?.data?.apps?.find(a => a.app === appName);
+    if (!app || app.status !== 'invited') {
+      toast.error(`Cannot view details for ${appName} - app must be invited`);
+      return;
+    }
+
+    setDetailsModal(prev => ({ ...prev, loading: true }));
+
+    try {
+      let endpoint;
+
+      switch (appName) {
+        case 'github':
+          endpoint = `${ENDPOINTS.APIEndpoint()}/github/user-details`;
+          break;
+        case 'dropbox':
+          endpoint = `${ENDPOINTS.APIEndpoint()}/dropbox/folder-details`;
+          break;
+        case 'sentry':
+          endpoint = `${ENDPOINTS.APIEndpoint()}/sentry/user-details`;
+          break;
+        default:
+          throw new Error(`Details not available for ${appName}`);
+      }
+
+      // Use POST request with targetUser in body (consistent with other API calls)
+      // Note: requestor role is automatically injected by backend middleware from JWT token
+      const response = await axios.post(endpoint, {
+        targetUser: { targetUserId },
+      });
+
+      setDetailsModal(prev => ({ ...prev, data: response.data.data, loading: false }));
+    } catch (error) {
+      //console.error(`Error fetching ${appName} details:`, error);
+      const errorMessage =
+        error.response?.data?.message || error.message || `Failed to fetch ${appName} details`;
+      toast.error(errorMessage);
+      setDetailsModal(prev => ({ ...prev, loading: false }));
+    }
+  };
+
+  // Handle toggle details
+  const handleToggleDetails = appName => {
+    if (detailsModal.app === appName && detailsModal.isOpen) {
+      // Hide details
+      setDetailsModal({ isOpen: false, app: null, data: null, loading: false, credentials: null });
+    } else {
+      // Show details
+      setDetailsModal({ isOpen: true, app: appName, data: null, loading: true, credentials: null });
+      fetchAppDetails(appName);
     }
   };
 
@@ -248,18 +370,6 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       const results = await Promise.allSettled(
         revokableApps.map(appName => handleRevokeApp(appName)),
       );
-
-      const successCount = results.filter(result => result.status === 'fulfilled').length;
-      const failCount = results.length - successCount;
-
-      if (successCount > 0) {
-        toast.success(
-          `Successfully revoked access from ${successCount} app${successCount > 1 ? 's' : ''}`,
-        );
-      }
-      if (failCount > 0) {
-        toast.error(`Failed to revoke access from ${failCount} app${failCount > 1 ? 's' : ''}`);
-      }
 
       await fetchAccessData(); // Refresh data
     } catch (error) {
@@ -289,23 +399,27 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_ADD;
-          payload = { username, targetUser: { targetUserId, role } };
+          payload = { 
+            username, 
+            targetUser: { targetUserId },
+            teamIds: selectedGithubTeams.map(team => team.id)
+          };
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_CREATE_ADD;
           payload = {
-            folderPath: `${userProfile.firstName} ${userProfile.lastName}`,
+            folderName: `${userProfile.firstName} ${userProfile.lastName}`,
             teamFolderKey: selectedTeamFolder,
-            targetUser: { targetUserId, role, email },
+            targetUser: { targetUserId, email },
           };
           break;
         case 'slack':
           endpoint = ENDPOINTS.SLACK_ADD;
-          payload = { targetUser: { targetUserId, role, email } };
+          payload = { targetUser: { targetUserId, email } };
           break;
         case 'sentry':
           endpoint = ENDPOINTS.SENTRY_ADD;
-          payload = { targetUser: { targetUserId, role, email } };
+          payload = { targetUser: { targetUserId, email } };
           break;
         default:
           throw new Error('Unknown app');
@@ -338,17 +452,17 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
       switch (appName) {
         case 'github':
           endpoint = ENDPOINTS.GITHUB_REMOVE;
-          payload = { targetUser: { targetUserId, role } };
+          payload = { targetUser: { targetUserId } };
           break;
         case 'dropbox':
           endpoint = ENDPOINTS.DROPBOX_DELETE;
           payload = {
-            targetUser: { targetUserId, role },
+            targetUser: { targetUserId },
           };
           break;
         case 'sentry':
           endpoint = ENDPOINTS.SENTRY_REMOVE;
-          payload = { targetUser: { targetUserId, role } };
+          payload = { targetUser: { targetUserId } };
           break;
         default:
           throw new Error('Unknown app');
@@ -387,16 +501,19 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
         const isValidTeamFolder = teamFolders.some(folder => folder.key === selectedTeamFolder);
         return !isValidTeamFolder;
       }
+      if (isGithub) {
+        return selectedGithubTeams.length === 0;
+      }
       return false;
     };
 
     return (
-      <div key={appName} className="app-card">
-        <div className="app-card-content">
-          <div className="app-header">
-            <div className="app-info">
+      <div key={appName} className={styles.appCard}>
+        <div className={styles.appCardContent}>
+          <div className={styles.appHeader}>
+            <div className={styles.appInfo}>
               <span
-                className="app-icon"
+                className={styles.appIcon}
                 style={{ display: 'inline-block', width: 32, height: 32, marginRight: 12 }}
               >
                 <img
@@ -406,17 +523,17 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                 />
               </span>
               <div>
-                <h6 className="app-name">{config.name}</h6>
-                <div className="status-container">
+                <h6 className={styles.appName}>{config.name}</h6>
+                <div className={styles.statusContainer}>
                   {getStatusIcon(status)}
                   {getStatusBadge(status)}
                 </div>
               </div>
             </div>
 
-            <div className="action-container">
+            <div className={styles.actionContainer}>
               {status === 'invited' && (
-                <div className="text-muted small">
+                <div className={`${styles.textMuted} ${styles.small}`}>
                   Invited: {app?.invitedOn ? new Date(app.invitedOn).toLocaleDateString() : 'N/A'}
                 </div>
               )}
@@ -425,18 +542,18 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                 <Button
                   color="danger"
                   size="sm"
-                  className="btn-action"
+                  className={styles.btnAction}
                   onClick={() => setConfirmAction({ type: 'revoke', app: appName })}
                   disabled={isRevokeLoading || isInviteLoading}
                 >
                   {isRevokeLoading ? (
                     <>
-                      <Spinner size="sm" className="mr-1" />
+                      <Spinner size="sm" className={styles.mr1} />
                       Revoking...
                     </>
                   ) : (
                     <>
-                      <FontAwesomeIcon icon={faUserMinus} className="mr-1" />
+                      <FontAwesomeIcon icon={faUserMinus} className={styles.mr1} />
                       Revoke
                     </>
                   )}
@@ -444,77 +561,163 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
               )}
 
               {(status === 'active' || status === 'invited') && appName === 'slack' && (
-                <div className="text-muted small">
-                  <FontAwesomeIcon icon={faExclamationTriangle} className="mr-1" />
+                <div className={`${styles.textMuted} ${styles.small}`}>
+                  <FontAwesomeIcon icon={faExclamationTriangle} className={styles.mr1} />
                   Manual removal required
                 </div>
               )}
 
               {status === 'revoked' && (
-                <div className="text-muted small">
+                <div className={`${styles.textMuted} ${styles.small}`}>
                   Revoked: {app?.revokedOn ? new Date(app.revokedOn).toLocaleDateString() : 'N/A'}
                 </div>
               )}
 
               {status === 'failed' && (
-                <div className="text-danger small">
+                <div className={`${styles.textDanger} ${styles.small}`}>
                   Failed: {app?.failedReason || 'Unknown error'}
                 </div>
               )}
             </div>
           </div>
 
-          {status === 'none' && !app?.revokedOn && (
-            <div className="invite-section">
-              <div className="input-group mb-2">
-                <input
-                  type="text"
-                  className="form-control uniform-input"
-                  placeholder={isGithub ? 'GitHub Username' : 'Email Address'}
-                  value={credentialValue}
-                  onChange={e => handleCredentialChange(appName, e.target.value)}
-                  onBlur={() => setInputTouched(prev => ({ ...prev, [appName]: true }))}
-                  required
-                />
-                {isDropbox && (
-                  <select
-                    className="form-control uniform-input ml-2"
-                    value={selectedTeamFolder}
-                    onChange={e => {
-                      setSelectedTeamFolder(e.target.value);
-                      setTeamFolderTouched(true);
-                    }}
-                    onBlur={() => setTeamFolderTouched(true)}
-                    disabled={teamFoldersLoading}
-                  >
-                    <option value="">
-                      {teamFoldersLoading
-                        ? 'Loading team folders...'
-                        : 'Select Dropbox Team Folder'}
-                    </option>
-                    {!teamFoldersLoading &&
-                      teamFolders.map(folder => (
-                        <option key={folder.key} value={folder.key}>
-                          {folder.name} {folder.isDefault ? '(Default)' : ''}
-                        </option>
-                      ))}
-                  </select>
-                )}
+          {(status === 'none' || status === 'revoked') && (
+            <div className={styles.inviteSection}>
+              {isDropbox && !teamFoldersLoading && selectedTeamFolder && isCredentialValid && (
+                <div className={`${styles.textInfo} ${styles.small} ${styles.mb2}`}>
+                  <FontAwesomeIcon icon={faFolder} className={styles.folderIcon} />
+                  <strong>User Folder Name:</strong> {userProfile?.firstName}{' '}
+                  {userProfile?.lastName}
+                </div>
+              )}
+
+              {/* GitHub Username Field */}
+              {isGithub && (
+                <div className={`${styles.inputGroup} ${styles.mb2}`}>
+                  <input
+                    type="text"
+                    className={`form-control ${styles.uniformInput}`}
+                    placeholder="GitHub Username"
+                    value={credentialValue}
+                    onChange={e => handleCredentialChange(appName, e.target.value)}
+                    onBlur={() => setInputTouched(prev => ({ ...prev, [appName]: true }))}
+                    required
+                  />
+                </div>
+              )}
+
+              {/* GitHub Teams and Roles Selection */}
+              {isGithub && (
+                <div className={`${styles.selectionGroup} ${styles.mb2}`}>
+                  {/* Teams Section with Enhanced UX */}
+                  <div className={`${styles.selectionRow} ${styles.mb2}`}>
+                    <label className={styles.selectionLabel}>
+                      <FontAwesomeIcon icon={faUsers} className={styles.mr1} />
+                      Teams ({selectedGithubTeams.length} selected):
+                    </label>
+                    <div className={styles.chipContainer}>
+                      {githubTeamsLoading ? (
+                        <div className={`${styles.textMuted} ${styles.small} ${styles.loadingContainer}`}>
+                          <Spinner size="sm" className={styles.mr1} />
+                          Loading teams...
+                        </div>
+                      ) : githubTeams.length === 0 ? (
+                        <div className={`${styles.textMuted} ${styles.small}`}>
+                          No teams available.
+                        </div>
+                      ) : (
+                        githubTeams.map(team => (
+                          <div key={team.id} className={styles.chipWrapper}>
+                            <button
+                              type="button"
+                              className={`${styles.chip} ${
+                                selectedGithubTeams.some(t => t.id === team.id) ? styles.chipSelected : ''
+                              }`}
+                              onClick={() => handleGithubTeamToggle(team)}
+                            >
+                              {team.name}
+                              {team.isDefault && (
+                                <span className={styles.defaultBadge}>Default</span>
+                              )}
+                              {team.privacy === 'secret' && (
+                                <FontAwesomeIcon icon={faLock} className={styles.ml2} />
+                              )}
+                            </button>
+                            {team.description && (
+                              <div className={styles.chipTooltip}>
+                                {team.description}
+                                {team.isDefault && (
+                                  <div className={styles.defaultTooltip}>
+                                    This team is selected by default
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+              {/* Other Apps Input Group */}
+              {!isGithub && (
+                <div className={`${styles.inputGroup} ${styles.mb2}`}>
+                  <input
+                    type="text"
+                    className={`form-control ${styles.uniformInput}`}
+                    placeholder="Email Address"
+                    value={credentialValue}
+                    onChange={e => handleCredentialChange(appName, e.target.value)}
+                    onBlur={() => setInputTouched(prev => ({ ...prev, [appName]: true }))}
+                    required
+                  />
+                  {isDropbox && (
+                    <select
+                      className={`form-control ${styles.uniformInput} ${styles.ml2}`}
+                      value={selectedTeamFolder}
+                      onChange={e => {
+                        setSelectedTeamFolder(e.target.value);
+                        setTeamFolderTouched(true);
+                      }}
+                      onBlur={() => setTeamFolderTouched(true)}
+                      disabled={teamFoldersLoading}
+                    >
+                      <option value="">
+                        {teamFoldersLoading
+                          ? 'Loading team folders...'
+                          : 'Select Dropbox Team Folder'}
+                      </option>
+                      {!teamFoldersLoading &&
+                        teamFolders.map(folder => (
+                          <option key={folder.key} value={folder.key}>
+                            {folder.name} {folder.isDefault ? '(Default)' : ''}
+                          </option>
+                        ))}
+                    </select>
+                  )}
+                </div>
+              )}
+
+              {/* Invite Button */}
+              <div className={`${styles.inputGroup} ${styles.mb2}`}>
                 <Button
                   color="primary"
                   size="sm"
-                  className="btn-action ml-2"
+                  className={styles.btnAction}
                   onClick={() => handleInviteApp(appName)}
                   disabled={isInviteButtonDisabled()}
                 >
                   {isInviteLoading ? (
                     <>
-                      <Spinner size="sm" className="mr-1" />
+                      <Spinner size="sm" className={styles.mr1} />
                       Inviting...
                     </>
                   ) : (
                     <>
-                      <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
+                      <FontAwesomeIcon icon={faUserPlus} className={styles.mr1} />
                       Invite
                     </>
                   )}
@@ -522,14 +725,14 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
               </div>
 
               {touched && !isCredentialValid && (
-                <div className="text-danger small">
+                <div className={`${styles.textDanger} ${styles.small}`}>
                   {isGithub ? 'GitHub username is required' : 'Email is required'}
                 </div>
               )}
 
               {isDropbox && teamFoldersLoading && (
-                <div className="text-info small mt-1">
-                  <Spinner size="sm" className="mr-1" />
+                <div className={`${styles.textInfo} ${styles.small} ${styles.mt1}`}>
+                  <Spinner size="sm" className={styles.mr1} />
                   Loading Dropbox team folders...
                 </div>
               )}
@@ -538,33 +741,132 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                 !teamFoldersLoading &&
                 (teamFolderTouched || (touched && isCredentialValid)) &&
                 !selectedTeamFolder && (
-                  <div className="text-danger small">
+                  <div className={`${styles.textDanger} ${styles.small}`}>
                     {teamFolders.length === 0
                       ? 'No team folders available. Please try refreshing the page.'
                       : 'Please select a Dropbox team folder'}
                   </div>
                 )}
 
-              {isDropbox && !teamFoldersLoading && selectedTeamFolder && isCredentialValid && (
-                <div className="text-info small mt-2">
-                  <FontAwesomeIcon icon={faFolder} className="mr-1" />
-                  <strong>User folder name to be created:</strong> {userProfile?.firstName}{' '}
-                  {userProfile?.lastName}
-                </div>
-              )}
+              {isGithub &&
+                !githubTeamsLoading &&
+                (touched && isCredentialValid) &&
+                selectedGithubTeams.length === 0 && (
+                  <div className={`${styles.textDanger} ${styles.small}`}>
+                    {githubTeams.length === 0
+                      ? 'No teams available. Please try refreshing the page.'
+                      : 'Please select at least one GitHub team'}
+                  </div>
+                )}
             </div>
           )}
 
-          {status === 'none' && app?.revokedOn && (
-            <div className="text-muted small">
-              <FontAwesomeIcon icon={faTimesCircle} className="mr-1" />
-              Access previously revoked
+          {status === 'revoked' && (
+            <div className={`${styles.textWarning} ${styles.small} ${styles.mb1} ${styles.mt3}`}>
+              <FontAwesomeIcon icon={faTimesCircle} className={styles.mr1} />
+              Access previously revoked on{' '}
+              {app?.revokedOn ? new Date(app.revokedOn).toLocaleDateString() : 'N/A'}. You can
+              re-invite this user.
             </div>
           )}
 
           {app?.credentials && (
-            <div className="credentials">
-              <strong>Credentials:</strong> {app.credentials}
+            <div
+              className={`${styles.credentials} ${styles.dFlex} ${styles.justifyContentBetween} ${styles.alignItemsCenter}`}
+            >
+              <div>
+                <strong className={darkMode ? 'text-light' : 'text-dark'}>
+                  {(() => {
+                    if (status === 'revoked') {
+                      switch (appName) {
+                        case 'github':
+                          return 'GitHub Username (Revoked):';
+                        case 'sentry':
+                          return 'Email (Revoked):';
+                        case 'dropbox':
+                          return 'Folder ID (Revoked):';
+                        case 'slack':
+                          return 'Email (Revoked):';
+                        default:
+                          return 'Credentials (Revoked):';
+                      }
+                    } else {
+                      switch (appName) {
+                        case 'github':
+                          return 'GitHub Username:';
+                        case 'sentry':
+                          return 'Email:';
+                        case 'dropbox':
+                          return 'Folder ID:';
+                        case 'slack':
+                          return 'Email:';
+                        default:
+                          return 'Credentials:';
+                      }
+                    }
+                  })()}
+                </strong>{' '}
+                <span className={darkMode ? 'text-light' : 'text-dark'}>{app.credentials}</span>
+              </div>
+              {status === 'invited' && appName !== 'slack' && (
+                <Button
+                  color="info"
+                  size="sm"
+                  className={`${styles.btnDetails} ${styles.ml2}`}
+                  onClick={() => handleToggleDetails(appName)}
+                  title={`View ${appConfigs[appName].name} details`}
+                >
+                  {detailsModal.app === appName && detailsModal.isOpen ? 'Hide' : 'Show'} Details
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Inline Details Section - Only show for invited status */}
+          {detailsModal.app === appName && detailsModal.isOpen && status === 'invited' && (
+            <div className={`${styles.appDetailsSection} ${styles.mt2}`}>
+              {detailsModal.loading ? (
+                <div className={`${styles.textCenter} ${styles.py2}`}>
+                  <Spinner size="sm" color="primary" className={styles.mr2} />
+                  Loading details...
+                </div>
+              ) : detailsModal.data ? (
+                <div className={styles.detailsContent}>
+                  <h6 className={`${styles.detailsTitle} ${styles.mb2}`}>
+                    <FontAwesomeIcon icon={faInfoCircle} className={styles.mr2} />
+                    {appConfigs[appName].name} Details
+                  </h6>
+                  <div className={styles.detailsList}>
+                    {Object.entries(detailsModal.data).map(([key, value]) => (
+                      <div key={key} className={`${styles.detailRow} ${styles.mb1}`}>
+                        <span className={styles.detailKey}>{key}:</span>
+                        <span className={styles.detailValue}>
+                          {value === null || value === undefined || value === ''
+                            ? 'N/A'
+                            : typeof value === 'object'
+                            ? JSON.stringify(value, null, 2)
+                            : String(value)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className={`${styles.detailsActions} ${styles.mt2}`}>
+                    <Button
+                      size="sm"
+                      color="primary"
+                      outline
+                      onClick={() => fetchAppDetails(appName)}
+                    >
+                      <FontAwesomeIcon icon={faSync} className={styles.mr1} />
+                      Refresh
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className={`${styles.textCenter} ${styles.py3} ${styles.textMuted}`}>
+                  No details available
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -595,7 +897,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
           isOpen={!!confirmAction}
           toggle={() => setConfirmAction(null)}
           size="md"
-          className={darkMode ? 'text-light dark-mode' : ''}
+          className={darkMode ? `text-light ${styles.darkMode}` : ''}
         >
           <ModalHeader
             toggle={() => setConfirmAction(null)}
@@ -604,8 +906,11 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
             Confirm Invite All Access
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <div className="d-flex align-items-center mb-3">
-              <FontAwesomeIcon icon={faUserPlus} className="mr-2 text-success" />
+            <div className={`${styles.dFlex} ${styles.alignItemsCenter} ${styles.mb3}`}>
+              <FontAwesomeIcon
+                icon={faUserPlus}
+                className={`${styles.mr2} ${styles.textSuccess}`}
+              />
               <span>
                 Are you sure you want to invite{' '}
                 <strong>
@@ -616,21 +921,27 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
             </div>
             <div className="alert alert-info">
               <strong>Apps to be invited:</strong>
-              <ul className="mb-0 mt-2">
+              <ul className={`${styles.mb0} ${styles.mt2}`}>
                 {invitableApps.map(appName => (
                   <li key={appName}>
                     <strong>{appConfigs[appName].name}</strong> -{' '}
                     {appName === 'github' ? 'Username' : 'Email'}: {credentialsInput[appName]}
                     {appName === 'dropbox' && selectedTeamFolder && (
-                      <div className="text-info small mt-1">
-                        <FontAwesomeIcon icon={faFolder} className="mr-1" />
+                      <div className={`${styles.textInfo} ${styles.small} ${styles.mt1}`}>
+                        <FontAwesomeIcon icon={faFolder} className={styles.folderIcon} />
                         <strong>Team folder:</strong>{' '}
                         {teamFolders.find(f => f.key === selectedTeamFolder)?.name ||
                           selectedTeamFolder}
                         <br />
-                        <FontAwesomeIcon icon={faFolder} className="mr-1" />
+                        <FontAwesomeIcon icon={faFolder} className={styles.folderIcon} />
                         <strong>User folder:</strong> {userProfile?.firstName}{' '}
                         {userProfile?.lastName}
+                      </div>
+                    )}
+                    {appName === 'github' && selectedGithubTeams.length > 0 && (
+                      <div className={`${styles.textInfo} ${styles.small} ${styles.mt1}`}>
+                        <FontAwesomeIcon icon={faUsers} className={styles.mr1} />
+                        <strong>Teams:</strong> {selectedGithubTeams.map(t => t.name).join(', ')}
                       </div>
                     )}
                   </li>
@@ -649,7 +960,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
             >
               {actionInProgress ? (
                 <>
-                  <Spinner size="sm" className="mr-2" />
+                  <Spinner size="sm" className={styles.mr2} />
                   Inviting All...
                 </>
               ) : (
@@ -675,7 +986,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
           isOpen={!!confirmAction}
           toggle={() => setConfirmAction(null)}
           size="md"
-          className={darkMode ? 'text-light dark-mode' : ''}
+          className={darkMode ? `text-light ${styles.darkMode}` : ''}
         >
           <ModalHeader
             toggle={() => setConfirmAction(null)}
@@ -691,7 +1002,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
             </div>
             <div className="alert alert-info">
               <strong>Apps to be revoked:</strong>
-              <ul className="mb-0 mt-2">
+              <ul className={`${styles.mb0} ${styles.mt2}`}>
                 {revokableApps.map(appName => (
                   <li key={appName}>
                     <strong>{appConfigs[appName].name}</strong>
@@ -711,7 +1022,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
             >
               {actionInProgress ? (
                 <>
-                  <Spinner size="sm" className="mr-2" />
+                  <Spinner size="sm" className={styles.mr2} />
                   Revoking All...
                 </>
               ) : (
@@ -738,7 +1049,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
         isOpen={!!confirmAction}
         toggle={() => setConfirmAction(null)}
         size="md"
-        className={darkMode ? 'text-light dark-mode' : ''}
+        className={darkMode ? `text-light ${styles.darkMode}` : ''}
       >
         <ModalHeader
           toggle={() => setConfirmAction(null)}
@@ -772,7 +1083,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
           >
             {actionInProgress ? (
               <>
-                <Spinner size="sm" className="mr-2" />
+                <Spinner size="sm" className={styles.mr2} />
                 {type === 'revoke' ? 'Revoking...' : 'Inviting...'}
               </>
             ) : type === 'revoke' ? (
@@ -810,61 +1121,65 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
         isOpen={isOpen}
         toggle={onClose}
         size="lg"
-        className={`access-management-modal ${darkMode ? 'text-light dark-mode' : ''}`}
+        className={`${styles.accessManagementModal} ${
+          darkMode ? `text-light ${styles.darkMode}` : ''
+        }`}
       >
         <ModalHeader toggle={onClose} className={darkMode ? 'bg-space-cadet' : ''}>
-          <div className="d-flex align-items-center">
-            <FontAwesomeIcon icon={faSync} className="mr-2" />
+          <div className={`${styles.dFlex} ${styles.alignItemsCenter}`}>
+            <FontAwesomeIcon icon={faSync} className={styles.mr2} />
             Access Management
           </div>
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {loading ? (
-            <div className="loading-container">
+            <div className={styles.loadingContainer}>
               <Spinner color="primary" />
-              <div className="mt-2">Loading access information...</div>
+              <div className={styles.mt2}>Loading access information...</div>
             </div>
           ) : (
             <div>
-              <div className="user-info">
+              <div className={styles.userInfo}>
                 <h6>
                   Managing access for:{' '}
                   <strong>
                     {userProfile?.firstName} {userProfile?.lastName}
                   </strong>
                 </h6>
-                <p className="text-muted mb-0">Email: {userProfile?.email}</p>
+                <p className={`${styles.textMuted} ${styles.mb0}`}>Email: {userProfile?.email}</p>
               </div>
 
-              <div className="mb-3">
+              <div className={styles.mb3}>
                 <h6>Application Access Status</h6>
-                <p className="text-muted small">
+                <p className={`${styles.textMuted} ${styles.small}`}>
                   {accessData?.found
                     ? 'User has access records. Manage their permissions below.'
                     : 'No access records found. You can invite this user to applications.'}
                 </p>
               </div>
 
-              <div className="apps-container">{Object.keys(appConfigs).map(renderAppCard)}</div>
+              <div className={styles.appsContainer}>
+                {Object.keys(appConfigs).map(renderAppCard)}
+              </div>
 
               {/* Bulk Action Buttons */}
-              <div className="d-flex mb-3">
+              <div className={`${styles.dFlex} ${styles.mb3}`}>
                 {invitableApps.length > 0 && (
                   <Button
                     color="success"
                     size="sm"
                     onClick={() => setConfirmAction({ type: 'invite-all', app: null })}
                     disabled={actionInProgress || anyAppLoading}
-                    className="mr-3"
+                    className={styles.mr3}
                   >
                     {actionInProgress ? (
                       <>
-                        <Spinner size="sm" className="mr-1" />
+                        <Spinner size="sm" className={styles.mr1} />
                         Inviting All...
                       </>
                     ) : (
                       <>
-                        <FontAwesomeIcon icon={faUserPlus} className="mr-1" />
+                        <FontAwesomeIcon icon={faUserPlus} className={styles.mr1} />
                         Invite All ({invitableApps.length})
                       </>
                     )}
@@ -879,12 +1194,12 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
                   >
                     {actionInProgress ? (
                       <>
-                        <Spinner size="sm" className="mr-1" />
+                        <Spinner size="sm" className={styles.mr1} />
                         Revoking All...
                       </>
                     ) : (
                       <>
-                        <FontAwesomeIcon icon={faUserMinus} className="mr-1" />
+                        <FontAwesomeIcon icon={faUserMinus} className={styles.mr1} />
                         Revoke All ({revokableApps.length})
                       </>
                     )}
@@ -904,7 +1219,7 @@ const AccessManagementModal = ({ isOpen, onClose, userProfile, darkMode = false 
               onClick={fetchAccessData}
               disabled={loading || anyAppLoading}
             >
-              <FontAwesomeIcon icon={faSync} className="mr-1" />
+              <FontAwesomeIcon icon={faSync} className={styles.mr1} />
               Refresh
             </Button>
           )}
