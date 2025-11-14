@@ -717,26 +717,34 @@ const BasicInformationTab = props => {
         {canEditRole ? (
           <FormGroup>
             <select
-              value={userProfile.role}
-              onChange={e => {
-                setUserProfile({
-                  ...userProfile,
-                  role: e.target.value,
-                  permissions: { ...userProfile.permissions, frontPermissions: [] },
-                });
-              }}
               id="role"
               name="role"
               className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
+              value={userProfile.role || ''}   // make sure this is a string
+              onChange={e => {
+                const newRole = e.target.value;
+                setUserProfile({
+                  ...userProfile,
+                  role: newRole,
+                  permissions: { ...userProfile.permissions, frontPermissions: [] },
+                });
+              }}
             >
-              {roles.map(( roleName ) => {
-                if (roleName === 'Owner') return;
-                return (
-                  <option key={roleName} value={roleName}>
-                    {roleName}
-                  </option>
-                );
-              })}
+              {/* Optional placeholder when no role selected */}
+              {!userProfile.role && <option value="">Select role</option>}
+  
+              {(roles || [])
+                .map(r => (typeof r === 'string' ? r : r.roleName)) // normalize
+                .filter(Boolean)
+                .map(roleName => {
+                  if (roleName === 'Owner') return null; // skip Owner in this list
+                  return (
+                    <option key={roleName} value={roleName}>
+                      {roleName}
+                    </option>
+                  );
+                })}
+  
               {canAddDeleteEditOwners && (
                 <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
                   Owner
@@ -750,7 +758,7 @@ const BasicInformationTab = props => {
       </Col>
       {desktopDisplay ? (
         <Col md="1">
-          <div style={{ marginTop: topMargin, }}>
+          <div style={{ marginTop: topMargin }}>
             <EditableInfoModal
               role={role}
               areaName={'roleInfo'}
@@ -765,6 +773,7 @@ const BasicInformationTab = props => {
       )}
     </>
   );
+  
 
   const locationComponent = (
     <>
