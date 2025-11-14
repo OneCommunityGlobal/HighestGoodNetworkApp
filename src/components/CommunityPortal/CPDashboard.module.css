@@ -1,0 +1,201 @@
+/* CSS Variables for consistent spacing and alignment */
+:root {
+  --filter-spacing: 16px;
+  --filter-item-margin: 20px;
+  --filter-label-margin-bottom: 8px;
+  --filter-option-spacing: 12px;
+  --filter-indent: 20px;
+}
+
+.dashboardContainer {
+  padding: 40px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.dashboardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: linear-gradient(120deg, #ffffff, #f8f9fa);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dashboardHeader h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.dashboardSearchContainer input {
+  border: 2px solid #2c3e50;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 600px;
+  transition: all 0.3s ease;
+}
+
+.dashboardSearchContainer input:focus {
+  border-color: #34495e;
+  box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
+  outline: none;
+}
+
+.dashboardSidebar {
+  padding: 30px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filterSection h4 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* Base styles for filter items */
+.filterItem {
+  margin-bottom: var(--filter-item-margin);
+}
+
+/* Base styles for filter labels */
+.filterItem label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: var(--filter-label-margin-bottom);
+}
+
+/* Structure for horizontal filter options (radio buttons) */
+.filterOptionsHorizontal {
+  display: flex;
+  gap: var(--filter-option-spacing);
+  margin-bottom: 10px;
+}
+
+.filterOptionsHorizontal > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Base styles for radio buttons and checkboxes */
+.filterItem input[type="radio"],
+.filterItem input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+  width: auto;
+  cursor: pointer;
+}
+
+.filterItem input[type="radio"] + label,
+.filterItem input[type="checkbox"] + label {
+  margin: 0;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.filterItem input,
+.filterItem select {
+  padding: 12px 15px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.filterItem input:focus,
+.filterItem select:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  outline: none;
+}
+
+.dashboardMain {
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.eventCard {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.eventCard:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.eventCardImgContainer img {
+  width: 100%;
+  height: auto;
+  border-bottom: 3px solid #34495e;
+}
+
+.eventTitle {
+  text-align: center;
+  color: #2c3e50;
+  margin: 10px 0;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.eventDate,
+.eventLocation,
+.eventOrganizer {
+  font-size: 1rem;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+}
+
+.dashboardActions {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.dashboardActions button {
+  background-color: #2c3e50;
+  color: #ffffff;
+  border: none;
+  padding: 12px 25px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.dashboardActions button:hover {
+  background-color: #34495e;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
