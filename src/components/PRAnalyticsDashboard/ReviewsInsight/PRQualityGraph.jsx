@@ -54,12 +54,10 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
       //   enabled: true,
       // },
       tooltip: {
-        displayColors: false, // optional, keeps it clean
+        displayColors: false,
         callbacks: {
-          // Top line: "<slice>: <value>"
           title: items =>
             items && items[0] ? `${items[0].label}: ${items[0].formattedValue}` : '',
-          // Second line: dataset label (series title)
           label: ctx => ctx?.dataset?.label || '',
         },
       },
