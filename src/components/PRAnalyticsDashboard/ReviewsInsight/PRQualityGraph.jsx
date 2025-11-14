@@ -1,7 +1,7 @@
 import { Pie } from 'react-chartjs-2';
 import styles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
-import Chart from 'chart.js/auto';
+import { Chart } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(ChartDataLabels);
