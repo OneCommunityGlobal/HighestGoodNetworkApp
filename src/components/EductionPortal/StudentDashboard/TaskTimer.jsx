@@ -7,6 +7,7 @@ import StopRoundedIcon from "@mui/icons-material/StopRounded";
 import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
+import AccessAlarmRoundedIcon from "@mui/icons-material/AccessAlarmRounded";
 
 const BASE_URL =
   (import.meta.env.VITE_API_BASE_URL &&
@@ -23,7 +24,6 @@ export default function TaskTimer() {
   const [timerInfo, setTimerInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
   const [displayRemaining, setDisplayRemaining] = useState(null);
 
   const token =
@@ -82,8 +82,6 @@ export default function TaskTimer() {
         options.body = JSON.stringify(body);
       }
 
-      console.log("Timer request:", method, url);
-
       const response = await fetch(url, options);
 
       const contentType = response.headers.get("content-type") || "";
@@ -106,7 +104,6 @@ export default function TaskTimer() {
 
       return data;
     } catch (err) {
-      console.error("Timer API error:", err);
       setError(err.message);
       throw err;
     } finally {
@@ -190,9 +187,11 @@ export default function TaskTimer() {
 
   const currentStatus = timerInfo?.status || "idle";
   const isActive = currentStatus === "running" || currentStatus === "paused";
-  const isIdleLike = !isActive; 
+  const isIdleLike = !isActive;
 
-  let dispH, dispM, dispS;
+  let dispH;
+  let dispM;
+  let dispS;
 
   if (isActive && displayRemaining != null) {
     const { h, m, s } = msToHMS(displayRemaining);
@@ -214,17 +213,87 @@ export default function TaskTimer() {
 
   const primaryLabel = currentStatus === "running" ? "Pause" : "Start";
 
+  const totalMs =
+    timerInfo?.durationMs ||
+    ((hours * 60 + minutes) * 60 * 1000 || 0);
+
+  let elapsedMs = 0;
+  if (timerInfo?.elapsedMs) {
+    elapsedMs = timerInfo.elapsedMs;
+  } else if (totalMs && displayRemaining != null) {
+    elapsedMs = Math.max(0, totalMs - displayRemaining);
+  }
+
+  let remainingMs = displayRemaining ?? 0;
+  if (!remainingMs && totalMs && elapsedMs) {
+    remainingMs = Math.max(0, totalMs - elapsedMs);
+  }
+
+  const goalHMS = msToHMS(totalMs || 0);
+  const elapsedHMS = msToHMS(elapsedMs || 0);
+  const remainingHMS = msToHMS(remainingMs || 0);
+
+  let progressPct = 0;
+  if (totalMs) {
+    const frac = elapsedMs / totalMs;
+    progressPct = Math.max(0, Math.min(100, frac * 100));
+  }
+
+  const radius = 90;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset =
+    circumference - (circumference * progressPct) / 100;
+
   return (
     <>
-      <button className={styles.timerBtn} onClick={() => setOpen(true)}>
-        Timer
-      </button>
+      <div className={styles.compactWrapper}>
+        <button
+          className={styles.compactIconBtn}
+          onClick={() => setOpen(true)}
+          aria-label="Open timer"
+        >
+          <AccessAlarmRoundedIcon fontSize="small" />
+        </button>
+
+        <div className={styles.compactBody}>
+          <div className={styles.progressBar}>
+            <div
+              className={styles.progressFill}
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+
+          <div className={styles.compactBottomRow}>
+            <div className={styles.timeLabel}>
+              {dispH}:{dispM}:{dispS}
+            </div>
+            <div className={styles.compactControls}>
+              <button
+                className={styles.compactCtrlBtn}
+                onClick={handleTogglePlay}
+                disabled={loading}
+                title={primaryLabel}
+              >
+                {primaryIcon}
+              </button>
+              <button
+                className={styles.compactCtrlBtn}
+                onClick={handleStop}
+                disabled={loading || !isActive}
+                title="Stop"
+              >
+                <StopRoundedIcon fontSize="small" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {open && (
         <div className={styles.backdrop} onClick={() => setOpen(false)}>
           <div className={styles.card} onClick={(e) => e.stopPropagation()}>
             <div className={styles.cardHeader}>
-              <span>Enter time</span>
+              <span className={styles.headerTitle}>Timer</span>
               <button
                 className={styles.iconGhost}
                 onClick={() => setOpen(false)}
@@ -234,8 +303,90 @@ export default function TaskTimer() {
               </button>
             </div>
 
+            <div className={styles.circleWrapper}>
+              <div className={styles.goalText}>
+                Goal:{" "}
+                {pad2(goalHMS.h)}:{pad2(goalHMS.m)}:{pad2(goalHMS.s)}
+              </div>
+              <div className={styles.elapsedText}>
+                Elapsed:{" "}
+                {pad2(elapsedHMS.h)}:{pad2(elapsedHMS.m)}:
+                {pad2(elapsedHMS.s)}
+              </div>
+
+              <div className={styles.circleOuter}>
+                <svg
+                  className={styles.circleSvg}
+                  viewBox="0 0 220 220"
+                >
+                  <circle
+                    className={styles.circleTrack}
+                    cx="110"
+                    cy="110"
+                    r={radius}
+                  />
+                  <circle
+                    className={styles.circleProgress}
+                    cx="110"
+                    cy="110"
+                    r={radius}
+                    strokeDasharray={circumference}
+                    strokeDashoffset={strokeDashoffset}
+                  />
+                </svg>
+
+                <div className={styles.circleInner}>
+                  <div className={styles.remainingWrapper}>
+                    <div className={styles.remainingLabel}>
+                      Time Remaining
+                    </div>
+                    <div className={styles.remainingTime}>
+                      {pad2(remainingHMS.m)}:{pad2(remainingHMS.s)}
+                    </div>
+                    <div className={styles.remainingUnitRow}>
+                      <span>MINUTES</span>
+                      <span>SECONDS</span>
+                    </div>
+                  </div>
+
+                  <div className={styles.circleControls}>
+                    <button
+                      className={styles.circleCtrlBtn}
+                      onClick={handleTogglePlay}
+                      disabled={loading}
+                      title={primaryLabel}
+                    >
+                      {primaryIcon}
+                    </button>
+                    <button
+                      className={styles.circleCtrlBtn}
+                      onClick={handleStop}
+                      disabled={loading || !isActive}
+                      title="Stop"
+                    >
+                      <StopRoundedIcon />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.quickRow}>
+              <button className={styles.quickBtn} disabled>
+                -15 m
+              </button>
+              <button className={styles.quickBtn} disabled>
+                +15 m
+              </button>
+              <button className={styles.quickBtn} disabled>
+                +30 m
+              </button>
+              <button className={styles.quickBtn} disabled>
+                +1 h
+              </button>
+            </div>
+
             <div className={styles.timeGrid}>
-              {/* Hours */}
               <div className={styles.slot}>
                 <button
                   className={styles.stepBtn}
@@ -248,7 +399,7 @@ export default function TaskTimer() {
 
                 <input
                   className={styles.digitBox}
-                  value={dispH}
+                  value={pad2(hours)}
                   onChange={isIdleLike ? onHoursChange : undefined}
                   readOnly={!isIdleLike}
                   inputMode="numeric"
@@ -267,7 +418,6 @@ export default function TaskTimer() {
 
               <div className={styles.colon}>:</div>
 
-              {/* Minutes */}
               <div className={styles.slot}>
                 <button
                   className={styles.stepBtn}
@@ -280,7 +430,7 @@ export default function TaskTimer() {
 
                 <input
                   className={styles.digitBox}
-                  value={dispM}
+                  value={pad2(minutes)}
                   onChange={isIdleLike ? onMinutesChange : undefined}
                   readOnly={!isIdleLike}
                   inputMode="numeric"
@@ -318,28 +468,6 @@ export default function TaskTimer() {
             )}
 
             <div className={styles.footer}>
-              <div className={styles.controls}>
-                {/* TOGGLE Start / Pause */}
-                <button
-                  className={styles.ctrlBtn}
-                  onClick={handleTogglePlay}
-                  disabled={loading}
-                  title={primaryLabel}
-                >
-                  {primaryIcon}
-                </button>
-
-                {/* STOP */}
-                <button
-                  className={styles.ctrlBtn}
-                  onClick={handleStop}
-                  disabled={loading || !isActive}
-                  title="Stop"
-                >
-                  <StopRoundedIcon fontSize="small" />
-                </button>
-              </div>
-
               <button className={styles.okBtn} onClick={() => setOpen(false)}>
                 OK
               </button>
