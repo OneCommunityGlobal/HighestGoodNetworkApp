@@ -62,6 +62,7 @@ import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember'
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
+import LessonPlan from './components/BMDashboard/LessonPlan/LessonPlan';
 import AnalyticsDashboard from './components/JobCCDashboard/JobAnalytics/JobAnalytics';
 
 import FaqSearch from './components/Faq/FaqSearch';
@@ -712,6 +713,12 @@ export default (
           fallback
           exact
           component={ToolsAvailabilityPage}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/student/build-lesson-plan"
+          fallback
+          exact
+          component={LessonPlan}
         />
         {/* PR Analytics Dashboard */}
         <Route path="/pull-request-analytics/reviews-insight" component={ReviewsInsight} />
