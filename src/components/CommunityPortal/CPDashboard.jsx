@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
-import './CPDashboard.css';
+import styles from './CPDashboard.module.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
 
 export function CPDashboard() {
@@ -41,11 +41,11 @@ export function CPDashboard() {
   }, []);
 
   return (
-    <Container fluid className="dashboard-container">
-      <header className="dashboard-header">
+    <Container fluid className={styles.dashboardContainer}>
+      <header className={styles.dashboardHeader}>
         <h1>All Events</h1>
         <div className="dashboard-controls">
-          <div className="dashboard-search-container">
+          <div className={styles.dashboardSearchContainer}>
             <Input
               type="search"
               placeholder="Search events..."
@@ -69,12 +69,12 @@ export function CPDashboard() {
       </header>
 
       <Row>
-        <Col md={3} className="dashboard-sidebar">
-          <div className="filter-section">
+        <Col md={3} className={styles.dashboardSidebar}>
+          <div className={styles.filterSection}>
             <h4>Search Filters</h4>
-            <div className="filter-item">
+            <div className={styles.filterItem}>
               <label htmlFor="date-tomorrow"> Dates</label>
-              <div className="filter-options-horizontal">
+              <div className={styles.filterOptionsHorizontal}>
                 <div>
                   <Input type="radio" name="dates" /> Tomorrow
                 </div>
@@ -84,25 +84,25 @@ export function CPDashboard() {
               </div>
               <Input type="date" placeholder="Ending After" className="date-filter" min={today} />
             </div>
-            <div className="filter-item">
+            <div className={styles.filterItem}>
               <label htmlFor="online-only">Online</label>
               <div>
                 <Input type="checkbox" /> Online Only
               </div>
             </div>
-            <div className="filter-item">
+            <div className={styles.filterItem}>
               <label htmlFor="branches">Branches</label>
               <Input type="select">
                 <option>Select branches</option>
               </Input>
             </div>
-            <div className="filter-item">
+            <div className={styles.filterItem}>
               <label htmlFor="themes">Themes</label>
               <Input type="select">
                 <option>Select themes</option>
               </Input>
             </div>
-            <div className="filter-item">
+            <div className={styles.filterItem}>
               <label htmlFor="categories">Categories</label>
               <Input type="select">
                 <option>Select categories</option>
@@ -111,25 +111,25 @@ export function CPDashboard() {
           </div>
         </Col>
 
-        <Col md={9} className="dashboard-main">
-          <h2 className="section-title">Events</h2>
+        <Col md={9} className={styles.dashboardMain}>
+          <h2 className={styles.sectionTitle}>Events</h2>
           <Row>
             {events.length > 0 ? (
               events.map(event => (
                 <Col md={4} key={event.id} className="event-card-col">
-                  <Card className="event-card">
-                    <div className="event-card-img-container">
+                  <Card className={styles.eventCard}>
+                    <div className={styles.eventCardImgContainer}>
                       <img src={event.image} alt={event.title} className="event-card-img" />
                     </div>
                     <CardBody>
-                      <h5 className="event-title">{event.title}</h5>
-                      <p className="event-date">
+                      <h5 className={styles.eventTitle}>{event.title}</h5>
+                      <p className={styles.eventDate}>
                         <FaCalendarAlt className="event-icon" /> {event.date}
                       </p>
-                      <p className="event-location">
+                      <p className={styles.eventLocation}>
                         <FaMapMarkerAlt className="event-icon" /> {event.location}
                       </p>
-                      <p className="event-organizer">
+                      <p className={styles.eventOrganizer}>
                         <FaUserAlt className="event-icon" /> {event.organizer}
                       </p>
                     </CardBody>
@@ -140,7 +140,7 @@ export function CPDashboard() {
               <div className="no-events">No events available</div>
             )}
           </Row>
-          <div className="dashboard-actions">
+          <div className={styles.dashboardActions}>
             <Button color="primary">Show Past Events</Button>
           </div>
         </Col>
