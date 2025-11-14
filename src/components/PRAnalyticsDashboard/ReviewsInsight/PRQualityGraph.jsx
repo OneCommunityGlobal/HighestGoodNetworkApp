@@ -50,8 +50,18 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
           color: !darkMode ? '#333' : '#fff',
         },
       },
+      // tooltip: {
+      //   enabled: true,
+      // },
       tooltip: {
-        enabled: true,
+        displayColors: false, // optional, keeps it clean
+        callbacks: {
+          // Top line: "<slice>: <value>"
+          title: items =>
+            items && items[0] ? `${items[0].label}: ${items[0].formattedValue}` : '',
+          // Second line: dataset label (series title)
+          label: ctx => ctx?.dataset?.label || '',
+        },
       },
     },
   };
