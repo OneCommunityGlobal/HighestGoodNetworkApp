@@ -40,6 +40,9 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
 
   const options = {
     responsive: true,
+    interaction: {
+      mode: 'dataset',
+    },
     plugins: {
       legend: {
         position: 'bottom',
@@ -52,6 +55,14 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
       },
       tooltip: {
         enabled: true,
+        callbacks: {
+          title: () => '',
+          label: tooltipItem => {
+            const label = tooltipItem.label || '';
+            const value = tooltipItem.raw || 0;
+            return `${label}: ${value}`;
+          },
+        },
       },
     },
   };
@@ -65,7 +76,7 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
             <div className={styles['ri-chart-header']}>
               <h3>{team}</h3>
               <span className={styles['ri-team-member-count']}>
-                {qualityData[team].memberCount}
+                {qualityData[team]?.memberCount ?? 0}
               </span>
             </div>
             <Pie data={generateChartData(team)} options={options} />
