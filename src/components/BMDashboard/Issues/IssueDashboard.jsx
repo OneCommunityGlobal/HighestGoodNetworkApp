@@ -7,7 +7,7 @@ import {
   FiCopy,
   FiEdit,
 } from 'react-icons/fi';
-import './IssueDashboard.css';
+import styles from './IssueDashboard.module.css';
 import { Col, Row, Table } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -110,7 +110,7 @@ export default function IssueDashboard() {
         </Col>
       </Row>
 
-      <div className="issues-table-responsive">
+      <div className={styles.issuesTableResponsive}>
         <Table hover className={`mb-0 ${darkMode ? 'table-dark' : ''}`}>
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
@@ -138,12 +138,18 @@ export default function IssueDashboard() {
                   <td className="fw-medium">{issue.name}</td>
                   <td>{openSince}</td>
                   <td>
-                    <span className="badge bg-info text-dark">{category}</span>
+                    <span className={`badge ${darkMode ? 'bg-info-dark' : 'bg-info text-dark'}`}>
+                      {category}
+                    </span>
                   </td>
                   <td>{assignedTo}</td>
                   <td>{cost}</td>
                   <td className="text-end position-relative">
-                    <div className={`issue-dashboard-dropdown  ${darkMode ? 'bg-oxide-blue' : ''}`}>
+                    <div
+                      className={`${styles.issueDashboardDropdown} ${
+                        darkMode ? styles.issueDashboardDropdownDark : ''
+                      }`}
+                    >
                       <button
                         type="button"
                         aria-label="Actions menu"
@@ -155,7 +161,9 @@ export default function IssueDashboard() {
 
                       {menuOpen === issue._id && (
                         <div
-                          className={`issue-dashboard-dropdown-menu show action-menu${
+                          className={`issue-dashboard-dropdown-menu show ${styles.actionMenu} ${
+                            darkMode ? styles.actionMenuDark : ''
+                          } ${
                             currentItems.indexOf(issue) === currentItems.length - 1
                               ? ' last-row-menu'
                               : ''
@@ -163,7 +171,9 @@ export default function IssueDashboard() {
                         >
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={`${styles.issueDashboardDropdownItem} ${
+                              darkMode ? styles.issueDashboardDropdownItemDark : ''
+                            }`}
                             onClick={() => {
                               openRenameModal(issue);
                               setMenuOpen(null);
@@ -174,7 +184,9 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item"
+                            className={`${styles.issueDashboardDropdownItem} ${
+                              darkMode ? styles.issueDashboardDropdownItemDark : ''
+                            }`}
                             onClick={() => {
                               openCopyModal(issue);
                               setMenuOpen(null);
@@ -185,7 +197,9 @@ export default function IssueDashboard() {
                           </button>
                           <button
                             type="button"
-                            className="issue-dashboard-dropdown-item text-danger"
+                            className={`${styles.issueDashboardDropdownItem} text-danger ${
+                              darkMode ? styles.issueDashboardDropdownItemDark : ''
+                            }`}
                             onClick={() => {
                               openDeleteModal(issue);
                               setMenuOpen(null);
@@ -275,7 +289,11 @@ export default function IssueDashboard() {
 
       {/* Rename Modal */}
       {showRenameModal && (
-        <div className="issues-modal-backdrop">
+        <div
+          className={`${styles.issuesModalBackdrop} ${
+            darkMode ? styles.issuesModalBackdropDark : ''
+          }`}
+        >
           <div className={`modal-dialog `}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Rename Issue</h5>
@@ -310,7 +328,11 @@ export default function IssueDashboard() {
 
       {/* Delete Modal */}
       {showDeleteModal && (
-        <div className="issues-modal-backdrop">
+        <div
+          className={`${styles.issuesModalBackdrop} ${
+            darkMode ? styles.issuesModalBackdropDark : ''
+          }`}
+        >
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Delete</h5>
@@ -342,7 +364,11 @@ export default function IssueDashboard() {
 
       {/* Copy Modal */}
       {showCopyModal && (
-        <div className="issues-modal-backdrop">
+        <div
+          className={`${styles.issuesModalBackdrop} ${
+            darkMode ? styles.issuesModalBackdropDark : ''
+          }`}
+        >
           <div className={`modal-dialog ${darkMode ? 'bg-dark text-light' : ''}`}>
             <div className={`modal-content p-3 ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
               <h5>Confirm Copy</h5>

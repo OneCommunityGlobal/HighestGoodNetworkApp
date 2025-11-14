@@ -1,17 +1,17 @@
-.issue-header-container {
+.issueHeaderContainer {
   display: flex;
   flex-direction: column;
   width: 100%;
   background-color: white;
 }
-.issue-header-container-dark{
+.issueHeaderContainerDark{
   display:flex;
   flex-direction: column;
   width: 100%;
   background-color: #3D444D;
 }
 
-.top-row {
+.topRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -19,25 +19,25 @@
   border-bottom: 1px solid #E0E0E0;
   padding: 14px 20px;
 }
-/* .top-row-dark{
+
+.topRowDark {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 12px;
-  border-bottom: 1px solid #E0E0E0;
+  border-bottom: 1px solid #5a6b88;
   padding: 14px 20px;
-  background-color: ;
+  background-color: #3D444D;
+}
 
-} */
-
-.title-section {
+.titleSection {
   display: flex;
   align-items: center;
   color: #1C1E1C;
    font-size: 36px;
   font-weight: 600;
 }
-.title-section-dark {
+.titleSectionDark {
   display: flex;
   align-items: center;
   color: #ffffff;
@@ -53,28 +53,22 @@
   color:#000000
 
 }
-.section-dark {
+.sectionDark {
  font-size: 36px;
   font-weight: 600;
   margin: 0;
   color:#E0E0E0
 
 }
-/* .title-section h1 {
-  font-size: 36px;
-  font-weight: 600;
-  margin: 0;
- 
-} */
 
-.action-section {
+.actionSection {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-right: 50px;
 }
 
-.more-button {
+.moreButton {
   background: none;
   border: none;
   cursor: pointer;
@@ -84,9 +78,23 @@
   align-items: center;
   background-color: #EEEEEE;
   border-radius: 8px;
+  transition: background-color 0.2s;
 }
 
-.back-button {
+.moreButton:hover {
+  background-color: #E0E0E0;
+}
+
+.moreButtonDark {
+  background-color: #5a6b88;
+  color: #ffffff;
+}
+
+.moreButtonDark:hover {
+  background-color: #6a7b98;
+}
+
+.backButton {
   background-color: #000;
   color: white;
   border: none;
@@ -95,6 +103,20 @@
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background-color: #333;
+}
+
+.backButtonDark {
+  background-color: #5a6b88;
+  color: #ffffff;
+}
+
+.backButtonDark:hover {
+  background-color: #6a7b98;
 }
 
 .avatar {
@@ -102,23 +124,32 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: 10px
+  transition: opacity 0.2s;
+}
+
+.avatar:hover {
+  opacity: 0.8;
+}
+
+.avatar::after {
+  display: none !important;
 }
 
 .avatar img {
   width: 32px;
   height: 32px;
   object-fit: cover;
+  border-radius: 50%;
 }
 
-.bottom-row {
+.bottomRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
 }
 
-.project-tab {
+.projectTab {
   display: inline-flex;
   background-color: #F3F4F6;  
   border-radius: 8px;    
@@ -126,7 +157,12 @@
   padding: 6px;
 }
 
-.project-tab .tab-item {
+.projectTabDark {
+  background-color: #2a3441;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.tabItem {
   border: none;
   background: transparent;
   padding: 6px 12px;
@@ -135,20 +171,41 @@
   cursor: pointer;
   transition: background 0.2s;
   border-radius: 4px;
+  color: #1C1E1C;
 }
 
-.project-tab .tab-item.active {
+.projectTab .tabItem:global(.active) {
   background-color: #FFFFFF; 
+  color: #1C1E1C;
 }
 
-.project-tab .tab-item:not(.active):hover {
+.projectTab .tabItem:not(:global(.active)):hover {
   background-color: #E5E7EB; 
 }
-.search-container {
-  position: relative;
+
+.tabItemDark {
+  color: #cfd7e3 !important;
 }
 
-.search-icon {
+.projectTabDark .tabItemDark:global(.active) {
+  background-color: #3D444D;
+  color: #ffffff !important;
+}
+
+.projectTabDark .tabItemDark:not(:global(.active)):hover {
+  background-color: #4a5568;
+}
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; 
+  width: 220px;             
+  margin-left: auto;         
+}
+
+
+.searchIcon {
   position: absolute;
   left: 10px;
   top: 50%;
@@ -156,25 +213,51 @@
   color: #828282;
   display: flex;
   align-items: center;
+  z-index: 1;
+  pointer-events: none;
 }
 
-.search-input {
-  padding: 8px 16px 8px 35px;
+.searchIconDark {
+  color: #cfd7e3;
+}
+
+.searchInput {
+  padding: 8px 12px 8px 32px;
   border: 1px solid #E0E0E0;
   border-radius: 8px;
   font-size: 16px;
-  width: 405px;
+  width: 100%;
+  box-sizing: border-box;
   background-color: #FFFFFF;
-  color:#828282;
+  color: #1C1E1C;
+  transition: border-color 0.2s;
 }
 
-.search-input:focus {
+.searchInput::placeholder {
+  color: #828282;
+}
+
+.searchInput:focus {
   outline: none;
   border-color: #b9b9b9;
 }
 
+.searchInputDark {
+  background-color: #2a3441;
+  border-color: #5a6b88;
+  color: #cfd7e3;
+}
+
+.searchInputDark::placeholder {
+  color: #aab1bf;
+}
+
+.searchInputDark:focus {
+  border-color: #6a7b98;
+}
+
 /* Search results styles - beautiful dropdown */
-.search-results {
+.searchResults {
   position: absolute;
   top: 100%;
   left: 0;
@@ -189,17 +272,23 @@
   animation: fadeIn 0.2s ease-in-out;
 }
 
+.searchResultsDark {
+  background-color: #2a3441;
+  border-color: #5a6b88;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-5px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.search-results-list {
+.searchResultsList {
   max-height: 300px;
   overflow-y: auto;
 }
 
-.search-result-item {
+.searchResultItem {
   padding: 12px 16px;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
@@ -208,30 +297,51 @@
   flex-direction: column;
 }
 
-.search-result-item:last-child {
+.searchResultItem:last-child {
   border-bottom: none;
 }
 
-.search-result-item:hover {
+.searchResultItem:hover {
   background-color: #f0f7ff;
 }
 
-.result-name {
+.searchResultItemDark {
+  border-bottom-color: #5a6b88;
+}
+
+.searchResultItemDark:hover {
+  background-color: #3D444D;
+}
+
+.resultName {
   font-size: 14px;
   font-weight: 500;
   color: #333333;
   margin-bottom: 2px;
 }
 
-.result-category {
+.resultNameDark {
+  color: #cfd7e3;
+}
+
+.resultCategory {
   font-size: 12px;
   color: #757575;
 }
 
-.search-no-results {
+.resultCategoryDark {
+  color: #aab1bf;
+}
+
+.searchNoResults {
   padding: 16px;
   text-align: center;
   color: #757575;
   font-style: italic;
   font-size: 14px;
 }
+
+.searchNoResultsDark {
+  color: #aab1bf;
+}
+
