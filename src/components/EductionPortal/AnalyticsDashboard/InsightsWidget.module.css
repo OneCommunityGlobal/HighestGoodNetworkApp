@@ -1,0 +1,243 @@
+.insightsContainer {
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.metricCard {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.metricCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.metricLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.metricValue {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.unit {
+  font-size: 20px;
+  margin-left: 4px;
+}
+
+.metricTrend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.metricTrend.positive {
+  color: #28a745;
+}
+
+.metricTrend.negative {
+  color: #dc3545;
+}
+
+.trendIcon {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.trendValue {
+  margin: 0 4px;
+}
+
+.trendLabel {
+  font-size: 12px;
+  font-weight: 400;
+  color: #888;
+  margin-left: 4px;
+}
+
+/* Top Performers Section */
+.topPerformersSection,
+.topSubjectsSection {
+  margin-top: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 16px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 12px;
+}
+
+.performersList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.performerItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+.performerItem:last-child {
+  border-bottom: none;
+}
+
+.rank {
+  font-weight: 700;
+  color: #007bff;
+  min-width: 40px;
+}
+
+.name {
+  flex: 1;
+  margin-left: 12px;
+  color: #1a1a1a;
+}
+
+.score {
+  font-weight: 600;
+  color: #28a745;
+  min-width: 60px;
+  text-align: right;
+}
+
+/* Top Subjects Section */
+.subjectsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.subjectItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.subjectItem:last-child {
+  border-bottom: none;
+}
+
+.subjectName {
+  flex: 0 0 150px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-size: 14px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  transition: width 0.3s ease;
+}
+
+.percentage {
+  flex: 0 0 50px;
+  text-align: right;
+  font-weight: 600;
+  color: #28a745;
+  font-size: 14px;
+}
+
+/* Loading & Error States */
+.loading,
+.error {
+  padding: 24px;
+  text-align: center;
+  font-size: 14px;
+  border-radius: 8px;
+  background: #f8f9fa;
+}
+
+.error {
+  color: #dc3545;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+
+.loading {
+  color: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .insightsContainer {
+    padding: 16px;
+  }
+
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .metricValue {
+    font-size: 24px;
+  }
+
+  .performerItem,
+  .subjectItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .subjectName {
+    flex: 1 0 auto;
+  }
+
+  .percentage {
+    flex: 1 0 auto;
+  }
+}

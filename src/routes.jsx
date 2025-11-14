@@ -161,6 +161,7 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+import InsightWidget from './components/EductionPortal/AnalyticsDashboard/InsightsWidget';
 
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
@@ -776,6 +777,7 @@ export default (
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
+        <Route path="/educationportal/InsightWidget" component={InsightWidget} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
