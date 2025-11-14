@@ -261,22 +261,34 @@ export function Header(props) {
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                       {canAccessUserManagement ? (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/communityportal/usermanagement"
+                          className={fontColor}
+                        >
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       ) : null}
                       {canAccessBadgeManagement ? (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/communityportal/badgemanagement"
+                          className={fontColor}
+                        >
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       ) : null}
                       {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/communityportal/projects"
+                          className={fontColor}
+                        >
                           {PROJECTS}
                         </DropdownItem>
                       )}
                       {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                        <DropdownItem tag={Link} to="/communityportal/teams" className={fontColor}>
                           {TEAMS}
                         </DropdownItem>
                       )}
@@ -290,7 +302,7 @@ export function Header(props) {
                           <DropdownItem divider />
                           <DropdownItem
                             tag={Link}
-                            to="/permissionsmanagement"
+                            to="/communityportal/permissionsmanagement"
                             className={fontColor}
                           >
                             {PERMISSIONS_MANAGEMENT}

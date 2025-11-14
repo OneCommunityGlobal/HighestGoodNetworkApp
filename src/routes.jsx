@@ -750,6 +750,60 @@ export default (
           exact
           component={Register}
         />
+        {/* http://localhost:5173/communityportal/usermanagement  */}
+        <CPProtectedRoute
+          path="/communityportal/usermanagement"
+          exact
+          component={UserManagement}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.userManagement}
+        />
+        {/* http://localhost:5173/communityportal/badgemanagement */}
+        <CPProtectedRoute
+          path="/communityportal/badgemanagement"
+          exact
+          component={BadgeManagement}
+          fallback
+          routePermissions={RoutePermissions.badgeManagement}
+        />
+        {/* http://localhost:5173/communityportal/projects */}
+        <CPProtectedRoute
+          path="/communityportal/projects"
+          exact
+          component={Projects}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
+          routePermissions={RoutePermissions.projects}
+        />
+        {/* http://localhost:5173/communityportal/teams */}
+        <CPProtectedRoute
+          path="/communityportal/teams"
+          exact
+          component={Teams}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.teams}
+        />
+        {/* http://localhost:5173/communityportal/permissionsmanagement */}
+        <CPProtectedRoute
+          path="/communityportal/permissionsmanagement"
+          exact
+          component={PermissionsManagement}
+          fallback
+          routePermissions={[
+            ...RoutePermissions.permissionsManagement,
+            ...RoutePermissions.userPermissionsManagement,
+          ].flat()}
+        />
+        {/* http://localhost:5173/communityportal/pr-dashboard/overview */}
+        {/* http://localhost:5173/communityportal/announcements */}
+        {/* <CPProtectedRoute
+          path="/communityportal/announcements"
+          exact
+          component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        /> */}
         {/* Listing and Bidding Routes */}
         <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
         <LBProtectedRoute path="/lbdashboard/listOverview/:id" exact component={ListOveriew} />
