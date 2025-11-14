@@ -79,7 +79,7 @@ function Badge(props) {
     );
 
     return (
-      <>
+      <div data-testid="total_badges">
         <div style={{ fontWeight: 'bold' }}>{'Bravo! '}</div>
         {'You earned '}
         <span
@@ -94,7 +94,7 @@ function Badge(props) {
         {totalBadges === 1 ? 'badge' : 'badges total'}
         {personalMaxText}
         {'!'}
-      </>
+      </div>
     );
   };
 
