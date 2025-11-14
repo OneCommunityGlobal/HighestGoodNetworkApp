@@ -4,6 +4,11 @@
   border-bottom-width: 1px;
 }
 
+.issuesTableResponsive:global(.bg-oxford-blue) :global(.text-end),
+.issuesTableResponsive:global(.bg-oxford-blue) :global(th) {
+  color: #ffffff !important;
+}
+
 /* Improved positioning for the action menu */
 .actionMenu {
   position: absolute;
@@ -21,9 +26,9 @@
 }
 
 .actionMenuDark {
-  background-color: #3D444D;
-  border-color: #5a6b88;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.4);
+  background-color: #1c2541;
+  border-color: #3a506b;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
 }
 
 .issueDashboardDropdownItem {
@@ -44,11 +49,11 @@
 }
 
 .issueDashboardDropdownItemDark {
-  color: #cfd7e3;
+  color: #ffffff;
 }
 
 .issueDashboardDropdownItemDark:hover {
-  background-color: #4a5568;
+  background-color: #2f4157;
 }
 
 .issueDashboardDropdownItemDark.textDanger {
@@ -56,7 +61,7 @@
 }
 
 .issueDashboardDropdownItemDark.textDanger:hover {
-  background-color: #4a5568;
+  background-color: #2f4157;
   color: #ff8787;
 }
 
@@ -68,7 +73,7 @@
 
 .badge :global(.bg-info-dark) {
   background-color: #3a506b !important;
-  color: #cfd7e3 !important;
+  color: #ffffff !important;
   font-weight: 500;
 }
 
@@ -90,7 +95,7 @@
 }
 
 .issueDashboardDropdownDark :global(.btn-link) {
-  color: #cfd7e3;
+  color: #ffffff;
 }
 
 .issueDashboardDropdownDark :global(.btn-link:hover) {
@@ -166,33 +171,33 @@
 }
 
 .issuesModalBackdropDark :global(.modal-content) {
-  background-color: #3D444D;
-  color: #cfd7e3;
-  border: 1px solid #5a6b88;
+  background-color: #1c2541;
+  color: #ffffff;
+  border: 1px solid #3a506b;
 }
 
 .issuesModalBackdropDark :global(.modal-content input) {
-  background-color: #2a3441;
-  border-color: #5a6b88;
-  color: #cfd7e3;
+  background-color: #1b2a41;
+  border-color: #3a506b;
+  color: #ffffff;
 }
 
 .issuesModalBackdropDark :global(.modal-content input::placeholder) {
-  color: #aab1bf;
+  color: #b5bac5;
 }
 
 .issuesModalBackdropDark :global(.modal-content input:focus) {
-  background-color: #2a3441;
-  border-color: #6a7b98;
-  color: #cfd7e3;
+  background-color: #1b2a41;
+  border-color: #4a5f7a;
+  color: #ffffff;
 }
 
 .issuesModalBackdropDark :global(.modal-content h5) {
-  color: #cfd7e3;
+  color: #ffffff;
 }
 
 .issuesModalBackdropDark :global(.modal-content p) {
-  color: #cfd7e3;
+  color: #ffffff;
 }
 
 .issuesModalBackdropDark :global(.modal-content strong) {
@@ -200,18 +205,18 @@
 }
 
 :global(.table-dark thead tr:hover) {
-  background-color: #3D444D;
+  background-color: #1b2a41;
 }
 
 :global(.table-dark thead tr th) {
-  color: #f8f9fa;
+  color: #ffffff;
 }
 
 :global(.table-dark tbody tr) {
-  color: #cfd7e3;
+  color: #ffffff;
 }
 
 :global(.table-dark tbody tr:hover) {
-  background-color: #4a5568;
+  background-color: #2f4157;
 }
 

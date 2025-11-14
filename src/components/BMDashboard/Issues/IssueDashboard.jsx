@@ -20,7 +20,7 @@ import IssueHeader from './IssueHeader';
 
 export default function IssueDashboard() {
   const dispatch = useDispatch();
-  const issues = useSelector(state => state.bmIssues.issues || []);
+  const issues = useSelector(state => state.bmIssues?.issues || []);
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -106,20 +106,20 @@ export default function IssueDashboard() {
       </div>
       <Row className="mb-3">
         <Col>
-          <h4 className="fw-semibold">Issue Dashboard</h4>
+          <h4 className={`fw-semibold ${darkMode ? 'text-light' : ''}`}>Issue Dashboard</h4>
         </Col>
       </Row>
 
-      <div className={styles.issuesTableResponsive}>
+      <div className={`${styles.issuesTableResponsive} ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Table hover className={`mb-0 ${darkMode ? 'table-dark' : ''}`}>
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
-              <th className="text-end">Issue Name </th>
-              <th className="text-end">Open since</th>
-              <th className="text-end">Category</th>
-              <th className="text-end">Person dealing</th>
-              <th className="text-end">Cost due to Issue</th>
-              <th className="text-end">Actions</th>
+              <th className={`text-end ${darkMode ? 'text-light' : ''}`}>Issue Name </th>
+              <th className={`text-end ${darkMode ? 'text-light' : ''}`}>Open since</th>
+              <th className={`text-end ${darkMode ? 'text-light' : ''}`}>Category</th>
+              <th className={`text-end ${darkMode ? 'text-light' : ''}`}>Person dealing</th>
+              <th className={`text-end ${darkMode ? 'text-light' : ''}`}>Cost due to Issue</th>
+              <th className={`text-end ${darkMode ? 'text-light' : ''}`}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -135,15 +135,15 @@ export default function IssueDashboard() {
 
               return (
                 <tr key={issue._id}>
-                  <td className="fw-medium">{issue.name}</td>
-                  <td>{openSince}</td>
+                  <td className={`fw-medium ${darkMode ? 'text-light' : ''}`}>{issue.name}</td>
+                  <td className={darkMode ? 'text-light' : ''}>{openSince}</td>
                   <td>
                     <span className={`badge ${darkMode ? 'bg-info-dark' : 'bg-info text-dark'}`}>
                       {category}
                     </span>
                   </td>
-                  <td>{assignedTo}</td>
-                  <td>{cost}</td>
+                  <td className={darkMode ? 'text-light' : ''}>{assignedTo}</td>
+                  <td className={darkMode ? 'text-light' : ''}>{cost}</td>
                   <td className="text-end position-relative">
                     <div
                       className={`${styles.issueDashboardDropdown} ${
@@ -218,7 +218,10 @@ export default function IssueDashboard() {
 
             {issues.length === 0 && (
               <tr>
-                <td colSpan="6" className="text-center py-4 text-muted">
+                <td
+                  colSpan="6"
+                  className={`text-center py-4 ${darkMode ? 'text-light' : 'text-muted'}`}
+                >
                   No issues found. Create one to get started.
                 </td>
               </tr>
@@ -229,10 +232,10 @@ export default function IssueDashboard() {
 
       <div
         className={`card-footer d-flex justify-content-between align-items-center ${
-          darkMode ? 'bg-dark text-light' : 'bg-light text-muted'
+          darkMode ? 'bg-space-cadet text-light' : 'bg-light text-muted'
         }`}
       >
-        <div className="small">
+        <div className={`small ${darkMode ? 'text-light' : ''}`}>
           Showing {currentItems.length} of {issues.length} issues
         </div>
         <nav aria-label="Issue pagination">

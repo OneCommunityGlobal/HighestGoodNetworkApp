@@ -41,9 +41,11 @@ export function IssueHeader(props) {
     dispatch(fetchBMProjects());
   }, [dispatch]);
 
-  const filteredProjects = searchTerm
-    ? projects.filter(project => project.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : projects;
+  const filteredProjects = isSearchFocused
+    ? searchTerm
+      ? projects.filter(project => project.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      : projects
+    : [];
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -147,7 +149,7 @@ export function IssueHeader(props) {
         </div>
       </div>
 
-      <div className={`${styles.bottomRow} ${darkMode ? 'bg-oxide-blue' : ''}`}>
+      <div className={darkMode ? styles.bottomRowDark : styles.bottomRow}>
         <div className={darkMode ? styles.projectTabDark : styles.projectTab}>
           <button
             type="button"
@@ -171,7 +173,7 @@ export function IssueHeader(props) {
 
         <div className={styles.searchContainer} ref={searchRef}>
           <div className={darkMode ? styles.searchIconDark : styles.searchIcon}>
-            <Search size={20} color={darkMode ? '#cfd7e3' : '#828282'} />
+            <Search size={20} color={darkMode ? '#ffffff' : '#828282'} />
           </div>
           <input
             type="text"
