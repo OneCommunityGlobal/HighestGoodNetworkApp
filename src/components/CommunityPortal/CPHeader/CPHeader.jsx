@@ -293,7 +293,11 @@ export function Header(props) {
                         </DropdownItem>
                       )}
                       {canAccessSendEmails && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
+                        <DropdownItem
+                          tag={Link}
+                          to="/communityportal/announcements"
+                          className={fontColor}
+                        >
                           {SEND_EMAILS}
                         </DropdownItem>
                       )}
