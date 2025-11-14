@@ -82,9 +82,22 @@
   display: flex;
   gap: var(--filter-option-spacing);
   margin-bottom: 10px;
+  margin-left: var(--filter-indent);
 }
 
 .filterOptionsHorizontal > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Container for checkbox options to match radio button alignment */
+.filterCheckboxContainer {
+  margin-left: var(--filter-indent);
+  margin-bottom: 10px;
+}
+
+.filterCheckboxContainer > div {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -97,6 +110,7 @@
   padding: 0;
   width: auto;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .filterItem input[type="radio"] + label,
@@ -104,21 +118,23 @@
   margin: 0;
   font-weight: 400;
   cursor: pointer;
+  user-select: none;
 }
 
-.filterItem input,
+.filterItem input[type="date"],
 .filterItem select {
   padding: 12px 15px;
   margin-top: 10px;
+  margin-left: var(--filter-indent);
   border: 1px solid #ddd;
   border-radius: 8px;
-  width: 100%;
+  width: calc(100% - var(--filter-indent));
   font-size: 1rem;
   background: #ffffff;
   transition: all 0.3s ease;
 }
 
-.filterItem input:focus,
+.filterItem input[type="date"]:focus,
 .filterItem select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
@@ -199,4 +215,3 @@
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-

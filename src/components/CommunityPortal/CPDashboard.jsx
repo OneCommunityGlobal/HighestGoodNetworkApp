@@ -73,18 +73,22 @@ export function CPDashboard() {
               <label htmlFor="date-tomorrow"> Dates</label>
               <div className={styles.filterOptionsHorizontal}>
                 <div>
-                  <Input type="radio" name="dates" /> Tomorrow
+                  <Input type="radio" name="dates" id="date-tomorrow" />{' '}
+                  <label htmlFor="date-tomorrow">Tomorrow</label>
                 </div>
                 <div>
-                  <Input type="radio" name="dates" /> This Weekend
+                  <Input type="radio" name="dates" id="date-weekend" />{' '}
+                  <label htmlFor="date-weekend">This Weekend</label>
                 </div>
               </div>
               <Input type="date" placeholder="Ending After" className="date-filter" />
             </div>
             <div className={styles.filterItem}>
               <label htmlFor="online-only">Online</label>
-              <div>
-                <Input type="checkbox" /> Online Only
+              <div className={styles.filterCheckboxContainer}>
+                <div>
+                  <Input type="checkbox" id="online-only" /> Online Only
+                </div>
               </div>
             </div>
             <div className={styles.filterItem}>
