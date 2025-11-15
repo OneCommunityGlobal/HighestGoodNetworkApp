@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '~': resolve('src/'),
+        __tests__: resolve('src/__tests__'),
       },
     },
     // https://stackoverflow.com/a/77824845
@@ -25,5 +26,10 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
     },
     plugins: [react()],
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: './src/setupTests.js',
+    },
   };
 });
