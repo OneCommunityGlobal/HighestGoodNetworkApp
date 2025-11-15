@@ -1,6 +1,13 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Check if dependencies are installed
+if [ ! -d "node_modules" ] || [ ! -f "node_modules/.bin/vitest" ]; then
+  echo "⚠️  Dependencies not installed. Skipping pre-push checks."
+  echo "💡 Run 'npm install' to enable pre-push test and lint checks."
+  exit 0
+fi
+
 echo "🧪 Running tests before push..."
 npm run test -- --bail=1
 test_status=$?
