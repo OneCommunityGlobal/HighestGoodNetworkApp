@@ -1,11 +1,12 @@
 // src/components/SupportPortal/SupportLogViewer.jsx
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styles from './SupportLogViewer.module.css';
 import axios from 'axios';
 
-export default function SupportLogViewer() {
-  const { studentId } = useParams();
+export default function SupportLogViewer({ match }) {
+  const { studentId } = match.params; // ← get :studentId from route props
+
   const [studentName, setStudentName] = useState('');
   const [entries, setEntries] = useState([]);
   const [error, setError] = useState('');
@@ -19,7 +20,6 @@ export default function SupportLogViewer() {
       try {
         const token = localStorage.getItem('supportAuthToken');
 
-        // TODO: adjust these endpoints to the real API
         const [studentRes, logRes] = await Promise.all([
           axios.get(`/api/support/students/${studentId}`, {
             headers: token ? { Authorization: `Bearer ${token}` } : undefined,
@@ -30,7 +30,11 @@ export default function SupportLogViewer() {
         ]);
 
         setStudentName(studentRes.data?.name || 'Student');
-        setEntries(logRes.data || []);
+
+        const raw = logRes.data;
+        const list = Array.isArray(raw) ? raw : Array.isArray(raw?.entries) ? raw.entries : [];
+
+        setEntries(list);
       } catch (err) {
         console.error(err);
         if (err.response?.status === 401 || err.response?.status === 403) {

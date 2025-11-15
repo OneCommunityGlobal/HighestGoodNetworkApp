@@ -810,11 +810,11 @@ export default (
           exact
           component={PromotionEligibility}
         />
-        <Route path="*" component={NotFoundPage} />
         {/* /*  for support team*/}
-        <Route path="/support/login" element={<SupportLogin />} />
-        <Route path="/support/dashboard" element={<SupportDashboard />} />
-        <Route path="/support/log/:studentId" element={<SupportLogViewer />} />
+        <Route path="/support/login" component={SupportLogin} />
+        <Route path="/support/dashboard" component={SupportDashboard} />
+        <Route path="/support/log/:studentId" component={SupportLogViewer} />
+        <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
   </Switch>

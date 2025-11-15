@@ -1,31 +1,3 @@
-// // src/components/SupportPortal/SupportDashboard.jsx
-// import React, { useEffect, useState } from 'react';
-// import styles from './SupportDashboard.module.css';
-// import { Link } from 'react-router-dom';
-
-// export default function SupportDashboard() {
-//   const [students, setStudents] = useState([]);
-
-//   useEffect(() => {
-//     fetch('/api/students?assignedTo=supportUserId')
-//       .then(res => res.json())
-//       .then(data => setStudents(data));
-//   }, []);
-
-//   return (
-//     <div className={styles.container}>
-//       <h1>Support Dashboard</h1>
-//       <ul>
-//         {students.map(s => (
-//           <li key={s.id}>
-//             <Link to={`/support/log/${s.id}`}>{s.name}</Link>
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// }
-
 // src/components/SupportPortal/SupportDashboard.jsx
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -45,24 +17,24 @@ export default function SupportDashboard() {
       setError('');
 
       try {
-        // Token example: adjust to your real auth
         const token = localStorage.getItem('supportAuthToken');
 
-        const res = await axios.get(
-          '/api/support/students', // TODO: adjust to real endpoint
-          {
-            headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-          },
-        );
+        const res = await axios.get('/api/support/students', {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
 
-        const list = res.data || [];
+        const raw = res.data;
+
+        // Make sure we always end up with an array
+        const list = Array.isArray(raw) ? raw : Array.isArray(raw?.students) ? raw.students : [];
+
+        console.log('Support students:', list);
         setStudents(list);
         setFilteredStudents(list);
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching support students:', err);
 
         if (err.response?.status === 401 || err.response?.status === 403) {
-          // Requirement: Access denied banner if unauthorized
           setError('Access denied. You are not authorized to view this dashboard.');
         } else {
           setError('Unable to load students. Please try again later.');
@@ -81,7 +53,7 @@ export default function SupportDashboard() {
       setFilteredStudents(students);
       return;
     }
-    setFilteredStudents(students.filter(s => (s.name || '').toLowerCase().includes(query)));
+    setFilteredStudents((students || []).filter(s => (s.name || '').toLowerCase().includes(query)));
   }, [search, students]);
 
   return (
@@ -97,7 +69,7 @@ export default function SupportDashboard() {
         />
       </header>
 
-      {error && <div className={styles.errorBanner}>{error}</div>}
+      {error && <div className={styles.emptyState}>{error}</div>}
 
       {isLoading ? (
         <div className={styles.emptyState}>Loading students…</div>
