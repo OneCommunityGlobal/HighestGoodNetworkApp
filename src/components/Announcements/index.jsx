@@ -16,6 +16,7 @@ import {
 import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-icons';
 import ReactTooltip from 'react-tooltip';
 import EmailPanel from './platforms/email';
+import MyspaceAutoPoster from './platforms/myspace';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -165,11 +166,15 @@ function Announcements({ title, email: initialEmail }) {
             'slashdot',
             'blogger',
             'truthsocial',
-          ].map(platform => (
-            <TabPane tabId={platform} key={platform}>
-              <SocialMediaComposer platform={platform} />
-            </TabPane>
-          ))}
+          ].map(platform => {
+            const PlatformComposer =
+              platform === 'myspace' ? MyspaceAutoPoster : SocialMediaComposer;
+            return (
+              <TabPane tabId={platform} key={platform}>
+                <PlatformComposer platform={platform} />
+              </TabPane>
+            );
+          })}
         </TabContent>
       </div>
     </div>
