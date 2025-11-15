@@ -36,7 +36,7 @@ export const peopleTasksPieChartViewData = (state) => {
     e => (e.personId ?? e.userId) === userId
   );
 
-  const completedUserEntries = allUserEntries.filter(e => e.isActive === false);
+  const completedUserEntries = allUserEntries.filter(e => e.isActive === true);
 
   const projectHours = {};
   allUserEntries.forEach(entry => {
