@@ -138,6 +138,15 @@ export default function TaskTimer() {
     } catch (_) {}
   };
 
+  const adjustTimer = async (deltaMinutes) => {
+    try {
+      const res = await callTimerApi("/api/student/timer/adjust", "POST", {
+        deltaMinutes,
+      });
+      setTimerInfo(res.data);
+    } catch (_) {}
+  };
+
   const fetchStatus = async () => {
     try {
       const res = await callTimerApi("/api/student/timer/status", "GET");
@@ -187,7 +196,10 @@ export default function TaskTimer() {
 
   const currentStatus = timerInfo?.status || "idle";
   const isActive = currentStatus === "running" || currentStatus === "paused";
-  const isIdleLike = !isActive;
+  const isEditable =
+    !timerInfo ||
+    currentStatus === "idle" ||
+    currentStatus === "stopped";
 
   let dispH;
   let dispM;
@@ -305,12 +317,10 @@ export default function TaskTimer() {
 
             <div className={styles.circleWrapper}>
               <div className={styles.goalText}>
-                Goal:{" "}
-                {pad2(goalHMS.h)}:{pad2(goalHMS.m)}:{pad2(goalHMS.s)}
+                Goal: {pad2(goalHMS.h)}:{pad2(goalHMS.m)}:{pad2(goalHMS.s)}
               </div>
               <div className={styles.elapsedText}>
-                Elapsed:{" "}
-                {pad2(elapsedHMS.h)}:{pad2(elapsedHMS.m)}:
+                Elapsed: {pad2(elapsedHMS.h)}:{pad2(elapsedHMS.m)}:
                 {pad2(elapsedHMS.s)}
               </div>
 
@@ -341,9 +351,11 @@ export default function TaskTimer() {
                       Time Remaining
                     </div>
                     <div className={styles.remainingTime}>
-                      {pad2(remainingHMS.m)}:{pad2(remainingHMS.s)}
+                      {pad2(remainingHMS.h)}:{pad2(remainingHMS.m)}:
+                      {pad2(remainingHMS.s)}
                     </div>
                     <div className={styles.remainingUnitRow}>
+                      <span>HOURS</span>
                       <span>MINUTES</span>
                       <span>SECONDS</span>
                     </div>
@@ -372,16 +384,32 @@ export default function TaskTimer() {
             </div>
 
             <div className={styles.quickRow}>
-              <button className={styles.quickBtn} disabled>
+              <button
+                className={styles.quickBtn}
+                onClick={() => adjustTimer(-15)}
+                disabled={loading || !isActive}
+              >
                 -15 m
               </button>
-              <button className={styles.quickBtn} disabled>
+              <button
+                className={styles.quickBtn}
+                onClick={() => adjustTimer(15)}
+                disabled={loading || !isActive}
+              >
                 +15 m
               </button>
-              <button className={styles.quickBtn} disabled>
+              <button
+                className={styles.quickBtn}
+                onClick={() => adjustTimer(30)}
+                disabled={loading || !isActive}
+              >
                 +30 m
               </button>
-              <button className={styles.quickBtn} disabled>
+              <button
+                className={styles.quickBtn}
+                onClick={() => adjustTimer(60)}
+                disabled={loading || !isActive}
+              >
                 +1 h
               </button>
             </div>
@@ -392,7 +420,7 @@ export default function TaskTimer() {
                   className={styles.stepBtn}
                   onClick={incH}
                   aria-label="Increase hours"
-                  disabled={!isIdleLike}
+                  disabled={!isEditable}
                 >
                   <KeyboardArrowUpRoundedIcon fontSize="small" />
                 </button>
@@ -400,8 +428,8 @@ export default function TaskTimer() {
                 <input
                   className={styles.digitBox}
                   value={pad2(hours)}
-                  onChange={isIdleLike ? onHoursChange : undefined}
-                  readOnly={!isIdleLike}
+                  onChange={isEditable ? onHoursChange : undefined}
+                  readOnly={!isEditable}
                   inputMode="numeric"
                   aria-label="Hours"
                 />
@@ -410,7 +438,7 @@ export default function TaskTimer() {
                   className={styles.stepBtn}
                   onClick={decH}
                   aria-label="Decrease hours"
-                  disabled={!isIdleLike}
+                  disabled={!isEditable}
                 >
                   <KeyboardArrowDownRoundedIcon fontSize="small" />
                 </button>
@@ -423,7 +451,7 @@ export default function TaskTimer() {
                   className={styles.stepBtn}
                   onClick={incM}
                   aria-label="Increase minutes"
-                  disabled={!isIdleLike}
+                  disabled={!isEditable}
                 >
                   <KeyboardArrowUpRoundedIcon fontSize="small" />
                 </button>
@@ -431,8 +459,8 @@ export default function TaskTimer() {
                 <input
                   className={styles.digitBox}
                   value={pad2(minutes)}
-                  onChange={isIdleLike ? onMinutesChange : undefined}
-                  readOnly={!isIdleLike}
+                  onChange={isEditable ? onMinutesChange : undefined}
+                  readOnly={!isEditable}
                   inputMode="numeric"
                   aria-label="Minutes"
                 />
@@ -441,7 +469,7 @@ export default function TaskTimer() {
                   className={styles.stepBtn}
                   onClick={decM}
                   aria-label="Decrease minutes"
-                  disabled={!isIdleLike}
+                  disabled={!isEditable}
                 >
                   <KeyboardArrowDownRoundedIcon fontSize="small" />
                 </button>

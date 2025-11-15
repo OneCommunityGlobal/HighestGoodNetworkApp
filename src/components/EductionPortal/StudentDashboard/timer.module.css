@@ -210,7 +210,7 @@
 .remainingUnitRow {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: 10px;
   font-size: 0.7rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -258,8 +258,12 @@
   font-weight: 500;
   background: #414957;
   color: #c9d2e4;
-  cursor: not-allowed; /* disabled for now */
-  opacity: 0.6;
+  cursor: pointer;
+}
+
+.quickBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .timeGrid {
