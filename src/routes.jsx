@@ -167,6 +167,8 @@ import { UserRole } from './utils/enums';
 
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
 
+import MaterialUtilizationChart from './components/MaterialUtilization/MaterialUtilizationChart';
+
 // Social Architecture
 
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
@@ -303,6 +305,7 @@ export default (
     <Route path="/hours-pledged-chart" component={HoursPledgedChart} />
     <Route path="/TestEventReg" component={TestEventRegistration} />
     <Route path="/logattendance" component={AttendanceNoShow} />
+
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       {/* Uncomment BMHeader and its import during phase 2 development. */}
@@ -551,6 +554,7 @@ export default (
           fallback
           allowedRoles={[UserRole.Owner]}
         />
+        <ProtectedRoute path="/materials/utilization" component={MaterialUtilizationChart} />
         <ProtectedRoute path="/job-application" exact component={JobApplicationForm} />
         <ProtectedRoute path="/popularity" component={PopularityTimelineChart} fallback />;
         <ProtectedRoute path="/analytics/months-pledged" component={MonthsPledgedChart} fallback />

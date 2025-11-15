@@ -12,16 +12,26 @@ export const ENDPOINTS = {
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
   TOP_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+    `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${
+      startDate && endDate
+        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : ''
+    }`,
   LEAST_CONVERTED: (limit, startDate, endDate) =>
-    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
+    `${APIEndpoint}/job-analytics/least-converted?limit=${limit}${
+      startDate && endDate
+        ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+        : ''
+    }`,
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
 
   // Blue Square Email Triggers
-  BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () => `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
-  BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () => `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
+  BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () =>
+    `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
+  BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () =>
+    `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
 
@@ -122,9 +132,10 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
-    ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
-    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
+    `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${
+      customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
@@ -148,19 +159,18 @@ export const ENDPOINTS = {
     `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
-  
-POPULARITY: (range, roles, start, end) => {
-  let url = `${APIEndpoint}/popularity?`;
-  if (range) url += `range=${range}&`;
-  if (roles && roles.length > 0) {
-    url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
-  }
-  if (start) url += `start=${encodeURIComponent(start)}&`;
-  if (end) url += `end=${encodeURIComponent(end)}&`;
-  return url.slice(0, -1); 
-},
-POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
+  POPULARITY: (range, roles, start, end) => {
+    let url = `${APIEndpoint}/popularity?`;
+    if (range) url += `range=${range}&`;
+    if (roles && roles.length > 0) {
+      url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
+    }
+    if (start) url += `start=${encodeURIComponent(start)}&`;
+    if (end) url += `end=${encodeURIComponent(end)}&`;
+    return url.slice(0, -1);
+  },
+  POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
@@ -324,7 +334,7 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   BM_TAGS_DELETE: `${APIEndpoint}/bm/tags`,
 
   BM_ORGS_WITH_LOCATION: `${APIEndpoint}/bm/orgLocation`,
-  ORG_DETAILS: (projectId) => `${APIEndpoint}/bm/orgLocation/${projectId}`,
+  ORG_DETAILS: projectId => `${APIEndpoint}/bm/orgLocation/${projectId}`,
   BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
 
   // bm time logger endpoints
@@ -443,10 +453,12 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+  MATERIAL_UTILIZATION: () => `${APIEndpoint}/materials/utilization`,
+  DISTINCT_PROJECTS: () => `${APIEndpoint}/materials/distinct-projects`,
+  DISTINCT_MATERIALS: () => `${APIEndpoint}/materials/distinct-materials`,
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
-
 };
 
 export const ApiEndpoint = APIEndpoint;
