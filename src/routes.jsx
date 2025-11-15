@@ -215,6 +215,9 @@ const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRo
 const Teams = lazy(() => import('./components/Teams/Teams'));
 const JobFormBuilder = lazy(() => import('./components/Collaboration/JobFormbuilder'));
 
+//Autoposter routes
+import RedditRedirect from './components/Announcements/platforms/reddit/Redirect';
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -465,6 +468,12 @@ export default (
           path="/announcements"
           exact
           component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/platforms/reddit/redirect"
+          exact
+          component={RedditRedirect}
           routePermissions={RoutePermissions.announcements}
         />
         <ProtectedRoute

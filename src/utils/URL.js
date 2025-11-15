@@ -382,6 +382,14 @@ export const ENDPOINTS = {
   // pr dashboard endpoints
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
+
+  // autoposter
+  AP_REDDIT_SUBMIT: `${APIEndpoint}/autoposter/reddit/submit`,
+  AP_REDDIT_AUTH_LOGIN: `${APIEndpoint}/autoposter/reddit/auth/login`,
+  AP_REDDIT_AUTH_TOKEN: `${APIEndpoint}/autoposter/reddit/auth/token`,
+  AP_REDDIT_SUBMIT_POST:`${APIEndpoint}/autoposter/reddit/submit-post`,
+  AP_REDDIT_POST:`${APIEndpoint}/autoposter/reddit/post`,
+  
 };
 
 export const ApiEndpoint = APIEndpoint;
