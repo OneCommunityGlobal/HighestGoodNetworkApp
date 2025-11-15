@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
@@ -10,6 +11,7 @@ import {
   LabelList,
 } from 'recharts';
 import httpService from '../../../services/httpService';
+import styles from './IssueBreakdownChart.module.css';
 
 const COLORS = {
   equipmentIssues: '#4F81BD', // blue
@@ -21,6 +23,12 @@ export default function IssuesBreakdownChart() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  const rootStyles = getComputedStyle(document.body);
+  const textColor = rootStyles.getPropertyValue('--text-color') || '#666';
+  const gridColor = rootStyles.getPropertyValue('--grid-color') || (darkMode ? '#444' : '#ccc');
+  const tooltipBg = rootStyles.getPropertyValue('--section-bg') || '#fff';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -40,121 +48,58 @@ export default function IssuesBreakdownChart() {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (!data || data.length === 0) {
-    return <div>No data available</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!data || data.length === 0) return <div>No data available</div>;
 
   return (
-    <div
-      style={{
-        boxSizing: 'border-box',
-        position: 'relative',
-        width: '100%',
-        maxWidth: '1400px',
-        margin: '32px auto',
-        background: '#fafbfc',
-        borderRadius: 18,
-        boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
-        padding: 32,
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-start',
-            width: '100%',
-            marginBottom: 24,
-          }}
-        >
-          <h2
-            style={{
-              textAlign: 'left',
-              margin: 0,
-              fontSize: 36,
-              fontWeight: 400,
-              color: '#888',
-              marginBottom: 16,
-            }}
-          >
-            Issues breakdown by Type
-          </h2>
+    <div className={styles.container}>
+      <div className={styles.inner}>
+        <div className={styles.headerRow}>
+          <h2 className={styles.heading}>Issues breakdown by Type</h2>
         </div>
-        <div style={{ display: 'flex', gap: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
+
+        <div className={styles.legend}>
+          <span className={styles.legendItem}>
             <span
-              style={{
-                display: 'inline-block',
-                width: 22,
-                height: 22,
-                backgroundColor: '#4F81BD',
-                borderRadius: 4,
-                marginRight: 8,
-              }}
+              className={styles.legendBox}
+              style={{ backgroundColor: COLORS.equipmentIssues }}
             />
-            <span style={{ color: '#666', fontSize: 22 }}>Equipment Issues</span>
+            <span className={styles.legendLabel}>Equipment Issues</span>
           </span>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: 22,
-                height: 22,
-                backgroundColor: '#C0504D',
-                borderRadius: 4,
-                marginRight: 8,
-              }}
-            />
-            <span style={{ color: '#666', fontSize: 22 }}>Labor Issues</span>
+          <span className={styles.legendItem}>
+            <span className={styles.legendBox} style={{ backgroundColor: COLORS.laborIssues }} />
+            <span className={styles.legendLabel}>Labor Issues</span>
           </span>
-          <span style={{ display: 'flex', alignItems: 'center' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: 22,
-                height: 22,
-                backgroundColor: '#F3C13A',
-                borderRadius: 4,
-                marginRight: 8,
-              }}
-            />
-            <span style={{ color: '#666', fontSize: 22 }}>Materials Issues</span>
+          <span className={styles.legendItem}>
+            <span className={styles.legendBox} style={{ backgroundColor: COLORS.materialIssues }} />
+            <span className={styles.legendLabel}>Materials Issues</span>
           </span>
         </div>
       </div>
-      <div style={{ width: '100%', height: '500px', marginTop: '20px' }}>
+
+      <div className={styles.chartContainer}>
         <ResponsiveContainer>
           <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="projectName" />
-            <YAxis allowDecimals={false} />
-            <Tooltip />
+            <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+            <XAxis dataKey="projectName" tick={{ fill: textColor }} />
+            <YAxis allowDecimals={false} tick={{ fill: textColor }} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: tooltipBg,
+                border: 'none',
+                borderRadius: '8px',
+                color: textColor,
+              }}
+            />
             <Bar dataKey="equipmentIssues" name="Equipment Issues" fill={COLORS.equipmentIssues}>
-              <LabelList dataKey="equipmentIssues" position="top" />
+              <LabelList dataKey="equipmentIssues" position="top" fill={textColor} />
             </Bar>
             <Bar dataKey="laborIssues" name="Labor Issues" fill={COLORS.laborIssues}>
-              <LabelList dataKey="laborIssues" position="top" />
+              <LabelList dataKey="laborIssues" position="top" fill={textColor} />
             </Bar>
             <Bar dataKey="materialIssues" name="Materials Issues" fill={COLORS.materialIssues}>
-              <LabelList dataKey="materialIssues" position="top" />
+              <LabelList dataKey="materialIssues" position="top" fill={textColor} />
             </Bar>
           </BarChart>
         </ResponsiveContainer>
