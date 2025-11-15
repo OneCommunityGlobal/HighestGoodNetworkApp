@@ -91,7 +91,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 timeIntervals={15}
                 dateFormat="yyyy-MM-dd HH:mm:ss"
                 placeholderText="Select date and time"
-                inputId="itemListTime"
+                inputId="itemListTime" // This is the key line
                 className={darkMode ? styles.datePickerDark : ''}
               />
               <SelectForm

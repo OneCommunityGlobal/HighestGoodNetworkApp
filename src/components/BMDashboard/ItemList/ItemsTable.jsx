@@ -119,6 +119,7 @@ export default function ItemsTable({
               {dynamicColumns.map(({ label }) => (
                 <th key={label} className={darkMode ? 'text-light' : ''}>{label}</th>
               ))}
+              <th className={darkMode ? 'text-light' : ''}>Usage Record</th>
               <th className={darkMode ? 'text-light' : ''}>Updates</th>
               <th className={darkMode ? 'text-light' : ''}>Purchases</th>
             </tr>
@@ -137,6 +138,24 @@ export default function ItemsTable({
                     <td className={`${styles.itemsCell} ${darkMode ? styles.itemsCellDark : ''}`}>
                       <button
                         type="button"
+                        onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
+                        aria-label="Edit Record"
+                      >
+                        <BiPencil />
+                      </button>
+                      <Button
+                        color="primary"
+                        outline
+                        size="sm"
+                        className={darkMode ? 'text-light' : ''}
+                        onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
+                      >
+                        View
+                      </Button>
+                    </td>
+                    <td className={`${styles.itemsCell} ${darkMode ? styles.itemsCellDark : ''}`}>
+                      <button
+                        type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
@@ -152,7 +171,7 @@ export default function ItemsTable({
                         View
                       </Button>
                     </td>
-                    <td>
+                    <td className={darkMode ? 'text-light' : ''}>
                       <Button
                         color="primary"
                         outline

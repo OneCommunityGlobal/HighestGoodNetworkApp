@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 1536px;
   margin: 1rem auto;
-  padding: 1rem;
+  padding: 0 1rem;
   min-height: calc(100vh - 200px);
   position: relative;
   z-index: 1;
