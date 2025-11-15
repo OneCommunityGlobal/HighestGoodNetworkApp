@@ -226,24 +226,7 @@
   word-break: break-word;
 }
 
-.detail-item:hover,
-.detail-item.active {
-  background: #111827;
-  border-color: #0b1220;
-  box-shadow: 0 8px 18px rgba(2,6,23,.12);
-  transform: translateY(-1px);
-}
-.detail-item:hover span,
-.detail-item.active span { color: #ffffff !important; }
-
-/* Map children into the grid */
-.detail-dot { grid-column: 1; width: 10px; height: 10px; border-radius: 999px; box-shadow: 0 0 0 2px rgba(255,255,255,0.7); }
-.detail-name { grid-column: 2; font-weight: 800; color: #0f172a; font-size: 0.9rem; }
-.detail-sep { display: none; }        /* we don’t need the bullet in a grid layout */
-.detail-count { grid-column: 3; font-weight: 800; color: #0f172a; }
-.detail-sub { display: none; }        /* optional: hide to keep cards compact; show if you prefer */
-.detail-pct { grid-column: 4; margin-left: 0; font-weight: 800; color: #2563eb; }
-
+/* Merged duplicate hover/active selectors */
 .detail-item:hover,
 .detail-item.active {
   background: #111827;
@@ -255,6 +238,14 @@
 .detail-item.active span { color: #ffffff !important; }
 .detail-item:hover .detail-pct,
 .detail-item.active .detail-pct { color: #93c5fd !important; } /* keep contrast on hover */
+
+/* Map children into the grid */
+.detail-dot { grid-column: 1; width: 10px; height: 10px; border-radius: 999px; box-shadow: 0 0 0 2px rgba(255,255,255,0.7); }
+.detail-name { grid-column: 2; font-weight: 800; color: #0f172a; font-size: 0.9rem; }
+.detail-sep { display: none; }        /* we don't need the bullet in a grid layout */
+.detail-count { grid-column: 3; font-weight: 800; color: #0f172a; }
+.detail-sub { display: none; }        /* optional: hide to keep cards compact; show if you prefer */
+.detail-pct { grid-column: 4; margin-left: 0; font-weight: 800; color: #2563eb; }
 
 @media (max-width: 640px) {
   .chart-details { grid-template-columns: 1fr; }
@@ -312,8 +303,6 @@
 .pie-cell { transition: opacity .15s ease, filter .15s ease, transform .15s ease; cursor: pointer; }
 .pie-cell:hover { opacity: .9; filter: brightness(1.05); }
 
-.detail-item { text-align: center; justify-content: center; }
-
 
 /* ===================== Responsive tweaks ===================== */
 @media (max-width: 640px) {
@@ -351,12 +340,14 @@
 }
 
 /* --- Ensure detail cards always show a visible background --- */
+/* Merged all .chart-details .detail-item selectors */
 .chart-details .detail-item {
   background-color: #f1f5f9;      /* stronger than #f8fafc, more visible */
   border: 1px solid #e2e8f0;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(2,6,23,0.06);
   background-clip: padding-box;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
 }
 
 /* Keep dark hover/active but ensure contrast is clear */
@@ -390,11 +381,6 @@
 
 .chart-details .detail-item.active span {
   color: #ffffff !important;               /* keep text readable */
-}
-
-/* Optional: smooth the state change */
-.chart-details .detail-item {
-  transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
 }
 /* ===================== DARK MODE (scoped to wrapper) ===================== */
 
