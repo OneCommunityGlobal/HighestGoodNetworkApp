@@ -25,12 +25,19 @@ export const CreateNewTeamPopup = React.memo(props => {
     const teamName = e.target.value;
     setNewName(teamName);
     onValidation(true);
-    setTeamExists(allTeams.some(team => team.teamName.toLowerCase() === teamName.toLowerCase()));
   };
 
+  //prettier-ignore
+  const formatSearchInput = text => text.toLowerCase().replace(/\s+/g, '').trim();
+
   const handleSubmit = async () => {
+    const teamNames = allTeams.filter(team => team.teamName).map(team => team.teamName);
+    const matchingTeams = teamNames.find(
+      team => formatSearchInput(team) === formatSearchInput(newTeam),
+    );
+
     if (newTeam !== '') {
-      if (!teamExists || props.isEdit) {
+      if (!matchingTeams || (props.isEdit && !matchingTeams)) {
         await props.onOkClick(newTeam, props.isEdit);
       } else {
         setTeamExists(true);
@@ -64,7 +71,7 @@ export const CreateNewTeamPopup = React.memo(props => {
           required
         />
         {!isValidTeam && <Alert color="danger">Please enter a team name.</Alert>}
-        {teamExists && !props.isEdit && (
+        {teamExists && (
           <Alert color="warning">
             That’s a great team name! So great that someone else already created that team. Please
             choose a new name or use the existing team.
