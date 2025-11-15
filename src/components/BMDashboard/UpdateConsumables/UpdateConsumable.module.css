@@ -1,0 +1,148 @@
+.updateModalContainer {
+  overflow-y: scroll;
+  height: 75vh;
+}
+
+.updateConsumableContainer {
+  padding: 0% !important;
+}
+
+.updateConsumablePage {
+  width: 100%;
+  height: auto;
+  margin: 0px;
+  padding: 1rem 2rem;
+  font-size: 15px;
+}
+
+.updateConsumablePageDark {
+  background-color: #1b2a41;
+}
+
+.updateConsumable {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: auto;
+}
+
+.updateConsumableDark {
+  background-color: #1c2541;
+  border: 1px solid #3a506b;
+}
+
+.consumableImage {
+  height: 10rem;
+  width: 10rem;
+  margin-bottom: 1rem;
+}
+
+.consumableFormField {
+  margin-bottom: .5rem;
+}
+
+.consumableFormLabel {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1C8BCC;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.consumableFormLabelDark {
+  color: #ffffff;
+}
+
+.consumableFormError {
+  font-weight: 500;
+  font-size: 12px !important;
+  color: red;
+}
+
+.consumableFormErrorClr {
+  color: red;
+}
+
+.consumableFormValue {
+  font-weight: 400;
+  font-size: 15px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.consumableFormValueDark {
+  color: #ffffff;
+}
+
+.consumableButtonOutline {
+  color: #2E5061 !important;
+}
+
+.consumableButtonOutline:hover {
+  background-color: #2E5061 !important;
+  color: white !important;
+}
+
+.consumableButtonOutlineDark {
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+}
+
+.consumableButtonOutlineDark:hover {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+.consumableButtonBg {
+  background-color: #2E5061 !important;
+  color: #ffffff !important;
+}
+
+.consumableButtonBg:hover {
+  background-color: white !important;
+  color: #2E5061 !important;
+}
+
+.consumableButtonBgDark {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+.consumableButtonBgDark:hover {
+  background-color: #4a5f7a !important;
+  color: #ffffff !important;
+}
+
+.updateModalBackdropDark :global(.modal-content) {
+  background-color: #1c2541;
+  color: #ffffff;
+  border: 1px solid #3a506b;
+}
+
+.updateModalBackdropDark :global(.modal-content input),
+.updateModalBackdropDark :global(.modal-content select) {
+  background-color: #1b2a41;
+  border-color: #3a506b;
+  color: #ffffff;
+}
+
+.updateModalBackdropDark :global(.modal-content input:focus),
+.updateModalBackdropDark :global(.modal-content select:focus) {
+  background-color: #1b2a41;
+  border-color: #4a5f7a;
+  color: #ffffff;
+}
+
+.updateModalBackdropDark :global(.modal-content h5),
+.updateModalBackdropDark :global(.modal-content p),
+.updateModalBackdropDark :global(.modal-content strong),
+.updateModalBackdropDark :global(.modal-content label) {
+  color: #ffffff;
+}
+
+@media (max-width: 992px) {
+  :global(.modal-body) {
+    padding: 0 !important;
+  }   
+}
+

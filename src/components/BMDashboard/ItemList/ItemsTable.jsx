@@ -4,6 +4,7 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
 import RecordsModal from './RecordsModal';
+import styles from './ItemListView.module.css';
 
 export default function ItemsTable({
   selectedProject,
@@ -11,6 +12,7 @@ export default function ItemsTable({
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
+  darkMode,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -96,29 +98,29 @@ export default function ItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className="items_table_container">
-        <Table>
-          <thead>
+      <div className={styles.itemsTableContainer}>
+        <Table className={darkMode ? 'table-dark' : ''}>
+          <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
               {selectedProject === 'all' ? (
-                <th onClick={() => sortData('ProjectName')}>
+                <th className={darkMode ? 'text-light' : ''} onClick={() => sortData('ProjectName')}>
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Project</th>
+                <th className={darkMode ? 'text-light' : ''}>Project</th>
               )}
               {selectedItem === 'all' ? (
-                <th onClick={() => sortData('InventoryItemType')}>
+                <th className={darkMode ? 'text-light' : ''} onClick={() => sortData('InventoryItemType')}>
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Name</th>
+                <th className={darkMode ? 'text-light' : ''}>Name</th>
               )}
               {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
+                <th key={label} className={darkMode ? 'text-light' : ''}>{label}</th>
               ))}
-              <th>Updates</th>
-              <th>Purchases</th>
+              <th className={darkMode ? 'text-light' : ''}>Updates</th>
+              <th className={darkMode ? 'text-light' : ''}>Purchases</th>
             </tr>
           </thead>
 
@@ -127,12 +129,12 @@ export default function ItemsTable({
               sortedData.map(el => {
                 return (
                   <tr key={el._id}>
-                    <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{el.project?.name}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{el.itemType?.name}</td>
                     {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
+                      <td key={label} className={darkMode ? 'text-light' : ''}>{getNestedValue(el, key)}</td>
                     ))}
-                    <td className="items_cell">
+                    <td className={`${styles.itemsCell} ${darkMode ? styles.itemsCellDark : ''}`}>
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}
@@ -144,6 +146,7 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
+                        className={darkMode ? 'text-light' : ''}
                         onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
                         View
@@ -154,6 +157,7 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
+                        className={darkMode ? 'text-light' : ''}
                         onClick={() => handleViewRecordsClick(el, 'Purchase')}
                       >
                         View
@@ -164,7 +168,7 @@ export default function ItemsTable({
               })
             ) : (
               <tr>
-                <td colSpan={11} style={{ textAlign: 'center' }}>
+                <td colSpan={11} className={darkMode ? 'text-light' : ''} style={{ textAlign: 'center' }}>
                   No items data
                 </td>
               </tr>
