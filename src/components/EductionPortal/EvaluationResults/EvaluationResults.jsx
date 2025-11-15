@@ -378,7 +378,7 @@ const EvaluationResults = ({ auth }) => {
                   {evaluationData.teacherFeedback.strengths.map((strength, index) => (
                     <li key={index} className={styles.feedbackItem}>
                       <span className={styles.checkmark}>✓</span>
-                      {strength}
+                      <span className={styles.feedbackTextItem}>{strength}</span>
                     </li>
                   ))}
                 </ul>
@@ -393,7 +393,7 @@ const EvaluationResults = ({ auth }) => {
                   {evaluationData.teacherFeedback.improvements.map((improvement, index) => (
                     <li key={index} className={styles.feedbackItem}>
                       <span className={styles.arrow}>→</span>
-                      {improvement}
+                      <span className={styles.feedbackTextItem}>{improvement}</span>
                     </li>
                   ))}
                 </ul>
