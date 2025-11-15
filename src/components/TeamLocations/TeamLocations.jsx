@@ -1,16 +1,16 @@
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, forwardRef } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
+import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import { Button, Container, Spinner } from 'reactstrap';
 import './TeamLocations.css';
 
-import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
+import { SEARCH } from '~/languages/en/ui';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { ApiEndpoint, ENDPOINTS } from '~/utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
 import ListUsersPopUp from './ListUsersPopUp';
 import MarkerPopup from './MarkerPopup';
@@ -26,7 +26,7 @@ function getUserName(profile) {
   return userName;
 }
 
-function TeamLocations() {
+const TeamLocations = forwardRef(() => {
   const [userProfiles, setUserProfiles] = useState([]);
   const [manuallyAddedProfiles, setManuallyAddedProfiles] = useState([]);
   const [addNewIsOpen, setAddNewIsOpen] = useState(false);
@@ -45,6 +45,59 @@ function TeamLocations() {
   const isAbleToEdit = role === 'Owner';
   const mapRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(null);
+
+  const randomLocationOffset = c => {
+    const randomOffset = (Math.random() - 0.5) * 2 * 0.05;
+    const newLongitude = Number(c) + randomOffset;
+
+    const modifiedLongitude = Number(newLongitude.toFixed(7));
+    return modifiedLongitude;
+  };
+
+  const handleFlyTo = (latitude, longitude) => {
+    mapRef?.current.flyTo([latitude, longitude], 13, {
+      animate: true,
+      duration: 3.0,
+    });
+  };
+
+  useEffect(() => {
+    async function getUserProfiles() {
+      try {
+        const locations = (await axios.get(ENDPOINTS.ALL_MAP_LOCATIONS())).data;
+        const users = locations.users.map(item => ({ ...item, type: 'user' })) || [];
+        const mUsers = locations.mUsers.map(item => ({ ...item, type: 'm_user' })) || [];
+
+        setUserProfiles(users);
+        setManuallyAddedProfiles(mUsers);
+        const allMapMarkers = [...users, ...mUsers];
+        const allMapMarkersOffset = allMapMarkers.map(ele => ({
+          ...ele,
+          location: {
+            ...ele.location,
+            coords: {
+              ...ele.location.coords,
+              lat: randomLocationOffset(ele.location.coords.lat),
+              lng: randomLocationOffset(ele.location.coords.lng),
+            },
+          },
+        }));
+        setMapMarkers(allMapMarkersOffset);
+        setLoading(false); // Set loading to false after data is loaded
+      } catch (error) {
+        toast.error(error.message);
+        setLoading(false); // Set loading to false if there's an error
+      }
+    }
+    getUserProfiles();
+  }, []);
+
+  useEffect(() => {
+    const coords = currentUser?.location.coords;
+    if (coords) {
+      handleFlyTo(coords.lat, coords.lng);
+    }
+  }, [currentUser]);
 
   // We don't need the back to top button on this page
   useEffect(() => {
@@ -89,14 +142,6 @@ function TeamLocations() {
     } else if (addNewIsOpen) {
       setAddNewIsOpen(false);
     }
-  };
-
-  const randomLocationOffset = c => {
-    const randomOffset = (Math.random() - 0.5) * 2 * 0.05;
-    const newLongitude = Number(c) + randomOffset;
-
-    const modifiedLongitude = Number(newLongitude.toFixed(7));
-    return modifiedLongitude;
   };
 
   useEffect(() => {
@@ -166,14 +211,6 @@ function TeamLocations() {
   if (searchText) {
     dropdown = true;
   }
-
-  const handleFlyTo = (latitude, longitude) => {
-    mapRef?.current.flyTo([latitude, longitude], 13, {
-      animate: true,
-      duration: 3.0,
-    });
-  };
-
   useEffect(() => {
     const coords = currentUser?.location.coords;
     if (coords) {
@@ -230,7 +267,10 @@ function TeamLocations() {
       )}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
         <div className="text-and-table-icon-container">
-          <h5>Total Countries: {totalUniqueCountries}</h5>
+          <h5>
+            Total Countries:
+            {totalUniqueCountries}
+          </h5>
           <button
             type="button"
             id="toggle-table-button"
@@ -248,16 +288,18 @@ function TeamLocations() {
           <div className="d-flex align-center">
             <div className="d-flex align-center pr-5 flex-column flex-md-row  position-relative">
               <div className="input-group-prepend">
-                <span className="input-group-text">{SEARCH}</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+                  {SEARCH}
+                </span>
               </div>
               <div>
                 <input
                   type="text"
-                  className="form-control"
                   aria-label="Search"
                   placeholder="Search by Location"
                   value={searchText}
                   onChange={searchHandler}
+                  className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 />
               </div>
               {dropdown && (
@@ -280,9 +322,11 @@ function TeamLocations() {
                             return (
                               <tr key={profile._id}>
                                 <td>{userName}</td>
-                                <td>{`${profile.location.city ? `${profile.location.city},` : ''} ${
-                                  profile.location.country
-                                }`}</td>
+                                <td>
+                                  {`${profile.location.city ? `${profile.location.city},` : ''} ${
+                                    profile.location.country
+                                  }`}
+                                </td>
                                 <td>
                                   <div
                                     style={{
@@ -360,8 +404,6 @@ function TeamLocations() {
         </div>
         {loading ? (
           <div
-            animation="border"
-            size="md"
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: '50vh' }}
           >
@@ -379,7 +421,9 @@ function TeamLocations() {
             zoom={3}
             scrollWheelZoom
             style={{ border: '1px solid grey' }}
-            ref={mapRef}
+            whenCreated={mapInstance => {
+              mapRef.current = mapInstance;
+            }}
           >
             <EventComponent
               setPopupsOpen={setPopupsOpen}
@@ -415,7 +459,7 @@ function TeamLocations() {
       </div>
     </Container>
   );
-}
+});
 
 function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   const map = useMapEvents({
@@ -438,4 +482,5 @@ function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
   return null;
 }
 
+TeamLocations.displayName = 'TeamLocations';
 export default TeamLocations;

@@ -33,9 +33,9 @@ class TextSuggestion extends React.Component {
           className={this.props.className}
         />
         <datalist id={this.props.list}>
-          {options.map(item => {
-            // eslint-disable-next-line jsx-a11y/control-has-associated-label
-            return <option value={item} key={item} />;
+          {options.map((item,id) => {
+            // eslint-disable-next-line jsx-a11y/control-has-associated-label,react/no-array-index-key
+            return <option value={item} key={id} />;
           })}
         </datalist>
       </>

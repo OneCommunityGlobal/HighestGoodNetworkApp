@@ -1,33 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, connect, useSelector } from 'react-redux';
-import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
-import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
-import AddTeamsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
+import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
+import AddProjectsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
+import AddTeamsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
 import "../reportsPage.css";
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { getFontColor, getBoxStyling } from 'styles';
+import { getFontColor, getBoxStyling } from '~/styles';
 import '../../Header/DarkMode.css'
 import { isEmpty, isEqual } from 'lodash';
-import { getUserProfile } from 'actions/userProfile';
-import { postTimeEntry } from 'actions/timeEntries';
-
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: '',
-  plugins:
-    'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar: `bold italic underline link removeformat | bullist numlist outdent indent |
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |
-                    subscript superscript charmap  | help`,
-  branding: false,
-  min_height: 180,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { cursor: text !important; }',
-};
+import { getUserProfile } from '~/actions/userProfile';
+import { postTimeEntry } from '~/actions/timeEntries';
 
 function AddLostTime(props) {
 
@@ -46,6 +30,24 @@ function AddLostTime(props) {
     minutes: 0,
     notes: '',
     isTangible: true,
+  };
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: '',
+    plugins:
+      'advlist autolink autoresize lists link charmap table help wordcount',
+    toolbar: `bold italic underline link removeformat | bullist numlist outdent indent |
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |
+                      subscript superscript charmap  | help`,
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const dispatch = useDispatch();
@@ -124,6 +126,7 @@ function AddLostTime(props) {
       return (
         <FormGroup>
           <Label className={fontColor}>Project Name</Label>
+          <span className="red-asterisk">* </span>
           <AddProjectsAutoComplete
             projectsData={props.projects}
             onDropDownSelect={selectProject}
@@ -140,6 +143,7 @@ function AddLostTime(props) {
       return (
         <FormGroup>
             <Label className={fontColor}>Name</Label>
+            <span className="red-asterisk">* </span>
             <MemberAutoComplete
               userProfileData={{userProfiles: props.users}}
               onAddUser={selectUser}
@@ -157,6 +161,7 @@ function AddLostTime(props) {
       return (
         <FormGroup>
           <Label className={fontColor}>Team Name</Label> 
+          <span className="red-asterisk">* </span>
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
@@ -238,7 +243,9 @@ function AddLostTime(props) {
         result.time = 'Time should be greater than 0';
       }
     }
-
+    if (entryType === '') {
+      result.events = 'Type is required';
+    }
     if (entryType === 'project' && inputs.projectId === undefined) {
       result.projectId = 'Project is required';
     }
@@ -296,7 +303,9 @@ function AddLostTime(props) {
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <FormGroup>
-            <Label for="entryType" className={fontColor} >Type</Label><br/>
+            <Label for="entryType" className={fontColor} >Type</Label>
+            <span className="red-asterisk">* </span>
+            <br/>
             <div className={`type-container ${fontColor}`}>
               <div className='type-item' style={{paddingLeft: '20px'}} >
                 <Input
@@ -327,8 +336,13 @@ function AddLostTime(props) {
                   onChange={handleTypeChange}
                 />
                 <Label htmlFor="team" className={fontColor}>Team</Label>
-              </div>
+              </div>              
             </div>
+            {'events' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.events}</small>
+                  </div>
+                )}
           </FormGroup>
           {entryType !== '' && (
             <>
@@ -341,6 +355,7 @@ function AddLostTime(props) {
                   id="dateOfWork"
                   value={inputs.dateOfWork}
                   onChange={handleInputChange}
+                  className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
                 />
                 {'dateOfWork' in errors && (
                   <div className="text-danger">
@@ -350,6 +365,7 @@ function AddLostTime(props) {
               </FormGroup>
               <FormGroup>
               <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
+              <span className="red-asterisk">* </span>
               <Row form>
                 <Col>
                   <Input
@@ -361,6 +377,7 @@ function AddLostTime(props) {
                     placeholder="Hours"
                     value={inputs.hours}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
                 <Col>
@@ -373,6 +390,7 @@ function AddLostTime(props) {
                     placeholder="Minutes"
                     value={inputs.minutes}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
               </Row>

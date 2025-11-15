@@ -9,28 +9,28 @@ import {
   INVENTORY,
   ARCHIVE,
 } from './../../../languages/en/ui';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faArrowUp, faArrowDown, faSortDown} from '@fortawesome/free-solid-svg-icons';
-import { Dropdown,DropdownButton, Divider } from 'react-bootstrap';
+import { Dropdown,DropdownButton } from 'react-bootstrap';
 
 // import DropdownButton from 'react-bootstrap/DropdownButton';
-import { boxStyle } from 'styles';
+import { boxStyle } from '~/styles';
 import { Button } from 'reactstrap';
 
 
 const ProjectTableHeader = props => {
   const { role, darkMode } = props;
-  const canDeleteProject = props.hasPermission('deleteProject');
+  const canDeleteProject = hasPermission('deleteProject')
 
   const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
   const statusList = ['Active', 'Inactive'];
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
-      <th scope="col" id="projects__order" className='align-middle'>
+      <th scope="col" id="projects__order" style={{ textAlign: 'center' }}>
         #
       </th>
       {/* <th scope="col">{PROJECT_NAME}</th> */}
@@ -48,10 +48,10 @@ const ProjectTableHeader = props => {
        <span className='d-flex justify-content-between align-middle mt-1'>
         {PROJECT_CATEGORY}
         <DropdownButton id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} menuAlign="right">
-          <Dropdown.Item default eventKey="" disabled={!props.selectedValue}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
+          <Dropdown.Item default eventKey="" disabled={!props.selectedValue} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
           <Dropdown.Divider />
           {categoryList.map((category, index) => 
-            <Dropdown.Item key={index} eventKey={category} active={props.selectedValue === category}>{category}</Dropdown.Item>
+            <Dropdown.Item key={index} eventKey={category} active={props.selectedValue === category} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{category}</Dropdown.Item>
           )}
         </DropdownButton>
        </span> 
@@ -60,9 +60,9 @@ const ProjectTableHeader = props => {
       <span className='d-flex justify-content-between align-middle mt-1'>
         {ACTIVE}
         <DropdownButton className='ml-2 align-middle' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
-        <Dropdown.Item default value="" disabled={!props.showStatus}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
+        <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
           {statusList.map((status, index) => 
-            <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status}>{status}</Dropdown.Item>
+            <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{status}</Dropdown.Item>
           )}
         </DropdownButton>
        </span> 
@@ -70,16 +70,27 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__inv" className='align-middle'>
         <span className='d-flex justify-content-between'>
           {INVENTORY}
+          <Button size="sm" className="ml-2" id="SortingByRecentEditedInventory" onClick={props.handleSort}>
+          <FontAwesomeIcon
+            icon={props.sorted === "SortingByRecentEditedInventory" ? faSort : faSortDown}
+            pointerEvents="none"
+          />
+          </Button>
         </span> 
       </th>
       <th scope="col" id="projects__members" className='align-middle'>
         <span className='d-flex'>
           {MEMBERS}
-          <Button size='sm' className='ml-2' id='SortingByRecentEditedMembers' onClick={props.handleSort}>
-          <FontAwesomeIcon 
-            icon={props.sorted === 'SortingByRecentEditedMembers' ? faSort : faSortDown} 
-            pointerEvents="none"
-          />
+          <Button
+            size='sm'
+            className={`ml-2 ${props.sorted === 'SortingByMostActiveMembers' ? 'btn-info' : ''}`}
+            id='SortingByMostActiveMembers'
+            onClick={props.handleSort}
+            title={props.sorted === 'SortingByMostActiveMembers' ? "Sorted: Most active members first" : "Sort by most active members"}>
+            <FontAwesomeIcon
+              icon={props.sorted === 'SortingByMostActiveMembers' ? faArrowDown : faSortDown}
+              pointerEvents="none"
+            />
           </Button>
         </span>
       </th>
@@ -110,5 +121,5 @@ const mapStateToProps = state => ({
   role: state.userProfile.role, // Map 'role' from Redux state to 'role' prop
 });
 
-export default connect(mapStateToProps, { hasPermission })(ProjectTableHeader);
+export default connect(mapStateToProps)(ProjectTableHeader)
 

@@ -17,7 +17,20 @@ function ActiveCell(props) {
         }
         return props.isActive ? 'Active' : 'Inactive';
       })()}
-      onClick={props.canChange ? props.onClick : () => {}}
+      aria-pressed={props.isActive}
+      role={props.canChange ? 'button' : undefined}
+      tabIndex={props.canChange ? 0 : -1}
+      onClick={props.canChange ? props.onClick : () => { }}
+      onKeyDown={
+        props.canChange
+          ? (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              props.onClick(e);
+            }
+          }
+          : undefined
+      }
     >
       <i className="fa fa-circle" aria-hidden="true" />
     </span>

@@ -1,0 +1,476 @@
+/* ---------------- PAGE CONTAINER ---------------- */
+.weeklyProjectSummaryContainer {
+  min-height: 100vh;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.weeklyProjectSummaryContainer html,
+.weeklyProjectSummaryContainer body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.weeklyProjectSummaryDashboardContainer {
+  width: 100%;
+  background: var(--bg-color);
+}
+
+.weeklyProjectSummaryHeaderWrapper {
+  background-color: var(--bg-color) !important;
+}
+
+/* ---------------- HEADER ---------------- */
+.weeklySummaryHeaderWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Header Container */
+.weeklySummaryHeaderContainer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+  padding: 16px;
+  background: var(--section-bg);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+/* Title */
+.weeklySummaryHeaderTitle {
+  padding-top: 5px;
+  color: var(--text-color);
+  font-size: x-large;
+  text-align: center;
+  flex-wrap: wrap;
+}
+
+/* Header Controls */
+.weeklySummaryHeaderControls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Dropdown Styling */
+.weeklySummaryHeaderControls select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  min-width: 200px;
+  font-size: 14px;
+  background: var(--section-bg);
+  color: var(--text-color);
+}
+
+/* Dropdown Hover */
+.weeklySummaryHeaderControls select:hover {
+  background-color: var(--section-title-hover) !important;
+}
+
+/* Share Button */
+.weeklySummaryShareBtn {
+  background-color: var(--button-bg) !important;
+  color: white;
+  font-family: inherit;
+  white-space: nowrap;
+  border-radius: 8px !important;
+  transition: background 0.2s ease-in-out;
+}
+
+.weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
+}
+
+/* ---------------- DASHBOARD ---------------- */
+.weeklyProjectSummaryDashboardContainer {
+  width: 95%;
+  margin: auto;
+  padding: 20px;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
+
+.weeklyProjectSummaryDashboardGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+/* .weeklyProjectSummaryDashboardSection options */
+.full {
+  grid-column: span 4;
+}
+
+.large {
+  grid-column: span 3;
+}
+
+.half {
+  grid-column: span 2;
+}
+
+.small {
+  grid-column: span 1;
+}
+
+/* ---------------- CARDS ---------------- */
+.projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+}
+
+.weeklyProjectSummaryCard {
+  background: var(--card-bg);
+  padding: 10px;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 2px 5px var(--card-shadow);
+}
+
+.darkMode .weeklyProjectSummaryCard {
+  background: var(--card-bg);
+  box-shadow: 0 2px 5px rgba(255, 255, 255, 0.1);
+}
+
+.financialSmall {
+  min-height: 100px;
+  max-height: 120px;
+  margin-top: 20px;
+  grid-column: span 1;
+}
+
+
+.weekly-project-summary-card.financial-big {
+  grid-column: span 4;
+  min-height: 600px;
+  height: auto;
+  padding: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.weekly-project-summary-card.financial-big h2 {
+  color: #333;
+  margin: 0;
+  font-weight: normal;
+  font-size: 24px;
+
+}
+
+.fullCard {
+  width: 100%;
+  min-height: 250px;
+  grid-column: span 4;
+}
+
+.wideCard {
+  width: 100%;
+  min-height: 250px;
+  grid-column: span 2;
+}
+
+.smallCard {
+  width: 100%;
+  min-height: 100px;
+}
+
+.normalCard {
+  width: 100%;
+  min-height: 250px;
+}
+
+.mapCard {
+  width: 100%;
+  min-height: 500px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.weeklyProjectSummaryDashboardSection {
+  background: var(--section-bg);
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px var(--card-shadow);
+}
+
+.weeklyProjectSummaryDashboardCategoryTitle {
+  background: var(--section-title-bg);
+  padding: 12px 16px;
+  font-size: medium;
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-color);
+}
+
+.weeklyProjectSummaryDashboardCategoryTitle:hover {
+  background: var(--section-title-hover);
+}
+
+.weeklyProjectSummaryDashboardCategoryContent {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  border-top: 1px solid var(--card-shadow);
+  animation: fadeIn 0.3s ease-in-out;
+  background: var(--section-bg);
+}
+
+/* Adjust grid columns based on section size */
+.weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.weeklyProjectSummaryDashboardSection.small .weeklyProjectSummaryDashboardCategoryContent {
+  grid-template-columns: 1fr;
+}
+
+/* ---------------- DARK MODE VARIABLES ---------------- */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --card-bg: #fafafa;
+  --card-shadow: rgba(0, 0, 0, 0.1);
+  --section-bg: white;
+  --section-title-bg: white;
+  --section-title-hover: #e0e0e0;
+  --button-bg: black;
+  --button-hover: #333;
+}
+
+/* ---------------- DARK MODE STYLES ---------------- */
+.darkMode {
+  --bg-color: #1b2a41;
+  --text-color: #ffffff;
+  --card-bg: #2b3e59;
+  --card-shadow: rgba(255, 255, 255, 0.1);
+  --section-bg: #253342;
+  --section-title-bg: #2d4059;
+  --section-title-hover: #3a506b;
+  --button-bg: #e8a71c;
+  --button-hover: #f5b13a;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle {
+  color: #ffffff;
+  background: #2d4059;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryTitle:hover {
+  background: #3a506b;
+}
+
+.darkMode .weeklyProjectSummaryDashboardCategoryContent {
+  background-color: var(--section-bg);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.darkMode .weeklySummaryHeaderContainer {
+  background: var(--section-bg);
+  color: var(--text-color);
+}
+
+.weeklySummaryShareBtn {
+  background-color: var(--button-bg) !important;
+}
+
+.weeklySummaryShareBtn:hover {
+  background-color: var(--button-hover) !important;
+}
+
+/* First, set a max-height and make it scrollable */
+.quantityOfMaterialsUsedChartTooltip {
+  max-height: 80vh !important; /* Limit to 80% of viewport height */
+  overflow-y: auto !important; /* Enable vertical scrolling */
+  padding-right: 15px !important; /* Add some padding for the scrollbar */
+}
+
+/* Style the scrollbar for better visibility */
+.quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
+  width: 8px;
+}
+
+.quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+/* Support for Firefox */
+.quantityOfMaterialsUsedChartTooltip {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
+}
+
+/* Additional adjustments for dark mode if needed */
+.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.darkMode .quantityOfMaterialsUsedChartTooltip {
+  scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
+}
+/* ---------------- RESPONSIVE DESIGN ---------------- */
+
+/* Medium Screens - Wrap Items */
+@media (max-width: 1024px) {
+  .weeklySummaryHeaderContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .weeklySummaryHeaderControls {
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .weeklyProjectSummaryDashboardGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Small Screens - Make Dropdowns Vertical */
+@media (max-width: 768px) {
+  .weeklySummaryHeaderContainer {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .weeklySummaryHeaderControls {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  /* Make Dropdowns Full Width */
+  .weeklySummaryHeaderControls select {
+    width: 100%;
+  }
+
+  /* Make Button Full Width */
+  .weeklySummaryShareBtn {
+    width: 100%;
+  }
+
+  .weeklyProjectSummaryDashboardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .weeklyProjectSummaryDashboardSection.full,
+  .weeklyProjectSummaryDashboardSection.large,
+  .weeklyProjectSummaryDashboardSection.half,
+  .weeklyProjectSummaryDashboardSection.small {
+    grid-column: span 1;
+  }
+
+  .projectStatusGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------------- STATUS CARD ---------------- */
+.statusCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  width: 100%;
+  max-width: 284px;
+  height: 190px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+.projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
+/* ---------------- OVAL STATUS BUTTON ---------------- */
+.weeklyStatusButton {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin: 12px 0;
+}
+
+.weeklyCardTitle {
+  color: #000;
+  font-size: clamp(14px, 1.4vw, 18px);
+  font-weight: 600;
+}
+
+.weeklyStatusValue {
+  color: #000;
+  font-size: 40px;
+  font-weight: 600;
+}
+
+/* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
+@media (min-width: 1600px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 1400px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}

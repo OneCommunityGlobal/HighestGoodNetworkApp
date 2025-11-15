@@ -1,4 +1,5 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import styles from './ItemListView.module.css';
 
 export default function SelectForm({ items, setSelectedProject, setSelectedItem, darkMode }) {
   let projectsSet = [];
@@ -13,7 +14,7 @@ export default function SelectForm({ items, setSelectedProject, setSelectedItem,
 
   return (
     <Form>
-      <FormGroup className="select_input">
+      <FormGroup className={`${styles.selectInput}`}>
         <Label htmlFor="select-project">Project:</Label>
         <Input
           id="select-project"

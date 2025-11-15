@@ -4,66 +4,64 @@ import HoursWorkedPieChart from '../HoursWorkedPieChart/HoursWorkedPieChart';
 // components
 import Loading from '../../common/Loading';
 
-export default function VolunteerHoursDistribution({
-  darkMode,
-  usersTimeEntries = [],
-  usersOverTimeEntries = [],
-}) {
-  const [userData, setUserData] = useState([]);
+const COLORS = ['#00AFF4', '#FFA500', '#00B030', '#EC52CB', '#F8FF00'];
 
-  useEffect(() => {
-    if (
-      !Array.isArray(usersTimeEntries) ||
-      usersTimeEntries.length === 0 ||
-      !Array.isArray(usersOverTimeEntries) ||
-      usersOverTimeEntries.length === 0
-    ) {
-      return;
+function HoursWorkList({ data, darkMode }) {
+  if (!data) return <div />;
+
+  const ranges = data.map((elem, index) => {
+    const rangeStr = elem._id;
+    const entry = {
+      name: rangeStr,
+    };
+
+    const rangeArr = rangeStr.split('-');
+    entry.color = COLORS[index];
+
+    if (rangeArr.length > 1) {
+      const [min, max] = rangeArr;
+      entry.min = Number(min);
+      entry.max = Number(max);
+    } else {
+      const min = rangeStr.split('+');
+      entry.min = Number(min);
+      entry.max = Infinity;
     }
+    return entry;
+  });
 
-    const hoursWorked = usersTimeEntries.reduce((acc, curr) => {
-      const hours = Number(curr.hours) || 0;
-      const minutes = Number(curr.minutes) || 0;
-      return acc + hours + minutes / 60;
-    }, 0);
+  return (
+    <div>
+      <h6 style={{ color: darkMode ? 'white' : 'grey' }}>Hours Worked</h6>
+      <div>
+        <ul className="list-unstyled">
+          {ranges.map(item => (
+            <li key={item.name} className="text-secondary d-flex align-items-center">
+              <div
+                className="me-2"
+                style={{
+                  width: '15px',
+                  height: '15px',
+                  marginRight: '5px',
+                  backgroundColor: item.color,
+                }}
+              />
+              <span className="ms-2">{item.name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
 
-    const hoursOverTimeWorked = usersOverTimeEntries.reduce((acc, curr) => {
-      const hours = Number(curr.hours) || 0;
-      const minutes = Number(curr.minutes) || 0;
-      return acc + hours + minutes / 60;
-    }, 0);
-
-    const ranges = [
-      { name: '0 - 9.99', min: 0, max: 9.99 },
-      { name: '10 - 19.99', min: 10, max: 19.99 },
-      { name: '20 - 29.99', min: 20, max: 29.99 },
-      { name: '30 - 39.99', min: 30, max: 39.99 },
-      { name: '40+', min: 40, max: Infinity },
-    ];
-
-    const arrData = ranges.map(range => {
-      const value = usersTimeEntries.reduce((acc, curr) => {
-        const hours = Number(curr.hours) || 0;
-        const minutes = Number(curr.minutes) || 0;
-        const total = hours + minutes / 60;
-        if (total >= range.min && total < range.max) {
-          return acc + total;
-        }
-        return acc;
-      }, 0);
-
-      return {
-        name: range.name,
-        value,
-        totalHours: hoursWorked,
-        totalOverTimeHours: hoursOverTimeWorked,
-        title: 'HOURS WORKED',
-      };
-    });
-
-    setUserData(arrData);
-  }, [usersTimeEntries, usersOverTimeEntries]);
-
+export default function VolunteerHoursDistribution({
+  isLoading,
+  darkMode,
+  hoursData,
+  totalHoursData,
+  comparisonType,
+}) {
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -83,22 +81,41 @@ export default function VolunteerHoursDistribution({
     };
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+
+  const totalHours = hoursData.reduce((total, cur) => total + cur.count, 0);
+
+  const userData = hoursData.map(range => {
+    return {
+      name: range._id,
+      value: range.count,
+      totalHours,
+      title: 'HOURS WORKED',
+      comparisonPercentage: totalHoursData.comparison,
+    };
+  });
+
   return (
-    <div>
-      {!Array.isArray(userData) || userData.length === 0 ? (
-        <div className="d-flex justify-content-center align-items-center">
-          <div className="w-100vh">
-            <Loading />
-          </div>
-        </div>
-      ) : (
-        <div>
-          <h6 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
-            Volunteer Hours Distribution
-          </h6>
-          <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
-        </div>
-      )}
+    <div
+      className="d-flex flex-row flex-wrap align-items-center justify-content-center"
+      style={{ gap: '20px' }}
+    >
+      <HoursWorkedPieChart
+        darkmode={darkMode}
+        windowSize={windowSize}
+        userData={userData}
+        comparisonType={comparisonType}
+        colors={COLORS}
+      />
+      <HoursWorkList data={hoursData} darkMode={darkMode} />
     </div>
   );
 }

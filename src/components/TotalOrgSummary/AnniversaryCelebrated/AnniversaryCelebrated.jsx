@@ -1,99 +1,176 @@
+import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
-import { useEffect, useState } from 'react';
-import { IoPersonOutline } from 'react-icons/io5';
 import { SiGmail } from 'react-icons/si';
-import { useDispatch } from 'react-redux';
+import Loading from '~/components/common/Loading';
+import sixMonthsAward from '../images/sixMonthsAward.svg';
+import oneYearAward from '../images/oneYearAward.svg';
 
-export default function AnniversaryCelebrated({
-  fromDate,
-  toDate,
-  fromOverDate,
-  toOverDate,
-  darkMode,
-}) {
-  const dispatch = useDispatch();
+export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
   const history = useHistory();
-  const [anniversaryStatsOnSetDate, setAnniversaryStatsOnSetDate] = useState([]);
-  const [anniversaryStatsOnLastDate, setAnniversaryStatsOnLastDate] = useState([]);
-  const [anniversaryStatsOnSetDateQuantity, setAnniversaryStatsOnSetDateQuantity] = useState(0);
-  const [anniversaryStatsOnLastDateQuantity, setAnniversaryStatsOnSLastDateQuantity] = useState(0);
-  const percentageChange = (
-    (anniversaryStatsOnSetDateQuantity / anniversaryStatsOnLastDateQuantity - 1) *
-    100
-  ).toFixed(2);
-  const isPositive = percentageChange >= 0;
-  const sign = isPositive ? '+' : '';
+  const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    setAnniversaryStatsOnSetDateQuantity(anniversaryStatsOnSetDate.length);
-  }, [anniversaryStatsOnSetDate, anniversaryStatsOnSetDateQuantity]);
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    setAnniversaryStatsOnSLastDateQuantity(anniversaryStatsOnLastDate.length);
-  }, [anniversaryStatsOnLastDate, anniversaryStatsOnLastDateQuantity]);
+  const sixMonthsData = data['6Months'];
+  const oneYearData = data['1Year'];
+  const hasComparisonData = [sixMonthsData, oneYearData].every(
+    dataset => dataset.comparisonPercentage,
+  );
 
-  useEffect(() => {
-    const fectchOnSetDate = async () => {
-      const response = await dispatch(getTotalOrgSummary(fromDate, toDate));
-      setAnniversaryStatsOnSetDate(response.data.anniversaryStats);
-    };
-    fectchOnSetDate();
-  }, [fromDate, toDate]);
-
-  useEffect(() => {
-    const fectchOnLastDate = async () => {
-      const res = await dispatch(getTotalOrgSummary(fromOverDate, toOverDate));
-      setAnniversaryStatsOnLastDate(res.data.anniversaryStats);
-    };
-    fectchOnLastDate();
-  }, [fromOverDate, toOverDate]);
+  let sixMonthsPercent;
+  let oneYearPercent;
+  let is6MonthsPositive;
+  let isOneYearPositive;
+  if (hasComparisonData) {
+    sixMonthsPercent = sixMonthsData.comparisonPercentage;
+    oneYearPercent = oneYearData.comparisonPercentage;
+    is6MonthsPositive = sixMonthsPercent.toString().charAt(0) !== '-';
+    isOneYearPositive = oneYearPercent.toString().charAt(0) !== '-';
+  }
 
   const handleEmailClick = email => {
     history.push('/sendemail', { state: { email } });
   };
 
+  const getAnniversaryListItem = (userData = {}, anniversaryMonths = 6) => {
+    const { _id, profilePic, email, firstName, lastName, createdDate } = userData;
+    return (
+      <li key={_id} className="d-flex flex-column">
+        <div
+          style={{
+            display: 'grid',
+            gap: '15px',
+            gridTemplateColumns: '30px 30px min-content 30px',
+            textWrap: 'nowrap',
+            margin: '10px 15px',
+          }}
+        >
+          <img
+            src={profilePic || '/profilepic.webp'}
+            alt="profile"
+            onError={e => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/profilepic.webp';
+            }}
+            className="rounded-circle ms-5"
+            style={{ width: '30px', height: '30px' }}
+          />
+
+          <SiGmail
+            size={30}
+            color="red"
+            style={{ cursor: 'pointer', display: 'block' }}
+            onClick={() => handleEmailClick(email)}
+          />
+
+          <div style={{ alignSelf: 'center' }}>
+            <p className="m-0" style={{ color: darkMode ? '#fff' : '#000' }}>
+              {`${firstName} ${lastName}`}
+            </p>
+            {/* show created date */}
+            <small style={{ color: darkMode ? '#aaa' : '#555' }}>
+              Joined: {new Date(createdDate).toLocaleDateString()}
+            </small>
+          </div>
+          <img
+            src={anniversaryMonths === 6 ? sixMonthsAward : oneYearAward}
+            alt="award"
+            style={{ width: '30px', height: '30px' }}
+          />
+        </div>
+      </li>
+    );
+  };
+
+  const exportData = () => {
+    const exportObj = {
+      sixMonths: sixMonthsData.users,
+      oneYear: oneYearData.users,
+    };
+    const blob = new Blob([JSON.stringify(exportObj, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'anniversaries.json';
+    // eslint-disable-next-line testing-library/no-node-access
+    link.click();
+  };
+
+  // filter users by search
+  const filterUsers = users =>
+    users.filter(u => `${u.firstName} ${u.lastName}`.toLowerCase().includes(search.toLowerCase()));
+
   return (
-    <div>
-      <h4 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
-        Anniversary Celebrated
-      </h4>
-      <span
-        className={`text-center ${isPositive ? 'text-success' : 'text-danger'}`}
-        style={{ fontWeight: 'bold' }}
-      >
-        {sign}
-        {percentageChange}% week over week
-      </span>
-      <ul className="w-90 overflow-auto" style={{ maxHeight: '220px' }}>
-        {Array.isArray(anniversaryStatsOnSetDate) && anniversaryStatsOnSetDate.length > 0 ? (
-          anniversaryStatsOnSetDate.map(item => (
-            <li key={item._id} className="d-flex flex-column ">
-              <div className="d-flex flex-row m-2">
-                {item.profilePic ? (
-                  <img
-                    src={item.profilePic}
-                    alt="profile"
-                    className="rounded-circle ms-5"
-                    style={{ width: '30px', height: '30px' }}
-                  />
-                ) : (
-                  <IoPersonOutline size={30} className="mx-2" />
-                )}
-                <SiGmail
-                  size={30}
-                  color="red"
-                  className="mx-2 "
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => handleEmailClick(item.email)}
-                />
-                <p className="mx-2">{`${item.firstName} ${item.lastName}`}</p>
-              </div>
-            </li>
-          ))
-        ) : (
-          <p>There are no Anniversaries in this period</p>
-        )}
+    <div className="mt-3">
+      {/* Comparison percentages with counts */}
+      {hasComparisonData && (
+        <span
+          style={{
+            fontWeight: 'bold',
+            display: 'grid',
+            justifyContent: 'center',
+            justifyItems: 'center',
+            fontSize: '20px',
+            marginBottom: '10px',
+          }}
+        >
+          <p style={{ display: 'flex', gap: '5px', marginBottom: '5px' }}>
+            <span style={{ color: darkMode ? '#fff' : 'gray' }}>6 months: </span>
+            <span
+              className={`text-center ${is6MonthsPositive ? 'text-success' : 'text-danger'}`}
+              style={{ margin: 0 }}
+            >
+              {`${is6MonthsPositive ? '+' : ''}${sixMonthsPercent}%`}({sixMonthsData.users.length}{' '}
+              users)
+            </span>
+          </p>
+          <p style={{ display: 'flex', gap: '5px' }}>
+            <span style={{ color: darkMode ? '#fff' : 'gray' }}>1 year: </span>
+            <span
+              className={`text-center ${isOneYearPositive ? 'text-success' : 'text-danger'}`}
+              style={{ margin: 0 }}
+            >
+              {`${isOneYearPositive ? '+' : ''}${oneYearPercent}%`}({oneYearData.users.length}{' '}
+              users)
+            </span>
+          </p>
+        </span>
+      )}
+
+      {/* Search + Export Controls */}
+      <div className="d-flex justify-content-between align-items-center mb-2">
+        <input
+          type="text"
+          placeholder="Search by name"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{
+            margin: '10px 0',
+            padding: '5px 10px',
+            borderRadius: '5px',
+            border: '1px solid gray',
+            width: '60%',
+          }}
+        />
+        <button onClick={exportData} className="btn btn-secondary">
+          Export Data
+        </button>
+      </div>
+
+      {/* List of anniversaries */}
+      <ul className="w-90 overflow-auto" style={{ maxHeight: '410px' }}>
+        {filterUsers(sixMonthsData.users).map(item => getAnniversaryListItem(item, 6))}
+        {filterUsers(oneYearData.users).map(item => getAnniversaryListItem(item, 12))}
       </ul>
     </div>
   );

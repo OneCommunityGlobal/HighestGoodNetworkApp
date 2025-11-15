@@ -5,6 +5,7 @@ const initialState = {
   error: null,
 };
 
+// eslint-disable-next-line default-param-last
 export const BlueSquareEmailAssignment = (state = initialState, action) => {
   switch (action.type) {
     case types.GET_BLUE_SQUARE_EMAIL_ASSIGNMENTS:
@@ -12,10 +13,7 @@ export const BlueSquareEmailAssignment = (state = initialState, action) => {
     case types.SET_BLUE_SQUARE_EMAIL_ASSIGNMENT:
       return {
         ...state,
-        emailAssignment: [
-          ...state.emailAssignment,
-          action.payload 
-        ],
+        emailAssignment: [...state.emailAssignment, action.payload],
         error: null,
       };
     case types.DELETE_BLUE_SQUARE_EMAIL_ASSIGNMENT:
@@ -24,12 +22,14 @@ export const BlueSquareEmailAssignment = (state = initialState, action) => {
         emailAssignment: state.emailAssignment.filter(ele => ele._id !== action.payload),
         error: null,
       };
-      case types.BLUE_SQUARE_EMAIL_ASSIGNMENT_ERROR:
-        return {
-          ...state,
-          error: action.payload,
-        };
+    case types.BLUE_SQUARE_EMAIL_ASSIGNMENT_ERROR:
+      return {
+        ...state,
+        error: action.payload,
+      };
     default:
       return state;
   }
 };
+
+export default BlueSquareEmailAssignment;

@@ -17,7 +17,7 @@ export const normalizeVolunteerStats = (volunteerNumberStats, totalHoursWorked) 
     {
       ...VOLUNTEER_STATUS_TAB.totalHoursWorked,
       number: Math.round(totalHoursWorked.current),
-      percentageChange: Math.abs(totalHoursWorked.percentage ?? 0).toFixed(0),
+      percentageChange: Math.abs((totalHoursWorked.percentage ?? 0) * 100).toFixed(0),
       isIncreased: (totalHoursWorked.percentage ?? 0) >= 0,
     },
   ];

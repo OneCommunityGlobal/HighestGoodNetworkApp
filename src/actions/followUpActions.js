@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../utils/URL';
-import * as types from '../constants/followUpConstants';
 import { toast } from 'react-toastify';
+import { ENDPOINTS } from '~/utils/URL';
+import * as types from '../constants/followUpConstants';
 
 const getAllFollowUps = allFollowUps => ({
   type: types.FETCH_ALL_FOLLOWUPS,
@@ -27,11 +27,11 @@ export const fetchAllFollowUps = () => {
         dispatch(getAllFollowUps(response.data));
       } else {
         dispatch(followUpFetchError(response.data));
-        toast.error('Error: loading follow-up data.')
+        toast.error('Error: loading follow-up data.');
       }
     } catch (err) {
       dispatch(followUpFetchError(err));
-      toast.error('Error: loading follow-up data.')
+      toast.error('Error: loading follow-up data.');
     }
   };
 };
@@ -45,12 +45,11 @@ export const setUserFollowUp = (userId, taskId, updateData) => {
         dispatch(setFollowUp(response.data));
       } else {
         dispatch(followUpFetchError(response.data));
-        toast.error('Error: Unable to set follow-up.')
+        toast.error('Error: Unable to set follow-up.');
       }
     } catch (err) {
       dispatch(followUpFetchError(err));
-      toast.error('Error: Unable to set follow-up.')
+      toast.error('Error: Unable to set follow-up.');
     }
   };
 };
-

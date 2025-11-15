@@ -1,50 +1,52 @@
-import React from 'react';
+/* eslint-disable react/destructuring-assignment */
 import './Team.css';
-import { DELETE } from '../../languages/en/ui';
-import TeamTable from '../Reports/TeamTable';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
 import { connect, useSelector } from 'react-redux';
+import { Button } from 'reactstrap';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
+import { DELETE } from '../../languages/en/ui';
 
-export const Team = props => {
+export function Team(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
   return (
-    <tr className={`teams__tr`} id={`tr_${props.teamId}`}>
+    <tr className="teams__tr" id={`tr_${props.teamId}`}>
       <th className="teams__order--input" scope="row">
-        <div>{props.index + 1}</div>
+        <div>{(props.index ?? 0) + 1}</div>
       </th>
-      <td>{props.name}</td>
-      <td
-        className="teams__active--input"
-        onClick={e => {
-          canDeleteTeam || canPutTeam
-            ? props.onStatusClick(props.name, props.teamId, props.active, props.teamCode)
-            : null;
-        }}
-        // style={boxStyle}
-        data-testid='active-marker'
-      >
-        {props.active ? (
-          <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true" />
+      {/*  Wrap long names vertically */}
+      <td className="team-name-col">{props.name}</td>
+      <td className="teams__active--input">
+        <button
+          data-testid="active-marker"
+          type="button"
+          onClick={() => {
+            if (canDeleteTeam || canPutTeam) {
+              props.onStatusClick(props.name, props.teamId, props.active, props.teamCode);
+            }
+          }}
+          style={{
+            boxStyle,
+          }}
+          aria-label={`Change status for team ${props.name}`}
+        >
+          <div className={props.active ? 'isActive' : 'isNotActive'}>
+            <i className="fa fa-circle" aria-hidden="true"></i>
           </div>
-        ) : (
-          <div className="isNotActive">
-            <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'/>
-          </div>
-        )}
+        </button>
       </td>
       <td className="centered-cell">
-        <button style={darkMode ? {} : boxStyle}
+        <button
+          style={darkMode ? {} : boxStyle}
           type="button"
           className="btn btn-outline-info"
-          onClick={e => {
+          onClick={() => {
             props.onMembersClick(props.teamId, props.name, props.teamCode);
           }}
-          data-testid='members-btn'
+          data-testid="members-btn"
+          aria-label="Users"
         >
           <i className="fa fa-users" aria-hidden="true" />
         </button>
@@ -52,32 +54,34 @@ export const Team = props => {
       {(canDeleteTeam || canPutTeam) && (
         <td>
           <span className="usermanagement-actions-cell">
-            <button
-              type="button"
-              className="btn btn-outline-success"
+            <Button
+              color="success"
+              // className="btn btn-outline-success"
               onClick={() => {
                 props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
               style={darkMode ? {} : boxStyle}
+              disabled={!canPutTeam}
             >
               Edit
-            </button>
+            </Button>
           </span>
           <span className="usermanagement-actions-cell">
-            <button
-              type="button"
-              className="btn btn-outline-danger"
+            <Button
+              color="danger"
+              // className="btn btn-outline-danger"
               onClick={() => {
                 props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
-              style={darkMode ? {} : boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
+              disabled={!canDeleteTeam}
             >
               {DELETE}
-            </button>
+            </Button>
           </span>
         </td>
       )}
     </tr>
   );
-};
+}
 export default connect(null, { hasPermission })(Team);

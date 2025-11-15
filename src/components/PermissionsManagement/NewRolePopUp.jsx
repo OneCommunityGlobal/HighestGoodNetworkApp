@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
+import { connect, useDispatch } from 'react-redux';
+import { boxStyle, boxStyleDark } from '~/styles';
 import { getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 
@@ -83,11 +82,14 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   return (
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
-        <Label className={darkMode ? 'text-light' : ''}>Role Name:</Label>
+        <Label className={darkMode ? 'text-light' : ''}>
+          Role Name<span className="red-asterisk">* </span>:
+        </Label>
         <Input
           placeholder="Please enter a new role name"
           value={newRoleName}
           onChange={handleRoleName}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
         />
         {isValidRole === false || isNotDuplicateRole === false ? (
           <Alert className="createRole__alert" color="danger">
@@ -97,7 +99,9 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
       </FormGroup>
 
       <FormGroup>
-        <Label className={darkMode ? 'text-light' : ''}>Permissions:</Label>
+        <Label className={darkMode ? 'text-light' : ''}>
+          Permissions<span className="red-asterisk">* </span>:
+        </Label>
         <PermissionList
           rolePermissions={permissionsChecked}
           editable

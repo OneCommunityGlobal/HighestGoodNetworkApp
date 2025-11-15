@@ -7,7 +7,7 @@ import '../Header/DarkMode.css';
 /**
  * Modal popup to show the user profile in create mode
  */
-const ActivationDatePopup = React.memo(props => {
+const ActivationDatePopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [activationDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
@@ -43,6 +43,7 @@ const ActivationDatePopup = React.memo(props => {
             onDateChange(event.target.value);
           }}
           data-testid="date-input"
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}
         />
         {dateError && <Alert color="danger">Please choose a future date.</Alert>}
       </ModalBody>
@@ -56,6 +57,9 @@ const ActivationDatePopup = React.memo(props => {
       </ModalFooter>
     </Modal>
   );
-});
+};
+
+const ActivationDatePopup = React.memo(ActivationDatePopupComponent);
+ActivationDatePopup.displayName = "ActivationDatePopup";
 
 export default ActivationDatePopup;

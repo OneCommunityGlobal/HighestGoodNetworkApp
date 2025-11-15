@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react';
 import TinyBarChart from '../TinyBarChart';
 import Loading from '../../common/Loading';
 
-export default function HoursCompletedBarChart({ data, darkMode }) {
+export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
   const initialCardSize = () => {
     if (window.innerWidth <= 680) {
-      return { height: '300px' };
+      return { height: '240px' };
     }
     if (window.innerWidth <= 1418) {
-      return { height: '548px' };
+      return { height: '320px' };
     }
-    return { height: '347px' };
+    return { height: '320px' };
   };
+
   const [cardSize, setCardSize] = useState(initialCardSize);
+
   const updateCardSize = () => {
     if (window.innerWidth <= 680) {
       setCardSize({ height: '300px' });
@@ -22,6 +24,7 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
       setCardSize({ height: '347px' });
     }
   };
+
   useEffect(() => {
     window.addEventListener('resize', updateCardSize);
     updateCardSize();
@@ -29,7 +32,8 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
       window.removeEventListener('resize', updateCardSize);
     };
   }, []);
-  if (!data || Object.keys(data).length === 0) {
+
+  if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
         <div className="w-100vh">
@@ -39,28 +43,30 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
     );
   }
 
-  const { taskHours, projectHours, lastTaskHours, lastProjectHours } = data;
-  // const taskPercentage = parseFloat(taskHours) / (parseFloat(taskHours) + parseFloat(projectHours));
-  // const taskChangePercentage = parseFloat(taskHours - lastTaskHours) / parseFloat(lastTaskHours);
-  // const projectChangePercentage =
-  //   parseFloat(projectHours - lastProjectHours) / parseFloat(lastProjectHours);
-  const taskPercentage = taskHours / (taskHours + projectHours);
-  const taskChangePercentage = (taskHours - lastTaskHours) / lastTaskHours;
-  const projectChangePercentage = (projectHours - lastProjectHours) / lastProjectHours;
+  const { taskHours, projectHours } = data;
+
+  const taskPercentage = taskHours.submittedToCommittedHoursPercentage;
+  const projectPercentage = projectHours.submittedToCommittedHoursPercentage;
+  const taskChangePercentage = taskHours.comparisonPercentage;
+  const projectChangePercentage = projectHours.comparisonPercentage;
   const stats = [
-    { name: 'Task', amount: taskHours, percentage: taskPercentage, change: taskChangePercentage },
+    {
+      name: 'Tasks',
+      amount: taskHours.count,
+      percentage: taskPercentage,
+      change: taskChangePercentage,
+    },
     {
       name: 'Project',
-      amount: projectHours,
-      percentage: 1.0 - taskPercentage,
+      amount: projectHours.count,
+      percentage: projectPercentage,
       change: projectChangePercentage,
     },
   ];
 
-  const maxY =
-    Math.ceil(Math.max(data.taskHours, data.projectHours)) +
-    Math.floor(Math.max(data.taskHours, data.projectHours) / 10);
-  const tickInterval = Math.floor(maxY / 10);
+  const maxY = Math.ceil(Math.max(taskHours.count, projectHours.count) * 1.2) + 1;
+
+  const tickInterval = Math.floor(maxY / 10) === 0 ? 1 : Math.floor(maxY / 10);
   const greenColor = darkMode ? 'lightgreen' : 'green';
   const chartData = stats.map(item => ({
     name: item.name,
@@ -73,8 +79,21 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
     fontcolor: item.change >= 0 ? greenColor : 'red',
     color: ['rgba(76,75,245,255)', 'rgba(0,175,244,255)'],
   }));
+  const projectBarInfo = {
+    ifcompare: projectChangePercentage !== undefined && projectChangePercentage !== null,
+    amount: projectHours.count,
+    percentage: `${(projectPercentage * 100).toFixed(2)}%`,
+    change:
+      projectChangePercentage > 0
+        ? `+${(projectChangePercentage * 100).toFixed(0)}%`
+        : `${(projectChangePercentage * 100).toFixed(0)}%`,
+    fontcolor: projectChangePercentage >= 0 ? greenColor : 'red',
+  };
   const renderCustomizedLabel = props => {
     const { x, y, width, value, index } = props;
+    if (typeof y !== 'number' || Number.isNaN(y)) {
+      return null;
+    }
     const { percentage } = chartData[index];
     const { change } = chartData[index];
     const perFontSize = cardSize.height === '548px' ? '0.6em' : '0.8em';
@@ -116,18 +135,61 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
   };
 
   return (
-    <div style={{ height: cardSize.height }}>
-      <h6 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
-        {' '}
-        Hours Completed{' '}
-      </h6>
-      <TinyBarChart
-        chartData={chartData}
-        maxY={maxY}
-        tickInterval={tickInterval}
-        renderCustomizedLabel={renderCustomizedLabel}
-        darkMode={darkMode}
-      />
+    <div
+      style={{
+        height: '380px',
+        minHeight: '300px',
+        maxHeight: '548px',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      <div style={{ textAlign: 'center', marginBottom: 0 }}>
+        <div
+          style={{
+            fontSize: '13px',
+            fontWeight: 500,
+            color: darkMode ? 'white' : '#222',
+            display: 'grid',
+            justifyItems: 'center',
+          }}
+        >
+          <span style={{ maxWidth: 200 }}>
+            {`${data.hoursSubmittedToTasksPercentage *
+              100}% of Total Tangible Hours Submitted to Tasks`}
+          </span>
+          {(() => {
+            const percentage = data.hoursSubmittedToTasksComparisonPercentage;
+
+            if (percentage === undefined || percentage === null) {
+              // No comparison → hide metrics
+              return null;
+            }
+            const isPositive = percentage >= 0;
+            let color;
+            if (isPositive) {
+              color = darkMode ? 'lightgreen' : 'green';
+            } else {
+              color = 'red';
+            }
+            const value = isPositive
+              ? `+${(percentage * 100).toFixed(0)}%`
+              : `${(percentage * 100).toFixed(0)}%`;
+            return <span style={{ color, marginLeft: 8, fontSize: '12px' }}>{value}</span>;
+          })()}
+        </div>
+      </div>
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <TinyBarChart
+          chartData={chartData.filter(item => item.name === 'Tasks')}
+          maxY={maxY}
+          tickInterval={tickInterval}
+          // renderCustomizedLabel={renderCustomizedLabel}
+          darkMode={darkMode}
+          projectBarInfo={projectBarInfo}
+          yAxisLabel="Hours"
+        />
+      </div>
     </div>
   );
 }

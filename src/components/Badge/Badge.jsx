@@ -14,7 +14,7 @@ import {
   ModalHeader,
 } from 'reactstrap';
 import './Badge.css';
-import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
+import BadgeSummaryViz from '~/components/Reports/BadgeSummaryViz';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
 import { WEEK_DIFF } from '../../constants/badge';
@@ -50,12 +50,15 @@ function Badge(props) {
   const generateBadgeText = (totalBadges, badgeCollection, personalBestMaxHrs) => {
     if (!totalBadges) return 'You have no badges. ';
 
-    const newBadges = badgeCollection.filter(
-      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
-    );
+    const newBadges = (Array.isArray(badgeCollection) ? badgeCollection : [])
+      .filter(b => b && b.lastModified)
+      .filter(b => {
+        const t = new Date(b.lastModified).getTime();
+        return Number.isFinite(t) && Date.now() - t <= WEEK_DIFF;
+      });
 
     const roundedHours = Math.floor(personalBestMaxHrs);
-    const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max')
+    const personalMaxText = newBadges.find(badgeObj => badgeObj?.badge?.type === 'Personal Max')
       ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
       : '';
 
@@ -71,7 +74,7 @@ function Badge(props) {
         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
           count += 1;
         } else {
-          count += Number(badge.count);
+          count += Number(badge?.count);
         }
       });
       setTotalBadge(Math.round(count));
@@ -94,7 +97,8 @@ function Badge(props) {
               id="badgesearned"
             >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
-                Badges <i className="fa fa-info-circle" id="BadgeInfo" />
+                Badges{' '}
+                <i className="fa fa-info-circle" id="BadgeInfo" data-testid="badge-info-icon" />
               </CardHeader>
               <CardBody>
                 <NewBadges
@@ -120,7 +124,7 @@ function Badge(props) {
                     props.userProfile.badgeCollection,
                     props.userProfile.personalBestMaxHrs,
                   )}
-                  <i className="fa fa-info-circle" id="CountInfo" />
+                  <i className="fa fa-info-circle" id="CountInfo" data-testid="count-info-icon" />
                 </CardText>
                 <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard />
               </CardBody>

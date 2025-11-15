@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -17,9 +17,9 @@ import {
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
-import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
+import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { toast } from 'react-toastify';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
@@ -30,7 +30,7 @@ import httpService from '../../services/httpService';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
-function SummaryBar(props) {
+const SummaryBar = React.forwardRef((props, ref) => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
@@ -406,6 +406,15 @@ function SummaryBar(props) {
     }
   }, [displayUserProfile, summaryBarData]);
 
+  useEffect(() => {
+    // Check if we should open the suggestions modal
+    const shouldOpenSuggestions = localStorage.getItem('openSuggestionsModal');
+    if (shouldOpenSuggestions === 'true') {
+      localStorage.removeItem('openSuggestionsModal'); // Clear the flag
+      openSuggestionModal(); // Open the suggestions modal
+    }
+  }, []); // Run once when component mounts
+
   const getContainerClass = () => {
     if (isAuthUser || canEditData()) {
       return darkMode
@@ -423,7 +432,7 @@ function SummaryBar(props) {
         return (
           <div
             className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
-            align="center"
+            style={{ textAlign: 'center' }}
           >
             <font className="text-center text-light" size="3">
               SUMMARY
@@ -488,7 +497,7 @@ function SummaryBar(props) {
     }
 
     const message = weeklySummaryNotReq
-      ? 'You don’t need to complete a weekly summary, but you still can. Click here to submit it.'
+      ? "You don't need to complete a weekly summary, but you still can. Click here to submit it."
       : 'You still need to complete the weekly summary. Click here to submit it.';
 
     if (isAuthUser) {
@@ -527,6 +536,11 @@ function SummaryBar(props) {
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
+  // Expose the openSuggestionModal function through the ref
+  React.useImperativeHandle(ref, () => ({
+    openSuggestionModal,
+  }));
+
   return displayUserProfile !== undefined && summaryBarData !== undefined ? (
     <Container fluid className={`px-lg-0 rounded ${getContainerClass()}`} style={{ width: '97%' }}>
       <Row className="no-gutters row-eq-height">
@@ -541,8 +555,27 @@ function SummaryBar(props) {
             </font>
             <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
               <div className="font-weight-bold">
-                {userProfile?.firstName || displayUserProfile.firstName}{' '}
-                {userProfile?.lastName || displayUserProfile.lastName}
+                <span
+                  className="name-segment"
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName).split(' ')[0]}
+                </span>
+                <span
+                  className="name-segment"
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName)
+                    .split(' ')
+                    .slice(1)
+                    .join(' ')}
+                </span>
+                <span
+                  className="name-segment"
+                  title={userProfile?.lastName || displayUserProfile.lastName}
+                >
+                  {userProfile?.lastName || displayUserProfile.lastName}
+                </span>
               </div>
             </CardTitle>
           </div>
@@ -564,7 +597,7 @@ function SummaryBar(props) {
             {totalEffort >= weeklyCommittedHours && (
               <div className="border-green col-4 bg--dark-green">
                 <div className="py-1"> </div>
-                <p className="text-center large_text_summary">✓</p>
+                <p className="text-center large_text_summary text--black">✓</p>
                 <font className="text-center" size="3">
                   HOURS
                 </font>
@@ -578,7 +611,11 @@ function SummaryBar(props) {
               }`}
               style={{ border: '1px solid black' }}
             >
-              <div className="align-items-center" id="timelogweeklychart">
+              <div
+                className="align-items-center"
+                id="timelogweeklychart"
+                style={{ whiteSpace: 'nowrap', padding: '0px 10px' }}
+              >
                 <div className="align-items-center med_text_summary">
                   Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
                   <Progress
@@ -602,13 +639,16 @@ function SummaryBar(props) {
               style={{ border: '1px solid black' }}
             >
               <div className="m-auto p-2 text-center">
-                <font
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={props.toggleSubmitForm}
-                  className="med_text_summary align-middle summary-toggle"
-                  size="3"
+                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
+                  className="summary-toggle"
+                  style={{ cursor: 'pointer', fontSize: '1.1rem' }}
                 >
                   {renderSummaryMessage()}
-                </font>
+                </span>
               </div>
             </div>
           </Row>
@@ -857,14 +897,16 @@ function SummaryBar(props) {
                   required
                 >
                   <option disabled value="" hidden>
-                    {' '}
-                    -- select an option --{' '}
+                    -- select an option --
                   </option>
-                  {suggestionCategory.map(item => {
-                    return <option key={item.id} value={item}>{`${item.id + 1}. ${item}`}</option>;
-                  })}
+                  {suggestionCategory.map((item, index) => (
+                    <option key={item} value={item}>
+                      {`${index + 1}. ${item}`}
+                    </option>
+                  ))}
                 </Input>
               </FormGroup>
+
               {takeInput && (
                 <FormGroup>
                   <Label for="suggestion" className={fontColor}>
@@ -1029,7 +1071,7 @@ function SummaryBar(props) {
   ) : (
     <div>Loading</div>
   );
-}
+});
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
@@ -1038,4 +1080,6 @@ const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
 });
 
-export default connect(mapStateToProps, { hasPermission })(SummaryBar);
+SummaryBar.displayName = 'SummaryBar';
+
+export default connect(mapStateToProps, { hasPermission })(React.memo(SummaryBar));

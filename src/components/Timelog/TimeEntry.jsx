@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
-import ReactHtmlParser from 'react-html-parser';
+import parse from 'html-react-parser';
 import moment from 'moment-timezone';
-import './Timelog.css';
+// import {styles} from './Timelog.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import hasPermission from 'utils/permissions';
-import { hrsFilterBtnColorMap } from 'constants/colors';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import hasPermission, { cantUpdateDevAdminDetails } from '~/utils/permissions';
+import { hrsFilterBtnColorMap } from '~/constants/colors';
 import { toast } from 'react-toastify';
 import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
@@ -30,7 +29,7 @@ import { editTeamMemberTimeEntry } from '../../actions/task';
 
 function TimeEntry(props) {
   // props from parent
-  const { from, data, displayYear, timeEntryUserProfile, tab } = props;
+  const { from, data, displayYear, timeEntryUserProfile, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
 
@@ -115,6 +114,9 @@ function TimeEntry(props) {
     editFilteredColor();
   }, []);
 
+  const hasHtmlTags =
+  typeof notes === 'string' && /<\/?[a-z][\s\S]*>/i.test(notes);
+
   return (
     <div style={{ display: 'flex' }}>
       <div
@@ -128,7 +130,7 @@ function TimeEntry(props) {
       <Card
         className="mb-1 p-2"
         style={{
-          backgroundColor: isTangible ? '#CCFFCC' : '#CCFFFF',
+          backgroundColor: isTangible ? `${darkMode ? '#488700' : '#CCFFCC'}` : `${darkMode ? '#389b57' : '#CCFFFF'}`,
           flexGrow: 1,
           maxWidth: 'calc(100% - 12px)',
         }}
@@ -137,26 +139,30 @@ function TimeEntry(props) {
           <Col md={3} className="date-block px-0">
             <div className="date-div">
               <div>
-                <h4>{moment(dateOfWork).format('MMM D')}</h4>
-                {displayYear && <h5>{moment(dateOfWork).format('YYYY')}</h5>}
-                <h5 className="text-info">{moment(dateOfWork).format('dddd')}</h5>
+                <h4 className={darkMode ? 'text-light' : ''}>{moment(dateOfWork).format('MMM D')}</h4>
+                {displayYear && <h5 className={darkMode ? 'text-light' : ''}>{moment(dateOfWork).format('YYYY')}</h5>}
+                <h5 className={darkMode? "dark-text-info" : "text-info"}>{moment(dateOfWork).format('dddd')}</h5>
               </div>
             </div>
           </Col>
           <Col md={4} className="px-0">
-            <h4 className="text-success">
+            <h4 className={darkMode ? "dark-text-info" : "text-success"}>
               {hours}h {minutes}m
             </h4>
-            <div className="text-muted">Project/Task:</div>
-            <p>
-              {projectName}
-              <br />
-              {taskName && `\u2003 ↳ ${taskName}`}
-            </p>
+            <div className={darkMode ? "dark-text-muted" : "text-muted"}>Project/Task:</div>
+            <p
+  className={darkMode ? 'text-light' : 'text-dark'}
+  style={{ margin: 0 }}
+>
+  {projectName}
+  <br />
+  {taskName && `\u2003 ↳ ${taskName}`}
+</p>
+
             <div className="mb-3">
               {canEditTangibility ? (
                 <>
-                  <span className="text-muted">Tangible:&nbsp;</span>
+                  <span className={darkMode ? "dark-text-muted" : "text-muted"}>Tangible:&nbsp;</span>
                   <input
                     type="checkbox"
                     name="isTangible"
@@ -173,10 +179,13 @@ function TimeEntry(props) {
           </Col>
           <Col md={5} className="pl-2 pr-0">
             <div className="time-entry-container">
-              <div className="notes-section">
-                <div className="text-muted">Notes:</div>
-                {ReactHtmlParser(notes)}
-              </div>
+              <div className={`notes-section ${darkMode ? 'notes-text-light' : ''}`}>
+              <div className={darkMode ? 'dark-text-muted' : 'text-muted'}>Notes:</div>
+
+                {hasHtmlTags
+                  ? parse(notes) 
+                  : <span>{notes != null ? String(notes) : ''}</span>} 
+                </div>
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&
                   !cantEditJaeRelatedRecord && (
@@ -209,6 +218,7 @@ function TimeEntry(props) {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
+  darkMode: state.theme.darkMode
 });
 
 const mapDispatchToProps = dispatch => ({

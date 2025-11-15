@@ -13,15 +13,14 @@ import {
   moveTasks,
   deleteTask,
   emptyTaskItems,
-  copyTask,
   deleteChildrenTasks,
 } from '../../../../../actions/task.js';
 import ModalDelete from './../../../../../components/common/Modal';
 import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 function ControllerRow(props) {
   /*
@@ -32,13 +31,14 @@ function ControllerRow(props) {
   const canPostTask = props.hasPermission('postTask');
 
   // props from store
-  const { role, userPermissions, roles, popupContent, darkMode } = props;
+  const { role, userPermissions, roles, popupContent, darkMode, tasks } = props;
 
   // states from hooks
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
 
+  const { currentTask, copyCurrentTask } = props;
   /*
   * -------------------------------- functions --------------------------------
   */
@@ -50,23 +50,19 @@ function ControllerRow(props) {
   const toggle = () => setDropdownOpen(prevState => !prevState);
 
   const onMove = async (from, to) => {
-    props.setIsLoading(true);
     await props.moveTasks(props.wbsId, from, to);
     props.load();
-    props.setIsLoading(false);
   };
 
-  const onCopy = id => {
+  const onCopy = () => {
     setIsCopied(true);
-    props.copyTask(id);
+    copyCurrentTask(currentTask);
   };
 
   const deleteTask = async (taskId, mother) => {
-    props.setIsLoading(true);
     await props.deleteTask(taskId, mother);
     await props.emptyTaskItems();
     await props.load();
-    props.setIsLoading(false);
   };
 
   /*
@@ -78,6 +74,7 @@ function ControllerRow(props) {
         <div className="task-action-buttons">
           {props.level < 4 && canPostTask ? (
             <AddTaskModal
+              label={"Add Subtask"}
               key={`addTask_${props.taskId}`}
               taskNum={props.num}
               taskId={props.taskId}
@@ -93,6 +90,7 @@ function ControllerRow(props) {
               pageLoadTime={props.pageLoadTime}
               isOpen={props.isOpen}
               setIsOpen={props.setIsOpen}
+              tasks={tasks}
             />
           ) : null}
           <EditTaskModal
@@ -107,7 +105,6 @@ function ControllerRow(props) {
             mother={props.mother}
             level={props.level}
             load={props.load}
-            setIsLoading={props.setIsLoading}
           />
          
           {canDeleteTask && (
@@ -175,7 +172,6 @@ export default connect(mapStateToProps, {
   moveTasks,
   deleteTask,
   emptyTaskItems,
-  copyTask,
   getPopupById,
   deleteChildrenTasks,
   hasPermission,
