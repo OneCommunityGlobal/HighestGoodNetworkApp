@@ -1,0 +1,19 @@
+.wrapper {
+  padding: 10px 0 20px 0;
+}
+
+.heading {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.subheading {
+  margin-top: 4px;
+  color: #6a6a6a;
+}
+
+.cardsContainer {
+  display: flex;
+  gap: 20px;
+  margin-top: 22px;
+}

@@ -1,11 +1,10 @@
-
 .page {
   background-color: #f5f5f5;
   min-height: 100vh;
 }
 
 
-.header {
+.progressStepper {
   background-color: white;
   padding: 20px 0;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -44,16 +43,64 @@
   background-color: #4285f4;
 }
 
+
 .stepLabel {
   margin-top: 8px;
   color: #555;
 }
+
 
 .activeLabel {
   font-weight: bold;
   color: #4285f4;
 }
 
+
+.midSectionWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+
+.midSectionHeader {
+  width: 60%;
+  padding: 20px 0;
+  border-radius: 10px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.midHeaderText {
+  text-align: center;
+}
+
+
+.midPrevButton,
+.midNextButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
+.midPrevButton {
+  left: 20px;
+  background-color: #e0e0e0;
+}
+
+.midNextButton {
+  right: 20px;
+  background-color: #4285f4;
+  color: white;
+}
 
 .body {
   display: flex;
@@ -69,29 +116,6 @@
   min-height: 300px;
   position: relative;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.prevButton {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-  background-color: #e0e0e0;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-}
-
-.nextButton {
-  position: absolute;
-  right: 20px;
-  top: 20px;
-  background-color: #4285f4;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
 }
 
 .content {
