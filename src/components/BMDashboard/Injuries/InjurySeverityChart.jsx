@@ -25,6 +25,13 @@ const generateColors = n =>
     return `hsl(${hue}, 70%, 50%)`;
   });
 
+const DEPARTMENT_COLOR_MAP = {
+  Plumbing: '#1f77b4',
+  Electrical: '#ff7f0e',
+  Carpentry: '#2ca02c',
+  Welding: '#d62728',
+};
+
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
 
 function CustomTooltip({ active, payload, label, darkMode }) {
@@ -180,7 +187,7 @@ function InjurySeverityDashboard(props) {
             key: `${project._id}_${dept}`,
             dataKey: `${project.name}_${dept}`,
             name: `${project.name} - ${dept}`, // Keep full name for tooltip
-            fill: departmentColors[deptIdx],
+            fill: DEPARTMENT_COLOR_MAP[dept],
             stackId: project.name, // Stack departments within each project
             legendType: projectIdx === 0 ? 'rect' : 'none', // Only show first occurrence in legend
           });
@@ -329,7 +336,7 @@ function InjurySeverityDashboard(props) {
                   ? visibleDepartments.map((dept, idx) => ({
                       value: dept,
                       type: 'rect',
-                      color: generateColors(visibleDepartments.length)[idx],
+                      color: DEPARTMENT_COLOR_MAP[dept],
                     }))
                   : undefined
               }
