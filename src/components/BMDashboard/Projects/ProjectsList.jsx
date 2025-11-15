@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { Row } from 'reactstrap';
 import Select from 'react-select';
 import ProjectSummary from './ProjectSummary';
+import styles from '../BMDashboard.module.css';
 
 function ProjectsList() {
   const projects = useSelector(state => state.bmProjects) || [];
@@ -31,9 +32,9 @@ function ProjectsList() {
         placeholder="Select Projects"
       />
       {filteredProjects.length ? (
-        <ul className="projects-list">
+        <ul className={`${styles.projectsList}`}>
           {filteredProjects.map(project => (
-            <li className="project-summary" key={project._id}>
+            <li className={`${styles.projectSummary}`} key={project._id}>
               <ProjectSummary project={project} />
             </li>
           ))}

@@ -5,7 +5,7 @@ import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import BMError from './shared/BMError';
-import './BMDashboard.css';
+import styles from './BMDashboard.module.css';
 
 export function BMDashboard() {
   const [isError, setIsError] = useState(false);
@@ -27,7 +27,7 @@ export function BMDashboard() {
 
   return (
     <Container className="justify-content-center align-items-center">
-      <header className="bm-dashboard__header">
+      <header className={`${styles.bmDashboardHeader}`}>
         <h1>Building and Inventory Management Dashboard</h1>
       </header>
       <main>

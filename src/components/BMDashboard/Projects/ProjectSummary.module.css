@@ -1,0 +1,40 @@
+.projectSummaryHeader {
+  font-size: clamp(0.8em, 3vw, 1.3em);
+  font-weight: bold;
+  text-align: center;
+  justify-content: center;
+}
+
+.projectSummaryContent {
+  display: block;
+  flex-wrap: wrap;
+  text-align: start;
+  margin: 0;
+  font-size: clamp(0.9em, 2.5vw, 1em);
+}
+
+.projectSummaryItem {
+  padding: 8px;
+  align-items: center;
+}
+
+.projectSummaryLabel {
+  margin-right: 1px;
+}
+
+.projectSummarySpan {
+  color: #3ea0cb;
+  font-weight: bold;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .projectSummaryLabel {
+    font-size: 14px;
+  }
+
+  .projectSummarySpan {
+    font-size: 12px; /* Optional: adjust font size for smaller screens */
+  }
+}
