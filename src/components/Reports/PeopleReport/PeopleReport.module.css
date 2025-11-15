@@ -202,7 +202,6 @@ body {
     display: flex;
     justify-content: center;
   }
-
 }
 
 .introDate div {
@@ -220,41 +219,61 @@ body {
   width: 100%;
 }
 
-
 .peopleReportTimeLogBlock {
   height: auto;
   min-width: 180px;
 }
 
-@media (min-width: 850px) {
+.peopleReportTimeLogsWrapper > .peopleReportTimeLogBlock {
+  flex: 0 1 calc((100% - 3rem)/4);   
+  min-width: 240px;                   
+}
+
+.peopleReportTimeLogBlock p {
+  line-height: 1.5rem;
+  font-size: 20px;
+  font-weight: 500;
+  color:white
+}
+
+@media (max-width: 1488px) {
+  .peopleReportTimeLogsWrapper > .peopleReportTimeLogBlock {
+    flex: 0 1 calc((100% - 1rem) / 2);
+  }
+}
+
+@media (max-width: 1155px) {
   .peopleReportTimeLogsWrapper {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    color: white;
-    margin-top: 0;
-    padding-top: 0;
+    justify-content: center;
+    gap: 1.5rem;
+  }
+
+  .peopleReportTimeLogsWrapper > .peopleReportTimeLogBlock {
+    flex: 0 1 45%;
   }
 }
 
-@media (min-width: 850px) and (max-width: 1249px) {
-  .peopleReportTimeLogsWrapper >* {
-    /* display: flex; */
-    flex-wrap: wrap;
-    justify-content: space-between;
-    color: white;
+.peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
+  flex: 0 1 calc((100% - 2rem) / 3); /* 3 per row */
+}
+
+/* Prevent wrapping weirdly at mid-screen sizes for 3-box layout */
+@media (max-width: 1488px) {
+  .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
+    flex: 0 1 calc((100% - 2rem) / 3);
   }
 }
 
-@media (min-width: 275px) and (max-width: 435px) {
-  .peopleReportTimeLogsWrapper >* {
-    margin-top: 25px;
-    /* display: flex; */
-    flex-wrap: wrap;
-    justify-content: space-between;
-    color: white;
+@media (max-width: 1155px) {
+  .peopleReportTimeLogsWrapper.threeBoxes {
+    justify-content: center;
+    gap: 1.5rem;
+  }
+  .peopleReportTimeLogsWrapper.threeBoxes > .peopleReportTimeLogBlock {
+    flex: 0 1 100%; /* Stack only on smaller screens */
   }
 }
+
 
 .infringementContainer {
   display: flex;
@@ -406,11 +425,29 @@ body {
   margin-top: 2rem;
 }
 
-@media (max-width: 1260px) {
+@media (min-width: 1489px) and (max-width: 1784px) {
   .reportStats {
-    height: 740px;
+    height: 721px;
   }
 }
+
+@media (min-width: 1156px) and (max-width: 1488px) {
+  .reportStats {
+    height: 869px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1155px) {
+  .reportStats {
+    height: 873px;
+  }
+}
+
+@media (min-width: 960px) and (max-width: 1024px) {
+  .reportStats {
+    height: 895px;
+  }
+} 
 
 .bgOxfordBlue {
   background-color: #0b1d3a !important;
@@ -443,9 +480,7 @@ body {
     margin-top: 1rem;
     height: auto !important; /* override the 140vh */
   }
-}
 
-@media (max-width: 960px) {
   .peopleReportTimeLogsWrapper {
     flex-direction: column;
     align-items: center; 
