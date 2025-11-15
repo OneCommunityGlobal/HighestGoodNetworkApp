@@ -79,8 +79,8 @@ export const mockEvaluationData = {
       },
     },
     {
-      id: 'participation',
-      name: 'Participation',
+      id: 'projects',
+      name: 'Projects',
       weightage: 10,
       totalItems: 1,
       completedItems: 1,
@@ -90,7 +90,7 @@ export const mockEvaluationData = {
       performanceLevel: 'good',
       color: '#28a745',
       icon: 'faUsers',
-      description: 'Class participation and engagement activities',
+      description: 'Group projects and collaborative work assignments',
       dueDate: '2024-11-19T12:00:00',
       submissions: {
         onTime: 1,
@@ -213,7 +213,7 @@ export const mockEvaluationData = {
     overallRating: 'Good',
     lastUpdated: '2024-10-25T10:30:00Z',
     overall:
-      'You performed strongly in Assignments (80%), Exams (80%), and Participation (80%). You may improve your performance in Quizzes (60%) - consider reviewing quiz preparation strategies.',
+      'You performed strongly in Assignments (80%), Exams (80%), and Projects (80%). You may improve your performance in Quizzes (60%) - consider reviewing quiz preparation strategies.',
     strengths: [
       'Strong analytical thinking and problem-solving skills',
       'Excellent written communication in assignments',

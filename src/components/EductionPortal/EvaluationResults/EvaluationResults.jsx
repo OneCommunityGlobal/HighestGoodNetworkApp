@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import { Container, Alert } from 'reactstrap';
+import { Container, Alert, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faUser,
@@ -8,6 +8,10 @@ import {
   faEye,
   faGraduationCap,
   faExclamationTriangle,
+  faTimes,
+  faCalendarAlt,
+  faPercent,
+  faAward,
 } from '@fortawesome/free-solid-svg-icons';
 
 import styles from './EvaluationResults.module.css';
@@ -18,6 +22,10 @@ const EvaluationResults = ({ auth }) => {
   const [evaluationData, setEvaluationData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [feedbackModal, setFeedbackModal] = useState({
+    isOpen: false,
+    task: null,
+  });
 
   useEffect(() => {
     // Load evaluation data immediately since we're using mock data
@@ -126,6 +134,15 @@ const EvaluationResults = ({ auth }) => {
     if (percentage >= 70) return styles.good;
     if (percentage >= 60) return styles.fair;
     return styles.poor;
+  };
+
+  // Feedback modal functions
+  const openFeedbackModal = task => {
+    setFeedbackModal({ isOpen: true, task });
+  };
+
+  const closeFeedbackModal = () => {
+    setFeedbackModal({ isOpen: false, task: null });
   };
 
   return (
@@ -276,7 +293,10 @@ const EvaluationResults = ({ auth }) => {
                       </span>
                     </td>
                     <td>
-                      <button className={styles.feedbackButton}>
+                      <button
+                        className={styles.feedbackButton}
+                        onClick={() => openFeedbackModal(task)}
+                      >
                         <FontAwesomeIcon icon={faEye} className={styles.buttonIcon} />
                         View Feedback
                       </button>
@@ -285,6 +305,100 @@ const EvaluationResults = ({ auth }) => {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Cards (shown on small screens) */}
+          <div className={styles.mobileAssignments}>
+            {tasks.slice(0, 6).map(task => (
+              <div className={styles.assignmentCard} key={task.id}>
+                <div className={styles.cardHeader}>
+                  <div className={styles.assignmentName}>{task.name}</div>
+                  <span className={`${styles.statusBadge} ${styles[getStatusClass(task.status)]}`}>
+                    {task.status || 'On time'}
+                  </span>
+                </div>
+                <div className={styles.cardMeta}>
+                  <div className={styles.cardMetaItem}>
+                    <strong>Weightage:</strong> {task.weightage || '8'}%
+                  </div>
+                  <div className={styles.cardMetaItem}>
+                    <strong>Score:</strong> {task.earnedMarks}/{task.totalMarks}
+                    <span className={getPerformanceColorClass(task.percentage)}>
+                      {' '}
+                      ({Math.round(task.percentage)}%)
+                    </span>
+                  </div>
+                  <div className={styles.cardMetaItem}>
+                    <strong>Submitted:</strong> {new Date(task.submissionDate).toLocaleDateString()}
+                  </div>
+                </div>
+                <div className={styles.cardActions}>
+                  <button className={styles.feedbackButton} onClick={() => openFeedbackModal(task)}>
+                    <FontAwesomeIcon icon={faEye} className={styles.buttonIcon} />
+                    View Feedback
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Teacher Feedback Section */}
+        <div className={styles.teacherFeedbackSection}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.sectionTitle}>
+              <FontAwesomeIcon icon={faGraduationCap} className={styles.sectionIcon} />
+              Teacher Feedback - Structured feedback display with strengths and recommendations
+            </h3>
+            <div className={styles.teacherInfo}>
+              <span className={styles.teacherName}>
+                {evaluationData.teacherFeedback.teacherName}
+              </span>
+              <span className={styles.teacherTitle}>
+                {evaluationData.teacherFeedback.teacherTitle}
+              </span>
+            </div>
+          </div>
+
+          <div className={styles.feedbackContent}>
+            {/* Overall Feedback */}
+            <div className={styles.overallFeedback}>
+              <h4 className={styles.feedbackSubtitle}>Overall Assessment</h4>
+              <p className={styles.feedbackText}>{evaluationData.teacherFeedback.overall}</p>
+            </div>
+
+            {/* Strengths and Improvements */}
+            <div className={styles.feedbackColumns}>
+              <div className={styles.strengthsSection}>
+                <h4 className={styles.feedbackSubtitle}>
+                  <FontAwesomeIcon icon={faUser} className={styles.feedbackIcon} />
+                  Strengths
+                </h4>
+                <ul className={styles.feedbackList}>
+                  {evaluationData.teacherFeedback.strengths.map((strength, index) => (
+                    <li key={index} className={styles.feedbackItem}>
+                      <span className={styles.checkmark}>✓</span>
+                      {strength}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className={styles.improvementsSection}>
+                <h4 className={styles.feedbackSubtitle}>
+                  <FontAwesomeIcon icon={faExclamationTriangle} className={styles.feedbackIcon} />
+                  Areas for Improvement
+                </h4>
+                <ul className={styles.feedbackList}>
+                  {evaluationData.teacherFeedback.improvements.map((improvement, index) => (
+                    <li key={index} className={styles.feedbackItem}>
+                      <span className={styles.arrow}>→</span>
+                      {improvement}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -308,6 +422,103 @@ const EvaluationResults = ({ auth }) => {
           </div>
         </div>
       </Container>
+
+      {/* Feedback Detail Modal */}
+      <Modal
+        isOpen={feedbackModal.isOpen}
+        toggle={closeFeedbackModal}
+        size="lg"
+        className={styles.feedbackModal}
+        scrollable={true}
+        centered={true}
+      >
+        <ModalHeader toggle={closeFeedbackModal} className={styles.modalHeader}>
+          <FontAwesomeIcon icon={faAward} className={styles.modalIcon} />
+          <span className={styles.modalTitle}>Assignment Feedback Details</span>
+        </ModalHeader>
+        <ModalBody className={styles.modalBody}>
+          {feedbackModal.task && (
+            <div className={styles.feedbackModalContent}>
+              {/* Assignment Header */}
+              <div className={styles.assignmentHeader}>
+                <h4 className={styles.assignmentTitle}>{feedbackModal.task.name}</h4>
+                <div className={styles.assignmentMeta}>
+                  <span className={styles.assignmentType}>
+                    <FontAwesomeIcon icon={faGraduationCap} />
+                    {feedbackModal.task.type}
+                  </span>
+                  <span className={styles.assignmentDate}>
+                    <FontAwesomeIcon icon={faCalendarAlt} />
+                    Due: {new Date(feedbackModal.task.dueDate).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Performance Summary */}
+              <div className={styles.performanceSummary}>
+                <div className={styles.performanceItem}>
+                  <div className={styles.performanceLabel}>Your Score</div>
+                  <div
+                    className={`${styles.performanceValue} ${getPerformanceColorClass(
+                      feedbackModal.task.percentage,
+                    )}`}
+                  >
+                    {feedbackModal.task.earnedMarks}/{feedbackModal.task.totalMarks}
+                    <span className={styles.percentage}>({feedbackModal.task.percentage}%)</span>
+                  </div>
+                </div>
+                <div className={styles.performanceItem}>
+                  <div className={styles.performanceLabel}>Weightage</div>
+                  <div className={styles.performanceValue}>
+                    <FontAwesomeIcon icon={faPercent} />
+                    {feedbackModal.task.weightage}%
+                  </div>
+                </div>
+                <div className={styles.performanceItem}>
+                  <div className={styles.performanceLabel}>Status</div>
+                  <div
+                    className={`${styles.statusValue} ${
+                      styles[getStatusClass(feedbackModal.task.status)]
+                    }`}
+                  >
+                    {feedbackModal.task.status}
+                  </div>
+                </div>
+              </div>
+
+              {/* Teacher Feedback */}
+              <div className={styles.teacherFeedbackDetail}>
+                <h5 className={styles.feedbackTitle}>
+                  <FontAwesomeIcon icon={faUser} />
+                  Teacher Feedback
+                </h5>
+                <div className={styles.feedbackText}>{feedbackModal.task.teacherFeedback}</div>
+              </div>
+
+              {/* Additional Details */}
+              <div className={styles.additionalDetails}>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Submission Date:</span>
+                  <span className={styles.detailValue}>
+                    {new Date(feedbackModal.task.submissionDate).toLocaleDateString()} at{' '}
+                    {new Date(feedbackModal.task.submissionDate).toLocaleTimeString()}
+                  </span>
+                </div>
+                <div className={styles.detailItem}>
+                  <span className={styles.detailLabel}>Grade Category:</span>
+                  <span className={styles.detailValue}>{feedbackModal.task.category}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </ModalBody>
+        <ModalFooter className={styles.modalFooter}>
+          <Button color="primary" onClick={closeFeedbackModal}>
+            <FontAwesomeIcon icon={faTimes} className="me-2" />
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };
