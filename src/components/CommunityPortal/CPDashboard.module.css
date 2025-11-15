@@ -5,6 +5,9 @@
   --filter-label-margin-bottom: 8px;
   --filter-option-spacing: 12px;
   --filter-indent: 20px;
+  --filter-label-font-size: 0.95rem;
+  --filter-option-font-size: 0.9rem;
+  --filter-line-height: 1.5;
 }
 
 .dashboardContainer {
@@ -69,12 +72,14 @@
 }
 
 /* Base styles for filter labels */
-.filterItem label {
+.filterItem > label {
   display: block;
-  font-size: 1rem;
+  font-size: var(--filter-label-font-size);
   font-weight: 600;
   color: #2c3e50;
   margin-bottom: var(--filter-label-margin-bottom);
+  line-height: var(--filter-line-height);
+  letter-spacing: 0.01em;
 }
 
 /* Structure for horizontal filter options (radio buttons) */
@@ -83,24 +88,28 @@
   gap: var(--filter-option-spacing);
   margin-bottom: 10px;
   margin-left: var(--filter-indent);
+  margin-top: 2px;
 }
 
 .filterOptionsHorizontal > div {
   display: flex;
   align-items: center;
   gap: 6px;
+  line-height: var(--filter-line-height);
 }
 
 /* Container for checkbox options to match radio button alignment */
 .filterCheckboxContainer {
   margin-left: var(--filter-indent);
   margin-bottom: 10px;
+  margin-top: 2px;
 }
 
 .filterCheckboxContainer > div {
   display: flex;
   align-items: center;
   gap: 6px;
+  line-height: var(--filter-line-height);
 }
 
 /* Base styles for radio buttons and checkboxes */
@@ -117,8 +126,12 @@
 .filterItem input[type="checkbox"] + label {
   margin: 0;
   font-weight: 400;
+  font-size: var(--filter-option-font-size);
+  color: #2c3e50;
   cursor: pointer;
   user-select: none;
+  line-height: var(--filter-line-height);
+  letter-spacing: 0.01em;
 }
 
 .filterItem input[type="date"],
@@ -129,8 +142,10 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   width: calc(100% - var(--filter-indent));
-  font-size: 1rem;
+  font-size: var(--filter-option-font-size);
+  line-height: var(--filter-line-height);
   background: #ffffff;
+  color: #2c3e50;
   transition: all 0.3s ease;
 }
 
