@@ -41,6 +41,7 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
   const options = {
     responsive: true,
     plugins: {
+      datalabels: { display: false },
       legend: {
         position: 'bottom',
         labels: {
