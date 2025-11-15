@@ -19,12 +19,6 @@ import styles from './InjurySeverityChart.module.css';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const generateColors = n =>
-  Array.from({ length: n }, (_, i) => {
-    const hue = Math.round((i * 360) / n);
-    return `hsl(${hue}, 70%, 50%)`;
-  });
-
 const DEPARTMENT_COLOR_MAP = {
   Plumbing: '#1f77b4',
   Electrical: '#ff7f0e',
@@ -168,7 +162,6 @@ function InjurySeverityDashboard(props) {
   const chartBars = useMemo(() => {
     if (visibleDepartments.length <= 1) {
       // Single department - one bar per project (these will be grouped)
-      const projectColors = generateColors(visibleProjects.length);
       return visibleProjects.map((project, idx) => ({
         key: project._id,
         dataKey: project.name,
@@ -178,7 +171,6 @@ function InjurySeverityDashboard(props) {
       // eslint-disable-next-line no-else-return
     } else {
       // Multiple departments - create stacked bars per project
-      const departmentColors = generateColors(visibleDepartments.length);
       const bars = [];
 
       visibleDepartments.forEach((dept, deptIdx) => {
