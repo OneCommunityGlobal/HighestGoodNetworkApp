@@ -41,6 +41,7 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
   const options = {
     responsive: true,
     plugins: {
+      datalabels: { display: false },
       legend: {
         position: 'bottom',
         labels: {
@@ -50,8 +51,16 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
           color: !darkMode ? '#333' : '#fff',
         },
       },
+      // tooltip: {
+      //   enabled: true,
+      // },
       tooltip: {
-        enabled: true,
+        displayColors: false,
+        callbacks: {
+          title: items =>
+            items && items[0] ? `${items[0].label}: ${items[0].formattedValue}` : '',
+          label: ctx => ctx?.dataset?.label || '',
+        },
       },
     },
   };
