@@ -11,10 +11,11 @@ fi
 echo ""
 echo "🛡️  Husky pre-commit hook triggered"
 
-# Block plain .css files (except .module.css and index.css)
+# Block plain .css files (except .module.css, index.css, and App.css)
 for file in $(git diff --cached --name-only --diff-filter=ACM | grep '\.css$'); do
   case "$file" in
     *index.css) ;;            # allow index.css
+    *App.css) ;;              # allow App.css (global stylesheet)
     *.module.css) ;;          # allow module.css
     *)
       echo "❌  $file is not allowed. Use .module.css instead."

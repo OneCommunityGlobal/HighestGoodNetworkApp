@@ -143,14 +143,31 @@ function UpdateConsumable({ record, setModal }) {
 
   return (
     <Container fluid className={styles.updateConsumableContainer}>
-      <div className={`${styles.updateConsumablePage} ${darkMode ? styles.updateConsumablePageDark : ''}`}>
-        <div className={`${styles.updateConsumable} ${darkMode ? styles.updateConsumableDark : ''}`}>
+      <div
+        className={`${styles.updateConsumablePage} ${
+          darkMode ? styles.updateConsumablePageDark : ''
+        }`}
+      >
+        <div
+          className={`${styles.updateConsumable} ${darkMode ? styles.updateConsumableDark : ''}`}
+        >
           <Form>
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableName" sm={4} className={`${styles.consumableFormLabel} ${darkMode ? styles.consumableFormLabelDark : ''}`}>
+              <Label
+                for="updateConsumableName"
+                sm={4}
+                className={`${styles.consumableFormLabel} ${
+                  darkMode ? styles.consumableFormLabelDark : ''
+                }`}
+              >
                 Consumable
               </Label>
-              <Col sm={6} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+              <Col
+                sm={6}
+                className={`${styles.consumableFormValue} ${
+                  darkMode ? styles.consumableFormValueDark : ''
+                }`}
+              >
                 <b>{record?.itemType?.name}</b>
               </Col>
             </FormGroup>
@@ -159,19 +176,37 @@ function UpdateConsumable({ record, setModal }) {
               <Label
                 for="updateConsumableProject"
                 sm={4}
-                className={`${styles.consumableFormLabel} ${darkMode ? styles.consumableFormLabelDark : ''}`}
+                className={`${styles.consumableFormLabel} ${
+                  darkMode ? styles.consumableFormLabelDark : ''
+                }`}
               >
                 Project Name
               </Label>
-              <Col sm={8} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+              <Col
+                sm={8}
+                className={`${styles.consumableFormValue} ${
+                  darkMode ? styles.consumableFormValueDark : ''
+                }`}
+              >
                 {record?.project.name}
               </Col>
             </FormGroup>
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableDate" sm={4} className={`${styles.consumableFormLabel} ${darkMode ? styles.consumableFormLabelDark : ''}`}>
+              <Label
+                for="updateConsumableDate"
+                sm={4}
+                className={`${styles.consumableFormLabel} ${
+                  darkMode ? styles.consumableFormLabelDark : ''
+                }`}
+              >
                 Date
               </Label>
-              <Col sm={6} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+              <Col
+                sm={6}
+                className={`${styles.consumableFormValue} ${
+                  darkMode ? styles.consumableFormValueDark : ''
+                }`}
+              >
                 <Input
                   id="updateConsumableDate"
                   name="date"
@@ -184,20 +219,42 @@ function UpdateConsumable({ record, setModal }) {
             </FormGroup>
 
             <FormGroup row className="align-items-center justify-content-start">
-              <Label for="updateConsumableUnit" sm={4} className={`${styles.consumableFormLabel} ${darkMode ? styles.consumableFormLabelDark : ''}`}>
+              <Label
+                for="updateConsumableUnit"
+                sm={4}
+                className={`${styles.consumableFormLabel} ${
+                  darkMode ? styles.consumableFormLabelDark : ''
+                }`}
+              >
                 Available
               </Label>
-              <Col sm={6} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+              <Col
+                sm={6}
+                className={`${styles.consumableFormValue} ${
+                  darkMode ? styles.consumableFormValueDark : ''
+                }`}
+              >
                 {record?.stockAvailable}
               </Col>
             </FormGroup>
 
             {availableCount !== undefined && (
               <FormGroup row className="align-items-center justify-content-start">
-                <Label for="updateMaterialUnit" sm={4} className={`${styles.consumableFormLabel} ${darkMode ? styles.consumableFormLabelDark : ''}`}>
+                <Label
+                  for="updateMaterialUnit"
+                  sm={4}
+                  className={`${styles.consumableFormLabel} ${
+                    darkMode ? styles.consumableFormLabelDark : ''
+                  }`}
+                >
                   New Available
                 </Label>
-                <Col sm={6} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+                <Col
+                  sm={6}
+                  className={`${styles.consumableFormValue} ${
+                    darkMode ? styles.consumableFormValueDark : ''
+                  }`}
+                >
                   <span className={availableCount < 0 ? styles.consumableFormErrorClr : undefined}>
                     {availableCount}
                   </span>
@@ -208,11 +265,18 @@ function UpdateConsumable({ record, setModal }) {
               <Label
                 for="updateConsumableQuantityUsed"
                 sm={4}
-                className={`${styles.consumableFormLabel} ${darkMode ? styles.consumableFormLabelDark : ''}`}
+                className={`${styles.consumableFormLabel} ${
+                  darkMode ? styles.consumableFormLabelDark : ''
+                }`}
               >
                 Quantity Used
               </Label>
-              <Col sm={4} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+              <Col
+                sm={4}
+                className={`${styles.consumableFormValue} ${
+                  darkMode ? styles.consumableFormValueDark : ''
+                }`}
+              >
                 <Input
                   id="updateConsumableQuantityUsed"
                   name="quantityUsed"
@@ -231,7 +295,12 @@ function UpdateConsumable({ record, setModal }) {
                   }}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+              <Col
+                sm={{ size: 4 }}
+                className={`${styles.consumableFormValue} ${
+                  darkMode ? styles.consumableFormValueDark : ''
+                }`}
+              >
                 <Input
                   id="updateConsumableQtyUsedLogUnitSelect"
                   name="qtyUsedLogUnit"
@@ -261,11 +330,18 @@ function UpdateConsumable({ record, setModal }) {
               <Label
                 for="updateConsumablequantityWasted"
                 sm={4}
-                className={`${styles.consumableFormLabel} ${darkMode ? styles.consumableFormLabelDark : ''}`}
+                className={`${styles.consumableFormLabel} ${
+                  darkMode ? styles.consumableFormLabelDark : ''
+                }`}
               >
                 Quantity Wasted
               </Label>
-              <Col sm={4} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+              <Col
+                sm={4}
+                className={`${styles.consumableFormValue} ${
+                  darkMode ? styles.consumableFormValueDark : ''
+                }`}
+              >
                 <Input
                   id="updateConsumablequantityWasted"
                   name="quantityWasted"
@@ -284,7 +360,12 @@ function UpdateConsumable({ record, setModal }) {
                   }}
                 />
               </Col>
-              <Col sm={{ size: 4 }} className={`${styles.consumableFormValue} ${darkMode ? styles.consumableFormValueDark : ''}`}>
+              <Col
+                sm={{ size: 4 }}
+                className={`${styles.consumableFormValue} ${
+                  darkMode ? styles.consumableFormValueDark : ''
+                }`}
+              >
                 <Input
                   id="updateConsumableQtyWastedLogUnitSelect"
                   name="qtyWastedLogUnit"
@@ -330,7 +411,9 @@ function UpdateConsumable({ record, setModal }) {
                   availableCount < 0 ||
                   changeOccured === false
                 }
-                className={`${styles.consumableButtonBg} ${darkMode ? styles.consumableButtonBgDark : ''}`}
+                className={`${styles.consumableButtonBg} ${
+                  darkMode ? styles.consumableButtonBgDark : ''
+                }`}
                 onClick={submitHandler}
               >
                 Update Consumable

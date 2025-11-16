@@ -103,21 +103,29 @@ export default function ItemsTable({
           <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
               {selectedProject === 'all' ? (
-                <th className={darkMode ? 'text-light' : ''} onClick={() => sortData('ProjectName')}>
+                <th
+                  className={darkMode ? 'text-light' : ''}
+                  onClick={() => sortData('ProjectName')}
+                >
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
                 <th className={darkMode ? 'text-light' : ''}>Project</th>
               )}
               {selectedItem === 'all' ? (
-                <th className={darkMode ? 'text-light' : ''} onClick={() => sortData('InventoryItemType')}>
+                <th
+                  className={darkMode ? 'text-light' : ''}
+                  onClick={() => sortData('InventoryItemType')}
+                >
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
                 <th className={darkMode ? 'text-light' : ''}>Name</th>
               )}
               {dynamicColumns.map(({ label }) => (
-                <th key={label} className={darkMode ? 'text-light' : ''}>{label}</th>
+                <th key={label} className={darkMode ? 'text-light' : ''}>
+                  {label}
+                </th>
               ))}
               <th className={darkMode ? 'text-light' : ''}>Usage Record</th>
               <th className={darkMode ? 'text-light' : ''}>Updates</th>
@@ -133,7 +141,9 @@ export default function ItemsTable({
                     <td className={darkMode ? 'text-light' : ''}>{el.project?.name}</td>
                     <td className={darkMode ? 'text-light' : ''}>{el.itemType?.name}</td>
                     {dynamicColumns.map(({ label, key }) => (
-                      <td key={label} className={darkMode ? 'text-light' : ''}>{getNestedValue(el, key)}</td>
+                      <td key={label} className={darkMode ? 'text-light' : ''}>
+                        {getNestedValue(el, key)}
+                      </td>
                     ))}
                     <td className={`${styles.itemsCell} ${darkMode ? styles.itemsCellDark : ''}`}>
                       <button
@@ -187,7 +197,11 @@ export default function ItemsTable({
               })
             ) : (
               <tr>
-                <td colSpan={11} className={darkMode ? 'text-light' : ''} style={{ textAlign: 'center' }}>
+                <td
+                  colSpan={11}
+                  className={darkMode ? 'text-light' : ''}
+                  style={{ textAlign: 'center' }}
+                >
                   No items data
                 </td>
               </tr>

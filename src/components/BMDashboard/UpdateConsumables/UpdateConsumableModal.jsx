@@ -24,7 +24,9 @@ function UpdateConsumableModal({ modal, setModal, record }) {
         <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
           <Button
             onClick={toggle}
-            className={darkMode ? styles.consumableButtonOutlineDark : styles.consumableButtonOutline}
+            className={
+              darkMode ? styles.consumableButtonOutlineDark : styles.consumableButtonOutline
+            }
           >
             Close
           </Button>
