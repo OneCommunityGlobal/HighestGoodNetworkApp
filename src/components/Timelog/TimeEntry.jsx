@@ -14,6 +14,7 @@ import DeleteModal from './DeleteModal';
 
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
 import { editTeamMemberTimeEntry } from '../../actions/task';
+import { useServerTime } from '~/context/ServerTimeContext';
 
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
@@ -32,6 +33,7 @@ function TimeEntry(props) {
   const { from, data, displayYear, timeEntryUserProfile, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
+  const { getServerDateISO } = useServerTime();
 
   const { _id: timeEntryUserId } = timeEntryUserProfile;
   const { _id: timeEntryId } = data;
@@ -211,6 +213,7 @@ function TimeEntry(props) {
         toggle={toggle}
         isOpen={timeEntryFormModal}
         tab={tab}
+        serverDate={getServerDateISO()}
       />
     </div>
   );

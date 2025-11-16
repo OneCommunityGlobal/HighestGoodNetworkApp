@@ -23,10 +23,13 @@ import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 import TimerPopout from './TimerPopout';
+import { useServerTime } from '~/context/ServerTimeContext';
+
 import { postTimeEntry, editTimeEntry } from '../../actions/timeEntries';
 
 function Timer({ authUser, darkMode, isPopout }) {
   const dispatch = useDispatch();
+  const { getServerDateISO } = useServerTime();
   const realIsPopout = typeof isPopout === 'boolean' ? isPopout : !!window.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),

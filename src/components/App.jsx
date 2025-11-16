@@ -4,6 +4,7 @@ import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ModalProvider } from '../context/ModalContext';
+import { ServerTimeProvider } from '../context/ServerTimeContext';
 import { persistor, store } from '../store';
 import initAuth from '../utils/authInit';
 import routes from '../routes';
@@ -226,12 +227,14 @@ class App extends Component {
       <Provider store={store}>
         <PersistGate loading={<Loading />} persistor={persistor}>
           <QueryClientProvider client={queryClient}>
-            <ModalProvider>
-              <Router>
-                <UpdateDocumentTitle />
-                {routes}
-              </Router>
-            </ModalProvider>
+            <ServerTimeProvider>
+              <ModalProvider>
+                <Router>
+                  <UpdateDocumentTitle />
+                  {routes}
+                </Router>
+              </ModalProvider>
+            </ServerTimeProvider>
           </QueryClientProvider>
         </PersistGate>
       </Provider>

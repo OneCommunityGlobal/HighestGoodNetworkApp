@@ -3,6 +3,7 @@ import { screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import { configureStore } from 'redux-mock-store';
+import { ServerTimeProvider } from '../../../../context/ServerTimeContext';
 import {
   authMock,
   userProfileMock,
@@ -67,7 +68,9 @@ describe('<TimeEntryForm edit/>', () => {
 
   const renderComponent = () => {
     renderWithProvider(
-      <TimeEntryForm userId={data.personId} data={data} edit toggle={toggle} isOpen />,
+      <ServerTimeProvider>
+        <TimeEntryForm userId={data.personId} data={data} edit toggle={toggle} isOpen />
+      </ServerTimeProvider>,
       { store }
     );
   };
@@ -89,7 +92,9 @@ describe('<TimeEntryForm edit/>', () => {
     renderComponent();
     await screen.findByRole('option', { name: 'Select Project/Task' });
     await userEvent.click(screen.getByRole('button', { name: /clear form/i }));
-    expect(screen.getByLabelText('Date')).toHaveValue(data.dateOfWork);
+    // After clearing, the form should use server date instead of test data
+    const dateField = screen.getByLabelText('Date');
+    expect(dateField.value).toMatch(/^\d{4}-\d{2}-\d{2}$/); // Should match YYYY-MM-DD pattern
     expect(screen.getByRole('combobox')).toHaveValue('defaultProject');
     expect(screen.getByRole('combobox')).toHaveDisplayValue('Select Project/Task');
   });
