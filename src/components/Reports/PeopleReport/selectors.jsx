@@ -54,8 +54,8 @@ export const peopleTasksPieChartViewData = (state) => {
 
   const taskHours = {};
   completedUserEntries.forEach(entry => {
-    if (entry.wbsId == null) return;
-    const taskKey = entry.wbsId;
+    if (entry.taskId == null) return;
+    const taskKey = entry.taskId;
     const taskName = entry.taskName || 'Unnamed Task';
     const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
 
