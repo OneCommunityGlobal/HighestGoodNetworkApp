@@ -12,10 +12,6 @@
   padding: 0;
 }
 
-.weeklyProjectSummaryDashboardContainer {
-  width: 100%;
-  background: var(--bg-color);
-}
 
 .weeklyProjectSummaryHeaderWrapper {
   background-color: var(--bg-color) !important;
@@ -120,12 +116,6 @@
 }
 
 /* ---------------- CARDS ---------------- */
-.projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 10px;
-}
 
 .weeklyProjectSummaryCard {
   background: var(--card-bg);
@@ -223,7 +213,7 @@
 .weeklyProjectSummaryDashboardCategoryContent {
   padding: 15px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
@@ -284,19 +274,22 @@
   color: var(--text-color);
 }
 
-.weeklySummaryShareBtn {
+/* .weeklySummaryShareBtn {
   background-color: var(--button-bg) !important;
 }
 
 .weeklySummaryShareBtn:hover {
   background-color: var(--button-hover) !important;
-}
+} */
 
 /* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important; /* Limit to 80% of viewport height */
   overflow-y: auto !important; /* Enable vertical scrolling */
   padding-right: 15px !important; /* Add some padding for the scrollbar */
+  /* Support for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
 /* Style the scrollbar for better visibility */
@@ -314,11 +307,7 @@
   border-radius: 4px;
 }
 
-/* Support for Firefox */
-.quantityOfMaterialsUsedChartTooltip {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
-}
+
 
 /* Additional adjustments for dark mode if needed */
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {
@@ -419,6 +408,12 @@
   max-width: 1600px;
   margin: auto;
 }
+/* .projectStatusGrid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 10px;
+} */
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */
 .weeklyStatusButton {
