@@ -89,6 +89,7 @@ import TSAFormPage7 from './components/TSAForm/pages/TSAFormPage7';
 import TSAFormPage8 from './components/TSAForm/pages/TSAFormPage8';
 
 import DisplayTeamMemberDetails from './components/HGNForm/TopCommunityMembers/TopCommunityMembers';
+import TopCommunityMembers from './components/HGNForm/TopCommunityMembers';
 
 import HelpPage from './components/LandingPage/HelpPage';
 
