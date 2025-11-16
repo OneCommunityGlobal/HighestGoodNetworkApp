@@ -47,17 +47,17 @@
   width: 0;
 }
 
-.compactBottomRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
 .timeLabel {
   font-weight: 600;
   font-size: 0.85rem;
   color: #ffffff;
+  text-align: center;
+}
+
+.compactControlsRow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .compactControls {
@@ -77,6 +77,13 @@
   background: #f5f5f5;
   color: #333;
   cursor: pointer;
+}
+
+.compactSmallBtn {
+  width: 24px;
+  height: 24px;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .compactCtrlBtn:disabled {

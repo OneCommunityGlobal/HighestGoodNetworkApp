@@ -4,6 +4,7 @@ import styles from "./timer.module.css";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
 import StopRoundedIcon from "@mui/icons-material/StopRounded";
+import RestartAltRoundedIcon from "@mui/icons-material/RestartAltRounded";
 import KeyboardArrowUpRoundedIcon from "@mui/icons-material/KeyboardArrowUpRounded";
 import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -138,6 +139,16 @@ export default function TaskTimer() {
     } catch (_) {}
   };
 
+  const handleReset = async () => {
+    try {
+      const res = await callTimerApi("/api/student/timer/reset", "POST");
+      setTimerInfo(res.data || null);
+    } catch (_) {}
+    setHours(2);
+    setMinutes(0);
+    setDisplayRemaining(null);
+  };
+
   const adjustTimer = async (deltaMinutes) => {
     try {
       const res = await callTimerApi("/api/student/timer/adjust", "POST", {
@@ -145,6 +156,19 @@ export default function TaskTimer() {
       });
       setTimerInfo(res.data);
     } catch (_) {}
+  };
+
+  const handleMiniAdjust = (deltaMinutes) => {
+    if (timerInfo && (timerInfo.status === "running" || timerInfo.status === "paused")) {
+      adjustTimer(deltaMinutes);
+      return;
+    }
+    let total = hours * 60 + minutes + deltaMinutes;
+    if (total < 1) total = 1;
+    const newH = Math.floor(total / 60);
+    const newM = total % 60;
+    setHours(newH % 24);
+    setMinutes(newM);
   };
 
   const fetchStatus = async () => {
@@ -195,35 +219,9 @@ export default function TaskTimer() {
   }, [open]);
 
   const currentStatus = timerInfo?.status || "idle";
+  const isRunning = currentStatus === "running";
   const isActive = currentStatus === "running" || currentStatus === "paused";
-  const isEditable =
-    !timerInfo ||
-    currentStatus === "idle" ||
-    currentStatus === "stopped";
-
-  let dispH;
-  let dispM;
-  let dispS;
-
-  if (isActive && displayRemaining != null) {
-    const { h, m, s } = msToHMS(displayRemaining);
-    dispH = pad2(h);
-    dispM = pad2(m);
-    dispS = pad2(s);
-  } else {
-    dispH = pad2(hours);
-    dispM = pad2(minutes);
-    dispS = "00";
-  }
-
-  const primaryIcon =
-    currentStatus === "running" ? (
-      <PauseRoundedIcon fontSize="small" />
-    ) : (
-      <PlayArrowRoundedIcon fontSize="small" />
-    );
-
-  const primaryLabel = currentStatus === "running" ? "Pause" : "Start";
+  const isEditable = !isRunning;
 
   const totalMs =
     timerInfo?.durationMs ||
@@ -256,6 +254,30 @@ export default function TaskTimer() {
   const strokeDashoffset =
     circumference - (circumference * progressPct) / 100;
 
+  let dispH;
+  let dispM;
+  let dispS;
+
+  if (isRunning && displayRemaining != null) {
+    const { h, m, s } = msToHMS(displayRemaining);
+    dispH = pad2(h);
+    dispM = pad2(m);
+    dispS = pad2(s);
+  } else {
+    dispH = pad2(hours);
+    dispM = pad2(minutes);
+    dispS = displayRemaining != null ? pad2(msToHMS(displayRemaining).s) : "00";
+  }
+
+  const primaryIcon =
+    currentStatus === "running" ? (
+      <PauseRoundedIcon fontSize="small" />
+    ) : (
+      <PlayArrowRoundedIcon fontSize="small" />
+    );
+
+  const primaryLabel = currentStatus === "running" ? "Pause" : "Start";
+
   return (
     <>
       <div className={styles.compactWrapper}>
@@ -274,30 +296,52 @@ export default function TaskTimer() {
               style={{ width: `${progressPct}%` }}
             />
           </div>
-
-          <div className={styles.compactBottomRow}>
-            <div className={styles.timeLabel}>
-              {dispH}:{dispM}:{dispS}
-            </div>
-            <div className={styles.compactControls}>
-              <button
-                className={styles.compactCtrlBtn}
-                onClick={handleTogglePlay}
-                disabled={loading}
-                title={primaryLabel}
-              >
-                {primaryIcon}
-              </button>
-              <button
-                className={styles.compactCtrlBtn}
-                onClick={handleStop}
-                disabled={loading || !isActive}
-                title="Stop"
-              >
-                <StopRoundedIcon fontSize="small" />
-              </button>
-            </div>
+          <div className={styles.timeLabel}>
+            {dispH}:{dispM}:{dispS}
           </div>
+        </div>
+
+        <div className={styles.compactControlsRow}>
+          <button
+            className={`${styles.compactCtrlBtn} ${styles.compactSmallBtn}`}
+            onClick={() => handleMiniAdjust(-15)}
+            disabled={loading}
+            title="-15 min"
+          >
+            -
+          </button>
+          <button
+            className={`${styles.compactCtrlBtn} ${styles.compactSmallBtn}`}
+            onClick={() => handleMiniAdjust(15)}
+            disabled={loading}
+            title="+15 min"
+          >
+            +
+          </button>
+          <button
+            className={styles.compactCtrlBtn}
+            onClick={handleTogglePlay}
+            disabled={loading}
+            title={primaryLabel}
+          >
+            {primaryIcon}
+          </button>
+          <button
+            className={styles.compactCtrlBtn}
+            onClick={handleStop}
+            disabled={loading || !isActive}
+            title="Stop"
+          >
+            <StopRoundedIcon fontSize="small" />
+          </button>
+          <button
+            className={styles.compactCtrlBtn}
+            onClick={handleReset}
+            disabled={loading}
+            title="Reset to 02:00:00"
+          >
+            <RestartAltRoundedIcon fontSize="small" />
+          </button>
         </div>
       </div>
 
@@ -377,6 +421,14 @@ export default function TaskTimer() {
                       title="Stop"
                     >
                       <StopRoundedIcon />
+                    </button>
+                    <button
+                      className={styles.circleCtrlBtn}
+                      onClick={handleReset}
+                      disabled={loading}
+                      title="Reset to 02:00:00"
+                    >
+                      <RestartAltRoundedIcon />
                     </button>
                   </div>
                 </div>
