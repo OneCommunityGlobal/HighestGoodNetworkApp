@@ -120,6 +120,12 @@
   width: auto;
   cursor: pointer;
   flex-shrink: 0;
+  accent-color: #2c3e50;
+}
+
+.filterItem input[type="radio"]:hover,
+.filterItem input[type="checkbox"]:hover {
+  opacity: 0.8;
 }
 
 .filterItem input[type="radio"] + label,
@@ -132,6 +138,12 @@
   user-select: none;
   line-height: var(--filter-line-height);
   letter-spacing: 0.01em;
+  transition: color 0.2s ease;
+}
+
+.filterItem input[type="radio"]:hover + label,
+.filterItem input[type="checkbox"]:hover + label {
+  color: #34495e;
 }
 
 .filterItem input[type="date"],
@@ -147,6 +159,7 @@
   background: #ffffff;
   color: #2c3e50;
   transition: all 0.3s ease;
+  box-sizing: border-box;
 }
 
 .filterItem input[type="date"]:focus,
@@ -154,6 +167,37 @@
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
+}
+
+.filterItem input[type="date"]:hover,
+.filterItem select:hover {
+  border-color: #bbb;
+}
+
+/* Additional styling for date filter class */
+.dateFilter {
+  padding: 12px 15px;
+  margin-top: 10px;
+  margin-left: var(--filter-indent);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: calc(100% - var(--filter-indent));
+  font-size: var(--filter-option-font-size);
+  line-height: var(--filter-line-height);
+  background: #ffffff;
+  color: #2c3e50;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.dateFilter:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  outline: none;
+}
+
+.dateFilter:hover {
+  border-color: #bbb;
 }
 
 .dashboardMain {

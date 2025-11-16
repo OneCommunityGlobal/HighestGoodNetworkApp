@@ -81,7 +81,7 @@ export function CPDashboard() {
                   <label htmlFor="date-weekend">This Weekend</label>
                 </div>
               </div>
-              <Input type="date" placeholder="Ending After" className="date-filter" />
+              <Input type="date" placeholder="Ending After" className={styles.dateFilter} />
             </div>
             <div className={styles.filterItem}>
               <label htmlFor="online-only">Online</label>
