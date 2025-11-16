@@ -67,45 +67,6 @@ import cn from 'classnames';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
-// Keeping this block commented intentionally for future reference —
-// // 🟢 NEW: Enhanced filterColor normalization function
-// const normalizeFilterColor = filterColor => {
-//   // eslint-disable-next-line no-console
-//   console.log('🔧 Normalizing filterColor:', filterColor, 'Type:', typeof filterColor);
-//   if (!filterColor) {
-//     // eslint-disable-next-line no-console
-//     console.log('🔧 FilterColor is null/undefined, returning empty array');
-//     return [];
-//   }
-//   if (Array.isArray(filterColor)) {
-//     // eslint-disable-next-line no-console
-//     console.log('🔧 FilterColor is already array:', filterColor);
-//     return filterColor.filter(Boolean); // Remove any falsy values
-//   }
-//   if (typeof filterColor === 'string') {
-//     // eslint-disable-next-line no-console
-//     console.log('🔧 FilterColor is string, attempting to parse:', filterColor);
-//     // Try to parse as JSON first
-//     try {
-//       const parsed = JSON.parse(filterColor);
-//       if (Array.isArray(parsed)) {
-//         // eslint-disable-next-line no-console
-//         console.log('🔧 Successfully parsed string as JSON array:', parsed);
-//         return parsed.filter(Boolean);
-//       }
-//       // eslint-disable-next-line no-console
-//       console.log('🔧 Parsed JSON but not array:', parsed);
-//       return [filterColor];
-//     } catch (error) {
-//       // eslint-disable-next-line no-console
-//       console.log('🔧 Failed to parse as JSON, treating as single string:', filterColor);
-//       return [filterColor];
-//     }
-//   }
-//   // eslint-disable-next-line no-console
-//   console.log('🔧 Unknown filterColor type, returning empty array');
-//   return [];
-// };
 
 const getWeekDates = () => {
   return Array.from({ length: 4 }).map((_, index) => ({
@@ -262,6 +223,27 @@ const WeeklySummariesReport = props => {
     );
   };
 
+  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
+    // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
+    const weekStartLA = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const weekEndLA = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const summaryStart = new Date(startDateStr);
+    const summaryEnd = new Date(endDateStr);
+
+    // keep if it overlaps that week
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
+  };
+
   /**
    * Get the roleNames
    * @param {*} summaries
@@ -386,61 +368,7 @@ const WeeklySummariesReport = props => {
 
       // Fetch data for the active tab only
       const res = await getWeeklySummariesReport(weekIndex); // old working code
-      // const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-      // Keeping this block commented intentionally for future reference —
-      // const res = await axios.get(url);
-      // eslint-disable-next-line no-console
-      // debugging logic
-      // console.log('📦 API Response Summaries:', res.data);
-      // // console.log('API response:', res);
-      // // console.log('Response data:', res?.data);
-      // // console.log('Data is array:', Array.isArray(res?.data));
-      // // console.log('Data length:', res?.data?.length);
-      // // eslint-disable-next-line no-console
-      // console.log('API DATA: ', res.data);
       const summaries = res?.data ?? []; // old working code
-      // const summaries = Array.isArray(res?.data) ? res.data : [];
-      // // eslint-disable-next-line no-console
-      // console.log('Backend summary sample:', res?.data?.[0]);
-
-      // Keeping this block commented intentionally for future reference —
-      // // eslint-disable-next-line no-console
-      // console.log(
-      //   '✅ Filtered summaries for teamCode "ABC123"',
-      //   summaries
-      //     .filter(s => (s.teamCode || 'noCodeLabel') === 'a-BCC')
-      //     .map(s => ({
-      //       name: `${s.firstName} ${s.lastName}`,
-      //       _id: s._id,
-      //       teamCode: s.teamCode || 'noCodeLabel',
-      //       filterColor: s.filterColor,
-      //     })),
-      // );
-      // // 🟢 ENHANCED: Fetch data with comprehensive filterColor debugging
-      // const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-      // // eslint-disable-next-line no-console
-      // console.log('🌐 Making API request to:', url);
-      // const res = await axios.get(url);
-      // // eslint-disable-next-line no-console
-      // console.log('📦 Raw API Response:', res.data);
-      // // eslint-disable-next-line no-console
-      // console.log('📦 API Response length:', res.data?.length);
-      // // 🟢 NEW: Debug filterColors in API response
-      // if (Array.isArray(res?.data)) {
-      //   // eslint-disable-next-line no-console
-      //   console.log('🎨 FilterColors in API response:');
-      //   res.data.forEach((user, index) => {
-      //     if (index < 5) {
-      //       // Log first 5 users
-      //       // eslint-disable-next-line no-console
-      //       console.log(
-      //         `  - ${user.firstName} ${user.lastName}: ${JSON.stringify(
-      //           user.filterColor,
-      //         )} (type: ${typeof user.filterColor})`,
-      //       );
-      //     }
-      //   });
-      // }
       if (!Array.isArray(summaries) || summaries.length === 0) {
         setState(prevState => ({
           ...prevState,
@@ -505,28 +433,7 @@ const WeeklySummariesReport = props => {
         }
 
         return { ...summary, promisedHoursByWeek, filterColor };
-        // 🟢 ENHANCED: Add new key of promised hours by week AND normalize filterColor
-        // summariesCopy = summariesCopy.map(summary => {
-        //   const promisedHoursByWeek = weekDates.map(weekDate =>
-        //     getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-        //   );
-
-        // Keeping this block commented intentionally for future reference —
-        //   // 🟢 NEW: Use enhanced filterColor normalization
-        //   const normalizedFilterColor = normalizeFilterColor(summary.filterColor);
-        //   // eslint-disable-next-line no-console
-        //   console.log(`🎨 Processing ${summary.firstName} ${summary.lastName}:`);
-        //   // eslint-disable-next-line no-console
-        //   console.log(`   Original filterColor:`, summary.filterColor);
-        //   // eslint-disable-next-line no-console
-        //   console.log(`   Normalized filterColor:`, normalizedFilterColor);
-        //   return {
-        //     ...summary,
-        //     promisedHoursByWeek,
-        //     filterColor: normalizedFilterColor,
-        //   };
       });
-      // });
 
       const colorOptionGroup = new Set();
       const colorOptions = [];
@@ -805,7 +712,10 @@ const WeeklySummariesReport = props => {
         //     return false; // Skip inactive members unless their summary is from last week
         //   }
         // }
-        if (summary?.isActive === false && !isLastWeekReport(summary.startDate, summary.endDate)) {
+        if (
+          summary?.isActive === false &&
+          !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+        ) {
           return false;
         }
         const isMeetCriteria =
@@ -866,32 +776,6 @@ const WeeklySummariesReport = props => {
           hasTrophy &&
           matchesLoggedHoursRange
         );
-        // 🟢 ENHANCED: Special color filter logic with debugging
-        // const matchesSpecialColor =
-        //   activeFilterColors.length === 0 ||
-        //   activeFilterColors.some(color => {
-        //     const userColors = Array.isArray(summary.filterColor) ? summary.filterColor : [];
-        //     const matches = userColors.includes(color);
-        //     if (summary.firstName === 'RahulB' && summary.lastName === 'Test-Dropbox') {
-        //       // eslint-disable-next-line no-console
-        //       console.log(`🔍 Special color check for ${summary.firstName}:`, {
-        //         filterColor: summary.filterColor,
-        //         userColors,
-        //         checkingColor: color,
-        //         matches,
-        //       });
-        //     }
-        //     return matches;
-        //   });
-        // return (
-        //   (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
-        //   (selectedColorsArray.length === 0 ||
-        //     selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-        //   matchesSpecialColor &&
-        //   isOverHours &&
-        //   isBio &&
-        //   hasTrophy
-        // );
       });
 
       if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
@@ -1068,9 +952,13 @@ const WeeklySummariesReport = props => {
       // Save in session storage
       sessionStorage.setItem('tabSelection', tab);
 
-      // Check if we already have data for this tab
-      if (state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
-        // Use cached data
+      const weekIndex = navItems.indexOf(tab);
+
+      // Always refetch for "Last Week" so late submissions show up
+      const shouldForceFetch = tab === 'Last Week';
+
+      if (!shouldForceFetch && state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
+        // use cache
         setState(prevState => ({
           ...prevState,
           summaries: prevState.summariesByTab[tab],
@@ -1082,18 +970,13 @@ const WeeklySummariesReport = props => {
           },
         }));
       } else {
-        // Fetch new data
-        const weekIndex = navItems.indexOf(tab);
-
+        // fetch fresh
         props
           .getWeeklySummariesReport(weekIndex)
           .then(res => {
             if (res && res.data) {
-              // Process data
               let summariesCopy = [...res.data];
               summariesCopy = alphabetize(summariesCopy);
-
-              // Add promised hours data
               summariesCopy = summariesCopy.map(summary => {
                 const promisedHoursByWeek = weekDates.map(weekDate =>
                   getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
@@ -1114,13 +997,12 @@ const WeeklySummariesReport = props => {
                 };
               });
 
-              // Update state
               setState(prevState => ({
                 ...prevState,
                 summaries: summariesCopy,
                 filteredSummaries: summariesCopy,
                 badges: props.allBadgeData || prevState.badges,
-                loadedTabs: [...prevState.loadedTabs, tab],
+                loadedTabs: [...new Set([...prevState.loadedTabs, tab])],
                 summariesByTab: {
                   ...prevState.summariesByTab,
                   [tab]: summariesCopy,
@@ -1141,7 +1023,6 @@ const WeeklySummariesReport = props => {
             }
           })
           .catch(() => {
-            // console.error('Error loading tab data:', error);
             setState(prevState => ({
               ...prevState,
               tabsLoading: {
@@ -1313,58 +1194,6 @@ const WeeklySummariesReport = props => {
       return null;
     }
   };
-
-  // Keeping this block commented intentionally for future reference —
-  // const handleSelectColorChange = event => {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     selectedColors: event,
-  //   }));
-  // };
-  // const handleReplaceCode = e => {
-  //   try {
-  //     e.persist();
-  //     setState(prevState => ({ ...prevState, replaceCode: e.target?.value }));
-  //     return e;
-  //   } catch (error) {
-  //     return null;
-  //   }
-  // };
-  // const handleTrophyToggleChange = () => {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     selectedTrophies: !prevState.selectedTrophies,
-  //   }));
-  // };
-  // const handleSpecialColorToggleChange = (color, isEnabled) => {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     selectedSpecialColors: {
-  //       ...prevState.selectedSpecialColors,
-  //       [color]: isEnabled,
-  //     },
-  //   }));
-  // };
-  // const handleSpecialColorDotClick = (userId, color) => {
-  //   setState(prevState => {
-  //     const updatedSummaries = prevState.summaries.map(summary => {
-  //       if (summary._id === userId) {
-  //         return { ...summary, filterColor: color };
-  //       }
-  //       return summary;
-  //     });
-  //     // Also update the tab-specific cache
-  //     const updatedSummariesByTab = {
-  //       ...prevState.summariesByTab,
-  //       [prevState.activeTab]: updatedSummaries,
-  //     };
-  //     return {
-  //       ...prevState,
-  //       summaries: updatedSummaries,
-  //       summariesByTab: updatedSummariesByTab,
-  //     };
-  //   });
-  // };
 
   // Saved filters functionality
   const handleSaveFilter = async filterName => {
@@ -1633,18 +1462,6 @@ const WeeklySummariesReport = props => {
 
   const handleSpecialColorDotClick = async (userId, color) => {
     try {
-      // const currentRequestorId = props.auth?.user?.userid;
-      // if (!currentRequestorId) {
-      //   console.error(
-      //     '❌ Cannot update filterColor: Requestor ID is missing from props.auth.',
-      //     props.auth,
-      //   );
-      //   toast.error(
-      //     'Cannot update color: Your user information seems incomplete. Please try refreshing the page.',
-      //   );
-      //   return; // Stop the function here if the ID is missing
-      // }
-      // **********************************
       // Logging inputs and the current state
       console.log('handleSpecialColorDotClick called with:', { userId, color });
       console.log('Current state.summaries (first 5):', state.summaries?.slice(0, 5)); // Logging the array that is being used
@@ -1752,112 +1569,7 @@ const WeeklySummariesReport = props => {
       toast.error('Failed to update filterColor. Please try again.');
     }
   };
-  // Keeping this block commented intentionally for future reference —
-  // const handleBulkDotClick = async color => {
-  //   if (!state.selectedCodes || state.selectedCodes.length === 0) {
-  //     toast.warning('Please, select team codes first');
-  //     return;
-  //   }
-  //   const selectedTeamCodes = state.selectedCodes.map(c => c.value);
-  //   const newState = true; // always apply color
-  //   // 1️⃣ Optimistic UI update
-  //   const updatedSummaries = state.summaries.map(user =>
-  //     selectedTeamCodes.includes(user.teamCode) ? { ...user, filterColor: [color] } : user,
-  //   );
-  //   // 1: Get all users matching selected team codes
-  //   const matchingUsers = state.summaries.filter(user => selectedTeamCodes.includes(user.teamCode));
-  //   if (matchingUsers.length === 0) {
-  //     console.warn('No matching users found for selected team codes!');
-  //     return;
-  //   }
-  //   setState(prev => ({
-  //     ...prev,
-  //     summaries: updatedSummaries,
-  //     summariesByTab: {
-  //       ...prev.summariesByTab,
-  //       [state.activeTab]: updatedSummaries,
-  //     },
-  //     bulkSelectedColors: {
-  //       purple: color === 'purple',
-  //       green: color === 'green',
-  //       navy: color === 'navy',
-  //     }, // reset dots immediately
-  //   }));
-  //   // 2️⃣ Fire toast immediately
-  //   toast.success(`Bulk "${color}" applied!`);
-  //   // 3️⃣ Persist to backend asynchronously (no need to wait)
-  //   matchingUsers.forEach(user =>
-  //     props
-  //       .updateOneSummaryReport(user._id, {
-  //         ...user,
-  //         filterColor: [color],
-  //         requestor: {
-  //           requestorId: props.auth?.user?._id,
-  //           role: props.auth?.user?.role,
-  //           permissions: props.auth?.user?.permissions,
-  //           email: props.auth?.user?.email,
-  //         },
-  //       })
-  //       .then(() => console.log(`✅ Updated ${user._id}`))
-  //       .catch(err => {
-  //         // console.error(`Failed to update user ${user._id}`, err)
-  //         const status = err?.response?.status;
-  //         const msg = err?.response?.data?.message || err.message;
-  //         console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
-  //       }),
-  //   );
-  //   // matchingUsers.forEach(user => {
-  //   //   const payload = {
-  //   //     filterColor: [color], // always overwrite
-  //   //     requestor: {
-  //   //       requestorId: props.auth?.user?._id,
-  //   //       role: props.auth?.user?.role,
-  //   //       permissions: props.auth?.user?.permissions,
-  //   //       email: props.auth?.user?.email,
-  //   //     },
-  //   //   };
-  //   //   props
-  //   //     .updateOneSummaryReport(user._id, payload)
-  //   //     .then(() => console.log(`✅ Updated ${user._id}`))
-  //   //     .catch(err => {
-  //   //       const status = err?.response?.status;
-  //   //       const msg = err?.response?.data?.message || err.message;
-  //   //       console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
-  //   //     });
-  //   // });
-  // };
-  // const handleBulkDotClick = async (color, selectedUsers = []) => {
-  //   if (!Array.isArray(selectedUsers) || selectedUsers.length === 0) {
-  //     console.warn('⚠️ No users passed to handleBulkDotClick');
-  //     return;
-  //   }
-  //   try {
-  //     await Promise.all(
-  //       console.log('selectedUsers in bulk:', selectedUsers),
-  //       console.log('typeof:', typeof selectedUsers, Array.isArray(selectedUsers)),
-  //       selectedUsers.map(async user => {
-  //         const payload = {
-  //           firstName: user.firstName || 'Unknown',
-  //           lastName: user.lastName || 'Unknown',
-  //           personalLinks: Array.isArray(user.personalLinks) ? user.personalLinks : [],
-  //           adminLinks: Array.isArray(user.adminLinks) ? user.adminLinks : [],
-  //           filterColor: [color],
-  //           requestor: {
-  //             requestorId: currentUser._id,
-  //             role: currentUser.role,
-  //             permissions: currentUser.permissions,
-  //           },
-  //         };
-  //         console.log('🚀 Bulk PUT payload:', payload);
-  //         await axios.put(`/userProfile/${user._id}`, payload);
-  //       }),
-  //     );
-  //     toast.success('✅ Bulk color update applied!');
-  //   } catch (err) {
-  //     console.error('❌ Bulk color update failed:', err);
-  //     toast.error('Bulk update failed');
-  //   }
-  // };
+
   const handleBulkDotClick = async color => {
     try {
       // 1) Guard: ensure we have selected codes in state
@@ -2015,207 +1727,6 @@ const WeeklySummariesReport = props => {
       toast.error('Bulk update failed unexpectedly. See console for details.');
     }
   };
-  // Keeping this block commented intentionally for future reference —
-  // const handleBulkDotClick = async color => {
-  //   if (!state.selectedCodes || state.selectedCodes.length === 0) {
-  //     toast.warning('Please, select team codes first');
-  //     return;
-  //   }
-  //   const safeSelectedCodes = Array.isArray(selectedCodes)
-  //     ? selectedCodes
-  //     : selectedCodes
-  //     ? [selectedCodes]
-  //     : [];
-  //   const selectedTeamCodes = safeSelectedCodes
-  //     .map(e => (e && e.value ? e.value : e))
-  //     .filter(Boolean);
-  //   console.log('✅ selectedTeamCodes:', selectedTeamCodes);
-
-  //   // Keeping this block commented intentionally for future reference —
-  //   // const selectedTeamCodes = new Set(state.selectedCodes.map(c => c.value));
-  //   // const newState = true; // always apply color
-  //   // // 1️⃣ Optimistic UI updates
-  //   // const updatedSummaries = state.summaries.map(user =>
-  //   //   selectedTeamCodes.includes(user.teamCode) ? { ...user, filterColor: [color] } : user,
-  //   // );
-  //   // 1: Getting all users matching selected team codes
-  //   const matchingUsers = state.summaries.filter(user => selectedTeamCodes.includes(user.teamCode));
-  //   if (matchingUsers.length === 0) {
-  //     console.warn('No matching users found for selected team codes!');
-  //     return;
-  //   }
-  //   const usersMissingId = matchingUsers.filter(u => !u?._id);
-  //   if (usersMissingId.length > 0) {
-  //     console.warn(
-  //       `⚠️ BULK UPDATE PRE-CHECK: ${usersMissingId.length} users are missing an _id and will be skipped!`,
-  //       usersMissingId,
-  //     );
-  //     toast.warn(
-  //       `Warning: ${usersMissingId.length} users have incomplete data and will be skipped.`,
-  //     );
-  //   }
-  //   // setState(prev => ({
-  //   //   ...prev,
-  //   //   summaries: updatedSummaries,
-  //   //   summariesByTab: {
-  //   //     ...prev.summariesByTab,
-  //   //     [state.activeTab]: updatedSummaries,
-  //   //   },
-  //   //   bulkSelectedColors: {
-  //   //     purple: color === 'purple',
-  //   //     green: color === 'green',
-  //   //     navy: color === 'navy',
-  //   //   }, // reset dots immediately
-  //   // }));
-  //   // --- Showing the immediate feedback ---
-  //   setState(prev => ({
-  //     ...prev,
-  //     bulkSelectedColors: {
-  //       purple: color === 'purple',
-  //       green: color === 'green',
-  //       navy: color === 'navy',
-  //     },
-  //   }));
-  //   toast.success(`Applying bulk "${color}"...`);
-  //   // -----------------------------
-  //   let successCount = 0;
-  //   let failCount = 0;
-  //   const updatePromises = matchingUsers.map(user => {
-  //     // *** ADDING THE GUARD CLAUSE ***
-  //     if (!user?._id) {
-  //       console.warn('⚠️ Skipping update for user object missing _id:', user);
-  //       failCount++;
-  //       return Promise.resolve({ status: 'skipped', reason: 'Missing user._id' }); // Resolve promise for skipped user
-  //     }
-  //     // ************************
-  //     // *** SEND REQUIRED PAYLOAD ***
-  //     const payloadToSend = {
-  //       filterColor: [color], // Always overwriting with the selected bulk color
-  //       requestor: {
-  //         requestorId: props.auth?.user?.userid,
-  //         role: props.auth?.user?.role,
-  //         permissions: props.auth?.user?.permissions,
-  //         email: props.auth?.user?.email,
-  //       },
-  //       firstName: user.firstName,
-  //       lastName: user.lastName,
-  //       personalLinks: user.personalLinks || [], // adding it even though it's optional
-  //       adminLinks: user.adminLinks || [], // adding it even though it's optional
-  //     };
-  //     // **************************
-  //     return props
-  //       .updateOneSummaryReport(user._id, payloadToSend) // Passing user._id and full payload
-  //       .then(res => {
-  //         console.log(`✅ Updated ${user._id}`);
-  //         successCount++;
-  //         const updatedUserFromServer = res?.data;
-  //         setState(prev => {
-  //           // --- Updating state.summaries ---
-  //           const updatedSummaries = prev.summaries.map(u => {
-  //             if (u._id === user._id) {
-  //               return {
-  //                 ...u,
-  //                 filterColor: updatedUserFromServer?.filterColor || [color],
-  //               };
-  //             }
-  //             return u;
-  //           });
-  //           // *** ALSO Updating state.filteredSummaries ***
-  //           const updatedFilteredSummaries = prev.filteredSummaries.map(u => {
-  //             if (u._id === user._id) {
-  //               // This code finds the same user in the filtered list
-  //               return {
-  //                 ...u,
-  //                 filterColor: updatedUserFromServer?.filterColor || [color], // Applying the same update
-  //               };
-  //             }
-  //             return u;
-  //           });
-  //           // ******************************************
-  //           // Updating the specific tab's cache
-  //           const updatedSummariesForTab = {
-  //             ...prev.summariesByTab,
-  //             [prev.activeTab]: updatedSummaries,
-  //           };
-  //           return {
-  //             ...prev,
-  //             summaries: updatedSummaries,
-  //             filteredSummaries: updatedFilteredSummaries, // Adding updated filtered list here
-  //             summariesByTab: updatedSummariesForTab,
-  //           };
-  //         });
-  //         return { status: 'fulfilled', value: res };
-  //       })
-  //       .catch(err => {
-  //         const status = err?.response?.status;
-  //         const msg = err?.response?.data?.message || err.message;
-  //         console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
-  //         failCount++;
-  //         return { status: 'rejected', reason: err }; // Returns rejected promise info
-  //       });
-  //   });
-  //   // Waiting for all the updates to finish
-  //   await Promise.allSettled(updatePromises);
-  //   // --- Final Feedback ---
-  //   if (failCount > 0) {
-  //     toast.error(`Bulk update finished. ${successCount} succeeded, ${failCount} failed.`);
-  //   } else {
-  //     toast.success(`Bulk "${color}" applied successfully to ${successCount} users!`);
-  //   }
-  //   // Resets bulk selection UI after completion
-  //   // setState(prev => ({
-  //   //   ...prev,
-  //   //   bulkSelectedColors: { purple: false, green: false, navy: false },
-  //   //   // refreshing: true, // Triggers refresh state if there's one
-  //   // }));
-  //   // If added a refresh state, trigger the refresh function here:
-  //   // refreshCurrentTab();
-  //   // createIntialSummaries(); // Refetch initial tab data
-  //   // 2️⃣ Fires toast immediately
-  //   // toast.success(`Bulk "${color}" applied!`);
-  //   // // 3️⃣ Persists to backend asynchronously (no need to wait)
-  //   // matchingUsers.forEach(user =>
-  //   //   props
-  //   //     .updateOneSummaryReport(user.userid, {
-  //   //       ...user,
-  //   //       filterColor: [color],
-  //   //       requestor: {
-  //   //         requestorId: props.auth?.user?.userid,
-  //   //         role: props.auth?.user?.role,
-  //   //         permissions: props.auth?.user?.permissions,
-  //   //         email: props.auth?.user?.email,
-  //   //       },
-  //   //     })
-  //   //     .then(() => console.log(`✅ Updated ${user.userid}`))
-  //   //     .catch(err => {
-  //   //       // console.error(`Failed to update user ${user._id}`, err)
-  //   //       const status = err?.response?.status;
-  //   //       const msg = err?.response?.data?.message || err.message;
-  //   //       console.warn(`⚠️ Skipped user ${user.userid} (${status}): ${msg}`);
-  //   //     }),
-  //   // );
-  //   // above is the latest code
-  //   // matchingUsers.forEach(user => {
-  //   //   const payload = {
-  //   //     filterColor: [color], // always overwrite
-  //   //     requestor: {
-  //   //       requestorId: props.auth?.user?._id,
-  //   //       role: props.auth?.user?.role,
-  //   //       permissions: props.auth?.user?.permissions,
-  //   //       email: props.auth?.user?.email,
-  //   //     },
-  //   //   };
-  //   //   props
-  //   //     .updateOneSummaryReport(user._id, payload)
-  //   //     .then(() => console.log(`✅ Updated ${user._id}`))
-  //   //     .catch(err => {
-  //   //       const status = err?.response?.status;
-  //   //       const msg = err?.response?.data?.message || err.message;
-  //   //       console.warn(`⚠️ Skipped user ${user._id} (${status}): ${msg}`);
-  //   //     });
-  //   // });
-  //   // };
-  // };
 
   const passwordInputModalToggle = () => {
     try {
@@ -2246,14 +1757,7 @@ const WeeklySummariesReport = props => {
       bulkSelectedColors: { purple: false, green: false, navy: false },
     }));
 
-    // console.log('Initial useEffect running');
-    // props.getWeeklySummariesReport().then(freshSummaries => {
-    //   createIntialSummaries(freshSummaries);
-    // }); // ✅ Ensures fresh MongoDB data is loaded
-    // props.getWeeklySummariesReport();
-    // Only loads the initial tab, nothing else
     createIntialSummaries();
-    // props.getWeeklySummariesReport();
 
     return () => {
       isMounted = false;
@@ -2324,89 +1828,6 @@ const WeeklySummariesReport = props => {
     props.getSavedFilters();
   }, []);
 
-  // workingggggggggg
-  // When Redux summaries change, store ONLY for current tab
-  // useEffect(() => {
-  //   if (!props.summaries?.length) return;
-  //   // if (props.summaries?.length) {
-  //   //   createIntialSummaries(props.summaries);
-  //   // }
-  //   if (!state.summaries?.length) {
-  //     const merged = props.summaries.map(incoming => ({
-  //       ...incoming,
-  //       filterColor: Array.isArray(incoming.filterColor) ? [...incoming.filterColor] : [],
-  //     }));
-
-  //     setState(prev => {
-  //       const merged = props.summaries.map(incoming => ({
-  //         ...incoming,
-  //         filterColor: Array.isArray(incoming.filterColor) ? [...incoming.filterColor] : [],
-  //       }));
-  //       //   const existing = prev.summaries.find(s => s._id === incoming._id);
-  //       //   return {
-  //       //     ...incoming,
-  //       //     filterColor: Array.isArray(incoming.filterColor)
-  //       //       ? [...incoming.filterColor]
-  //       //       : existing?.filterColor || [],
-  //       //   };
-  //       // });
-  //       return {
-  //         ...prev,
-  //         summaries: merged,
-  //         summariesByTab: {
-  //           ...prev.summariesByTab,
-  //           [prev.activeTab]: merged,
-  //         },
-  //       };
-  //     });
-  //   }
-  // }, [props.summaries]);
-
-  // trying
-
-  // useEffect(() => {
-  //   if (!props.summaries?.length) return;
-
-  //   setState(prev => {
-  //     // Keep existing summaries (with correct filterColor)
-  //     const existingSummaries = prev.summaries?.length ? prev.summaries : props.summaries;
-
-  //     // Build teamCodes fresh from summaries
-  //     const teamCodeCounts = existingSummaries.reduce((acc, { teamCode }) => {
-  //       acc[teamCode] = (acc[teamCode] || 0) + 1;
-  //       return acc;
-  //     }, {});
-  //     const teamCodeWithUserId = existingSummaries.reduce((acc, { _id, teamCode }) => {
-  //       if (acc[teamCode]) acc[teamCode].push(_id);
-  //       else acc[teamCode] = [_id];
-  //       return acc;
-  //     }, {});
-
-  //     let teamCodes = Object.entries(teamCodeCounts)
-  //       .filter(([code, count]) => code?.length > 0 && count > 0)
-  //       .map(([code, count]) => ({
-  //         label: `${code} (${count})`,
-  //         value: code,
-  //         _ids: teamCodeWithUserId[code],
-  //       }));
-
-  //     const noTeamCodeCount = teamCodeCounts[''] || 0;
-  //     teamCodes
-  //       .sort((a, b) => a.label.localeCompare(b.label))
-  //       .push({
-  //         value: '',
-  //         label: `Select All With NO Code (${noTeamCodeCount})`,
-  //         _ids: teamCodeWithUserId[''] || [],
-  //       });
-
-  //     return {
-  //       ...prev,
-  //       summaries: existingSummaries,
-  //       teamCodes,
-  //     };
-  //   });
-  // }, [props.summaries]);
-
   useEffect(() => {
     // Define all possible color options (the ones you mentioned)
     const allColors = [
@@ -2433,21 +1854,6 @@ const WeeklySummariesReport = props => {
         summaries: state.summariesByTab[state.activeTab],
       }));
     } else {
-      //     props
-      //       .getWeeklySummariesReport(state.activeTab)
-      //       .then(freshSummaries => {
-      //         setState(prev => ({
-      //           ...prev,
-      //           summaries: freshSummaries,
-      //           summariesByTab: {
-      //             ...prev.summariesByTab,
-      //             [state.activeTab]: freshSummaries,
-      //           },
-      //         }));
-      //       })
-      //       .catch(err => console.error(`❌ Failed to fetch data for ${state.activeTab}`, err));
-      //   }
-      // }, [state.activeTab]);
       // Fetch new data using axios
       const weekIndex = navItems.indexOf(state.activeTab);
       const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
@@ -2869,183 +2275,11 @@ const WeeklySummariesReport = props => {
               }),
             }}
           />
-          {/* <div className={`${styles.filterContainer}`}>
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle}`}>
-                <span>Filter by Special Colors</span>
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
-                >
-                  {['purple', 'green', 'navy'].map(color => (
-                    <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
-                      <div className={`${styles.switchToggleControl}`}>
-                        <input
-                          type="checkbox"
-                          className={`${styles.switchToggle}`}
-                          id={`${color}-toggle`}
-                          onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
-                        />
-                        <label
-                          className={`${styles.switchToggleLabel}`}
-                          htmlFor={`${color}-toggle`}
-                        >
-                          <span className={`${styles.switchToggleInner}`} />
-                          <span className={`${styles.switchToggleSwitch}`} />
-                        </label>
-                      </div>
-                      <span
-                        style={{
-                          marginLeft: '3px',
-                          fontSize: 'inherit',
-                          textTransform: 'capitalize',
-                          whiteSpace: 'nowrap',
-                          fontWeight: 'normal',
-                        }}
-                      >
-                        {color}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
-                <span>Filter by Bio Status</span>
-                <div className={styles.switchToggleControl}>
-                  <input
-                    type="checkbox"
-                    className={styles.switchToggle}
-                    id="bio-status-toggle"
-                    onChange={handleBioStatusToggleChange}
-                  />
-                  <label className={styles.switchToggleLabel} htmlFor="bio-status-toggle">
-                    <span className={styles.switchToggleInner} />
-                    <span className={styles.switchToggleSwitch} />
-                  </label>
-                </div>
-              </div>
-            )}
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
-                <span>Filter by Trophies</span>
-                <div className={`${styles.switchToggleControl}`}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchToggle}`}
-                    id="trophy-toggle"
-                    onChange={handleTrophyToggleChange}
-                  />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="trophy-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
-                  </label>
-                </div>
-              </div>
-            )}
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
-                <span>Filter by Over Hours</span>
-                <div className={`${styles.switchToggleControl}`}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchToggle}`}
-                    id="over-hours-toggle"
-                    onChange={handleOverHoursToggleChange}
-                  />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="over-hours-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
-                  </label>
-                </div>
-                <ReactTooltip
-                  id="filterTooltip"
-                  place="top"
-                  effect="solid"
-                  className="custom-tooltip"
-                >
-                  <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
-                    Filter people who contributed more than 25% of their committed hours
-                  </span>
-                </ReactTooltip>
-              </div>
-            )}
-          </div> */}
 
           {/* This is the new block from my lastWorking file */}
           <Row style={{ marginBottom: '10px' }}>
             <Col lg={{ size: 10, offset: 1 }} xs="12">
               <div className={`${styles.filterContainer}`}>
-                {/* {hasPermissionToFilter && (
-                  <>
-                    <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                      <span>Filter by Special Colors:</span>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          marginTop: '2px',
-                        }}
-                      >
-                        {['purple', 'green', 'navy'].map(color => {
-                          const labelMap = {
-                            purple: 'Admin Team',
-                            green: '20 Hour HGN Team',
-                            navy: '10 Hour HGN Team',
-                          };
-                          return (
-                            <div
-                              key={`${color}-toggle`}
-                              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-                            >
-                              <span className={styles.filterLabel}>{labelMap[color]}</span>
-                              <SlideToggle
-                                key={`${color}-toggle`}
-                                className={styles.slideToggle}
-                                color={color}
-                                onChange={handleSpecialColorToggleChange}
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    {state.selectedCodes.length > 0 && (
-                      <div className={cn(styles.filterStyle, styles.filterMarginRight)}>
-                        <span className={styles.selectAllLabel}>Select All (Visible Users): </span>
-                        <div className={styles.dotSelector}>
-                          {['purple', 'green', 'navy'].map(color => (
-                            <span
-                              key={color}
-                              onClick={e => {
-                                e.preventDefault();
-                                handleBulkDotClick(color);
-                              }}
-                              className={cn(
-                                styles.bulkDot,
-                                state.bulkSelectedColors[color] && styles.active,
-                              )}
-                              style={{
-                                display: 'inline-block',
-                                width: '15px',
-                                height: '15px',
-                                margin: '0 5px',
-                                borderRadius: '50%',
-                                backgroundColor: state.bulkSelectedColors[color]
-                                  ? color
-                                  : 'transparent',
-                                border: `3px solid ${color}`,
-                                cursor: 'pointer',
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )} */}
                 {hasPermissionToFilter && state.selectedCodes.length > 0 && (
                   <div
                     className={cn(
@@ -3404,16 +2638,6 @@ WeeklySummariesReport.propTypes = {
 };
 
 const mapStateToProps = state => {
-  // eslint-disable-next-line no-console
-  // debug logs
-  // console.log(
-  //   '🔵 mapStateToProps summaries:',
-  //   (state.weeklySummariesReport?.summaries || []).map(u => ({
-  //     id: u._id,
-  //     name: `${u.firstName} ${u.lastName}`,
-  //     filterColor: u.filterColor,
-  //   })),
-  // );
   return {
     error: state.weeklySummariesReport?.error || null,
     loading: state.weeklySummariesReport?.loading || false,
