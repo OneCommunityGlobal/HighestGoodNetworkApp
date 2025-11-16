@@ -290,7 +290,6 @@ function ReportDetails({
   getWeeklySummariesReport,
   isFinalWeek, // new prop
 }) {
-  const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
@@ -300,10 +299,6 @@ function ReportDetails({
     summary.totalTangibleHrs > 80 &&
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
-
-  useEffect(() => {
-    setFilteredBadges(badges.filter(badge => badge.showReport === true));
-  }, []);
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -319,8 +314,8 @@ function ReportDetails({
             isFinalWeek={isFinalWeek}
           />
         </ListGroupItem>
-        <Row className="flex-nowrap">
-          <Col xs="6" className="flex-grow-0">
+        <Row>
+          <Col md="6" xs="12" className="flex-grow-0">
             <ListGroupItem darkMode={darkMode}>
               <TeamCodeRow
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
@@ -331,7 +326,7 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
-              <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
+              <div style={{ backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
                   bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
@@ -366,9 +361,17 @@ function ReportDetails({
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
-          <Col xs="6">
+          <Col
+            xs="6"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'flex-start',
+              paddingTop: 0,
+            }}
+          >
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
             )}
           </Col>
         </Row>
@@ -382,6 +385,20 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
     return (
       <p>
         <b>Weekly Summary:</b> Not provided!
+      </p>
+    );
+  }
+
+  // Add safety check for weeklySummaries array and weekIndex
+  if (
+    !summary.weeklySummaries ||
+    !Array.isArray(summary.weeklySummaries) ||
+    weekIndex < 0 ||
+    weekIndex >= summary.weeklySummaries.length
+  ) {
+    return (
+      <p>
+        <b>Weekly Summary:</b> <span style={{ color: 'red' }}>Not provided!</span>
       </p>
     );
   }
@@ -489,7 +506,7 @@ function TeamCodeRow({
     <>
       <div className={styles.teamcodeWrapper}>
         {canEditTeamCode ? (
-          <div style={{ width: '107px', paddingRight: '5px', position: 'relative' }}>
+          <div style={{ paddingRight: '5px', position: 'relative' }}>
             <Input
               id="codeInput"
               value={teamCode}
@@ -499,7 +516,9 @@ function TeamCodeRow({
                 }
               }}
               placeholder="X-XXX"
-              className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
+              className={`${styles.weeklySummariesCodeInput} ${
+                darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+              }`}
             />
           </div>
         ) : (
@@ -507,8 +526,10 @@ function TeamCodeRow({
             {teamCode === '' ? 'No assigned team code!' : teamCode}
           </div>
         )}
-        <b>Media URL:</b>
-        <MediaUrlLink summary={summary} />
+        <div>
+          <b>Media URL:</b>
+          <MediaUrlLink summary={summary} />
+        </div>
       </div>
       {hasError ? (
         <Alert className={styles.codeAlert} color="danger">
@@ -548,7 +569,7 @@ function MediaUrlLink({ summary }) {
       );
     }
   }
-  return <div style={{ paddingLeft: '5px' }}>Not provided!</div>;
+  return <span style={{ paddingLeft: '5px' }}>Not provided!</span>;
 }
 
 function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
@@ -590,7 +611,7 @@ function TotalValidWeeklySummaries({ summary, canEditSummaryCount, darkMode }) {
         </div>
       )}
       {canEditSummaryCount ? (
-        <div className="pl-2" style={{ width: '150px' }}>
+        <div className={`pl-2 ${styles.weeklySummariesCodeInput}`}>
           <Input
             type="number"
             name="weeklySummaryCount"
@@ -731,7 +752,15 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   }
   return (
     badgeThisWeek.length > 0 && (
-      <ListGroupItem className="row">
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+          gap: '5px',
+          paddingTop: 0,
+        }}
+      >
         {badgeThisWeek.map((value, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <div className={styles.badgeTd} key={`${weekIndex}_${summary._id}_${index}`}>
@@ -761,7 +790,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
             )}
           </div>
         ))}
-      </ListGroupItem>
+      </div>
     )
   );
 }
@@ -876,6 +905,7 @@ function Index({
             <RoleInfoModal
               info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
               auth={auth}
+              roleName={`${summary.role}Info`}
             />
           )}
           {loadTrophies &&

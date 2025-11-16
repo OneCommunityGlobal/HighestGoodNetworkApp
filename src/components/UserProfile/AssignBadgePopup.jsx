@@ -23,6 +23,7 @@ function AssignBadgePopup(props) {
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
     if(props.isRecordBelongsToJaeAndUneditable){
+      // eslint-disable-next-line no-alert
       alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }

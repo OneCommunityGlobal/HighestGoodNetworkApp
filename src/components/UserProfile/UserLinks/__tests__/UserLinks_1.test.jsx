@@ -20,6 +20,7 @@ const renderWithProviders = (ui, { store }) => {
 
 describe('user links tests', () => {
   beforeEach(() => {
+    // eslint-disable-next-line testing-library/no-render-in-lifecycle
     renderWithProviders(<UserLinks links={userProfileMock.personalLinks} />, { store });
   });
 
