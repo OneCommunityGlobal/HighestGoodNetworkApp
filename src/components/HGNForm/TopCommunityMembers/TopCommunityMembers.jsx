@@ -168,7 +168,7 @@ function TopCommunityMembers() {
         </tbody>
       </table>
       <a
-        href="/hgnhelp/community"
+        href="/hgnhelp?request=1"
         className={darkMode ? styles.underlineLinkDark : styles.underlineLink}
       >
         Show your team members &gt;
