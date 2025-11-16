@@ -168,6 +168,8 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
+import EPSubjectPage from './components/EductionPortal/Subjects/SubjectPage';
+import EPUnitPage from './components/EductionPortal/Units/UnitPage';
 
 import EmbedInteractiveMap from './components/BMDashboard/InteractiveMap/EmbedInteractiveMap';
 import InteractiveMap from './components/BMDashboard/InteractiveMap/InteractiveMap';
@@ -737,6 +739,12 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/subject/:subjectId"
+          exact
+          component={EPSubjectPage}
+        />
+        <EPProtectedRoute path="/educationportal/unit/:unitId" exact component={EPUnitPage} />
         <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
         <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
         <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />

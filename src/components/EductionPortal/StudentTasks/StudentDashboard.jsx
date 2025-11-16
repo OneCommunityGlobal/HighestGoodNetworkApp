@@ -2,6 +2,9 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import Sidebar from './StudentSidebar';
+import ProgressTracker from '../progress/ProgressTracker';
+import SubjectList from '../Subjects/SubjectList';
+import UnitProgress from '../Units/UnitProgress';
 import styles from './StudentDashboard.module.css';
 
 const LIFE_CARD_IDS = ['lc-a', 'lc-b', 'lc-c', 'lc-d', 'lc-e', 'lc-f'];
@@ -61,6 +64,24 @@ export default function StudentDashboard() {
           </div>
         </div>
         <hr className={styles.divider} />
+
+        {/* Progress Tracker Section */}
+        <div className={styles.progressSection}>
+          <h2 className={styles.sectionTitle}>Your Progress</h2>
+          <ProgressTracker />
+        </div>
+
+        {/* Subjects Section */}
+        <div className={styles.subjectsSection}>
+          <h2 className={styles.sectionTitle}>Subjects</h2>
+          <SubjectList />
+        </div>
+
+        {/* Units Section */}
+        <div className={styles.unitsSection}>
+          <h2 className={styles.sectionTitle}>Units</h2>
+          <UnitProgress />
+        </div>
 
         <div className={styles.mainGrid}>
           <section className={styles.visualArea} aria-label="Knowledge map">
