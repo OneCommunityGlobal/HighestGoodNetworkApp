@@ -249,6 +249,10 @@ const JobAnalyticsPage = lazy(() =>
 );
 
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
+
+//Autoposter routes
+import RedditRedirect from './components/Announcements/platforms/reddit/Redirect';
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
