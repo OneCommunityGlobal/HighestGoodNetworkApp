@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import './CPDashboard.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [dateError, setDateError] = useState('');
 
   useEffect(() => {
     const mockEvents = [
@@ -36,6 +39,22 @@ export function CPDashboard() {
     ];
     setEvents(mockEvents);
   }, []);
+
+  const handleDateChange = e => {
+    const value = e.target.value;
+    setSelectedDate(value);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // midnight today
+
+    const chosen = new Date(value);
+
+    if (chosen < today) {
+      toast.error('Past dates are not supported. Please select a future date.');
+      setSelectedDate('');
+      return;
+    }
+  };
 
   return (
     <Container fluid className="dashboard-container">
@@ -79,7 +98,17 @@ export function CPDashboard() {
                   <Input type="radio" name="dates" /> This Weekend
                 </div>
               </div>
-              <Input type="date" placeholder="Ending After" className="date-filter" />
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={handleDateChange}
+                className="date-filter"
+              />
+              {dateError && (
+                <p className="date-error-message" style={{ color: 'red', marginTop: '5px' }}>
+                  {dateError}
+                </p>
+              )}
             </div>
             <div className="filter-item">
               <label htmlFor="online-only">Online</label>
