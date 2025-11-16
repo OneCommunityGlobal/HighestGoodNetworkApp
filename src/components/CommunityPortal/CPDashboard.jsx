@@ -70,7 +70,7 @@ export function CPDashboard() {
           <div className={styles.filterSection}>
             <h4>Search Filters</h4>
             <div className={styles.filterItem}>
-              <label htmlFor="date-tomorrow"> Dates</label>
+              <div className={styles.filterLabel}>Dates</div>
               <div className={styles.filterOptionsHorizontal}>
                 <div>
                   <Input type="radio" name="dates" id="date-tomorrow" />{' '}
@@ -84,10 +84,11 @@ export function CPDashboard() {
               <Input type="date" placeholder="Ending After" className={styles.dateFilter} />
             </div>
             <div className={styles.filterItem}>
-              <label htmlFor="online-only">Online</label>
+              <div className={styles.filterLabel}>Online</div>
               <div className={styles.filterCheckboxContainer}>
                 <div>
-                  <Input type="checkbox" id="online-only" /> Online Only
+                  <Input type="checkbox" id="online-checkbox" />{' '}
+                  <label htmlFor="online-checkbox">Online Only</label>
                 </div>
               </div>
             </div>

@@ -8,6 +8,7 @@
   --filter-label-font-size: 0.95rem;
   --filter-option-font-size: 0.9rem;
   --filter-line-height: 1.5;
+  --filter-vertical-spacing: 4px;
 }
 
 .dashboardContainer {
@@ -72,7 +73,8 @@
 }
 
 /* Base styles for filter labels */
-.filterItem > label {
+.filterItem > label,
+.filterLabel {
   display: block;
   font-size: var(--filter-label-font-size);
   font-weight: 600;
@@ -80,6 +82,8 @@
   margin-bottom: var(--filter-label-margin-bottom);
   line-height: var(--filter-line-height);
   letter-spacing: 0.01em;
+  margin-top: 0;
+  padding: 0;
 }
 
 /* Structure for horizontal filter options (radio buttons) */
@@ -88,7 +92,8 @@
   gap: var(--filter-option-spacing);
   margin-bottom: 10px;
   margin-left: var(--filter-indent);
-  margin-top: 2px;
+  margin-top: var(--filter-vertical-spacing);
+  align-items: flex-start;
 }
 
 .filterOptionsHorizontal > div {
@@ -96,13 +101,15 @@
   align-items: center;
   gap: 6px;
   line-height: var(--filter-line-height);
+  white-space: nowrap;
 }
 
 /* Container for checkbox options to match radio button alignment */
 .filterCheckboxContainer {
   margin-left: var(--filter-indent);
   margin-bottom: 10px;
-  margin-top: 2px;
+  margin-top: var(--filter-vertical-spacing);
+  align-items: flex-start;
 }
 
 .filterCheckboxContainer > div {
@@ -110,6 +117,7 @@
   align-items: center;
   gap: 6px;
   line-height: var(--filter-line-height);
+  white-space: nowrap;
 }
 
 /* Base styles for radio buttons and checkboxes */
@@ -118,9 +126,13 @@
   margin: 0;
   padding: 0;
   width: auto;
+  height: auto;
   cursor: pointer;
   flex-shrink: 0;
   accent-color: #2c3e50;
+  vertical-align: middle;
+  position: relative;
+  top: 0;
 }
 
 .filterItem input[type="radio"]:hover,
@@ -131,6 +143,7 @@
 .filterItem input[type="radio"] + label,
 .filterItem input[type="checkbox"] + label {
   margin: 0;
+  padding: 0;
   font-weight: 400;
   font-size: var(--filter-option-font-size);
   color: #2c3e50;
@@ -139,6 +152,8 @@
   line-height: var(--filter-line-height);
   letter-spacing: 0.01em;
   transition: color 0.2s ease;
+  vertical-align: middle;
+  display: inline-block;
 }
 
 .filterItem input[type="radio"]:hover + label,
