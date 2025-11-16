@@ -19,12 +19,12 @@ import styles from './InjurySeverityChart.module.css';
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
-const generateColors = n =>
-  Array.from({ length: n }, (_, i) => {
-    const hue = Math.round((i * 360) / n);
-    return `hsl(${hue}, 70%, 50%)`;
-  });
-
+const DEPARTMENT_COLOR_MAP = {
+  Plumbing: '#1f77b4',
+  Electrical: '#ff7f0e',
+  Carpentry: '#2ca02c',
+  Welding: '#d62728',
+};
 const SEVERITY_ORDER = ['Minor', 'Major', 'Critical'];
 
 function CustomTooltip({ active, payload, label, darkMode }) {
@@ -161,7 +161,6 @@ function InjurySeverityDashboard(props) {
   const chartBars = useMemo(() => {
     if (visibleDepartments.length <= 1) {
       // Single department - one bar per project (these will be grouped)
-      const projectColors = generateColors(visibleProjects.length);
       return visibleProjects.map((project, idx) => ({
         key: project._id,
         dataKey: project.name,
@@ -171,7 +170,6 @@ function InjurySeverityDashboard(props) {
       // eslint-disable-next-line no-else-return
     } else {
       // Multiple departments - create stacked bars per project
-      const departmentColors = generateColors(visibleDepartments.length);
       const bars = [];
 
       visibleDepartments.forEach((dept, deptIdx) => {
@@ -180,7 +178,7 @@ function InjurySeverityDashboard(props) {
             key: `${project._id}_${dept}`,
             dataKey: `${project.name}_${dept}`,
             name: `${project.name} - ${dept}`, // Keep full name for tooltip
-            fill: departmentColors[deptIdx],
+            fill: DEPARTMENT_COLOR_MAP[dept],
             stackId: project.name, // Stack departments within each project
             legendType: projectIdx === 0 ? 'rect' : 'none', // Only show first occurrence in legend
           });
@@ -329,7 +327,7 @@ function InjurySeverityDashboard(props) {
                   ? visibleDepartments.map((dept, idx) => ({
                       value: dept,
                       type: 'rect',
-                      color: generateColors(visibleDepartments.length)[idx],
+                      color: DEPARTMENT_COLOR_MAP[dept],
                     }))
                   : undefined
               }
