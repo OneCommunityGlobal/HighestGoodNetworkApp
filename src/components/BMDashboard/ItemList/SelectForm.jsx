@@ -1,7 +1,7 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 import styles from './ItemListView.module.css';
 
-export default function SelectForm({ items, setSelectedProject, setSelectedItem }) {
+export default function SelectForm({ items, setSelectedProject, setSelectedItem, darkMode }) {
   let projectsSet = [];
   if (items.length) {
     projectsSet = [...new Set(items.map(el => el.project?.name))];
@@ -22,6 +22,7 @@ export default function SelectForm({ items, setSelectedProject, setSelectedItem 
           type="select"
           onChange={handleChange}
           disabled={!items.length}
+          className={darkMode ? 'bg-space-cadet text-light' : ''}
         >
           {items.length ? (
             <>

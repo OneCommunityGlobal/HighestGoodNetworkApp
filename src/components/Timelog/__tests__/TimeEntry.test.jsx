@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
 // eslint-disable-next-line import/named
 import { rest } from 'msw';

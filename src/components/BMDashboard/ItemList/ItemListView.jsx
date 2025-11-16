@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import BMError from '../shared/BMError';
@@ -9,6 +10,7 @@ import ItemsTable from './ItemsTable';
 import styles from './ItemListView.module.css';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
@@ -42,72 +44,115 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     setIsError(Object.entries(errors).length > 0);
   }, [errors]);
 
+  useEffect(() => {
+    const rootElement = document.getElementById('root');
+    if (darkMode && rootElement) {
+      rootElement.style.backgroundColor = '#1b2a41';
+    } else if (rootElement) {
+      rootElement.style.backgroundColor = '#ffffff';
+    }
+
+    return () => {
+      // Cleanup: restore original background when component unmounts
+      if (rootElement) {
+        rootElement.style.backgroundColor = '#ffffff';
+      }
+    };
+  }, [darkMode]);
+
   if (isError) {
     return (
-      <main className={`${styles.itemsListContainer}`}>
-        <h2>
-          {itemType}
-          {' List'}
-        </h2>
-        <BMError errors={errors} />
-      </main>
+      <div className={darkMode ? styles.pageWrapperDark : styles.pageWrapper}>
+        <main
+          className={`${styles.itemsListContainer} ${
+            darkMode ? styles.itemsListContainerDark : ''
+          }`}
+        >
+          <h2 className={darkMode ? 'text-light' : ''}>
+            {itemType}
+            {' List'}
+          </h2>
+          <BMError errors={errors} />
+        </main>
+      </div>
     );
   }
 
   return (
-    <main className={`${styles.itemsListContainer}`}>
-      <h3>{itemType}</h3>
-      <section>
-        <span>
-          {items && (
-            <div className={`${styles.selectInput}`}>
-              <label htmlFor="itemListTime">Time:</label>
-              <DatePicker
-                selected={selectedTime}
-                onChange={date => setSelectedTime(date)}
-                showTimeSelect
-                timeFormat="HH:mm"
-                timeIntervals={15}
-                dateFormat="yyyy-MM-dd HH:mm:ss"
-                placeholderText="Select date and time"
-                inputId="itemListTime" // This is the key line
-              />
-              <SelectForm
-                items={items}
-                setSelectedProject={setSelectedProject}
-                setSelectedItem={setSelectedItem}
-              />
-              <SelectItem
-                items={items}
-                selectedProject={selectedProject}
-                selectedItem={selectedItem}
-                setSelectedItem={setSelectedItem}
-              />
+    <div className={darkMode ? styles.pageWrapperDark : styles.pageWrapper}>
+      <main
+        className={`${styles.itemsListContainer} ${darkMode ? styles.itemsListContainerDark : ''}`}
+      >
+        <h3 className={darkMode ? 'text-light' : ''}>{itemType}</h3>
+        <section>
+          <span>
+            {items && (
+              <div
+                className={`${styles.selectInput} ${darkMode ? styles.selectInputDark : ''} ${
+                  darkMode ? 'dark-mode' : ''
+                }`}
+              >
+                <label htmlFor="itemListTime">Time:</label>
+                <DatePicker
+                  selected={selectedTime}
+                  onChange={date => setSelectedTime(date)}
+                  showTimeSelect
+                  timeFormat="HH:mm"
+                  timeIntervals={15}
+                  dateFormat="yyyy-MM-dd HH:mm:ss"
+                  placeholderText="Select date and time"
+                  inputId="itemListTime" // This is the key line
+                  className={darkMode ? styles.datePickerDark : ''}
+                />
+                <SelectForm
+                  items={items}
+                  setSelectedProject={setSelectedProject}
+                  setSelectedItem={setSelectedItem}
+                  darkMode={darkMode}
+                />
+                <SelectItem
+                  items={items}
+                  selectedProject={selectedProject}
+                  selectedItem={selectedItem}
+                  setSelectedItem={setSelectedItem}
+                  darkMode={darkMode}
+                />
+              </div>
+            )}
+            <div className={`${styles.buttonsRow}`}>
+              <button
+                type="button"
+                className={`${styles.btnPrimary} ${darkMode ? styles.btnPrimaryDark : ''}`}
+              >
+                Add Material
+              </button>
+              <button
+                type="button"
+                className={`${styles.btnPrimary} ${darkMode ? styles.btnPrimaryDark : ''}`}
+              >
+                Edit Name/Measurement
+              </button>
+              <button
+                type="button"
+                className={`${styles.btnPrimary} ${darkMode ? styles.btnPrimaryDark : ''}`}
+              >
+                View Update History
+              </button>
             </div>
+          </span>
+          {filteredItems && (
+            <ItemsTable
+              selectedProject={selectedProject}
+              selectedItem={selectedItem}
+              filteredItems={filteredItems}
+              UpdateItemModal={UpdateItemModal}
+              dynamicColumns={dynamicColumns}
+              darkMode={darkMode}
+            />
           )}
-          <div className={`${styles.buttonsRow}`}>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              Add Material
-            </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              Edit Name/Measurement
-            </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
-              View Update History
-            </button>
-          </div>
-        </span>
-        {filteredItems && (
-          <ItemsTable
-            selectedProject={selectedProject}
-            selectedItem={selectedItem}
-            filteredItems={filteredItems}
-            UpdateItemModal={UpdateItemModal}
-            dynamicColumns={dynamicColumns}
-          />
-        )}
-      </section>
-    </main>
+        </section>
+      </main>
+    </div>
   );
 }
 

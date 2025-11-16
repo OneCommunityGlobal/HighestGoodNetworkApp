@@ -7,8 +7,9 @@
 }
 
 .reports-table-head {
+  /* display: flex; */
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 1.2fr 0.6fr 0.6fr 1.2fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   justify-content: space-between;
   align-items: center;
   vertical-align: middle;
@@ -24,7 +25,7 @@
 
 .people-table-row {
   display: grid;
-  grid-template-columns: 2.2fr 1fr 1fr 1.2fr 0.6fr 0.6fr 1.2fr 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   justify-content: space-between;
   align-items: center;
   vertical-align: middle;
@@ -39,10 +40,11 @@ flex-direction: row; */
 
 .reports-table-head,
 .people-table-row > div {
-  padding: 8px;
-  text-align: left;
-  margin: 0;
+  padding: 1%;
+  text-align: center;
+  margin: 1%;
   vertical-align: middle;
+  max-width: 800px;
   font-size: 16px;
   word-wrap: break-word;
   white-space: normal;
@@ -210,7 +212,6 @@ flex-direction: row; */
   padding: 15px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  align-items: flex-start;
 }
 
 .task-status {
@@ -265,89 +266,8 @@ flex-direction: row; */
 
 .people-report-task-name {
   word-wrap: break-word;
-  min-width: 200px;
-  text-align: left;
 }
 
 .task-name-word-break {
   word-break: break-all;
-}
-
-.people-table-scrollable {
-  max-height: 600px;
-  overflow-y: auto;
-  width: 100%;
-}
-
-/* Dark mode for mobile modal cards */
-.task-card.text-dark {
-  background-color: #232946;
-  color: #fff;
-  border: 1px solid #444;
-}
-
-.task-card.text-dark .task-header {
-  background-color: #1a1a2e;
-  color: #fff;
-}
-
-.task-card.text-dark .task-status {
-  background-color: #ca50db;
-  color: #fff;
-}
-
-.task-card.text-dark .task-info {
-  color: #fff;
-}
-
-.task-card.text-dark .sub-head,
-.task-card.text-dark .sub-details {
-  color: #fff;
-}
-
-/* Modal textarea dark mode */
-.text-dark .rectangle {
-  background: #232946;
-  color: #fff;
-  border: 1.5px solid #444;
-}
-
-/* Desktop table dark mode */
-.bg-space-cadet {
-  background-color: #1a1a2e !important;
-  color: #fff !important;
-}
-
-.people-table-row-dark {
-  background-color: #232946 !important;
-  color: #fff !important;
-}
-
-.people-table-row-dark > div,
-.bg-space-cadet > div {
-  color: #fff !important;
-}
-
-.people-table-row-dark:hover {
-  background-color: #1a1a2e !important;
-  color: #fff !important;
-}
-
-.people-table-row-dark .people-table-center-cell,
-.people-table-row-dark .people-table-end-cell {
-  color: #fff !important;
-}
-
-/* Table cell border for dark mode */
-.people-table-row-dark,
-.bg-space-cadet {
-  border-bottom: 2px solid #444 !important;
-}
-
-/* Table textarea dark mode */
-.people-table-row-dark .rectangle,
-.bg-space-cadet .rectangle {
-  background: #232946;
-  color: #fff;
-  border: 1.5px solid #444;
 }

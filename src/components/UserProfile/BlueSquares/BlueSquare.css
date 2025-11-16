@@ -103,19 +103,7 @@
   background-color: #1da1ff;
 }
 
-@media (min-width: 1450px) {
-  #wrapper .report { 
-     left: 102%;
-     top: 0px; 
-     z-index: 1;
-     overflow: visible;
-   }
-   .summary {
-     min-height: 300px;
-   }
- }
-
-@media (max-width: 1450px) {
+@media (max-width: 1420px) {
   #wrapper .report { 
      left: 102%;
      top: 0px; 

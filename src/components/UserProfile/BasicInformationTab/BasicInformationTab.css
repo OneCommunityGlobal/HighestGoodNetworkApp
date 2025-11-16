@@ -19,15 +19,9 @@
   display: inline-block;
 }
 
-.basic-info-tab-desktop .custom-row {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+.basic-info-tab-desktop {
+  margin-left: 16px;
 }
-
-
-
-
-
 
 @media (max-width: 1024px) {
   .basic-info-tab-desktop {

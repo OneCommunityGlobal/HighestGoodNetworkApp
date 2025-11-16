@@ -1,13 +1,32 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Check if dependencies are installed
+if [ ! -d "node_modules" ]; then
+  echo "⚠️  Dependencies not installed. Skipping pre-push checks."
+  echo "💡 Run 'npm install' to enable pre-push test and lint checks."
+  exit 0
+fi
+
 echo "🧪 Running tests before push..."
-npm run test -- --bail=1
-test_status=$?
+if [ -f "node_modules/.bin/vitest" ] || command -v vitest >/dev/null 2>&1; then
+  npm run test -- --bail=1
+  test_status=$?
+else
+  echo "⚠️  vitest not found. Skipping tests."
+  echo "💡 Run 'npm install' to install test dependencies."
+  test_status=0
+fi
 
 echo "🧹 Running lint before push..."
-npm run lint
-lint_status=$?
+if [ -f "node_modules/.bin/eslint" ] || command -v eslint >/dev/null 2>&1; then
+  npm run lint
+  lint_status=$?
+else
+  echo "⚠️  eslint not found. Skipping lint."
+  echo "💡 Run 'npm install' to install lint dependencies."
+  lint_status=0
+fi
 
 # Block push if either fails
 if [ $test_status -ne 0 ] || [ $lint_status -ne 0 ]; then

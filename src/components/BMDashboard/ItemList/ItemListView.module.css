@@ -3,6 +3,42 @@
   max-width: 1536px;
   margin: 1rem auto;
   padding: 0 1rem;
+  min-height: calc(100vh - 200px);
+  position: relative;
+  z-index: 1;
+}
+
+.pageWrapper {
+  width: 100%;
+  min-height: calc(100vh - 100px);
+  background-color: transparent;
+  position: relative;
+}
+
+.pageWrapperDark {
+  width: 100vw;
+  min-height: calc(100vh - 100px);
+  background-color: #1b2a41;
+  position: relative;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0;
+}
+
+.pageBackgroundDark {
+  display: none;
+}
+
+.itemsListContainerDark {
+  background-color: #1b2a41;
+  color: #ffffff;
+  position: relative;
+  z-index: 1;
+}
+
+.itemsListContainerDark section {
+  background-color: #1b2a41;
+  color: #ffffff;
 }
 
 .itemsTableContainer {
@@ -11,6 +47,7 @@
 
 .itemsListContainer section {
   margin-top: 2rem;
+  background-color: transparent;
 }
 
 .itemsListContainer table {
@@ -39,6 +76,14 @@
   color: black;
 }
 
+.itemsCellDark svg {
+  color: #b5bac5;
+}
+
+.itemsCellDark svg:hover {
+  color: #ffffff;
+}
+
 .selectInput {
   display: grid;
   grid-template-columns: auto 1fr auto 1fr auto 1fr;
@@ -48,6 +93,14 @@
   max-width: 1200px;
   margin: 0 auto 10px auto;
   overflow: visible;
+  padding: 15px;
+  background-color: transparent;
+}
+
+.itemsListContainerDark .selectInput {
+  background-color: #1c2541;
+  border-radius: 8px;
+  border: 1px solid #3a506b;
 }
 
 .selectInput label {
@@ -56,6 +109,10 @@
   min-width: 100px;
   white-space: nowrap;
   margin-bottom: 8px;
+}
+
+.selectInputDark label {
+  color: #ffffff;
 }
 
 .selectInput input,
@@ -68,12 +125,36 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 8px;
+  background-color: #ffffff;
+  color: #1C1E1C;
+}
+
+.selectInputDark input,
+.selectInputDark select {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #ffffff;
+}
+
+.selectInputDark input::placeholder {
+  color: #b5bac5;
+}
+
+.datePickerDark {
+  background-color: #1c2541;
+  border-color: #3a506b;
+  color: #ffffff;
+}
+
+.datePickerDark::placeholder {
+  color: #b5bac5;
 }
 
 .selectInput input[type='text'] {
   padding: 5px;
   margin-bottom: 8px;
 }
+
 .btnPrimary {
   background-color: #468ef9;
   color: white;
@@ -82,12 +163,31 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
 .buttonsRow {
   display: flex;
   justify-content: center;
   gap: 15px;
   margin-bottom: 15px;
+  padding: 15px;
+  background-color: transparent;
 }
+
+.itemsListContainerDark .buttonsRow {
+  background-color: #1c2541;
+  border-radius: 8px;
+  border: 1px solid #3a506b;
+}
+
 .btnPrimary:hover {
   background-color: #3b82f6;
+}
+
+.btnPrimaryDark {
+  background-color: #3a506b;
+  color: #ffffff;
+}
+
+.btnPrimaryDark:hover {
+  background-color: #4a5f7a;
 }

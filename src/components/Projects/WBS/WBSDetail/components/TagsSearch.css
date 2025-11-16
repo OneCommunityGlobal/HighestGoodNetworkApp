@@ -1,14 +1,7 @@
 .scrollbar::-webkit-scrollbar {
-  width: 3px;
+  display: none;
 }
-
-.scrollbar::-webkit-scrollbar-thumb {
-  background: #000;
-}
-
 .scrollable-menu {
-  max-height: 400px;
+  max-height: 200px;
   overflow-y: auto;
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
 }

@@ -7,6 +7,7 @@ export default function SelectItem({
   selectedItem,
   setSelectedItem,
   label,
+  darkMode,
 }) {
   let itemSet = [];
   if (items?.length) {
@@ -42,6 +43,7 @@ export default function SelectItem({
           value={selectedItem}
           onChange={e => setSelectedItem(e.target.value)}
           disabled={!items.length}
+          className={darkMode ? 'bg-space-cadet text-light' : ''}
         >
           {items.length ? (
             <>

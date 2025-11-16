@@ -34,7 +34,7 @@ img {
   margin-left: 0rem;
 }
 
-.owner-message-button {
+button {
   border: none;
   background: none;
 }
@@ -59,35 +59,5 @@ button > img:hover {
     align-items: center;
     justify-content: center;
     text-align: center;
-  }
-}
-
-@media print {
-  .owner-message-button {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: auto !important;
-    height: auto !important;
-    min-width: max-content !important;
-    min-height: max-content !important;
-    transform: none !important;
-    transform-origin: 0 0 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  .owner-message-button img {
-    width: 24px !important;
-    height: 24px !important;
-    min-width: 24px !important;
-    min-height: 24px !important;
-    display: block !important;
-    position: relative !important;
-    transform: none !important;
-    transform-origin: 0 0 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-    object-fit: contain !important;
   }
 }

@@ -30,29 +30,10 @@
   margin: 0.5rem;
 }
 
-
-/* Light mode (default) */
 .statistics-title {
   color: #000000;
   font-size: larger;
   text-align: center;
-}
-
-
-
-
-/* All text and numbers inside the statistics boxes are black */
-.statistics-title,
-.statistics-number,
-.statistics-percentage {
-  color: #000 !important;
-}
-
-/* Section headers above the boxes remain white in dark mode for contrast */
-.bg-oxford-blue .volunteerStatusGrid h3,
-.bg-oxford-blue .componentContainer h3,
-.bg-oxford-blue .statistics-section-title {
-  color: #fff !important;
 }
 
 .statistics-number-shape {
@@ -64,7 +45,6 @@
   border-radius: 50%;
 }
 
-
 .statistics-number {
   color: #000000;
 }
@@ -73,7 +53,6 @@
   margin-top: 0.75rem;
   font-size: medium;
 }
-
 
 .statistics-percentage-increase {
   color: var(--color-increase-percentage);

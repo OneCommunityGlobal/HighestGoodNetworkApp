@@ -3,28 +3,13 @@
   padding-top: 20px;
   padding-left: 3%;
   padding-right: 3%;
-  /* margin-top: 40px;
-  margin-bottom: 20px; */
+  margin-top: 40px;
+  margin-bottom: 20px;
   font-weight: bold;
 }
-.project-details-dark {
-  text-align: center;
-  padding-top: 20px;
-  padding-left: 3%;
-  padding-right: 3%;
-/*   margin-top: 40px;
-  margin-bottom: 20px;
- */  font-weight: bold;
-  background-color: #1C1E1C;
-}
 
-.project-details-title {
+.project-details h1 {
   font-size: 1.5rem;
-}
-
-.project-details-title-dark {
-  font-size: 1.5rem;
-  color: white;
 }
 
 /* styling for the logBar component - i.e. dashboard with buttons */
@@ -36,16 +21,7 @@
   margin: 2em;
   padding: 1em 2em;
   width: 100%;
-background-color: white;
-}
-.log-bar-dark {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 2em;
-  padding: 1em 2em;
-  width: 100%;
-background-color: rgb(1, 1, 38);
+  background-color: #eaeeef;
 }
 
 .log-bar__section {
@@ -142,18 +118,14 @@ background-color: rgb(1, 1, 38);
 .card.cards-container {
   align-items: center;
   margin: 1em 2em;
-  padding: 1em;
-  width: auto;
-  max-width: 100%;
-  overflow: hidden;
+  padding: 1em 2em;
 }
 
 .cards-container__content {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
-  gap: 10px;
 }
 
 /* styling for single card element */
@@ -161,24 +133,8 @@ background-color: rgb(1, 1, 38);
   border: 1px solid #eaeeef;
   border-radius: 5px;
   text-align: center;
+  margin-bottom: 0.5em;
   cursor: pointer;
-  transition: box-shadow 0.3s, transform 0.3s;
-  overflow: hidden;
-}
-
-.single-card__img {
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.single-card__img img {
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
 }
 
 .single-card:hover {
@@ -188,7 +144,6 @@ background-color: rgb(1, 1, 38);
 
 .single-card__body {
   margin-top: 0.5em;
-  padding: 0.5em;
 }
 
 .single-card__body h3 {
@@ -211,26 +166,22 @@ background-color: rgb(1, 1, 38);
   background-color: #980101;
 } */
 
-@media (min-width: 992px) {
-  .single-card {
-    width: calc(33.333% - 20px);
-    max-width: 180px;
-    margin-bottom: 15px;
+@media (min-width: 600px) {
+  .cards-container__header {
+    height: 38px;
   }
-}
 
-@media (min-width: 576px) and (max-width: 991px) {
-  .single-card {
-    width: calc(50% - 15px);
-    max-width: 180px;
-    margin-bottom: 15px;
+  .cards-container__content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
   }
-}
-@media (max-width: 575px) {
+
+  /* styling for single card element */
   .single-card {
-    width: 90%;
-    max-width: 180px;
-    margin-bottom: 15px;
+    margin: auto 0.2em;
+    flex: none;
   }
 }
 
@@ -240,7 +191,6 @@ background-color: rgb(1, 1, 38);
   padding: 1em 2em;
   width: 100%;
   font-weight: lighter;
-  white-space: nowrap;
 }
 
 .project-log thead {

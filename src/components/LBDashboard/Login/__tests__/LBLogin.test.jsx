@@ -4,7 +4,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import LBLogin from '..';

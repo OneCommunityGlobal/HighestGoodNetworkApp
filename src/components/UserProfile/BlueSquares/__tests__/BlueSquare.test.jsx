@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import BlueSquare from '../BlueSquare';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 

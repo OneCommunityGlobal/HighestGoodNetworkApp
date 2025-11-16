@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitForElementToBeRemoved } from '@testing-l
 import { Provider } from 'react-redux';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import Badge from '../Badge';
 import thunk from 'redux-thunk';
 

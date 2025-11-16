@@ -4,11 +4,6 @@
   padding: 0;
 }
 
-.red-asterisk {
-  color: #e00000;
-  font-weight: bold;
-}
-
 .dark-mode .close {
   color: white;
   opacity: 1; 

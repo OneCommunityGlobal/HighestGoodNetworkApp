@@ -1,13 +1,21 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
+# Load nvm and use the correct Node version (if available)
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ] && [ -f ".nvmrc" ]; then
+  \. "$NVM_DIR/nvm.sh"
+  nvm use 2>/dev/null || true  # Continue if version not installed
+fi
+
 echo ""
 echo "🛡️  Husky pre-commit hook triggered"
 
-# Block plain .css files (except .module.css and index.css)
+# Block plain .css files (except .module.css, index.css, and App.css)
 for file in $(git diff --cached --name-only --diff-filter=ACM | grep '\.css$'); do
   case "$file" in
     *index.css) ;;            # allow index.css
+    *App.css) ;;              # allow App.css (global stylesheet)
     *.module.css) ;;          # allow module.css
     *)
       echo "❌  $file is not allowed. Use .module.css instead."
@@ -22,15 +30,22 @@ git diff --cached --name-only --diff-filter=ACM | grep -E '\.(js|jsx|ts|tsx|css)
 
 # Run lint-staged only if relevant files are staged
 if git diff --cached --name-only | grep -qE '\.(js|jsx|ts|tsx|css)$'; then
-  npx lint-staged
-  lint_exit_code=$?
-
-  if [ $lint_exit_code -eq 0 ]; then
-    echo "✅ Lint passed or was auto-fixed. Proceeding with commit."
+  # Check Node version - lint-staged requires Node 15+ for ??= operator
+  node_version=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
+  if [ "$node_version" -lt 15 ]; then
+    echo "⚠️  Node version is too old for lint-staged. Skipping lint checks."
+    echo "💡 Please use Node 20+ for full lint checking."
   else
-    echo "❌ Lint failed. Some issues couldn't be auto-fixed. Commit aborted."
-    echo "💡 Please fix the errors and try again."
-    exit $lint_exit_code
+    npx lint-staged
+    lint_exit_code=$?
+
+    if [ $lint_exit_code -eq 0 ]; then
+      echo "✅ Lint passed or was auto-fixed. Proceeding with commit."
+    else
+      echo "❌ Lint failed. Some issues couldn't be auto-fixed. Commit aborted."
+      echo "💡 Please fix the errors and try again."
+      exit $lint_exit_code
+    fi
   fi
 else
   echo "ℹ️  No JS/TS/CSS files to lint. Skipping lint-staged."

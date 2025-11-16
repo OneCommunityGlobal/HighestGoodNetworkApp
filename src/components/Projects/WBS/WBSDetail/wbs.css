@@ -129,12 +129,6 @@
   height: 40px; /* Matches the height of the table rows */
 }
 
-#edit-modal-td {
-  text-align: left;
-  vertical-align: top;
-  width: 30%;
-}
-
 
 
 .taskNum {
@@ -143,7 +137,6 @@
 
 .taskName {
   height: auto;
-  text-align: left !important;
 }
 
 .taskDrop {
@@ -191,10 +184,6 @@
   width: 100% !important;
 }
 
-.tasks-detail-header {
-  vertical-align: middle !important;
-}
-
 .action-edit-btn {
   padding-right: 5px;
 }
@@ -204,11 +193,6 @@
   flex-direction: row;
   margin-right: 10px;
   min-width: 100px;
-  padding-left: 8mm
-}
-
-.mw-4 {
-  max-width: 4rem;
 }
 
 @media (max-width: 250px) {
@@ -234,6 +218,9 @@
 }
 
 @media (min-width: 200px) and (max-width: 1496px) {
+  table.responsive {
+    table-layout: fixed;
+  }
 
   .flex-responsive {
     display: flex;
@@ -248,7 +235,6 @@
   padding: 0;
   display: flex;
   border: .01em solid #cdcbcb;
-  align-items: center;
 }
 
 .add_new_task_form-label{
@@ -290,21 +276,7 @@
     align-items: flex-start;
     margin-bottom: 10px;
   }
-}
-
-.text-dark.end-modal-dt .DayPickerInput{
-  position: relative;
-}
-
-.text-dark.end-modal-dt .DayPickerInput-OverlayWrapper{
-  position: absolute;
-  bottom: 18.70em;
-  left: -5em; 
-  z-index: 9999;
-}
-
-@media (max-width: 768px) { /* arranging the buttons */
-  .button-group button {
+  .wbs-button-group button {
     margin-bottom: 10px;
   }
 }

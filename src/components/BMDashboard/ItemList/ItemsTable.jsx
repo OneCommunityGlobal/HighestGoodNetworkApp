@@ -12,6 +12,7 @@ export default function ItemsTable({
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
+  darkMode,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -97,30 +98,38 @@ export default function ItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className={`${styles.itemsTableContainer}`}>
-        <Table>
-          <thead>
+      <div className={styles.itemsTableContainer}>
+        <Table className={darkMode ? 'table-dark' : ''}>
+          <thead className={darkMode ? 'table-dark' : 'table-light'}>
             <tr>
               {selectedProject === 'all' ? (
-                <th onClick={() => sortData('ProjectName')}>
+                <th
+                  className={darkMode ? 'text-light' : ''}
+                  onClick={() => sortData('ProjectName')}
+                >
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Project</th>
+                <th className={darkMode ? 'text-light' : ''}>Project</th>
               )}
               {selectedItem === 'all' ? (
-                <th onClick={() => sortData('InventoryItemType')}>
+                <th
+                  className={darkMode ? 'text-light' : ''}
+                  onClick={() => sortData('InventoryItemType')}
+                >
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Name</th>
+                <th className={darkMode ? 'text-light' : ''}>Name</th>
               )}
               {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
+                <th key={label} className={darkMode ? 'text-light' : ''}>
+                  {label}
+                </th>
               ))}
-              <th>Usage Record</th>
-              <th>Updates</th>
-              <th>Purchases</th>
+              <th className={darkMode ? 'text-light' : ''}>Usage Record</th>
+              <th className={darkMode ? 'text-light' : ''}>Updates</th>
+              <th className={darkMode ? 'text-light' : ''}>Purchases</th>
             </tr>
           </thead>
 
@@ -129,12 +138,14 @@ export default function ItemsTable({
               sortedData.map(el => {
                 return (
                   <tr key={el._id}>
-                    <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{el.project?.name}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{el.itemType?.name}</td>
                     {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
+                      <td key={label} className={darkMode ? 'text-light' : ''}>
+                        {getNestedValue(el, key)}
+                      </td>
                     ))}
-                    <td className={`${styles.itemsCell}`}>
+                    <td className={`${styles.itemsCell} ${darkMode ? styles.itemsCellDark : ''}`}>
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'UsageRecord')}
@@ -146,12 +157,13 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
+                        className={darkMode ? 'text-light' : ''}
                         onClick={() => handleViewRecordsClick(el, 'UsageRecord')}
                       >
                         View
                       </Button>
                     </td>
-                    <td className={`${styles.itemsCell}`}>
+                    <td className={`${styles.itemsCell} ${darkMode ? styles.itemsCellDark : ''}`}>
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}
@@ -163,16 +175,18 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
+                        className={darkMode ? 'text-light' : ''}
                         onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
                         View
                       </Button>
                     </td>
-                    <td>
+                    <td className={darkMode ? 'text-light' : ''}>
                       <Button
                         color="primary"
                         outline
                         size="sm"
+                        className={darkMode ? 'text-light' : ''}
                         onClick={() => handleViewRecordsClick(el, 'Purchase')}
                       >
                         View
@@ -183,7 +197,11 @@ export default function ItemsTable({
               })
             ) : (
               <tr>
-                <td colSpan={11} style={{ textAlign: 'center' }}>
+                <td
+                  colSpan={11}
+                  className={darkMode ? 'text-light' : ''}
+                  style={{ textAlign: 'center' }}
+                >
                   No items data
                 </td>
               </tr>
