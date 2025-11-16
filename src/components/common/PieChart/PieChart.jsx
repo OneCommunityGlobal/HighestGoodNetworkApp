@@ -4,7 +4,8 @@ import * as d3 from 'd3';
 
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
-import './UserProjectPieChart.css';
+import './PieChart.css';
+// import './UserProjectPieChart.css';
 
 export function PieChart({
   tasksData = [], // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
@@ -220,8 +221,9 @@ export function PieChart({
           </table>
         </div>
 
-        <div className="data-total-value">
-          <strong>Total Hours:</strong> {totalHours.toFixed(2)}
+        <div className="data-total-value" style={{ marginTop: 8 }}>
+          <strong className={`strong-text ${darkMode ? 'text-light' : ''}`}>Total Hours:</strong>{' '}
+          {totalHours.toFixed(2)}
         </div>
       </div>
     </div>

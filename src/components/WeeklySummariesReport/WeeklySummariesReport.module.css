@@ -277,7 +277,29 @@
 }
 
 
-@media screen and (max-width: 544px) {
+/* @media screen and (max-width: 544px) {
+  .responsive-font-size {
+    font-size: 0.75rem !important;
+  }
+} */
+
+.mx-max-sm-0 {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+@media screen and (max-width: 576px) {
+  .responsiveFontSize {
+    font-size: 0.3rem !important;
+  }  
+
+  .px-max-sm-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+}
+/* @media screen and (max-width: 544px) {
   .responsiveFontSize {
     font-size: 0.75rem !important;
   }
@@ -302,7 +324,7 @@
   .switchToggleControl{
     width: 40px;
   }
-}
+} */
 
 @media (min-width: 482px) {
   .teamcodeWrapper {
