@@ -4,11 +4,7 @@ body {
   padding: 0;
 }
 
-.darkMode{
-  background-color: #d09a4a;
-}
-
-.dashboard-container {
+.dashboardContainer {
   padding: 40px 20px;
   max-width: 1400px;
   margin: 0 auto;
@@ -17,12 +13,12 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-container.darkMode {
-  background-color: #142237;
-  color: #f1f1f1;
+.darkContainer {
+  background: #1B2A41;
+  color: #fff;
 }
 
-.dashboard-header {
+.dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -33,18 +29,21 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-header.darkMode {
-  background-color: #6d2121;
-  color: #f1f1f1;
+.darkHeader{
+  background: #2b3e59;
 }
 
-.dashboard-header h1 {
+.dashboardHeader h1 {
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
 }
 
-.dashboard-search-container input {
+.dashboardHeader.darkHeader h1 {
+  color: #fff;
+}
+
+.dashboardSearchContainer input {
   border: 2px solid #2c3e50;
   border-radius: 25px;
   padding: 12px 20px;
@@ -54,30 +53,39 @@ body {
   transition: all 0.3s ease;
 }
 
-.dashboard-search-container input:focus {
+.dashboardSearchContainer input:focus {
   border-color: #34495e;
   box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
   outline: none;
 }
 
-.dashboard-sidebar {
+.dashboardSidebar {
   padding: 30px;
   background: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.filter-section h4 {
+.darkSidebar{
+    background: #1B2A41;
+}
+
+.filterSection h4 {
   font-size: 1.8rem;
   color: #2c3e50;
   margin-bottom: 20px;
   font-weight: 600;
 }
 
-.filter-item input,
-.filter-item select {
+.darkFilterSection h4 {
+    color: #fff;
+}
+
+.filterItem input,
+.filterItem select {
   padding: 12px 15px;
-  margin-top: 10px;
+  margin-top: 5px;
+  margin-bottom: 20px;
   border: 1px solid #ddd;
   border-radius: 8px;
   width: 100%;
@@ -86,11 +94,15 @@ body {
   transition: all 0.3s ease;
 }
 
-.filter-item input:focus,
-.filter-item select:focus {
+.filterItem input:focus,
+.filterItem select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
+}
+
+.darkFilterItem label {
+  color: #ddd;
 }
 
 .dashboard-main {
@@ -121,9 +133,9 @@ body {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.event-card.darkMode {
-  background-color: #6d2121 !important;
-  color: #602020 !important;
+.eventCardDark {
+  background-color: #6d2121;
+  color: #ddd;
 }
 
 .event-card-img-container img {

@@ -40,17 +40,17 @@ export function CPDashboard() {
   }, []);
 
   return (
-    <div className={`${styles['dashboard-container']} ${darkMode ? styles.darkMode : ''}`}>
-      <header className={styles['dashboard-header']}>
+    <div className={`${styles.dashboardContainer} ${darkMode ? styles.darkContainer : ''}`}>
+      <header className={`${styles.dashboardHeader} ${darkMode ? styles.darkHeader : ''}`}>
         <h1>All Events</h1>
-        <div className={styles['dashboard-controls']}>
-          <div className={styles['dashboard-search-container']}>
+        <div>
+          <div className={styles.dashboardSearchContainer}>
             <Input
               type="search"
               placeholder="Search events..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className={styles['dashboard-search']}
+              className={styles.dashboardSearch}
             />
           </div>
           {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
@@ -68,10 +68,10 @@ export function CPDashboard() {
       </header>
 
       <Row>
-        <Col md={3} className={styles['dashboard-sidebar']}>
-          <div className={styles['filter-section']}>
+        <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
+          <div className={`${styles.filterSection} ${darkMode ? styles.darkFilterSection : ''}`}>
             <h4>Search Filters</h4>
-            <div className={styles['filter-item']}>
+            <div className={`${styles.filterItem} ${darkMode ? styles.darkFilterItem : ''}`}>
               <label htmlFor="date-tomorrow"> Dates</label>
               <div className={styles['filter-options-horizontal']}>
                 <div>
@@ -83,25 +83,25 @@ export function CPDashboard() {
               </div>
               <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
             </div>
-            <div className={styles['filter-item']}>
+            <div className={`${styles.filterItem} ${darkMode ? styles.darkFilterItem : ''}`}>
               <label htmlFor="online-only">Online</label>
               <div>
                 <Input type="checkbox" /> Online Only
               </div>
             </div>
-            <div className={styles['filter-item']}>
+            <div className={`${styles.filterItem} ${darkMode ? styles.darkFilterItem : ''}`}>
               <label htmlFor="branches">Branches</label>
               <Input type="select">
                 <option>Select branches</option>
               </Input>
             </div>
-            <div className={styles['filter-item']}>
+            <div className={`${styles.filterItem} ${darkMode ? styles.darkFilterItem : ''}`}>
               <label htmlFor="themes">Themes</label>
               <Input type="select">
                 <option>Select themes</option>
               </Input>
             </div>
-            <div className={styles['filter-item']}>
+            <div className={`${styles.filterItem} ${darkMode ? styles.darkFilterItem : ''}`}>
               <label htmlFor="categories">Categories</label>
               <Input type="select">
                 <option>Select categories</option>
