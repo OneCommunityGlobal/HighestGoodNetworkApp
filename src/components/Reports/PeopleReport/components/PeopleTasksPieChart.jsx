@@ -1,12 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
-//import  {UserProjectD3PieChart}  from '../../../common/PieChart/ProjectPieChart';
 import UserProjectD3PieChart from '../../../common/PieChart/ProjectPieChart';
 
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
-import './PeopleTasksPieChart.css';
+import styles from './PeopleTasksPieChart.module.css';
 // import { ProjectPieChart } from '~/components/Reports/ProjectReport/ProjectPieChart/ProjectPieChart';
 
 export function PeopleTasksPieChart({ darkMode }) {
@@ -47,13 +46,13 @@ export function PeopleTasksPieChart({ darkMode }) {
 
 
   return (
-    <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`} >
-      {hoursLoggedToProjectsOnly.length!==0 && (
-        <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className="pie-no-scroll">
-        <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
+    <div className={`${styles['people-pie-charts-wrapper']} ${darkMode ? styles['text-light'] : ''}`}>
+      {hoursLoggedToProjectsOnly.length !== 0 && (
+        <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className={styles['pie-no-scroll']}>
+        <h5 className={styles['people-pie-charts-header']}>Time Logged to Projects/Non-tasks</h5>
         {/* <div style={{ width: '100%', minHeight: projectsHeight }}> */}
         <div style={{ width: '100%' }}>
-        <div className="people-report-pie-wrapper">
+        <div className={styles['people-report-pie-wrapper']}>
           <UserProjectD3PieChart
             pieChartId="projectsPieChart"
             darkMode={darkMode}
@@ -65,8 +64,8 @@ export function PeopleTasksPieChart({ darkMode }) {
       </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
-        <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className="pie-no-scroll">
-        <h5 className="people-pie-charts-header">Tasks With Completed Hours</h5>
+        <ReportPage.ReportBlock darkMode={darkMode} style={{ overflow: 'visible' }} className={styles['pie-no-scroll']}>
+        <h5 className={styles['people-pie-charts-header']}>Tasks With Completed Hours</h5>
         <div style={{ width: '100%', minHeight: tasksHeight }}>
           <PieChart
             pieChartId="tasksPieChart"

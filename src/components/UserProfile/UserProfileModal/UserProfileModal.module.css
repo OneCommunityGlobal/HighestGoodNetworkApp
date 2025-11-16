@@ -1,0 +1,213 @@
+.customInput {
+  display: block;
+  width: 100%;
+  margin: 2px;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.25em 0.4em;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+
+  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.closeButton {
+  display: block;
+  margin: 2px;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.8rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: white;
+  background-color: firebrick;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+
+  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.customEdit {
+  display: 'flex';
+  margin: 2px;
+  padding: 0.25em 0.4em;
+  height: calc(1.5em + 0.75rem + 2px);
+  width: 100%;
+  border-radius: 0.25rem;
+  border: 1px solid #ced4da;
+}
+
+.customTitle {
+  display: flex;
+  padding: 0.25em 0.4em;
+  margin: 2px;
+  width: 100%;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+  -webkit-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  color: #fff;
+  background-color: #6c757d;
+}
+
+.addButton {
+  display: block;
+  margin: 2px;
+  height: calc(1.5em + 0.75rem + 2px);
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: white;
+  background-color: dodgerblue;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+
+  -webkit-transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.popover__title {
+  text-align: center;
+}
+
+.popover__title p {
+  margin: 0.3em 0;
+}
+
+/* Profile Image Modal - Suggested Profile Links Grid */
+.suggestedProfileLinks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns of images */
+  gap: 10px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Scrollable container for images */
+.scrollable-container {
+  max-height: 300px; /* Limit height to make it scrollable */
+  overflow-y: auto;  /* Enable vertical scroll if content overflows */
+  padding-right: 10px; /* Add padding for better look when scrolling */
+}
+
+/* Individual profile tile */
+.suggestedProfileTile {
+  cursor: pointer;
+  padding: 10px;
+  transition: border 0.3s ease;
+}
+
+.suggestedProfileTile img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid transparent;
+}
+
+/* Text under each profile image */
+.suggestedProfileTile p {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+/* Highlight selected image with a border */
+.suggestedProfileTile.selected img {
+  border: 2px solid #007bff; /* Primary blue border for selected image */
+}
+
+/* General Button Styling for All Modal Buttons */
+.modal-button {
+  flex: 1;
+  padding: 10px;
+  margin-right: 10px;
+  background-color: #007bff; /* Primary Blue for Set Image or Confirm */
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Last button (either Set Image or Cancel) should not have a right margin */
+.modal-button:last-child {
+  margin-right: 0;
+}
+
+/* Hover effect for modal buttons */
+.modal-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Specific Styling for Remove Button */
+.remove-button {
+  background-color: #dc3545; /* Bootstrap Danger Color */
+  border: none;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+  background-color: #c82333; /* Darker red for hover effect */
+}
+
+/* Button group for confirm/cancel modal */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* Specific Close button styling (can use modal-button class as well) */
+.close-button {
+  flex: 1;
+  background-color: #6c757d; /* Bootstrap Secondary Color */
+  border: none;
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-right: 10px; /* Ensure proper spacing */
+}
+
+.close-button:hover {
+  background-color: #5a6268; /* Darker gray for hover effect */
+}
+
+/* Set Image Button */
+.set-image-button {
+  flex: 1;
+  background-color: #007bff; /* Bootstrap Primary Color */
+  border: none;
+  padding: 10px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.set-image-button:hover {
+  background-color: #0056b3; /* Darker blue for hover effect */
+}
