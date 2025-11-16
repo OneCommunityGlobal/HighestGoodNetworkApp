@@ -9,7 +9,7 @@ vi.mock('react', async importOriginal => {
 });
 import { render, screen, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import Badges from '../Badges';
 import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';

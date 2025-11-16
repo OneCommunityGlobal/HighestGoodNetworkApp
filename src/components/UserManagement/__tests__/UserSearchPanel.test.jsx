@@ -2,7 +2,7 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import UserSearchPanel from '../UserSearchPanel';
 import { renderWithProvider } from '../../../__tests__/utils';
 // import { overrides } from 'chart.js/dist/core/core.defaults';

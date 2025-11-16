@@ -1,6 +1,6 @@
 import React from 'react';
 import BadgeTableHeader from '~/components/Badge/BadgeTableHeader';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { renderWithProvider } from '__tests__/utils';
 import { screen } from '@testing-library/react';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 
 import AssignBadgePopup from '~/components/Badge/AssignBadgePopup';
 import { Provider } from 'react-redux';

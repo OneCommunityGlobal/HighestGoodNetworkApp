@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 // eslint-disable-next-line no-unused-vars
 import thunk from 'redux-thunk';
 // eslint-disable-next-line no-unused-vars
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 // eslint-disable-next-line no-unused-vars
 import { rolesMock } from '__tests__/mockStates';
 // eslint-disable-next-line no-unused-vars
