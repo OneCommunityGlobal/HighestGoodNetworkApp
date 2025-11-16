@@ -114,6 +114,9 @@ function TimeEntry(props) {
     editFilteredColor();
   }, []);
 
+  const hasHtmlTags =
+  typeof notes === 'string' && /<\/?[a-z][\s\S]*>/i.test(notes);
+
   return (
     <div style={{ display: 'flex' }}>
       <div
@@ -178,7 +181,9 @@ function TimeEntry(props) {
             <div className={`${styles['time-entry-container']}`}>
               <div className={`${styles['notes-section']} ${darkMode ? styles['notes-text-light'] : ''}`}>
                 <div className={darkMode ? `${styles['dark-text-muted']}` : `${styles['text-muted']}`}>Notes:</div>
-                {parse(notes)}
+                {hasHtmlTags
+                  ? parse(notes) 
+                  : <span>{notes != null ? String(notes) : ''}</span>} 
               </div>
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&
