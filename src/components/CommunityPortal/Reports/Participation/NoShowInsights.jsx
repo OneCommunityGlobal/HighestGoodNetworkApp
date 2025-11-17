@@ -12,21 +12,29 @@ function NoShowInsights() {
     const today = new Date();
     return events.filter(event => {
       const eventDate = new Date(event.eventDate);
+
       switch (dateFilter) {
         case 'Today':
           return eventDate.toDateString() === today.toDateString();
+
         case 'This Week': {
-          const startOfWeek = new Date(today);
-          startOfWeek.setDate(today.getDate() - today.getDay());
-          const endOfWeek = new Date(startOfWeek);
-          endOfWeek.setDate(startOfWeek.getDate() + 6);
-          return eventDate >= startOfWeek && eventDate <= endOfWeek;
+          const start = new Date(today);
+          start.setDate(today.getDate() - today.getDay());
+          start.setHours(0, 0, 0, 0);
+
+          const end = new Date(start);
+          end.setDate(start.getDate() + 6);
+          end.setHours(23, 59, 59, 999);
+
+          return eventDate >= start && eventDate <= end;
         }
+
         case 'This Month':
           return (
             eventDate.getMonth() === today.getMonth() &&
             eventDate.getFullYear() === today.getFullYear()
           );
+
         default:
           return true;
       }
@@ -38,41 +46,44 @@ function NoShowInsights() {
 
     filteredEvents.forEach(event => {
       let key;
+
       if (activeTab === 'Event type') key = event.eventType;
       else if (activeTab === 'Time') key = event.eventTime.split(' ')[0];
+      // date portion
       else if (activeTab === 'Location') key = event.location;
 
-      const percentage = parseInt(event.noShowRate, 10);
+      const percent = parseInt(event.noShowRate, 10);
 
       if (statsMap.has(key)) {
-        const existing = statsMap.get(key);
+        const current = statsMap.get(key);
         statsMap.set(key, {
-          totalPercentage: existing.totalPercentage + percentage,
-          count: existing.count + 1,
+          totalPercentage: current.totalPercentage + percent,
+          count: current.count + 1,
         });
       } else {
-        statsMap.set(key, { totalPercentage: percentage, count: 1 });
+        statsMap.set(key, { totalPercentage: percent, count: 1 });
       }
     });
 
-    return Array.from(statsMap.entries()).map(([key, value]) => ({
-      label: key,
-      percentage: Math.round(value.totalPercentage / value.count),
+    return Array.from(statsMap.entries()).map(([label, val]) => ({
+      label,
+      percentage: Math.round(val.totalPercentage / val.count),
     }));
   };
 
   const renderStats = () => {
-    const filteredEvents = filterByDate(mockEvents);
-    const stats = calculateStats(filteredEvents);
+    const stats = calculateStats(filterByDate(mockEvents));
 
     return stats.map(item => (
       <div key={item.label} className={styles.insightItem}>
         <div className={`${styles.insightsLabel} ${darkMode ? styles.insightsLabelDark : ''}`}>
           {item.label}
         </div>
+
         <div className={styles.insightBar}>
           <div className={styles.insightFill} style={{ width: `${item.percentage}%` }} />
         </div>
+
         <div
           className={`${styles.insightsPercentage} ${
             darkMode ? styles.insightsPercentageDark : ''
@@ -88,8 +99,13 @@ function NoShowInsights() {
     <div className={`${styles.insights} ${darkMode ? styles.insightsDark : ''}`}>
       <div className={`${styles.insightsHeader} ${darkMode ? styles.insightsHeaderDark : ''}`}>
         <h3>No-show rate insights</h3>
+
         <div className={styles.insightsFilters}>
-          <select value={dateFilter} onChange={e => setDateFilter(e.target.value)}>
+          <select
+            value={dateFilter}
+            onChange={e => setDateFilter(e.target.value)}
+            className={darkMode ? 'darkSelect' : ''}
+          >
             <option value="All">All Time</option>
             <option value="Today">Today</option>
             <option value="This Week">This Week</option>
@@ -98,7 +114,7 @@ function NoShowInsights() {
         </div>
       </div>
 
-      <div className={styles.insightsTabs}>
+      <div className={`${styles.insightsTabs} ${darkMode ? styles.insightsTabsDark : ''}`}>
         {['Event type', 'Time', 'Location'].map(tab => (
           <button
             key={tab}

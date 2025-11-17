@@ -12,46 +12,48 @@ function EventParticipation() {
   const [exporting, setExporting] = useState(false);
 
   const handleSaveAsPDF = useCallback(() => {
-    if (globalThis.window === undefined || globalThis.document === undefined) return;
+    if (!window || !document) return;
     if (exporting) return;
-    setExporting(true);
 
+    setExporting(true);
     document.documentElement.dataset.exporting = 'true';
 
-    // Expand "More" so all visible items are included
-    const moreBtn = document.querySelector('.more-btn-global');
-    const toggled = moreBtn?.textContent?.toLowerCase().includes('more') ?? false;
-    if (toggled) moreBtn.click();
+    // Toggle the "More" button inside MyCases (module approach)
+    const moreBtn = document.querySelector(`[class*="moreBtn"]`);
+    const shouldExpand = moreBtn?.textContent?.toLowerCase().includes('more');
+
+    if (shouldExpand) moreBtn.click();
 
     const prevTitle = document.title;
     document.title = 'event_participation';
 
     setTimeout(() => {
-      globalThis.print();
+      window.print();
 
       setTimeout(() => {
-        if (toggled) moreBtn.click();
+        if (shouldExpand) moreBtn.click();
 
         delete document.documentElement.dataset.exporting;
         document.title = prevTitle;
         setExporting(false);
-      }, 100);
+      }, 120);
     }, 500);
   }, [exporting]);
 
   return (
     <div
       ref={exportRef}
-      className={`participation-landing-page-global ${styles.participationLandingPage} ${
+      className={`${styles.participationLandingPage} ${
         darkMode ? styles.participationLandingPageDark : ''
       }`}
     >
-      {/* Print-only page title header */}
-      <div className={`${styles.printOnly} ${styles.printHeader}`}>
+      {/* PRINT-ONLY HEADER */}
+      <div className={styles.printOnly}>
         <div className={styles.printHeaderTitle}>Social And Recreational Management</div>
         <div className={styles.printHeaderSubtitle}>Event Participation</div>
       </div>
 
+      {/* PAGE HEADER */}
       <header
         className={`${styles.landingPageHeaderContainer} ${styles.avoidBreak} ${styles.noPrintGap}`}
       >
@@ -60,6 +62,7 @@ function EventParticipation() {
         >
           Social And Recreational Management
         </h1>
+
         <button
           className={`${styles.savePdfBtn} ${
             darkMode ? styles.savePdfBtnDark : styles.savePdfBtnLight
@@ -72,17 +75,17 @@ function EventParticipation() {
         </button>
       </header>
 
+      {/* MY CASES (Top section) */}
       <MyCases />
 
+      {/* ANALYTICS SECTION */}
       <div className={styles.analyticsSection}>
         <DropOffTracking />
         <NoShowInsights />
       </div>
 
-      {/* Print-only footer note */}
-      <div className={`${styles.printOnly} ${styles.printFooter}`}>
-        Generated from Event Participation
-      </div>
+      {/* PRINT-ONLY FOOTER */}
+      <div className={styles.printOnly}>Generated from Event Participation</div>
     </div>
   );
 }

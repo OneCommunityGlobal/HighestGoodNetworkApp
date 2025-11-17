@@ -735,6 +735,11 @@ export default (
           component={EventParticipation}
         />
         <CPProtectedRoute
+          path="/communityportal/events/create"
+          exact
+          component={TestEventRegistration}
+        />
+        <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
           component={EventStats}
