@@ -472,7 +472,7 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}>
                         Equipment/Tool List
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor}>
+                      <DropdownItem tag={Link} to="/bmdashboard/issues" className={fontColor}>
                         Issue
                       </DropdownItem>
                       <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
