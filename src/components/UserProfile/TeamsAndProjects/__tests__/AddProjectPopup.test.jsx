@@ -44,8 +44,11 @@ describe('AddProjectPopup component Unit test case', () => {
 });
   it('Test 1 : Expected  UI elements are present', () => {
     const { getByText }=renderComponent(props);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const closeBtn = getByText('Close');
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const confirmBtn = getByText('Confirm');
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const addProjectText = getByText('Add Project');
     expect(closeBtn).toBeInTheDocument();
     expect(confirmBtn).toBeInTheDocument();
@@ -55,6 +58,7 @@ describe('AddProjectPopup component Unit test case', () => {
 
   it('Test 2 : Calls onClose when Close button is clicked', () => {
     const { getByText } = renderComponent(props);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const closeButton = getByText('Close');
     fireEvent.click(closeButton);
     expect(onCloseMock).toHaveBeenCalled();
@@ -64,10 +68,12 @@ describe('AddProjectPopup component Unit test case', () => {
 
   it('Test 3 : Calls onSelectAssignProject and resets selectedProject when Confirm button is clicked', async () => {
     const { getByText } = renderComponent(props);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const confirmButton = getByText('Confirm');
     fireEvent.click(confirmButton);
     await waitFor(() => {
       expect(onSelectAssignProjectMock).not.toHaveBeenCalled();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
       expect(onCloseMock).not.toHaveBeenCalled();
     });
   });
@@ -76,8 +82,10 @@ describe('AddProjectPopup component Unit test case', () => {
 
   it('Test 4 : Shows error alert when attempting to confirm without selecting a project', () => {
     const { getByText } = renderComponent(props);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const confirmButton = getByText('Confirm');
     fireEvent.click(confirmButton);
+    // eslint-disable-next-line testing-library/prefer-screen-queries
     const errorAlert = getByText('Hey, You need to pick a project first!');
     expect(errorAlert).toBeInTheDocument();
   });

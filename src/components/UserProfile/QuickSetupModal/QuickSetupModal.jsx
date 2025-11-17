@@ -37,6 +37,7 @@ function QuickSetupModal(props) {
       .then(res => {
         setTitles(res.data);
       })
+      // eslint-disable-next-line no-console
       .catch(err => console.log(err));
   }, [editModal, refreshTrigger]);
 
@@ -48,6 +49,7 @@ function QuickSetupModal(props) {
       const sortedData = response.data.sort((a, b) => a.order - b.order);
       setTitles(sortedData);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
@@ -61,6 +63,7 @@ function QuickSetupModal(props) {
           setQSTTeamCodes(formatted);
         }
       })
+      // eslint-disable-next-line no-console
       .catch((err) => console.error('Failed to fetch team codes:', err));
   }
 }, [stateTeamCodes.length, props.teamsData && props.teamsData.allTeamCode]);

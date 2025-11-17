@@ -9,7 +9,7 @@ import { getUserProfile } from '../../actions/userProfile';
 
 function PermissionWatcher() {
   const dispatch = useDispatch();
-  const { isAuthenticated, forceLogoutAt } = useSelector(state => state.auth);
+  const { isAuthenticated, forceLogoutAt } = useSelector(state => state.auth || {});
   const userProfile = useSelector(state => state.userProfile);
   const isAcknowledged = userProfile?.permissions?.isAcknowledged !== false;
   const [isAckLoading, setIsAckLoading] = useState(false);
@@ -31,7 +31,7 @@ function PermissionWatcher() {
 
       if (!userProfile || !userProfile._id) {
         // eslint-disable-next-line no-console
-        console.error('User profile not available');
+        //console.error('User profile not available');
         setIsAckLoading(false);
         return;
       }
@@ -53,12 +53,12 @@ function PermissionWatcher() {
         })
         .catch(error => {
           // eslint-disable-next-line no-console
-          console.error('Error updating user profile:', error);
+          // console.error('Error updating user profile:', error);
           setIsAckLoading(false);
         });
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error acknowledging permission changes:', error);
+      // console.error('Error acknowledging permission changes:', error);
       setIsAckLoading(false);
     }
   };
