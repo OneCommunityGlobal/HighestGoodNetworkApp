@@ -779,7 +779,7 @@ export default (
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
         <EPProtectedRoute
-          path="/educator/tasks/intermediate"
+          path="/educationportal/tasks/intermediate"
           exact
           component={IntermediateTaskList}
         />

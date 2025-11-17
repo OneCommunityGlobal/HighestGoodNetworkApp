@@ -71,14 +71,17 @@ const IntermediateTaskList = () => {
   // Handle edit intermediate task
   const handleEditTask = (task, parentTaskId) => {
     setSelectedParentTaskId(parentTaskId);
-    setEditingTask(task);
+    // Ensure task has id field for consistency
+    const taskWithId = { ...task, id: task.id || task._id };
+    setEditingTask(taskWithId);
     setShowForm(true);
   };
 
   // Handle delete intermediate task
-  const handleDeleteTask = async (taskId, parentTaskId) => {
+  const handleDeleteTask = async (task, parentTaskId) => {
     if (window.confirm('Are you sure you want to delete this sub-task?')) {
       try {
+        const taskId = task.id || task._id;
         await dispatch(deleteIntermediateTask(taskId));
         // Refresh intermediate tasks for the parent
         const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
@@ -90,8 +93,9 @@ const IntermediateTaskList = () => {
   };
 
   // Handle mark as done (for students)
-  const handleMarkAsDone = async (taskId, parentTaskId) => {
+  const handleMarkAsDone = async (task, parentTaskId) => {
     try {
+      const taskId = task.id || task._id;
       await dispatch(markIntermediateTaskAsDone(taskId));
       // Refresh intermediate tasks for the parent
       const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
@@ -105,12 +109,18 @@ const IntermediateTaskList = () => {
   const handleFormSubmit = async formData => {
     try {
       if (editingTask) {
-        await dispatch(updateIntermediateTask(editingTask.id, formData));
+        const taskId = editingTask.id || editingTask._id;
+        await dispatch(
+          updateIntermediateTask(taskId, {
+            ...formData,
+            parentTaskId: selectedParentTaskId,
+          }),
+        );
       } else {
         await dispatch(
           createIntermediateTask({
             ...formData,
-            parent_task_id: selectedParentTaskId,
+            parentTaskId: selectedParentTaskId,
           }),
         );
       }
@@ -237,7 +247,7 @@ const IntermediateTaskList = () => {
                       ) : (
                         <div className={styles.subTasksList}>
                           {subTasks.map(subTask => (
-                            <div key={subTask.id} className={styles.subTaskItem}>
+                            <div key={subTask.id || subTask._id} className={styles.subTaskItem}>
                               <div className={styles.subTaskContent}>
                                 <h4 className={styles.subTaskTitle}>{subTask.title}</h4>
                                 {subTask.description && (
@@ -283,7 +293,7 @@ const IntermediateTaskList = () => {
                                     </button>
                                     <button
                                       className={styles.deleteButton}
-                                      onClick={() => handleDeleteTask(subTask.id, parentTask.id)}
+                                      onClick={() => handleDeleteTask(subTask, parentTask.id)}
                                       title="Delete"
                                     >
                                       <svg
@@ -303,7 +313,7 @@ const IntermediateTaskList = () => {
                                 {!isEducator && subTask.status !== 'completed' && (
                                   <button
                                     className={styles.markDoneButton}
-                                    onClick={() => handleMarkAsDone(subTask.id, parentTask.id)}
+                                    onClick={() => handleMarkAsDone(subTask, parentTask.id)}
                                     title="Mark as Done"
                                   >
                                     Mark as Done

@@ -16,8 +16,8 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    expected_hours: '',
-    due_date: '',
+    expectedHours: '',
+    dueDate: '',
     status: 'pending',
   });
 
@@ -26,8 +26,11 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
       setFormData({
         title: task.title || '',
         description: task.description || '',
-        expected_hours: task.expected_hours || '',
-        due_date: task.due_date ? new Date(task.due_date).toISOString().split('T')[0] : '',
+        expectedHours: task.expectedHours || task.expected_hours || '',
+        dueDate:
+          task.dueDate || task.due_date
+            ? new Date(task.dueDate || task.due_date).toISOString().split('T')[0]
+            : '',
         status: task.status || 'pending',
       });
     }
@@ -50,18 +53,25 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
       return;
     }
 
-    if (
-      formData.expected_hours &&
-      (isNaN(formData.expected_hours) || formData.expected_hours < 0)
-    ) {
+    if (formData.expectedHours && (isNaN(formData.expectedHours) || formData.expectedHours < 0)) {
       alert('Expected hours must be a positive number');
       return;
     }
 
-    onSubmit({
-      ...formData,
-      expected_hours: formData.expected_hours ? parseFloat(formData.expected_hours) : 0,
-    });
+    // Convert to backend format
+    const submitData = {
+      title: formData.title,
+      description: formData.description,
+      expectedHours: formData.expectedHours ? parseFloat(formData.expectedHours) : 0,
+      status: formData.status,
+    };
+
+    // Only include dueDate if it's set
+    if (formData.dueDate) {
+      submitData.dueDate = new Date(formData.dueDate).toISOString();
+    }
+
+    onSubmit(submitData);
   };
 
   return (
@@ -99,26 +109,26 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
 
           <div className={styles.formRow}>
             <FormGroup className={styles.formGroupHalf}>
-              <Label for="expected_hours">Expected Hours</Label>
+              <Label for="expectedHours">Expected Hours</Label>
               <Input
                 type="number"
-                name="expected_hours"
-                id="expected_hours"
+                name="expectedHours"
+                id="expectedHours"
                 min="0"
                 step="0.5"
-                value={formData.expected_hours}
+                value={formData.expectedHours}
                 onChange={handleChange}
                 placeholder="0"
               />
             </FormGroup>
 
             <FormGroup className={styles.formGroupHalf}>
-              <Label for="due_date">Due Date</Label>
+              <Label for="dueDate">Due Date</Label>
               <Input
                 type="date"
-                name="due_date"
-                id="due_date"
-                value={formData.due_date}
+                name="dueDate"
+                id="dueDate"
+                value={formData.dueDate}
                 onChange={handleChange}
               />
             </FormGroup>
