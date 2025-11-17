@@ -20,8 +20,8 @@ function AgeChart({ data, compareLabel }) {
 
   const formatTooltip = (value, name, props) => {
     const { change } = props.payload;
-    let changeText = '';
     if (compareLabel && change !== undefined) {
+      let changeText = '';
       if (change > 0) {
         changeText = `${change}% more than ${compareLabel}`;
       } else if (change < 0) {

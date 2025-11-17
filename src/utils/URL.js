@@ -18,12 +18,14 @@ export const ENDPOINTS = {
 
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-  
+
   // Blue Square Email Triggers
   BLUE_SQUARE_RESEND_INFRINGEMENT_EMAILS: () => `${APIEndpoint}/blueSquare/resend-infringement-emails-only`,
   BLUE_SQUARE_RESEND_WEEKLY_SUMMARY_EMAILS: () => `${APIEndpoint}/blueSquare/resend-weekly-summary-emails`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   REPLACE_TEAM_CODE: `${APIEndpoint}/userProfile/replaceTeamCode`,
+
+  GET_JOB_FORMS: `${APIEndpoint}/jobForms`,
 
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
@@ -46,6 +48,8 @@ export const ENDPOINTS = {
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
+  JOB_ANALYTICS: `${APIEndpoint}/jobAnalytics/data`,
+  JOB_ANALYTICS_REALTIME: `${APIEndpoint}/jobAnalytics/realtime`,
   PROJECT: `${APIEndpoint}/project/`,
   PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   PROJECT_MEMBER_SEARCH: (projectId, query) =>
@@ -82,6 +86,7 @@ export const ENDPOINTS = {
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
   TIME_ENTRY: () => `${APIEndpoint}/TimeEntry`,
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
+  TIMELOG_TRACKING: userId => `${APIEndpoint}/timelogTracking/${userId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
@@ -97,6 +102,7 @@ export const ENDPOINTS = {
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
   TASK_UPDATE_STATUS: taskId => `${APIEndpoint}/task/updateStatus/${taskId}`,
+  TASK_CHANGE_LOGS: taskId => `${APIEndpoint}/task/${taskId}/changeLogs`,
   DELETE_CHILDREN: taskId => `${APIEndpoint}/task/delete/children/${taskId}`,
   GET_USER_BY_NAME: name => `${APIEndpoint}/userprofile/name/${name}`,
   FIX_TASKS: wbsId => `${APIEndpoint}/tasks/${wbsId}`,
@@ -111,6 +117,7 @@ export const ENDPOINTS = {
   DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
   EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
   GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  GET_SPECIAL_WARNINGS: userId => `${APIEndpoint}/warnings/${userId}/special`,
   POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
@@ -143,6 +150,19 @@ export const ENDPOINTS = {
     `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
+  
+POPULARITY: (range, roles, start, end) => {
+  let url = `${APIEndpoint}/popularity?`;
+  if (range) url += `range=${range}&`;
+  if (roles && roles.length > 0) {
+    url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
+  }
+  if (start) url += `start=${encodeURIComponent(start)}&`;
+  if (end) url += `end=${encodeURIComponent(end)}&`;
+  return url.slice(0, -1); 
+},
+POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
+
 
   // titles endpoints
   TITLES: () => `${APIEndpoint}/title`,
@@ -158,6 +178,10 @@ export const ENDPOINTS = {
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
+
+  // Student Tasks (Education Portal)
+  STUDENT_TASKS: () => `${APIEndpoint}/student/tasks`,
+  STUDENT_TASK_MARK_DONE: taskId => `${APIEndpoint}/student/tasks/${taskId}/mark-done`,
 
   TIMER_SERVICE: new URL('/timer-service', APIEndpoint.replace('http', 'ws')).toString(),
   TIMEZONE_LOCATION: location => `${APIEndpoint}/timezone/${location}`,
@@ -195,6 +219,8 @@ export const ENDPOINTS = {
   NON_HGN_EMAIL_SUBSCRIPTION: `${APIEndpoint}/add-non-hgn-email-subscription`,
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
+  
+  PERMISSION_MANAGEMENT_UPDATE: () => `${APIEndpoint}/permission-management`,
 
   // reasons endpoints
   CREATEREASON: () => {
@@ -286,7 +312,10 @@ export const ENDPOINTS = {
   BM_INJURY_TYPES: `${APIEndpoint}/bm/injuries/injury-types`,
   BM_INJURY_PROJECTS: `${APIEndpoint}/bm/injuries/project-injury`,
   BM_INJURY_ISSUE: `${APIEndpoint}/bm/issues`,
+  BM_INJURY_SEVERITY: `${APIEndpoint}/bm/injuries/severity-by-project`,
   BM_RENTAL_CHART: `${APIEndpoint}/bm/rentalChart`,
+  BM_TOOLS_RETURNED_LATE: `${APIEndpoint}/bm/tools/returned-late`,
+  BM_TOOLS_RETURNED_LATE_PROJECTS: `${APIEndpoint}/bm/tools/returned-late/projects`,
   TOOLS_AVAILABILITY_PROJECTS: `${APIEndpoint}/bm/tools-availability/projects`,
   TOOLS_AVAILABILITY_BY_PROJECT: (projectId, startDate, endDate) => {
     let url = `${APIEndpoint}/bm/projects/${projectId}/tools-availability`;
@@ -333,6 +362,8 @@ export const ENDPOINTS = {
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
 
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
@@ -358,6 +389,11 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+  // event endpoint
+  EVENTS: `${APIEndpoint}/events`,
+  EVENT_TYPES: `${APIEndpoint}/events/types`,
+  EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
   LB_SEND_MESSAGE: `${APIEndpoint}/lb/messages`,
   LB_READ_MESSAGE: `${APIEndpoint}/lb/messages/conversation`,
   LB_UPDATE_MESSAGE_STATUS: `${APIEndpoint}/lb/messages/statuses`,

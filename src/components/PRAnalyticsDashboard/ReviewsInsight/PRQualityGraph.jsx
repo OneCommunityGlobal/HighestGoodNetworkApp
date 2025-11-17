@@ -31,7 +31,7 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
             teamQualityData.Sufficient || 0,
             teamQualityData.Exceptional || 0,
           ],
-          backgroundColor: ['#DC3545', '#FFC107', '#28A745', '#007BFF'],
+          backgroundColor: ['#DC3545', '#FFC107', '#28A745', '#5940CB'],
           hoverOffset: 4,
         },
       ],
