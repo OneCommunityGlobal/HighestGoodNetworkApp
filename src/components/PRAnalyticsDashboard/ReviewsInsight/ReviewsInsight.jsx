@@ -9,7 +9,7 @@ import { getAllTeamCode } from '../../../actions/allTeamsAction';
 
 function ReviewsInsight() {
   const [duration, setDuration] = useState('Last Week');
-  const [selectedTeams, setSelectedTeams] = useState([]);
+  const [selectedTeams, setSelectedTeams] = useState([{ value: 'All', label: 'All Teams' }]);
   const [teamData, setTeamData] = useState({});
   const [qualityData, setQualityData] = useState({});
   const [dataViewActive, setDataViewActive] = useState(false);
