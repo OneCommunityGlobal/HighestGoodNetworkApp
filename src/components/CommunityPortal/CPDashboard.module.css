@@ -1,4 +1,4 @@
-body {
+:global(body) {
   font-family: 'Poppins', sans-serif;
   background: #fff;
   margin: 0;
@@ -6,7 +6,7 @@ body {
 }
 
 .dashboard-container {
-  padding: 40px 20px;
+  padding: 40px 10px;
   max-width: 1400px;
   margin: 0 auto;
   background: #ffffff;
@@ -19,10 +19,40 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 20px;
+  padding: 16px 24px;
   background: linear-gradient(120deg, #ffffff, #f8f9fa);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-controls {
+  display: flex;
+  align-items: center;
+}
+
+.dashboard-search {
+  border: none;
+  padding: 8px 16px;
+  min-width: 260px;
+  border-radius: 999px 0 0 999px;
+  outline: none;
+}
+
+.dashboard-search:focus {
+  box-shadow: none;
+}
+
+.dashboard-search-button {
+  border-radius: 0 999px 999px 0;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+}
+
+.dashboard-search-icon {
+  font-size: 1rem;
 }
 
 .dashboard-header h1 {
@@ -39,6 +69,57 @@ body {
   width: 100%;
   max-width: 600px;
   transition: all 0.3s ease;
+}
+
+/* pill input */
+.dashboard-search-input {
+  padding: 8px 90px 8px 16px;  /* extra right padding for icons */
+  border-radius: 999px;
+  border: 2px solid #1b3c55;
+  min-width: 260px;
+  outline: none;
+}
+
+/* clear X button */
+.dashboard-clear-btn {
+  position: absolute;
+  right: 35px;
+  top: 45%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #1b3c55;
+}
+
+/* blue circular search button inside the bar */
+.dashboard-search-icon-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  background: #ffffff;          /* 🔹 icon background now white */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b3c55;               /* blue magnifying-glass icon */
+  font-size: 0.9rem;
+}
+
+
+.dashboard-search-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
 }
 
 .dashboard-search-container input:focus {
@@ -153,4 +234,13 @@ body {
 .dashboard-actions button:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Hide browser's built-in clear icon for search inputs */
+.dashboard-search-input::-webkit-search-cancel-button,
+.dashboard-search-input::-webkit-search-decoration,
+.dashboard-search-input::-webkit-search-results-button,
+.dashboard-search-input::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
 }
