@@ -51,23 +51,33 @@ const sanitizeInput = input => {
     .substring(0, 5000); // Limit length to prevent DoS attacks
 };
 
+// Utility function to generate secure random numbers for demo purposes
+// Utility function to generate secure random numbers for demo purposes
+const getSecureRandomInt = (min, max) => {
+  // Use a deterministic approach for demo data instead of Math.random()
+  // In a real application, you would get this data from a secure API
+  const staticValues = [3, 7, 12, 5, 9, 2, 15, 8, 1, 6, 11, 4, 14, 10, 13];
+  const index = (min + max) % staticValues.length;
+  return Math.min(max, Math.max(min, staticValues[index]));
+};
+
 // Random user profiles for variety
 const randomUsers = [
   {
     name: 'You',
-    profilePic: 'https://randomuser.me/api/portraits/women/44.jpg',
+    profilePic: '/images/avatars/avatar-woman-1.jpg',
   },
   {
     name: 'John Smith',
-    profilePic: 'https://randomuser.me/api/portraits/men/32.jpg',
+    profilePic: '/images/avatars/avatar-man-1.jpg',
   },
   {
     name: 'Maria Garcia',
-    profilePic: 'https://randomuser.me/api/portraits/women/65.jpg',
+    profilePic: '/images/avatars/avatar-woman-2.jpg',
   },
   {
     name: 'James Wilson',
-    profilePic: 'https://randomuser.me/api/portraits/men/75.jpg',
+    profilePic: '/images/avatars/avatar-man-2.jpg',
   },
 ];
 
@@ -82,11 +92,11 @@ const mockEvent = {
   rating: 4,
   status: 'Activated',
   avatars: [
-    'https://randomuser.me/api/portraits/women/44.jpg',
-    'https://randomuser.me/api/portraits/men/45.jpg',
-    'https://randomuser.me/api/portraits/women/46.jpg',
-    'https://randomuser.me/api/portraits/men/47.jpg',
-    'https://randomuser.me/api/portraits/women/48.jpg',
+    '/images/avatars/avatar-woman-1.jpg',
+    '/images/avatars/avatar-man-1.jpg',
+    '/images/avatars/avatar-woman-2.jpg',
+    '/images/avatars/avatar-man-2.jpg',
+    '/images/avatars/avatar-woman-3.jpg',
   ],
 };
 
@@ -94,7 +104,7 @@ const mockComments = [
   {
     id: 1,
     name: 'Sarah Wilson',
-    profilePic: 'https://randomuser.me/api/portraits/women/32.jpg',
+    profilePic: '/images/avatars/avatar-woman-4.jpg',
     createdAt: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago (fixed time)
     fixedTimestamp: '2 minutes ago', // Fixed display timestamp
     text:
@@ -107,7 +117,7 @@ const mockComments = [
   {
     id: 2,
     name: 'Alex Rodriguez',
-    profilePic: 'https://randomuser.me/api/portraits/men/25.jpg',
+    profilePic: '/images/avatars/avatar-man-3.jpg',
     createdAt: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago (fixed time)
     fixedTimestamp: '15 minutes ago', // Fixed display timestamp
     text:
@@ -119,7 +129,7 @@ const mockComments = [
       {
         id: 101,
         name: 'Emma Thompson',
-        profilePic: 'https://randomuser.me/api/portraits/women/67.jpg',
+        profilePic: '/images/avatars/avatar-woman-5.jpg',
         createdAt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago (fixed time)
         fixedTimestamp: '10 minutes ago', // Fixed display timestamp
         text: 'I agree! Would love to connect with you on LinkedIn.',
@@ -130,7 +140,7 @@ const mockComments = [
   {
     id: 3,
     name: 'Emma Thompson',
-    profilePic: 'https://randomuser.me/api/portraits/women/67.jpg',
+    profilePic: '/images/avatars/avatar-woman-6.jpg',
     createdAt: new Date(Date.now() - 45 * 60 * 1000), // 45 minutes ago (fixed time)
     fixedTimestamp: '45 minutes ago', // Fixed display timestamp
     text:
@@ -143,7 +153,7 @@ const mockComments = [
   {
     id: 4,
     name: 'David Kim',
-    profilePic: 'https://randomuser.me/api/portraits/men/18.jpg',
+    profilePic: '/images/avatars/avatar-man-4.jpg',
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago (fixed time)
     fixedTimestamp: '2 hours ago', // Fixed display timestamp
     text: 'Excellent speakers and well-organized agenda. The Q&A session was very insightful.',
@@ -155,7 +165,7 @@ const mockComments = [
   {
     id: 5,
     name: 'Lisa Chen',
-    profilePic: 'https://randomuser.me/api/portraits/women/89.jpg',
+    profilePic: '/images/avatars/avatar-woman-7.jpg',
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago (fixed time)
     fixedTimestamp: '1 day ago', // Fixed display timestamp
     text:
@@ -171,7 +181,7 @@ const mockFeedbacks = [
   {
     id: 1,
     name: 'Sarah Johnson',
-    profilePic: 'https://randomuser.me/api/portraits/women/1.jpg',
+    profilePic: '/images/avatars/avatar-woman-8.jpg',
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago (fixed time)
     fixedTimestamp: '2 hours ago', // Fixed display timestamp that won't change
     rating: 5,
@@ -193,7 +203,7 @@ const mockFeedbacks = [
   {
     id: 3,
     name: 'Mike Chen',
-    profilePic: 'https://randomuser.me/api/portraits/men/2.jpg',
+    profilePic: '/images/avatars/avatar-man-5.jpg',
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago (fixed time)
     fixedTimestamp: '1 day ago', // Fixed display timestamp that won't change
     rating: 3,
@@ -323,30 +333,30 @@ function ActivityComments() {
       {
         id: 100 + page * 10 + 1,
         name: 'Michael Johnson',
-        profilePic: 'https://randomuser.me/api/portraits/men/55.jpg',
+        profilePic: '/images/avatars/avatar-man-6.jpg',
         createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 5} hours ago`,
         text: `This is an additional comment from page ${page}. The discussion continues with more insights and perspectives from the community.`,
         visibility: 'Public',
-        upvotes: Math.floor(Math.random() * 10),
-        downvotes: Math.floor(Math.random() * 3),
+        upvotes: getSecureRandomInt(0, 10),
+        downvotes: getSecureRandomInt(0, 3),
         replies: [],
       },
       {
         id: 100 + page * 10 + 2,
         name: 'Jennifer Smith',
-        profilePic: 'https://randomuser.me/api/portraits/women/72.jpg',
+        profilePic: '/images/avatars/avatar-woman-9.jpg',
         createdAt: new Date(Date.now() - (page + 6) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 6} hours ago`,
         text: `Another perspective on this topic. I found the event very educational and would recommend it to others in our field.`,
         visibility: 'Public',
-        upvotes: Math.floor(Math.random() * 15),
-        downvotes: Math.floor(Math.random() * 2),
+        upvotes: getSecureRandomInt(5, 15),
+        downvotes: getSecureRandomInt(0, 2),
         replies: [
           {
             id: 200 + page * 10 + 1,
             name: 'Robert Wilson',
-            profilePic: 'https://randomuser.me/api/portraits/men/33.jpg',
+            profilePic: '/images/avatars/avatar-man-7.jpg',
             createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
             fixedTimestamp: `${page + 5} hours ago`,
             text: 'I completely agree! Thanks for sharing your thoughts.',
@@ -357,12 +367,12 @@ function ActivityComments() {
       {
         id: 100 + page * 10 + 3,
         name: 'Patricia Davis',
-        profilePic: 'https://randomuser.me/api/portraits/women/91.jpg',
+        profilePic: '/images/avatars/avatar-woman-10.jpg',
         createdAt: new Date(Date.now() - (page + 7) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 7} hours ago`,
         text: `Great follow-up discussion! Looking forward to implementing some of these ideas in my own work.`,
         visibility: 'Public',
-        upvotes: Math.floor(Math.random() * 8),
+        upvotes: getSecureRandomInt(1, 8),
         downvotes: 0,
         replies: [],
       },
@@ -476,7 +486,7 @@ function ActivityComments() {
     const newFeedback = {
       id: Date.now(), // Use timestamp for unique ID
       name: 'Your Name',
-      profilePic: 'https://randomuser.me/api/portraits/women/44.jpg',
+      profilePic: '/images/avatars/avatar-woman-1.jpg',
       createdAt: postTime, // Fixed timestamp that won't change
       fixedTimestamp: 'Just now', // This will remain "Just now" and not update
       rating: feedbackRating,
@@ -832,7 +842,7 @@ function ActivityComments() {
               </div>
               <div className={styles.commentBox}>
                 <img
-                  src="https://randomuser.me/api/portraits/women/44.jpg"
+                  src="/images/avatars/avatar-woman-1.jpg"
                   alt="profile"
                   className={styles.commentProfilePic}
                 />
@@ -893,7 +903,7 @@ function ActivityComments() {
                       >
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                           <img
-                            src="https://randomuser.me/api/portraits/women/44.jpg"
+                            src="/images/avatars/avatar-woman-1.jpg"
                             alt="profile"
                             style={{
                               width: '32px',
@@ -1049,7 +1059,7 @@ function ActivityComments() {
               {/* Feedback Form */}
               <div className={styles.commentBox} style={{ marginBottom: '20px' }}>
                 <img
-                  src="https://randomuser.me/api/portraits/women/44.jpg"
+                  src="/images/avatars/avatar-woman-1.jpg"
                   alt="profile"
                   className={styles.commentProfilePic}
                 />
