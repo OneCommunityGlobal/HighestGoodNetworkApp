@@ -176,17 +176,69 @@ const mockFeedbacks = [
 ];
 
 function ActivityComments() {
+  // Utility function to restore Date objects from localStorage
+  const restoreDates = items => {
+    return items.map(item => ({
+      ...item,
+      createdAt: new Date(item.createdAt),
+      replies: item.replies
+        ? item.replies.map(reply => ({
+            ...reply,
+            createdAt: new Date(reply.createdAt),
+          }))
+        : [],
+    }));
+  };
+
+  // Load data from localStorage or use mock data as fallback
+  const loadStoredComments = () => {
+    try {
+      const stored = localStorage.getItem('activityComments');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return restoreDates(parsed);
+      }
+      return mockComments;
+    } catch (error) {
+      return mockComments;
+    }
+  };
+
+  const loadStoredFeedbacks = () => {
+    try {
+      const stored = localStorage.getItem('activityFeedbacks');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return parsed.map(item => ({
+          ...item,
+          createdAt: new Date(item.createdAt),
+        }));
+      }
+      return mockFeedbacks;
+    } catch (error) {
+      return mockFeedbacks;
+    }
+  };
+
   const [activeTab, setActiveTab] = useState('Engagement');
   const [commentTab, setCommentTab] = useState('Comment');
-  const [comments, setComments] = useState(mockComments);
+  const [comments, setComments] = useState(loadStoredComments);
   const [commentInput, setCommentInput] = useState('');
   const [sortType, setSortType] = useState('Newest');
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMoreComments, setHasMoreComments] = useState(true);
+  const [totalComments, setTotalComments] = useState(loadStoredComments().length + 10); // Simulating more comments exist
+  const commentsPerPage = 5;
+
   // Reply states
   const [replyingTo, setReplyingTo] = useState(null); // ID of comment being replied to
   const [replyInput, setReplyInput] = useState(''); // Reply text input
 
   // Feedback states
-  const [feedbacks, setFeedbacks] = useState(mockFeedbacks);
+  const [feedbacks, setFeedbacks] = useState(loadStoredFeedbacks);
   const [feedbackInput, setFeedbackInput] = useState('');
   const [feedbackRating, setFeedbackRating] = useState(0);
   const [feedbackSearch, setFeedbackSearch] = useState('');
@@ -206,19 +258,128 @@ function ActivityComments() {
     new Date(2024, 7, 25), // Aug 25, 2024
   ];
 
+  // Save comments to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('activityComments', JSON.stringify(comments));
+    } catch (error) {
+      // Failed to save to localStorage - continue without persistence
+    }
+  }, [comments]);
+
+  // Save feedbacks to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('activityFeedbacks', JSON.stringify(feedbacks));
+    } catch (error) {
+      // Failed to save to localStorage - continue without persistence
+    }
+  }, [feedbacks]);
+
+  // Utility function to reset all data (for testing)
+  const resetAllData = () => {
+    localStorage.removeItem('activityComments');
+    localStorage.removeItem('activityFeedbacks');
+    setComments(mockComments);
+    setFeedbacks(mockFeedbacks);
+    setTotalComments(mockComments.length + 10);
+  };
+
+  // Mock API function to simulate fetching more comments
+  const fetchMoreComments = async page => {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Generate additional mock comments for pagination
+    const additionalComments = [
+      {
+        id: 100 + page * 10 + 1,
+        name: 'Michael Johnson',
+        profilePic: 'https://randomuser.me/api/portraits/men/55.jpg',
+        createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
+        fixedTimestamp: `${page + 5} hours ago`,
+        text: `This is an additional comment from page ${page}. The discussion continues with more insights and perspectives from the community.`,
+        visibility: 'Public',
+        upvotes: Math.floor(Math.random() * 10),
+        downvotes: Math.floor(Math.random() * 3),
+        replies: [],
+      },
+      {
+        id: 100 + page * 10 + 2,
+        name: 'Jennifer Smith',
+        profilePic: 'https://randomuser.me/api/portraits/women/72.jpg',
+        createdAt: new Date(Date.now() - (page + 6) * 60 * 60 * 1000),
+        fixedTimestamp: `${page + 6} hours ago`,
+        text: `Another perspective on this topic. I found the event very educational and would recommend it to others in our field.`,
+        visibility: 'Public',
+        upvotes: Math.floor(Math.random() * 15),
+        downvotes: Math.floor(Math.random() * 2),
+        replies: [
+          {
+            id: 200 + page * 10 + 1,
+            name: 'Robert Wilson',
+            profilePic: 'https://randomuser.me/api/portraits/men/33.jpg',
+            createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
+            fixedTimestamp: `${page + 5} hours ago`,
+            text: 'I completely agree! Thanks for sharing your thoughts.',
+            visibility: 'Public',
+          },
+        ],
+      },
+      {
+        id: 100 + page * 10 + 3,
+        name: 'Patricia Davis',
+        profilePic: 'https://randomuser.me/api/portraits/women/91.jpg',
+        createdAt: new Date(Date.now() - (page + 7) * 60 * 60 * 1000),
+        fixedTimestamp: `${page + 7} hours ago`,
+        text: `Great follow-up discussion! Looking forward to implementing some of these ideas in my own work.`,
+        visibility: 'Public',
+        upvotes: Math.floor(Math.random() * 8),
+        downvotes: 0,
+        replies: [],
+      },
+    ];
+
+    return {
+      comments: additionalComments,
+      hasMore: page < 3, // Simulate having 3 pages total
+      total: 20, // Simulate total of 20 comments
+    };
+  };
+
+  // Handle loading more comments
+  const handleLoadMore = async () => {
+    if (isLoadingMore || !hasMoreComments) return;
+
+    setIsLoadingMore(true);
+    try {
+      const nextPage = currentPage + 1;
+      const result = await fetchMoreComments(nextPage);
+
+      setComments(prevComments => [...prevComments, ...result.comments]);
+      setCurrentPage(nextPage);
+      setHasMoreComments(result.hasMore);
+      setTotalComments(result.total);
+    } catch (error) {
+      // console.error('Error loading more comments:', error);
+      // In a real app, you might show an error message to the user
+    } finally {
+      setIsLoadingMore(false);
+    }
+  };
+
   const handlePostComment = () => {
     if (!commentInput.trim()) return;
 
     // Use random user for demonstration (in real app, this would be the current user)
     const randomUser = randomUsers[0]; // Always use "You" for new comments
 
-    const postTime = new Date(); // Fixed timestamp at moment of posting
+    const postTime = new Date(); // Timestamp at moment of posting
     const newComment = {
       id: Date.now(), // Use timestamp for unique ID
       name: randomUser.name,
       profilePic: randomUser.profilePic,
-      createdAt: postTime, // Fixed timestamp that won't change
-      fixedTimestamp: 'Just now', // This will remain "Just now" and not update
+      createdAt: postTime, // This will be used by getRelativeTime to show dynamic timestamps
       text: commentInput.trim(),
       visibility: 'Public',
       upvotes: 0,
@@ -228,6 +389,7 @@ function ActivityComments() {
 
     setComments(prevComments => [newComment, ...prevComments]);
     setCommentInput('');
+    setTotalComments(prevTotal => prevTotal + 1); // Update total count when new comment is added
   };
 
   const handleReplyClick = commentId => {
@@ -240,13 +402,12 @@ function ActivityComments() {
 
     const randomUser = randomUsers[0]; // Always use "You" for new replies
 
-    const postTime = new Date(); // Fixed timestamp at moment of posting
+    const postTime = new Date(); // Timestamp at moment of posting
     const newReply = {
       id: Date.now(), // Use timestamp for unique ID
       name: randomUser.name,
       profilePic: randomUser.profilePic,
-      createdAt: postTime, // Fixed timestamp that won't change
-      fixedTimestamp: 'Just now', // This will remain "Just now" and not update
+      createdAt: postTime, // This will be used by getRelativeTime to show dynamic timestamps
       text: replyInput.trim(),
       visibility: 'Public',
     };
@@ -799,7 +960,15 @@ function ActivityComments() {
                   </div>
                 ))}
               </div>
-              <button className={styles.loadMoreBtn}>Load More</button>
+              {hasMoreComments && (
+                <button
+                  className={styles.loadMoreBtn}
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                >
+                  {isLoadingMore ? 'Loading...' : 'Load More'}
+                </button>
+              )}
             </div>
           )}
 
