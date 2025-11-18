@@ -23,6 +23,34 @@ const getRelativeTime = createdAt => {
   }
 };
 
+// Utility function to sanitize user input and prevent XSS
+const sanitizeInput = input => {
+  if (typeof input !== 'string') return '';
+
+  // Remove any HTML tags and escape special characters
+  return input
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<[^>]*>/g, '') // Remove all HTML tags
+    .replace(/[<>&"']/g, char => {
+      switch (char) {
+        case '<':
+          return '&lt;';
+        case '>':
+          return '&gt;';
+        case '&':
+          return '&amp;';
+        case '"':
+          return '&quot;';
+        case "'":
+          return '&#x27;';
+        default:
+          return char;
+      }
+    })
+    .trim()
+    .substring(0, 5000); // Limit length to prevent DoS attacks
+};
+
 // Random user profiles for variety
 const randomUsers = [
   {
@@ -371,6 +399,10 @@ function ActivityComments() {
   const handlePostComment = () => {
     if (!commentInput.trim()) return;
 
+    // Sanitize the input to prevent XSS
+    const sanitizedText = sanitizeInput(commentInput);
+    if (!sanitizedText) return;
+
     // Use random user for demonstration (in real app, this would be the current user)
     const randomUser = randomUsers[0]; // Always use "You" for new comments
 
@@ -380,7 +412,7 @@ function ActivityComments() {
       name: randomUser.name,
       profilePic: randomUser.profilePic,
       createdAt: postTime, // This will be used by getRelativeTime to show dynamic timestamps
-      text: commentInput.trim(),
+      text: sanitizedText,
       visibility: 'Public',
       upvotes: 0,
       downvotes: 0,
@@ -400,6 +432,10 @@ function ActivityComments() {
   const handlePostReply = commentId => {
     if (!replyInput.trim()) return;
 
+    // Sanitize the input to prevent XSS
+    const sanitizedText = sanitizeInput(replyInput);
+    if (!sanitizedText) return;
+
     const randomUser = randomUsers[0]; // Always use "You" for new replies
 
     const postTime = new Date(); // Timestamp at moment of posting
@@ -408,7 +444,7 @@ function ActivityComments() {
       name: randomUser.name,
       profilePic: randomUser.profilePic,
       createdAt: postTime, // This will be used by getRelativeTime to show dynamic timestamps
-      text: replyInput.trim(),
+      text: sanitizedText,
       visibility: 'Public',
     };
 
@@ -426,15 +462,15 @@ function ActivityComments() {
 
   const handlePostFeedback = () => {
     if (!feedbackInput.trim()) {
-      // eslint-disable-next-line no-alert
-      alert('Please enter feedback text!');
       return;
     }
     if (feedbackRating === 0) {
-      // eslint-disable-next-line no-alert
-      alert('Please select a rating!');
       return;
     }
+
+    // Sanitize the input to prevent XSS
+    const sanitizedText = sanitizeInput(feedbackInput);
+    if (!sanitizedText) return;
 
     const postTime = new Date(); // Fixed timestamp at moment of posting
     const newFeedback = {
@@ -444,15 +480,13 @@ function ActivityComments() {
       createdAt: postTime, // Fixed timestamp that won't change
       fixedTimestamp: 'Just now', // This will remain "Just now" and not update
       rating: feedbackRating,
-      text: feedbackInput.trim(),
+      text: sanitizedText,
       helpful: 0,
     };
 
     setFeedbacks(prevFeedbacks => [newFeedback, ...prevFeedbacks]);
     setFeedbackInput('');
     setFeedbackRating(0);
-    // eslint-disable-next-line no-alert
-    alert('Feedback posted successfully!');
   };
 
   const handleHelpfulClick = feedbackId => {
@@ -464,12 +498,13 @@ function ActivityComments() {
   };
 
   const handleFlagClick = feedbackId => {
-    // eslint-disable-next-line no-alert
-    const confirmed = confirm('Are you sure you want to report this feedback?');
-    if (confirmed) {
-      // eslint-disable-next-line no-alert
-      alert('Feedback has been reported to moderators.');
-    }
+    // In a real application, this would make an API call to report the feedback
+    // For now, we'll just silently handle the flag action
+    setFeedbacks(prevFeedbacks =>
+      prevFeedbacks.map(feedback =>
+        feedback.id === feedbackId ? { ...feedback, flagged: true } : feedback,
+      ),
+    );
   };
 
   const handleDateClick = date => {
@@ -590,7 +625,7 @@ function ActivityComments() {
             <span className={styles.eventMetaItem}>Location: {mockEvent.location}</span>
             <span className={styles.eventMetaItem}>
               Link:{' '}
-              <a href={mockEvent.link} target="_blank" rel="noopener noreferrer">
+              <a href={mockEvent.link} target="_blank" rel="noopener noreferrer nofollow">
                 {mockEvent.link}
               </a>
             </span>
