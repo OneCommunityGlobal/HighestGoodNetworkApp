@@ -27,28 +27,46 @@ const getRelativeTime = createdAt => {
 const sanitizeInput = input => {
   if (typeof input !== 'string') return '';
 
-  // Remove any HTML tags and escape special characters
-  return input
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
-    .replace(/<[^>]*>/g, '') // Remove all HTML tags
-    .replace(/[<>&"']/g, char => {
-      switch (char) {
-        case '<':
-          return '&lt;';
-        case '>':
-          return '&gt;';
-        case '&':
-          return '&amp;';
-        case '"':
-          return '&quot;';
-        case "'":
-          return '&#x27;';
-        default:
-          return char;
+  // Safely remove script tags without vulnerable regex
+  let result = input;
+
+  // Remove script tags using a safer approach
+  while (result.toLowerCase().includes('<script')) {
+    const startIndex = result.toLowerCase().indexOf('<script');
+    const endIndex = result.toLowerCase().indexOf('</script>', startIndex);
+    if (startIndex !== -1) {
+      if (endIndex !== -1) {
+        result = result.substring(0, startIndex) + result.substring(endIndex + 9);
+      } else {
+        result = result.substring(0, startIndex);
       }
-    })
-    .trim()
-    .substring(0, 5000); // Limit length to prevent DoS attacks
+    } else {
+      break;
+    }
+  }
+
+  // Remove all HTML tags using a simple approach
+  result = result.replace(/<[^>]*>/g, '');
+
+  // Escape special characters
+  result = result.replace(/[<>&"']/g, char => {
+    switch (char) {
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '&':
+        return '&amp;';
+      case '"':
+        return '&quot;';
+      case "'":
+        return '&#x27;';
+      default:
+        return char;
+    }
+  });
+
+  return result.trim().substring(0, 5000); // Limit length to prevent DoS attacks
 };
 
 // Utility function to generate secure random numbers for demo purposes
