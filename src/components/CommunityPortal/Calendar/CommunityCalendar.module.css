@@ -140,21 +140,22 @@
   transition: background 0.3s, border-color 0.3s;
   overflow: hidden;
 }
-.reactCalendarDarkMode :global(.react-calendar__tile) {
+
+/* .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
   color: #FFFFFF;
-}
+} */
 
-.reactCalendar :global(.react-calendar__tile) {
+/* .reactCalendar :global(.react-calendar__tile) {
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
   transition: border-color 0.3s ease;
-}
+} */
 
-.reactCalendar :global(.react-calendar__month-view__days__day) {
+/* .reactCalendar :global(.react-calendar__month-view__days__day) {
   border: 1px solid #555454;
   box-sizing: border-box;
-}
+} */
 
 .reactCalendar :global(.react-calendar__tile):hover {
   background-color: #f5f5f5;
@@ -170,7 +171,7 @@
   line-height: 1.2;
 }
 
-.reactCalendar :global(.react-calendar__tile) .eventItem {
+.reactCalendar :global(.react-calendar__tile) :global(.eventItem) {
   background-color: #e0f7fa;
   padding: 5px;
   border-radius: 4px;
@@ -263,6 +264,26 @@
   transform: translateY(0);
 }
 
+.eventTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 5px;
+  width: 220px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: #333;
+}
+
 /* Event Modal Styles */
 .eventModalOverlay {
   position: fixed;
@@ -314,11 +335,11 @@
   }
 }
 
-.eventModalDark {
+/* .eventModalDark {
   background: #1a202c;
   color: #e2e8f0;
   border: 1px solid #4a5568;
-}
+} */
 
 .modalHeader {
   display: flex;
@@ -380,9 +401,9 @@
   padding: 20px 24px;
 }
 
-.eventModalDark .modalContent {
+/* .eventModalDark .modalContent {
   background: #1a202c;
-}
+} */
 
 .eventStatus {
   margin-bottom: 20px;
