@@ -271,3 +271,109 @@
   }
 }
 
+/* ---------- Demographics Page ---------- */
+.demographicsPage {
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.demographicsPageDark {
+  background: #1C2541;
+  color: #fff;
+}
+
+.demographicsHeader {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.demographicsHeaderDark {
+  color: #ffffff;
+}
+
+.demographicsContent {
+  display: flex;
+  justify-content: center;
+}
+
+.placeholderBox {
+  width: 100%;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  text-align: center;
+  color: #555;
+}
+
+.demographicsPageDark .placeholderBox {
+  border-color: #888;
+  color: #ddd;
+}
+
+.subPageNav {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
+
+.subPageBtn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f1f1f1;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+}
+
+.subPageBtn:hover {
+  background: #e1e1e1;
+}
+
+.subPageBtnDark {
+  background: #2B3A55;
+  border-color: #666;
+  color: #fff;
+}
+
+.subPageBtnDark:hover {
+  background: #3A4B66;
+}
+
+/* ---------- Personalization Page ---------- */
+.personalizationPage {
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  margin-top: 20px;
+}
+
+.personalizationPageDark {
+  background: #1C2541;
+  color: #fff;
+}
+
+.personalizationHeader {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.personalizationHeaderDark {
+  color: #ffffff;
+}
+
+.personalizationContent {
+  display: flex;
+  justify-content: center;
+}
+
+.personalizationPageDark .placeholderBox {
+  border-color: #888;
+  color: #ddd;
+}

@@ -120,11 +120,88 @@ function MyCases() {
     </ul>
   );
 
-  const renderCalendarView = () => (
-    <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
-      <p>Calendar View is under construction...</p>
-    </div>
-  );
+  const renderCalendarView = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const firstDay = new Date(year, month, 1);
+    const startDay = firstDay.getDay();
+
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const days = [];
+
+    for (let i = 0; i < startDay; i++) {
+      days.push({ empty: true });
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateString = new Date(year, month, day).toDateString();
+      const eventsForDay = mockEvents.filter(ev => {
+        const evDate = new Date(ev.eventDate).toDateString();
+        return evDate === dateString;
+      });
+
+      days.push({
+        day,
+        events: eventsForDay.slice(0, 2),
+        moreCount: eventsForDay.length > 2 ? eventsForDay.length - 2 : 0,
+      });
+    }
+
+    return (
+      <div
+        className={`${styles.calendarContainer} ${darkMode ? styles.calendarContainerDark : ''}`}
+      >
+        <div className={`${styles.calendarHeader} ${darkMode ? styles.calendarHeaderDark : ''}`}>
+          {now.toLocaleString('default', { month: 'long' })} {year}
+        </div>
+
+        <div className={styles.calendarGrid}>
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
+            <div key={d} className={styles.calendarHeaderDark}>
+              {d}
+            </div>
+          ))}
+
+          {days.map((cell, i) =>
+            cell.empty ? (
+              <div key={i}></div>
+            ) : (
+              <div
+                key={i}
+                className={`${styles.calendarCell} ${darkMode ? styles.calendarCellDark : ''}`}
+              >
+                <div
+                  className={`${styles.calendarDate} ${darkMode ? styles.calendarDateDark : ''}`}
+                >
+                  {cell.day}
+                </div>
+
+                {cell.events.map(ev => (
+                  <div
+                    key={ev.id}
+                    className={`${styles.calendarEvent} ${
+                      darkMode ? styles.calendarEventDark : ''
+                    }`}
+                  >
+                    {ev.eventType}
+                  </div>
+                ))}
+
+                {cell.moreCount > 0 && (
+                  <div className={`${styles.moreEvents} ${darkMode ? styles.moreEventsDark : ''}`}>
+                    +{cell.moreCount} more
+                  </div>
+                )}
+              </div>
+            ),
+          )}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className={`${styles.myCasesPage} ${darkMode ? styles.myCasesPageDark : ''}`}>
@@ -137,21 +214,24 @@ function MyCases() {
           <div className={styles.viewSwitcher}>
             <button
               type="button"
-              className={view === 'calendar' ? styles.active : ''}
+              className={`${
+                view === 'calendar' ? (darkMode ? styles.activeDark : styles.active) : ''
+              }`}
               onClick={() => setView('calendar')}
             >
               Calendar
             </button>
             <button
               type="button"
-              className={view === 'card' ? styles.active : ''}
+              className={`${view === 'card' ? (darkMode ? styles.activeDark : styles.active) : ''}`}
               onClick={() => setView('card')}
             >
               Card
             </button>
+
             <button
               type="button"
-              className={view === 'list' ? styles.active : ''}
+              className={`${view === 'list' ? (darkMode ? styles.activeDark : styles.active) : ''}`}
               onClick={() => setView('list')}
             >
               List

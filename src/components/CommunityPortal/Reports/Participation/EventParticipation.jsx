@@ -1,6 +1,7 @@
 /* eslint-disable testing-library/no-node-access */
 import { useSelector } from 'react-redux';
 import { useRef, useState, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
@@ -8,6 +9,7 @@ import styles from './Participation.module.css';
 
 function EventParticipation() {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const history = useHistory();
   const exportRef = useRef(null);
   const [exporting, setExporting] = useState(false);
 
@@ -18,7 +20,6 @@ function EventParticipation() {
     setExporting(true);
     document.documentElement.dataset.exporting = 'true';
 
-    // Toggle the "More" button inside MyCases (module approach)
     const moreBtn = document.querySelector(`[class*="moreBtn"]`);
     const shouldExpand = moreBtn?.textContent?.toLowerCase().includes('more');
 
@@ -74,6 +75,22 @@ function EventParticipation() {
           {exporting ? 'Preparing…' : '📄 Save as PDF'}
         </button>
       </header>
+
+      {/* SUB-PAGE NAVIGATION BUTTONS */}
+      <div className={styles.subPageNav}>
+        <button
+          className={`${styles.subPageBtn} ${darkMode ? styles.subPageBtnDark : ''}`}
+          onClick={() => history.push('/communityportal/reports/participation/demographics')}
+        >
+          Demographics
+        </button>
+        <button
+          className={`${styles.subPageBtn} ${darkMode ? styles.subPageBtnDark : ''}`}
+          onClick={() => history.push('/communityportal/reports/participation/personalization')}
+        >
+          Personalization
+        </button>
+      </div>
 
       {/* MY CASES (Top section) */}
       <MyCases />
