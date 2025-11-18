@@ -6,6 +6,7 @@ import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
 import styles from './Participation.module.css';
+import ChartsSection from './ChartsSection';
 
 function EventParticipation() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -100,7 +101,39 @@ function EventParticipation() {
         <DropOffTracking />
         <NoShowInsights />
       </div>
+      <ChartsSection />
+      {/* ACTIONABLE INSIGHTS SECTION */}
+      <div
+        className={`${styles.actionableSection} ${darkMode ? styles.actionableSectionDark : ''}`}
+      >
+        <h3 className={styles.actionableHeader}>Actionable insights</h3>
 
+        <div className={styles.actionableGrid}>
+          <div className={styles.actionCard}>
+            <h4 className={styles.actionTitle}>High no-show rate detected</h4>
+            <p className={styles.actionDescription}>
+              Yoga Class events show an unusual increase in no-show percentage this month.
+            </p>
+            <span className={styles.actionTrendUp}>↑ 12%</span>
+          </div>
+
+          <div className={styles.actionCard}>
+            <h4 className={styles.actionTitle}>Weekend events perform better</h4>
+            <p className={styles.actionDescription}>
+              Attendance is consistently higher on Saturdays compared to weekdays.
+            </p>
+            <span className={styles.actionTrendUp}>↑ 8%</span>
+          </div>
+
+          <div className={styles.actionCard}>
+            <h4 className={styles.actionTitle}>Drop-off rate reduction opportunity</h4>
+            <p className={styles.actionDescription}>
+              Average event drop-off decreases when host reminders are sent earlier.
+            </p>
+            <span className={styles.actionTrendDown}>↓ 5%</span>
+          </div>
+        </div>
+      </div>
       {/* PRINT-ONLY FOOTER */}
       <div className={styles.printOnly}>Generated from Event Participation</div>
     </div>
