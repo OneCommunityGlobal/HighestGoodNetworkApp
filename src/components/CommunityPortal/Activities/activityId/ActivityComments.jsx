@@ -45,8 +45,20 @@ const sanitizeInput = input => {
     }
   }
 
-  // Remove all HTML tags using a simple approach
-  result = result.replace(/<[^>]*>/g, '');
+  // Remove all HTML tags using a safe iterative approach (no ReDoS risk)
+  while (result.includes('<') && result.includes('>')) {
+    const startIndex = result.indexOf('<');
+    const endIndex = result.indexOf('>', startIndex);
+    if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+      result = result.substring(0, startIndex) + result.substring(endIndex + 1);
+    } else {
+      // If we find < but no matching >, remove everything from < to end
+      if (startIndex !== -1) {
+        result = result.substring(0, startIndex);
+      }
+      break;
+    }
+  }
 
   // Escape special characters
   result = result.replace(/[<>&"']/g, char => {
