@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
-import './CPDashboard.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
+import styles from './CPDashboard.module.css';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
@@ -37,69 +37,89 @@ export function CPDashboard() {
     setEvents(mockEvents);
   }, []);
 
+  const filteredEvents = events.filter(event => {
+    const keyword = search.trim().toLowerCase();
+    if (!keyword) return true;
+    return (
+      event.title.toLowerCase().includes(keyword) ||
+      event.location.toLowerCase().includes(keyword) ||
+      event.organizer.toLowerCase().includes(keyword)
+    );
+  });
+
   return (
-    <Container fluid className="dashboard-container">
-      <header className="dashboard-header">
+    <Container fluid className={styles.dashboardContainer}>
+      <header className={styles.dashboardHeader}>
         <h1>All Events</h1>
-        <div className="dashboard-controls">
-          <div className="dashboard-search-container">
+        <div className={styles.dashboardControls}>
+          <div className={styles.dashboardSearchContainer}>
             <Input
               type="search"
-              placeholder="Search events..."
+              placeholder="Search..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="dashboard-search"
+              className={styles.dashboardSearch}
             />
           </div>
-          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
-            <DropdownToggle caret color="secondary">
-              Community Portal
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={() => handleNavigation('/home')}>Home</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/events')}>Events</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
-            </DropdownMenu>
-          </Dropdown> */}
         </div>
       </header>
 
       <Row>
-        <Col md={3} className="dashboard-sidebar">
-          <div className="filter-section">
+        <Col md={3} className={styles.dashboardSidebar}>
+          <div className={styles.filterSection}>
             <h4>Search Filters</h4>
-            <div className="filter-item">
-              <label htmlFor="date-tomorrow"> Dates</label>
-              <div className="filter-options-horizontal">
-                <div>
-                  <Input type="radio" name="dates" /> Tomorrow
-                </div>
-                <div>
-                  <Input type="radio" name="dates" /> This Weekend
-                </div>
+
+            <div className={`${styles.filterItem} ${styles.searchFilter}`}>
+              <label htmlFor="search-events">Search Events</label>
+              <div className={styles.inputGroup}>
+                <span className={styles.inputGroupText}>
+                  <i className="fa fa-search" aria-hidden="true"></i>
+                </span>
+                <input
+                  type="text"
+                  id="search-events"
+                  placeholder="Search Events"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
               </div>
-              <Input type="date" placeholder="Ending After" className="date-filter" />
             </div>
-            <div className="filter-item">
+
+            <div className={styles.filterItem}>
+              <label htmlFor="date-tomorrow">Dates</label>
+              <div className={styles.filterOptionsVertical}>
+                <label className={styles.radioOption}>
+                  <input type="radio" name="dates" /> Tomorrow
+                </label>
+                <label className={styles.radioOption}>
+                  <input type="radio" name="dates" /> This Weekend
+                </label>
+              </div>
+              <Input type="date" placeholder="Ending After" className={styles.dateFilter} />
+            </div>
+
+            <div className={styles.filterItem}>
               <label htmlFor="online-only">Online</label>
               <div>
                 <Input type="checkbox" /> Online Only
               </div>
             </div>
-            <div className="filter-item">
+
+            <div className={styles.filterItem}>
               <label htmlFor="branches">Branches</label>
               <Input type="select">
                 <option>Select branches</option>
               </Input>
             </div>
-            <div className="filter-item">
+
+            <div className={styles.filterItem}>
               <label htmlFor="themes">Themes</label>
               <Input type="select">
                 <option>Select themes</option>
               </Input>
             </div>
-            <div className="filter-item">
+
+            <div className={styles.filterItem}>
               <label htmlFor="categories">Categories</label>
               <Input type="select">
                 <option>Select categories</option>
@@ -108,37 +128,37 @@ export function CPDashboard() {
           </div>
         </Col>
 
-        <Col md={9} className="dashboard-main">
-          <h2 className="section-title">Events</h2>
+        <Col md={9} className={styles.dashboardMain}>
+          <h2 className={styles.sectionTitle}>Events</h2>
           <Row>
-            {events.length > 0 ? (
-              events.map(event => (
-                <Col md={4} key={event.id} className="event-card-col">
-                  <Card className="event-card">
-                    <div className="event-card-img-container">
-                      <img src={event.image} alt={event.title} className="event-card-img" />
+            {filteredEvents.length > 0 ? (
+              filteredEvents.map(event => (
+                <Col md={4} key={event.id} className={styles.eventCardCol}>
+                  <Card className={styles.eventCard}>
+                    <div className={styles.eventCardImgContainer}>
+                      <img src={event.image} alt={event.title} className={styles.eventCardImg} />
                     </div>
                     <CardBody>
-                      <h5 className="event-title">{event.title}</h5>
-                      <p className="event-date">
-                        <FaCalendarAlt className="event-icon" /> {event.date}
+                      <h5 className={styles.eventTitle}>{event.title}</h5>
+                      <p className={styles.eventDate}>
+                        <FaCalendarAlt className={styles.eventIcon} /> {event.date}
                       </p>
-                      <p className="event-location">
-                        <FaMapMarkerAlt className="event-icon" /> {event.location}
+                      <p className={styles.eventLocation}>
+                        <FaMapMarkerAlt className={styles.eventIcon} /> {event.location}
                       </p>
-                      <p className="event-organizer">
-                        <FaUserAlt className="event-icon" /> {event.organizer}
+                      <p className={styles.eventOrganizer}>
+                        <FaUserAlt className={styles.eventIcon} /> {event.organizer}
                       </p>
                     </CardBody>
                   </Card>
                 </Col>
               ))
             ) : (
-              <div className="no-events">No events available</div>
+              <div className={styles.noEvents}>No events available</div>
             )}
           </Row>
-          <div className="dashboard-actions">
-            <Button color="primary">Show Past Events</Button>
+          <div className={styles.dashboardActions}>
+            <Button className={styles.showPastEventsBtn}>Show Past Events</Button>
           </div>
         </Col>
       </Row>
