@@ -65,24 +65,24 @@ const getSecureRandomInt = (min, max) => {
 const randomUsers = [
   {
     name: 'You',
-    profilePic: '/images/avatars/avatar-woman-1.jpg',
+    profilePic: '/pfp-default.png',
   },
   {
     name: 'John Smith',
-    profilePic: '/images/avatars/avatar-man-1.jpg',
+    profilePic: '/Portrait_Placeholder.png',
   },
   {
     name: 'Maria Garcia',
-    profilePic: '/images/avatars/avatar-woman-2.jpg',
+    profilePic: '/pfp-default-header.png',
   },
   {
     name: 'James Wilson',
-    profilePic: '/images/avatars/avatar-man-2.jpg',
+    profilePic: '/profilepic.webp',
   },
 ];
 
 const mockEvent = {
-  name: 'Event Name',
+  name: 'Community Innovation Workshop: Sustainable Tech Solutions',
   location: 'San Francisco, CA 94108',
   link: 'https://devforum.zoom.us',
   date: 'Monday, Sept 2',
@@ -92,11 +92,11 @@ const mockEvent = {
   rating: 4,
   status: 'Activated',
   avatars: [
-    '/images/avatars/avatar-woman-1.jpg',
-    '/images/avatars/avatar-man-1.jpg',
-    '/images/avatars/avatar-woman-2.jpg',
-    '/images/avatars/avatar-man-2.jpg',
-    '/images/avatars/avatar-woman-3.jpg',
+    '/pfp-default.png',
+    '/Portrait_Placeholder.png',
+    '/pfp-default-header.png',
+    '/profilepic.webp',
+    '/pfp-default.png',
   ],
 };
 
@@ -104,7 +104,7 @@ const mockComments = [
   {
     id: 1,
     name: 'Sarah Wilson',
-    profilePic: '/images/avatars/avatar-woman-4.jpg',
+    profilePic: '/pfp-default.png',
     createdAt: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago (fixed time)
     fixedTimestamp: '2 minutes ago', // Fixed display timestamp
     text:
@@ -117,7 +117,7 @@ const mockComments = [
   {
     id: 2,
     name: 'Alex Rodriguez',
-    profilePic: '/images/avatars/avatar-man-3.jpg',
+    profilePic: '/Portrait_Placeholder.png',
     createdAt: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago (fixed time)
     fixedTimestamp: '15 minutes ago', // Fixed display timestamp
     text:
@@ -129,7 +129,7 @@ const mockComments = [
       {
         id: 101,
         name: 'Emma Thompson',
-        profilePic: '/images/avatars/avatar-woman-5.jpg',
+        profilePic: '/pfp-default-header.png',
         createdAt: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago (fixed time)
         fixedTimestamp: '10 minutes ago', // Fixed display timestamp
         text: 'I agree! Would love to connect with you on LinkedIn.',
@@ -140,7 +140,7 @@ const mockComments = [
   {
     id: 3,
     name: 'Emma Thompson',
-    profilePic: '/images/avatars/avatar-woman-6.jpg',
+    profilePic: '/pfp-default-header.png',
     createdAt: new Date(Date.now() - 45 * 60 * 1000), // 45 minutes ago (fixed time)
     fixedTimestamp: '45 minutes ago', // Fixed display timestamp
     text:
@@ -153,7 +153,7 @@ const mockComments = [
   {
     id: 4,
     name: 'David Kim',
-    profilePic: '/images/avatars/avatar-man-4.jpg',
+    profilePic: '/profilepic.webp',
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago (fixed time)
     fixedTimestamp: '2 hours ago', // Fixed display timestamp
     text: 'Excellent speakers and well-organized agenda. The Q&A session was very insightful.',
@@ -165,7 +165,7 @@ const mockComments = [
   {
     id: 5,
     name: 'Lisa Chen',
-    profilePic: '/images/avatars/avatar-woman-7.jpg',
+    profilePic: '/pfp-default.png',
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago (fixed time)
     fixedTimestamp: '1 day ago', // Fixed display timestamp
     text:
@@ -181,7 +181,7 @@ const mockFeedbacks = [
   {
     id: 1,
     name: 'Sarah Johnson',
-    profilePic: '/images/avatars/avatar-woman-8.jpg',
+    profilePic: '/Portrait_Placeholder.png',
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago (fixed time)
     fixedTimestamp: '2 hours ago', // Fixed display timestamp that won't change
     rating: 5,
@@ -203,7 +203,7 @@ const mockFeedbacks = [
   {
     id: 3,
     name: 'Mike Chen',
-    profilePic: '/images/avatars/avatar-man-5.jpg',
+    profilePic: '/pfp-default-header.png',
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago (fixed time)
     fixedTimestamp: '1 day ago', // Fixed display timestamp that won't change
     rating: 3,
@@ -333,7 +333,7 @@ function ActivityComments() {
       {
         id: 100 + page * 10 + 1,
         name: 'Michael Johnson',
-        profilePic: '/images/avatars/avatar-man-6.jpg',
+        profilePic: '/profilepic.webp',
         createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 5} hours ago`,
         text: `This is an additional comment from page ${page}. The discussion continues with more insights and perspectives from the community.`,
@@ -345,7 +345,7 @@ function ActivityComments() {
       {
         id: 100 + page * 10 + 2,
         name: 'Jennifer Smith',
-        profilePic: '/images/avatars/avatar-woman-9.jpg',
+        profilePic: '/pfp-default.png',
         createdAt: new Date(Date.now() - (page + 6) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 6} hours ago`,
         text: `Another perspective on this topic. I found the event very educational and would recommend it to others in our field.`,
@@ -356,7 +356,7 @@ function ActivityComments() {
           {
             id: 200 + page * 10 + 1,
             name: 'Robert Wilson',
-            profilePic: '/images/avatars/avatar-man-7.jpg',
+            profilePic: '/Portrait_Placeholder.png',
             createdAt: new Date(Date.now() - (page + 5) * 60 * 60 * 1000),
             fixedTimestamp: `${page + 5} hours ago`,
             text: 'I completely agree! Thanks for sharing your thoughts.',
@@ -367,7 +367,7 @@ function ActivityComments() {
       {
         id: 100 + page * 10 + 3,
         name: 'Patricia Davis',
-        profilePic: '/images/avatars/avatar-woman-10.jpg',
+        profilePic: '/pfp-default-header.png',
         createdAt: new Date(Date.now() - (page + 7) * 60 * 60 * 1000),
         fixedTimestamp: `${page + 7} hours ago`,
         text: `Great follow-up discussion! Looking forward to implementing some of these ideas in my own work.`,
@@ -486,7 +486,7 @@ function ActivityComments() {
     const newFeedback = {
       id: Date.now(), // Use timestamp for unique ID
       name: 'Your Name',
-      profilePic: '/images/avatars/avatar-woman-1.jpg',
+      profilePic: '/pfp-default.png',
       createdAt: postTime, // Fixed timestamp that won't change
       fixedTimestamp: 'Just now', // This will remain "Just now" and not update
       rating: feedbackRating,
@@ -841,11 +841,7 @@ function ActivityComments() {
                 </button>
               </div>
               <div className={styles.commentBox}>
-                <img
-                  src="/images/avatars/avatar-woman-1.jpg"
-                  alt="profile"
-                  className={styles.commentProfilePic}
-                />
+                <img src="/pfp-default.png" alt="profile" className={styles.commentProfilePic} />
                 <textarea
                   className={styles.commentInput}
                   rows={2}
@@ -903,7 +899,7 @@ function ActivityComments() {
                       >
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
                           <img
-                            src="/images/avatars/avatar-woman-1.jpg"
+                            src="/pfp-default.png"
                             alt="profile"
                             style={{
                               width: '32px',
@@ -1058,11 +1054,7 @@ function ActivityComments() {
 
               {/* Feedback Form */}
               <div className={styles.commentBox} style={{ marginBottom: '20px' }}>
-                <img
-                  src="/images/avatars/avatar-woman-1.jpg"
-                  alt="profile"
-                  className={styles.commentProfilePic}
-                />
+                <img src="/pfp-default.png" alt="profile" className={styles.commentProfilePic} />
                 <div style={{ flex: 1 }}>
                   <div style={{ marginBottom: '10px' }}>
                     <div style={{ fontSize: '0.9rem', color: '#666', marginBottom: '5px' }}>
