@@ -87,10 +87,14 @@ function IssueCharts() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  const containerClass = `${styles.issueChartContainer} ${darkMode ? styles.issueChartContainerDark : ''}`;
+  const containerClass = `${styles.issueChartContainer} ${
+    darkMode ? styles.issueChartContainerDark : ''
+  }`;
   const labelClass = `${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`;
   const filterSelectClass = `${styles.filterSelect} ${darkMode ? styles.filterSelectDark : ''}`;
-  const chartContainerClass = `${styles.chartContainer} ${darkMode ? styles.chartContainerDark : ''}`;
+  const chartContainerClass = `${styles.chartContainer} ${
+    darkMode ? styles.chartContainerDark : ''
+  }`;
   const noDataMessageClass = `${styles.noDataMessage} ${darkMode ? styles.noDataMessageDark : ''}`;
   const noDataContentClass = `${styles.noDataContent} ${darkMode ? styles.noDataContentDark : ''}`;
 

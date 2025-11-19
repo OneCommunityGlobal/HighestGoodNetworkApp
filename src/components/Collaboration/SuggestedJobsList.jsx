@@ -130,7 +130,9 @@ function SuggestedJobsList() {
             type="text"
             placeholder="Search by title..."
             defaultValue={query}
-            className={`${darkMode ? `bg-space-cadet text-light ${styles.darkModePlaceholder}` : ''}`}
+            className={`${
+              darkMode ? `bg-space-cadet text-light ${styles.darkModePlaceholder}` : ''
+            }`}
             style={{ padding: '8px' }}
           />
 
@@ -159,7 +161,9 @@ function SuggestedJobsList() {
           jobAds.map(ad => (
             <div
               key={ad._id}
-              className={`${styles.jobAd} ${darkMode ? 'bg-yinmn-blue text-light boxStyleDark' : ''}`}
+              className={`${styles.jobAd} ${
+                darkMode ? 'bg-yinmn-blue text-light boxStyleDark' : ''
+              }`}
               style={{
                 marginBottom: '20px',
                 borderBottom: '1px solid #ccc',
@@ -183,7 +187,9 @@ function SuggestedJobsList() {
 
               <div
                 className={`${styles.jobLocationTag} ${
-                  ad.location?.toLowerCase() !== 'remote' ? styles.jobLocationTagInPerson : styles.jobLocationTagRemote
+                  ad.location?.toLowerCase() !== 'remote'
+                    ? styles.jobLocationTagInPerson
+                    : styles.jobLocationTagRemote
                 }`}
                 style={{
                   backgroundColor: ad.location?.toLowerCase() !== 'remote' ? '#ffeb3b' : '#d1ecf1',
