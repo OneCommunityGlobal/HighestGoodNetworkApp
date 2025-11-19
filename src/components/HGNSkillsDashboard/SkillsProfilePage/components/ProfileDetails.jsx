@@ -1,6 +1,9 @@
+import { useSelector } from 'react-redux';
 import styles from '../styles/ProfileDetails.module.css';
 
-function ProfileDetails({ profileData }) {
+// function ProfileDetails({ profileData }) {
+function ProfileDetails() {
+  const profileData = useSelector(state => state.userSkills.profileData);
   return (
     <div className={`${styles.profileDetails}`}>
       <h3>User Profile</h3>

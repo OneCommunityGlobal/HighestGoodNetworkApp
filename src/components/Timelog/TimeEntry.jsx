@@ -3,7 +3,7 @@ import { Card, Row, Col } from 'reactstrap';
 import { useDispatch, connect } from 'react-redux';
 import parse from 'html-react-parser';
 import moment from 'moment-timezone';
-import './Timelog.css';
+// import {styles} from './Timelog.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import hasPermission, { cantUpdateDevAdminDetails } from '~/utils/permissions';
@@ -114,6 +114,9 @@ function TimeEntry(props) {
     editFilteredColor();
   }, []);
 
+  const hasHtmlTags =
+  typeof notes === 'string' && /<\/?[a-z][\s\S]*>/i.test(notes);
+
   return (
     <div style={{ display: 'flex' }}>
       <div
@@ -147,11 +150,15 @@ function TimeEntry(props) {
               {hours}h {minutes}m
             </h4>
             <div className={darkMode ? "dark-text-muted" : "text-muted"}>Project/Task:</div>
-            <p className={darkMode ? 'text-light' : ''}>
-              {projectName}
-              <br />
-              {taskName && `\u2003 ↳ ${taskName}`}
-            </p>
+            <p
+  className={darkMode ? 'text-light' : 'text-dark'}
+  style={{ margin: 0 }}
+>
+  {projectName}
+  <br />
+  {taskName && `\u2003 ↳ ${taskName}`}
+</p>
+
             <div className="mb-3">
               {canEditTangibility ? (
                 <>
@@ -173,9 +180,12 @@ function TimeEntry(props) {
           <Col md={5} className="pl-2 pr-0">
             <div className="time-entry-container">
               <div className={`notes-section ${darkMode ? 'notes-text-light' : ''}`}>
-                <div className={darkMode ? "dark-text-muted" : "text-muted"}>Notes:</div>
-                {parse(notes)}
-              </div>
+              <div className={darkMode ? 'dark-text-muted' : 'text-muted'}>Notes:</div>
+
+                {hasHtmlTags
+                  ? parse(notes) 
+                  : <span>{notes != null ? String(notes) : ''}</span>} 
+                </div>
               <div className="d-flex justify-content-end">
                 {(hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) &&
                   !cantEditJaeRelatedRecord && (
