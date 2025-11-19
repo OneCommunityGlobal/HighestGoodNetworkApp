@@ -88,7 +88,7 @@ const IntermediateTaskList = () => {
     const { task, parentTaskId } = deleteModal;
     try {
       const taskId = task.id || task._id;
-      await dispatch(deleteIntermediateTask(taskId));
+      await dispatch(deleteIntermediateTask(taskId, parentTaskId));
       // Refresh intermediate tasks for the parent
       const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
       setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: tasks || [] }));

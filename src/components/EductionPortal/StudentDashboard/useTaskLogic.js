@@ -12,12 +12,14 @@ import {
  * Custom hook for task-related logic
  * @param {Object} task - The task object
  * @param {Object} styles - CSS module styles object
+ * @param {Array} intermediateTasks - Array of intermediate tasks (optional)
  * @returns {Object} Task logic and computed values
  */
-export const useTaskLogic = (task, styles) => {
-  const progressPercentage = useMemo(() => calculateProgressPercentage(task), [
+export const useTaskLogic = (task, styles, intermediateTasks = []) => {
+  const progressPercentage = useMemo(() => calculateProgressPercentage(task, intermediateTasks), [
     task.logged_hours,
     task.suggested_total_hours,
+    intermediateTasks,
   ]);
 
   const canMarkDone = useMemo(() => canMarkTaskAsDone(task), [
@@ -44,15 +46,17 @@ export const useTaskLogic = (task, styles) => {
     task.suggested_total_hours,
   ]);
 
-  const formattedTimeAndDate = useMemo(() => getFormattedTimeAndDate(task), [
+  const formattedTimeAndDate = useMemo(() => getFormattedTimeAndDate(task, intermediateTasks), [
     task.logged_hours,
     task.last_logged_date,
     task.created_at,
+    intermediateTasks,
   ]);
 
-  const progressText = useMemo(() => getProgressText(task), [
+  const progressText = useMemo(() => getProgressText(task, intermediateTasks), [
     task.logged_hours,
     task.suggested_total_hours,
+    intermediateTasks,
   ]);
 
   return {

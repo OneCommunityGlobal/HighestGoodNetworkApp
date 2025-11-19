@@ -8,6 +8,7 @@ import TaskListView from './TaskListView';
 import NavigationBar from './NavigationBar';
 import SummaryCards from './SummaryCards';
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
+import { fetchIntermediateTasks, markIntermediateTaskAsDone } from '~/actions/intermediateTasks';
 
 const StudentDashboard = () => {
   const [viewMode, setViewMode] = useState('card'); // 'card' or 'list'
@@ -17,6 +18,8 @@ const StudentDashboard = () => {
     activeCourses: 0,
     logEntries: 0,
   });
+  const [intermediateTasks, setIntermediateTasks] = useState({});
+  const [expandedTasks, setExpandedTasks] = useState({});
 
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth.user);
@@ -70,6 +73,38 @@ const StudentDashboard = () => {
   // Handle mark as done
   const handleMarkAsDone = async taskId => {
     dispatch(markStudentTaskAsDone(taskId));
+  };
+
+  // Handle mark intermediate task as done
+  const handleMarkIntermediateAsDone = async (intermediateTaskId, parentTaskId) => {
+    try {
+      await dispatch(markIntermediateTaskAsDone(intermediateTaskId));
+      // Refresh intermediate tasks for this parent
+      const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
+      setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: tasks || [] }));
+    } catch (error) {
+      // Error is handled in the action
+    }
+  };
+
+  // Toggle expand/collapse intermediate tasks
+  const toggleIntermediateTasks = async taskId => {
+    const isExpanded = expandedTasks[taskId];
+
+    if (!isExpanded && !intermediateTasks[taskId]) {
+      // Fetch intermediate tasks when expanding
+      try {
+        const tasks = await dispatch(fetchIntermediateTasks(taskId));
+        setIntermediateTasks(prev => ({ ...prev, [taskId]: tasks || [] }));
+      } catch (error) {
+        console.error('Error fetching intermediate tasks:', error);
+      }
+    }
+
+    setExpandedTasks(prev => ({
+      ...prev,
+      [taskId]: !isExpanded,
+    }));
   };
 
   // Toggle view mode
@@ -161,9 +196,23 @@ const StudentDashboard = () => {
 
           {/* Task Views */}
           {viewMode === 'card' ? (
-            <TaskCardView tasks={tasks} onMarkAsDone={handleMarkAsDone} />
+            <TaskCardView
+              tasks={tasks}
+              onMarkAsDone={handleMarkAsDone}
+              intermediateTasks={intermediateTasks}
+              expandedTasks={expandedTasks}
+              onToggleIntermediateTasks={toggleIntermediateTasks}
+              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+            />
           ) : (
-            <TaskListView tasks={tasks} onMarkAsDone={handleMarkAsDone} />
+            <TaskListView
+              tasks={tasks}
+              onMarkAsDone={handleMarkAsDone}
+              intermediateTasks={intermediateTasks}
+              expandedTasks={expandedTasks}
+              onToggleIntermediateTasks={toggleIntermediateTasks}
+              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+            />
           )}
         </div>
       </Container>

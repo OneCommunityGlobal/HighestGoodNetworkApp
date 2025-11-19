@@ -2,7 +2,14 @@ import React from 'react';
 import styles from './TaskCard.module.css';
 import { useTaskLogic } from './useTaskLogic';
 
-const TaskCard = ({ task, onMarkAsDone }) => {
+const TaskCard = ({
+  task,
+  onMarkAsDone,
+  intermediateTasks = [],
+  isExpanded = false,
+  onToggleIntermediateTasks,
+  onMarkIntermediateAsDone,
+}) => {
   const {
     progressPercentage,
     canMarkDone,
@@ -10,11 +17,23 @@ const TaskCard = ({ task, onMarkAsDone }) => {
     markAsDoneTooltip,
     formattedTimeAndDate,
     progressText,
-  } = useTaskLogic(task, styles);
+  } = useTaskLogic(task, styles, intermediateTasks);
 
   const handleMarkAsDone = () => {
     if (canMarkDone) {
       onMarkAsDone(task.id);
+    }
+  };
+
+  const handleToggleIntermediateTasks = () => {
+    if (onToggleIntermediateTasks) {
+      onToggleIntermediateTasks(task.id);
+    }
+  };
+
+  const handleMarkIntermediateAsDone = intermediateTaskId => {
+    if (onMarkIntermediateAsDone) {
+      onMarkIntermediateAsDone(intermediateTaskId, task.id);
     }
   };
 
@@ -110,6 +129,87 @@ const TaskCard = ({ task, onMarkAsDone }) => {
             </button>
           )}
         </div>
+
+        {/* Intermediate Tasks Section */}
+        {onToggleIntermediateTasks && (
+          <div className={styles.intermediateTasksSection}>
+            <button
+              className={styles.toggleIntermediateButton}
+              onClick={handleToggleIntermediateTasks}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className={isExpanded ? styles.expandedIcon : ''}
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+              <span>
+                {isExpanded ? 'Hide' : 'Show'} Sub-tasks
+                {intermediateTasks.length > 0 && ` (${intermediateTasks.length})`}
+              </span>
+            </button>
+
+            {isExpanded && (
+              <div className={styles.intermediateTasksList}>
+                {intermediateTasks.length === 0 ? (
+                  <p className={styles.noIntermediateTasks}>No sub-tasks available</p>
+                ) : (
+                  intermediateTasks.map(subTask => (
+                    <div key={subTask._id || subTask.id} className={styles.intermediateTaskItem}>
+                      <div className={styles.intermediateTaskContent}>
+                        <h4 className={styles.intermediateTaskTitle}>{subTask.title}</h4>
+                        {subTask.description && (
+                          <p className={styles.intermediateTaskDescription}>
+                            {subTask.description}
+                          </p>
+                        )}
+                        <div className={styles.intermediateTaskMeta}>
+                          <span className={styles.intermediateTaskHours}>
+                            {subTask.expected_hours || 0}h
+                          </span>
+                          {subTask.due_date && (
+                            <span className={styles.intermediateTaskDueDate}>
+                              Due: {new Date(subTask.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                          <span
+                            className={`${styles.intermediateTaskStatus} ${
+                              styles[`status${subTask.status}`]
+                            }`}
+                          >
+                            {subTask.status || 'pending'}
+                          </span>
+                        </div>
+                      </div>
+                      {subTask.status !== 'completed' && (
+                        <button
+                          className={styles.markIntermediateDoneButton}
+                          onClick={() => handleMarkIntermediateAsDone(subTask._id || subTask.id)}
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <polyline points="20,6 9,17 4,12" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
