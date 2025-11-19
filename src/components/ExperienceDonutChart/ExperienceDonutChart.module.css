@@ -1,0 +1,561 @@
+/* ===================== Global reset ===================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ===================== Container ===================== */
+.experience-chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1.75rem;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(0,0,0,0.04),
+    0 12px 30px rgba(2,6,23,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* center children horizontally */
+  text-align: center;      /* center text by default */
+}
+
+.experience-chart-container::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, #FF6384 0%, #36A2EB 25%, #FFCE56 50%, #4BC0C0 75%, #FF9F40 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+/* ===================== Header ===================== */
+.chart-header { margin-bottom: 1.25rem; padding-top: 0.25rem; }
+.chart-title {
+  margin: 0;
+  color: #0f172a;
+  letter-spacing: -0.015em;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+/* ===================== Filters ===================== */
+.filter-section {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center !important;   /* center items in the row */
+  align-items: center;       /* equal vertical alignment */
+  gap: 1rem;
+  width: 100%;
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+
+.filter-group,
+.filter-actions {
+  flex: 1 1 220px;           /* grow/shrink; base width ~220px */
+  max-width: 320px;          /* avoid overly wide inputs */
+  min-width: 200px;          /* don’t get too tiny */
+  text-align: left;          /* labels/inputs left-aligned inside */
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #334155;
+  letter-spacing: 0.04em;
+}
+
+.filter-input,
+.filter-select,
+.filter-group select {
+  width: 100%;
+  height: 44px;              /* consistent control height */
+  line-height: 44px;
+  padding: 0 0.9rem;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: box-shadow .2s, border-color .2s, transform .15s;
+}
+
+.filter-input:hover,
+.filter-select:hover { border-color: #9ca3af; }
+
+.filter-input:focus,
+.filter-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59,130,246,.12);
+  transform: translateY(-1px);
+}
+
+.filter-select { resize: vertical; overflow-y: auto; }
+
+.filter-actions {
+  display: flex;
+  gap: .75rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: .7rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .2s, background-color .2s;
+  height: 44px;              /* same height as inputs */
+}
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+.btn.primary { background: #3b82f6; color: #fff; box-shadow: 0 6px 20px rgba(59,130,246,.25); }
+.btn.primary:hover { transform: translateY(-1px); }
+.btn.ghost { background: #fff; color: #0f172a; border-color: #e2e8f0; }
+.btn.ghost:hover { box-shadow: 0 6px 20px rgba(2,6,23,.08); transform: translateY(-1px); }
+
+/* --- Normalize native date inputs across browsers --- */
+.filter-input[type="date"] {
+  height: 44px;
+  line-height: 44px;
+  padding: 0 0.9rem;
+}
+.filter-input[type="date"]::-webkit-datetime-edit,
+.filter-input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+.filter-input[type="date"]::-webkit-datetime-edit-text,
+.filter-input[type="date"]::-webkit-datetime-edit-month-field,
+.filter-input[type="date"]::-webkit-datetime-edit-day-field,
+.filter-input[type="date"]::-webkit-datetime-edit-year-field {
+  padding: 0;
+  line-height: 1;
+}
+.filter-input[type="date"]::-webkit-calendar-picker-indicator {
+  margin: 0; padding: 0;
+}
+/* Firefox */
+@-moz-document url-prefix() {
+  .filter-input[type="date"] { padding-top: 0; padding-bottom: 0; }
+}
+
+/* ===================== Chart Area ===================== */
+.chart-section {
+  width: 100%;
+  padding: 0 !important;
+
+}
+
+.chart-area {
+  width: 100%;
+  min-width: 0;
+  display: flex;                 /* ← was commented out; enable flex centering */
+  flex-direction: column;
+  align-items: center;           /* center horizontally */
+  justify-content: center;       /* center vertically within area */
+  text-align: center;
+  padding-right: 100px !important;
+}
+
+.chart-canvas {
+  display: flex;
+  align-items: center;
+  justify-content: center;       /* center the inner wrapper */
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1 / 1;           /* keeps donut perfectly square */
+  min-height: 240px;             /* fallback for older browsers */
+  margin: 0 auto;
+}
+
+/* Recharts wrappers: enforce centering */
+.chart-canvas .recharts-wrapper {
+  margin: 0 auto !important;
+}
+.recharts-wrapper,
+.recharts-surface {
+  display: block;
+}
+ .chart-canvas, .recharts-wrapper { direction: ltr; }
+
+/* ===================== Details (below donut) ===================== */
+.chart-details {
+  max-width: 960px;                  /* match .experience-chart-container */
+  width: 100%;
+  margin: 1rem auto 0;
+  padding-inline: 0.5rem;
+  display: grid;
+  gap: 0.8rem;
+
+  /* single strategy: fluid columns that never force overflow */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+
+  justify-items: stretch;
+  align-items: stretch;
+  overflow-x: hidden;                /* safety net */
+}
+/* 2) Let cards fill the grid cell on desktop (remove narrow cap) */
+.detail-item {
+  display: grid;
+  grid-template-columns: 12px 1fr auto auto;  /* dot | name | count | pct */
+  column-gap: 8px;
+  align-items: center;
+
+  width: 100%;
+  max-width: none;                   /* fill grid column, don't cap */
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+
+  /* prevent overflow on long role names / unbroken strings */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  text-align: center; 
+  justify-content: center;
+}
+
+.detail-item:hover,
+.detail-item.active {
+  background: #111827;
+  border-color: #0b1220;
+  box-shadow: 0 8px 18px rgba(2,6,23,.12);
+  transform: translateY(-1px);
+}
+.detail-item:hover span,
+.detail-item.active span { color: #ffffff !important; }
+
+/* Map children into the grid */
+.detail-dot { grid-column: 1; width: 10px; height: 10px; border-radius: 999px; box-shadow: 0 0 0 2px rgba(255,255,255,0.7); }
+.detail-name { grid-column: 2; font-weight: 800; color: #0f172a; font-size: 0.9rem; }
+.detail-sep { display: none; }        /* we don’t need the bullet in a grid layout */
+.detail-count { grid-column: 3; font-weight: 800; color: #0f172a; }
+.detail-sub { display: none; }        /* optional: hide to keep cards compact; show if you prefer */
+.detail-pct { grid-column: 4; margin-left: 0; font-weight: 800; color: #2563eb; }
+
+/* .detail-item:hover,
+.detail-item.active {
+  background: #111827;
+  border-color: #0b1220;
+  box-shadow: 0 8px 18px rgba(2,6,23,.12);
+  transform: translateY(-1px);
+} */
+/* .detail-item:hover span,
+.detail-item.active span { color: #ffffff !important; } */
+.detail-item:hover .detail-pct,
+.detail-item.active .detail-pct { color: #93c5fd !important; } /* keep contrast on hover */
+
+@media (max-width: 640px) {
+  .chart-details { grid-template-columns: 1fr; }
+
+  .detail-item {
+    display: flex;                 /* simpler on mobile */
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    gap: 0.45rem 0.6rem;
+  }
+  .detail-dot { order: 1; }
+  .detail-name { order: 2; width: 100%; font-size: 1rem; }
+  .detail-sep { display: none; }
+  .detail-count { order: 3; }
+  .detail-sub { order: 4; display: inline; color: #475569; }
+  .detail-pct { order: 5; }
+}
+
+/* ===================== States ===================== */
+.spinner-container {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 3rem 0;
+}
+.spinner {
+  width: 40px; height: 40px; border: 4px solid #e5e7eb; border-top: 4px solid #3b82f6;
+  border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner-container p { color: #64748b; font-weight: 600; margin: 0; }
+
+.error-container { padding: 2rem; text-align: center; }
+.error-message {
+  color: #dc2626; font-weight: 700; font-size: .95rem;
+  background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;
+  padding: 1.1rem 1.25rem; display: inline-block;
+}
+
+.no-data-container { padding: 3rem 2rem; text-align: center; }
+.no-data-message { font-size: 1.15rem; font-weight: 800; color: #6b7280; margin: 0 0 .4rem 0; }
+.no-data-subtitle { font-size: .95rem; color: #9ca3af; margin: 0; font-style: italic; }
+
+/* ===================== Tooltip ===================== */
+.custom-tooltip {
+  background: rgba(15,23,42,.96) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: .9rem 1rem !important;
+  box-shadow: 0 12px 28px rgba(2,6,23,.35) !important;
+  backdrop-filter: blur(10px);
+}
+.tooltip-content { color: #fff !important; margin: 0 !important; font-size: .875rem !important; line-height: 1.5 !important; }
+
+/* ===================== Slices ===================== */
+.pie-cell { transition: opacity .15s ease, filter .15s ease, transform .15s ease; cursor: pointer; }
+.pie-cell:hover { opacity: .9; filter: brightness(1.05); }
+
+/* .detail-item { text-align: center; justify-content: center; } */
+
+
+/* ===================== Responsive tweaks ===================== */
+@media (max-width: 640px) {
+  .filter-group,
+  .filter-actions { max-width: 320px; min-width: 220px; }
+  .chart-canvas { max-width: 360px; min-height: 220px; }
+  .chart-details { grid-template-columns: 1fr; }  /* single column for clarity */
+}
+
+/* ===================== Print & Accessibility ===================== */
+@media print {
+  .experience-chart-container { box-shadow: none; border: 1px solid #cbd5e1; }
+  .filter-section { display: none; }
+}
+@media (prefers-contrast: high) {
+  .experience-chart-container { border: 2px solid #000; }
+  .filter-input, .filter-select { border: 2px solid #000; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+  .pie-cell, .btn, .filter-input, .filter-select { transition: none; }
+}
+
+@media (max-width: 640px) {
+  .chart-details { grid-template-columns: 1fr; }
+
+  .detail-item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+    gap: 0.45rem 0.6rem;
+  }
+  .detail-name { width: 100%; font-size: 1rem; }
+}
+
+/* --- Ensure detail cards always show a visible background --- */
+.chart-details .detail-item {
+  background-color: #f1f5f9;      /* stronger than #f8fafc, more visible */
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(2,6,23,0.06);
+  background-clip: padding-box;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
+}
+
+/* Keep dark hover/active but ensure contrast is clear */
+.chart-details .detail-item:hover,
+.chart-details .detail-item.active {
+  background-color: #111827;
+  border-color: #0b1220;
+  box-shadow: 0 8px 18px rgba(2,6,23,.12);
+}
+
+/* If your app has global card or utility classes that might strip bg,
+   this raises specificity a bit further without !important. */
+.experience-chart-container .chart-details .detail-item {
+  background-color: #f1f5f9;
+}
+
+/* Optional: high-contrast users still get borders */
+@media (prefers-contrast: more) {
+  .chart-details .detail-item {
+    border-color: #0f172a;
+  }
+}
+
+/* --- Make chart-driven active state win over base card styles --- */
+.chart-details .detail-item.active {
+  background-color: #111827 !important;   /* win against base bg */
+  border-color: #0b1220 !important;
+  box-shadow: 0 8px 18px rgba(2,6,23,.12);
+  color: #ffffff;
+}
+
+.chart-details .detail-item.active span {
+  color: #ffffff !important;               /* keep text readable */
+}
+
+/* Optional: smooth the state change */
+/* .chart-details .detail-item {
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
+} */
+/* ===================== DARK MODE (scoped to wrapper) ===================== */
+
+/* Ensure every surface flips dark */
+.experience-donut-chart.experience-donut-chart-dark-mode,
+.experience-donut-chart-dark-mode,
+.experience-donut-chart-dark-mode .experience-chart-container,
+.experience-donut-chart-dark-mode .chart-section,
+.experience-donut-chart-dark-mode .chart-area {
+  background-color: #1c2441 !important;
+  color: #f1f5f9;
+}
+
+.experience-donut-chart-dark-mode{
+  margin-top: -35px;
+}
+
+/* Top gradient bar */
+.experience-donut-chart-dark-mode .experience-chart-container::before {
+  background: linear-gradient(90deg, #60a5fa 0%, #34d399 25%, #fbbf24 50%, #22d3ee 75%, #f97316 100%);
+}
+
+/* Title & header */
+.experience-donut-chart-dark-mode .chart-title {
+  color: #ffffff !important; /* “Applicants by Experience” */
+}
+.experience-donut-chart-dark-mode .chart-header { color: #f1f5f9; }
+
+/* ===================== Filters ===================== */
+.experience-donut-chart-dark-mode .filter-section {
+  background: #232d53;
+  border-color: #3b4a75;
+}
+.experience-donut-chart-dark-mode .filter-label { color: #dbe3ff; }
+
+.experience-donut-chart-dark-mode .filter-input,
+.experience-donut-chart-dark-mode .filter-select,
+.experience-donut-chart-dark-mode .filter-group select {
+  background: #232d53;
+  color: #e5e7eb;
+  border-color: #3b4a75;
+}
+.experience-donut-chart-dark-mode .filter-input:hover,
+.experience-donut-chart-dark-mode .filter-select:hover {
+  border-color: #4c5a8a;
+}
+.experience-donut-chart-dark-mode .filter-input:focus,
+.experience-donut-chart-dark-mode .filter-select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96,165,250,.25);
+}
+
+/* Date input icons */
+.experience-donut-chart-dark-mode .filter-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(.9);
+}
+
+/* ===================== Buttons ===================== */
+.experience-donut-chart-dark-mode .btn { color: #e5e7eb; }
+.experience-donut-chart-dark-mode .btn.primary {
+  background-color: #3b4a75;
+  color: #f8fafc;
+}
+.experience-donut-chart-dark-mode .btn.primary:hover { filter: brightness(1.05); }
+.experience-donut-chart-dark-mode .btn.ghost {
+  background: #232d53;
+  border-color: #4c5a8a;
+  color: #e5e7eb;
+}
+.experience-donut-chart-dark-mode .btn.ghost:hover {
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+}
+
+/* ===================== Chart canvas & Recharts ===================== */
+.experience-donut-chart-dark-mode .chart-canvas { background: transparent; }
+
+/* Default Recharts labels/ticks/legend */
+.experience-donut-chart-dark-mode .recharts-text,
+.experience-donut-chart-dark-mode .recharts-label,
+.experience-donut-chart-dark-mode .recharts-legend-item-text {
+  fill: #e5e7eb !important;
+  color: #e5e7eb !important;
+}
+
+/* Grid lines if any */
+.experience-donut-chart-dark-mode .recharts-cartesian-grid-horizontal line,
+.experience-donut-chart-dark-mode .recharts-cartesian-grid-vertical line {
+  stroke: #3b4a75 !important;
+}
+
+/* Strong contrast on hover/active (details + svg labels) */
+.experience-donut-chart-dark-mode .chart-details .detail-item:hover span,
+.experience-donut-chart-dark-mode .chart-details .detail-item.active span {
+  color: #ffffff !important;
+}
+.experience-donut-chart-dark-mode .recharts-sector:hover text,
+.experience-donut-chart-dark-mode .recharts-pie-sector:hover text {
+  fill: #ffffff !important;
+}
+
+/* ===================== Details (cards under chart) ===================== */
+.experience-donut-chart-dark-mode .chart-details { color: #e5e7eb; }
+
+.experience-donut-chart-dark-mode .chart-details .detail-item {
+  background-color: #2a355f;
+  border: 1px solid #3b4a75;
+  color: #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+}
+.experience-donut-chart-dark-mode .detail-name,
+.experience-donut-chart-dark-mode .detail-count { color: #e5e7eb; }
+.experience-donut-chart-dark-mode .detail-pct { color: #93c5fd; }
+.experience-donut-chart-dark-mode .detail-dot { box-shadow: 0 0 0 2px rgba(28,36,65,0.7); }
+
+/* Hover/active state harmonized with palette */
+.experience-donut-chart-dark-mode .chart-details .detail-item:hover,
+.experience-donut-chart-dark-mode .chart-details .detail-item.active {
+  background-color: #232d53;
+  border-color: #1c2441;
+  box-shadow: 0 8px 18px rgba(0,0,0,.45);
+}
+
+/* ===================== States (loading, error, empty) ===================== */
+.experience-donut-chart-dark-mode .spinner {
+  border-color: #2a355f; 
+  border-top-color: #60a5fa;
+}
+.experience-donut-chart-dark-mode .spinner-container p { color: #dbe3ff; }
+
+.experience-donut-chart-dark-mode .error-message {
+  color: #ffd2d2;
+  background: #3b1f28;
+  border-color: #7f2a3a;
+}
+.experience-donut-chart-dark-mode .no-data-message { color: #dbe3ff; }
+.experience-donut-chart-dark-mode .no-data-subtitle { color: #b8c2ea; }
+
+/* ===================== Tooltip ===================== */
+.experience-donut-chart-dark-mode .custom-tooltip {
+  background-color: #2a355f;
+  color: #f1f5f9;
+  border: 1px solid #3b4a75;
+  border-radius: 6px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+.experience-donut-chart-dark-mode .tooltip-content { color: #f8fafc !important; }
+
+/* ===================== Print & prefers-color-scheme ===================== */
+@media print {
+  .experience-donut-chart-dark-mode .experience-chart-container {
+    background: #ffffff;
+    color: #0f172a;
+    box-shadow: none;
+    border: 1px solid #cbd5e1;
+  }
+}
+/* Keep prefers-color-scheme consistent with your chosen dark */
+@media (prefers-color-scheme: dark) {
+  .experience-donut-chart-dark-mode .experience-chart-container { background: #1c2441; }
+}

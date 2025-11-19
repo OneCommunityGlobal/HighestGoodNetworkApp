@@ -381,27 +381,75 @@ const TeamMemberTask = React.memo(
                               </div>
                             )}
 
-                            {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '6px',
+                                marginTop: '4px',
+                                marginLeft: '4px',
+                              }}
+                            >
+                              {canGetWeeklySummaries && (
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                  <GoogleDocIcon link={userGoogleDocLink} />
+                                </div>
+                              )}
 
-                            {canSeeReports && (
-                              <Link
-                                className={styles['team-member-tasks-user-report-link']}
-                                to={`/peoplereport/${user?.personId}`}
-                              >
-                                <img
-                                  src="/report_icon.png"
-                                  alt="reportsicon"
-                                  className={styles['team-member-tasks-user-report-link-image']}
-                                />
-                              </Link>
-                            )}
-                            {canSeeReports && (
-                              <Link to={`/peoplereport/${user?.personId}`}>
-                                <span className={styles['team-member-tasks-number']}>
-                                  {completedTasks.length}
-                                </span>
-                              </Link>
-                            )}
+                              {canSeeReports && (
+                                <>
+                                  <Link
+                                    to={`/peoplereport/${user?.personId}`}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      textDecoration: 'none',
+                                    }}
+                                  >
+                                    <img
+                                      src="/report_icon.png"
+                                      alt="reportsicon"
+                                      style={{
+                                        width: '22px',
+                                        height: '22px',
+                                        marginTop: '-2px', // 🔧 fixes the slight vertical offset of the R icon
+                                      }}
+                                    />
+                                  </Link>
+
+                                  <Link
+                                    to={`/peoplereport/${user?.personId}`}
+                                    style={{
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      justifyContent: 'center',
+                                      textDecoration: 'none',
+                                    }}
+                                  >
+                                    <span
+                                      style={{
+                                        display: 'inline-flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        textAlign: 'center',
+                                        background: '#0000FF',
+                                        borderRadius: '50%',
+                                        color: '#fff',
+                                        height: '22px',
+                                        width: '22px',
+                                        fontSize: '14px',
+                                        fontWeight: 'bold',
+                                        marginLeft: '2px',
+                                      }}
+                                    >
+                                      {completedTasks.length}
+                                    </span>
+                                  </Link>
+                                </>
+                              )}
+                            </div>
                             <Warning
                               username={user.name}
                               nameOfUser={user}
@@ -449,80 +497,95 @@ const TeamMemberTask = React.memo(
                                       darkMode ? 'bg-yinmn-blue text-light' : ''
                                     }`}
                                   >
-                                    <div className={styles['team-member-tasks-content']}>
-                                      <Link
-                                        className={styles['team-member-tasks-content-link']}
-                                        to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
-                                        data-testid={`${task.taskName}`}
-                                        style={{ color: darkMode ? '#339CFF' : undefined }}
-                                      >
-                                        <span>{`${task.num} ${task.taskName}`} </span>
-                                      </Link>
-                                      <CopyToClipboard
-                                        writeText={task.taskName}
-                                        message="Task Copied!"
-                                      />
-                                    </div>
-                                    <div className={styles['team-member-tasks-icons']}>
-                                      {task.taskNotifications.length > 0 &&
-                                      task.taskNotifications.some(
-                                        notification =>
-                                          Object.prototype.hasOwnProperty.call(
-                                            notification,
-                                            'userId',
-                                          ) && notification.userId === user.personId,
-                                      ) ? (
-                                        <FontAwesomeIcon
-                                          className={styles['team-member-tasks-bell']}
-                                          title="Task Info Changes"
-                                          icon={faBell}
-                                          onClick={() => {
-                                            const taskNotificationId = task.taskNotifications.filter(
-                                              taskNotification =>
-                                                taskNotification.userId === user.personId,
-                                            );
-                                            handleOpenTaskNotificationModal(
-                                              user.personId,
-                                              task,
-                                              taskNotificationId,
-                                            );
-                                          }}
-                                          data-taskid={`task-info-icon-${task.taskName}`}
+                                    <div className={styles['inner-task-align']}>
+                                      {/*  */}
+                                      <div className={styles['team-member-tasks-content']}>
+                                        <Link
+                                          className={styles['team-member-tasks-content-link']}
+                                          to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
+                                          data-testid={`${task.taskName}`}
+                                          style={{ color: darkMode ? '#339CFF' : undefined }}
+                                        >
+                                          {/* <span>aaaaaaaa aaaaaaaaaa aaaaaa aaaaaaaaaaaaaaaa aaaa aaaaaaaaaaaaaaa aaa aaaaaa aaaa aaaaaaa aaaaaaaa aaaaaaaa aaaaaa aa bb</span> */}
+
+                                          <span>{`${task.num} ${task.taskName}`} </span>
+                                        </Link>
+                                        <CopyToClipboard
+                                          writeText={task.taskName}
+                                          message="Task Copied!"
                                         />
-                                      ) : null}
-                                      {isAllowedToResolveTasks && (
-                                        <FontAwesomeIcon
-                                          className={styles['team-member-tasks-done']}
-                                          icon={faCheckCircle}
-                                          title="Mark as Done"
-                                          onClick={() => {
-                                            handleMarkAsDoneModal(user.personId, task);
-                                            handleTaskModalOption('Checkmark');
-                                          }}
-                                          data-testid={`tick-${task.taskName}`}
+                                      </div>
+                                      {/*  */}
+                                      <div className={styles['team-member-tasks-icons']}>
+                                        {task.taskNotifications.length > 0 &&
+                                        task.taskNotifications.some(
+                                          notification =>
+                                            Object.prototype.hasOwnProperty.call(
+                                              notification,
+                                              'userId',
+                                            ) && notification.userId === user.personId,
+                                        ) ? (
+                                          <div>
+                                            <FontAwesomeIcon
+                                              className={styles['team-member-tasks-bell']}
+                                              title="Task Info Changes"
+                                              icon={faBell}
+                                              onClick={() => {
+                                                const taskNotificationId = task.taskNotifications.filter(
+                                                  taskNotification =>
+                                                    taskNotification.userId === user.personId,
+                                                );
+                                                handleOpenTaskNotificationModal(
+                                                  user.personId,
+                                                  task,
+                                                  taskNotificationId,
+                                                );
+                                              }}
+                                              data-taskid={`task-info-icon-${task.taskName}`}
+                                            />
+                                          </div>
+                                        ) : null}
+                                        {isAllowedToResolveTasks && (
+                                          <div>
+                                            <FontAwesomeIcon
+                                              className={styles['team-member-tasks-done']}
+                                              icon={faCheckCircle}
+                                              title="Mark as Done"
+                                              onClick={() => {
+                                                handleMarkAsDoneModal(user.personId, task);
+                                                handleTaskModalOption('Checkmark');
+                                              }}
+                                              data-testid={`tick-${task.taskName}`}
+                                            />
+                                          </div>
+                                        )}
+                                        {(canUpdateTask || canDeleteTask) && (
+                                          <div>
+                                            <FontAwesomeIcon
+                                              className={styles['team-member-task-remove']}
+                                              icon={faTimesCircle}
+                                              title="Remove User from Task"
+                                              onClick={() => {
+                                                handleRemoveFromTaskModal(user.personId, task);
+                                                handleTaskModalOption('XMark');
+                                              }}
+                                              data-testid={`Xmark-${task.taskName}`}
+                                            />
+                                          </div>
+                                        )}
+                                        <div>
+                                          <TeamMemberTaskIconsInfo />
+                                        </div>
+                                      </div>
+                                      {/*  */}
+                                      <div className={styles['team-member-task-review-button']}>
+                                        <ReviewButton
+                                          user={user}
+                                          userId={userId}
+                                          task={task}
+                                          updateTask={updateTaskStatus}
                                         />
-                                      )}
-                                      {(canUpdateTask || canDeleteTask) && (
-                                        <FontAwesomeIcon
-                                          className={styles['team-member-task-remove']}
-                                          icon={faTimesCircle}
-                                          title="Remove User from Task"
-                                          onClick={() => {
-                                            handleRemoveFromTaskModal(user.personId, task);
-                                            handleTaskModalOption('XMark');
-                                          }}
-                                          data-testid={`Xmark-${task.taskName}`}
-                                        />
-                                      )}
-                                      <TeamMemberTaskIconsInfo />
-                                    </div>
-                                    <div className={styles['team-member-task-review-button']}>
-                                      <ReviewButton
-                                        user={user}
-                                        userId={userId}
-                                        task={task}
-                                        updateTask={updateTaskStatus}
-                                      />
+                                      </div>
                                     </div>
                                   </td>
                                   {task.hoursLogged != null && task.estimatedHours != null && (
@@ -532,48 +595,60 @@ const TeamMemberTask = React.memo(
                                         darkMode ? 'bg-yinmn-blue text-light' : ''
                                       }`}
                                     >
-                                      {isAllowedToSeeDeadlineCount && (
-                                        <span
-                                          className={styles['deadlineCount']}
-                                          title="Click to view task change history"
-                                          data-testid={`deadline-${task.taskName}`}
-                                          onClick={() => handleOpenTaskChangeLog(task)}
-                                          onKeyDown={e => {
-                                            if (e.key === 'Enter' || e.key === ' ') {
-                                              e.preventDefault();
-                                              handleOpenTaskChangeLog(task);
-                                            }
-                                          }}
-                                          role="button"
-                                          tabIndex={0}
-                                          style={{ cursor: 'pointer' }}
-                                        >
-                                          {taskCounts[task._id] ?? task.deadlineCount ?? 0}
-                                        </span>
-                                      )}
-                                      <div className={styles['team-task-progress-container']}>
-                                        <span
-                                          data-testid={`times-${task.taskName}`}
-                                          className={`${darkMode ? 'text-light ' : ''} ${
-                                            canSeeFollowUpCheckButton
-                                              ? styles['team-task-progress-time']
-                                              : styles['team-task-progress-time-volunteers']
-                                          }`}
-                                        >
-                                          {`${parseFloat(
-                                            task.hoursLogged.toFixed(2),
-                                          )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
-                                        </span>
-                                        {canSeeFollowUpCheckButton && (
-                                          <>
-                                            <FollowupCheckButton
-                                              moseoverText={followUpMouseoverText(task)}
-                                              user={user}
-                                              task={task}
-                                            />
-                                            <FollowUpInfoModal />
-                                          </>
-                                        )}
+                                      <>
+                                        <div className={styles['team-task-progress-container']}>
+                                          <div
+                                            data-testid={`times-${task.taskName}`}
+                                            className={`${darkMode ? 'text-light ' : ''} ${
+                                              canSeeFollowUpCheckButton
+                                                ? styles['team-task-progress-time']
+                                                : styles['team-task-progress-time-volunteers']
+                                            }`}
+                                          >
+                                            <p
+                                              className={`${styles['progress-text']} ${
+                                                darkMode ? 'text-light' : ''
+                                              }`}
+                                            >
+                                              {`${parseFloat(
+                                                task.hoursLogged.toFixed(2),
+                                              )} of ${parseFloat(task.estimatedHours.toFixed(2))}`}
+                                            </p>
+                                          </div>
+                                          {canSeeFollowUpCheckButton && (
+                                            <div className={styles['task-followup-icon']}>
+                                              <FollowupCheckButton
+                                                moseoverText={followUpMouseoverText(task)}
+                                                user={user}
+                                                task={task}
+                                              />
+                                              <div className={styles['followup-info-override']}>
+                                                <FollowUpInfoModal />
+                                                {isAllowedToSeeDeadlineCount && (
+                                                  <span
+                                                    className={styles['deadlineCount']}
+                                                    title="Click to view task change history"
+                                                    data-testid={`deadline-${task.taskName}`}
+                                                    onClick={() => handleOpenTaskChangeLog(task)}
+                                                    onKeyDown={e => {
+                                                      if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        handleOpenTaskChangeLog(task);
+                                                      }
+                                                    }}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    style={{ cursor: 'pointer' }}
+                                                  >
+                                                    {taskCounts[task._id] ??
+                                                      task.deadlineCount ??
+                                                      0}
+                                                  </span>
+                                                )}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
                                         <Progress
                                           color={getProgressColor(
                                             task.hoursLogged,
@@ -586,7 +661,7 @@ const TeamMemberTask = React.memo(
                                           )}
                                           className={styles['team-task-progress-bar']}
                                         />
-                                      </div>
+                                      </>
                                     </td>
                                   )}
                                 </tr>

@@ -1,4 +1,3 @@
-// NOSONAR
 // recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
 const getAllSubpermissionKeys = permissions => {
   const keys = [];
@@ -108,6 +107,11 @@ export const permissionLabels = [
         description:
           'Gives the user permission to create, edit and delete the filter in weekly summaries report page.',
       },
+      {
+        label: 'See Job Analytics Reports',
+        key: 'getJobReports',
+        description: 'Job Analytics Reports.',
+      },
     ],
   },
   {
@@ -203,6 +207,12 @@ export const permissionLabels = [
         label: 'Tracking Management',
         key: 'setTrackingManagement',
         description: 'Gives the user permission to interact with the edit warnings list modal.',
+      },
+      {
+        label: 'HGN People +/- Setup',
+        key: 'manageHGNAccessSetup',
+        description:
+          'Gives the user permission to access the HGN Add Access button on user profile pages to add/remove user access to GitHub, Dropbox, Slack, and Sentry.',
       },
     ],
   },

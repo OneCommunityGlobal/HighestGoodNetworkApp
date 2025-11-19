@@ -96,6 +96,7 @@ const initialState = {
   teamCodes: [],
   colorOptions: [],
   auth: [],
+  selectedLoggedHoursRange: '',
   selectedOverTime: false,
   selectedBioStatus: false,
   selectedTrophies: false,
@@ -184,7 +185,7 @@ const CustomMenuList = props => {
 
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
-  const { loading, infoCollections, getInfoCollections } = props;
+  const { loading, getInfoCollections } = props;
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
@@ -224,6 +225,27 @@ const WeeklySummariesReport = props => {
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
+  };
+
+  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
+    // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
+    const weekStartLA = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const weekEndLA = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const summaryStart = new Date(startDateStr);
+    const summaryEnd = new Date(endDateStr);
+
+    // keep if it overlaps that week
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   /**
@@ -278,11 +300,11 @@ const WeeklySummariesReport = props => {
 
   const intialInfoCollections = async summariesCopy => {
     try {
-      await getInfoCollections();
+      const infoCollectionsData = await getInfoCollections();
       const roleInfoNames = getAllRoles(summariesCopy);
       const allRoleInfo = [];
-      if (Array.isArray(infoCollections)) {
-        infoCollections.forEach(info => {
+      if (Array.isArray(infoCollectionsData)) {
+        infoCollectionsData.forEach(info => {
           if (roleInfoNames?.includes(info.infoName)) {
             const visible =
               info.visibility === '0' ||
@@ -389,13 +411,13 @@ const WeeklySummariesReport = props => {
         hasSeeBadgePermission: hasPermission('seeBadges') && badgeStatusCode === 200,
       }));
 
-      // Fetch data for the active tab only
-      const res = await getWeeklySummariesReport(weekIndex);
-      // console.log('API response:', res);
-      // console.log('Response data:', res?.data);
-      // console.log('Data is array:', Array.isArray(res?.data));
-      // console.log('Data length:', res?.data?.length);
-      const summaries = res?.data ?? [];
+      // Fetch data for the active tab only with cache-busting
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
+      // console.log('API response:', response);
+      const summaries = response?.data ?? [];
 
       if (!Array.isArray(summaries) || summaries.length === 0) {
         setState(prevState => ({
@@ -677,6 +699,7 @@ const WeeklySummariesReport = props => {
       const {
         selectedCodes,
         selectedColors,
+        selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
         selectedBioStatus,
@@ -730,7 +753,10 @@ const WeeklySummariesReport = props => {
         //     return false; // Skip inactive members unless their summary is from last week
         //   }
         // }
-        if (summary?.isActive === false && !isLastWeekReport(summary.startDate, summary.endDate)) {
+        if (
+          summary?.isActive === false &&
+          !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+        ) {
           return false;
         }
         const isMeetCriteria =
@@ -742,7 +768,7 @@ const WeeklySummariesReport = props => {
           !selectedOverTime ||
           (summary.weeklycommittedHours > 0 &&
             hoursLogged > 0 &&
-            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
 
         // Add trophy filter logic
         const summarySubmissionDate = moment()
@@ -765,6 +791,25 @@ const WeeklySummariesReport = props => {
         const noFilterSelected =
           selectedCodesArray.length === 0 && selectedExtraMembersArray.length === 0;
 
+        let matchesLoggedHoursRange = true;
+        if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
+          matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
+            switch (range.value) {
+              case '=0':
+                return hoursLogged === 0;
+              case '0-10':
+                return hoursLogged > 0 && hoursLogged <= 10;
+              case '10-20':
+                return hoursLogged > 10 && hoursLogged <= 20;
+              case '20-40':
+                return hoursLogged > 20 && hoursLogged <= 40;
+              case '>40':
+                return hoursLogged > 40;
+              default:
+                return true;
+            }
+          });
+        }
         return (
           (noFilterSelected || isInSelectedCode || isInSelectedExtraMember) &&
           (selectedColorsArray.length === 0 ||
@@ -772,7 +817,8 @@ const WeeklySummariesReport = props => {
           matchesSpecialColor &&
           isOverHours &&
           isBio &&
-          hasTrophy
+          hasTrophy &&
+          matchesLoggedHoursRange
         );
       });
 
@@ -912,12 +958,12 @@ const WeeklySummariesReport = props => {
     setState(prev => ({ ...prev, refreshing: true }));
 
     try {
-      // Use the force refresh parameter
+      // Use the force refresh parameter and cache-busting timestamp
       const weekIndex = navItems.indexOf(activeTab);
-      const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true&_=${Date.now()}`;
-      // console.log(`Forcing refresh of report section from: ${url}`);
-
-      const response = await axios.get(url);
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
 
       if (response.status === 200) {
         // Process the data
@@ -976,9 +1022,13 @@ const WeeklySummariesReport = props => {
       // Save in session storage
       sessionStorage.setItem('tabSelection', tab);
 
-      // Check if we already have data for this tab
-      if (state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
-        // Use cached data
+      const weekIndex = navItems.indexOf(tab);
+
+      // Always refetch for "Last Week" so late submissions show up
+      const shouldForceFetch = tab === 'Last Week';
+
+      if (!shouldForceFetch && state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
+        // use cache
         setState(prevState => ({
           ...prevState,
           summaries: prevState.summariesByTab[tab],
@@ -990,35 +1040,27 @@ const WeeklySummariesReport = props => {
           },
         }));
       } else {
-        // Fetch new data
-        const weekIndex = navItems.indexOf(tab);
-
+        // fetch fresh
         props
           .getWeeklySummariesReport(weekIndex)
           .then(res => {
             if (res && res.data) {
-              // Process data
               let summariesCopy = [...res.data];
               summariesCopy = alphabetize(summariesCopy);
-
-              // Add promised hours data
               summariesCopy = summariesCopy.map(summary => {
                 const promisedHoursByWeek = weekDates.map(weekDate =>
                   getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
                 );
-
                 const filterColor = summary.filterColor || null;
-
                 return { ...summary, promisedHoursByWeek, filterColor };
               });
 
-              // Update state
               setState(prevState => ({
                 ...prevState,
                 summaries: summariesCopy,
                 filteredSummaries: summariesCopy,
                 badges: props.allBadgeData || prevState.badges,
-                loadedTabs: [...prevState.loadedTabs, tab],
+                loadedTabs: [...new Set([...prevState.loadedTabs, tab])],
                 summariesByTab: {
                   ...prevState.summariesByTab,
                   [tab]: summariesCopy,
@@ -1039,7 +1081,6 @@ const WeeklySummariesReport = props => {
             }
           })
           .catch(() => {
-            // console.error('Error loading tab data:', error);
             setState(prevState => ({
               ...prevState,
               tabsLoading: {
@@ -1565,10 +1606,23 @@ const WeeklySummariesReport = props => {
     let isMounted = true;
     window._isMounted = isMounted;
 
-    // console.log('Initial useEffect running');
+    createIntialSummaries().then(() => {
+      if (!window._isMounted) return;
+      refreshCurrentTab();
 
-    // Only load the initial tab, nothing else
-    createIntialSummaries();
+      // const nav =
+      //   performance && performance.getEntriesByType
+      //     ? performance.getEntriesByType('navigation')[0]
+      //     : null;
+
+      // // Only refresh if this navigation was a browser reload
+      // if (nav && nav.type === 'reload') {
+      //   refreshCurrentTab();
+      // } else {
+      //   // If you prefer always refreshing after initial load:
+      //   // refreshCurrentTab();
+      // }
+    });
 
     return () => {
       isMounted = false;
@@ -1592,6 +1646,7 @@ const WeeklySummariesReport = props => {
     }
   }, [
     state.selectedOverTime,
+    state.selectedLoggedHoursRange,
     state.selectedCodes,
     state.selectedBioStatus,
     state.selectedColors,
@@ -2365,7 +2420,7 @@ const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: weekIndex => dispatch(getWeeklySummariesReport(weekIndex)),
   hasPermission: permission => dispatch(hasPermission(permission)),
-  getInfoCollections: () => getInfoCollections(),
+  getInfoCollections: () => dispatch(getInfoCollections()),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
