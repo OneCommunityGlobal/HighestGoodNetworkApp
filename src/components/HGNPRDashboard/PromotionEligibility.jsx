@@ -125,7 +125,9 @@ function PromotionEligibility({ currentUser }) {
               toggleSelectPromotion(id);
             }
           }}
-          className={`custom-circular-checkbox-wrapper ${processing ? 'disabled' : ''}`}
+          className={`${styles['custom-circular-checkbox-wrapper']} ${
+            processing ? styles['disabled'] : ''
+          }`}
           style={{
             cursor: !processing ? 'pointer' : 'not-allowed',
           }}
