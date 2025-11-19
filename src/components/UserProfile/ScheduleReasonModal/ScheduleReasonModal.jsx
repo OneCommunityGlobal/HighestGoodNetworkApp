@@ -28,14 +28,21 @@ const ScheduleReasonModal = ({
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
 
-  const nextSundayStr = moment()
-    .isoWeekday(7)
-    .startOf('day');
-  const nextSunday = new Date(nextSundayStr.year(), nextSundayStr.month(), nextSundayStr.date());
-  
-  const currSundayStr = moment()
-    .startOf('week');
-  const currSunday = new Date(currSundayStr.year(), currSundayStr.month(), currSundayStr.date());
+  const today = moment().startOf('day');
+
+  const currSundayStr = today.clone().startOf('week');
+  const currSunday = new Date(
+    currSundayStr.year(),
+    currSundayStr.month(),
+    currSundayStr.date()
+  );
+
+  const nextSundayStr = currSundayStr.clone().add(1, 'week');
+  const nextSunday = new Date(
+    nextSundayStr.year(),
+    nextSundayStr.month(),
+    nextSundayStr.date()
+  );
   
   const initialRequestData = {
     dateOfLeave: nextSunday,

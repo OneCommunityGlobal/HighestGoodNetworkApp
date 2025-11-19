@@ -596,25 +596,6 @@ const TeamMemberTask = React.memo(
                                       }`}
                                     >
                                       <>
-                                        {isAllowedToSeeDeadlineCount && (
-                                          <span
-                                            className={styles['deadlineCount']}
-                                            title="Click to view task change history"
-                                            data-testid={`deadline-${task.taskName}`}
-                                            onClick={() => handleOpenTaskChangeLog(task)}
-                                            onKeyDown={e => {
-                                              if (e.key === 'Enter' || e.key === ' ') {
-                                                e.preventDefault();
-                                                handleOpenTaskChangeLog(task);
-                                              }
-                                            }}
-                                            role="button"
-                                            tabIndex={0}
-                                            style={{ cursor: 'pointer' }}
-                                          >
-                                            {taskCounts[task._id] ?? task.deadlineCount ?? 0}
-                                          </span>
-                                        )}
                                         <div className={styles['team-task-progress-container']}>
                                           <div
                                             data-testid={`times-${task.taskName}`}
@@ -643,6 +624,27 @@ const TeamMemberTask = React.memo(
                                               />
                                               <div className={styles['followup-info-override']}>
                                                 <FollowUpInfoModal />
+                                                {isAllowedToSeeDeadlineCount && (
+                                                  <span
+                                                    className={styles['deadlineCount']}
+                                                    title="Click to view task change history"
+                                                    data-testid={`deadline-${task.taskName}`}
+                                                    onClick={() => handleOpenTaskChangeLog(task)}
+                                                    onKeyDown={e => {
+                                                      if (e.key === 'Enter' || e.key === ' ') {
+                                                        e.preventDefault();
+                                                        handleOpenTaskChangeLog(task);
+                                                      }
+                                                    }}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    style={{ cursor: 'pointer' }}
+                                                  >
+                                                    {taskCounts[task._id] ??
+                                                      task.deadlineCount ??
+                                                      0}
+                                                  </span>
+                                                )}
                                               </div>
                                             </div>
                                           )}
