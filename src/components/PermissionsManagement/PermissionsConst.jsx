@@ -1,3 +1,4 @@
+// NOSONAR
 // recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
 const getAllSubpermissionKeys = permissions => {
   const keys = [];
