@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Select from 'react-select';
-import './ReviewsInsight.css';
+import styles from './ReviewsInsight.module.css';
 import ActionDoneGraph from './ActionDoneGraph';
 import PRQualityGraph from './PRQualityGraph';
 import { fetchReviewsInsights } from '../../../actions/prAnalytics/reviewsInsightsAction';
@@ -93,11 +93,13 @@ function ReviewsInsight() {
   ];
 
   return (
-    <div className={`reviews-insight-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div
+      className={`${styles['reviews-insight-container']} ${darkMode ? styles['dark-mode'] : ''}`}
+    >
       <h1>PR Reviews Insights</h1>
 
-      <div className="ri-filters">
-        <div className="ri-filter-item">
+      <div className={styles['ri-filters']}>
+        <div className={styles['ri-filter-item']}>
           <label htmlFor="ri-duration-filter">Duration:</label>
           <select id="ri-duration-filter" value={duration} onChange={handleDurationChange}>
             <option value="Last Week">Last Week</option>
@@ -107,7 +109,7 @@ function ReviewsInsight() {
           </select>
         </div>
 
-        <div className="ri-filter-item">
+        <div className={styles['ri-filter-item']}>
           <label htmlFor="team-filter">Team Code:</label>
           <Select
             id="team-filter"
@@ -175,7 +177,7 @@ function ReviewsInsight() {
         </div>
       </div>
 
-      <div className="ri-selected-teams">
+      <div className={styles['ri-selected-teams']}>
         {selectedTeams.length === 0 ? (
           <p>No teams selected</p>
         ) : selectedTeams.some(team => team.value === 'All') ? (
@@ -185,10 +187,10 @@ function ReviewsInsight() {
         )}
       </div>
 
-      {loading && <div className="ri-loading">Loading...</div>}
-      {error && <div className="ri-error">{error}</div>}
+      {loading && <div className={styles['ri-loading']}>Loading...</div>}
+      {error && <div className={styles['ri-error']}>{error}</div>}
       {!loading && !error && (
-        <div className="ri-graphs">
+        <div className={styles['ri-graphs']}>
           <ActionDoneGraph selectedTeams={selectedTeams} teamData={teamData} />
           <PRQualityGraph selectedTeams={selectedTeams} qualityData={qualityData} />
         </div>
