@@ -982,6 +982,7 @@ return (
                         data={intangibletimeEntryFormData}
                         userProfile={displayUserProfile}
                         roles={roles}
+                        maxHoursPerEntry={40}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
