@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Button } from 'reactstrap';
+import { Container, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import styles from './IntermediateTaskList.module.css';
@@ -25,6 +25,7 @@ const IntermediateTaskList = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [selectedParentTaskId, setSelectedParentTaskId] = useState(null);
   const [isEducator, setIsEducator] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ isOpen: false, task: null, parentTaskId: null });
 
   // Check if user is educator (you may need to adjust this based on your role system)
   useEffect(() => {
@@ -77,19 +78,30 @@ const IntermediateTaskList = () => {
     setShowForm(true);
   };
 
-  // Handle delete intermediate task
-  const handleDeleteTask = async (task, parentTaskId) => {
-    if (window.confirm('Are you sure you want to delete this sub-task?')) {
-      try {
-        const taskId = task.id || task._id;
-        await dispatch(deleteIntermediateTask(taskId));
-        // Refresh intermediate tasks for the parent
-        const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
-        setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: tasks || [] }));
-      } catch (error) {
-        // Error is handled in the action
-      }
+  // Handle delete intermediate task - open confirmation modal
+  const handleDeleteTask = (task, parentTaskId) => {
+    setDeleteModal({ isOpen: true, task, parentTaskId });
+  };
+
+  // Confirm deletion
+  const confirmDelete = async () => {
+    const { task, parentTaskId } = deleteModal;
+    try {
+      const taskId = task.id || task._id;
+      await dispatch(deleteIntermediateTask(taskId));
+      // Refresh intermediate tasks for the parent
+      const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
+      setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: tasks || [] }));
+      setDeleteModal({ isOpen: false, task: null, parentTaskId: null });
+    } catch (error) {
+      // Error is handled in the action
+      setDeleteModal({ isOpen: false, task: null, parentTaskId: null });
     }
+  };
+
+  // Cancel deletion
+  const cancelDelete = () => {
+    setDeleteModal({ isOpen: false, task: null, parentTaskId: null });
   };
 
   // Handle mark as done (for students)
@@ -334,6 +346,28 @@ const IntermediateTaskList = () => {
             })
           )}
         </div>
+
+        {/* Delete Confirmation Modal */}
+        <Modal isOpen={deleteModal.isOpen} toggle={cancelDelete}>
+          <ModalHeader toggle={cancelDelete}>Confirm Deletion</ModalHeader>
+          <ModalBody>
+            <p>Are you sure you want to delete this sub-task?</p>
+            {deleteModal.task && (
+              <p>
+                <strong>{deleteModal.task.title}</strong>
+              </p>
+            )}
+            <p className="text-muted">This action cannot be undone.</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={cancelDelete}>
+              Cancel
+            </Button>
+            <Button color="danger" onClick={confirmDelete}>
+              Delete
+            </Button>
+          </ModalFooter>
+        </Modal>
       </Container>
     </div>
   );
