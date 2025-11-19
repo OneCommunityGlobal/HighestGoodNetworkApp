@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect , useSelector } from 'react-redux';
 import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
 import ProjectsList from '~/components/BMDashboard/Projects/ProjectsList';
 import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
@@ -18,7 +18,7 @@ import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
-import { useSelector } from 'react-redux'
+
 
 const Projects = function(props) {
   const { role } = props.state.userProfile;
@@ -283,7 +283,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
+        <div className="container py-3 border border-secondary rounded" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex justify-content-center align-items-center">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>

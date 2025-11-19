@@ -39,13 +39,15 @@ function ApplicantVolunteerRatio() {
 
   useEffect(() => {
     const fetchFilteredData = async () => {
+      // Validate date range: start must be before or equal to end
       if (startDate && endDate && startDate > endDate) {
-        setValidationError('Start date cannot be greater than end date.');
+        setValidationError('Start date must be earlier than or equal to End date.');
         setData([]);
         setLoading(false);
         return;
       }
 
+      // clear previous validation error when dates are valid
       if (validationError) setValidationError('');
 
       if (selectedRoles.length === 0) {
@@ -89,7 +91,7 @@ function ApplicantVolunteerRatio() {
   const handleStartDateChange = date => {
     setStartDate(date);
     if (endDate && date && date > endDate) {
-      setValidationError('Start date cannot be greater than end date.');
+      setValidationError('Start date must be earlier than or equal to End date.');
     } else {
       setValidationError('');
     }
@@ -98,12 +100,13 @@ function ApplicantVolunteerRatio() {
   const handleEndDateChange = date => {
     setEndDate(date);
     if (startDate && date && startDate > date) {
-      setValidationError('Start date cannot be greater than end date.');
+      setValidationError('Start date must be earlier than or equal to End date.');
     } else {
       setValidationError('');
     }
   };
 
+  // Inline styles for react-select to guarantee contrast in dark mode (overrides other CSS)
   const selectStyles = useMemo(() => {
     if (!darkMode) return undefined;
 
@@ -140,6 +143,7 @@ function ApplicantVolunteerRatio() {
     };
   }, [darkMode]);
 
+  // Apply dark mode to document body and inject page-specific dark styles
   useEffect(() => {
     if (darkMode) {
       document.body.classList.add('dark-mode-body');
@@ -151,18 +155,25 @@ function ApplicantVolunteerRatio() {
       const styleElement = document.createElement('style');
       styleElement.id = 'applicant-volunteer-dark-styles';
       styleElement.innerHTML = `
-        .dark-mode-body,
-        .dark-mode-body body,
-        .dark-mode-body #root,
-        .dark-mode-body .App {
+        /* Page-level dark background to cover gutters and root */
+        .dark-mode-body, .dark-mode-body body, .dark-mode-body #root, .dark-mode-body .App {
           background-color: #1B2A41 !important;
           color: #e0e0e0 !important;
         }
+        /* Common layout wrappers that might enforce white background */
         .dark-mode-body .header-wrapper,
         .dark-mode-body .content-wrapper,
         .dark-mode-body .page,
         .dark-mode-body .container,
         .dark-mode-body .container-fluid {
+          background-color: #1B2A41 !important;
+          color: #e0e0e0 !important;
+        }
+        .dark-mode-body .applicant-volunteer-page {
+          background-color: #1B2A41 !important;
+          color: #e0e0e0 !important;
+        }
+        .dark-mode-body .applicant-volunteer-content {
           background-color: #1B2A41 !important;
           color: #e0e0e0 !important;
         }

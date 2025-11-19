@@ -6,6 +6,7 @@ vi.mock('../AddTeamPopup', () => ({
   __esModule: true,
   default: function AddTeamPopupMock(props) {
     return (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
       <div
         data-testid="add-team-popup"
         data-open={props.open ? 'true' : 'false'}
@@ -22,6 +23,7 @@ vi.mock('../UserTeamsTable', () => ({
   __esModule: true,
   default: function UserTeamsTableMock(props) {
     return (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
       <div
         data-testid="user-teams-table"
         onClick={() => props.onButtonClick && props.onButtonClick()}

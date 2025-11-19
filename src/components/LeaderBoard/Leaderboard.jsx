@@ -315,6 +315,37 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
+  const manager = 'Manager';
+  const adm = 'Administrator';
+  const owner = 'Owner';
+
+  const handleDashboardAccess = item => {
+    // check the logged in user is manager and if the dashboard is admin and owner
+    if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
+      // check the logged in user is admin and if dashboard is owner
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    }
+    // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
+    else if (
+      loggedInUser.role !== manager &&
+      loggedInUser.role !== adm &&
+      loggedInUser.role !== owner
+    ) {
+      if ([manager, adm, owner].includes(item.role)) {
+        // prevent access
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else {
+        // allow access to the painel
+        dashboardToggle(item);
+      }
+    } else {
+      // allow access to the painel
+      dashboardToggle(item);
+    }
+  };
+
   // For Monthly and yearly anniversaries
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -717,7 +748,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
-                            0-hrs Mentors:{' '}
+                            0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
                           </span>
@@ -731,7 +762,7 @@ function LeaderBoard({
                         <span>{stateOrganizationData.name}</span>
                         {viewZeroHouraMembers(loggedInUser.role) && (
                           <span className="leaderboard-totals-title">
-                            0-hrs Mentors:{' '}
+                            0 hrs Totals:{' '}
                             {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
                             Members
                           </span>
@@ -807,14 +838,14 @@ function LeaderBoard({
                             </ModalHeader>
                             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                               <p className={darkMode ? 'text-light' : ''}>
-                                Are you sure you wish to view this {item.name} dashboard?
+                                Are you sure you wish to view the dashboard for {item.name}?
                               </p>
                             </ModalBody>
                             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <Button variant="primary" onClick={() => showDashboard(item)}>
+                              <Button color="primary" onClick={() => showDashboard(item)}>
                                 Ok
-                              </Button>{' '}
-                              <Button variant="secondary" onClick={dashboardToggle}>
+                              </Button>
+                              <Button color="danger" onClick={dashboardToggle}>
                                 Cancel
                               </Button>
                             </ModalFooter>
@@ -834,11 +865,11 @@ function LeaderBoard({
                             role="button"
                             tabIndex={0}
                             onClick={() => {
-                              dashboardToggle(item);
+                              handleDashboardAccess(item);
                             }}
                             onKeyDown={e => {
                               if (e.key === 'Enter') {
-                                dashboardToggle(item);
+                                handleDashboardAccess(item);
                               }
                             }}
                           >
