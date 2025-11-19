@@ -1,24 +1,24 @@
 /* Simple styling for Blue Square Email Management */
-.bg-oxford-blue {
+.bgOxfordBlue {
   background-color: #1a1a1a;
   color: #ffffff;
 }
 
 /* Card styling for consistent height */
-.card.h-100 {
+.cardH100 {
   height: 100% !important;
 }
 
-.card-body.d-flex.flex-column {
+.cardBodyFlexColumn {
   display: flex !important;
   flex-direction: column !important;
 }
 
-.card-text.flex-grow-1 {
+.cardTextFlexGrow1 {
   flex-grow: 1 !important;
 }
 
-.btn.mt-auto {
+.btnMtAuto {
   margin-top: auto !important;
 }
 
@@ -44,6 +44,7 @@
   100% { transform: rotate(360deg); }
 }
 
-.fa-spinner {
+.faSpinner {
   animation: spin 1s linear infinite;
-} 
+}
+
