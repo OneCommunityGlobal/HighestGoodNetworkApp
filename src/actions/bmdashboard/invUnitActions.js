@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
   POST_BUILDING_MATERIAL_INVENTORY_UNIT,

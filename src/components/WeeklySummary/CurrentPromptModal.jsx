@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../Header/DarkMode.css';
 import './WeeklySummary.css';
 import {
@@ -140,6 +140,7 @@ function CurrentPromptModal(props) {
             data-for="timeEntryTip"
             data-delay-hide="1000"
             aria-hidden="true"
+            data-testid="ai-info-icon"
             title=""
             style={{ paddingLeft: '.32rem' }}
           />
@@ -159,6 +160,7 @@ function CurrentPromptModal(props) {
             data-delay-hide="1000"
             aria-hidden="true"
             title=""
+            data-testid="ai-info-icon"
             style={{ paddingLeft: '.32rem' }}
           />
         </Button>

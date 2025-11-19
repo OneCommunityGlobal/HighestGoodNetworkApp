@@ -13,7 +13,7 @@ import {
   Table,
 } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
@@ -63,6 +63,7 @@ function AssignBadge(props) {
       }
       setError(null);
     } catch (err) {
+      /* eslint-disable no-console */
       console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
@@ -129,7 +130,6 @@ function AssignBadge(props) {
             data-testid="NameInfo"
             style={{ cursor: 'pointer' }}
           />
-          
           <UncontrolledTooltip
             placement="right"
             target="NameInfo"

@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Button } from 'reactstrap';
 import { useHistory, useParams } from 'react-router-dom';
-import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
+import { fetchEquipmentById } from '~/actions/bmdashboard/equipmentActions';
 import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
-import '../EquipmentDetailPage.css';
+import styles from './EquipmentDetailPage.module.css';
 
 function DetailItem({ label, value }) {
   return (
@@ -157,17 +157,19 @@ function EquipmentDetail() {
     }
   };
   return (
-    <Container className="EquipmentDetailPage justify-content-center align-items-center mw-80 px-4">
-      <header className="EquipmentDetailPage__header">
+    <Container
+      className={`${styles.equipmentDetailPage} justify-content-center align-items-center mw-80 px-4`}
+    >
+      <header className={styles.equipmentDetailPageHeader}>
         <h1>Equipment Detail Page</h1>
       </header>
-      <main className="EquipmentDetailPage__content">
+      <main className={styles.equipmentDetailPageContent}>
         <p>
-          <img src={equipment?.imageUrl} alt="" className="EquipmentDetailPage__image" />
+          <img src={equipment?.imageUrl} alt="" className={styles.equipmentDetailPageImage} />
         </p>
         {details.filter(Boolean).map(renderDetails)}
         <Button
-          className="back-btn"
+          className={styles.backBtn}
           style={{ color: 'black', borderWidth: '2px', borderRadius: '9px' }}
           outline
           onClick={() => history.push('/bmdashboard/equipment')}
