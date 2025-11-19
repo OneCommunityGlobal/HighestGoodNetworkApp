@@ -17,3 +17,33 @@
     width: 95%;
   }
 }
+/* Make the entire page dark and full width */
+.bg-oxford-blue {
+  background-color: #0B2038 !important;
+  min-height: 100vh;
+  width: 100vw;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+}
+
+/* Remove Bootstrap container padding */
+.bg-oxford-blue.container,
+.bg-oxford-blue.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Wrapper for proper dashboard-style spacing */
+.equipment-update-page-wrapper {
+  width: 100%;
+  padding: 40px 60px;
+}
+
+@media (max-width: 900px) {
+  .equipment-update-page-wrapper {
+    padding: 20px;
+  }
+}
+
+

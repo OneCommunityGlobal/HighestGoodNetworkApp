@@ -11,12 +11,12 @@
 
 .dark-mode .close {
   color: white;
-  opacity: 1; 
+  opacity: 1;
 }
 
 .dark-mode .close:hover {
   color: #f0f0f0;
-  opacity: 1; 
+  opacity: 1;
 }
 /* Custom styles for datepicker in darkMode */
 .dark-mode .react-datepicker {
@@ -65,8 +65,8 @@
 }
 
 .hover-effect-reports-page-dark-mode:hover {
-  background-color: #1C2541; 
-  color: #ffffff; 
+  background-color: #1C2541;
+  color: #ffffff;
 }
 
 /* Dark mode for DayPicker (AddTaskModal) */
