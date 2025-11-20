@@ -4,6 +4,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import AgeChart from './AgeChart';
 import fetchApplicantsData from './api';
+import styles from './ApplicantsChart.module.css';
 
 function ApplicantsDashboard() {
   const [selectedOption, setSelectedOption] = useState('weekly');
@@ -63,9 +64,12 @@ function ApplicantsDashboard() {
     <div
       className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
       style={{
-        padding: '20px',
-        borderRadius: '8px',
+        padding: 'clamp(10px, 2vw, 20px)',
+        borderRadius: darkMode ? '0' : '8px',
         minHeight: '100vh',
+        width: '100%',
+        maxWidth: '100%',
+        boxSizing: 'border-box',
       }}
     >
       {/* Time Filter */}
@@ -74,9 +78,11 @@ function ApplicantsDashboard() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          gap: '16px',
-          margin: '20px auto',
+          gap: 'clamp(8px, 2vw, 16px)',
+          margin: 'clamp(10px, 2vw, 20px) auto',
           flexWrap: 'wrap',
+          width: '100%',
+          maxWidth: '100%',
         }}
       >
         <label
@@ -101,9 +107,12 @@ function ApplicantsDashboard() {
           }}
           style={{
             padding: '6px 12px',
-            borderRadius: '4px',
-            border: '1px solid #ccc',
+            borderRadius: darkMode ? '0' : '4px',
+            border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
+            backgroundColor: darkMode ? '#1f2937' : '#fff',
+            color: darkMode ? '#e5e7eb' : '#000',
             fontSize: '14px',
+            cursor: 'pointer',
           }}
         >
           <option value="weekly">Weekly</option>
@@ -122,8 +131,20 @@ function ApplicantsDashboard() {
               }}
               placeholderText="Start Date"
               dateFormat="yyyy/MM/dd"
+              className={darkMode ? 'hgn-datepicker-dark' : ''}
+              calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : ''}
+              wrapperClassName={darkMode ? styles.datePickerWrapper : ''}
+              style={{
+                backgroundColor: darkMode ? '#1f2937' : '#fff',
+                color: darkMode ? '#e5e7eb' : '#000',
+                border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
+                borderRadius: darkMode ? '0' : '4px',
+                padding: '6px 12px',
+                fontSize: '14px',
+                cursor: 'pointer',
+              }}
             />
-            <span style={{ color: darkMode ? '#fff' : '#000' }}>to</span>
+            <span style={{ color: darkMode ? '#e5e7eb' : '#000' }}>to</span>
             <DatePicker
               selected={endDate}
               onChange={date => {
@@ -132,19 +153,110 @@ function ApplicantsDashboard() {
               }}
               placeholderText="End Date"
               dateFormat="yyyy/MM/dd"
+              className={darkMode ? 'hgn-datepicker-dark' : ''}
+              calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : ''}
+              wrapperClassName={darkMode ? styles.datePickerWrapper : ''}
+              style={{
+                backgroundColor: darkMode ? '#1f2937' : '#fff',
+                color: darkMode ? '#e5e7eb' : '#000',
+                border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
+                borderRadius: darkMode ? '0' : '4px',
+                padding: '6px 12px',
+                fontSize: '14px',
+                cursor: 'pointer',
+              }}
             />
           </>
         )}
       </div>
 
-      {/* Error message */}
-      {error && (
-        <div className="flex justify-center items-center h-20">
+      {/* Chart Title - Always visible */}
+      <h2
+        style={{
+          color: darkMode ? '#fff' : '#000',
+          textAlign: 'center',
+          width: '100%',
+          marginTop: '20px',
+          marginBottom: '20px',
+          fontSize: 'clamp(1.25rem, 2.5vw, 1.75rem)',
+        }}
+      >
+        Applicants Grouped by Age
+      </h2>
+
+      {/* Chart */}
+      <div
+        style={{
+          width: '100%',
+          minHeight: '350px',
+        }}
+      >
+        {loading ? (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '52vh',
+              minHeight: '350px',
+              width: '100%',
+            }}
+          >
+            <p
+              style={{
+                fontSize: 'clamp(18px, 2.5vw, 24px)',
+                fontWeight: 'bold',
+                color: darkMode ? '#e5e7eb' : '#000',
+                textAlign: 'center',
+              }}
+            >
+              Loading...
+            </p>
+          </div>
+        ) : !error && chartData.length > 0 ? (
+          <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '52vh',
+              minHeight: '350px',
+              width: '100%',
+            }}
+          >
+            <p
+              style={{
+                fontSize: 'clamp(16px, 2.5vw, 18px)',
+                fontWeight: '600',
+                color: darkMode ? '#9ca3af' : '#6b7280',
+                textAlign: 'center',
+              }}
+            >
+              {error ? 'Unable to load chart data.' : 'No data available to display.'}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Error/Validation message below chart */}
+      {error && !loading && (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: '20px',
+            width: '100%',
+            padding: '10px',
+          }}
+        >
           <p
             style={{
-              color: 'red',
-              fontSize: '18px',
+              fontSize: 'clamp(14px, 2vw, 16px)',
               fontWeight: '600',
+              color: darkMode ? '#ef4444' : '#dc2626',
               textAlign: 'center',
             }}
           >
@@ -152,24 +264,6 @@ function ApplicantsDashboard() {
           </p>
         </div>
       )}
-
-      {/* Chart */}
-      {loading ? (
-        <div className="flex justify-center items-center h-52">
-          <p
-            style={{
-              fontSize: '24px',
-              fontWeight: 'bold',
-              color: darkMode ? '#fff' : '#000',
-              textAlign: 'center',
-            }}
-          >
-            Loading...
-          </p>
-        </div>
-      ) : !error ? (
-        <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />
-      ) : null}
     </div>
   );
 }
