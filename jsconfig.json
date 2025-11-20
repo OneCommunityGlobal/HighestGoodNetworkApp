@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "src"
+    "ignoreDeprecations": "6.0"
+    // "baseUrl": ".", // Removed because it is deprecated. Use path mapping or absolute imports as per https://aka.ms/ts6
   }
 }
