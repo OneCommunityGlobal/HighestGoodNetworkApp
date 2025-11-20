@@ -25,6 +25,7 @@ function IssueCharts() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const chartContainerRef = useRef(null);
@@ -108,7 +109,7 @@ function IssueCharts() {
   }
 
   return (
-    <div className="issue-chart-container">
+    <div className={`issue-chart-container ${darkMode ? 'dark' : ''}`}>
       <h2>Longest Open Issues</h2>
 
       <div className="filters-container">
