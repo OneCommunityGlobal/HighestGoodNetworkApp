@@ -1,4 +1,4 @@
-// recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
+//// recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
 const getAllSubpermissionKeys = permissions => {
   const keys = [];
   permissions.forEach(permission => {
@@ -192,10 +192,9 @@ export const permissionLabels = [
           'Gives the user permission to use the "Pause" button to pause user activity on their profile page.',
       },
       {
-        label: 'Set Final Day for User',
-        key: 'setUserFinalDay',
-        description:
-          'Gives the user permission to use the "Set Final Day" button to set a final working day for a user on their profile page.',
+        label: 'Set Final Day',
+        key: 'setFinalDay',
+        description: 'Gives the user permission to use the set the final working day.',
       },
       {
         label: 'Tracking Management',
