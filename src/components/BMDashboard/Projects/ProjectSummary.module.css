@@ -5,6 +5,16 @@
   justify-content: center;
 }
 
+/* Light mode h2 color */
+.projectSummaryContent h2 {
+  color: #000;
+}
+
+/* Dark mode h2 color */
+.darkProjectSummaryContent h2 {
+  color: #fff;
+}
+
 .projectSummaryContent {
   display: block;
   flex-wrap: wrap;
@@ -18,8 +28,15 @@
   align-items: center;
 }
 
+/* Light mode label */
 .projectSummaryLabel {
   margin-right: 1px;
+  color: #000;
+}
+
+/* Dark mode label */
+.darkProjectSummaryContent .projectSummaryLabel {
+  color: #fff;
 }
 
 .projectSummarySpan {
@@ -35,6 +52,6 @@
   }
 
   .projectSummarySpan {
-    font-size: 12px; /* Optional: adjust font size for smaller screens */
+    font-size: 12px;
   }
 }

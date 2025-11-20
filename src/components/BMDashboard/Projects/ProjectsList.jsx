@@ -8,7 +8,7 @@ import styles from '../BMDashboard.module.css';
 function ProjectsList() {
   const projects = useSelector(state => state.bmProjects) || [];
   const [selectedProjects, setSelectedProjects] = useState([]);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   const projectOptions = projects.map(project => ({
     value: project._id,
     label: project.name,
@@ -23,7 +23,7 @@ function ProjectsList() {
     : projects;
 
   return (
-    <Row className="ml-0 text-center mt-5">
+    <Row className="ml-0 text-center mt-5" style={{ width: '100%' }}>
       <Select
         isMulti
         options={projectOptions}
@@ -32,9 +32,16 @@ function ProjectsList() {
         placeholder="Select Projects"
       />
       {filteredProjects.length ? (
-        <ul className={`${styles.projectsList}`}>
+        <ul
+          className={`${styles.projectsList} ${
+            darkMode ? styles.darkProjectsList : styles.lightProjectsList
+          }`}
+        >
           {filteredProjects.map(project => (
-            <li className={`${styles.projectSummary}`} key={project._id}>
+            <li
+              className={`${darkMode ? styles.darkProjectSummary : styles.projectSummary}`}
+              key={project._id}
+            >
               <ProjectSummary project={project} />
             </li>
           ))}

@@ -4,6 +4,17 @@
   margin-top: 2em;
 }
 
+.darkBmDashboardHeader h1 {
+  font-size: 1.5em;
+  text-align: center;
+  margin-top: 2em;
+  color:#ffffff
+}
+
+.darkBmDashboardMain{
+  background-color: #1b2a41;
+}
+
 .bmDashboardButton {
   background-color: #2e5061;
 }
@@ -30,7 +41,15 @@
   transition: transform 0.2s;
 }
 
-.projectSummary:hover {
+.darkProjectSummary {
+  background-color: #3a506b;
+  margin: 1em;
+  padding: 1em;
+  border-radius: 5px;
+  transition: transform 0.2s;
+}
+
+.projectSummary:hover, .darkProjectSummary:hover {
   transform: scale(1.02);
 }
 
@@ -45,8 +64,15 @@
   margin: 1em auto;
   border: 1px solid #ccc;
   border-radius: 5px;
-  background-color: #f9f9f9;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.darkProjectsList {
+  background-color: #222831;
+}
+
+.lightProjectsList {
+  background-color: #f9f9f9;
 }
 
 .bmErrorPage {
