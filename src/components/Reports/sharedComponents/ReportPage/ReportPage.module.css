@@ -3,8 +3,10 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #faf7fd;
-  padding: 40px 0 0 24px;
   align-items: stretch;
+  padding-top: 2rem;
+  padding-left: 24px;
+  padding-right: 24px;
 }
 
 .report-page-content {
@@ -17,27 +19,14 @@
 
 
 .report-page-profile {
-  border-top-left-radius: 25px;
   border-radius: 25px;
   width: 100%;
 }
 
 .report-page-profile-dark {
-  border-top-left-radius: 25px;
   border-radius: 25px;
   width: 100%;
 }
-
-.report-page-wrapper {
-  padding: 40px;
-}
-
-.report-page-content {
-  padding: 24px;
-  justify-content: center;
-  align-items: center;
-}
-
 
 @media (max-width: 435px) {
 
