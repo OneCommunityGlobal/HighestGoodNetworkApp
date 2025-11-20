@@ -261,7 +261,7 @@ function WBSTasks(props) {
         {renderButtonGroup()}
         <div className={`${styles['tasks-table']} mb-5`}>
           <table
-            className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`}
+            className={`${styles['table']} table table-bordered ${darkMode ? 'text-light' : ''}`}
             ref={myRef}
           >
             {renderTableHeader()}
