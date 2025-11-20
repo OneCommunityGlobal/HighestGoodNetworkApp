@@ -493,16 +493,14 @@ function UserProfile(props) {
       setUserProfile(profileWithFormattedDates);
       setOriginalUserProfile(profileWithFormattedDates);
       setIsRehireable(newUserProfile.isRehireable);
-      setUserStartDate(startDate);
+      setUserStartDate(profileWithFormattedDates.startDate || '');
 
       // Fetch calculated start date from first time entry
       await fetchCalculatedStartDate(userId, newUserProfile);
 
       // run after main profile is loaded
-      const teamId = newUserProfile?.teams[0]?._id;
-      if (teamId) {
-        await loadSummaryIntroDetails(teamId, response.data);
-      }
+      const teamId = newUserProfile?.teams?.[0]?._id || null;
+      await loadSummaryIntroDetails(teamId, response.data);
 
       // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
       // Users can now toggle between manual and calculated startDate via button
@@ -1517,6 +1515,7 @@ const onAssignProject = assignedProject => {
             ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
               <Button
                 onClick={() => {
+                  console.log(summaryIntro)
                   navigator.clipboard.writeText(summaryIntro);
                   toast.success('Summary Intro Copied!');
                 }}
