@@ -303,9 +303,7 @@ describe('AddTaskModal', () => {
   });
 
   test('renders RT button when modal is open', () => {
-    const mockStore = configureStore([]);
-    const store = mockStore(initialState);
-  
+    // use the thunk-enabled store from beforeEach
     render(
       <Provider store={store}>
         <AddTaskModal />
@@ -319,4 +317,6 @@ describe('AddTaskModal', () => {
     const rtBtn = screen.getByLabelText('Replicate Task');
     expect(rtBtn).toBeInTheDocument();
   });
+  
+  
 });
