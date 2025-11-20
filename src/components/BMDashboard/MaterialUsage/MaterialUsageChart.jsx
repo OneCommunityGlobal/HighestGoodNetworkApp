@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
-import './MaterialUsageChart.module.css';
+import styles from './MaterialUsageChart.module.css';
 
 // Constants
 const COLORS = ['#A74C4C', '#4C4C4C', '#C9B28A'];
@@ -35,19 +35,19 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
 
   // Center label component
   const CenterLabel = ({ increase }) => (
-    <div className="center-label">
-      <strong className="center-label-value">{formatIncrease(increase)}</strong>
-      <div className="center-label-subtitle">week over week</div>
+    <div className={styles.centerLabel}>
+      <strong className={styles.centerLabelValue}>{formatIncrease(increase)}</strong>
+      <div className={styles.centerLabelSubtitle}>week over week</div>
     </div>
   );
 
   // Chart legend component
   const ChartLegend = ({ data }) => (
-    <div className="chart-legend">
+    <div className={styles.chartLegend}>
       {data.map((entry, index) => (
-        <div key={entry.name} className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: COLORS[index] }} />
-          <span className="legend-text">
+        <div key={entry.name} className={styles.legendItem}>
+          <div className={styles.legendColor} style={{ backgroundColor: COLORS[index] }} />
+          <span className={styles.legendText}>
             {entry.name}: {entry.percentage}%
           </span>
         </div>
@@ -138,32 +138,37 @@ export default function MaterialUsageChart({ projectId, toggle, darkMode = false
     setLoading(true);
   };
 
+  // Apply dark mode class if enabled
+  const modalClass = darkMode
+    ? `${styles.materialChartModal} ${styles.darkMode}`
+    : styles.materialChartModal;
+
   return (
-    <Modal isOpen={true} toggle={toggle} size="lg" centered className="material-chart-modal">
-      <ModalHeader toggle={toggle} className="material-chart-header">
+    <Modal isOpen={true} toggle={toggle} size="lg" centered className={modalClass}>
+      <ModalHeader toggle={toggle} className={styles.materialChartHeader}>
         Material Usage Proportion
       </ModalHeader>
 
-      <ModalBody className="material-chart-body">
+      <ModalBody className={styles.materialChartBody}>
         {loading ? (
-          <div className="chart-loading-container">
+          <div className={styles.chartLoadingContainer}>
             <Spinner color="primary" />
-            <div className="chart-loading-text">Loading material data...</div>
+            <div className={styles.chartLoadingText}>Loading material data...</div>
           </div>
         ) : error ? (
-          <div className="chart-error-container">
-            <p className="chart-error-text">{error}</p>
-            <button className="chart-retry-button" onClick={retryFetch}>
+          <div className={styles.chartErrorContainer}>
+            <p className={styles.chartErrorText}>{error}</p>
+            <button className={styles.chartRetryButton} onClick={retryFetch} type="button">
               Retry
             </button>
           </div>
         ) : isEmptyData ? (
-          <div className="chart-empty-container">
-            <p className="chart-empty-text">No material data available</p>
+          <div className={styles.chartEmptyContainer}>
+            <p className={styles.chartEmptyText}>No material data available</p>
           </div>
         ) : (
-          <div className="chart-main-container">
-            <div className="pie-chart-wrapper">
+          <div className={styles.chartMainContainer}>
+            <div className={styles.pieChartWrapper}>
               <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
                   <Pie

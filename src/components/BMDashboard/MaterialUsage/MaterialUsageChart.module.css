@@ -1,17 +1,17 @@
 /* Modal Container */
-.material-chart-modal .modal-dialog {
+.materialChartModal :global(.modal-dialog) {
   max-width: 800px;
   margin: 1rem auto;
 }
 
-.material-chart-modal .modal-content {
+.materialChartModal :global(.modal-content) {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 /* Header */
-.material-chart-header {
+.materialChartHeader {
   background: #f8f9fa;
   color: #212529;
   border-bottom: 1px solid #dee2e6;
@@ -20,19 +20,19 @@
   font-weight: 600;
 }
 
-.material-chart-header .close {
+.materialChartHeader :global(.close) {
   color: #6c757d;
   opacity: 0.7;
   font-size: 1.5rem;
 }
 
-.material-chart-header .close:hover {
+.materialChartHeader :global(.close):hover {
   opacity: 1;
   color: #495057;
 }
 
 /* Body */
-.material-chart-body {
+.materialChartBody {
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@
 }
 
 /* Main Chart Container */
-.chart-main-container {
+.chartMainContainer {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -50,7 +50,7 @@
 }
 
 /* Pie Chart Wrapper */
-.pie-chart-wrapper {
+.pieChartWrapper {
   flex: 1;
   position: relative;
   min-height: 350px;
@@ -65,7 +65,7 @@
 }
 
 /* Center Label */
-.center-label {
+.centerLabel {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -85,7 +85,7 @@
   border: 1px solid #f1f3f4;
 }
 
-.center-label-value {
+.centerLabelValue {
   font-size: 1.1rem;
   font-weight: 700;
   color: #2c3e50;
@@ -93,7 +93,7 @@
   line-height: 1.2;
 }
 
-.center-label-subtitle {
+.centerLabelSubtitle {
   font-size: 0.75rem;
   color: #6c757d;
   margin-top: 0.25rem;
@@ -101,7 +101,7 @@
 }
 
 /* Chart Legend */
-.chart-legend {
+.chartLegend {
   display: flex;
   justify-content: center;
   gap: 1.5rem;
@@ -112,7 +112,7 @@
   border: 1px solid #e9ecef;
 }
 
-.legend-item {
+.legendItem {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -120,24 +120,36 @@
   background: #ffffff;
   border-radius: 4px;
   border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
 }
 
-.legend-color {
+.legendItem:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.legendColor {
   width: 16px;
   height: 16px;
   border-radius: 3px;
   border: 2px solid #ffffff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
 }
 
-.legend-text {
+.legendItem:hover .legendColor {
+  transform: scale(1.1);
+}
+
+.legendText {
   font-size: 0.9rem;
   font-weight: 500;
   color: #495057;
+  white-space: nowrap;
 }
 
 /* Loading States */
-.chart-loading-container {
+.chartLoadingContainer {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -147,13 +159,14 @@
   padding: 2rem;
 }
 
-.chart-loading-text {
+.chartLoadingText {
   font-size: 1rem;
   color: #6c757d;
+  font-weight: 500;
 }
 
 /* Error States */
-.chart-error-container {
+.chartErrorContainer {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -163,30 +176,40 @@
   padding: 2rem;
 }
 
-.chart-error-text {
+.chartErrorText {
   font-size: 1rem;
   color: #dc3545;
   text-align: center;
   margin: 0;
+  font-weight: 500;
+  max-width: 400px;
+  line-height: 1.5;
 }
 
-.chart-retry-button {
+.chartRetryButton {
   background: #007bff;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 1.5rem;
   border-radius: 4px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
 }
 
-.chart-retry-button:hover {
+.chartRetryButton:hover {
   background: #0056b3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.chartRetryButton:active {
+  transform: translateY(0);
 }
 
 /* Empty State */
-.chart-empty-container {
+.chartEmptyContainer {
   flex: 1;
   display: flex;
   align-items: center;
@@ -194,110 +217,215 @@
   padding: 2rem;
 }
 
-.chart-empty-text {
+.chartEmptyText {
   font-size: 1rem;
   color: #6c757d;
   margin: 0;
+  font-weight: 500;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .material-chart-modal .modal-dialog {
+  .materialChartModal :global(.modal-dialog) {
     max-width: 95%;
     margin: 0.5rem auto;
   }
   
-  .material-chart-header {
+  .materialChartHeader {
     padding: 0.75rem 1rem;
     font-size: 1.1rem;
   }
   
-  .chart-main-container {
+  .chartMainContainer {
     padding: 1rem;
     gap: 1rem;
   }
   
-  .pie-chart-wrapper {
+  .pieChartWrapper {
     min-height: 300px;
     padding: 0.5rem;
   }
   
-  .center-label {
+  .centerLabel {
     width: 80px;
     height: 80px;
     padding: 0.75rem;
   }
   
-  .center-label-value {
+  .centerLabelValue {
     font-size: 0.9rem;
   }
   
-  .center-label-subtitle {
+  .centerLabelSubtitle {
     font-size: 0.65rem;
   }
   
-  .chart-legend {
+  .chartLegend {
     gap: 1rem;
     padding: 0.75rem;
   }
   
-  .legend-item {
+  .legendItem {
     padding: 0.3rem 0.6rem;
   }
   
-  .legend-text {
+  .legendText {
     font-size: 0.8rem;
   }
 }
 
-/* Dark Mode - Only applied when explicitly enabled */
-.material-chart-modal.dark-mode .material-chart-header {
+@media (max-width: 576px) {
+  .materialChartModal :global(.modal-dialog) {
+    margin: 0.25rem auto;
+    max-width: 98%;
+  }
+  
+  .materialChartBody {
+    min-height: 450px;
+  }
+  
+  .pieChartWrapper {
+    min-height: 280px;
+    padding: 0.25rem;
+  }
+  
+  .centerLabel {
+    width: 80px;
+    height: 80px;
+    padding: 0.6rem;
+  }
+  
+  .centerLabelValue {
+    font-size: 0.9rem;
+  }
+  
+  .centerLabelSubtitle {
+    font-size: 0.65rem;
+  }
+  
+  .chartLegend {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.75rem;
+  }
+  
+  .legendItem {
+    width: 100%;
+    max-width: 200px;
+    justify-content: center;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .legendText {
+    font-size: 0.8rem;
+  }
+  
+  .chartLoadingText,
+  .chartErrorText,
+  .chartEmptyText {
+    font-size: 0.9rem;
+  }
+  
+  .chartRetryButton {
+    padding: 0.4rem 1.25rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Dark Mode */
+.darkMode :global(.modal-content) {
+  background-color: #1a1a1a;
+  border-color: #333;
+}
+
+.darkMode .materialChartHeader {
   background: #2d3748;
   color: #ffffff;
   border-bottom-color: #4a5568;
 }
 
-.material-chart-modal.dark-mode .material-chart-body {
-  background: #1a202c;
-}
-
-.material-chart-modal.dark-mode .pie-chart-wrapper {
-  background: #2d3748;
-  border-color: #4a5568;
-}
-
-.material-chart-modal.dark-mode .center-label {
-  background: #2d3748;
-  border-color: #4a5568;
-}
-
-.material-chart-modal.dark-mode .center-label-value {
-  color: #ffffff;
-}
-
-.material-chart-modal.dark-mode .center-label-subtitle {
+.darkMode .materialChartHeader :global(.close) {
   color: #cbd5e0;
 }
 
-.material-chart-modal.dark-mode .chart-legend {
+.darkMode .materialChartHeader :global(.close):hover {
+  color: #ffffff;
+}
+
+.darkMode .materialChartBody {
+  background: #1a202c;
+}
+
+.darkMode .pieChartWrapper {
   background: #2d3748;
   border-color: #4a5568;
 }
 
-.material-chart-modal.dark-mode .legend-item {
+.darkMode .centerLabel {
+  background: #2d3748;
+  border-color: #4a5568;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.darkMode .centerLabelValue {
+  color: #ffffff;
+}
+
+.darkMode .centerLabelSubtitle {
+  color: #cbd5e0;
+}
+
+.darkMode .chartLegend {
+  background: #2d3748;
+  border-color: #4a5568;
+}
+
+.darkMode .legendItem {
   background: #4a5568;
   border-color: #718096;
 }
 
-.material-chart-modal.dark-mode .legend-text {
+.darkMode .legendText {
   color: #e2e8f0;
 }
 
-/* Dark mode for chart labels */
-.material-chart-modal.dark-mode .recharts-pie-label-text {
-  fill: #e2e8f0;
+.darkMode .chartLoadingText {
+  color: #a0aec0;
 }
 
-.material-chart-modal.dark-mode .recharts-line {
-  stroke: #e2e8f0;
+.darkMode .chartErrorText {
+  color: #fc8181;
+}
+
+.darkMode .chartEmptyText {
+  color: #a0aec0;
+}
+
+.darkMode .chartRetryButton {
+  background: #3182ce;
+}
+
+.darkMode .chartRetryButton:hover {
+  background: #2c5aa0;
+}
+
+/* Accessibility */
+.chartRetryButton:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .legendItem,
+  .legendColor,
+  .chartRetryButton {
+    transition: none;
+  }
+  
+  .legendItem:hover,
+  .chartRetryButton:hover {
+    transform: none;
+  }
 }
