@@ -245,10 +245,10 @@ export function Header(props) {
       props.getAllRoles();
     }
     // Fetch unread notification
-    if (isAuthenticated && userId) {
-      dispatch(getUnreadUserNotifications(userId));
+    if (isAuthenticated && displayUserId) {
+      dispatch(getUnreadUserNotifications(displayUserId));
     }
-  }, []);
+  }, [isAuthenticated, displayUserId, roles.length]);
 
   useEffect(() => {
     if (props.notification?.error) {

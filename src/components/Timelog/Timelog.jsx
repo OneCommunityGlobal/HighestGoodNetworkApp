@@ -1252,9 +1252,7 @@ Timelog.prototype = {
   userId: PropTypes.string,
 };
 
-Timelog.defaultProps = {
-  userId: null,
-};
+// ...existing code...
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
