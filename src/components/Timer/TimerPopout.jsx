@@ -4,15 +4,43 @@ import { createRoot } from 'react-dom/client';
 import { useRef, useEffect } from 'react';
 import cs from 'classnames';
 import { Provider } from 'react-redux';
+import DOMPurify from 'dompurify';
 import styles from './Timer.module.css';
 import './Countdown.module.css';
 import { store } from '../../store';
 
 function TimerPopout({ authUser, darkMode, TimerComponent }) {
   const popupRef = useRef(null);
+  const rootRef = useRef(null);
+
+  // Sanitize CSS content to prevent CSS injection attacks
+  const sanitizeCSS = cssText => {
+    if (!cssText || typeof cssText !== 'string') return '';
+
+    // Remove potentially dangerous CSS properties and values
+    const dangerousPatterns = [
+      /javascript:/gi,
+      /data:/gi,
+      /vbscript:/gi,
+      /expression\s*\(/gi,
+      /@import/gi,
+      /behavior\s*:/gi,
+      /-moz-binding/gi,
+    ];
+
+    let sanitized = cssText;
+    dangerousPatterns.forEach(pattern => {
+      sanitized = sanitized.replace(pattern, '');
+    });
+
+    return DOMPurify.sanitize(sanitized, { ALLOWED_TAGS: [] });
+  };
 
   useEffect(() => {
     return () => {
+      if (rootRef.current) {
+        rootRef.current.unmount();
+      }
       if (popupRef.current && !popupRef.current.closed) {
         popupRef.current.close();
       }
@@ -102,7 +130,7 @@ function TimerPopout({ authUser, darkMode, TimerComponent }) {
       Array.from(window.document.styleSheets).forEach(styleSheet => {
         try {
           const cssRules = Array.from(styleSheet.cssRules)
-            .map(rule => rule.cssText)
+            .map(rule => sanitizeCSS(rule.cssText))
             .join('');
           const style = popup.document.createElement('style');
           style.textContent = cssRules;

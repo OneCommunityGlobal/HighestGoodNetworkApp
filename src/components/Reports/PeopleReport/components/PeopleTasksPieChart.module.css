@@ -52,3 +52,17 @@
 .show-all-tasks-button:hover {
   color: #ca50db;
 }
+
+.people-pie-charts-wrapper .pie-no-scroll {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}
+
+.pie-chart-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  width: 100%;
+}

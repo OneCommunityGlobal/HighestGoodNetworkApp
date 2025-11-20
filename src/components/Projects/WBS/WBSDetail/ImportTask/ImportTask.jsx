@@ -63,7 +63,7 @@ const ImportTask = props => {
       setImportStatus('imported');
       setTaskList(tmpList);
     } catch (error) {
-      console.log("ERROR!!!!!")
+     // console.log("ERROR!!!!!")
       setImportStatus('importError');
       setAlert(error.message);
     }
