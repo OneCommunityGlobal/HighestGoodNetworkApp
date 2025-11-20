@@ -100,3 +100,23 @@
   color: #6c757d;
   font-size: 12px;
 }
+
+.errorMessage {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 4px;
+  color: #721c24;
+  font-size: 13px;
+}
+
+.downloadButton:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+.formatSelect:focus {
+  outline: 2px solid #007bff;
+  outline-offset: 2px;
+}
