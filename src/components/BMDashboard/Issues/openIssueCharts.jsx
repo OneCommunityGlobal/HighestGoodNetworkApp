@@ -101,14 +101,18 @@ function IssueCharts() {
       <h2 className={darkMode ? styles.titleDark : styles.title}>Longest Open Issues</h2>
 
       <div className={styles.filterCenterWrapper}>
+        {/* Label: Date */}
+        <div className={styles.rowLabel}>Date</div>
+
         {/* Row 1: Date picker */}
         <div className={styles.dateRow}>
-          <span className={styles.dateLabel}>From</span>
+          <span className={darkMode ? styles.dateLabelDark : styles.dateLabelLight}>From</span>
           <div className={styles.dateField}>
             <DatePicker
               selected={startDate}
               onChange={date => setStartDate(date)}
               placeholderText="Start Date"
+              isClearable
               className={darkMode ? styles.dateDark : styles.dateLight}
             />
           </div>
@@ -118,10 +122,14 @@ function IssueCharts() {
               selected={endDate}
               onChange={date => setEndDate(date)}
               placeholderText="End Date"
+              isClearable
               className={darkMode ? styles.dateDark : styles.dateLight}
             />
           </div>
         </div>
+
+        {/* Label: Project */}
+        <div className={styles.rowLabel}>Project</div>
 
         {/* Row 2: Project selector */}
         <div className={styles.projectRow}>
