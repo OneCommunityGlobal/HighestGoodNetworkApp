@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import './CPDashboard.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
+  const [date, setDate] = useState(null);
 
   useEffect(() => {
     const mockEvents = [
@@ -79,7 +82,16 @@ export function CPDashboard() {
                   <Input type="radio" name="dates" /> This Weekend
                 </div>
               </div>
-              <Input type="date" placeholder="Ending After" className="date-filter" />
+              <div style={{ width: '100%' }}>
+                <DatePicker
+                  selected={date}
+                  onChange={d => setDate(d)}
+                  placeholderText="Ending After"
+                  id="ending-after"
+                  className="date-filter"
+                  style={{ width: '100%' }}
+                />
+              </div>
             </div>
             <div className="filter-item">
               <label htmlFor="online-only">Online</label>
