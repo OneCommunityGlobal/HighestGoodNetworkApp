@@ -13,7 +13,11 @@ function LogBar(props) {
   const buttonLabels = {
     dailyLogging: {
       name: ['Time', 'Material', 'Tool/Equipment'],
-      url: ['/bmdashboard/timelog', '/bmdashboard/materials/add', '/bmdashboard/tools/log'],
+      url: [
+        `/bmdashboard/timelog/${projectId}`, // was incorrect
+        '/bmdashboard/materials', // go to materials list/log page
+        '/bmdashboard/equipment', // go to equipment list/log page
+      ],
     },
     newItem: {
       name: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
