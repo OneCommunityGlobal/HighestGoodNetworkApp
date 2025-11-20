@@ -66,7 +66,7 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
       datalabels: {
         color: darkMode ? '#fff' : '#000',
         font: { weight: 'bold', size: 11 },
-        formatter: value => (value ? value : '')
+        formatter: value => (value ? value : ''),
       },
     },
     scales: {

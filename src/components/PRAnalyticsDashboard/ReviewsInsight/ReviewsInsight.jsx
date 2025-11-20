@@ -64,12 +64,10 @@ function ReviewsInsight() {
         };
 
         formattedQualityData[team._id] = {
-
           NotApproved: qualityDistribution.find(q => q.qualityLevel === 'Not approved')?.count || 0,
           LowQuality: qualityDistribution.find(q => q.qualityLevel === 'Low Quality')?.count || 0,
           Sufficient: qualityDistribution.find(q => q.qualityLevel === 'Sufficient')?.count || 0,
           Exceptional: qualityDistribution.find(q => q.qualityLevel === 'Exceptional')?.count || 0,
-
         };
       });
 
@@ -93,7 +91,6 @@ function ReviewsInsight() {
 
   return (
     <div
-
       className={`${sharedStyles.reviewsInsightContainer} ${darkMode ? sharedStyles.darkMode : ''}`}
     >
       <h1>PR Reviews Insights</h1>
@@ -109,14 +106,12 @@ function ReviewsInsight() {
             value={duration}
             onChange={handleDurationChange}
           >
-
             <option value="Last Week">Last Week</option>
             <option value="Last 2 weeks">Last 2 weeks</option>
             <option value="Last Month">Last Month</option>
             <option value="All Time">All Time</option>
           </select>
         </div>
-
 
         <div className={sharedStyles.riFilterItem}>
           <label htmlFor="team-filter">Team Code:</label>
@@ -137,11 +132,40 @@ function ReviewsInsight() {
                 color: darkMode ? '#f1f1f1' : '#000',
                 minHeight: '40px',
               }),
+
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+
+              menuList: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused
+                  ? darkMode
+                    ? '#23304d'
+                    : '#e6e6e6'
+                  : darkMode
+                  ? '#1c2541'
+                  : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+                cursor: 'pointer',
+              }),
             }}
           />
         </div>
 
-        <div className={`${sharedStyles.riFilterItem} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
+        <div
+          className={`${sharedStyles.riFilterItem} ${
+            darkMode ? sharedStyles.darkModeForeground : ''
+          }`}
+        >
           <span className={sharedStyles.riDataviewTitle}>Data View</span>
           <div className={sharedStyles.riToggleWrap}>
             <label className={sharedStyles.riSwitch}>
@@ -152,28 +176,47 @@ function ReviewsInsight() {
                 aria-label="Toggle data view: Percent vs Number"
                 className={sharedStyles.riSwitchInput}
               />
-              <span className={`${sharedStyles.riSlider} ${darkMode ? sharedStyles.riSliderDarkMode : ''}`} />
+              <span
+                className={`${sharedStyles.riSlider} ${
+                  darkMode ? sharedStyles.riSliderDarkMode : ''
+                }`}
+              />
             </label>
 
-            <span className={`${sharedStyles.riModeLabel} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
+            <span
+              className={`${sharedStyles.riModeLabel} ${
+                darkMode ? sharedStyles.darkModeForeground : ''
+              }`}
+            >
               {dataViewActive ? 'PERCENT' : 'NUMBER'}
             </span>
           </div>
         </div>
       </div>
 
-
       <div className={sharedStyles.riSelectedTeams}>
         {selectedTeams.length === 0 ? (
-          <p className={`${sharedStyles.riSelectedTeams} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
+          <p
+            className={`${sharedStyles.riSelectedTeams} ${
+              darkMode ? sharedStyles.darkModeForeground : ''
+            }`}
+          >
             No teams selected
           </p>
         ) : selectedTeams.some(team => team.value === 'All') ? (
-          <p className={`${sharedStyles.riSelectedTeams} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
+          <p
+            className={`${sharedStyles.riSelectedTeams} ${
+              darkMode ? sharedStyles.darkModeForeground : ''
+            }`}
+          >
             Selected Teams: All Teams
           </p>
         ) : (
-          <p className={`${sharedStyles.riSelectedTeams} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
+          <p
+            className={`${sharedStyles.riSelectedTeams} ${
+              darkMode ? sharedStyles.darkModeForeground : ''
+            }`}
+          >
             Selected Teams: {selectedTeams.map(team => team.label).join(', ')}
           </p>
         )}

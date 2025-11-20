@@ -86,8 +86,15 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
 
       <div className={`${sharedStyles.riCharts}`}>
         {teamsToDisplay.map(team => (
-          <div key={team} className={`${sharedStyles.riChart} ${darkMode ? sharedStyles.riChartDarkMode : ''}`}>
-            <h3 className={`${sharedStyles.heading} ${darkMode ? sharedStyles.darkModeForeground : ''}`}>
+          <div
+            key={team}
+            className={`${sharedStyles.riChart} ${darkMode ? sharedStyles.riChartDarkMode : ''}`}
+          >
+            <h3
+              className={`${sharedStyles.heading} ${
+                darkMode ? sharedStyles.darkModeForeground : ''
+              }`}
+            >
               {team}
             </h3>
             <Pie data={generateChartData(team)} options={options} />
