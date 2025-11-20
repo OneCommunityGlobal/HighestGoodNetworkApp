@@ -25,5 +25,15 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
     },
     plugins: [react()],
+
+    server: {
+      proxy: {
+        '/api': {
+          target: 'http://localhost:4500',
+          changeOrigin: true,
+          secure: false,
+        },
+      },
+    },
   };
 });
