@@ -64,6 +64,9 @@ describe('BMDashboard Tests', () => {
     const initialState = {
       bmProjects: mockProjects,
       errors: {},
+      theme: {
+        darkMode: false,
+      },
     };
     store = mockStore(initialState);
   });

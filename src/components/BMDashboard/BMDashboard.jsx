@@ -5,14 +5,14 @@ import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
 import ProjectSelectForm from './Projects/ProjectSelectForm';
 import BMError from './shared/BMError';
-import './BMDashboard.css';
+import styles from './BMDashboard.module.css';
 
 export function BMDashboard() {
   const [isError, setIsError] = useState(false);
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   // fetch projects data on pageload
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -26,8 +26,13 @@ export function BMDashboard() {
   }, [errors]);
 
   return (
-    <Container className="justify-content-center align-items-center">
-      <header className="bm-dashboard__header">
+    <Container
+      fluid
+      className={`justify-content-center align-items-center ${
+        darkMode ? styles.darkBmDashboardMain : ''
+      }`}
+    >
+      <header className={`${darkMode ? styles.darkBmDashboardHeader : styles.bmDashboardHeader}`}>
         <h1>Building and Inventory Management Dashboard</h1>
       </header>
       <main>
