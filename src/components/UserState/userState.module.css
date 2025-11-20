@@ -1,0 +1,95 @@
+/* src/components/UserState/userState.module.css */
+
+/* Container under 25/0/0 */
+.state-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+/* Single state chip */
+.state-chip {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  width: fit-content;
+  color: white;
+  background: #3498db;
+  display: inline-flex;
+  align-items: center;
+  cursor: default;
+  transition: 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Hover for owners/admins only — will be added via className */
+.state-chip-editable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* Add button */
+.add-chip {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  width: fit-content;
+  color: #2c3e50;
+  background: #ecf0f1;
+  cursor: pointer;
+  border: 1px solid #bdc3c7;
+  transition: 0.2s ease;
+}
+
+.add-chip:hover {
+  background: #dfe6e9;
+  border-color: #95a5a6;
+}
+
+/* Modal list items */
+.state-list-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s ease;
+  justify-content: space-between;
+  border: 1px solid transparent;
+}
+
+.state-list-item:hover {
+  background: rgba(0,0,0,0.05);
+}
+
+/* Active selected item */
+.state-selected {
+  background: rgba(52,152,219,0.2);
+  border: 1px solid #3498db;
+}
+
+/* New state creation input */
+.new-state-input {
+  padding: 6px 8px;
+  width: 100%;
+  border-radius: 6px;
+  border: 1px solid #bdc3c7;
+}
+
+.save-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  background-color: #3498db;
+  color: white;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.save-btn:hover {
+  background-color: #2980b9;
+}

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
@@ -29,6 +29,10 @@ import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
 import TaskChangeLogModal from './components/TaskChangeLogModal';
 import * as messages from '../../constants/followUpConstants';
+import UserStateCell from "../UserState/UserStateCell";
+import UserStateModal from "../UserState/UserStateModal";
+import { fetchCatalog, fetchUserStatesBatch, updateUserStates } from "../UserState/userState.api";
+
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -60,6 +64,40 @@ const TeamMemberTask = React.memo(
     const manager = 'Manager';
     const adm = 'Administrator';
     const owner = 'Owner';
+
+    const [catalog, setCatalog] = useState([]);
+    const [userStatesMap, setUserStatesMap] = useState({});
+    const [isStateModalOpen, setIsStateModalOpen] = useState(false);
+    const [modalUserId, setModalUserId] = useState(null);
+
+    useEffect(() => {
+      async function load() {
+        const ids = [user.personId];
+        const cat = await fetchCatalog();
+        const states = await fetchUserStatesBatch(ids);
+        setCatalog(cat);
+        setUserStatesMap(states);
+      }
+      load();
+    }, [user.personId]);
+
+    const openUserStateModal = (uid) => {
+      setModalUserId(uid);
+      setIsStateModalOpen(true);
+    };
+
+    const closeUserStateModal = () => {
+      setIsStateModalOpen(false);
+      setModalUserId(null);
+    };
+
+    const handleUserStateUpdated = (newValues) => {
+      setUserStatesMap((prev) => ({
+        ...prev,
+        [modalUserId]: newValues,
+      }));
+    };
+
 
     const handleDashboardAccess = () => {
       // null checks
@@ -363,9 +401,9 @@ const TeamMemberTask = React.memo(
                                   currentDate.isSameOrAfter(
                                     moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                                   ) &&
-                                  currentDate.isBefore(
-                                    moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
-                                  )
+                                    currentDate.isBefore(
+                                      moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+                                    )
                                     ? 'rgba(128, 128, 128, 0.5)'
                                     : darkMode && '#339CFF',
                                 fontSize: '20px',
@@ -474,6 +512,14 @@ const TeamMemberTask = React.memo(
                             </font>{' '}
                             /<font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                           </td>
+                          <td style={{ paddingTop: "4px", paddingLeft: "4px", verticalAlign: "top" }}>
+                            <UserStateCell
+                              catalog={catalog}
+                              userStates={userStatesMap[user.personId] || []}
+                              canEdit={true}
+                              onOpenModal={() => openUserStateModal(user.personId)}
+                            />
+                          </td>
                         </tr>
                       </tbody>
                     </Table>
@@ -487,15 +533,13 @@ const TeamMemberTask = React.memo(
                               return (
                                 <tr
                                   key={`${task._id}`}
-                                  className={`${styles['task-break']} ${
-                                    darkMode ? 'bg-yinmn-blue' : ''
-                                  }`}
+                                  className={`${styles['task-break']} ${darkMode ? 'bg-yinmn-blue' : ''
+                                    }`}
                                 >
                                   <td
                                     data-label="Task(s)"
-                                    className={`${styles['task-align']} ${
-                                      darkMode ? 'bg-yinmn-blue text-light' : ''
-                                    }`}
+                                    className={`${styles['task-align']} ${darkMode ? 'bg-yinmn-blue text-light' : ''
+                                      }`}
                                   >
                                     <div className={styles['inner-task-align']}>
                                       {/*  */}
@@ -518,13 +562,13 @@ const TeamMemberTask = React.memo(
                                       {/*  */}
                                       <div className={styles['team-member-tasks-icons']}>
                                         {task.taskNotifications.length > 0 &&
-                                        task.taskNotifications.some(
-                                          notification =>
-                                            Object.prototype.hasOwnProperty.call(
-                                              notification,
-                                              'userId',
-                                            ) && notification.userId === user.personId,
-                                        ) ? (
+                                          task.taskNotifications.some(
+                                            notification =>
+                                              Object.prototype.hasOwnProperty.call(
+                                                notification,
+                                                'userId',
+                                              ) && notification.userId === user.personId,
+                                          ) ? (
                                           <div>
                                             <FontAwesomeIcon
                                               className={styles['team-member-tasks-bell']}
@@ -591,24 +635,21 @@ const TeamMemberTask = React.memo(
                                   {task.hoursLogged != null && task.estimatedHours != null && (
                                     <td
                                       data-label="Progress"
-                                      className={`${styles['team-task-progress']} ${
-                                        darkMode ? 'bg-yinmn-blue text-light' : ''
-                                      }`}
+                                      className={`${styles['team-task-progress']} ${darkMode ? 'bg-yinmn-blue text-light' : ''
+                                        }`}
                                     >
                                       <>
                                         <div className={styles['team-task-progress-container']}>
                                           <div
                                             data-testid={`times-${task.taskName}`}
-                                            className={`${darkMode ? 'text-light ' : ''} ${
-                                              canSeeFollowUpCheckButton
-                                                ? styles['team-task-progress-time']
-                                                : styles['team-task-progress-time-volunteers']
-                                            }`}
+                                            className={`${darkMode ? 'text-light ' : ''} ${canSeeFollowUpCheckButton
+                                              ? styles['team-task-progress-time']
+                                              : styles['team-task-progress-time-volunteers']
+                                              }`}
                                           >
                                             <p
-                                              className={`${styles['progress-text']} ${
-                                                darkMode ? 'text-light' : ''
-                                              }`}
+                                              className={`${styles['progress-text']} ${darkMode ? 'text-light' : ''
+                                                }`}
                                             >
                                               {`${parseFloat(
                                                 task.hoursLogged.toFixed(2),
@@ -712,9 +753,8 @@ const TeamMemberTask = React.memo(
                       {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) && (
                         <button
                           type="button"
-                          className={`${styles['expand-time-off-detail-button']} ${
-                            isTimeOffContentOpen ? styles.hidden : ''
-                          }`}
+                          className={`${styles['expand-time-off-detail-button']} ${isTimeOffContentOpen ? styles.hidden : ''
+                            }`}
                           onClick={() => setIsTimeOffContentOpen(true)}
                           aria-label="Expand time off detail"
                         >
@@ -735,6 +775,15 @@ const TeamMemberTask = React.memo(
             toggle={handleCloseTaskChangeLog}
             task={selectedTaskForChangeLog}
             darkMode={darkMode}
+          />
+        )}
+        {isStateModalOpen && (
+          <UserStateModal
+            isOpen={isStateModalOpen}
+            toggle={closeUserStateModal}
+            userId={modalUserId}
+            existingStates={userStatesMap[modalUserId] || []}
+            onUpdated={handleUserStateUpdated}
           />
         )}
       </tr>
