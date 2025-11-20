@@ -8,13 +8,12 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '~': resolve('src/'),
-        __tests__: resolve('src/__tests__'),
       },
     },
     // https://stackoverflow.com/a/77824845
     define: {
       ...Object.keys(env).reduce((prev, key) => {
-        const sanitizedKey = key.replace(/[^a-zA-Z0-9_]/g, '_');
+        const sanitizedKey = key.replace(/^a-zA-Z0-9_]/g, '_');
 
         // eslint-disable-next-line no-param-reassign
         prev[`process.env.${sanitizedKey}`] = JSON.stringify(env[key]);
@@ -26,10 +25,5 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
     },
     plugins: [react()],
-    test: {
-      globals: true,
-      environment: 'jsdom',
-      setupFiles: './src/setupTests.js',
-    },
   };
 });
