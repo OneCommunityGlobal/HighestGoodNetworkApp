@@ -1,5 +1,5 @@
 import { Pie } from 'react-chartjs-2';
-import './ReviewsInsight.css';
+import styles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
 
 function PRQualityGraph({ selectedTeams, qualityData }) {
@@ -10,7 +10,7 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
   }
 
   if (!qualityData || Object.keys(qualityData).length === 0) {
-    return <div className="no-data-ri">No data available for Quality Graph.</div>;
+    return <div className={styles['no-data-ri']}>No data available for Quality Graph.</div>;
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
@@ -31,7 +31,7 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
             teamQualityData.Sufficient || 0,
             teamQualityData.Exceptional || 0,
           ],
-          backgroundColor: ['#DC3545', '#FFC107', '#28A745', '#007BFF'],
+          backgroundColor: ['#DC3545', '#FFC107', '#28A745', '#5940CB'],
           hoverOffset: 4,
         },
       ],
@@ -40,6 +40,9 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
 
   const options = {
     responsive: true,
+    interaction: {
+      mode: 'dataset',
+    },
     plugins: {
       legend: {
         position: 'bottom',
@@ -52,17 +55,30 @@ function PRQualityGraph({ selectedTeams, qualityData }) {
       },
       tooltip: {
         enabled: true,
+        callbacks: {
+          title: () => '',
+          label: tooltipItem => {
+            const label = tooltipItem.label || '';
+            const value = tooltipItem.raw || 0;
+            return `${label}: ${value}`;
+          },
+        },
       },
     },
   };
 
   return (
-    <div className="ri-quality-graph">
+    <div className={styles['ri-quality-graph']}>
       <h2>PR Quality Distribution</h2>
-      <div className="ri-charts">
+      <div className={styles['ri-charts']}>
         {teamsToDisplay.map(team => (
-          <div key={team} className="ri-chart">
-            <h3>{team}</h3>
+          <div key={team} className={styles['ri-chart']}>
+            <div className={styles['ri-chart-header']}>
+              <h3>{team}</h3>
+              <span className={styles['ri-team-member-count']}>
+                {qualityData[team]?.memberCount ?? 0}
+              </span>
+            </div>
             <Pie data={generateChartData(team)} options={options} />
           </div>
         ))}

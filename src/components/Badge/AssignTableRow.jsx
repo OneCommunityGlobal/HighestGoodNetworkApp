@@ -1,36 +1,34 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
-import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
-  // Pull selected badges from Redux if prop is not passed
-  const storeBadges = useSelector(state => state.badge.selectedBadges);
-  const existBadges = propExistBadges ?? storeBadges;
+  const dispatch = useDispatch();
+  const selectedBadges = useSelector(state => state.badge.selectedBadges); // array of badge._id
 
   const [isOpen, setOpen] = useState(false);
-  const [isSelect, setSelect] = useState(false);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (existBadges?.includes(`assign-badge-${badge._id}`)) {
-      setSelect(true);
-      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
-    } else {
-      setSelect(false);
-    }
-  }, [existBadges, badge._id, dispatch]);
-
   const toggle = () => setOpen(prev => !prev);
 
+  const badgeId = badge._id;
+  const domId = `assign-badge-${badgeId}`;
+
+  // Initialize selection from props (badges that user already has)
+  useEffect(() => {
+    if (propExistBadges?.includes(badgeId)) {
+      dispatch(addSelectBadge(badgeId));
+    }
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const isSelected = selectedBadges.includes(badgeId);
+
   const handleCheckBoxChange = e => {
-    const isChecked = e.target.checked;
-    setSelect(isChecked);
-    if (isChecked) {
-      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
+    if (e.target.checked) {
+      dispatch(addSelectBadge(badgeId));
     } else {
-      dispatch(removeSelectBadge(`assign-badge-${badge._id}`));
+      dispatch(removeSelectBadge(badgeId));
     }
   };
 
@@ -56,9 +54,9 @@ function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
       <td>
         <CustomInput
           type="checkbox"
-          id={`assign-badge-${badge._id}`}
+          id={domId}
           onChange={handleCheckBoxChange}
-          checked={isSelect}
+          checked={isSelected}
         />
       </td>
     </tr>
