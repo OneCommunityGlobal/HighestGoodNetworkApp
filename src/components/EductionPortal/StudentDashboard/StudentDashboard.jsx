@@ -7,6 +7,7 @@ import TaskCardView from './TaskCardView';
 import TaskListView from './TaskListView';
 import NavigationBar from './NavigationBar';
 import SummaryCards from './SummaryCards';
+import TaskTimer from '../StudentTimer/TaskTimer';   // ← ADDED
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
 
 const StudentDashboard = () => {
@@ -104,8 +105,13 @@ const StudentDashboard = () => {
       <Container className={styles.mainContainer}>
         {/* Header */}
         <div className={styles.header}>
-          <h1 className={styles.title}>Student Dashboard</h1>
-          <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+          <div className={styles.headerLeft}>
+            <h1 className={styles.title}>Student Dashboard</h1>
+            <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
+          </div>
+          <div className={styles.headerRight}>
+            <TaskTimer />
+          </div>
         </div>
 
         {/* Summary Cards */}
@@ -121,33 +127,20 @@ const StudentDashboard = () => {
                 onClick={() => setViewMode('card')}
                 aria-label="Card view"
               >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <rect x="3" y="3" width="7" height="7" />
                   <rect x="14" y="3" width="7" height="7" />
                   <rect x="14" y="14" width="7" height="7" />
                   <rect x="3" y="14" width="7" height="7" />
                 </svg>
               </button>
+
               <button
                 className={`${styles.toggleButton} ${viewMode === 'list' ? styles.active : ''}`}
                 onClick={() => setViewMode('list')}
                 aria-label="List view"
               >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <line x1="8" y1="6" x2="21" y2="6" />
                   <line x1="8" y1="12" x2="21" y2="12" />
                   <line x1="8" y1="18" x2="21" y2="18" />
@@ -160,11 +153,9 @@ const StudentDashboard = () => {
           </div>
 
           {/* Task Views */}
-          {viewMode === 'card' ? (
-            <TaskCardView tasks={tasks} onMarkAsDone={handleMarkAsDone} />
-          ) : (
-            <TaskListView tasks={tasks} onMarkAsDone={handleMarkAsDone} />
-          )}
+          {viewMode === 'card'
+            ? <TaskCardView tasks={tasks} onMarkAsDone={handleMarkAsDone} />
+            : <TaskListView tasks={tasks} onMarkAsDone={handleMarkAsDone} />}
         </div>
       </Container>
     </div>

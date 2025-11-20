@@ -144,6 +144,7 @@ export default function TaskTimer() {
       const res = await callTimerApi("/api/student/timer/reset", "POST");
       setTimerInfo(res.data || null);
     } catch (_) {}
+
     setHours(2);
     setMinutes(0);
     setDisplayRemaining(null);
@@ -207,9 +208,7 @@ export default function TaskTimer() {
   }, [timerInfo?.status, displayRemaining]);
 
   useEffect(() => {
-    if (open) {
-      fetchStatus();
-    }
+    if (open) fetchStatus();
   }, [open]);
 
   useEffect(() => {
@@ -221,7 +220,7 @@ export default function TaskTimer() {
   const currentStatus = timerInfo?.status || "idle";
   const isRunning = currentStatus === "running";
   const isActive = currentStatus === "running" || currentStatus === "paused";
-  const isEditable = !isRunning;
+  const isEditable = !isRunning; 
 
   const totalMs =
     timerInfo?.durationMs ||
@@ -270,22 +269,18 @@ export default function TaskTimer() {
   }
 
   const primaryIcon =
-    currentStatus === "running" ? (
-      <PauseRoundedIcon fontSize="small" />
-    ) : (
-      <PlayArrowRoundedIcon fontSize="small" />
-    );
+    currentStatus === "running"
+      ? <PauseRoundedIcon fontSize="small" />
+      : <PlayArrowRoundedIcon fontSize="small" />;
 
-  const primaryLabel = currentStatus === "running" ? "Pause" : "Start";
+  const primaryLabel =
+    currentStatus === "running" ? "Pause" : "Start";
 
   return (
     <>
+      {/* MINI-TIMER */}
       <div className={styles.compactWrapper}>
-        <button
-          className={styles.compactIconBtn}
-          onClick={() => setOpen(true)}
-          aria-label="Open timer"
-        >
+        <button className={styles.compactIconBtn} onClick={() => setOpen(true)}>
           <AccessAlarmRoundedIcon fontSize="small" />
         </button>
 
@@ -296,6 +291,7 @@ export default function TaskTimer() {
               style={{ width: `${progressPct}%` }}
             />
           </div>
+
           <div className={styles.timeLabel}>
             {dispH}:{dispM}:{dispS}
           </div>
@@ -305,56 +301,47 @@ export default function TaskTimer() {
           <button
             className={`${styles.compactCtrlBtn} ${styles.compactSmallBtn}`}
             onClick={() => handleMiniAdjust(-15)}
-            disabled={loading}
-            title="-15 min"
           >
-            -
+            −
           </button>
           <button
             className={`${styles.compactCtrlBtn} ${styles.compactSmallBtn}`}
             onClick={() => handleMiniAdjust(15)}
-            disabled={loading}
-            title="+15 min"
           >
             +
           </button>
+
           <button
             className={styles.compactCtrlBtn}
             onClick={handleTogglePlay}
-            disabled={loading}
-            title={primaryLabel}
           >
             {primaryIcon}
           </button>
+
           <button
             className={styles.compactCtrlBtn}
             onClick={handleStop}
-            disabled={loading || !isActive}
-            title="Stop"
+            disabled={!isActive}
           >
             <StopRoundedIcon fontSize="small" />
           </button>
+
           <button
             className={styles.compactCtrlBtn}
             onClick={handleReset}
-            disabled={loading}
-            title="Reset to 02:00:00"
           >
             <RestartAltRoundedIcon fontSize="small" />
           </button>
         </div>
       </div>
-
+      
       {open && (
         <div className={styles.backdrop} onClick={() => setOpen(false)}>
           <div className={styles.card} onClick={(e) => e.stopPropagation()}>
             <div className={styles.cardHeader}>
               <span className={styles.headerTitle}>Timer</span>
-              <button
-                className={styles.iconGhost}
-                onClick={() => setOpen(false)}
-                aria-label="Close"
-              >
+
+              <button className={styles.iconGhost} onClick={() => setOpen(false)}>
                 <CloseRoundedIcon fontSize="small" />
               </button>
             </div>
@@ -363,16 +350,13 @@ export default function TaskTimer() {
               <div className={styles.goalText}>
                 Goal: {pad2(goalHMS.h)}:{pad2(goalHMS.m)}:{pad2(goalHMS.s)}
               </div>
+
               <div className={styles.elapsedText}>
-                Elapsed: {pad2(elapsedHMS.h)}:{pad2(elapsedHMS.m)}:
-                {pad2(elapsedHMS.s)}
+                Elapsed: {pad2(elapsedHMS.h)}:{pad2(elapsedHMS.m)}:{pad2(elapsedHMS.s)}
               </div>
 
               <div className={styles.circleOuter}>
-                <svg
-                  className={styles.circleSvg}
-                  viewBox="0 0 220 220"
-                >
+                <svg className={styles.circleSvg} viewBox="0 0 220 220">
                   <circle
                     className={styles.circleTrack}
                     cx="110"
@@ -391,13 +375,12 @@ export default function TaskTimer() {
 
                 <div className={styles.circleInner}>
                   <div className={styles.remainingWrapper}>
-                    <div className={styles.remainingLabel}>
-                      Time Remaining
-                    </div>
+                    <div className={styles.remainingLabel}>Time Remaining</div>
+
                     <div className={styles.remainingTime}>
-                      {pad2(remainingHMS.h)}:{pad2(remainingHMS.m)}:
-                      {pad2(remainingHMS.s)}
+                      {pad2(remainingHMS.h)}:{pad2(remainingHMS.m)}:{pad2(remainingHMS.s)}
                     </div>
+
                     <div className={styles.remainingUnitRow}>
                       <span>HOURS</span>
                       <span>MINUTES</span>
@@ -409,24 +392,21 @@ export default function TaskTimer() {
                     <button
                       className={styles.circleCtrlBtn}
                       onClick={handleTogglePlay}
-                      disabled={loading}
-                      title={primaryLabel}
                     >
                       {primaryIcon}
                     </button>
+
                     <button
                       className={styles.circleCtrlBtn}
                       onClick={handleStop}
-                      disabled={loading || !isActive}
-                      title="Stop"
+                      disabled={!isActive}
                     >
                       <StopRoundedIcon />
                     </button>
+
                     <button
                       className={styles.circleCtrlBtn}
                       onClick={handleReset}
-                      disabled={loading}
-                      title="Reset to 02:00:00"
                     >
                       <RestartAltRoundedIcon />
                     </button>
@@ -439,28 +419,31 @@ export default function TaskTimer() {
               <button
                 className={styles.quickBtn}
                 onClick={() => adjustTimer(-15)}
-                disabled={loading || !isActive}
+                disabled={!isActive}
               >
-                -15 m
+                −15 m
               </button>
+
               <button
                 className={styles.quickBtn}
                 onClick={() => adjustTimer(15)}
-                disabled={loading || !isActive}
+                disabled={!isActive}
               >
                 +15 m
               </button>
+
               <button
                 className={styles.quickBtn}
                 onClick={() => adjustTimer(30)}
-                disabled={loading || !isActive}
+                disabled={!isActive}
               >
                 +30 m
               </button>
+
               <button
                 className={styles.quickBtn}
                 onClick={() => adjustTimer(60)}
-                disabled={loading || !isActive}
+                disabled={!isActive}
               >
                 +1 h
               </button>
@@ -471,7 +454,6 @@ export default function TaskTimer() {
                 <button
                   className={styles.stepBtn}
                   onClick={incH}
-                  aria-label="Increase hours"
                   disabled={!isEditable}
                 >
                   <KeyboardArrowUpRoundedIcon fontSize="small" />
@@ -482,14 +464,11 @@ export default function TaskTimer() {
                   value={pad2(hours)}
                   onChange={isEditable ? onHoursChange : undefined}
                   readOnly={!isEditable}
-                  inputMode="numeric"
-                  aria-label="Hours"
                 />
 
                 <button
                   className={styles.stepBtn}
                   onClick={decH}
-                  aria-label="Decrease hours"
                   disabled={!isEditable}
                 >
                   <KeyboardArrowDownRoundedIcon fontSize="small" />
@@ -502,7 +481,6 @@ export default function TaskTimer() {
                 <button
                   className={styles.stepBtn}
                   onClick={incM}
-                  aria-label="Increase minutes"
                   disabled={!isEditable}
                 >
                   <KeyboardArrowUpRoundedIcon fontSize="small" />
@@ -513,14 +491,11 @@ export default function TaskTimer() {
                   value={pad2(minutes)}
                   onChange={isEditable ? onMinutesChange : undefined}
                   readOnly={!isEditable}
-                  inputMode="numeric"
-                  aria-label="Minutes"
                 />
 
                 <button
                   className={styles.stepBtn}
                   onClick={decM}
-                  aria-label="Decrease minutes"
                   disabled={!isEditable}
                 >
                   <KeyboardArrowDownRoundedIcon fontSize="small" />
@@ -535,7 +510,6 @@ export default function TaskTimer() {
                   className={styles.digitBox}
                   value={dispS}
                   readOnly
-                  aria-label="Seconds"
                 />
                 <div className={styles.stepBtn} aria-hidden="true" />
               </div>

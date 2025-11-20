@@ -13,21 +13,22 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #2b323c;
+  background: #3b82f6;
   color: #ffffff;
   cursor: pointer;
 }
 
 .compactIconBtn:hover {
-  background: #353d48;
+  background: #2563eb;
 }
 
 .compactBody {
-  background: #3b4351;
+  background: #ffffff;
   border-radius: 12px;
   padding: 4px 10px 8px;
   min-width: 130px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
 }
 
 .progressBar {
@@ -35,7 +36,7 @@
   width: 100%;
   height: 6px;
   border-radius: 999px;
-  background: #2b323c;
+  background: #e5e7eb;
   overflow: hidden;
   margin-bottom: 4px;
 }
@@ -43,24 +44,18 @@
 .progressFill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #27ae60, #3498db);
+  background: #3b82f6;
   width: 0;
 }
 
 .timeLabel {
   font-weight: 600;
   font-size: 0.85rem;
-  color: #ffffff;
+  color: #1a1a1a;
   text-align: center;
 }
 
 .compactControlsRow {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.compactControls {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -74,9 +69,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  color: #333;
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
   cursor: pointer;
+}
+
+.compactCtrlBtn:hover {
+  background: #f3f4f6;
 }
 
 .compactSmallBtn {
@@ -86,58 +86,58 @@
   font-weight: 700;
 }
 
-.compactCtrlBtn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
 
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.30);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
 
+
 .card {
-  background: #2b323c;
-  color: #ffffff;
+  background: #ffffff;
+  color: #1f2937;
   border-radius: 20px;
   padding: 18px 20px 20px;
   width: 340px;
   max-width: 100%;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   gap: 14px;
+  border: 1px solid #e5e7eb;
 }
 
+/* Header */
 .cardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
 }
 
 .headerTitle {
   font-size: 1.05rem;
   font-weight: 600;
+  color: #1a1a1a;
 }
 
 .iconGhost {
   border: none;
   background: transparent;
-  color: #ffffff;
+  color: #4b5563;
   padding: 4px;
   border-radius: 999px;
   cursor: pointer;
 }
 
 .iconGhost:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: #f3f4f6;
 }
+
 
 .circleWrapper {
   display: flex;
@@ -150,14 +150,7 @@
 .elapsedText {
   font-size: 0.85rem;
   font-weight: 500;
-}
-
-.goalText {
-  color: #f8f8f8;
-}
-
-.elapsedText {
-  color: #c5d0e0;
+  color: #374151;
 }
 
 .circleOuter {
@@ -175,13 +168,13 @@
 
 .circleTrack {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.12);
+  stroke: #e5e7eb;
   stroke-width: 12;
 }
 
 .circleProgress {
   fill: none;
-  stroke: #3498db;
+  stroke: #3b82f6;
   stroke-width: 12;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.3s ease;
@@ -197,32 +190,24 @@
   gap: 10px;
 }
 
-.remainingWrapper {
-  text-align: center;
-}
-
 .remainingLabel {
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  color: #d1d7e3;
-  margin-bottom: 4px;
+  color: #6b7280;
 }
 
 .remainingTime {
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 700;
+  color: #1a1a1a;
 }
 
 .remainingUnitRow {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #c5d0e0;
-  margin-top: 2px;
+  font-size: 0.65rem;
+  color: #6b7280;
 }
 
 .circleControls {
@@ -236,23 +221,25 @@
   height: 42px;
   border-radius: 12px;
   border: none;
-  background: #ffffff;
-  color: #333333;
+  background: #3b82f6;
+  color: white;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 }
 
+.circleCtrlBtn:hover {
+  background: #2563eb;
+}
+
 .circleCtrlBtn:disabled {
-  opacity: 0.6;
-  cursor: default;
+  opacity: 0.5;
 }
 
 .quickRow {
   display: flex;
   justify-content: space-between;
-  margin-top: 4px;
   gap: 6px;
 }
 
@@ -263,9 +250,13 @@
   padding: 6px 4px;
   font-size: 0.75rem;
   font-weight: 500;
-  background: #414957;
-  color: #c9d2e4;
+  background: #e5e7eb;
+  color: #374151;
   cursor: pointer;
+}
+
+.quickBtn:hover {
+  background: #d1d5db;
 }
 
 .quickBtn:disabled {
@@ -273,19 +264,12 @@
   cursor: default;
 }
 
+/* Time Editor */
 .timeGrid {
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr;
   align-items: center;
   justify-items: center;
-  margin-top: 8px;
-  gap: 4px;
-}
-
-.slot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 4px;
 }
 
@@ -294,62 +278,50 @@
   height: 24px;
   border-radius: 999px;
   border: none;
-  background: #414957;
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  background: #e5e7eb;
+  color: #374151;
   cursor: pointer;
 }
 
-.stepBtn:disabled {
-  opacity: 0.4;
-  cursor: default;
+.stepBtn:hover {
+  background: #d1d5db;
 }
 
 .digitBox {
   width: 44px;
   height: 36px;
   border-radius: 10px;
-  border: none;
+  border: 1px solid #d1d5db;
   text-align: center;
   font-size: 1.1rem;
   font-weight: 600;
-  background: #f6f7fb;
-  color: #111827;
+  background: #ffffff;
+  color: #1a1a1a;
 }
 
 .colon {
   font-size: 1.6rem;
   font-weight: 600;
-  margin-bottom: 4px;
+  color: #1a1a1a;
 }
 
-.errorRow {
-  margin-top: 6px;
-}
-
+/* Errors */
 .errorText {
   font-size: 0.8rem;
-  color: #ff6b6b;
+  color: #dc2626;
 }
 
-.footer {
-  margin-top: 8px;
-  display: flex;
-  justify-content: flex-end;
-}
-
+/* Footer */
 .okBtn {
   border-radius: 999px;
   padding: 6px 18px;
   border: none;
-  background: #6366f1;
+  background: #3b82f6;
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
 }
 
 .okBtn:hover {
-  background: #4f46e5;
+  background: #2563eb;
 }
