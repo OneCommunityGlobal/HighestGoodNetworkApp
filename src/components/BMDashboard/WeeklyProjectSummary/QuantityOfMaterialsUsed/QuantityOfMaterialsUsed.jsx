@@ -20,6 +20,7 @@ import { useSelector } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Info, Repeat } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
+import { setProjectFilter } from '../../../../actions/bmdashboard/issueChartActions';
 import styles from './QuantityOfMaterialsUsed.module.css';
 
 ChartJS.register(
@@ -69,7 +70,10 @@ function getRandomColor() {
 
 function QuantityOfMaterialsUsed({ data }) {
   const [chartData, setChartData] = useState(null);
+  const projects = useSelector(state => state.bmProjects);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
+  const [selectedProjects, setSelectedProjects] = useState(projects);
+
   const [selectedDate, setSelectedDate] = useState('Last Week');
   const [dateRangeOne, setDateRangeOne] = useState([null, null]);
   const [dateRangeTwo, setDateRangeTwo] = useState([null, null]);
@@ -80,7 +84,6 @@ function QuantityOfMaterialsUsed({ data }) {
   const [visibleRange, setVisibleRange] = useState([0, 30]);
   const [selectedMaterialName, setSelectedMaterialName] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const selectStyles = useMemo(
@@ -164,6 +167,9 @@ function QuantityOfMaterialsUsed({ data }) {
     [darkMode],
   );
 
+  const handleProjectChange = selected => {
+    setProjectFilter(selected ? selected.map(option => option.value) : []);
+  };
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 1200);
@@ -191,6 +197,11 @@ function QuantityOfMaterialsUsed({ data }) {
   }, [data]);
 
   const orgOptions = useMemo(() => [{ value: selectedOrg, label: selectedOrg }], [selectedOrg]);
+
+  const projectOptions = selectedProjects.map(project => ({
+    value: project._id,
+    label: project.name,
+  }));
 
   const dateOptions = useMemo(
     () => [
@@ -735,13 +746,19 @@ function QuantityOfMaterialsUsed({ data }) {
         />
 
         <Select
-          options={orgOptions}
-          value={orgOptions.find(option => option.value === selectedOrg)}
-          placeholder="Organization"
+          isMulti
+          isSearchable
+          options={projectOptions}
+          value={projectOptions.filter(option => selectedProjects.includes(option.value))}
+          onChange={selectedOptions =>
+            setSelectedProjects(selectedOptions.map(({ value }) => value))
+          }
+          placeholder="Projects"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
-          // isDisabled
+          closeMenuOnSelect={false}
+          hideSelectedOptions={false}
           styles={selectStyles}
         />
         <Select
