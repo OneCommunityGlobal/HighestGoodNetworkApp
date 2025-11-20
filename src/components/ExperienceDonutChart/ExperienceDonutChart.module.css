@@ -219,7 +219,7 @@
   width: 100%;
   max-width: none;                   /* fill grid column, don't cap */
   padding: 0.6rem 0.75rem;
-  text-align: left;
+  /* text-align: left; */
 
   /* prevent overflow on long role names / unbroken strings */
   overflow-wrap: anywhere;

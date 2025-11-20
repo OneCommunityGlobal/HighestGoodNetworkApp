@@ -59,6 +59,7 @@ import SelectFilterModal from './SelectFilterModal';
 // import './WeeklySummariesReport.css';
 import SaveFilterModal from './SaveFilterModal';
 import styles from './WeeklySummariesReport.module.css';
+import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -605,17 +606,11 @@ const WeeklySummariesReport = props => {
   }, [state.selectedCodes, state.summaries]);
 
   const onSummaryRecepientsPopupClose = () => {
-    setState(prev => ({
-      ...prev,
-      summaryRecepientsPopupOpen: false,
-    }));
+    setField(setState, 'summaryRecepientsPopupOpen', false);
   };
 
   const setSummaryRecepientsPopup = val => {
-    setState(prev => ({
-      ...prev,
-      summaryRecepientsPopupOpen: val,
-    }));
+    setField(setState, 'summaryRecepientsPopupOpen', val);
   };
 
   const popUpElements = () => {
@@ -631,38 +626,23 @@ const WeeklySummariesReport = props => {
   };
 
   const onpasswordModalClose = () => {
-    setState(prev => ({
-      ...prev,
-      passwordModalOpen: false,
-    }));
+    setField(setState, 'passwordModalOpen', false);
   };
 
   const checkForValidPwd = booleanVal => {
-    setState(prev => ({
-      ...prev,
-      isValidPwd: booleanVal,
-    }));
+    setField(setState, 'isValidPwd', booleanVal);
   };
 
   // Authorization for the weeklySummary Recipients is required once
   const setAuthpassword = authPass => {
-    setState(prev => ({
-      ...prev,
-      weeklyRecipientAuthPass: authPass,
-    }));
+    setField(setState, 'weeklyRecipientAuthPass', authPass);
   };
 
   const onClickRecepients = () => {
     if (state.weeklyRecipientAuthPass) {
-      setState(prev => ({
-        ...prev,
-        summaryRecepientsPopupOpen: true,
-      }));
+      setField(setState, 'summaryRecepientsPopupOpen', true);
     } else {
-      setState(prev => ({
-        ...prev,
-        passwordModalOpen: true,
-      }));
+      setField(setState, 'passwordModalOpen', true);
       checkForValidPwd(true);
     }
   };

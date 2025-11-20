@@ -19,6 +19,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import { ENDPOINTS } from '~/utils/URL';
 import Select from 'react-select';
 import mainStyles from './WeeklySummariesReport.module.css';
+import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 
 const defaultState = {
   filterName: '',
@@ -94,83 +95,16 @@ function CreateFilterModal({
     }));
   }, [state.selectedCodes, state.summaries]);
 
-  const handleFilterNameChange = value => {
-    setState(prev => ({
-      ...prev,
-      filterName: value,
-    }));
-  };
-
-  const handleSelectCodesChange = event => {
-    setState(prev => ({
-      ...prev,
-      selectedCodes: event,
-    }));
-  };
-
-  const removeSelectedCode = removeCode => {
-    setState(prev => ({
-      ...prev,
-      selectedCodes: prev.selectedCodes.filter(item => item !== removeCode),
-    }));
-  };
-
-  const handleSelectColorChange = event => {
-    setState(prevState => ({
-      ...prevState,
-      selectedColors: event,
-    }));
-  };
-  const removeSelectedColor = removeColor => {
-    setState(prev => ({
-      ...prev,
-      selectedColors: prev.selectedColors.filter(item => item !== removeColor),
-    }));
-  };
-
-  const handleSelectExtraMembersChange = event => {
-    setState(prev => ({
-      ...prev,
-      selectedExtraMembers: event,
-    }));
-  };
-
-  const removeSelectedExtraMember = removeMember => {
-    setState(prev => ({
-      ...prev,
-      selectedExtraMembers: prev.selectedExtraMembers.filter(item => item !== removeMember),
-    }));
-  };
-
   const handleTrophyToggleChange = () => {
-    setState(prevState => ({
-      ...prevState,
-      selectedTrophies: !prevState.selectedTrophies,
-    }));
-  };
-
-  const handleSpecialColorToggleChange = (color, isEnabled) => {
-    setState(prevState => ({
-      ...prevState,
-      selectedSpecialColors: {
-        ...prevState.selectedSpecialColors,
-        [color]: isEnabled,
-      },
-    }));
+    toggleField(setState, 'selectedTrophies');
   };
 
   const handleBioStatusToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedBioStatus: !prev.selectedBioStatus,
-    }));
+    toggleField(setState, 'selectedBioStatus');
   };
 
   const handleOverHoursToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedOverTime: !prev.selectedOverTime,
-    }));
+    toggleField(setState, 'selectedOverTime');
   };
 
   const handleSubmit = async e => {
@@ -274,7 +208,7 @@ function CreateFilterModal({
             <Input
               id="filterName"
               value={state.filterName}
-              onChange={e => handleFilterNameChange(e.target.value)}
+              onChange={e => setField(setState, 'filterName', e.target.value)}
               placeholder="Enter filter name"
               required
               invalid={!state.filterName}
@@ -306,7 +240,7 @@ function CreateFilterModal({
                   };
                 })}
                 value={state.selectedCodes}
-                onChange={handleSelectCodesChange}
+                onChange={e => setField(setState, 'selectedCodes', e)}
                 labelledBy="Select"
               />
             </Col>
@@ -321,7 +255,7 @@ function CreateFilterModal({
                     {item.label}
                     <Button
                       close
-                      onClick={() => removeSelectedCode(item)}
+                      onClick={() => removeItemFromField(setState, 'selectedCodes', item)}
                       className={`${mainStyles.minSzButton} px-2`}
                       aria-label={`Remove ${item.label}`}
                     />
@@ -341,7 +275,7 @@ function CreateFilterModal({
                 }`}
                 options={state.colorOptions}
                 value={state.selectedColors}
-                onChange={handleSelectColorChange}
+                onChange={e => setField(setState, 'selectedColors', e)}
               />
             </Col>
             <Col md={6} sm={12}>
@@ -355,7 +289,7 @@ function CreateFilterModal({
                     {item.label}
                     <Button
                       close
-                      onClick={() => removeSelectedColor(item)}
+                      onClick={() => removeItemFromField(setState, 'selectedColors', item)}
                       className={`${mainStyles.minSzButton} px-2`}
                       aria-label={`Remove ${item.label}`}
                     />
@@ -375,7 +309,7 @@ function CreateFilterModal({
                 }`}
                 options={state.membersFromUnselectedTeam}
                 value={state.selectedExtraMembers}
-                onChange={handleSelectExtraMembersChange}
+                onChange={e => setField(setState, 'selectedExtraMembers', e)}
               />
             </Col>
             <Col md={6} sm={12}>
@@ -389,7 +323,7 @@ function CreateFilterModal({
                     {item.label}
                     <Button
                       close
-                      onClick={() => removeSelectedExtraMember(item)}
+                      onClick={() => removeItemFromField(setState, 'selectedExtraMembers', item)}
                       className={`${mainStyles.minSzButton} px-2`}
                       aria-label={`Remove ${item.label}`}
                     />
@@ -413,7 +347,14 @@ function CreateFilterModal({
                           className={`${mainStyles.switchToggle}`}
                           id={`filter-modal-${color}-toggle`}
                           checked={state.selectedSpecialColors[color]}
-                          onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
+                          onChange={e =>
+                            setChildField(
+                              setState,
+                              'selectedSpecialColors',
+                              color,
+                              e.target.checked,
+                            )
+                          }
                         />
                         <Label
                           className={`${mainStyles.switchToggleLabel}`}

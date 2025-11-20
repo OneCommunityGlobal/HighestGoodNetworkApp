@@ -20,6 +20,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import { ENDPOINTS } from '~/utils/URL';
 import Select from 'react-select';
 import mainStyles from './WeeklySummariesReport.module.css';
+import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
 
 const defaultState = {
   filterName: '',
@@ -108,105 +109,58 @@ export default function UpdateFilterModal({
   }, [state.selectedCodes, summaries]);
 
   const handleFilterNameChange = value => {
-    setState(prev => ({
-      ...prev,
-      filterName: value,
-    }));
+    setField(setState, 'filterName', value);
   };
 
   const handleSelectCodesChange = event => {
-    setState(prev => ({
-      ...prev,
-      selectedCodes: event,
-    }));
+    setField(setState, 'selectedCodes', event);
   };
 
   const removeSelectedCode = removeCode => {
-    setState(prev => ({
-      ...prev,
-      selectedCodes: prev.selectedCodes.filter(item => item !== removeCode),
-    }));
+    removeItemFromField(setState, 'selectedCodes', removeCode);
   };
 
   const removeInvalidSelectedCode = removeCode => {
-    setState(prev => ({
-      ...prev,
-      selectedCodesInvalid: prev.selectedCodesInvalid.filter(item => item !== removeCode),
-    }));
+    removeItemFromField(setState, 'selectedCodesInvalid', removeCode);
   };
 
   const removeInvalidSelectedColor = removeCode => {
-    setState(prev => ({
-      ...prev,
-      selectedColorsInvalid: prev.selectedColorsInvalid.filter(item => item !== removeCode),
-    }));
+    removeItemFromField(setState, 'selectedColorsInvalid', removeCode);
   };
 
   const removeInvalidSelectedExtraMember = removeCode => {
-    setState(prev => ({
-      ...prev,
-      selectedExtraMembersInvalid: prev.selectedExtraMembersInvalid.filter(
-        item => item !== removeCode,
-      ),
-    }));
+    removeItemFromField(setState, 'selectedExtraMembersInvalid', removeCode);
   };
 
   const handleSelectColorChange = event => {
-    setState(prevState => ({
-      ...prevState,
-      selectedColors: event,
-    }));
+    setField(setState, 'selectedColors', event);
   };
   const removeSelectedColor = removeColor => {
-    setState(prev => ({
-      ...prev,
-      selectedColors: prev.selectedColors.filter(item => item !== removeColor),
-    }));
+    removeItemFromField(setState, 'selectedColors', removeColor);
   };
 
   const handleSelectExtraMembersChange = event => {
-    setState(prev => ({
-      ...prev,
-      selectedExtraMembers: event,
-    }));
+    setField(setState, 'selectedExtraMembers', event);
   };
 
   const removeSelectedExtraMember = removeMember => {
-    setState(prev => ({
-      ...prev,
-      selectedExtraMembers: prev.selectedExtraMembers.filter(item => item !== removeMember),
-    }));
+    removeItemFromField(setState, 'selectedExtraMembers', removeMember);
   };
 
   const handleTrophyToggleChange = () => {
-    setState(prevState => ({
-      ...prevState,
-      selectedTrophies: !prevState.selectedTrophies,
-    }));
+    toggleField(setState, 'selectedTrophies');
   };
 
   const handleSpecialColorToggleChange = (color, isEnabled) => {
-    setState(prevState => ({
-      ...prevState,
-      selectedSpecialColors: {
-        ...prevState.selectedSpecialColors,
-        [color]: isEnabled,
-      },
-    }));
+    setChildField(setState, 'selectedSpecialColors', color, isEnabled);
   };
 
   const handleBioStatusToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedBioStatus: !prev.selectedBioStatus,
-    }));
+    toggleField(setState, 'selectedBioStatus');
   };
 
   const handleOverHoursToggleChange = () => {
-    setState(prev => ({
-      ...prev,
-      selectedOverTime: !prev.selectedOverTime,
-    }));
+    toggleField(setState, 'selectedOverTime');
   };
 
   const handleSelectedFilter = e => {

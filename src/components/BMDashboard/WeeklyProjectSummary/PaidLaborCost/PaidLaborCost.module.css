@@ -90,7 +90,7 @@
 }
 
 .paid-labor-cost-date-range-input {
-  display: flex;
+  /* display: flex; */
   /* justify-content: space-between; */
   margin-top: 3px;
   /* padding: 2px 4px; */
