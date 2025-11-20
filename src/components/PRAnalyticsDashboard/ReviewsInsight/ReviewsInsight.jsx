@@ -124,6 +124,31 @@ function ReviewsInsight() {
                 color: darkMode ? '#f1f1f1' : '#000',
                 minHeight: '40px',
               }),
+
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+
+              menuList: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#1c2541' : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+              }),
+
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused
+                  ? darkMode
+                    ? '#23304d'
+                    : '#e6e6e6'
+                  : darkMode
+                  ? '#1c2541'
+                  : '#fff',
+                color: darkMode ? '#f1f1f1' : '#000',
+                cursor: 'pointer',
+              }),
             }}
           />
         </div>
