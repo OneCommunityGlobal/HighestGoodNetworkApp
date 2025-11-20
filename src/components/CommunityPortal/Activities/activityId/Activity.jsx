@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import CommentSection from './CommentSection/CommentSection';
-import './Activity.css';
+import './Activity.module.css';
 
 const data = {
   eventName: 'Event Name',
@@ -224,7 +224,7 @@ function Activity() {
           <div className="activity-participates-section">
             {event.eventParticipates.map(participant => (
               <div key={participant.id} className="activity-participant">
-                <span className={`activity-icon ${Math.random() > 0.5 ? 'purple' : 'blue'}`}>
+                <span className={`activity-icon ${participant.id % 2 === 0 ? 'purple' : 'blue'}`}>
                   {participant.name[0]}
                 </span>
                 <div className="activity-participant-name">{participant.name}</div>
