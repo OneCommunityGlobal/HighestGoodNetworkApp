@@ -7,7 +7,7 @@ import TaskCardView from './TaskCardView';
 import TaskListView from './TaskListView';
 import NavigationBar from './NavigationBar';
 import SummaryCards from './SummaryCards';
-import TaskTimer from '../StudentTimer/TaskTimer';   // ← ADDED
+import TaskTimer from './TaskTimer';  
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
 
 const StudentDashboard = () => {
@@ -110,7 +110,7 @@ const StudentDashboard = () => {
             <p className={styles.subtitle}>Track your learning progress and manage your logs</p>
           </div>
           <div className={styles.headerRight}>
-            <TaskTimer />
+            <TaskTimer userid = {authUser?.userid} />
           </div>
         </div>
 

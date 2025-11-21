@@ -17,7 +17,7 @@ const BASE_URL =
 
 const FALLBACK_USER_ID = "64528f5e9a3b2c0012adbe4f";
 
-export default function TaskTimer() {
+export default function TaskTimer({ userid }) {
   const [open, setOpen] = useState(false);
   const [hours, setHours] = useState(2);
   const [minutes, setMinutes] = useState(0);
@@ -32,10 +32,7 @@ export default function TaskTimer() {
     sessionStorage.getItem("token") ||
     "";
 
-  const userId =
-    localStorage.getItem("userId") ||
-    sessionStorage.getItem("userId") ||
-    FALLBACK_USER_ID;
+  const userId = userid;
 
   const pad2 = (n) => String(n).padStart(2, "0");
   const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
@@ -129,21 +126,27 @@ export default function TaskTimer() {
         });
         setTimerInfo(res.data);
       }
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const handleStop = async () => {
     try {
       const res = await callTimerApi("/api/student/timer/stop", "POST");
-      setTimerInfo(res.data);
-    } catch (_) {}
+      const { h, m, s } = msToHMS(res.data.elapsedMs || 0);
+      alert(`Timer stopped.\nTime logged: ${pad2(h)}:${pad2(m)}:${pad2(s)}`);
+      setTimerInfo(null);
+      setHours(2);
+      setMinutes(0);
+      setDisplayRemaining(null);
+
+    } catch (_) { }
   };
 
   const handleReset = async () => {
     try {
       const res = await callTimerApi("/api/student/timer/reset", "POST");
       setTimerInfo(res.data || null);
-    } catch (_) {}
+    } catch (_) { }
 
     setHours(2);
     setMinutes(0);
@@ -156,7 +159,7 @@ export default function TaskTimer() {
         deltaMinutes,
       });
       setTimerInfo(res.data);
-    } catch (_) {}
+    } catch (_) { }
   };
 
   const handleMiniAdjust = (deltaMinutes) => {
@@ -176,7 +179,7 @@ export default function TaskTimer() {
     try {
       const res = await callTimerApi("/api/student/timer/status", "GET");
       setTimerInfo(res.data);
-    } catch (_) {}
+    } catch (_) { }
   };
 
   useEffect(() => {
@@ -220,7 +223,7 @@ export default function TaskTimer() {
   const currentStatus = timerInfo?.status || "idle";
   const isRunning = currentStatus === "running";
   const isActive = currentStatus === "running" || currentStatus === "paused";
-  const isEditable = !isRunning; 
+  const isEditable = !isRunning;
 
   const totalMs =
     timerInfo?.durationMs ||
@@ -334,7 +337,7 @@ export default function TaskTimer() {
           </button>
         </div>
       </div>
-      
+
       {open && (
         <div className={styles.backdrop} onClick={() => setOpen(false)}>
           <div className={styles.card} onClick={(e) => e.stopPropagation()}>
@@ -378,7 +381,9 @@ export default function TaskTimer() {
                     <div className={styles.remainingLabel}>Time Remaining</div>
 
                     <div className={styles.remainingTime}>
-                      {pad2(remainingHMS.h)}:{pad2(remainingHMS.m)}:{pad2(remainingHMS.s)}
+                      {pad2(remainingMs ? remainingHMS.h : hours)}:
+                      {pad2(remainingMs ? remainingHMS.m : minutes)}:
+                      {pad2(remainingMs ? remainingHMS.s : 0)}
                     </div>
 
                     <div className={styles.remainingUnitRow}>
@@ -418,32 +423,32 @@ export default function TaskTimer() {
             <div className={styles.quickRow}>
               <button
                 className={styles.quickBtn}
-                onClick={() => adjustTimer(-15)}
-                disabled={!isActive}
+                onClick={() => handleMiniAdjust(-15)}
+              // disabled={!isActive}
               >
                 −15 m
               </button>
 
               <button
                 className={styles.quickBtn}
-                onClick={() => adjustTimer(15)}
-                disabled={!isActive}
+                onClick={() => handleMiniAdjust(15)}
+              // disabled={!isActive}
               >
                 +15 m
               </button>
 
               <button
                 className={styles.quickBtn}
-                onClick={() => adjustTimer(30)}
-                disabled={!isActive}
+                onClick={() => handleMiniAdjust(30)}
+              // disabled={!isActive}
               >
                 +30 m
               </button>
 
               <button
                 className={styles.quickBtn}
-                onClick={() => adjustTimer(60)}
-                disabled={!isActive}
+                onClick={() => handleMiniAdjust(60)}
+              // disabled={!isActive}
               >
                 +1 h
               </button>
