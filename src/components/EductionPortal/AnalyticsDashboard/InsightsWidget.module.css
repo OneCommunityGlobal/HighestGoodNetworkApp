@@ -241,3 +241,23 @@
     flex: 1 0 auto;
   }
 }
+
+.retryButton {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.retryButton:hover {
+  background: #0056b3;
+}
+
+.retryInfo {
+  font-size: 12px;
+  margin-top: 8px;
+}
