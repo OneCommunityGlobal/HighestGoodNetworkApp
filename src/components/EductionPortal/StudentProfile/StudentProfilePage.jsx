@@ -12,11 +12,13 @@ import {
   faCalendarAlt,
   faHandHoldingHand,
 } from '@fortawesome/free-solid-svg-icons';
+import { useHistory } from 'react-router-dom';
 
 const StudentProfile = () => {
   const dispatch = useDispatch();
   const { profile, subjectProgress, error } = useSelector(state => state.student);
   const [activeTab, setActiveTab] = useState('Educational Progress');
+  const history = useHistory();
 
   useEffect(() => {
     dispatch(fetchStudentProfile());
@@ -43,7 +45,9 @@ const StudentProfile = () => {
           </div>
         </div>
 
-        <button className={styles.portfolioBtn}>🏆 View Portfolio</button>
+        <button className={styles.portfolioBtn} onClick={() => history.push(profile.portfolioLink)}>
+          🏆 View Portfolio
+        </button>
       </div>
 
       {/* Info Section */}
