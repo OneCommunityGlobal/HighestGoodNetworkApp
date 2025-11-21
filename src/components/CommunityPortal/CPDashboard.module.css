@@ -14,7 +14,7 @@ body {
 }
 
 .darkContainer {
-  background: #1B2A41;
+  background: #2b3e59;
   color: #fff;
 }
 
@@ -30,7 +30,7 @@ body {
 }
 
 .darkHeader{
-  background: #2b3e59;
+  background: #1B2A41;
 }
 
 .dashboardHeader h1 {
@@ -57,6 +57,12 @@ body {
   border-color: #34495e;
   box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
   outline: none;
+}
+
+.centeredRow {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
 }
 
 .dashboardSidebar {
@@ -105,14 +111,18 @@ body {
   color: #ddd;
 }
 
-.dashboard-main {
+.dashboardMain {
   padding: 30px;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.section-title {
+.darkMain{
+    background: #1B2A41;
+}
+
+.sectionTitle {
   font-size: 2.2rem;
   color: #2c3e50;
   margin-bottom: 20px;
@@ -120,7 +130,7 @@ body {
   text-align: center;
 }
 
-.event-card {
+.eventCard {
   margin-bottom: 20px;
   border-radius: 12px;
   overflow: hidden;
@@ -128,23 +138,18 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.event-card:hover {
+.eventCard:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.eventCardDark {
-  background-color: #6d2121;
-  color: #ddd;
-}
-
-.event-card-img-container img {
+.eventCardImgContainer img {
   width: 100%;
   height: auto;
   border-bottom: 3px solid #34495e;
 }
 
-.event-title {
+.eventTitle {
   text-align: center;
   color: #2c3e50;
   margin: 10px 0;
@@ -152,9 +157,9 @@ body {
   font-size: 1.5rem;
 }
 
-.event-date,
-.event-location,
-.event-organizer {
+.eventDate,
+.eventLocation,
+.eventOrganizer {
   font-size: 1rem;
   color: #555;
   display: flex;
@@ -163,12 +168,12 @@ body {
   margin: 5px 0;
 }
 
-.dashboard-actions {
+.dashboardActions {
   text-align: center;
   margin-top: 20px;
 }
 
-.dashboard-actions button {
+.dashboardActions button {
   background-color: #2c3e50;
   color: #ffffff;
   border: none;
@@ -180,7 +185,7 @@ body {
   font-weight: bold;
 }
 
-.dashboard-actions button:hover {
+.dashboardActions button:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }

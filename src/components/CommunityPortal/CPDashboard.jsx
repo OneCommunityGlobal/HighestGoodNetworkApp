@@ -67,7 +67,7 @@ export function CPDashboard() {
         </div>
       </header>
 
-      <Row>
+      <Row className={styles.centeredRow}>
         <Col md={3} className={`${styles.dashboardSidebar} ${darkMode ? styles.darkSidebar : ''}`}>
           <div className={`${styles.filterSection} ${darkMode ? styles.darkFilterSection : ''}`}>
             <h4>Search Filters</h4>
@@ -110,14 +110,14 @@ export function CPDashboard() {
           </div>
         </Col>
 
-        <Col md={9} className={styles['dashboard-main']}>
-          <h2 className={styles['section-title']}>Events</h2>
+        <Col md={9} className={`${styles.dashboardMain} ${darkMode ? styles.darkMain : ''}`}>
+          <h2 className={styles.sectionTitle}>Events</h2>
           <Row>
             {events.length > 0 ? (
               events.map(event => (
                 <Col md={4} key={event.id} className={styles['event-card-col']}>
-                  <Card className={styles['event-card']}>
-                    <div className={styles['event-card-img-container']}>
+                  <Card className={styles.eventCard}>
+                    <div className={styles.eventCardImgContainer}>
                       <img
                         src={event.image}
                         alt={event.title}
@@ -125,14 +125,14 @@ export function CPDashboard() {
                       />
                     </div>
                     <CardBody>
-                      <h5 className={styles['event-title']}>{event.title}</h5>
-                      <p className={styles['event-date']}>
+                      <h5 className={styles.eventTitle}>{event.title}</h5>
+                      <p className={styles.eventDate}>
                         <FaCalendarAlt className={styles['event-icon']} /> {event.date}
                       </p>
-                      <p className={styles['event-location']}>
+                      <p className={styles.eventLocation}>
                         <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
                       </p>
-                      <p className={styles['event-organizer']}>
+                      <p className={styles.eventOrganizer}>
                         <FaUserAlt className={styles['event-icon']} /> {event.organizer}
                       </p>
                     </CardBody>
@@ -143,7 +143,7 @@ export function CPDashboard() {
               <div className={styles['no-events']}>No events available</div>
             )}
           </Row>
-          <div className={styles['dashboard-actions']}>
+          <div className={styles.dashboardActions}>
             <Button color="primary">Show Past Events</Button>
           </div>
         </Col>
