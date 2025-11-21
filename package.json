@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json.schemastore.org/package.json",
   "name": "hgnreactapp",
   "version": "0.1.0",
   "license": "GPL-2.0",
