@@ -11,6 +11,9 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
+  TASKS_TRENDS: () => `${APIEndpoint}/tasks/trends`,
+  TASKS_SUMMARY: () => `${APIEndpoint}/tasks/summary`,
+
   TOP_CONVERTED: (limit, startDate, endDate) =>
     `${APIEndpoint}/job-analytics/top-converted?limit=${limit}${startDate && endDate ? `&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}` : ''}`,
   LEAST_CONVERTED: (limit, startDate, endDate) =>
