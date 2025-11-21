@@ -56,6 +56,21 @@
   color: #000;
 }
 
+.promoteButton {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  background-color: #f0f0f0;
+  color: black;
+  font-weight: bold;
+}
+
+.button-row .button:last-child:not(:disabled):hover {
+  background-color: #2563eb;
+  color: white;
+}
+
 .button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
@@ -80,30 +95,30 @@
 }
 
 .color-0 {
-  background-color: #b19cd9;
+  background-color: #9400D3;
 }
 
 .color-1 {
-  background-color: #9370db;
+  background-color: #4B0082;
 }
 
 .color-2 {
-  background-color: #87ceeb;
+  background-color: #0000FF;
 }
 
 .color-3 {
-  background-color: #90ee90;
+  background-color: #00FF00;
 }
 
 .color-4 {
-  background-color: #ffffe0;
+  background-color: #FFFF00;
 }
 
 .color-5 {
-  background-color: #ffb347;
+  background-color: #FF7F00;
 }
 
 .color-6 {
-  background-color: #ff6b6b;
+  background-color: #FF0000;
 }
 
