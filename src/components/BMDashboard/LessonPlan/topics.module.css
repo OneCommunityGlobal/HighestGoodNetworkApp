@@ -1,0 +1,61 @@
+.wrapper {
+  width: 100%;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.templateDescriptor {
+  width: 100%;
+  border: 1px solid rgb(126, 153, 248);
+  background: rgb(219, 225, 246);
+  padding: 16px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.subjectTabs {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.subjectTab {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 20px;
+  background: #f1f1f1;
+}
+
+.activeTab {
+  background: #e3e7ff;
+  border: 2px solid #5c73f2;
+}
+
+.atomsList {
+  display: flex;
+  gap: 16px;
+}
+
+.atomCard {
+  width: 260px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #dcdcdc;
+  background: #fff;
+}
+
+.atomTitle {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.searchBox {
+  margin: 20px 0;
+}
+
+.searchInput {
+  width: 250px;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
