@@ -22,6 +22,7 @@ import EditableInfoModal from './components/UserProfile/EditableModal/EditableIn
 import RoleInfoCollections from './components/UserProfile/EditableModal/RoleInfoModal';
 import PRDashboard from './components/PRDashboard';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
+import ApplicantsChart from './components/ApplicantsChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 
