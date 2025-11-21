@@ -1,0 +1,69 @@
+.listContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.listItem:hover {
+  background: #f5f5f5;
+  border-color: #2196F3;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+}
+
+.subjectName {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.progressContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 150px;
+}
+
+.progressBar {
+  flex: 1;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: #4CAF50;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  min-width: 40px;
+  text-align: right;
+}
+
+.loading,
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}

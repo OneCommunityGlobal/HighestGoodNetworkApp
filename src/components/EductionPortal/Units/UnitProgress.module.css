@@ -1,0 +1,61 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card:hover {
+  border-color: #2196F3;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+  transform: translateY(-2px);
+}
+
+.cardTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.chartContainer {
+  height: 150px;
+  position: relative;
+}
+
+.metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.percent {
+  font-size: 24px;
+  font-weight: 700;
+  color: #2196F3;
+}
+
+.hours {
+  font-size: 14px;
+  color: #666;
+}
+
+.loading,
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}

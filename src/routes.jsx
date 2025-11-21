@@ -1,5 +1,5 @@
 import { lazy } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import AutoUpdate from './components/AutoUpdate';
@@ -163,7 +163,9 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
-
+import StudentDashboard from './components/EductionPortal/StudentTasks/StudentDashboard';
+import StudentTasks from './components/EductionPortal/StudentTasks/StudentTasks';
+import TaskDetails from './components/EductionPortal/StudentTasks/TaskDetails';
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
 import PRDashboardPromotionEligibility from './components/HGNPRDashboard/PRDashboardPromotionEligibility';
@@ -176,6 +178,8 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
 
 import WriteTaskUpload from './components/EductionPortal/Tasks/WriteTaskUpload';
+import EPSubjectPage from './components/EductionPortal/Subjects/SubjectPage';
+import EPUnitPage from './components/EductionPortal/Units/UnitPage';
 
 // Social Architecture
 
@@ -759,6 +763,17 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute
+          path="/educationportal/subject/:subjectId"
+          exact
+          component={EPSubjectPage}
+        />
+        <EPProtectedRoute path="/educationportal/unit/:unitId" exact component={EPUnitPage} />
+        <EPProtectedRoute path="/educationportal/dashboard" exact component={StudentDashboard} />
+        <EPProtectedRoute path="/educationportal/student/tasks" exact component={StudentTasks} />
+        <EPProtectedRoute path="/educationportal/student/tasks/:id" exact component={TaskDetails} />
+        <Redirect exact from="/student/tasks" to="/educationportal/student/tasks" />
+        <Redirect exact from="/student/tasks/:id" to="/educationportal/student/tasks/:id" />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
