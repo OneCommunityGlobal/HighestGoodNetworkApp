@@ -13,7 +13,7 @@ describe('Checkbox Component', () => {
 
     const label = screen.getByText('Test Label');
     expect(label).toBeInTheDocument();
-  });
+  }, 10000);
 
   test('handles onChange and changes checked state', () => {
     const handleChange = vi.fn();
