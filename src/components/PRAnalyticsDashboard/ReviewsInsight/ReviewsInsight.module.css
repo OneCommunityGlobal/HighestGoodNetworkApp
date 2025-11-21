@@ -8,7 +8,7 @@
 }
 
 .reviews-insight-container h1 {
- color: #000000;
+  color: #000000;
 }
 .dark-mode h1 {
   color: #f1f1f1;
@@ -25,7 +25,7 @@
     gap: 5px;
   }
 
-  .ri-action-done-graph{
+  .ri-action-done-graph {
     width: 100% !important;
     height: 500px;
   }
@@ -34,7 +34,7 @@
     width: 100% !important;
   }
 
-  .ri-graph{
+  .ri-graph {
     min-height: 300px;
   }
 }
@@ -75,7 +75,7 @@
   color: #f1f1f1;
 }
 
-.ri-selected-teams p{
+.ri-selected-teams p {
   margin-bottom: 20px;
   font-style: italic;
   text-align: center;
@@ -124,7 +124,6 @@
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: 5px;
-  text-align: center;
   background-color: #ffffff;
   color: #000000;
   transition: background-color 0.3s, color 0.3s;
@@ -142,6 +141,36 @@
 }
 
 .dark-mode .ri-chart h3 {
+  color: #f1f1f1;
+}
+
+.ri-chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between name and circle */
+  margin-bottom: 10px; /* Space above the pie chart */
+}
+
+.ri-chart-header h3 {
+  margin: 0; /* Remove default margin */
+}
+
+.ri-team-member-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+  color: #333;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dark-mode .ri-team-member-count {
+  background-color: #34495e;
   color: #f1f1f1;
 }
 
@@ -176,7 +205,7 @@
   border: none;
 }
 
-.ri-graph canvas{
+.ri-graph canvas {
   height: auto !important;
 }
 
@@ -186,7 +215,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: #666;
   font-size: 14px;
 }
 
