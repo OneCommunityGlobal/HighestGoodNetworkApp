@@ -104,10 +104,10 @@ function TimeEntryForm(props) {
                       subscript superscript charmap  | help',
     branding: false,
     toolbar_mode: 'sliding',
-    min_height: 180,
+    min_height: 250,
     max_height: 300,
     autoresize_bottom_margin: 1,
-    content_style: 'body { cursor: text !important; }',
+    content_style: 'body { cursor: text !important; } .mce-content-body[data-mce-placeholder]:focus::before {content: "";}',
     images_upload_handler: customImageUploadHandler,
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
@@ -241,6 +241,7 @@ function TimeEntryForm(props) {
   };
 
   const handleEditorChange = (content, editor) => {
+    editor.focus();
     const { wordcount } = editor.plugins;
     const regexFilter = /https:\/\/(?!(www\.)?localhost|(www\.)?dropbox\.com(?!\/scl\/)|(www\.)?[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}.*$/gim;
     const hasLink = regexFilter.test(content);

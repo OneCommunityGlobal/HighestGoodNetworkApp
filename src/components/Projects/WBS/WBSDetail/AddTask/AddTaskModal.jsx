@@ -20,6 +20,7 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
+import styles from '../wbs.module.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
 import { fetchAllProjects } from '../../../../../actions/projects';
 import { getProjectDetail } from '../../../../../actions/project';
@@ -112,7 +113,7 @@ const TINY_MCE_INIT_OPTIONS = {
                     styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
                     subscript superscript charmap  | help',
   branding: false,
-  min_height: 180,
+  min_height: 280,
   max_height: 300,
   autoresize_bottom_margin: 1,
 };
@@ -589,33 +590,33 @@ function AddTaskModal(props) {
         <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <div className="table table-bordered responsive">
             <div>
-              <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`} data-tip="WBS ID">
+              <div className={styles["add_new_task_form-group"]}>
+                <span className={`${styles['add_new_task_form-label']} ${fontColor}`} data-tip="WBS ID">
                   WBS #
                 </span>
 
-                <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
+                <span className={`${styles['add_new_task_form-input_area']} ${fontColor}`}>{newTaskNum}</span>
               </div>
-              <div className="add_new_task_form-group">
-                <label htmlFor="taskNameInput" className={`add_new_task_form-label ${fontColor}`}>
+              <div className={styles["add_new_task_form-group"]}>
+                <label htmlFor="taskNameInput" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Task Name
                 </label>
-                <span className="add_new_task_form-input_area">
+                <span className={styles['add_new_task_form-input_area']}>
                   <textarea
                     id="taskNameInput"
                     rows="2"
-                    className="task-name border border-dark rounded"
+                    className={`${styles['task-name']} border border-dark rounded`}
                     onChange={e => setTaskName(e.target.value)}
                     value={taskName}
                   />
                 </span>
               </div>
 
-              <div className="add_new_task_form-group">
-                <label htmlFor="priority" className={`add_new_task_form-label ${fontColor}`}>
+              <div className={styles["add_new_task_form-group"]}>
+                <label htmlFor="priority" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Priority
                 </label>
-                <span className="add_new_task_form-input_area">
+                <span className={styles['add_new_task_form-input_area']}>
                   <select
                     id="priority"
                     onChange={e => setPriority(e.target.value)}
@@ -628,11 +629,11 @@ function AddTaskModal(props) {
                 </span>
               </div>
 
-              <div className="add_new_task_form-group">
-                <label htmlFor="resource-input" className={`add_new_task_form-label ${fontColor}`}>
+              <div className={styles["add_new_task_form-group"]}>
+                <label htmlFor="resource-input" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Resources
                 </label>
-                <div className="add_new_task_form-input_area">
+                <div className={styles['add_new_task_form-input_area']}>
                 <TagsSearch
                   key={`tags-${props.projectId}-${activeMembers.length}`}
                   placeholder="Add resources"
@@ -647,10 +648,10 @@ function AddTaskModal(props) {
                 </div>
               </div>
 
-              <div className="add_new_task_form-group">
+              <div className={styles["add_new_task_form-group"]}>
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`add_new_task_form-label ${fontColor}`}>Assigned</label>
-                <div className="add_new_task_form-input_area">
+                <label className={`${styles['add_new_task_form-label']} ${fontColor}`}>Assigned</label>
+                <div className={styles['add_new_task_form-input_area']}>
                   <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
                       <input
@@ -684,9 +685,9 @@ function AddTaskModal(props) {
                 </div>
               </div>
 
-              <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Status</span>
-                <span className="add_new_task_form-input_area">
+              <div className={styles["add_new_task_form-group"]}>
+                <span className={`${styles['add_new_task_form-label']} ${fontColor}`}>Status</span>
+                <span className={styles['add_new_task_form-input_area']}>
                   <div className="d-flex align-items-center flex-wrap">
                     <span className="form-check form-check-inline mr-5">
                       <input
@@ -749,14 +750,14 @@ function AddTaskModal(props) {
                   </div>
                 </span>
               </div>
-              <div className="add_new_task_form-group">
+              <div className={styles["add_new_task_form-group"]}>
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`add_new_task_form-label ${fontColor}`}>Hours</label>
-                <div className="add_new_task_form-input_area">
+                <label className={`${styles['add_new_task_form-label']} ${fontColor}`}>Hours</label>
+                <div className={styles['add_new_task_form-input_area']}>
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="bestCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`w-25 mr-4 text-nowrap align-self-center ${fontColor}`}
                     >
                       Best-case
                     </label>
@@ -778,7 +779,7 @@ function AddTaskModal(props) {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="worstCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`w-25 mr-4 text-nowrap align-self-center ${fontColor}`}
                     >
                       Worst-case
                     </label>
@@ -802,7 +803,7 @@ function AddTaskModal(props) {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="mostCaseInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`w-25 mr-4 text-nowrap align-self-center ${fontColor}`}
                     >
                       Most-case
                     </label>
@@ -826,7 +827,7 @@ function AddTaskModal(props) {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="estimatedInput"
-                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
+                      className={`w-25 mr-4 text-nowrap align-self-center ${fontColor}`}
                     >
                       Estimated
                     </label>
@@ -847,11 +848,11 @@ function AddTaskModal(props) {
                 </div>
               </div>
 
-              <div className="add_new_task_form-group">
-                <label htmlFor="linkInput" className={`add_new_task_form-label ${fontColor}`}>
+              <div className={styles["add_new_task_form-group"]}>
+                <label htmlFor="linkInput" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Links
                 </label>
-                <span className="add_new_task_form-input_area">
+                <span className={styles['add_new_task_form-input_area']}>
                   <div className="d-flex flex-row">
                     <input
                       type="text"
@@ -923,10 +924,10 @@ function AddTaskModal(props) {
               </div>
 
               <div className="d-flex border align-items-center">
-                <label htmlFor="category-select" className={`add_new_task_form-label ${fontColor}`}>
+                <label htmlFor="category-select" className={`${styles['add_new_task_form-label']} ${fontColor}`}>
                   Category
                 </label>
-                <span className="add_new_task_form-input_area">
+                <span className={styles['add_new_task_form-input_area']}>
                   <select
                     id="category-select"
                     value={category}

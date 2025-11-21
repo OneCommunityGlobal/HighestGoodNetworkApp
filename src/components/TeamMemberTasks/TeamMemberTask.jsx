@@ -372,13 +372,15 @@ const TeamMemberTask = React.memo(
                               }}
                             >{`${user.name}`}</Link>
 
-                            {user.role !== 'Volunteer' && (
+                            {user.role !== 'Volunteer' ? (
                               <div
                                 className="user-role"
                                 style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
                               >
                                 {user.role}
                               </div>
+                            ) : (
+                              <div></div>
                             )}
 
                             <div
