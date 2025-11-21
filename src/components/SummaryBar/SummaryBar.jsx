@@ -345,6 +345,7 @@ const SummaryBar = React.forwardRef((props, ref) => {
 
   const onBadgeClick = () => {
     window.location.hash = '#badgesearned';
+    props.resetBadgeCount(displayUserId);
   };
 
   // const onBlueSquareClick = () => {
