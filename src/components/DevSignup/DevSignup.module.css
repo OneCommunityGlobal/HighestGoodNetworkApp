@@ -1,0 +1,68 @@
+.devsignup-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 80px;
+}
+
+.devsignup-card {
+  width: 480px;
+  background: #ffffff;
+  padding: 32px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.devsignup-title {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.devsignup-subtitle {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.inputLabel {
+  display: block;
+  margin-top: 16px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.name-row {
+  display: flex;
+  gap: 12px;
+}
+
+.name-field {
+  flex: 1;
+}
+
+.submit-btn {
+  margin-top: 24px;
+  width: 100%;
+  padding: 12px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #23963d;
+}
