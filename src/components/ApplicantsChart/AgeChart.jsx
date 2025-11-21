@@ -47,7 +47,7 @@ function AgeChart({ data, compareLabel, darkMode }) {
         width: '100%',
         maxWidth: '100%',
         margin: '0 auto',
-        padding: 'clamp(10px, 2vw, 20px)',
+        padding: 'clamp(10px, 2vw, 20px) clamp(10px, 2vw, 20px) 0 clamp(10px, 2vw, 20px)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -56,10 +56,11 @@ function AgeChart({ data, compareLabel, darkMode }) {
       <div
         style={{
           width: '100%',
-          height: '60vh',
-          minHeight: '350px',
+          height: 'calc(100vh - 150px)',
+          minHeight: '600px',
           maxWidth: '100%',
           position: 'relative',
+          backgroundColor: darkMode ? '#1b2a41' : '#fff',
         }}
       >
         <ResponsiveContainer width="100%" height="100%" debounce={1}>
@@ -69,7 +70,7 @@ function AgeChart({ data, compareLabel, darkMode }) {
               top: 20,
               right: 30,
               left: 20,
-              bottom: 40,
+              bottom: 20,
             }}
             barSize={60}
           >

@@ -65,8 +65,8 @@ function ApplicantsDashboard() {
       className={darkMode ? 'bg-oxford-blue text-light' : 'bg-white text-black'}
       style={{
         padding: 'clamp(10px, 2vw, 20px)',
+        paddingBottom: 'clamp(10px, 1.5vw, 15px)',
         borderRadius: darkMode ? '0' : '8px',
-        minHeight: '100vh',
         width: '100%',
         maxWidth: '100%',
         boxSizing: 'border-box',
@@ -188,7 +188,8 @@ function ApplicantsDashboard() {
       <div
         style={{
           width: '100%',
-          minHeight: '350px',
+          minHeight: 'calc(100vh - 150px)',
+          backgroundColor: darkMode ? '#1b2a41' : '#fff',
         }}
       >
         {loading ? (
@@ -197,9 +198,10 @@ function ApplicantsDashboard() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              height: '52vh',
-              minHeight: '350px',
+              height: 'calc(100vh - 150px)',
+              minHeight: '600px',
               width: '100%',
+              backgroundColor: darkMode ? '#1b2a41' : '#fff',
             }}
           >
             <p
@@ -221,9 +223,10 @@ function ApplicantsDashboard() {
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              height: '52vh',
-              minHeight: '350px',
+              height: 'calc(100vh - 150px)',
+              minHeight: '600px',
               width: '100%',
+              backgroundColor: darkMode ? '#1b2a41' : '#fff',
             }}
           >
             <p
@@ -247,9 +250,11 @@ function ApplicantsDashboard() {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            marginTop: '20px',
+            marginTop: 'clamp(10px, 2vw, 20px)',
+            marginBottom: '0',
             width: '100%',
-            padding: '10px',
+            padding: '10px 10px 0 10px',
+            backgroundColor: darkMode ? '#1b2a41' : '#fff',
           }}
         >
           <p

@@ -78,3 +78,16 @@
   display: inline-block;
 }
 
+/* Dark mode styles for recharts surface */
+:global(.bg-oxford-blue) :global(.recharts-surface) {
+  background-color: #1b2a41 !important;
+}
+
+:global(.bg-oxford-blue) :global(.recharts-wrapper) {
+  background-color: #1b2a41 !important;
+}
+
+:global(.bg-oxford-blue) :global(.recharts-cartesian-grid) {
+  stroke: #555 !important;
+}
+
