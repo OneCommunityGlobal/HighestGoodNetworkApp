@@ -105,6 +105,8 @@ import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 import EventList from './components/CommunityPortal/Event/EventList/EventList';
 import Resources from './components/CommunityPortal/Activities/activityId/Resources';
 import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
+import Demographics from './components/CommunityPortal/Reports/Participation/Demographics';
+import Personalization from './components/CommunityPortal/Reports/Participation/Personalization';
 
 import MaterialSummary from './components/MaterialSummary/MaterialSummary';
 
@@ -713,6 +715,16 @@ export default (
           component={Feedbackform}
         />
         <CPProtectedRoute
+          path="/communityportal/reports/participation/demographics"
+          exact
+          component={Demographics}
+        />
+        <CPProtectedRoute
+          path="/communityportal/reports/participation/personalization"
+          exact
+          component={Personalization}
+        />
+        <CPProtectedRoute
           path="/communityportal/activities/FollowUpEmailTemplate"
           component={FollowUpEmailTemplate}
         />
@@ -720,6 +732,11 @@ export default (
           path="/communityportal/reports/participation"
           exact
           component={EventParticipation}
+        />
+        <CPProtectedRoute
+          path="/communityportal/events/create"
+          exact
+          component={TestEventRegistration}
         />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
