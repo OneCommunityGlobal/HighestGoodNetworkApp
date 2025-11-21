@@ -101,6 +101,7 @@ export default function BellNotification({ userId }) {
   };
 
   useEffect(() => {
+    if (!userId) return;
     const fetchDbNotifications = async () => {
       try {
         const { data } = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);

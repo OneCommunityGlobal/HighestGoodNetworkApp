@@ -983,6 +983,7 @@ return (
                         data={intangibletimeEntryFormData}
                         userProfile={displayUserProfile}
                         roles={roles}
+                        maxHoursPerEntry={40}
                       />
                       <ReactTooltip id="registerTip" place="bottom" effect="solid">
                         Click this icon to learn about the timelog.
@@ -1260,9 +1261,7 @@ Timelog.prototype = {
   userId: PropTypes.string,
 };
 
-Timelog.defaultProps = {
-  userId: null,
-};
+// ...existing code...
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
