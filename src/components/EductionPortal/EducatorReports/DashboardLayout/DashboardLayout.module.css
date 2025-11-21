@@ -1,0 +1,49 @@
+/* Dashboard Layout */
+.dashboardLayout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.dashboardLayout.darkMode {
+  background-color: #121212;
+}
+
+/* Main Content Area */
+.mainContent {
+  flex: 1;
+  margin-left: 250px; /* Sidebar width */
+  min-height: calc(100vh - var(--header-height));
+  overflow-x: auto;
+}
+
+.contentWrapper {
+  padding: 0 20px; /* Remove top padding completely */
+  max-width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboardLayout {
+    flex-direction: column;
+    margin-top: 0; /* Remove header spacing on mobile */
+    min-height: 100vh;
+  }
+  
+  .mainContent {
+    margin-left: 0;
+    width: 100%;
+    min-height: auto;
+    order: 2; /* Make main content appear below sidebar */
+  }
+  
+  .contentWrapper {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .contentWrapper {
+    padding: 12px;
+  }
+}

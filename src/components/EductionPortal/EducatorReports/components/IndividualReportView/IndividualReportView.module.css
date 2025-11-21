@@ -1,0 +1,488 @@
+/* IndividualReportView.module.css */
+
+.individualReport {
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.individualReport.darkMode {
+  color: #ffffff;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 2rem;
+}
+
+.emptyState.darkMode {
+  color: #ffffff;
+}
+
+.emptyContent {
+  text-align: center;
+  max-width: 400px;
+}
+
+.emptyContent i {
+  font-size: 4rem;
+  color: #d1d5db;
+  margin-bottom: 1rem;
+}
+
+.darkMode .emptyContent i {
+  color: #6b7280;
+}
+
+.emptyContent h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.darkMode .emptyContent h3 {
+  color: #f9fafb;
+}
+
+.emptyContent p {
+  color: #6b7280;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.darkMode .emptyContent p {
+  color: #9ca3af;
+}
+
+/* Metrics Row */
+.metricsRow {
+  margin-bottom: 2rem;
+}
+
+.metricCol {
+  margin-bottom: 1rem;
+}
+
+/* Report Cards */
+.reportCard {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.reportCard.darkMode {
+  background-color: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.reportCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.darkMode .reportCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Card Headers */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.darkMode .cardHeader {
+  border-bottom-color: #374151;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.darkMode .cardTitle {
+  color: #f9fafb;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.subjectCount {
+  font-size: 0.875rem;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.darkMode .subjectCount {
+  color: #d1d5db;
+  background-color: #374151;
+}
+
+/* Table Styles */
+.tableContainer {
+  overflow-x: auto;
+}
+
+.performanceTable {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.performanceTable th {
+  background-color: #f9fafb;
+  color: #374151;
+  font-weight: 600;
+  border: none;
+  padding: 1rem 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+}
+
+.darkMode .performanceTable th {
+  background-color: #374151;
+  color: #d1d5db;
+}
+
+.performanceTable td {
+  padding: 1rem 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.darkMode .performanceTable td {
+  border-top-color: #374151;
+  color: #d1d5db;
+}
+
+.performanceTable tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.darkMode .performanceTable tbody tr:hover {
+  background-color: #374151;
+}
+
+.subjectCell {
+  font-weight: 500;
+  color: #111827;
+}
+
+.darkMode .subjectCell {
+  color: #f9fafb;
+}
+
+.performanceCell {
+  font-size: 0.875rem;
+}
+
+.performanceCell strong {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.darkMode .performanceCell strong {
+  color: #818cf8;
+}
+
+/* Status Badges */
+.statusBadge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.statusBadge.excellent {
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.darkMode .statusBadge.excellent {
+  background-color: #064e3b;
+  color: #34d399;
+}
+
+.statusBadge.good {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.darkMode .statusBadge.good {
+  background-color: #1e3a8a;
+  color: #60a5fa;
+}
+
+.statusBadge.needsImprovement {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.darkMode .statusBadge.needsImprovement {
+  background-color: #78350f;
+  color: #fbbf24;
+}
+
+/* Visual Indicators */
+.visualCell {
+  text-align: center;
+}
+
+.visualIndicator {
+  font-size: 1.25rem;
+  display: inline-block;
+}
+
+/* Chart Styles */
+.chartCol {
+  margin-bottom: 1rem;
+}
+
+.chartContainer {
+  height: 300px;
+  position: relative;
+}
+
+.chartLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #6b7280;
+}
+
+.darkMode .chartLoading {
+  color: #9ca3af;
+}
+
+.chartLoading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.chartLoading p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Loading States */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: #6b7280;
+}
+
+.darkMode .loading {
+  color: #9ca3af;
+}
+
+.loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.loading p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Insights Section */
+.insightsContainer {
+  margin-top: 1rem;
+}
+
+.insightAlert {
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.insightAlert:last-child {
+  margin-bottom: 0;
+}
+
+.insightContent {
+  line-height: 1.6;
+}
+
+.insightContent strong {
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .individualReport {
+    padding: 1rem;
+  }
+
+  .metricsRow {
+    margin-bottom: 1.5rem;
+  }
+
+  .chartCol,
+  .tableCol {
+    margin-bottom: 1.5rem;
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .individualReport {
+    padding: 0.5rem;
+  }
+
+  .reportCard {
+    margin: 0 -0.5rem 1.5rem -0.5rem;
+  }
+
+  .performanceTable {
+    font-size: 0.8rem;
+  }
+
+  .performanceTable th,
+  .performanceTable td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .cardTitle {
+    font-size: 1.125rem;
+  }
+
+  .chartContainer {
+    height: 250px;
+  }
+
+  .metricCol {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .emptyContent i {
+    font-size: 3rem;
+  }
+
+  .emptyContent h3 {
+    font-size: 1.25rem;
+  }
+
+  .emptyContent p {
+    font-size: 0.9rem;
+  }
+
+  .performanceTable {
+    font-size: 0.75rem;
+  }
+
+  .statusBadge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .visualIndicator {
+    font-size: 1rem;
+  }
+
+  .chartContainer {
+    height: 200px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .individualReport {
+    background: white !important;
+    color: black !important;
+  }
+
+  .reportCard {
+    background: white !important;
+    box-shadow: none;
+    border: 1px solid #ccc;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+
+  .chartContainer {
+    height: 250px !important;
+  }
+
+  .statusBadge {
+    background: transparent !important;
+    border: 1px solid currentColor;
+  }
+
+  .insightAlert {
+    background: transparent !important;
+    border: 1px solid currentColor;
+  }
+}
+
+/* Accessibility */
+.reportCard:focus-within {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .reportCard:focus-within {
+  outline-color: #818cf8;
+}
+
+.performanceTable:focus-within {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.darkMode .performanceTable:focus-within {
+  outline-color: #818cf8;
+}
