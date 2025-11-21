@@ -1,0 +1,123 @@
+/* Unique namespace prefix: cprof_ */
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+
+.modal {
+  background: #fff;
+  padding: 24px;
+  width: 480px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modalTitle {
+  margin-bottom: 16px;
+  font-size: 1.2rem;
+}
+
+.certList {
+  margin-bottom: 20px;
+}
+
+.certItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.certName {
+  font-weight: 600;
+}
+
+.certStatus {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.Completed {
+  color: #0a7b0a;
+}
+
+.InProgress {
+  color: #d69e00;
+}
+
+.NotStarted {
+  color: #888;
+}
+
+.editButton,
+.addButton,
+.saveButton,
+.cancelButton {
+  cursor: pointer;
+  border: none;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+}
+
+.editButton {
+  background: #1976d2;
+  color: #fff;
+}
+
+.addButton {
+  background: #28a745;
+  color: #fff;
+  width: 100%;
+  margin-bottom: 18px;
+  margin-top: 10px;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input,
+.select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #aaa;
+  margin-top: 4px;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.saveButton {
+  background: #007bff;
+  color: white;
+}
+
+.cancelButton {
+  background: #ccc;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,134 @@
+.etdContainer {
+  padding: 24px;
+  font-family: Arial, sans-serif;
+}
+
+.etdTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.etdSubtitle {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.etdTableWrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #e3e3e3;
+}
+
+.etdTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.etdThead {
+  background: #f2f6fc;
+}
+
+.etdTh {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.etdRow:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.etdTd {
+  padding: 12px;
+  vertical-align: top;
+  border-bottom: 1px solid #eee;
+}
+
+.etdSubtext {
+  font-size: 13px;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Certification item */
+.etdCertItem {
+  margin-bottom: 6px;
+}
+
+.etdCertName {
+  font-weight: 600;
+}
+
+
+/* Action Button */
+.etdActionButton {
+  background: #4a6cff;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.etdActionButton:hover {
+  background: #3958e0;
+}
+
+/* Base status styling */
+.etdCertStatus {
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  text-transform: capitalize;
+  font-size: 13px;
+  display: inline-block;
+}
+
+/* 🟢 Completed */
+.etdStatus_Completed {
+  background: #e9f8ef;
+  color: #218838;
+  border: 1px solid #b6e7c5;
+}
+
+/* 🟡 In Progress */
+.etdStatus_InProgress {
+  background: #fff8e6;
+  color: #d89a00;
+  border: 1px solid #ffe7a3;
+}
+
+/* 🔴 Not Started */
+.etdStatus_NotStarted {
+  background: #ffeaea;
+  color: #c82333;
+  border: 1px solid #f5b7b7;
+}
+
+/* 🟢 Active */
+.etdStatus_Active {
+  background: #e5f4ff;
+  color: #1a73e8;
+  border: 1px solid #b3dcff;
+}
+
+/* 🔥 Expired */
+.etdStatus_Expired {
+  background: #ffe4e4;
+  color: #b91c1c;
+  border: 1px solid #fbb;
+}
+
+/* 🟠 Revoked */
+.etdStatus_Revoked {
+  background: #fff4e6;
+  color: #d87b17;
+  border: 1px solid #f7d1a6;
+}

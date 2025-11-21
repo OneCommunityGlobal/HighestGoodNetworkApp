@@ -451,6 +451,11 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  //PM Dashboard Certification endpoints
+  PM_EDUCATOR_CERTIFICATIONS: ()=> `${APIEndpoint}/pm/educators/certifications`,
+  PM_CERTIFICATIONS: () => `${APIEndpoint}/pm/certifications`,
+  PM_ASSIGN_CERTIFICATIONS: (educatorId) => `${APIEndpoint}/pm/educators/${encodeURIComponent(educatorId)}/certifications` 
+
 };
 
 export const ApiEndpoint = APIEndpoint;
