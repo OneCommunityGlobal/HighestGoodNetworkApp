@@ -14,9 +14,9 @@
 
 .weeklyProjectSummaryDashboardContainer {
   width: 95%;
-  background: var(--bg-color);
   margin: auto;
   padding: 20px;
+  background: var(--bg-color);
   color: var(--text-color);
 }
 
@@ -63,11 +63,17 @@
 /* Dropdown Styling */
 .weeklySummaryHeaderControls select {
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color, #ccc);
   border-radius: 6px;
   min-width: 200px;
   font-size: 14px;
   background: var(--section-bg);
+  color: var(--text-color);
+}
+
+.weeklySummaryHeaderControls select:focus {
+  outline: none;
+  border-color: var(--focus-border-color, #3b82f6);
 }
 
 /* Dropdown Hover */
@@ -195,6 +201,7 @@
   min-height: 500px;
   border-radius: 8px;
   overflow: hidden;
+  grid-column: span 4;
 }
 
 .weeklyProjectSummaryDashboardSection {
@@ -263,6 +270,8 @@
   --section-title-hover: #3a506b;
   --button-bg: #e8a71c;
   --button-hover: #f5b13a;
+  --border-color: #4a5a77;
+  --focus-border-color: #e8a71c;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
@@ -289,11 +298,12 @@
   max-height: 80vh !important; /* Limit to 80% of viewport height */
   overflow-y: auto !important; /* Enable vertical scrolling */
   padding-right: 15px !important; /* Add some padding for the scrollbar */
-  scrollbar-width: thin; /* Support for Firefox */
-  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1); /* Support for Firefox */
+  /* Support for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
-/* Style the scrollbar for better visibility */
+/* Style the scrollbar for better visibility - Webkit browsers */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }

@@ -18,8 +18,10 @@ import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
+import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
+import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
 import { get } from 'lodash';
@@ -361,21 +363,23 @@ function WeeklyProjectSummary() {
       {
         title: 'Tools and Equipment Tracking',
         key: 'Tools and Equipment Tracking',
-        className: 'half',
-        content: [
-          <div
-            key="donut-chart"
-            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-          >
-            <ToolStatusDonutChart />
-          </div>,
-          <div
-            key="bar-chart"
-            className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
-          >
-            <ToolsHorizontalBarChart darkMode={darkMode} />
-          </div>,
-        ],
+        className: 'full',
+        content: (
+          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
+            <div className="tools-donut-wrap">
+              <ToolStatusDonutChart />
+            </div>
+            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+              <ToolsHorizontalBarChart darkMode={darkMode} />
+            </div>
+            <div
+              className="weekly-project-summary-card normal-card"
+              style={{ minHeight: '300px', gridColumn: 'span 2' }}
+            >
+              <SupplierPerformanceGraph />
+            </div>
+          </div>
+        ),
       },
       {
         title: 'Lessons Learned',
@@ -421,7 +425,7 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
             style={{ height: '500px', padding: '0' }}
           >
-            <EmbedInteractiveMap />
+            <InteractiveMap />
           </div>
         ),
       },
@@ -554,11 +558,7 @@ function WeeklyProjectSummary() {
   };
 
   return (
-    <div
-      className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? 'dark-mode' : ''} ${
-        darkMode ? 'bg-oxford-blue' : ''
-      }`}
-    >
+    <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
       <div
         className={`${styles.weeklyProjectSummaryDashboardContainer} ${

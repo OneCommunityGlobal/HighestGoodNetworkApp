@@ -30,6 +30,12 @@ function IssueCharts({ darkMode }) {
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
 
+  // Enhanced color scheme for accessibility
+  const textColor = darkMode ? '#f7fafc' : '#1a202c';
+  const gridColor = darkMode ? '#4a5568' : '#e2e8f0';
+  const tooltipBg = darkMode ? '#2d3748' : '#ffffff';
+  const tooltipBorder = darkMode ? '#4a5568' : '#e2e8f0';
+
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, [dispatch]);
@@ -84,8 +90,22 @@ function IssueCharts({ darkMode }) {
 
   const { margin, yAxisWidth } = getChartLayout();
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) {
+    return (
+      <div style={{ color: textColor, textAlign: 'center', padding: '20px' }}>
+        Loading chart data...
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div
+        style={{ color: darkMode ? '#fca5a5' : '#dc2626', textAlign: 'center', padding: '20px' }}
+      >
+        Error: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="issue-chart-container">

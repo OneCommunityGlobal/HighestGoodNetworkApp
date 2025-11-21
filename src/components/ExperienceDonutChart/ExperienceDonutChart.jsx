@@ -62,24 +62,54 @@ export default function ExperienceDonutChart() {
     setActiveIndex(null);
 
     try {
-      const randomMultiplier =
-        (appliedFilters.roles?.length || 1) +
-        (appliedFilters.startDate ? 1 : 0) +
-        (appliedFilters.endDate ? 1 : 0);
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No token found. Please log in.');
 
-      const dummy = EXPERIENCE_LABELS.map((label, idx) => ({
-        name: label,
-        value: secureRandomInt(5, 5 + 50 * randomMultiplier), // ✅ secure random
-        color: SEGMENT_COLORS[idx % SEGMENT_COLORS.length],
-      }));
+      const url = `${process.env.REACT_APP_APIENDPOINT}/experience-breakdown`;
+      const params = {};
 
-      const filtered = dummy.filter(d => d.value > 0);
-      const totalCount = filtered.reduce((sum, d) => sum + d.value, 0);
+      if (filterStartDate && filterEndDate) {
+        params.startDate = filterStartDate;
+        params.endDate = filterEndDate;
+      } else if (filterRoles && filterRoles.length > 0) {
+        params.roles = filterRoles.join(',');
+      }
 
-      setChartData(filtered);
-      setTotal(totalCount);
-    } catch {
-      setError('Failed to load dummy data');
+      // const response = await axios.get(url, { params });
+      const response = await axios.get(url, {
+        headers: { Authorization: token },
+        params,
+      });
+
+      const { data } = response;
+
+      if (!data || data.length === 0) {
+        setChartData(null);
+        setLoading(false);
+        return;
+      }
+
+      const counts = experienceLabels.map(label => {
+        const found = data.find(d => d.experience === label);
+        return found ? found.count : 0;
+      });
+
+      const totalCount = counts.reduce((a, b) => a + b, 0);
+
+      const chart = {
+        labels: experienceLabels,
+        datasets: [
+          {
+            data: counts,
+            backgroundColor: segmentColors,
+            hoverOffset: 20,
+          },
+        ],
+      };
+
+      setChartData({ chart, totalCount });
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Error fetching data.');
       setChartData(null);
       setTotal(0);
     } finally {

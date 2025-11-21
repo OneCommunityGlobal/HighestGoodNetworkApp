@@ -56,11 +56,9 @@ export default function WeeklyProjectSummaryHeader({ handleSaveAsPDF }) {
   const comparisonOptions = useMemo(() => [getLastTwoCompletedWeeks().prevWeek], []);
 
   return (
-    <div className={`${styles.weeklySummaryHeaderWrapper} ${darkMode ? 'bg-oxford-blue' : ''}`}>
-      <header
-        className={`${styles.weeklySummaryHeaderContainer} ${darkMode ? 'bg-space-cadet' : ''}`}
-      >
-        <h1 className={`${styles.weeklySummaryHeaderTitle} `}>Weekly Project Summary</h1>
+    <div className={`${styles.weeklySummaryHeaderWrapper} ${darkMode ? styles.darkMode : ''}`}>
+      <header className={`${styles.weeklySummaryHeaderContainer}`}>
+        <h1 className={`${styles.weeklySummaryHeaderTitle}`}>Weekly Project Summary</h1>
 
         <div className={`${styles.weeklySummaryHeaderControls}`}>
           <Input
