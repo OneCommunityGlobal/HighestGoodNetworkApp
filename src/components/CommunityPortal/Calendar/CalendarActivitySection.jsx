@@ -16,9 +16,10 @@ function CalendarActivitySection() {
         darkMode ? styles.calendarActivitySectionDarkMode : ''
       }`}
     >
-      <h2 className={`activity-header ${darkMode ? 'activity-header-dark-mode' : ''}`}>
-        Latest News
-      </h2>
+      {/* Header */}
+      <h2 className={styles.activityHeader}>Latest News</h2>
+
+      {/* Cleaned list */}
       <ul className={styles.calendarActivityList}>
         {calendarActivities.map(activity => (
           <li
@@ -27,12 +28,10 @@ function CalendarActivitySection() {
               darkMode ? styles.calendarActivityItemDarkMode : ''
             }`}
           >
-            <p className={`activity-message ${darkMode ? styles.activityMessageDarkMode : ''}`}>
+            <p className={styles.activityMessage}>
               <strong>{activity.author}</strong>: {activity.message}
             </p>
-            <small className={`activity-time ${darkMode ? styles.activityTimeDarkMode : ''}`}>
-              {activity.time}
-            </small>
+            <small className={styles.activityTime}>{activity.time}</small>
           </li>
         ))}
       </ul>
