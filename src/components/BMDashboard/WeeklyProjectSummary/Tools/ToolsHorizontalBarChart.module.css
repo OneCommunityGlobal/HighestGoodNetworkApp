@@ -1,5 +1,5 @@
 /* Tools Horizontal Bar Chart Card Component */
-.tools-horizontal-bar-chart-card {
+.toolsHorizontalBarChartCard {
   background-color: var(--card-bg, #ffffff);
   border-radius: 8px;
   padding: 16px;
@@ -11,17 +11,16 @@
   min-height: 280px;
 }
 
-.tools-horizontal-bar-chart-card:hover {
+.toolsHorizontalBarChartCard:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode {
-  background-color: var(--section-bg, #2c2c2c);
+.toolsHorizontalBarChartCard.toolsHorizontalBarChartDarkMode {
   color: white;
 }
 
-.tools-horizontal-bar-chart-title {
+.toolsHorizontalBarChartTitle {
   font-size: 16px;
   font-weight: 600;
   margin: 0 0 16px 0;
@@ -30,18 +29,18 @@
   flex-shrink: 0;
 }
 
-.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-title {
+.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartTitle {
   color: #ffffff;
 }
 
-.tools-horizontal-bar-chart-content {
+.toolsHorizontalBarChartContent {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
 }
 
-.tools-horizontal-bar-chart-loading {
+.toolsHorizontalBarChartLoading {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,20 +50,19 @@
   opacity: 0.7;
 }
 
-.tools-horizontal-bar-chart-error {
+.toolsHorizontalBarChartError {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 200px;
   font-size: 14px;
   color: #f44336;
-  background-color: rgba(244, 67, 54, 0.05);
   border-radius: 4px;
   padding: 12px;
   text-align: center;
 }
 
-.tools-horizontal-bar-chart-empty {
+.toolsHorizontalBarChartEmpty {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -75,7 +73,7 @@
   text-align: center;
 }
 
-.tools-horizontal-bar-chart-tooltip {
+.toolsHorizontalBarChartTooltip {
   background-color: rgba(255, 255, 255, 0.95);
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -85,13 +83,13 @@
   max-width: 200px;
 }
 
-.tools-horizontal-bar-chart-tooltip-label {
+.toolsHorizontalBarChartTooltipLabel {
   font-weight: 600;
   margin: 0 0 4px 0;
   color: #333;
 }
 
-.tools-horizontal-bar-chart-tooltip-total {
+.toolsHorizontalBarChartTooltipTotal {
   font-weight: 600;
   margin: 4px 0 0 0;
   padding-top: 4px;
@@ -99,36 +97,36 @@
   color: #333;
 }
 
-.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-tooltip {
+.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartTooltip {
   background-color: rgba(45, 45, 45, 0.95);
   border-color: #555;
 }
 
-.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-tooltip-label,
-.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-tooltip-total {
+.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartTooltipLabel,
+.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartTooltipTotal {
   color: #e0e0e0;
 }
 
 /* Filters Styling */
-.tools-horizontal-bar-chart-filters {
+.toolsHorizontalBarChartFilters {
   padding: 12px 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   margin-bottom: 12px;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-filters {
+.toolsHorizontalBarChartCard.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartFilters {
   border-bottom-color: rgba(255, 255, 255, 0.2);
 }
 
-.tools-horizontal-bar-chart-filter-group {
+.toolsHorizontalBarChartFilterGroup {
   margin-bottom: 12px;
 }
 
-.tools-horizontal-bar-chart-filter-group:last-child {
+.toolsHorizontalBarChartFilterGroup:last-child {
   margin-bottom: 0;
 }
 
-.tools-horizontal-bar-chart-filter-group label {
+.toolsHorizontalBarChartFilterGroup label {
   display: block;
   font-size: 12px;
   font-weight: 500;
@@ -136,22 +134,22 @@
   color: #555;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-filter-group label {
+.toolsHorizontalBarChartCard.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartFilterGroup label {
   color: #e0e0e0;
 }
 
-.tools-horizontal-bar-chart-project-select {
+.toolsHorizontalBarChartProjectSelect {
   max-width: 100%;
 }
 
-.tools-horizontal-bar-chart-date-picker-group {
+.toolsHorizontalBarChartDatePickerGroup {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-.tools-horizontal-bar-chart-date-picker {
+.toolsHorizontalBarChartDatePicker {
   padding: 4px 6px;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -161,29 +159,29 @@
   min-width: 120px;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-date-picker {
+.toolsHorizontalBarChartCard.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartDatePicker {
   background-color: #2c3344;
   border-color: #364156;
   color: #e0e0e0;
 }
 
-.tools-horizontal-bar-chart-date-picker:focus {
+.toolsHorizontalBarChartDatePicker:focus {
   outline: none;
   border-color: #2196F3;
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
 }
 
-.tools-horizontal-bar-chart-date-picker-group span {
+.toolsHorizontalBarChartDatePickerGroup span {
   font-size: 12px;
   color: #666;
   white-space: nowrap;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-date-picker-group span {
+.toolsHorizontalBarChartCard.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartDatePickerGroup span {
   color: #aaa;
 }
 
-.tools-horizontal-bar-chart-clear-dates-btn {
+.toolsHorizontalBarChartClearDatesBtn {
   background: #f5f5f5;
   border: 1px solid #ddd;
   border-radius: 4px;
@@ -194,42 +192,42 @@
   transition: all 0.2s ease;
 }
 
-.tools-horizontal-bar-chart-clear-dates-btn:hover {
+.toolsHorizontalBarChartClearDatesBtn:hover {
   background: #e0e0e0;
   border-color: #ccc;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-clear-dates-btn {
+.toolsHorizontalBarChartCard.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartClearDatesBtn {
   background: #364156;
   border-color: #4a5568;
   color: #e0e0e0;
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-clear-dates-btn:hover {
+.toolsHorizontalBarChartCard.toolsHorizontalBarChartDarkMode .toolsHorizontalBarChartClearDatesBtn:hover {
   background: #4a5568;
   border-color: #5a6578;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .tools-horizontal-bar-chart-card {
+  .toolsHorizontalBarChartCard {
     padding: 12px;
     min-height: 250px;
   }
-  
-  .tools-horizontal-bar-chart-title {
+
+  .toolsHorizontalBarChartTitle {
     font-size: 14px;
     margin-bottom: 12px;
   }
-  
-  .tools-horizontal-bar-chart-date-picker-group {
+
+  .toolsHorizontalBarChartDatePickerGroup {
     flex-direction: column;
     align-items: flex-start;
     gap: 6px;
   }
-  
-  .tools-horizontal-bar-chart-date-picker {
+
+  .toolsHorizontalBarChartDatePicker {
     min-width: 100px;
     width: 100%;
   }
-} 
+}

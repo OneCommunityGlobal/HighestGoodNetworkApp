@@ -1,6 +1,6 @@
 /* ---------------- PAGE CONTAINER ---------------- */
 .weeklyProjectSummaryContainer {
-  min-height: 100vh;
+  min-height: 100%;
   background-color: var(--bg-color);
   color: var(--text-color);
 }
@@ -83,12 +83,12 @@
 
 /* Share Button */
 .weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
   color: white;
   font-family: inherit;
   white-space: nowrap;
   border-radius: 8px !important;
   transition: background 0.2s ease-in-out;
+  background-color: var(--button-bg) !important;
 }
 
 .weeklySummaryShareBtn:hover {
@@ -121,6 +121,17 @@
 }
 
 /* ---------------- CARDS ---------------- */
+.projectStatusGrid {
+  display: grid;
+  grid-template-rows: repeat(2, auto);
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
 
 .weeklyProjectSummaryCard {
   background: var(--card-bg);
@@ -393,18 +404,6 @@
   padding: 20px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   position: relative;
-}
-
-/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
-.projectStatusGrid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1600px;
-  margin: auto;
 }
 
 /* ---------------- OVAL STATUS BUTTON ---------------- */

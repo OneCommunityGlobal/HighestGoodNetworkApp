@@ -13,8 +13,9 @@ import Select from 'react-select';
 import httpService from '../../../services/httpService';
 import { useSelector } from 'react-redux';
 import styles from './ProjectRiskProfileOverview.module.css';
+import PropTypes from 'prop-types';
 
-export default function ProjectRiskProfileOverview() {
+function ProjectRiskProfileOverview({ selectStyles }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -28,6 +29,9 @@ export default function ProjectRiskProfileOverview() {
 
   const allSpanRef = useRef(null);
   const dateSpanRef = useRef(null);
+
+  const tooltipBg = darkMode ? '#3a506b' : '#fff';
+  const textColor = darkMode ? '#ffffff' : '#000000ff';
 
   useEffect(() => {
     async function fetchData() {
@@ -104,6 +108,7 @@ export default function ProjectRiskProfileOverview() {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  styles={selectStyles}
                 />
               </div>
             )}
@@ -132,6 +137,7 @@ export default function ProjectRiskProfileOverview() {
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
                   components={{ IndicatorSeparator: () => null, ClearIndicator: () => null }}
+                  styles={selectStyles}
                 />
               </div>
             )}
@@ -151,9 +157,18 @@ export default function ProjectRiskProfileOverview() {
             barGap={8}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="projectName" />
-            <YAxis />
-            <Tooltip />
+            <XAxis dataKey="projectName" tick={{ fill: textColor }} />
+            <YAxis tick={{ fill: textColor }} />
+            <Tooltip
+              cursor={{ fill: darkMode ? 'rgba(28, 37, 65, .25)' : 'rgba(145, 140, 140, 0.25)' }}
+              contentStyle={{
+                backgroundColor: tooltipBg,
+                border: 'none',
+                borderRadius: '8px',
+                color: textColor,
+              }}
+              labelStyle={{ color: textColor }}
+            />
             <Legend />
             <Bar dataKey="predictedCostOverrun" name="Predicted Cost Overrun (%)" fill="#4285F4" />
             <Bar dataKey="totalOpenIssues" name="Issues" fill="#EA4335" />
@@ -164,3 +179,9 @@ export default function ProjectRiskProfileOverview() {
     </div>
   );
 }
+
+ProjectRiskProfileOverview.propTypes = {
+  selectStyles: PropTypes.object.isRequired,
+};
+
+export default ProjectRiskProfileOverview;

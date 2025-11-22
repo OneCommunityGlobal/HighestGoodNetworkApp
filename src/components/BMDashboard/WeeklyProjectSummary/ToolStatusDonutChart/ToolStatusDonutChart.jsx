@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
-import './ToolStatusDonutChart.css';
+import styles from './ToolStatusDonutChart.module.css';
+import PropTypes from 'prop-types';
 
 const COLORS = {
   AVAILABLE: '#220F57',
@@ -11,7 +12,7 @@ const COLORS = {
 };
 
 const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }) => {
+const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width, darkMode }) => {
   const isSmall = width <= 768;
   if (isSmall) return null;
 
@@ -23,7 +24,7 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }
     <text
       x={x}
       y={y}
-      fill="var(--donut-text-color)"
+      fill={darkMode ? '#fff' : '#000'}
       textAnchor="middle"
       dominantBaseline="central"
       fontSize="12"
@@ -34,7 +35,20 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, width }
 };
 
 // Custom tooltip component
-const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectName, toolId }) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  total,
+  hasNoData,
+  toolName,
+  projectName,
+  toolId,
+  darkMode,
+}) => {
+  let darkModeObject = darkMode
+    ? { backgroundColor: 'rgba(58, 80, 107, .95)', color: '#ffffff' }
+    : { backgroundColor: 'rgba(255, 255, 255, 0.95)', color: '#000000ff' };
+
   if (!active || !payload || !payload.length) {
     return null;
   }
@@ -44,17 +58,18 @@ const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectNam
     return (
       <div
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: darkModeObject.backgroundColor,
           border: '1px solid #ccc',
           borderRadius: '4px',
           padding: '8px 12px',
           fontSize: '14px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
           maxWidth: '200px',
+          color: darkModeObject.color,
         }}
       >
-        <div style={{ fontWeight: '600', color: '#333' }}>📊 No Tools Match</div>
-        <div style={{ color: '#666', fontSize: '12px' }}>
+        <div style={{ fontWeight: '600', color: darkModeObject.color }}>📊 No Tools Match</div>
+        <div style={{ color: darkModeObject.color, fontSize: '12px' }}>
           No tools match the selected combination
         </div>
       </div>
@@ -66,16 +81,17 @@ const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectNam
     return (
       <div
         style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backgroundColor: darkModeObject.backgroundColor,
           border: '1px solid #ccc',
           borderRadius: '4px',
           padding: '8px 12px',
           fontSize: '14px',
           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
           maxWidth: '200px',
+          color: darkModeObject.color,
         }}
       >
-        <div style={{ fontWeight: '600', color: '#333' }}>{toolName}</div>
+        <div style={{ fontWeight: '600', color: darkModeObject.color }}>{toolName}</div>
         <div style={{ color: '#666', fontSize: '12px' }}>❌ Not used in this project</div>
       </div>
     );
@@ -87,7 +103,7 @@ const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectNam
   return (
     <div
       style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backgroundColor: darkMode ? 'rgba(58, 80, 107, .95)' : 'rgba(255, 255, 255, 0.95)',
         border: '1px solid #ccc',
         borderRadius: '4px',
         padding: '8px 12px',
@@ -96,20 +112,20 @@ const CustomTooltip = ({ active, payload, total, hasNoData, toolName, projectNam
         maxWidth: '200px',
       }}
     >
-      <div style={{ fontWeight: '600', color: '#333', marginBottom: '4px' }}>
+      <div style={{ fontWeight: '600', color: darkModeObject.color, marginBottom: '4px' }}>
         {toolName || 'All Tools'}
       </div>
-      <div style={{ color: '#666', marginBottom: '2px' }}>
+      <div style={{ color: darkModeObject.color, marginBottom: '2px' }}>
         Count: <strong>{data.value}</strong>
       </div>
-      <div style={{ color: '#666' }}>
+      <div style={{ color: darkModeObject.color }}>
         Percentage: <strong>{percentage}%</strong>
       </div>
     </div>
   );
 };
 
-export default function ToolStatusDonutChart() {
+function ToolStatusDonutChart() {
   const dispatch = useDispatch();
   const toolslist = useSelector(state => state.tools.toolslist);
   const availabilityData = useSelector(state => state.toolAvailability.availabilityData);
@@ -199,15 +215,20 @@ export default function ToolStatusDonutChart() {
   }
 
   return (
-    <div className={`tool-donut-wrapper ${darkMode ? 'dark-mode' : ''}`}>
-      <h3 className="tool-donut-title">Proportion of Tools/Equipment</h3>
+    <div className={`${styles.toolDonutWrapper} ${darkMode ? 'darkMode' : ''}`}>
+      <h3 className={styles.toolDonutTitle}>Proportion of Tools/Equipment</h3>
 
-      <div className="tool-donut-filters">
-        <div className="filter-item">
-          <label htmlFor="tool-select" className="filter-label">
+      <div className={styles.toolDonutFilters}>
+        <div className={styles.filterItem}>
+          <label htmlFor="tool-select" className={styles.filterLabel}>
             Tool/Equipment Name
           </label>
-          <select id="tool-select" value={toolId} onChange={e => setToolId(e.target.value)}>
+          <select
+            id="tool-select"
+            value={toolId}
+            onChange={e => setToolId(e.target.value)}
+            className={darkMode ? styles.selectDarkMode : styles.selectLightMode}
+          >
             <option value="">All</option>
             {uniqueTools.map(tool => (
               <option key={`tool-${tool.id}`} value={tool.id}>
@@ -217,14 +238,15 @@ export default function ToolStatusDonutChart() {
           </select>
         </div>
 
-        <div className="filter-item">
-          <label htmlFor="project-select" className="filter-label">
+        <div className={styles.filterItem}>
+          <label htmlFor="project-select" className={styles.filterLabel}>
             Project
           </label>
           <select
             id="project-select"
             value={projectId}
             onChange={e => setProjectId(e.target.value)}
+            className={darkMode ? styles.selectDarkMode : styles.selectLightMode}
           >
             <option value="">All</option>
             {uniqueProjects.map(project => (
@@ -267,7 +289,7 @@ export default function ToolStatusDonutChart() {
           <div
             style={{
               fontSize: '0.9rem',
-              color: 'var(--donut-text-color)',
+              color: darkMode ? '#fff' : '#000',
               opacity: 0.7,
             }}
           >
@@ -287,7 +309,7 @@ export default function ToolStatusDonutChart() {
                 innerRadius={innerRadius}
                 outerRadius={outerRadius}
                 labelLine={false}
-                label={props => renderCustomizedLabel({ ...props, width: windowWidth })}
+                label={props => renderCustomizedLabel({ ...props, width: windowWidth, darkMode })}
                 dataKey="count"
                 isAnimationActive={false}
               >
@@ -301,7 +323,7 @@ export default function ToolStatusDonutChart() {
                 y="50%"
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fill="var(--donut-text-color)"
+                fill={darkMode ? '#fff' : '#000'}
                 fontSize={14}
                 fontWeight="bold"
               >
@@ -315,6 +337,7 @@ export default function ToolStatusDonutChart() {
                     hasNoData={hasNoData}
                     toolName={toolName}
                     toolId={toolId}
+                    darkMode={darkMode}
                   />
                 }
                 cursor={false}
@@ -326,11 +349,11 @@ export default function ToolStatusDonutChart() {
       )}
 
       {!hasNoData && !hasNoToolsMatch && (
-        <div className="tool-donut-legend">
+        <div className={styles.toolDonutLegend}>
           {chartData.map(entry => (
             <div
               key={entry.status}
-              className="tool-donut-legend-item"
+              className={styles.toolDonutLegendItem}
               style={{ backgroundColor: COLORS[entry.status.toUpperCase()] }}
             >
               {entry.status}
@@ -341,3 +364,16 @@ export default function ToolStatusDonutChart() {
     </div>
   );
 }
+
+CustomTooltip.propTypes = {
+  active: PropTypes.bool,
+  payload: PropTypes.array,
+  total: PropTypes.number,
+  hasNoData: PropTypes.bool,
+  toolName: PropTypes.string,
+  projectName: PropTypes.string,
+  toolId: PropTypes.string,
+  darkMode: PropTypes.bool.isRequired,
+};
+
+export default ToolStatusDonutChart;

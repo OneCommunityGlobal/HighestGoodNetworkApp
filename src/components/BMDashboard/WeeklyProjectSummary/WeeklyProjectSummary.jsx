@@ -24,6 +24,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import { get } from 'lodash';
 
 const projectStatusButtons = [
   {
@@ -175,11 +176,85 @@ function WeeklyProjectSummary() {
   const materials = useSelector(state => state.materials?.materialslist || []);
   const [openSections, setOpenSections] = useState({});
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const getOptionBackground = (state, darkMode) => {
+    if (state.isSelected) return '#0d55b3';
+    if (state.isFocused) return '#0d55b3';
+    return darkMode ? '#22272e' : '#fff';
+  };
+
   useEffect(() => {
     if (materials.length === 0) {
       dispatch(fetchAllMaterials());
     }
   }, [dispatch, materials.length]);
+
+  const selectStyles = useMemo(
+    () => ({
+      control: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        borderColor: darkMode ? '#375071' : '#ccc',
+        color: darkMode ? '#fff' : '#232323',
+        minHeight: 38,
+        boxShadow: 'none',
+        borderRadius: 8,
+      }),
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        fontSize: 12,
+        zIndex: 10001,
+        borderRadius: 8,
+        marginTop: 2,
+        color: darkMode ? '#fff' : '#232323',
+      }),
+      menuList: base => ({
+        ...base,
+        maxHeight: 400,
+        overflowY: 'auto',
+        backgroundColor: darkMode ? '#22272e' : '#fff',
+        color: darkMode ? '#fff' : '#232323',
+        padding: 0,
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: getOptionBackground(state, darkMode),
+        color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
+        fontSize: 13,
+        padding: '10px 16px',
+        cursor: 'pointer',
+      }),
+      singleValue: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#232323',
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#375071' : '#e2e7ee',
+        borderRadius: 6,
+        fontSize: 12,
+        marginRight: 4,
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        fontSize: 12,
+        padding: '2px 6px',
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#fff' : '#333',
+        ':hover': {
+          backgroundColor: darkMode ? '#0d55b3' : '#e2e7ee',
+          color: '#fff',
+        },
+        borderRadius: 4,
+        padding: 2,
+      }),
+    }),
+    [darkMode],
+  );
 
   const quantityOfMaterialsUsedData = useMemo(() => {
     if (!materials.length) return [];
@@ -200,7 +275,7 @@ function WeeklyProjectSummary() {
         title: 'Risk profile for projects',
         key: 'Risk profile for projects',
         className: 'full',
-        content: <ProjectRiskProfileOverview />,
+        content: <ProjectRiskProfileOverview selectStyles={selectStyles} />,
       },
       {
         title: 'Project Status',
@@ -253,9 +328,14 @@ function WeeklyProjectSummary() {
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
-            content = <QuantityOfMaterialsUsed data={quantityOfMaterialsUsedData} />;
+            content = (
+              <QuantityOfMaterialsUsed
+                data={quantityOfMaterialsUsedData}
+                selectStyles={selectStyles}
+              />
+            );
           } else if (index === 2) {
-            content = <TotalMaterialCostPerProject />;
+            content = <TotalMaterialCostPerProject selectStyles={selectStyles} />;
           } else {
             content = <p>📊 Card</p>;
           }
@@ -276,7 +356,7 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: (
           <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
-            <IssueCharts />
+            <IssueCharts darkMode={darkMode} />
           </div>
         ),
       },
@@ -320,7 +400,7 @@ function WeeklyProjectSummary() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '10px' }}>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small financial-chart">
-              <ExpenseBarChart />
+              <ExpenseBarChart darkMode={darkMode} />
             </div>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
             <div className="weekly-project-summary-card financial-small">📊 Card</div>
@@ -360,7 +440,7 @@ function WeeklyProjectSummary() {
               key={uniqueId}
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
-              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours />}
+              {index === 1 ? <PaidLaborCost /> : <DistributionLaborHours darkMode={darkMode} />}
             </div>
           );
         }),
@@ -377,7 +457,7 @@ function WeeklyProjectSummary() {
               className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
             >
               {(() => {
-                if (index === 2) return <CostPredictionChart projectId={1} />;
+                if (index === 2) return <CostPredictionChart projectId={1} darkMode={darkMode} />;
                 if (index === 3) return <ActualVsPlannedCost />;
                 return '📊 Card';
               })()}
@@ -480,22 +560,34 @@ function WeeklyProjectSummary() {
   return (
     <div className={`${styles.weeklyProjectSummaryContainer} ${darkMode ? styles.darkMode : ''}`}>
       <WeeklyProjectSummaryHeader handleSaveAsPDF={handleSaveAsPDF} />
-      <div className={`${styles.weeklyProjectSummaryDashboardContainer}`}>
+      <div
+        className={`${styles.weeklyProjectSummaryDashboardContainer} ${
+          darkMode ? 'bg-space-cadet' : ''
+        }`}
+      >
         <div className={`${styles.weeklyProjectSummaryDashboardGrid}`}>
           {sections.map(({ title, key, className, content }) => (
             <div
               key={key}
-              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]}`}
+              className={`${styles.weeklyProjectSummaryDashboardSection} ${styles[className]} ${
+                darkMode ? 'bg-yinmn-blue' : ''
+              }`}
             >
               <button
                 type="button"
-                className={styles.weeklyProjectSummaryDashboardCategoryTitle}
+                className={`${styles.weeklyProjectSummaryDashboardCategoryTitle} ${
+                  darkMode ? 'bg-space-cadet' : ''
+                }`}
                 onClick={() => toggleSection(key)}
               >
                 {title} <span>{openSections[key] ? '∧' : '∨'}</span>
               </button>
               {openSections[key] && (
-                <div className={`${styles.weeklyProjectSummaryDashboardCategoryContent}`}>
+                <div
+                  className={`${styles.weeklyProjectSummaryDashboardCategoryContent} ${
+                    darkMode ? 'bg-yinmn-blue' : ''
+                  }`}
+                >
                   {content}
                 </div>
               )}

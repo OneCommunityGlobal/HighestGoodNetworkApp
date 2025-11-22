@@ -19,10 +19,10 @@ import {
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
 import './issueCharts.css';
+import PropTypes from 'prop-types';
 
-function IssueCharts() {
+function IssueCharts({ darkMode }) {
   const dispatch = useDispatch();
-  const darkMode = useSelector(state => state.theme.darkMode);
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
   const [startDate, setStartDate] = useState(null);
@@ -108,15 +108,18 @@ function IssueCharts() {
   }
 
   return (
-    <div className={`issue-chart-container ${darkMode ? 'dark' : ''}`}>
-      <h2>Longest Open Issues</h2>
+    <div className="issue-chart-container">
+      <h2 className={darkMode ? 'text-light' : ''}>Longest Open Issues</h2>
 
       <div className="filters-container">
         <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+          <label
+            className={`issue-chart-label ${darkMode ? 'text-light' : ''}`}
+            htmlFor="start-date"
+          >
             Date Range:
           </label>
-          <div className="date-range-picker">
+          <div className={`date-range-picker`}>
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -146,7 +149,10 @@ function IssueCharts() {
         </div>
 
         <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+          <label
+            className={`issue-chart-label ${darkMode ? 'text-light' : ''}`}
+            htmlFor="start-date"
+          >
             Projects:
           </label>
           <Select
@@ -203,5 +209,9 @@ function IssueCharts() {
     </div>
   );
 }
+
+IssueCharts.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+};
 
 export default IssueCharts;

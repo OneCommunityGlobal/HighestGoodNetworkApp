@@ -89,7 +89,7 @@ export default function IssuesBreakdownChart() {
         </div>
       </div>
 
-      <div className={styles.chartContainer}>
+      <div className={`${styles.chartContainer} ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         <ResponsiveContainer>
           <BarChart data={data} margin={{ top: 30, right: 30, left: 0, bottom: 30 }} barGap={8}>
             <CartesianGrid strokeDasharray="3 3" stroke={gridColor} strokeWidth={1} />
