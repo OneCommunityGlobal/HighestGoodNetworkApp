@@ -262,13 +262,9 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
   return (
     <div
-      className={
-        styles[
-          `tools-horizontal-bar-chart-card ${
-            darkMode ? 'tools-horizontal-bar-chart-dark-mode' : ''
-          }`
-        ]
-      }
+      className={`${styles['tools-horizontal-bar-chart-card']} ${
+        darkMode ? styles['tools-horizontal-bar-chart-dark-mode'] : ''
+      }`}
     >
       <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
 
