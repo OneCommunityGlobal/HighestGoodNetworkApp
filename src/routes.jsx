@@ -1,6 +1,28 @@
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
+import ToolsAvailabilityPage from '~/components/BMDashboard/WeeklyProjectSummary/Tools/ToolsAvailabilityPage';
+import AutoUpdate from '~/components/AutoUpdate';
+import TaskEditSuggestions from '~/components/TaskEditSuggestions/TaskEditSuggestions';
+import RoutePermissions from '~/utils/routePermissions';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
+import RoleInfoCollections from '~/components/UserProfile/EditableModal/RoleInfoModal';
+import LessonList from '~/components/BMDashboard/LessonList/LessonListForm';
+import ResourceUsage from '~/components/CommunityPortal/ResourceUsage/ResourceUsage';
+import AddEquipmentType from '~/components/BMDashboard/Equipment/Add/AddEquipmentType';
+import EDailyActivityLog from '~/components/BMDashboard/Equipment/DailyActivityLog/EDailyActivityLog';
+import Announcements from '~/components/Announcements';
+import JobCCDashboard from '~/components/JobCCDashboard/JobCCDashboard';
+import WeeklyProjectSummary from '~/components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import FaqSearch from '~/components/Faq/FaqSearch';
+import FaqManagement from '~/components/Faq/FaqManagement';
+import FaqHistory from '~/components/Faq/FaqHistory';
+import UnansweredFaqs from '~/components/Faq/UnansweredFaqs';
+import HeaderRenderer from '~/components/Header/HeaderRenderer';
+import IssueDashboard from '~/components/BMDashboard/Issues/IssueDashboard';
+import { ExperienceDonutChart } from '~/components/ExperienceDonutChart';
+import ActualCostBreakdown from '~/components/ActualCostBreakdown';
+import LessonForm from '~/components/BMDashboard/Lesson/LessonForm';
 import 'react-toastify/dist/ReactToastify.css';
 import AutoUpdate from './components/AutoUpdate';
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
@@ -830,6 +852,7 @@ export default (
         <ProtectedRoute path="/tsaformpage7" exact component={TSAFormPage7} />
         <ProtectedRoute path="/tsaformpage8" exact component={TSAFormPage8} />
         <ProtectedRoute path="/ExperienceDonutChart" component={ExperienceDonutChart} fallback />
+        <ProtectedRoute path="/actual-cost-breakdown" component={ActualCostBreakdown} fallback />
         <ProtectedRoute path="/prPromotionsPage" component={PRPromotionsPage} fallback />
         <ProtectedRoute path="/" exact component={Dashboard} />
         {/* ----- PR Dashboard  ----- */}
