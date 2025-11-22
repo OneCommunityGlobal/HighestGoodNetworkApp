@@ -10,58 +10,33 @@ function CommunityCalendar() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
 
-  const mockEvents = [
-    {
-      id: 1,
-      title: 'Event 1',
-      type: 'Workshop',
-      location: 'Virtual',
-      time: '10:00 AM',
-      date: new Date(2025, 0, 27),
-      status: 'New',
-      description: 'Detailed description of Event 1.',
-    },
-    {
-      id: 2,
-      title: 'Event 2',
-      type: 'Meeting',
-      location: 'In person',
-      time: '2:00 PM',
-      date: new Date(2025, 0, 31),
-      status: 'Needs Attendees',
-      description: 'Detailed description of Event 2.',
-    },
-    {
-      id: 3,
-      title: 'Event 3',
-      type: 'Workshop',
-      location: 'Virtual',
-      time: '12:00 PM',
-      date: new Date(2025, 0, 28),
-      status: 'New',
-      description: 'Detailed description of Event 3.',
-    },
-    {
-      id: 4,
-      title: 'Event 4',
-      type: 'Webinar',
-      location: 'Virtual',
-      time: '3:00 AM',
-      date: new Date(2025, 0, 3),
-      status: 'Full',
-      description: 'Detailed description of Event 4.',
-    },
-    {
-      id: 5,
-      title: 'Event 5',
-      type: 'Social Gathering',
-      location: 'In person',
-      time: '11:00 AM',
-      date: new Date(2025, 0, 28),
-      status: 'Filling Fast',
-      description: 'Detailed description of Event 5.',
-    },
-  ];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Date fetching
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/api/events');
+        if (!response.ok) throw new Error('Failed to fetch events');
+
+        const data = await response.json();
+
+        const formattedEvents = data.map(event => ({
+          ...event,
+          date: new Date(event.date),
+        }));
+
+        setEvents(formattedEvents);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading calendar data:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   // Memoized filtered events - only recalculates when filter changes
   const filteredEvents = useMemo(() => {
