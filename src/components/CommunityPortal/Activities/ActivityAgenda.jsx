@@ -1,11 +1,92 @@
 import './ActivityAgenda.css';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL';
 import ActivityImg from '../../../assets/images/yoga-img.png';
 
 function ActivityAgenda() {
   const { activityid } = useParams();
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [eventData, setEventData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch event data by ID
+  useEffect(() => {
+    if (!activityid) {
+      setError('Activity ID is missing');
+      setLoading(false);
+      return;
+    }
+    const fetchEventData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        // Try to fetch event by ID first
+        let event = null;
+        try {
+          const response = await axios.get(ENDPOINTS.EVENT_BY_ID(activityid));
+          event = response.data;
+        } catch (idError) {
+          // If endpoint doesn't exist, fetch all events and filter by ID
+          const response = await axios.get(ENDPOINTS.EVENTS);
+          const events = response.data.events || [];
+          event = events.find(e => e._id === activityid || e.id === activityid);
+        }
+
+        if (!event) {
+          throw new Error('Event not found');
+        }
+
+        // Transform event data to match component structure
+        const transformedData = {
+          activityName: event.title || 'Untitled Event',
+          description: event.description || 'No description available.',
+          schedule:
+            event.resources && event.resources.length > 0
+              ? event.resources.map((resource, index) => ({
+                  time:
+                    event.startTime && event.endTime
+                      ? `${new Date(event.startTime).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })} to ${new Date(event.endTime).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}`
+                      : `Session ${index + 1}`,
+                  activity: resource.name || 'Activity',
+                }))
+              : [
+                  {
+                    time:
+                      event.startTime && event.endTime
+                        ? `${new Date(event.startTime).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })} to ${new Date(event.endTime).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}`
+                        : 'TBD',
+                    activity: event.type || 'Event',
+                  },
+                ],
+          image: event.coverImage || ActivityImg,
+        };
+
+        setEventData(transformedData);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch event data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEventData();
+  }, [activityid]);
 
   // Validate activityid parameter
   if (!activityid) {
@@ -21,17 +102,48 @@ function ActivityAgenda() {
     );
   }
 
-  const eventData = {
-    activityName: 'Yoga Session',
-    description:
-      "Our Yoga Session is designed to provide a peaceful and invigorating experience for people of all fitness levels. Whether you are a beginner or a seasoned practitioner, this class will guide you through a series of asanas (poses) that will improve flexibility, strength, and mindfulness. Led by **Jane Doe**, a certified yoga instructor with over 10 years of experience, the session focuses on mindfulness, breath control (pranayama), and body awareness. Jane's teaching style emphasizes proper alignment, modifications for different skill levels, and creating an inclusive, welcoming space for all participants. The class begins with a gentle warm-up to prepare the body, followed by breathwork exercises to calm the mind and enhance focus. The main flow consists of standing poses, seated stretches, and core work, with variations offered to accommodate everyone. As the session progresses, you'll experience a cool-down phase with restorative stretches and a guided relaxation to release any tension. The class concludes with a brief meditation or mindfulness practice to help you center yourself and leave with a sense of calm. To make the most of your experience, please bring a yoga mat, comfortable clothing, a water bottle, a towel, and any optional props such as yoga blocks or straps. You can expect a calming, positive environment with soothing music, and the instructor will provide adjustments as needed to help you get the most out of your practice. Yoga offers numerous benefits, including improved flexibility, increased strength, reduced stress, enhanced mental focus, and better energy levels. This session is perfect for anyone looking to deepen their practice, relieve stress, or simply enjoy a calming and rejuvenating experience. Join us for this transformative yoga class — we look forward to seeing you on the mat!",
-    schedule: [
-      { time: '9:00 to 10:00', activity: 'Morning Meditation' },
-      { time: '10:00 to 11:00', activity: 'Sun Salutation' },
-      { time: '11:00 to 12:00', activity: 'Stretching and Breathing Exercises' },
-    ],
-    image: ActivityImg,
-  };
+  // Loading state
+  if (loading) {
+    return (
+      <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
+        <div className="activity-agenda-container">
+          <div className="activity-agenda-content">
+            <h1>Loading...</h1>
+            <p>Please wait while we fetch the activity details.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
+        <div className="activity-agenda-container">
+          <div className="activity-agenda-content">
+            <h1>Error</h1>
+            <p>{error}</p>
+            <p>Please check the activity ID and try again.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No data state
+  if (!eventData) {
+    return (
+      <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
+        <div className="activity-agenda-container">
+          <div className="activity-agenda-content">
+            <h1>No Data</h1>
+            <p>No activity data found for the provided ID.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
@@ -43,11 +155,15 @@ function ActivityAgenda() {
           <h1>{eventData.activityName}</h1>
           <p>{eventData.description}</p>
           <h1>Schedule of the day</h1>
-          {eventData.schedule.map(item => (
-            <p key={`${item.time}-${item.activity}`}>
-              {item.time} - {item.activity}
-            </p>
-          ))}
+          {eventData.schedule && eventData.schedule.length > 0 ? (
+            eventData.schedule.map((item, index) => (
+              <p key={`${item.time}-${item.activity}-${index}`}>
+                {item.time} - {item.activity}
+              </p>
+            ))
+          ) : (
+            <p>No schedule available.</p>
+          )}
         </div>
       </div>
     </div>
