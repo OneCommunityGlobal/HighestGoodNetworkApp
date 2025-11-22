@@ -80,13 +80,13 @@ const initialState = {
   isValidPwd: true,
   badges: [],
   loadBadges: false,
-  hasSeeBadgePermission: false,
   selectedCodes: [],
   selectedColors: [],
   filteredSummaries: [],
   teamCodes: [],
   colorOptions: [],
   auth: [],
+  selectedLoggedHoursRange: '',
   selectedOverTime: false,
   selectedBioStatus: false,
   selectedTrophies: false,
@@ -115,6 +115,7 @@ const intialPermissionState = {
   canEditSummaryCount: false,
   codeEditPermission: false,
   canSeeBioHighlight: false,
+  hasSeeBadgePermission: false,
 };
 
 const CheckboxOption = props => {
@@ -169,10 +170,20 @@ const CustomMenuList = props => {
 
 /* eslint-disable react/function-component-definition */
 const WeeklySummariesReport = props => {
-  const { loading, infoCollections, getInfoCollections } = props;
+  const { loading, getInfoCollections } = props;
   const weekDates = getWeekDates();
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
+
+  useEffect(() => {
+    // Update local state whenever allBadgeData prop changes
+    if (props.allBadgeData && props.allBadgeData.length > 0) {
+      setState(prevState => ({
+        ...prevState,
+        badges: props.allBadgeData,
+      }));
+    }
+  }, [props.allBadgeData]);
 
   // Saved filters functionality
   const [currentAppliedFilter, setCurrentAppliedFilter] = useState(null);
@@ -189,6 +200,27 @@ const WeeklySummariesReport = props => {
     return temp.sort((a, b) =>
       `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
     );
+  };
+
+  const doesSummaryBelongToWeek = (startDateStr, endDateStr, weekIndex) => {
+    // weekIndex: 0 = This Week, 1 = Last Week, 2 = Week Before Last, 3 = Three Weeks Ago
+    const weekStartLA = moment()
+      .tz('America/Los_Angeles')
+      .startOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const weekEndLA = moment()
+      .tz('America/Los_Angeles')
+      .endOf('week')
+      .subtract(weekIndex, 'week')
+      .toDate();
+
+    const summaryStart = new Date(startDateStr);
+    const summaryEnd = new Date(endDateStr);
+
+    // keep if it overlaps that week
+    return summaryStart <= weekEndLA && summaryEnd >= weekStartLA;
   };
 
   /**
@@ -243,11 +275,11 @@ const WeeklySummariesReport = props => {
 
   const intialInfoCollections = async summariesCopy => {
     try {
-      await getInfoCollections();
+      const infoCollectionsData = await getInfoCollections();
       const roleInfoNames = getAllRoles(summariesCopy);
       const allRoleInfo = [];
-      if (Array.isArray(infoCollections)) {
-        infoCollections.forEach(info => {
+      if (Array.isArray(infoCollectionsData)) {
+        infoCollectionsData.forEach(info => {
           if (roleInfoNames?.includes(info.infoName)) {
             const visible =
               info.visibility === '0' ||
@@ -273,14 +305,7 @@ const WeeklySummariesReport = props => {
   // Initial data loading
   const createIntialSummaries = async () => {
     try {
-      const {
-        allBadgeData,
-        getWeeklySummariesReport,
-        fetchAllBadges,
-        hasPermission,
-        auth,
-        setTeamCodes,
-      } = props;
+      const { getWeeklySummariesReport, fetchAllBadges, hasPermission, auth, setTeamCodes } = props;
 
       // Get the active tab from session storage or use default
       const activeTab =
@@ -315,15 +340,16 @@ const WeeklySummariesReport = props => {
           auth.user.role === 'Owner' ||
           auth.user.role === 'Administrator',
         canSeeBioHighlight: hasPermission('highlightEligibleBios'),
+        hasSeeBadgePermission: hasPermission('seeBadges') && badgeStatusCode === 200,
       }));
 
-      // Fetch data for the active tab only
-      const res = await getWeeklySummariesReport(weekIndex);
-      // console.log('API response:', res);
-      // console.log('Response data:', res?.data);
-      // console.log('Data is array:', Array.isArray(res?.data));
-      // console.log('Data length:', res?.data?.length);
-      const summaries = res?.data ?? [];
+      // Fetch data for the active tab only with cache-busting
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
+      // console.log('API response:', response);
+      const summaries = response?.data ?? [];
 
       if (!Array.isArray(summaries) || summaries.length === 0) {
         setState(prevState => ({
@@ -433,8 +459,7 @@ const WeeklySummariesReport = props => {
         summariesByTab: {
           [activeTab]: summariesCopy,
         },
-        badges: allBadgeData,
-        hasSeeBadgePermission: badgeStatusCode === 200,
+        badges: props.allBadgeData || [],
         filteredSummaries: summariesCopy,
         tableData: teamCodeGroup,
         chartData,
@@ -561,6 +586,7 @@ const WeeklySummariesReport = props => {
       const {
         selectedCodes,
         selectedColors,
+        selectedLoggedHoursRange,
         summaries,
         selectedOverTime,
         selectedBioStatus,
@@ -610,7 +636,10 @@ const WeeklySummariesReport = props => {
         //     return false; // Skip inactive members unless their summary is from last week
         //   }
         // }
-        if (summary?.isActive === false && !isLastWeekReport(summary.startDate, summary.endDate)) {
+        if (
+          summary?.isActive === false &&
+          !doesSummaryBelongToWeek(summary.startDate, summary.endDate, weekIndex)
+        ) {
           return false;
         }
         const isMeetCriteria =
@@ -622,7 +651,7 @@ const WeeklySummariesReport = props => {
           !selectedOverTime ||
           (summary.weeklycommittedHours > 0 &&
             hoursLogged > 0 &&
-            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
+            hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)]);
 
         // Add trophy filter logic
         const summarySubmissionDate = moment()
@@ -639,6 +668,25 @@ const WeeklySummariesReport = props => {
         const matchesSpecialColor =
           activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
 
+        let matchesLoggedHoursRange = true;
+        if (selectedLoggedHoursRange && selectedLoggedHoursRange.length > 0) {
+          matchesLoggedHoursRange = selectedLoggedHoursRange.some(range => {
+            switch (range.value) {
+              case '=0':
+                return hoursLogged === 0;
+              case '0-10':
+                return hoursLogged > 0 && hoursLogged <= 10;
+              case '10-20':
+                return hoursLogged > 10 && hoursLogged <= 20;
+              case '20-40':
+                return hoursLogged > 20 && hoursLogged <= 40;
+              case '>40':
+                return hoursLogged > 40;
+              default:
+                return true;
+            }
+          });
+        }
         return (
           (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
           (selectedColorsArray.length === 0 ||
@@ -646,7 +694,8 @@ const WeeklySummariesReport = props => {
           matchesSpecialColor &&
           isOverHours &&
           isBio &&
-          hasTrophy
+          hasTrophy &&
+          matchesLoggedHoursRange
         );
       });
 
@@ -739,12 +788,12 @@ const WeeklySummariesReport = props => {
     setState(prev => ({ ...prev, refreshing: true }));
 
     try {
-      // Use the force refresh parameter
+      // Use the force refresh parameter and cache-busting timestamp
       const weekIndex = navItems.indexOf(activeTab);
-      const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
-      // console.log(`Forcing refresh of report section from: ${url}`);
-
-      const response = await axios.get(url);
+      const response = await axios.get(ENDPOINTS.WEEKLY_SUMMARIES_REPORT(), {
+        params: { week: weekIndex, forceRefresh: true, _ts: Date.now() },
+        headers: { 'Cache-Control': 'no-cache', Pragma: 'no-cache' },
+      });
 
       if (response.status === 200) {
         // Process the data
@@ -768,6 +817,7 @@ const WeeklySummariesReport = props => {
           refreshing: false,
           summaries: summariesCopy,
           filteredSummaries: summariesCopy,
+          badges: props.allBadgeData || prevState.badges,
           summariesByTab: {
             ...prevState.summariesByTab,
             [activeTab]: summariesCopy, // Also update the cached tab data
@@ -802,47 +852,45 @@ const WeeklySummariesReport = props => {
       // Save in session storage
       sessionStorage.setItem('tabSelection', tab);
 
-      // Check if we already have data for this tab
-      if (state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
-        // Use cached data
+      const weekIndex = navItems.indexOf(tab);
+
+      // Always refetch for "Last Week" so late submissions show up
+      const shouldForceFetch = tab === 'Last Week';
+
+      if (!shouldForceFetch && state.summariesByTab[tab] && state.summariesByTab[tab].length > 0) {
+        // use cache
         setState(prevState => ({
           ...prevState,
           summaries: prevState.summariesByTab[tab],
           filteredSummaries: prevState.summariesByTab[tab],
+          badges: props.allBadgeData || prevState.badges,
           tabsLoading: {
             ...prevState.tabsLoading,
             [tab]: false,
           },
         }));
       } else {
-        // Fetch new data
-        const weekIndex = navItems.indexOf(tab);
-
+        // fetch fresh
         props
           .getWeeklySummariesReport(weekIndex)
           .then(res => {
             if (res && res.data) {
-              // Process data
               let summariesCopy = [...res.data];
               summariesCopy = alphabetize(summariesCopy);
-
-              // Add promised hours data
               summariesCopy = summariesCopy.map(summary => {
                 const promisedHoursByWeek = weekDates.map(weekDate =>
                   getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory || []),
                 );
-
                 const filterColor = summary.filterColor || null;
-
                 return { ...summary, promisedHoursByWeek, filterColor };
               });
 
-              // Update state
               setState(prevState => ({
                 ...prevState,
                 summaries: summariesCopy,
                 filteredSummaries: summariesCopy,
-                loadedTabs: [...prevState.loadedTabs, tab],
+                badges: props.allBadgeData || prevState.badges,
+                loadedTabs: [...new Set([...prevState.loadedTabs, tab])],
                 summariesByTab: {
                   ...prevState.summariesByTab,
                   [tab]: summariesCopy,
@@ -863,7 +911,6 @@ const WeeklySummariesReport = props => {
             }
           })
           .catch(() => {
-            // console.error('Error loading tab data:', error);
             setState(prevState => ({
               ...prevState,
               tabsLoading: {
@@ -1304,10 +1351,23 @@ const WeeklySummariesReport = props => {
     let isMounted = true;
     window._isMounted = isMounted;
 
-    // console.log('Initial useEffect running');
+    createIntialSummaries().then(() => {
+      if (!window._isMounted) return;
+      refreshCurrentTab();
 
-    // Only load the initial tab, nothing else
-    createIntialSummaries();
+      // const nav =
+      //   performance && performance.getEntriesByType
+      //     ? performance.getEntriesByType('navigation')[0]
+      //     : null;
+
+      // // Only refresh if this navigation was a browser reload
+      // if (nav && nav.type === 'reload') {
+      //   refreshCurrentTab();
+      // } else {
+      //   // If you prefer always refreshing after initial load:
+      //   // refreshCurrentTab();
+      // }
+    });
 
     return () => {
       isMounted = false;
@@ -1331,6 +1391,7 @@ const WeeklySummariesReport = props => {
     }
   }, [
     state.selectedOverTime,
+    state.selectedLoggedHoursRange,
     state.selectedCodes,
     state.selectedBioStatus,
     state.selectedColors,
@@ -1358,6 +1419,8 @@ const WeeklySummariesReport = props => {
           canEditSummaryCount: props.hasPermission('editSummaryHoursCount'),
           // Show bio highlights only to users with that permission
           canSeeBioHighlight: props.hasPermission('highlightEligibleBios'),
+          // Show badges if user has permission and badges loaded successfully
+          hasSeeBadgePermission: props.hasPermission('seeBadges'),
         }));
       } catch (error) {
         // log failure fetching badges or permissions
@@ -1396,14 +1459,10 @@ const WeeklySummariesReport = props => {
 
   if (state.loading) {
     return (
-      <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
-        <Row className="text-center" data-testid="loading">
-          <SkeletonLoading
-            template="WeeklySummariesReport"
-            className={darkMode ? 'bg-yinmn-blue' : ''}
-          />
-        </Row>
-      </Container>
+      <SkeletonLoading
+        template="WeeklySummariesReport"
+        className={darkMode ? 'bg-yinmn-blue' : ''}
+      />
     );
   }
 
@@ -1435,7 +1494,7 @@ const WeeklySummariesReport = props => {
         currentFilter={currentAppliedFilter}
         isModification
       />
-      <Row>
+      <Row className={styles['mx-max-sm-0']}>
         <Col lg={{ size: 10, offset: 1 }}>
           <h3 className="mt-3 mb-5">
             <div className="d-flex align-items-center">
@@ -1467,8 +1526,8 @@ const WeeklySummariesReport = props => {
           </Button>
         </Row>
       )}
-      <Row>
-        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
           <div className={`${styles.filterContainerTeamcode}`}>
             <div>Select Team Code</div>
             <div className={`${styles.filterStyle}`}>
@@ -1487,266 +1546,99 @@ const WeeklySummariesReport = props => {
               </div>
             </div>
           </div>
-        </Col>
-        <Col lg={{ size: 6 }} md={{ size: 6 }} xs={{ size: 6 }}>
-          <div>Select Color</div>
-        </Col>
-      </Row>
-      <Row>
-        <Col
-          lg={{ size: 5, offset: 1 }}
-          md={{ size: 6 }}
-          xs={{ size: 6 }}
-          style={{ position: 'relative' }}
-        >
-          {state.teamCodeWarningUsers.length > 0 && (
-            <>
-              <i
-                className="fa fa-info-circle text-danger"
-                data-tip
-                data-placement="top"
-                data-for="teamCodeWarningTooltip"
-                style={{
-                  position: 'absolute',
-                  left: '-25px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  fontSize: '20px',
-                  cursor: 'pointer',
+          <div>
+            {/* MultiSelect with Save/Delete Buttons */}
+            <div style={{ position: 'relative' }}>
+              {state.teamCodeWarningUsers.length > 0 && (
+                <>
+                  <i
+                    className="fa fa-info-circle text-danger"
+                    data-tip
+                    data-placement="top"
+                    data-for="teamCodeWarningTooltip"
+                    style={{
+                      position: 'absolute',
+                      left: '-25px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                    }}
+                  />
+                  <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
+                    {state.teamCodeWarningUsers.length} users have mismatched team codes!
+                  </ReactTooltip>
+                </>
+              )}
+              <Select
+                isMulti
+                isSearchable
+                closeMenuOnSelect={false}
+                hideSelectedOptions={false}
+                blurInputOnSelect={false}
+                options={state.teamCodes.map(item => {
+                  const [code, count] = item.label.split(' (');
+                  return {
+                    ...item,
+                    label: `${code.padEnd(10, ' ')} (${count}`,
+                  };
+                })}
+                value={state.selectedCodes}
+                onChange={handleSelectCodeChange}
+                components={{
+                  Option: CheckboxOption,
+                  MenuList: CustomMenuList,
+                }}
+                placeholder="Search and select team codes..."
+                classNamePrefix="custom-select"
+                className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
+                  state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
+                }`}
+                styles={{
+                  menuList: base => ({
+                    ...base,
+                    maxHeight: '700px',
+                    overflowY: 'auto',
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    fontSize: '13px',
+                    backgroundColor: state.isFocused ? '#eee' : 'white',
+                  }),
                 }}
               />
-              <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                {state.teamCodeWarningUsers.length} users have mismatched team codes!
-              </ReactTooltip>
-            </>
-          )}
 
-          {/* MultiSelect with Save/Delete Buttons */}
-          <div style={{ position: 'relative' }}>
-            <Select
-              isMulti
-              isSearchable
-              closeMenuOnSelect={false}
-              hideSelectedOptions={false}
-              blurInputOnSelect={false}
-              options={state.teamCodes.map(item => {
-                const [code, count] = item.label.split(' (');
-                return {
-                  ...item,
-                  label: `${code.padEnd(10, ' ')} (${count}`,
-                };
-              })}
-              value={state.selectedCodes}
-              onChange={handleSelectCodeChange}
-              components={{
-                Option: CheckboxOption,
-                MenuList: CustomMenuList,
-              }}
-              placeholder="Search and select team codes..."
-              classNamePrefix="custom-select"
-              className={`custom-select-container ${darkMode ? 'dark-mode' : ''} ${
-                state.teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-              }`}
-              styles={{
-                menuList: base => ({
-                  ...base,
-                  maxHeight: '700px',
-                  overflowY: 'auto',
-                }),
-                option: (base, state) => ({
-                  ...base,
-                  fontSize: '13px',
-                  backgroundColor: state.isFocused ? '#eee' : 'white',
-                }),
-              }}
-            />
-
-            {/* Save/Delete Buttons - only visible when codes are selected */}
-            {state.selectedCodes.length > 0 && hasPermissionToFilter && (
-              <div className={styles['filter-save-buttons']}>
-                <button
-                  type="button"
-                  className={`${styles['filter-save-btn']} ${styles.save}`}
-                  onClick={handleOpenSaveFilterModal}
-                  title="Save current filter"
-                  aria-label="Save current filter"
-                >
-                  <i className="fa fa-save" />
-                </button>
-                <button
-                  type="button"
-                  className={`${styles['filter-save-btn']} ${styles.clear}`}
-                  onClick={() => handleSelectCodeChange([])}
-                  title="Clear selection"
-                  aria-label="Clear selection"
-                >
-                  <i className="fa fa-times" />
-                </button>
-              </div>
-            )}
+              {/* Save/Delete Buttons - only visible when codes are selected */}
+              {state.selectedCodes.length > 0 && hasPermissionToFilter && (
+                <div className={styles['filter-save-buttons']}>
+                  <button
+                    type="button"
+                    className={`${styles['filter-save-btn']} ${styles.save}`}
+                    onClick={handleOpenSaveFilterModal}
+                    title="Save current filter"
+                    aria-label="Save current filter"
+                  >
+                    <i className="fa fa-save" />
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles['filter-save-btn']} ${styles.clear}`}
+                    onClick={() => handleSelectCodeChange([])}
+                    title="Clear selection"
+                    aria-label="Clear selection"
+                  >
+                    <i className="fa fa-times" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
-        </Col>
-
-        <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
-          <Select
-            isMulti
-            isSearchable
-            closeMenuOnSelect={false}
-            hideSelectedOptions={false}
-            blurInputOnSelect={false}
-            options={state.colorOptions}
-            value={state.selectedColors}
-            onChange={handleSelectColorChange}
-            components={{
-              Option: CheckboxOption,
-              MenuList: CustomMenuList,
-            }}
-            placeholder="Select color filters..."
-            classNamePrefix="custom-select"
-            className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
-            styles={{
-              menuList: base => ({
-                ...base,
-                maxHeight: '700px',
-                overflowY: 'auto',
-              }),
-              option: (base, state) => ({
-                ...base,
-                fontSize: '13px',
-                backgroundColor: state.isFocused ? '#eee' : 'white',
-              }),
-            }}
-          />
-        </Col>
-      </Row>
-
-      {state.chartShow && (
-        <Row>
-          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
-            <SelectTeamPieChart
-              chartData={state.chartData}
-              COLORS={state.COLORS}
-              total={state.total}
-              style={{ width: '100%' }}
-            />
-          </Col>
-          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
-            <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
-          </Col>
-        </Row>
-      )}
-      <Row style={{ marginBottom: '10px' }}>
-        <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
-          <div className={`${styles.filterContainer}`}>
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                <span>Filter by Special Colors</span>
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
-                >
-                  {['purple', 'green', 'navy'].map(color => (
-                    <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
-                      <div className={`${styles.switchToggleControl}`}>
-                        <input
-                          type="checkbox"
-                          className={`${styles.switchToggle}`}
-                          id={`${color}-toggle`}
-                          onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
-                        />
-                        <label
-                          className={`${styles.switchToggleLabel}`}
-                          htmlFor={`${color}-toggle`}
-                        >
-                          <span className={`${styles.switchToggleInner}`} />
-                          <span className={`${styles.switchToggleSwitch}`} />
-                        </label>
-                      </div>
-                      <span
-                        style={{
-                          marginLeft: '3px',
-                          fontSize: 'inherit',
-                          textTransform: 'capitalize',
-                          whiteSpace: 'nowrap',
-                          fontWeight: 'normal',
-                        }}
-                      >
-                        {color}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                <span>Filter by Bio Status</span>
-                <div className={`${styles.switchToggleControl}`}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchToggle}`}
-                    id="bio-status-toggle"
-                    onChange={handleBioStatusToggleChange}
-                  />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="bio-status-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
-                  </label>
-                </div>
-              </div>
-            )}
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle} ${styles.marginRight}`}>
-                <span>Filter by Trophies</span>
-                <div className={`${styles.switchToggleControl}`}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchToggle}`}
-                    id="trophy-toggle"
-                    onChange={handleTrophyToggleChange}
-                  />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="trophy-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
-                  </label>
-                </div>
-              </div>
-            )}
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle}`}>
-                <span>Filter by Over Hours</span>
-                <div className={`${styles.switchToggleControl}`}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchToggle}`}
-                    id="over-hours-toggle"
-                    onChange={handleOverHoursToggleChange}
-                  />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="over-hours-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
-                  </label>
-                </div>
-                <ReactTooltip
-                  id="filterTooltip"
-                  place="top"
-                  effect="solid"
-                  className="custom-tooltip"
-                >
-                  <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
-                    Filter people who contributed more than 25% of their committed hours
-                  </span>
-                </ReactTooltip>
-              </div>
-            )}
-          </div>
-        </Col>
-      </Row>
-
-      {/* Saved Filter Buttons */}
-      {props.savedFilters && props.savedFilters.length > 0 && (
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}>
+          {/* Saved Filter Buttons */}
+          {props.savedFilters && props.savedFilters.length > 0 && (
+            <div
+              style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', alignItems: 'center' }}
+              className="my-3"
+            >
               {props.savedFilters.map(filter => (
                 <div
                   key={filter._id}
@@ -1790,13 +1682,203 @@ const WeeklySummariesReport = props => {
                 </div>
               ))}
             </div>
+          )}
+        </Col>
+        <Col lg={{ size: 5 }} md={{ size: 6 }} xs={{ size: 12 }}>
+          <div>Select Color</div>
+          <Select
+            isMulti
+            isSearchable
+            closeMenuOnSelect={false}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
+            options={state.colorOptions}
+            value={state.selectedColors}
+            onChange={handleSelectColorChange}
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
+            placeholder="Select color filters..."
+            classNamePrefix="custom-select"
+            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              menuList: base => ({
+                ...base,
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }),
+              option: (base, state) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: state.isFocused ? '#eee' : 'white',
+              }),
+            }}
+          />
+          <div className={`${styles.filterContainer}`}>
+            {hasPermissionToFilter && (
+              <div className={`${styles.filterStyle}`}>
+                <span>Filter by Special Colors</span>
+                <div
+                  style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
+                >
+                  {['purple', 'green', 'navy'].map(color => (
+                    <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
+                      <div className={`${styles.switchToggleControl}`}>
+                        <input
+                          type="checkbox"
+                          className={`${styles.switchToggle}`}
+                          id={`${color}-toggle`}
+                          onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
+                        />
+                        <label
+                          className={`${styles.switchToggleLabel}`}
+                          htmlFor={`${color}-toggle`}
+                        >
+                          <span className={`${styles.switchToggleInner}`} />
+                          <span className={`${styles.switchToggleSwitch}`} />
+                        </label>
+                      </div>
+                      <span
+                        style={{
+                          marginLeft: '3px',
+                          fontSize: 'inherit',
+                          textTransform: 'capitalize',
+                          whiteSpace: 'nowrap',
+                          fontWeight: 'normal',
+                        }}
+                      >
+                        {color}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
+              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
+                <span>Filter by Bio Status</span>
+                <div className={styles.switchToggleControl}>
+                  <input
+                    type="checkbox"
+                    className={styles.switchToggle}
+                    id="bio-status-toggle"
+                    onChange={handleBioStatusToggleChange}
+                  />
+                  <label className={styles.switchToggleLabel} htmlFor="bio-status-toggle">
+                    <span className={styles.switchToggleInner} />
+                    <span className={styles.switchToggleSwitch} />
+                  </label>
+                </div>
+              </div>
+            )}
+            {hasPermissionToFilter && (
+              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
+                <span>Filter by Trophies</span>
+                <div className={`${styles.switchToggleControl}`}>
+                  <input
+                    type="checkbox"
+                    className={`${styles.switchToggle}`}
+                    id="trophy-toggle"
+                    onChange={handleTrophyToggleChange}
+                  />
+                  <label className={`${styles.switchToggleLabel}`} htmlFor="trophy-toggle">
+                    <span className={`${styles.switchToggleInner}`} />
+                    <span className={`${styles.switchToggleSwitch}`} />
+                  </label>
+                </div>
+              </div>
+            )}
+            {hasPermissionToFilter && (
+              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
+                <span>Filter by Over Hours</span>
+                <div className={`${styles.switchToggleControl}`}>
+                  <input
+                    type="checkbox"
+                    className={`${styles.switchToggle}`}
+                    id="over-hours-toggle"
+                    onChange={handleOverHoursToggleChange}
+                  />
+                  <label className={`${styles.switchToggleLabel}`} htmlFor="over-hours-toggle">
+                    <span className={`${styles.switchToggleInner}`} />
+                    <span className={`${styles.switchToggleSwitch}`} />
+                  </label>
+                </div>
+                <ReactTooltip
+                  id="filterTooltip"
+                  place="top"
+                  effect="solid"
+                  className="custom-tooltip"
+                >
+                  <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
+                    Filter people who contributed more than 25% of their committed hours
+                  </span>
+                </ReactTooltip>
+              </div>
+            )}
+          </div>
+        </Col>
+      </Row>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col lg={{ size: 5, offset: 6 }} md={{ size: 6 }} xs={{ size: 12 }}>
+          <div>Logged Hours Range</div>
+          <Select
+            isMulti
+            placeholder="Select range..."
+            components={{
+              Option: CheckboxOption,
+              MenuList: CustomMenuList,
+            }}
+            options={[
+              { value: '0', label: '0' },
+              { value: '0-10', label: '0-10' },
+              { value: '10-20', label: '10-20' },
+              { value: '20-40', label: '20-40' },
+              { value: '>40', label: '>40' },
+            ]}
+            hideSelectedOptions={false}
+            blurInputOnSelect={false}
+            closeMenuOnSelect={false}
+            className={`${styles.multiSelectFilter} text-dark ${darkMode ? 'dark-mode' : ''}`}
+            styles={{
+              menuList: base => ({
+                ...base,
+                maxHeight: '700px',
+                overflowY: 'auto',
+              }),
+              option: (base, state) => ({
+                ...base,
+                fontSize: '13px',
+                backgroundColor: state.isFocused ? '#eee' : 'white',
+              }),
+            }}
+            value={state.selectedLoggedHoursRange}
+            onChange={selectedOption =>
+              setState({ ...state, selectedLoggedHoursRange: selectedOption })
+            }
+          />
+        </Col>
+      </Row>
+
+      {state.chartShow && (
+        <Row className={styles['mx-max-sm-0']}>
+          <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 12 }}>
+            <SelectTeamPieChart
+              chartData={state.chartData}
+              COLORS={state.COLORS}
+              total={state.total}
+              style={{ width: '100%' }}
+            />
+          </Col>
+          <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 12 }} style={{ width: '100%' }}>
+            <TeamChart teamData={state.structuredTableData} darkMode={darkMode} />
           </Col>
         </Row>
       )}
 
       {permissionState.codeEditPermission && state.selectedCodes && state.selectedCodes.length > 0 && (
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+        <Row className={styles['mx-max-sm-0']} style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 12 }}>
             Replace With
             <Input
               type="string"
@@ -1825,8 +1907,8 @@ const WeeklySummariesReport = props => {
           </Col>
         </Row>
       )}
-      <Row>
-        <Col lg={{ size: 10, offset: 1 }}>
+      <Row className={styles['mx-max-sm-0']}>
+        <Col lg={{ size: 10, offset: 1 }} xs={{ size: 12 }}>
           <Nav tabs>
             {navItems.map(item => (
               <NavItem key={item}>
@@ -1848,7 +1930,7 @@ const WeeklySummariesReport = props => {
             {navItems.map((item, index) => (
               <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== state.activeTab}>
                 {state.tabsLoading[item] ? (
-                  <Row className="text-center py-4">
+                  <Row className={`text-center py-4 ${styles['mx-max-sm-0']}`}>
                     <Col>
                       <Spinner color="primary" />
                       <p>Loading data...</p>
@@ -1856,7 +1938,7 @@ const WeeklySummariesReport = props => {
                   </Row>
                 ) : (
                   <>
-                    <Row>
+                    <Row className={styles['mx-max-sm-0']}>
                       <Col sm="12" md="6" className="mb-2">
                         From <b>{weekDates[index].fromDate}</b> to <b>{weekDates[index].toDate}</b>
                       </Col>
@@ -1871,16 +1953,27 @@ const WeeklySummariesReport = props => {
                           weekDates={weekDates[index]}
                           darkMode={darkMode}
                         />
-                        {state.hasSeeBadgePermission && (
-                          <Button
-                            className="btn--dark-sea-green"
-                            style={darkMode ? boxStyleDark : boxStyle}
-                            onClick={() =>
-                              setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
-                            }
-                          >
-                            {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
-                          </Button>
+                        {permissionState.hasSeeBadgePermission && (
+                          <>
+                            <Button
+                              className="btn--dark-sea-green mr-2"
+                              style={darkMode ? boxStyleDark : boxStyle}
+                              onClick={() =>
+                                setState(prev => ({ ...prev, loadBadges: !state.loadBadges }))
+                              }
+                            >
+                              {state.loadBadges ? 'Hide Badges' : 'Load Badges'}
+                            </Button>
+                            <Button
+                              className="btn--dark-sea-green"
+                              style={darkMode ? boxStyleDark : boxStyle}
+                              onClick={() =>
+                                setState(prev => ({ ...prev, loadTrophies: !state.loadTrophies }))
+                              }
+                            >
+                              {state.loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
+                            </Button>
+                          </>
                         )}
                         <Button
                           className="btn--dark-sea-green mr-2"
@@ -1965,7 +2058,7 @@ const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   getWeeklySummariesReport: weekIndex => dispatch(getWeeklySummariesReport(weekIndex)),
   hasPermission: permission => dispatch(hasPermission(permission)),
-  getInfoCollections: () => getInfoCollections(),
+  getInfoCollections: () => dispatch(getInfoCollections()),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),

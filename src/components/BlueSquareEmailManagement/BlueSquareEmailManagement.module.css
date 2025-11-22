@@ -1,0 +1,50 @@
+/* Simple styling for Blue Square Email Management */
+:global(.bg-oxford-blue) {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Card styling for consistent height */
+:global(.card.h-100) {
+  height: 100% !important;
+}
+
+:global(.card-body.d-flex.flex-column) {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+:global(.card-text.flex-grow-1) {
+  flex-grow: 1 !important;
+}
+
+:global(.btn.mt-auto) {
+  margin-top: auto !important;
+}
+
+/* Button styling to remove weird lining */
+:global(.btn) {
+  border: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+}
+
+:global(.btn:focus) {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+:global(.btn:active) {
+  transform: none !important;
+}
+
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+:global(.fa-spinner) {
+  animation: spin 1s linear infinite;
+}
+
