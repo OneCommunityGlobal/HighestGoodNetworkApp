@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import './DevSignup.module.css';
+import styles from './DevSignup.module.css';
 
 const DevSignup = () => {
   const [form, setForm] = useState({
@@ -32,103 +32,94 @@ const DevSignup = () => {
   };
 
   return (
-    <div className="devsignup-container">
-      <div className="devsignup-card">
-        <h2 className="devsignup-title">
+    <div className={styles.container}>
+      <h2 className={styles.title}>
+        Create Dev Account <span>(Linked to Production)</span>
+      </h2>
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <label htmlFor="productionEmail" className={styles.label}>
+          Production Email
+        </label>
+        <input
+          id="productionEmail"
+          type="email"
+          name="productionEmail"
+          value={form.productionEmail}
+          onChange={handleChange}
+          className={styles.input}
+          required
+        />
+
+        <label htmlFor="productionPassword" className={styles.label}>
+          Production Password
+        </label>
+        <input
+          id="productionPassword"
+          type="password"
+          name="productionPassword"
+          value={form.productionPassword}
+          onChange={handleChange}
+          className={styles.input}
+          required
+        />
+
+        <label htmlFor="firstName" className={styles.label}>
+          First Name
+        </label>
+        <input
+          id="firstName"
+          type="text"
+          name="firstName"
+          value={form.firstName}
+          onChange={handleChange}
+          className={styles.input}
+          required
+        />
+
+        <label htmlFor="lastName" className={styles.label}>
+          Last Name
+        </label>
+        <input
+          id="lastName"
+          type="text"
+          name="lastName"
+          value={form.lastName}
+          onChange={handleChange}
+          className={styles.input}
+          required
+        />
+
+        <label htmlFor="email" className={styles.label}>
+          Dev Account Email
+        </label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          className={styles.input}
+          required
+        />
+
+        <label htmlFor="devPassword" className={styles.label}>
+          Dev Account Password
+        </label>
+        <input
+          id="devPassword"
+          type="password"
+          name="devPassword"
+          value={form.devPassword}
+          onChange={handleChange}
+          className={styles.input}
+          required
+        />
+
+        <button type="submit" className={styles.button}>
           Create Dev Account
-          <span className="devsignup-subtitle">(Linked to Production)</span>
-        </h2>
-
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="productionEmail" className={styles.inputLabel}>
-            Production Email
-          </label>
-          <input
-            id="productionEmail"
-            type="email"
-            name="productionEmail"
-            className={styles.inputField}
-            value={form.productionEmail}
-            onChange={handleChange}
-            required
-          />
-
-          <label htmlFor="productionPassword" className={styles.inputLabel}>
-            Production Password
-          </label>
-          <input
-            id="productionPassword"
-            type="password"
-            name="productionPassword"
-            className={styles.inputField}
-            value={form.productionPassword}
-            onChange={handleChange}
-            required
-          />
-
-          <div className="name-row">
-            <div className="name-field">
-              <label htmlFor="firstName" className={styles.inputLabel}>
-                First Name
-              </label>
-              <input
-                id="firstName"
-                type="text"
-                name="firstName"
-                className={styles.inputField}
-                value={form.firstName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="name-field">
-              <label htmlFor="lastName" className={styles.inputLabel}>
-                Last Name
-              </label>
-              <input
-                id="lastName"
-                type="text"
-                name="lastName"
-                className={styles.inputField}
-                value={form.lastName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-
-          <label htmlFor="email" className={styles.inputLabel}>
-            Dev Account Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            className={styles.inputField}
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
-
-          <label htmlFor="devPassword" className={styles.inputLabel}>
-            Dev Account Password
-          </label>
-          <input
-            id="devPassword"
-            type="password"
-            name="devPassword"
-            className={styles.inputField}
-            value={form.devPassword}
-            onChange={handleChange}
-            required
-          />
-
-          <button type="submit" className="submit-btn">
-            Create Dev Account
-          </button>
-        </form>
-      </div>
+        </button>
+      </form>
     </div>
   );
 };
