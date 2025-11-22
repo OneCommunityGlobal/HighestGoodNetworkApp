@@ -28,6 +28,53 @@
   min-height: 100vh;
   background-color: var(--bg-light);
   padding: 0;
+  margin-left: 200px;
+  transition: margin-left 0.3s ease;
+}
+
+/* When sidebar is minimized, expand the content */
+.evaluationResultsPage[data-sidebar-minimized='true'] {
+  margin-left: 70px;
+}
+
+@media (max-width: 991px) {
+  .evaluationResultsPage {
+    margin-left: 180px;
+  }
+
+  .evaluationResultsPage[data-sidebar-minimized='true'] {
+    margin-left: 70px;
+  }
+}
+
+@media (max-width: 767px) {
+  .evaluationResultsPage {
+    margin-left: 240px;
+  }
+
+  .evaluationResultsPage[data-sidebar-minimized='true'] {
+    margin-left: 70px;
+  }
+}
+
+@media (max-width: 480px) {
+  .evaluationResultsPage {
+    margin-left: 220px;
+  }
+
+  .evaluationResultsPage[data-sidebar-minimized='true'] {
+    margin-left: 70px;
+  }
+}
+
+@media (max-width: 359px) {
+  .evaluationResultsPage {
+    margin-left: 200px;
+  }
+
+  .evaluationResultsPage[data-sidebar-minimized='true'] {
+    margin-left: 70px;
+  }
 }
 
 /* ============================================================================
@@ -1425,23 +1472,247 @@
 }
 
 /* ============================================================================
-   MODAL RESPONSIVE BREAKPOINTS
+   MOBILE RESPONSIVE BREAKPOINTS
    ============================================================================ */
 
-/* Large screens - limit modal width for better readability */
-@media (min-width: 1200px) {
-  .feedbackModal .modal-dialog {
-    max-width: 900px;
+/* Tablets (768px and below) */
+@media (max-width: 991px) and (min-width: 768px) {
+  .evaluationResultsPage {
+    margin-left: 180px;
   }
 }
 
-/* Medium screens - optimize modal layout */
-@media (min-width: 992px) and (max-width: 1199px) {
-  .feedbackModal .modal-dialog {
-    max-width: 800px;
+/* Mobile phones (767px and below) */
+@media (max-width: 767px) {
+  .evaluationResultsPage {
+    margin-left: 240px;
   }
-  
-  .performanceSummary {
-    grid-template-columns: repeat(3, 1fr);
+
+  .headerSection {
+    padding: 1.5rem 0;
+    margin-bottom: 1rem;
+  }
+
+  .headerContent {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .headerRight {
+    position: relative;
+    right: auto;
+    top: auto;
+    margin-top: 1rem;
+  }
+
+  .pageTitle {
+    font-size: 1.5rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.85rem;
+  }
+
+  .mainContent {
+    padding: 0 1rem;
+  }
+
+  .overallSection {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .overallScore {
+    width: 100%;
+  }
+
+  .categorySection,
+  .assignmentSection,
+  .insightsSection,
+  .teacherFeedbackSection {
+    margin-bottom: 1rem;
+  }
+
+  .tableContainer {
+    overflow-x: auto;
+    border-radius: 0;
+  }
+
+  .performanceTable {
+    font-size: 0.75rem;
+  }
+
+  .performanceTable th,
+  .performanceTable td {
+    padding: 0.5rem;
+  }
+
+  .mobileAssignments {
+    display: block;
+  }
+
+  .assignmentTable {
+    display: none;
+  }
+
+  .assignmentCard {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+  }
+
+  .feedbackColumns {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .summaryCards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .summaryCard {
+    padding: 0.75rem;
+  }
+
+  .cardNumber {
+    font-size: 1.5rem;
+  }
+
+  .cardLabel {
+    font-size: 0.75rem;
+  }
+}
+
+/* Mobile phones (480px and below) */
+@media (max-width: 480px) {
+  .evaluationResultsPage {
+    margin-left: 220px;
+  }
+
+  .headerSection {
+    padding: 1rem 0;
+    margin-bottom: 0.75rem;
+  }
+
+  .pageTitle {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pageSubtitle {
+    font-size: 0.8rem;
+  }
+
+  .mainContent {
+    padding: 0 0.75rem;
+  }
+
+  .overallSection {
+    padding: 0.75rem;
+  }
+
+  .userWelcome {
+    flex-wrap: wrap;
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .performanceTable {
+    font-size: 0.65rem;
+  }
+
+  .performanceTable th,
+  .performanceTable td {
+    padding: 0.35rem;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+  }
+
+  .feedbackColumns {
+    gap: 0.75rem;
+  }
+
+  .strengthsSection,
+  .improvementsSection {
+    padding: 0.75rem;
+  }
+
+  .feedbackList {
+    padding-left: 1rem;
+  }
+
+  .feedbackItem {
+    padding: 0.5rem 0;
+    font-size: 0.8rem;
+  }
+
+  .summaryCards {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .summaryCard {
+    padding: 0.5rem;
+  }
+
+  .cardNumber {
+    font-size: 1.25rem;
+  }
+
+  .cardLabel {
+    font-size: 0.7rem;
+  }
+
+  .actionButtons {
+    flex-direction: column;
+  }
+
+  .actionButton {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .feedbackButton {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+}
+
+/* Small phones (below 360px) */
+@media (max-width: 359px) {
+  .evaluationResultsPage {
+    margin-left: 200px;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
+  }
+
+  .mainContent {
+    padding: 0 0.5rem;
+  }
+
+  .overallScore .scoreText {
+    font-size: 1.5rem;
+  }
+
+  .performanceTable {
+    font-size: 0.6rem;
+  }
+
+  .performanceTable th,
+  .performanceTable td {
+    padding: 0.25rem;
   }
 }

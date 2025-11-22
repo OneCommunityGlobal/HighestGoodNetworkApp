@@ -138,7 +138,7 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
-import EvaluationResults from './components/EductionPortal/EvaluationResults/EvaluationResults';
+import EvaluationResultsWrapper from './components/EductionPortal/EvaluationResultsWrapper';
 
 import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
 
@@ -685,7 +685,7 @@ export default (
         <EPProtectedRoute
           path="/educationportal/evaluation-results"
           exact
-          component={EvaluationResults}
+          component={EvaluationResultsWrapper}
         />
         <Route path="/educationportal/login" component={EPLogin} />
 

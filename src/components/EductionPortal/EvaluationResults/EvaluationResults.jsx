@@ -15,10 +15,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import styles from './EvaluationResults.module.css';
+import SideBar from '../SideBar/SideBar';
+import { useSidebar } from '../SidebarContext';
 import EvaluationNotificationService from './evaluationNotificationService';
 import { mockEvaluationData } from './mockData_new';
 
 const EvaluationResults = ({ auth }) => {
+  const { isMinimized } = useSidebar();
   const [evaluationData, setEvaluationData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -146,380 +149,389 @@ const EvaluationResults = ({ auth }) => {
   };
 
   return (
-    <div className={styles.evaluationResultsPage}>
-      {/* New Clean Header */}
-      <div className={styles.headerSection}>
-        <Container>
-          <div className={styles.headerContent}>
-            <div className={styles.headerLeft}>
-              <h1 className={styles.pageTitle}>Evaluation Results</h1>
-              <p className={styles.pageSubtitle}>
-                Comprehensive overview of your grades, performance on assignments, and detailed
-                feedback from teachers
-              </p>
-            </div>
-            <div className={styles.headerRight}>
-              <div className={styles.userWelcome}>
-                <FontAwesomeIcon icon={faUser} className={styles.userIcon} />
-                <span>Welcome, {auth?.user?.firstName || 'Student Name'}</span>
+    <>
+      <SideBar />
+      <div className={styles.evaluationResultsPage} data-sidebar-minimized={isMinimized}>
+        {/* New Clean Header */}
+        <div className={styles.headerSection}>
+          <Container>
+            <div className={styles.headerContent}>
+              <div className={styles.headerLeft}>
+                <h1 className={styles.pageTitle}>Evaluation Results</h1>
+                <p className={styles.pageSubtitle}>
+                  Comprehensive overview of your grades, performance on assignments, and detailed
+                  feedback from teachers
+                </p>
               </div>
-              <FontAwesomeIcon icon={faBell} className={styles.notificationIcon} />
+              <div className={styles.headerRight}>
+                <div className={styles.userWelcome}>
+                  <FontAwesomeIcon icon={faUser} className={styles.userIcon} />
+                  <span>Welcome, {auth?.user?.firstName || 'Student Name'}</span>
+                </div>
+                <FontAwesomeIcon icon={faBell} className={styles.notificationIcon} />
+              </div>
+            </div>
+          </Container>
+        </div>
+
+        <Container className={styles.mainContent}>
+          {/* Overall Performance Summary */}
+          <div className={styles.overallSection}>
+            <div className={styles.sectionHeader}>
+              <h3>Overall Performance Summary</h3>
+              <div className={styles.overallScore}>
+                <span className={styles.scoreText}>{percentageScore}%</span>
+                <span className={styles.scoreLabel}>Overall Grade</span>
+              </div>
+            </div>
+            <div className={styles.progressSection}>
+              <div className={styles.progressBar}>
+                <div className={styles.progressFill} style={{ width: `${percentageScore}%` }}></div>
+              </div>
+              <div className={styles.scoreDetails}>
+                <span>
+                  Total Score: {totalEarnedPoints}/{totalPossiblePoints} points
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Category Performance Table */}
+          <div className={styles.categorySection}>
+            <h3 className={styles.sectionTitle}>Overall Performance Summary</h3>
+            <div className={styles.tableContainer}>
+              <table className={styles.performanceTable}>
+                <thead>
+                  <tr>
+                    <th>Category</th>
+                    <th>Weightage</th>
+                    <th>Items</th>
+                    <th>Total Points</th>
+                    <th>Your Score</th>
+                    <th>Percentage</th>
+                    <th>Performance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {categories.map(category => (
+                    <tr key={category.id}>
+                      <td className={styles.categoryName}>{category.name}</td>
+                      <td>{category.weightage}%</td>
+                      <td>{category.completedItems}</td>
+                      <td>{category.totalMarks}</td>
+                      <td>{category.earnedMarks}</td>
+                      <td>{Math.round(category.percentage)}%</td>
+                      <td>
+                        <div className={styles.performanceBar}>
+                          <div
+                            className={`${styles.performanceFill} ${
+                              styles[getPerformanceColor(category.percentage)]
+                            }`}
+                            style={{ width: `${category.percentage}%` }}
+                          ></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Performance Insights */}
+          <div className={styles.insightsSection}>
+            <div className={styles.insightsBox}>
+              <h4>Performance Insights</h4>
+              <p>
+                You performed strongly in <strong>Assignments (80%)</strong>,{' '}
+                <strong>Exams (80%)</strong>, and <strong>Participation (80%)</strong>. You may
+                improve your performance in <strong>Quizzes (60%)</strong> - consider reviewing quiz
+                preparation strategies.
+              </p>
+              <div className={styles.actionButtons}>
+                <button className={styles.actionButton}>Review Quiz Messages</button>
+                <button className={styles.actionButton}>Study Schedule Tips</button>
+              </div>
+            </div>
+          </div>
+
+          {/* Individual Assignment & Task Results */}
+          <div className={styles.assignmentSection}>
+            <h3 className={styles.sectionTitle}>Individual Assignment & Task Results</h3>
+            <div className={styles.tableContainer}>
+              <table className={styles.assignmentTable}>
+                <thead>
+                  <tr>
+                    <th>Assignment Name</th>
+                    <th>Weightage</th>
+                    <th>Your Marks</th>
+                    <th>Percentage</th>
+                    <th>Status</th>
+                    <th>Feedback</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tasks.slice(0, 6).map(task => (
+                    <tr key={task.id}>
+                      <td>
+                        <div className={styles.assignmentInfo}>
+                          <div className={styles.assignmentName}>{task.name}</div>
+                          <div className={styles.assignmentDate}>
+                            Submitted: {new Date(task.submissionDate).toLocaleDateString()}
+                          </div>
+                        </div>
+                      </td>
+                      <td>{task.weightage || '8'}%</td>
+                      <td>
+                        {task.earnedMarks}/{task.totalMarks}
+                      </td>
+                      <td>
+                        <span className={getPerformanceColorClass(task.percentage)}>
+                          {Math.round(task.percentage)}%
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`${styles.statusBadge} ${styles[getStatusClass(task.status)]}`}
+                        >
+                          {task.status || 'On time'}
+                        </span>
+                      </td>
+                      <td>
+                        <button
+                          className={styles.feedbackButton}
+                          onClick={() => openFeedbackModal(task)}
+                        >
+                          <FontAwesomeIcon icon={faEye} className={styles.buttonIcon} />
+                          View Feedback
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards (shown on small screens) */}
+            <div className={styles.mobileAssignments}>
+              {tasks.slice(0, 6).map(task => (
+                <div className={styles.assignmentCard} key={task.id}>
+                  <div className={styles.cardHeader}>
+                    <div className={styles.assignmentName}>{task.name}</div>
+                    <span
+                      className={`${styles.statusBadge} ${styles[getStatusClass(task.status)]}`}
+                    >
+                      {task.status || 'On time'}
+                    </span>
+                  </div>
+                  <div className={styles.cardMeta}>
+                    <div className={styles.cardMetaItem}>
+                      <strong>Weightage:</strong> {task.weightage || '8'}%
+                    </div>
+                    <div className={styles.cardMetaItem}>
+                      <strong>Score:</strong> {task.earnedMarks}/{task.totalMarks}
+                      <span className={getPerformanceColorClass(task.percentage)}>
+                        {' '}
+                        ({Math.round(task.percentage)}%)
+                      </span>
+                    </div>
+                    <div className={styles.cardMetaItem}>
+                      <strong>Submitted:</strong>{' '}
+                      {new Date(task.submissionDate).toLocaleDateString()}
+                    </div>
+                  </div>
+                  <div className={styles.cardActions}>
+                    <button
+                      className={styles.feedbackButton}
+                      onClick={() => openFeedbackModal(task)}
+                    >
+                      <FontAwesomeIcon icon={faEye} className={styles.buttonIcon} />
+                      View Feedback
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Teacher Feedback Section */}
+          <div className={styles.teacherFeedbackSection}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.sectionTitle}>
+                <FontAwesomeIcon icon={faGraduationCap} className={styles.sectionIcon} />
+                Teacher Feedback - Structured feedback display with strengths and recommendations
+              </h3>
+              <div className={styles.teacherInfo}>
+                <span className={styles.teacherName}>
+                  {evaluationData.teacherFeedback.teacherName}
+                </span>
+                <span className={styles.teacherTitle}>
+                  {evaluationData.teacherFeedback.teacherTitle}
+                </span>
+              </div>
+            </div>
+
+            <div className={styles.feedbackContent}>
+              {/* Overall Feedback */}
+              <div className={styles.overallFeedback}>
+                <h4 className={styles.feedbackSubtitle}>Overall Assessment</h4>
+                <p className={styles.feedbackText}>{evaluationData.teacherFeedback.overall}</p>
+              </div>
+
+              {/* Strengths and Improvements */}
+              <div className={styles.feedbackColumns}>
+                <div className={styles.strengthsSection}>
+                  <h4 className={styles.feedbackSubtitle}>
+                    <FontAwesomeIcon icon={faUser} className={styles.feedbackIcon} />
+                    Strengths
+                  </h4>
+                  <ul className={styles.feedbackList}>
+                    {evaluationData.teacherFeedback.strengths.map((strength, index) => (
+                      <li key={index} className={styles.feedbackItem}>
+                        <span className={styles.checkmark}>✓</span>
+                        <span className={styles.feedbackTextItem}>{strength}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className={styles.improvementsSection}>
+                  <h4 className={styles.feedbackSubtitle}>
+                    <FontAwesomeIcon icon={faExclamationTriangle} className={styles.feedbackIcon} />
+                    Areas for Improvement
+                  </h4>
+                  <ul className={styles.feedbackList}>
+                    {evaluationData.teacherFeedback.improvements.map((improvement, index) => (
+                      <li key={index} className={styles.feedbackItem}>
+                        <span className={styles.arrow}>→</span>
+                        <span className={styles.feedbackTextItem}>{improvement}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary Cards */}
+          <div className={styles.summaryCards}>
+            <div className={styles.summaryCard}>
+              <div className={`${styles.cardNumber} ${styles.total}`}>6</div>
+              <div className={styles.cardLabel}>Total Assignments</div>
+            </div>
+            <div className={styles.summaryCard}>
+              <div className={`${styles.cardNumber} ${styles.onTime}`}>5</div>
+              <div className={styles.cardLabel}>On Time</div>
+            </div>
+            <div className={styles.summaryCard}>
+              <div className={`${styles.cardNumber} ${styles.late}`}>1</div>
+              <div className={styles.cardLabel}>Late Submissions</div>
+            </div>
+            <div className={styles.summaryCard}>
+              <div className={`${styles.cardNumber} ${styles.average}`}>72%</div>
+              <div className={styles.cardLabel}>Avg Score</div>
             </div>
           </div>
         </Container>
-      </div>
 
-      <Container className={styles.mainContent}>
-        {/* Overall Performance Summary */}
-        <div className={styles.overallSection}>
-          <div className={styles.sectionHeader}>
-            <h3>Overall Performance Summary</h3>
-            <div className={styles.overallScore}>
-              <span className={styles.scoreText}>{percentageScore}%</span>
-              <span className={styles.scoreLabel}>Overall Grade</span>
-            </div>
-          </div>
-          <div className={styles.progressSection}>
-            <div className={styles.progressBar}>
-              <div className={styles.progressFill} style={{ width: `${percentageScore}%` }}></div>
-            </div>
-            <div className={styles.scoreDetails}>
-              <span>
-                Total Score: {totalEarnedPoints}/{totalPossiblePoints} points
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* Category Performance Table */}
-        <div className={styles.categorySection}>
-          <h3 className={styles.sectionTitle}>Overall Performance Summary</h3>
-          <div className={styles.tableContainer}>
-            <table className={styles.performanceTable}>
-              <thead>
-                <tr>
-                  <th>Category</th>
-                  <th>Weightage</th>
-                  <th>Items</th>
-                  <th>Total Points</th>
-                  <th>Your Score</th>
-                  <th>Percentage</th>
-                  <th>Performance</th>
-                </tr>
-              </thead>
-              <tbody>
-                {categories.map(category => (
-                  <tr key={category.id}>
-                    <td className={styles.categoryName}>{category.name}</td>
-                    <td>{category.weightage}%</td>
-                    <td>{category.completedItems}</td>
-                    <td>{category.totalMarks}</td>
-                    <td>{category.earnedMarks}</td>
-                    <td>{Math.round(category.percentage)}%</td>
-                    <td>
-                      <div className={styles.performanceBar}>
-                        <div
-                          className={`${styles.performanceFill} ${
-                            styles[getPerformanceColor(category.percentage)]
-                          }`}
-                          style={{ width: `${category.percentage}%` }}
-                        ></div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Performance Insights */}
-        <div className={styles.insightsSection}>
-          <div className={styles.insightsBox}>
-            <h4>Performance Insights</h4>
-            <p>
-              You performed strongly in <strong>Assignments (80%)</strong>,{' '}
-              <strong>Exams (80%)</strong>, and <strong>Participation (80%)</strong>. You may
-              improve your performance in <strong>Quizzes (60%)</strong> - consider reviewing quiz
-              preparation strategies.
-            </p>
-            <div className={styles.actionButtons}>
-              <button className={styles.actionButton}>Review Quiz Messages</button>
-              <button className={styles.actionButton}>Study Schedule Tips</button>
-            </div>
-          </div>
-        </div>
-
-        {/* Individual Assignment & Task Results */}
-        <div className={styles.assignmentSection}>
-          <h3 className={styles.sectionTitle}>Individual Assignment & Task Results</h3>
-          <div className={styles.tableContainer}>
-            <table className={styles.assignmentTable}>
-              <thead>
-                <tr>
-                  <th>Assignment Name</th>
-                  <th>Weightage</th>
-                  <th>Your Marks</th>
-                  <th>Percentage</th>
-                  <th>Status</th>
-                  <th>Feedback</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasks.slice(0, 6).map(task => (
-                  <tr key={task.id}>
-                    <td>
-                      <div className={styles.assignmentInfo}>
-                        <div className={styles.assignmentName}>{task.name}</div>
-                        <div className={styles.assignmentDate}>
-                          Submitted: {new Date(task.submissionDate).toLocaleDateString()}
-                        </div>
-                      </div>
-                    </td>
-                    <td>{task.weightage || '8'}%</td>
-                    <td>
-                      {task.earnedMarks}/{task.totalMarks}
-                    </td>
-                    <td>
-                      <span className={getPerformanceColorClass(task.percentage)}>
-                        {Math.round(task.percentage)}%
-                      </span>
-                    </td>
-                    <td>
-                      <span
-                        className={`${styles.statusBadge} ${styles[getStatusClass(task.status)]}`}
-                      >
-                        {task.status || 'On time'}
-                      </span>
-                    </td>
-                    <td>
-                      <button
-                        className={styles.feedbackButton}
-                        onClick={() => openFeedbackModal(task)}
-                      >
-                        <FontAwesomeIcon icon={faEye} className={styles.buttonIcon} />
-                        View Feedback
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Mobile Cards (shown on small screens) */}
-          <div className={styles.mobileAssignments}>
-            {tasks.slice(0, 6).map(task => (
-              <div className={styles.assignmentCard} key={task.id}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.assignmentName}>{task.name}</div>
-                  <span className={`${styles.statusBadge} ${styles[getStatusClass(task.status)]}`}>
-                    {task.status || 'On time'}
-                  </span>
-                </div>
-                <div className={styles.cardMeta}>
-                  <div className={styles.cardMetaItem}>
-                    <strong>Weightage:</strong> {task.weightage || '8'}%
-                  </div>
-                  <div className={styles.cardMetaItem}>
-                    <strong>Score:</strong> {task.earnedMarks}/{task.totalMarks}
-                    <span className={getPerformanceColorClass(task.percentage)}>
-                      {' '}
-                      ({Math.round(task.percentage)}%)
+        {/* Feedback Detail Modal */}
+        <Modal
+          isOpen={feedbackModal.isOpen}
+          toggle={closeFeedbackModal}
+          size="lg"
+          className={styles.feedbackModal}
+          scrollable={true}
+          centered={true}
+        >
+          <ModalHeader toggle={closeFeedbackModal} className={styles.modalHeader}>
+            <FontAwesomeIcon icon={faAward} className={styles.modalIcon} />
+            <span className={styles.modalTitle}>Assignment Feedback Details</span>
+          </ModalHeader>
+          <ModalBody className={styles.modalBody}>
+            {feedbackModal.task && (
+              <div className={styles.feedbackModalContent}>
+                {/* Assignment Header */}
+                <div className={styles.assignmentHeader}>
+                  <h4 className={styles.assignmentTitle}>{feedbackModal.task.name}</h4>
+                  <div className={styles.assignmentMeta}>
+                    <span className={styles.assignmentType}>
+                      <FontAwesomeIcon icon={faGraduationCap} />
+                      {feedbackModal.task.type}
+                    </span>
+                    <span className={styles.assignmentDate}>
+                      <FontAwesomeIcon icon={faCalendarAlt} />
+                      Due: {new Date(feedbackModal.task.dueDate).toLocaleDateString()}
                     </span>
                   </div>
-                  <div className={styles.cardMetaItem}>
-                    <strong>Submitted:</strong> {new Date(task.submissionDate).toLocaleDateString()}
+                </div>
+
+                {/* Performance Summary */}
+                <div className={styles.performanceSummary}>
+                  <div className={styles.performanceItem}>
+                    <div className={styles.performanceLabel}>Your Score</div>
+                    <div
+                      className={`${styles.performanceValue} ${getPerformanceColorClass(
+                        feedbackModal.task.percentage,
+                      )}`}
+                    >
+                      {feedbackModal.task.earnedMarks}/{feedbackModal.task.totalMarks}
+                      <span className={styles.percentage}>({feedbackModal.task.percentage}%)</span>
+                    </div>
+                  </div>
+                  <div className={styles.performanceItem}>
+                    <div className={styles.performanceLabel}>Weightage</div>
+                    <div className={styles.performanceValue}>
+                      <FontAwesomeIcon icon={faPercent} />
+                      {feedbackModal.task.weightage}%
+                    </div>
+                  </div>
+                  <div className={styles.performanceItem}>
+                    <div className={styles.performanceLabel}>Status</div>
+                    <div
+                      className={`${styles.statusValue} ${
+                        styles[getStatusClass(feedbackModal.task.status)]
+                      }`}
+                    >
+                      {feedbackModal.task.status}
+                    </div>
                   </div>
                 </div>
-                <div className={styles.cardActions}>
-                  <button className={styles.feedbackButton} onClick={() => openFeedbackModal(task)}>
-                    <FontAwesomeIcon icon={faEye} className={styles.buttonIcon} />
-                    View Feedback
-                  </button>
+
+                {/* Teacher Feedback */}
+                <div className={styles.teacherFeedbackDetail}>
+                  <h5 className={styles.feedbackTitle}>
+                    <FontAwesomeIcon icon={faUser} />
+                    Teacher Feedback
+                  </h5>
+                  <div className={styles.feedbackText}>{feedbackModal.task.teacherFeedback}</div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Teacher Feedback Section */}
-        <div className={styles.teacherFeedbackSection}>
-          <div className={styles.sectionHeader}>
-            <h3 className={styles.sectionTitle}>
-              <FontAwesomeIcon icon={faGraduationCap} className={styles.sectionIcon} />
-              Teacher Feedback - Structured feedback display with strengths and recommendations
-            </h3>
-            <div className={styles.teacherInfo}>
-              <span className={styles.teacherName}>
-                {evaluationData.teacherFeedback.teacherName}
-              </span>
-              <span className={styles.teacherTitle}>
-                {evaluationData.teacherFeedback.teacherTitle}
-              </span>
-            </div>
-          </div>
-
-          <div className={styles.feedbackContent}>
-            {/* Overall Feedback */}
-            <div className={styles.overallFeedback}>
-              <h4 className={styles.feedbackSubtitle}>Overall Assessment</h4>
-              <p className={styles.feedbackText}>{evaluationData.teacherFeedback.overall}</p>
-            </div>
-
-            {/* Strengths and Improvements */}
-            <div className={styles.feedbackColumns}>
-              <div className={styles.strengthsSection}>
-                <h4 className={styles.feedbackSubtitle}>
-                  <FontAwesomeIcon icon={faUser} className={styles.feedbackIcon} />
-                  Strengths
-                </h4>
-                <ul className={styles.feedbackList}>
-                  {evaluationData.teacherFeedback.strengths.map((strength, index) => (
-                    <li key={index} className={styles.feedbackItem}>
-                      <span className={styles.checkmark}>✓</span>
-                      <span className={styles.feedbackTextItem}>{strength}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className={styles.improvementsSection}>
-                <h4 className={styles.feedbackSubtitle}>
-                  <FontAwesomeIcon icon={faExclamationTriangle} className={styles.feedbackIcon} />
-                  Areas for Improvement
-                </h4>
-                <ul className={styles.feedbackList}>
-                  {evaluationData.teacherFeedback.improvements.map((improvement, index) => (
-                    <li key={index} className={styles.feedbackItem}>
-                      <span className={styles.arrow}>→</span>
-                      <span className={styles.feedbackTextItem}>{improvement}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Summary Cards */}
-        <div className={styles.summaryCards}>
-          <div className={styles.summaryCard}>
-            <div className={`${styles.cardNumber} ${styles.total}`}>6</div>
-            <div className={styles.cardLabel}>Total Assignments</div>
-          </div>
-          <div className={styles.summaryCard}>
-            <div className={`${styles.cardNumber} ${styles.onTime}`}>5</div>
-            <div className={styles.cardLabel}>On Time</div>
-          </div>
-          <div className={styles.summaryCard}>
-            <div className={`${styles.cardNumber} ${styles.late}`}>1</div>
-            <div className={styles.cardLabel}>Late Submissions</div>
-          </div>
-          <div className={styles.summaryCard}>
-            <div className={`${styles.cardNumber} ${styles.average}`}>72%</div>
-            <div className={styles.cardLabel}>Avg Score</div>
-          </div>
-        </div>
-      </Container>
-
-      {/* Feedback Detail Modal */}
-      <Modal
-        isOpen={feedbackModal.isOpen}
-        toggle={closeFeedbackModal}
-        size="lg"
-        className={styles.feedbackModal}
-        scrollable={true}
-        centered={true}
-      >
-        <ModalHeader toggle={closeFeedbackModal} className={styles.modalHeader}>
-          <FontAwesomeIcon icon={faAward} className={styles.modalIcon} />
-          <span className={styles.modalTitle}>Assignment Feedback Details</span>
-        </ModalHeader>
-        <ModalBody className={styles.modalBody}>
-          {feedbackModal.task && (
-            <div className={styles.feedbackModalContent}>
-              {/* Assignment Header */}
-              <div className={styles.assignmentHeader}>
-                <h4 className={styles.assignmentTitle}>{feedbackModal.task.name}</h4>
-                <div className={styles.assignmentMeta}>
-                  <span className={styles.assignmentType}>
-                    <FontAwesomeIcon icon={faGraduationCap} />
-                    {feedbackModal.task.type}
-                  </span>
-                  <span className={styles.assignmentDate}>
-                    <FontAwesomeIcon icon={faCalendarAlt} />
-                    Due: {new Date(feedbackModal.task.dueDate).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Performance Summary */}
-              <div className={styles.performanceSummary}>
-                <div className={styles.performanceItem}>
-                  <div className={styles.performanceLabel}>Your Score</div>
-                  <div
-                    className={`${styles.performanceValue} ${getPerformanceColorClass(
-                      feedbackModal.task.percentage,
-                    )}`}
-                  >
-                    {feedbackModal.task.earnedMarks}/{feedbackModal.task.totalMarks}
-                    <span className={styles.percentage}>({feedbackModal.task.percentage}%)</span>
+                {/* Additional Details */}
+                <div className={styles.additionalDetails}>
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>Submission Date:</span>
+                    <span className={styles.detailValue}>
+                      {new Date(feedbackModal.task.submissionDate).toLocaleDateString()} at{' '}
+                      {new Date(feedbackModal.task.submissionDate).toLocaleTimeString()}
+                    </span>
                   </div>
-                </div>
-                <div className={styles.performanceItem}>
-                  <div className={styles.performanceLabel}>Weightage</div>
-                  <div className={styles.performanceValue}>
-                    <FontAwesomeIcon icon={faPercent} />
-                    {feedbackModal.task.weightage}%
-                  </div>
-                </div>
-                <div className={styles.performanceItem}>
-                  <div className={styles.performanceLabel}>Status</div>
-                  <div
-                    className={`${styles.statusValue} ${
-                      styles[getStatusClass(feedbackModal.task.status)]
-                    }`}
-                  >
-                    {feedbackModal.task.status}
+                  <div className={styles.detailItem}>
+                    <span className={styles.detailLabel}>Grade Category:</span>
+                    <span className={styles.detailValue}>{feedbackModal.task.category}</span>
                   </div>
                 </div>
               </div>
-
-              {/* Teacher Feedback */}
-              <div className={styles.teacherFeedbackDetail}>
-                <h5 className={styles.feedbackTitle}>
-                  <FontAwesomeIcon icon={faUser} />
-                  Teacher Feedback
-                </h5>
-                <div className={styles.feedbackText}>{feedbackModal.task.teacherFeedback}</div>
-              </div>
-
-              {/* Additional Details */}
-              <div className={styles.additionalDetails}>
-                <div className={styles.detailItem}>
-                  <span className={styles.detailLabel}>Submission Date:</span>
-                  <span className={styles.detailValue}>
-                    {new Date(feedbackModal.task.submissionDate).toLocaleDateString()} at{' '}
-                    {new Date(feedbackModal.task.submissionDate).toLocaleTimeString()}
-                  </span>
-                </div>
-                <div className={styles.detailItem}>
-                  <span className={styles.detailLabel}>Grade Category:</span>
-                  <span className={styles.detailValue}>{feedbackModal.task.category}</span>
-                </div>
-              </div>
-            </div>
-          )}
-        </ModalBody>
-        <ModalFooter className={styles.modalFooter}>
-          <Button color="primary" onClick={closeFeedbackModal}>
-            <FontAwesomeIcon icon={faTimes} className="me-2" />
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </div>
+            )}
+          </ModalBody>
+          <ModalFooter className={styles.modalFooter}>
+            <Button color="primary" onClick={closeFeedbackModal}>
+              <FontAwesomeIcon icon={faTimes} className="me-2" />
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </div>
+    </>
   );
 };
 
