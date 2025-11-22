@@ -73,6 +73,7 @@ function ReviewsInsight() {
             qualityDistribution.find(quality => quality.qualityLevel === 'Sufficient')?.count || 0,
           Exceptional:
             qualityDistribution.find(quality => quality.qualityLevel === 'Exceptional')?.count || 0,
+          memberCount: team.memberCount,
         };
       });
       setTeamData(formattedTeamData);

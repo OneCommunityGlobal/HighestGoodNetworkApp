@@ -50,6 +50,9 @@ function PRQualityGraph({ selectedTeams, qualityData, isDataViewActive }) {
 
   const options = {
     responsive: true,
+    interaction: {
+      mode: 'dataset',
+    },
     plugins: {
       legend: {
         position: 'bottom',
