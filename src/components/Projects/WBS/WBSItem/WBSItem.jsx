@@ -9,8 +9,8 @@ import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
 import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
-import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle } from '~/styles';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 

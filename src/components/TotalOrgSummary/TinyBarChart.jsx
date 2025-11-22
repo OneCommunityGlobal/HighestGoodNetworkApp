@@ -1,3 +1,5 @@
+// ...existing code...
+import CustomTooltip from '../CustomTooltip';
 import {
   BarChart,
   Bar,
@@ -33,12 +35,19 @@ function ProjectLabel({ viewBox, info }) {
           minWidth: 120,
           minHeight: 60,
           pointerEvents: 'none',
+          display: 'grid',
+          justifyItems: 'center',
+          gap: 1,
         }}
       >
         <div style={{ color: '#444', fontWeight: 'bold', fontSize: 15 }}>Projects</div>
-        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 15 }}>{info.amount}</div>
-        <div style={{ color: '#666', fontSize: 13 }}>{info.percentage}</div>
-        <div style={{ color: info.fontcolor, fontSize: 13 }}>{info.change}</div>
+        <div style={{ color: '#222', fontWeight: 'bold', fontSize: 14 }}>{info.amount}</div>
+        <div style={{ color: '#666', fontSize: 10 }}>({info.percentage})</div>
+        {info.ifcompare && (
+          <div style={{ color: info.fontcolor, fontSize: 10, fontWeight: 'bold' }}>
+            {info.change}
+          </div>
+        )}
       </div>
     </foreignObject>
   );
@@ -52,16 +61,17 @@ export default function TinyBarChart(props) {
     renderCustomizedLabel,
     darkMode,
     projectBarInfo,
-    showYAxisLabel = true,
+    yAxisLabel,
   } = props;
 
   return (
-    <ResponsiveContainer maxWidth={600} maxHeight={340} minWidth={180} minHeight={340}>
+    <ResponsiveContainer maxWidth={600} maxHeight={400} minWidth={180} minHeight={340}>
       <BarChart
         data={chartData}
         margin={{
           top: 50,
           bottom: 40,
+          right: 20,
         }}
       >
         <XAxis dataKey="name" stroke={darkMode ? 'white' : 'gray'} />
@@ -72,21 +82,17 @@ export default function TinyBarChart(props) {
           tickLine
           tickCount={Math.floor(maxY / tickInterval) + 1}
           interval={0}
-          label={
-            showYAxisLabel
-              ? {
-                  value: 'Hours',
-                  angle: -90,
-                  position: 'insideLeft',
-                  offset: 20,
-                  fill: darkMode ? 'white' : '#444',
-                  fontSize: 14,
-                  fontWeight: 'bold',
-                }
-              : undefined
-          }
+          label={{
+            value: yAxisLabel,
+            angle: -90,
+            position: 'insideLeft',
+            offset: 20,
+            fill: darkMode ? 'white' : '#444',
+            fontSize: 14,
+            fontWeight: 'bold',
+          }}
         />
-        <Tooltip cursor={{ fill: 'transparent' }} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
         <Bar dataKey="amount" fill="#8884d8">
           {chartData.map((entry, index) => (
             <Cell key={`cell-${entry.name}-${entry.amount}`} fill={entry.color[index]} />

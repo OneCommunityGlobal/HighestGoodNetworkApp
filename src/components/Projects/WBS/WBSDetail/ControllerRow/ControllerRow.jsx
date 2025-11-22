@@ -19,8 +19,8 @@ import ModalDelete from './../../../../../components/common/Modal';
 import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 function ControllerRow(props) {
   /*
@@ -31,7 +31,7 @@ function ControllerRow(props) {
   const canPostTask = props.hasPermission('postTask');
 
   // props from store
-  const { role, userPermissions, roles, popupContent, darkMode } = props;
+  const { role, userPermissions, roles, popupContent, darkMode, tasks } = props;
 
   // states from hooks
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -90,6 +90,7 @@ function ControllerRow(props) {
               pageLoadTime={props.pageLoadTime}
               isOpen={props.isOpen}
               setIsOpen={props.setIsOpen}
+              tasks={tasks}
             />
           ) : null}
           <EditTaskModal

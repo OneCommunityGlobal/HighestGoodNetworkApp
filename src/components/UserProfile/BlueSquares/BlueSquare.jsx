@@ -1,7 +1,7 @@
 import './BlueSquare.css';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { connect } from 'react-redux';
-import { formatCreatedDate, formatDate } from 'utils/formatDate';
+import { formatCreatedDate, formatDate } from '~/utils/formatDate';
 
 
 const BlueSquare = (props) => {
@@ -33,6 +33,7 @@ const BlueSquare = (props) => {
           blueSquares
             .sort((a, b) => (a.date > b.date ? 1 : -1))  // sorting by most recent date(awareded) last
             .map((blueSquare, index) => (
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus, jsx-a11y/no-static-element-interactions
               <div
                 key={index}
                 role="button"
@@ -56,6 +57,7 @@ const BlueSquare = (props) => {
           <div>No blue squares.</div>
         )}
         {canAddInfringements && (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
           <div
             onClick={() => handleBlueSquare(true, 'addBlueSquare', '')}
             className="blueSquareButton"

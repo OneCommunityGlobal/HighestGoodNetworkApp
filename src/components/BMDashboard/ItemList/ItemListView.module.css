@@ -1,0 +1,93 @@
+.itemsListContainer {
+  width: 100%;
+  max-width: 1536px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.itemsTableContainer {
+  overflow-x: scroll;
+}
+
+.itemsListContainer section {
+  margin-top: 2rem;
+}
+
+.itemsListContainer table {
+  text-align: center;
+  min-width: 1024px;
+  overflow: scroll;
+  font-size: small;
+}
+
+.itemsListContainer th {
+  height: 2rem;
+}
+
+.itemsCell button {
+  cursor: pointer;
+}
+
+.itemsCell svg {
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  color: dimgray;
+}
+
+.itemsCell svg:hover {
+  color: black;
+}
+
+.selectInput {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 10px auto;
+  overflow: visible;
+}
+
+.selectInput label {
+  font-weight: bold;
+  text-align: right;
+  min-width: 100px;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+.selectInput input,
+.selectInput select {
+  height: 38px;
+  width: 100%;
+  min-width: 220px;
+  max-width: 240px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.selectInput input[type='text'] {
+  padding: 5px;
+  margin-bottom: 8px;
+}
+.btnPrimary {
+  background-color: #468ef9;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.buttonsRow {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+.btnPrimary:hover {
+  background-color: #3b82f6;
+}

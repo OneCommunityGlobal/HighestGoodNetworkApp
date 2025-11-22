@@ -281,6 +281,18 @@ function PeopleTableDetails(props) {
   // const renderFilteredTask = () => (
     
   // )
+
+  const renderModalContent = (value) => (
+    <div>
+      <div>Why This Task is important</div>
+      <textarea className="rectangle" type="text" value={value.whyInfo} />
+      <div>Design Intent</div>
+      <textarea className="rectangle" type="text" value={value.intentInfo} />
+      <div>End State</div>
+      <textarea className="rectangle" type="text" value={value.endstateInfo} />
+    </div>
+  )
+
   return (
     <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
       <div className="table-filter-container">
@@ -311,31 +323,36 @@ function PeopleTableDetails(props) {
           Clear Filters
         </button>
       </div>
-      <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
-        <div data-testid="task">Task</div>
-        <div data-testid="priority">Priority</div>
-        <div data-testid="status">Status</div>
-        <div data-testid="resources" className="people-table-center-cell">Resources</div>
-        <div data-testid="active" className="people-table-center-cell">Active</div>
-        <div data-testid="assign" className="people-table-center-cell">Assign</div>
-        <div data-testid="eh" className="people-table-end-cell">Estimated Hours</div>
-        <div data-testid="sd" className="people-table-end-cell">Start Date</div>
-        <div data-testid="ed" className="people-table-end-cell">End Date</div>
-      </div>
-      <div className="people-table">
-        {filteredTasks.map(value => (
-
-          // eslint-disable-next-line react/no-unstable-nested-components
-          <NewModal header="Task info" trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
-            <div>Why This Task is important</div>
-            <textarea className="rectangle" type="text" value={value.whyInfo} />
-            <div>Design Intent</div>
-            <textarea className="rectangle" type="text" value={value.intentInfo} />
-            <div>End State</div>
-            <textarea className="rectangle" type="text" value={value.endstateInfo} />
-          </NewModal>
-        ))}
-      </div>
+      {windowWidth > 1020 ? (
+        <>
+          <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
+            <div data-testid="task">Task</div>
+            <div data-testid="priority">Priority</div>
+            <div data-testid="status">Status</div>
+            <div data-testid="resources" className="people-table-center-cell">Resources</div>
+            <div data-testid="active" className="people-table-center-cell">Active</div>
+            <div data-testid="assign" className="people-table-center-cell">Assign</div>
+            <div data-testid="eh" className="people-table-end-cell">Estimated Hours</div>
+            <div data-testid="sd" className="people-table-end-cell">Start Date</div>
+            <div data-testid="ed" className="people-table-end-cell">End Date</div>
+          </div>
+          <div className="people-table people-table-scrollable">
+            {filteredTasks.map(value => (
+              <NewModal key={value._id} header="Task info" trigger={() => renderFilteredTask(value)} darkMode={darkMode}>
+                {renderModalContent(value)}
+              </NewModal>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="people-table">
+          {filteredTasks.map(value => (
+            <NewModal key={value._id} header="Task info" trigger={() => renderMobileFilteredTask(value)} darkMode={darkMode}>
+              {renderModalContent(value)}
+            </NewModal>
+          ))}
+        </div>
+      )}
     </Container>
   );
 }

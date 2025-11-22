@@ -191,6 +191,10 @@
   width: 100% !important;
 }
 
+.tasks-detail-header {
+  vertical-align: middle !important;
+}
+
 .action-edit-btn {
   padding-right: 5px;
 }
@@ -244,6 +248,7 @@
   padding: 0;
   display: flex;
   border: .01em solid #cdcbcb;
+  align-items: center;
 }
 
 .add_new_task_form-label{
@@ -285,7 +290,21 @@
     align-items: flex-start;
     margin-bottom: 10px;
   }
-  .wbs-button-group button {
+}
+
+.text-dark.end-modal-dt .DayPickerInput{
+  position: relative;
+}
+
+.text-dark.end-modal-dt .DayPickerInput-OverlayWrapper{
+  position: absolute;
+  bottom: 18.70em;
+  left: -5em; 
+  z-index: 9999;
+}
+
+@media (max-width: 768px) { /* arranging the buttons */
+  .button-group button {
     margin-bottom: 10px;
   }
 }

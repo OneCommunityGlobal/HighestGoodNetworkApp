@@ -6,39 +6,47 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import {
   fetchAllMembers,
-  findUserProfiles,
+  fetchMembersSummary,
+  findProjectMembers,
   getAllUserProfiles,
   assignProject,
-} from './../../../actions/projectMembers';
+ foundUsers } from '~/actions/projectMembers';
+ 
 import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';
-import hasPermission from '../../../utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
-import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
-import Loading from 'components/common/Loading';
-
+import hasPermission from '~/utils/permissions';
+import { boxStyle, boxStyleDark } from '~/styles';
+import ToggleSwitch from '~/components/UserProfile/UserProfileEdit/ToggleSwitch';
+import Loading from '~/components/common/Loading';
+import { getProjectDetail } from '~/actions/project';
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
-
   const projectId = props.match.params.projectId;
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
   const [lastTimeoutId, setLastTimeoutId] = useState(null);
+  const [query, setQuery] = useState('');
+  const [searchText, setSearchText] = useState('');
+
   const [isLoading, setIsLoading] = useState(true);
 
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
+  const projectName = useSelector(state => state.projectById?.projectName || '');
+
   useEffect(() => {
     const fetchMembers = async () => {
       setIsLoading(true);
       setMembersList([]);
-      await props.fetchAllMembers(projectId);
+      // Use lightweight summary API for better performance (no profile pics)
+      await props.fetchMembersSummary(projectId);
+      props.getProjectDetail(projectId);
       setIsLoading(false);
     };
     fetchMembers();
@@ -50,67 +58,122 @@ const Members = props => {
     // Wait for all members to be assigned
     await Promise.all(
       allUsers.map(user =>
-        props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName),
+        props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName, user.isActive),
       ),
     );
 
+    // Use regular API for assignment operations (may need profile pics for other components)
     props.fetchAllMembers(projectId);
   };
 
   useEffect(() => {
     if (!isLoading) {
-      setMembersList(props.state.projectMembers.members);
+      setMembersList(props.state.projectMembers.members.filter(user => !showActiveMembersOnly || user.isActive));
     }
   }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
-  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(true);
+  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
+
+  useEffect(() => {
+    setMembersList(props.state.projectMembers.members?.filter(user => !showActiveMembersOnly || user.isActive))
+  }, [showActiveMembersOnly])
+
+  useEffect(() => {
+    handleFind()
+  }, [membersList])
 
   // avoid re-filtering the netire list on every render
-  const displayedMembers = useMemo(
-    () => (showActiveMembersOnly ? membersList?.filter(member => member.isActive) : membersList),
-    [membersList, showActiveMembersOnly]
-  );
+  // const displayedMembers = useMemo(
+  //   () => (showActiveMembersOnly ? membersList?.filter(member => member.isActive) : [...membersList]),
+  //   [membersList, showActiveMembersOnly]
+  // );
 
   const handleToggle = async () => {
     setShowActiveMembersOnly(prevState => !prevState);
-    await props.fetchAllMembers(projectId);
+    // Use lightweight summary API for toggle operations (better performance)
+    await props.fetchMembersSummary(projectId);
     setMembersList(props.state.projectMembers.members);
   };
+
 
   // Waits for user to finsh typing before calling API
   const handleInputChange = event => {
     const currentValue = event.target.value;
-  
+    setQuery(currentValue);
+    setSearchText(currentValue);
+
     if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
-  
+
     const timeoutId = setTimeout(() => {
       // Only call findUserProfiles if there's actual search text
       if (currentValue && currentValue.trim() !== '') {
-        props.findUserProfiles(currentValue);
+        props.findProjectMembers(projectId, currentValue.trim());
         setShowFindUserList(true);
       } else {
         setShowFindUserList(false);
       }
     }, 300);
-  
     setLastTimeoutId(timeoutId);
+  };
+
+  const handleFind = () => {
+    const q = (searchText || '').trim();
+    if (!q) {
+      setShowFindUserList(false);
+      return;
+    }
+    props.findProjectMembers(projectId, q);
+    setShowFindUserList(true);
   };
 
   return (
     <React.Fragment>
-      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
-          <nav aria-label="breadcrumb">
-            <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
-              <NavItem tag={Link} to={`/projects/`}>
-                <button type="button" className="btn btn-secondary" style={darkMode ? {} : boxStyle}>
-                  <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-                </button>
-              </NavItem>
+      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
+        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+          <nav aria-label="breadcrumb" className="w-100">
+            <div
+              className={`d-flex align-items-center justify-content-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`}
+              style={{
+                ...darkMode ? boxStyleDark : boxStyle,
+                backgroundColor: darkMode ? '' : '#E9ECEF',
+                margin: '0 0 16px',
+                padding: '12px 16px',
+                position: 'relative',
+                flexWrap: 'wrap',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <NavItem tag={Link} to={`/projects/`}>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                  </button>
+                </NavItem>
+              </div>
 
-              <div id="member_project__name">PROJECTS {props.projectId}</div>
-            </ol>
+              <div
+                style={{
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  fontSize: '1.5rem',
+                  wordBreak: 'break-word',
+                  flexGrow: 1,
+                  whiteSpace: 'normal',
+                }}
+              >
+                {projectName}
+              </div>
+            </div>
+
           </nav>
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
@@ -119,34 +182,58 @@ const Members = props => {
               </div>
 
               <input
+                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 type="text"
                 className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 aria-label="Search user"
                 placeholder="Name"
-                onChange={e => handleInputChange(e)}
-                disabled={showActiveMembersOnly}
+                value={searchText}
+                onChange={handleInputChange}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleFind();
+                  }
+                }}
+              // disabled={showActiveMembersOnly}
               />
               <div className="input-group-append">
                 <button
+                  className="btn btn-primary"
+                  type="button"
+                  disabled={!searchText.trim()}   // enabled only when there’s something to find
+                  onClick={handleFind}
+                >
+                  Find
+                </button>
+                <button
                   className="btn btn-outline-primary"
                   type="button"
-                  onClick={e => {
+                  onClick={() => {
+                    // optional “All users” button
                     props.getAllUserProfiles();
                     setShowFindUserList(true);
                   }}
-                  disabled={showActiveMembersOnly}
                 >
                   All
                 </button>
                 <button
                   className="btn btn-outline-danger"
                   type="button"
-                  onClick={() => setShowFindUserList(false)} // Hide the find user list
+                  onClick={() => {
+                    setShowFindUserList(false);
+                    setQuery('');
+                    props.clearFoundUsers();
+                    setSearchText('');            // clear the visible input too
+                    // clear previous suggestions in Redux (you already imported foundUsers)
+                    if (props.dispatch) props.dispatch(foundUsers([]));
+                  }}
                 >
                   Cancel
                 </button>
               </div>
+
             </div>
           ) : null}
 
@@ -168,26 +255,29 @@ const Members = props => {
                         onClick={() => assignAll()}
                         style={darkMode ? {} : boxStyle}
                       >
-                        +All
+                        All
                       </button>
                     </th>
                   ) : null}
                 </tr>
               </thead>
               <tbody>
-                {props.state.projectMembers.foundUsers.map((user, i) => (
-                  <FoundUser
-                    index={i}
-                    key={user._id}
-                    projectId={projectId}
-                    uid={user._id}
-                    email={user.email}
-                    firstName={user.firstName}
-                    lastName={user.lastName}
-                    assigned={user.assigned}
-                    darkMode={darkMode}
-                  />
-                ))}
+                {props.state.projectMembers.foundUsers
+                  .filter(user => !showActiveMembersOnly || user.isActive)
+                  .map((user, i) => (
+                    <FoundUser
+                      index={i}
+                      key={user._id}
+                      projectId={projectId}
+                      uid={user._id}
+                      email={user.email}
+                      firstName={user.firstName}
+                      lastName={user.lastName}
+                      isActive={user.isActive}
+                      assigned={user.assigned}
+                      darkMode={darkMode}
+                    />
+                  ))}
               </tbody>
             </table>
           ) : null}
@@ -213,7 +303,7 @@ const Members = props => {
                 </tr>
               </thead>
               <tbody>
-                {displayedMembers.map((member, i) => (
+                {membersList?.map((member, i) => (
                   <Member
                     index={i}
                     key={member._id ?? i}
@@ -238,8 +328,10 @@ const mapStateToProps = state => {
 };
 export default connect(mapStateToProps, {
   fetchAllMembers,
-  findUserProfiles,
+  fetchMembersSummary,
+  findProjectMembers,
   getAllUserProfiles,
   assignProject,
   hasPermission,
+  getProjectDetail,
 })(Members);

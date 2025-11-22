@@ -1,6 +1,6 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import UpdateMaterial from './UpdateMaterial';
-import './UpdateMaterial.css';
+import styles from './UpdateMaterial.module.css';
 
 function UpdateMaterialModal({ modal, setModal, record }) {
   if (record) {
@@ -12,7 +12,7 @@ function UpdateMaterialModal({ modal, setModal, record }) {
       <Modal isOpen={modal} size="md">
         <ModalHeader>Update Material Form</ModalHeader>
         <ModalBody>
-          <div className="updateModalContainer">
+          <div className={`${styles.updateModalContainer}`}>
             <UpdateMaterial setModal={setModal} record={record} />
           </div>
         </ModalBody>

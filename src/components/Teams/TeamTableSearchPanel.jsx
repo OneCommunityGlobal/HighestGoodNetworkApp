@@ -1,6 +1,8 @@
-import hasPermission from 'utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
+/* eslint-disable react/destructuring-assignment */
 import { connect } from 'react-redux';
+import { useEffect, useRef } from 'react';
+import { boxStyle, boxStyleDark } from '~/styles';
+import hasPermission from '~/utils/permissions';
 import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 
 /**
@@ -9,6 +11,13 @@ import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 export function TeamTableSearchPanelBase(props) {
   const { darkMode } = props;
   const canPostTeam = props.hasPermission('postTeam');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   return (
     <div className="input-group" id="new_team">
@@ -30,6 +39,7 @@ export function TeamTableSearchPanelBase(props) {
         </span>
       </div>
       <input
+        ref={inputRef}
         type="text"
         className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"

@@ -14,8 +14,7 @@ function InfoModal({ isOpen, toggle }) {
         </ModalBody>
         <ModalFooter>
           <Button onClick={toggle} color="secondary" className="float-left">
-            {' '}
-            Ok{' '}
+            Ok
           </Button>
         </ModalFooter>
       </Modal>

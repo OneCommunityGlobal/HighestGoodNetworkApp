@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
-import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle, boxStyleDark } from '~/styles';
+import EditableInfoModal from '~/components/UserProfile/EditableModal/EditableInfoModal';
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
@@ -12,7 +12,7 @@ function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
 
   useEffect(() => {
-    props.fetchAllBadges(); 
+    props.fetchAllBadges();
   }, [props.fetchAllBadges]);
 
   const handleTabChange = tabId => {

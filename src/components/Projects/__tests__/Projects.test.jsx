@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import Projects from '..';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { rolesMock } from '__tests__/mockStates';
 
 import axios from 'axios';
@@ -51,7 +51,7 @@ beforeEach(() => {
   });
 });
 
-jest.mock('axios');
+vi.mock('axios');
 
 describe("Projects component",()=>{
 
@@ -197,7 +197,7 @@ describe("Projects component",()=>{
 
     const {container}=render(<MemoryRouter><Provider store={testStore}><Projects /></Provider></MemoryRouter>)
     expect(screen.getByText("ERROR")).toBeInTheDocument()
-
+    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const ascendingButton=container.querySelector('[id="Ascending"]')
     fireEvent.click(ascendingButton)
 

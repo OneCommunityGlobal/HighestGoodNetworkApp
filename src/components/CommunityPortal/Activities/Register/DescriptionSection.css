@@ -1,0 +1,42 @@
+/* DescriptionSection.css */
+.tabs {
+  display: flex;
+  justify-content: space-between;
+  /* Ensures tabs fill the container */
+  border-bottom: 2px solid #ccc;
+  margin-bottom: 16px;
+}
+
+.tab-button {
+  flex: 1;
+  /* Ensures all buttons take equal width */
+  text-align: center;
+  /* Center-align the text */
+  padding: 12px;
+  font-weight: bold;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  color: #1d4ed8;
+  /* Highlight active tab */
+  border-bottom: 2px solid #1d4ed8;
+  /* Bottom border for active tab */
+}
+
+.tab-button:hover {
+  background-color: #f3f4f6;
+  /* Light background on hover */
+}
+
+.tab-content {
+  margin-top: 16px;
+  border: none;
+}
+
+.description-paragraph {
+  padding-left: 5%;
+  margin-bottom: 8px;
+}

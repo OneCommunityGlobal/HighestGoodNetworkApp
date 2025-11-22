@@ -1,25 +1,33 @@
-import { useEffect } from 'react';
-import * as d3 from 'd3/dist/d3.min';
+import { useEffect, useRef } from 'react';
+import * as d3 from 'd3';
 import './TotalReportBarGraph.css';
+import { useSelector } from 'react-redux';
 
 function TotalReportBarGraph({ barData, range }) {
   const svgId = `svg-container-${range}`;
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const containerRef = useRef(null);
 
-  const drawChart = (data) => {
+  const drawChart = (data, darkmode) => {
     data.sort((a, b) => (a.label > b.label ? 1 : -1));
 
-    const svgWidth = 500;
-    const svgHeight = 450;             
+    const container = containerRef.current;
+    const { width: containerWidth } = container.getBoundingClientRect(); 
+    const containerHeight = containerWidth;
+
     const margin = { top: 10, right: 8, bottom: 100, left: 20 };
-    const width = svgWidth - margin.left - margin.right;
-    const height = svgHeight - margin.top - margin.bottom;
+    const width = containerWidth - margin.left - margin.right;
+    const height = containerHeight - margin.top - margin.bottom;
 
     const maxValue = Math.max(...data.map(d => d.value));
 
     const svg = d3
+      // eslint-disable-next-line testing-library/no-node-access
       .select(`#${svgId}`)
-      .attr('width', svgWidth)
-      .attr('height', svgHeight);
+      .attr('viewBox', `0 0 ${containerWidth} ${containerHeight}`) // Make SVG responsive
+      .attr('preserveAspectRatio', 'xMidYMid meet') // Preserve aspect ratio
+      .attr('width', '100%')
+      .attr('height', '100%');
 
     svg.selectAll('*').remove();
 
@@ -38,11 +46,10 @@ function TotalReportBarGraph({ barData, range }) {
       .domain([0, maxValue])
       .range([height, 0]);
 
-    const colorScale = d3
+      const colorScale = d3
       .scaleLinear()
       .domain([0, maxValue])
-      .range(['darksalmon', 'darkslateblue']);
-
+      .range(darkMode ? ['#4a90e2', '#003366'] : ['#f5a3a3', '#c3b6f7']);
     data.forEach(d => {
       const x = xScale(d.label);
       const barHeight = height - yScale(d.value);
@@ -69,7 +76,7 @@ function TotalReportBarGraph({ barData, range }) {
         .attr('x', x + xScale.bandwidth() / 2)
         .attr('y', yText)
         .attr('text-anchor', 'middle')
-        .style('fill', 'white')
+        .style('fill', darkmode ? 'white' : 'black')
         .style('font-size', '20px')
         .style('font-weight', 'bold')
         .text(Number.isNaN(d.value) ? '' : d.value);
@@ -84,17 +91,18 @@ function TotalReportBarGraph({ barData, range }) {
       .attr('dy', '1em')
       .style('text-anchor', 'middle')
       .style('font-size', '14px')
-      .style('fill', 'black');
+      .style('fill', 'black')
+      .style('fill', darkmode ? 'white' : 'black'); 
   };
 
   useEffect(() => {
     if (barData && barData.length) {
-      drawChart(barData);
+      drawChart(barData, darkMode);
     }
-  }, [barData]);
+  }, [barData, darkMode]);
 
   return (
-    <div className="svg-container">
+    <div ref={containerRef} className="svg-container">
       <svg id={svgId} className="svg-chart" />
     </div>
   );

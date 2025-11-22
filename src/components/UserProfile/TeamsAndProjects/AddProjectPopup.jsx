@@ -1,215 +1,242 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Input } from 'reactstrap';
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
+import { useDispatch } from 'react-redux';
 
-const AddProjectPopup = React.memo(props => {
-  const { darkMode } = props;
+import { assignProject } from '~/actions/projectMembers';
+ 
+ const createUserProjectMembership = async (userId, projectId) => {
+   // If your ENDPOINTS key is named differently, use that one.
+   // Typical: POST /userProjects  body: { userId, projectId, isActive }
+   return axios.post(ENDPOINTS.USER_PROJECTS, {
+     userId,
+     projectId,
+     isActive: true,
+   });
+ };
+/*const AddProjectPopup = React.memo(function AddProjectPopup(props) {
+  const {
+    open,
+    onClose,
+    userId,
+    darkMode,
+    // projects already in DB (for autocomplete / create-new check)
+    projects = [],
+    // projects already assigned to this user (to block duplicates)
+    userProjects = [],
+    // optional: parent callback to update its local table immediately
+    onSelectAssignProject, // (project) => void
+  } = props;
+  const safeProjects = Array.isArray(projects) ? projects : [];
+  const safeUserProjects = Array.isArray(userProjects) ? userProjects : [];
 
-  const closePopup = () => {
-    props.onClose();
-    setIsOpenDropdown(false);
-    isSetShowAlert(false);
-  };
-
-  const [selectedProject, onSelectProject] = useState(undefined);
-  const [isValidProject, onValidation] = useState(true);
-  const [isShowAlert, isSetShowAlert] = useState(false);
-  const [itemsDropdown, setItemsDropdown] = useState([]);
-  const [isOpenDropdown, setIsOpenDropdown] = useState(false);
-  const [isUserIsNotSelectedAutoComplete, isSetUserIsNotSelectedAutoComplete] = useState(false);
-  const [dropdownText, setDropdownText] = useState('Unspecified');
-  const [searchText, onInputChange] = useState('');
-  const [allProjects, setAllProjects] = useState(props.projects);
-
-  const formatText = result =>
-    result
-      .toLowerCase()
-      .trim()
-      .replace(/\s+/g, '');
-
+  // set data from props
   useEffect(() => {
-    const categoriesProjects = props.projects.map(item => item.category);
-    const uniqueCategoriesProjects = Array.from(new Set(categoriesProjects));
-    setItemsDropdown(uniqueCategoriesProjects);
-  }, [props.projects]);
-
-  const onAssignProject = async () => {
-    try {
-      if (isUserIsNotSelectedAutoComplete) {
-        const validateProjectName = validationProjectName();
-  
-        if (!validateProjectName) {
-          isSetShowAlert(true);
-          setIsOpenDropdown(true);
-          return;
-        }
-      }
-  
-      if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
-        await props.onSelectAssignProject(selectedProject);
-        onSelectProject(undefined);
-        if (props.handleSubmit !== undefined) {
-         await props.handleSubmit();
-        }
-        toast.success('Project assigned successfully');
-      } else {
-        onValidation(false);
-      }
-    } catch (error) {
-      
-    }
-   
-  };
-
-  const selectProject = project => {
-    onSelectProject(project);
-    onValidation(true);
-    isSetUserIsNotSelectedAutoComplete(false);
-  };
-
-  useEffect(() => {
-    onValidation(true);
-  }, [props.open]);
-
-  const finishFetch = status => {
-    setIsOpenDropdown(false);
-    
-    toast.success(
-      status === 200
-        ? 'Project created successfully'
-        : 'Project created successfully, but it is not possible to retrieve the new project.',
+    setAllProjects(safeProjects);
+    const categories = Array.from(
+      new Set(safeProjects.map(p => p?.category).filter(Boolean))
     );
-  
-    setDropdownText(dropdownText);
+    setCategoryOptions(categories.length ? categories : ['Unspecified']);
+  }, [projects]);*/
+
+// eslint-disable-next-line react/display-name
+const AddProjectPopup = React.memo(props => {
+  const { darkMode, projects = [], onClose } = props;
+
+  const dispatch = useDispatch();
+
+  // ---------- local state ----------
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isValidProject, setIsValidProject] = useState(true);
+  const [showDoesNotExistAlert, setShowDoesNotExistAlert] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState([]);
+  const [creatingNew, setCreatingNew] = useState(false);
+  const [newProjectCategory, setNewProjectCategory] = useState('Unspecified');
+  const [searchText, setSearchText] = useState('');
+  const [allProjects, setAllProjects] = useState([]);
+
+  // set data from props
+  useEffect(() => {
+    setAllProjects(projects || []);
+    const categories = Array.from(new Set((projects || []).map(p => p.category).filter(Boolean)));
+    setCategoryOptions(categories.length ? categories : ['Unspecified']);
+  }, [projects]);
+
+  // reset validation each time the modal opens
+  useEffect(() => {
+    if (open) {
+      setIsValidProject(true);
+      setShowDoesNotExistAlert(false);
+      setCreatingNew(false);
+      setSelectedProject(null);
+      setSearchText('');
+    }
+  }, [open]);
+
+ 
+
+
+  // ---------- helpers ----------
+  const format = s => (s || '').toLowerCase().trim();
+  const projectByName = name => (allProjects || []).find(p => format(p.projectName) === format(name));
+
+  const handleSelectProject = (project) => {
+    setSelectedProject(project);
+    setIsValidProject(true);
+    setShowDoesNotExistAlert(false);
   };
 
-  const format = result => result.toLowerCase();
+  const close = () => {
+    onClose?.();
+    setCreatingNew(false);
+    setShowDoesNotExistAlert(false);
+  };
 
-  const validationProjectName = () =>
-    props.projects.find(project => format(project.projectName) === format(searchText));
+  // ---------- Confirm existing project ----------
+ const handleConfirm = async () => {
+   if (!selectedProject) {
+     setIsValidProject(false);
+     toast.error('Please select a project from the list.');
+     return;
+   }
+   if ((props.userProjects || []).some(p => p?._id === selectedProject._id)) {
+     setIsValidProject(false);
+     toast.error('Great idea, but they already have that one! Pick another!');
+     return;
+   }
+   try {
+    await dispatch(assignProject(selectedProject._id, props.userId, 'Assign'));
+    // ✅ Make sure we're passing the complete project object
+    props.onSelectAssignProject?.(selectedProject);
+    toast.success(`Assigned to "${selectedProject.projectName}".`);
+    props.onClose?.();
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Error Assigning Project:', e);
+    toast.error('Failed to assign project. Please try again.');
+  }
+};
 
-  const onCreateNewProject = async () => {
-    if (isShowAlert) isSetShowAlert(false);
-
-    // prettier-ignore
-    if (searchText === '') {onValidation(false); onSelectProject(undefined); return;}
-
-    const validateProjectName = validationProjectName();
-    // prettier-ignore
-    if (validateProjectName) { toast.error('This project already exists.'); return;}
-
-    const urlCreateProject = ENDPOINTS.PROJECTS;
+  // ---------- Create new project, then confirm ----------
+  const handleCreateNew = async () => {
+    if (!searchText.trim()) {
+      setIsValidProject(false);
+      setSelectedProject(null);
+      return;
+    }
+    if (projectByName(searchText)) {
+      toast.error('This project already exists.');
+      return;
+    }
 
     const newProject = {
-      projectName: searchText,
-      projectCategory: dropdownText,
+      projectName: searchText.trim(),
+      projectCategory: newProjectCategory,
       isActive: true,
     };
 
     try {
-      await axios.post(urlCreateProject, newProject);
-      const url = ENDPOINTS.PROJECTS;
-      const res = await axios.get(url);
-      const status = res.status;
-      const projects = res.data;
-      if (status === 200) {
-        const findNewProject = projects.filter((item, i) => i === 0)[0];
-        selectProject(findNewProject);
-        setAllProjects(res.data);
-        finishFetch(status);
-      } else {
-        onInputChange('');
-        finishFetch(status);
+      await axios.post(ENDPOINTS.PROJECTS, newProject);
+      const res = await axios.get(ENDPOINTS.PROJECTS);
+      const created =
+        (res.data || []).find(p => format(p.projectName) === format(searchText)) ||
+        null;
+
+      if (!created) {
+        toast.success('Project created successfully, but it was not auto-selected.');
+        setCreatingNew(false);
+        setSearchText('');
+        return;
       }
-    } catch (err) {
+
+      // select the newly created project so pressing Confirm assigns it
+      setSelectedProject(created);
+      setAllProjects(res.data || []);
+      setCreatingNew(false);
+      toast.success('Project created successfully');
+    } catch {
       toast.error('Project creation failed');
-      onInputChange('');
     }
   };
 
   return (
     <Modal
       isOpen={props.open}
-      toggle={closePopup}
+      toggle={onClose}
+      // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus={false}
       className={darkMode ? 'text-light dark-mode' : ''}
     >
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-        {isOpenDropdown ? 'Create' : '  Add'} Project{' '}
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose}>
+        {creatingNew ? 'Create' : '  Add'} Project{' '}
       </ModalHeader>
+
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
-        <>
-          <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
-            <AddProjectsAutoComplete
-              projectsData={allProjects}
-              onDropDownSelect={selectProject}
-              selectedProject={selectedProject}
-              setIsOpenDropdown={setIsOpenDropdown}
-              searchText={searchText}
-              onInputChange={onInputChange}
-              isSetUserIsNotSelectedAutoComplete={isSetUserIsNotSelectedAutoComplete}
-              formatText={formatText}
-            />
+        <div className="input-group-prepend" style={{ marginBottom: 10 }}>
+          <AddProjectsAutoComplete
+            projectsData={allProjects}
+            onDropDownSelect={handleSelectProject}
+            selectedProject={selectedProject}
+            setIsOpenDropdown={setCreatingNew}
+            searchText={searchText}
+            onInputChange={setSearchText}
+            isSetUserIsNotSelectedAutoComplete={setShowDoesNotExistAlert}
+            formatText={(s) => format(s).replace(/\s+/g, '')}
+          />
+          <Button
+            color={creatingNew ? 'success' : 'primary'}
+            style={darkMode ? {} : { ...boxStyle, marginLeft: 5 }}
+            onClick={creatingNew ? handleCreateNew : handleConfirm}
+          >
+            {creatingNew ? 'Create' : 'Confirm'}
+          </Button>
+        </div>
+
+        {creatingNew && (
+          <div className="input-group-prepend" style={{ marginBottom: 10, display: 'flex', gap: 10 }}>
+            <Input type="select" value={newProjectCategory} onChange={e => setNewProjectCategory(e.target.value)}>
+              {categoryOptions.map(opt => (
+                <option key={opt}>{opt}</option>
+              ))}
+            </Input>
+
             <Button
-              color={isOpenDropdown ? 'success' : 'primary'}
-              style={darkMode ? {} : { ...boxStyle, marginLeft: '5px' }}
-              onClick={isOpenDropdown ? onCreateNewProject : onAssignProject}
+              color="danger"
+              onClick={() => {
+                setCreatingNew(false);
+                setShowDoesNotExistAlert(false);
+                setSearchText('');
+              }}
+              style={{ width: '100%' }}
             >
-              {isOpenDropdown ? 'Create' : 'Confirm'}
+              Cancel project creation
             </Button>
           </div>
+        )}
 
-          {isOpenDropdown && (
-            <div
-              className="input-group-prepend"
-              style={{ marginBottom: '10px', display: 'flex', flexDirection: 'row', gap: '10px' }}
-            >
-              <Input
-                type="select"
-                onChange={e => setDropdownText(e.target.value)}
-                value={dropdownText}
-              >
-                {itemsDropdown.map(item => {
-                  return <option key={item}>{item}</option>;
-                })}
-              </Input>
-
-              <Button
-                color="danger"
-                onClick={() => {
-                  setIsOpenDropdown(false), isSetShowAlert(false), onInputChange('');
-                }}
-                style={{ width: '100%' }}
-              >
-                Cancel project creation
-              </Button>
-            </div>
-          )}
-        </>
-        <div>
-          {!isValidProject && selectedProject && (
-            <Alert color="danger">Great idea, but they already have that one! Pick another! </Alert>
-          )}
-          {!isValidProject && !selectedProject && (
-            <Alert color="danger">
-              Hey, You need to {isOpenDropdown ? 'write the name of' : 'pick'} a project first!
-            </Alert>
-          )}
-
-          {isShowAlert && <Alert color="danger">This project does not exist.</Alert>}
-        </div>
+        {!isValidProject && selectedProject && (
+          <Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>
+        )}
+        {!isValidProject && !selectedProject && (
+          <Alert color="danger">
+            Hey, You need to {creatingNew ? 'write the name of' : 'pick'} a project first!
+          </Alert>
+        )}
+        {showDoesNotExistAlert && <Alert color="danger">This project does not exist.</Alert>}
       </ModalBody>
+
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
+        <Button color="secondary" onClick={close} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>
     </Modal>
   );
 });
+
 export default AddProjectPopup;

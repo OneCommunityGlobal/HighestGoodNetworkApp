@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import UserCard from './UserCard';
-import './style/UserCard.css';
+import './style/UserCard.module.css';
 
 function RankedUserList({ selectedSkills }) {
   const [rankedUsers, setRankedUsers] = useState([]);

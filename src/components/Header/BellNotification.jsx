@@ -1,25 +1,39 @@
 // Version: 1.2.3 - Added memoization, accessibility, error handling, and dark mode improvements
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
+import { getMessagingSocket } from '../../utils/messagingSocket';
+import {
+  clearDBNotifications,
+  clearNotifications,
+} from '../../actions/lbdashboard/messagingActions';
+import { ENDPOINTS } from '../../utils/URL';
 
-export default function BellNotification({userId}) {
+export default function BellNotification({ userId }) {
   // State variables to manage notifications and UI state
   const [hasNotification, setHasNotification] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const notificationRef = useRef(null);
 
+  const [dbNotifications, setDbNotifications] = useState([]); // Notifications from the database
+  const [messageNotifications, setMessageNotifications] = useState([]);
+  const [hasMessageNotification, setHasMessageNotification] = useState(false);
+  const notifications = useSelector(state => {
+    return state.messages?.notifications || [];
+  });
   // Fetching data from the Redux store
   const timeEntries = useSelector(state => state.timeEntries?.weeks?.[0] || []);
   const weeklycommittedHours = useSelector(state => state.userProfile?.weeklycommittedHours || 0);
   const darkMode = useSelector(state => state.theme.darkMode);
-  // const userId = useSelector(state => {
+
+  const dispatch = useDispatch();
+  // const userId = useSelector(state =>
   //   console.log(state.auth)
   //   return state.auth.user?.userid});
   // const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   // const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   // const [displayUserId, setDisplayUserId] = useState( viewingUser?.userId || userId);
-  
 
   /**
    * Memoized function to calculate the total effort (hours + minutes) logged by the user
@@ -72,10 +86,45 @@ export default function BellNotification({userId}) {
   const handleNotificationClick = () => {
     setHasNotification(false);
     setShowNotification(false);
+    setMessageNotifications([]);
+    setHasMessageNotification(false);
+
+    try {
+      // Clear notifications from Redux state
+      dispatch(clearNotifications());
+      dispatch(clearDBNotifications());
+    } catch (error) {
+      Error('❌ Error marking notifications as read:', error);
+    }
     localStorage.setItem(`${userId}_notificationSeen`, 'true');
     localStorage.setItem(`${userId}_weekNumber`, getCurrentWeekNumber().toString());
   };
 
+  useEffect(() => {
+    if (!userId) return;
+    const fetchDbNotifications = async () => {
+      try {
+        const { data } = await axios.get(`${ENDPOINTS.NOTIFICATIONS}/unread/user/${userId}`);
+        setDbNotifications(data);
+        if (data.length > 0) {
+          setHasMessageNotification(true);
+        }
+      } catch (error) {
+        Error('❌ Error fetching notifications from DB:', error);
+      }
+    };
+
+    fetchDbNotifications();
+  }, [userId]);
+
+  const allNotifications = [...(dbNotifications || []), ...messageNotifications];
+
+  useEffect(() => {
+    if (notifications.length > 0) {
+      setMessageNotifications(notifications);
+      setHasMessageNotification(true);
+    }
+  }, [notifications]);
   /**
    * useEffect to check if a notification should be triggered based on time and effort logged.
    * Triggers the notification if effort is < 50% and time left < 48 hours.
@@ -117,6 +166,51 @@ export default function BellNotification({userId}) {
     return () => clearInterval(id); // Cleanup interval on unmount
   }, [weeklycommittedHours, calculateTotalEffort, calculateTimeLeft, getCurrentWeekNumber, userId]);
 
+  useEffect(() => {
+    const socket = getMessagingSocket();
+
+    const handleNewMessageNotification = event => {
+      try {
+        const data = JSON.parse(event.data);
+
+        if (data.action === 'NEW_NOTIFICATION') {
+          setMessageNotifications(prev => [...prev, { message: data.payload }]);
+          setHasMessageNotification(true);
+        }
+      } catch (error) {
+        Error('❌ Error handling WebSocket notification:', error);
+      }
+    };
+
+    if (socket) {
+      socket.addEventListener('message', handleNewMessageNotification);
+    } else {
+      Error('❌ WebSocket is not connected.');
+    }
+
+    return () => {
+      if (socket) {
+        socket.removeEventListener('message', handleNewMessageNotification);
+      }
+    };
+  }, [messageNotifications]);
+
+  const handleMessageNotificationClick = async () => {
+    setShowNotification(prev => !prev);
+
+    if (!showNotification) {
+      try {
+        // Ensure notification IDs are valid before making the API call
+        const notificationIds = dbNotifications.map(notification => notification._id);
+        if (notificationIds.length > 0) {
+          await axios.post(`${ENDPOINTS.MSG_NOTIFICATION}/mark-as-read`, { notificationIds });
+        }
+      } catch (error) {
+        Error('❌ Error marking message notifications as read:', error);
+      }
+    }
+  };
+
   /**
    * useEffect to close the notification when a click is detected outside the notification area.
    */
@@ -132,10 +226,6 @@ export default function BellNotification({userId}) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  useEffect(() => {
-    setIsDataReady(false);
-  },[userId])
 
   /**
    * Utility function to format time values in hours and minutes
@@ -160,26 +250,35 @@ export default function BellNotification({userId}) {
     return formatTime(leftHours, leftMinutes);
   };
 
-  // Function to toggle the notification popup
-  const handleClick = useCallback(() => {
-    setShowNotification(prev => !prev);
-  }, []);
-
   return (
     <>
       {isDataReady && (
-        <i
-          className={`fa fa-bell i-large ${hasNotification ? 'has-notification' : ''}`}
-          onClick={handleClick}
+        <button
+          type="button"
+          onClick={handleMessageNotificationClick}
+          className={`fa fa-bell i-large ${
+            hasNotification || hasMessageNotification ? 'has-notification' : ''
+          }`}
           style={{
             position: 'relative',
             cursor: 'pointer',
-            color: hasNotification ? 'white' : 'rgba(255, 255, 255, .5)',
+            background: 'none',
+            border: 'none',
+            color: hasNotification || hasMessageNotification ? 'white' : 'rgba(255, 255, 255, .5)',
+            padding: 0,
           }}
-          aria-label={hasNotification ? 'You have new notifications' : 'No new notifications'}
-          title={hasNotification ? 'You have new notifications' : 'No new notifications'}
+          aria-label={
+            hasNotification || hasMessageNotification
+              ? 'You have new notifications'
+              : 'No new notifications'
+          }
+          title={
+            hasNotification || hasMessageNotification
+              ? 'You have new notifications'
+              : 'No new notifications'
+          }
         >
-          {hasNotification && (
+          {(hasNotification || hasMessageNotification) && (
             <span
               style={{
                 position: 'absolute',
@@ -194,7 +293,7 @@ export default function BellNotification({userId}) {
               }}
             />
           )}
-        </i>
+        </button>
       )}
       {showNotification && (
         <div
@@ -217,15 +316,22 @@ export default function BellNotification({userId}) {
             textAlign: 'left',
           }}
         >
-          {hasNotification ? (
+          {hasNotification && (
             <div>
               You’ve completed {getFormattedEffort()} out of the {weeklycommittedHours} you need.
               Only {getFormattedLeftToWork()} left to go. Hurry up, there are less than 48 hours
               left to finish your tasks!
             </div>
-          ) : (
-            <div>No notifications</div>
           )}
+          {hasMessageNotification && (
+            <div>
+              <strong>New Messages:</strong>
+              {allNotifications.map((notification, index) => (
+                <div key={notification._id || index}>{notification.message || notification}</div>
+              ))}
+            </div>
+          )}
+          {!hasNotification && !hasMessageNotification && <div>No new notifications.</div>}
         </div>
       )}
     </>
