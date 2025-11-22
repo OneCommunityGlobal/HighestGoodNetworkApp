@@ -275,3 +275,265 @@ body {
   place-items: center;
   color: #999;
 }
+
+/* Comparing Villages Chart Filters */
+.comparingChart {
+  width: 100%;
+}
+
+.filtersContainer {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.filtersLegend {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 12px;
+  padding: 0 8px;
+}
+
+.darkFilters {
+  background: #1C2541;
+  border-color: #225163;
+}
+
+.toggleBtn {
+  background: #fff;
+  border: 1px solid #dee2e6;
+  color: #495057;
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.toggleBtn.active {
+  background: #007bff;
+  border-color: #007bff;
+  color: #fff;
+}
+
+.darkToggleBtn {
+  background: #2C3E50;
+  border-color: #34495E;
+  color: #fff;
+}
+
+.darkToggleBtn.active {
+  background: #3498DB;
+  border-color: #3498DB;
+}
+
+.dateRangeDisplay {
+  background: #e9ecef;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+.darkText .dateRangeDisplay {
+  background: #2C3E50;
+  color: #fff;
+}
+
+.warningMessage {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.darkWarning {
+  background: #8B4513;
+  border-color: #A0522D;
+  color: #FFE4B5;
+}
+
+.chartContainer {
+  margin-top: 16px;
+}
+
+/* Loading and Error States */
+.loadingIndicator {
+  font-size: 12px;
+  color: #6c757d;
+  margin-left: 8px;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.darkError {
+  background: #2C3E50;
+  border-color: #34495E;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #dc3545;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.retryBtn {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.retryBtn:hover {
+  background: #0056b3;
+}
+
+.darkRetryBtn {
+  background: #3498DB;
+}
+
+.darkRetryBtn:hover {
+  background: #2980B9;
+}
+
+/* Loading Skeleton */
+.loadingSkeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  height: 300px;
+}
+
+.darkSkeleton {
+  background: #1C2541;
+}
+
+.skeletonChart {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease-in-out infinite;
+}
+
+.darkSkeleton .skeletonChart {
+  background: linear-gradient(90deg, #3A506B 25%, transparent 37%, #3A506B 63%);
+  background-size: 400% 100%;
+}
+
+.skeletonLegend {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skeletonLegendItem {
+  width: 150px;
+  height: 16px;
+  background: linear-gradient(90deg, #f0f0f0 25%, transparent 37%, #f0f0f0 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.darkSkeleton .skeletonLegendItem {
+  background: linear-gradient(90deg, #3A506B 25%, transparent 37%, #3A506B 63%);
+  background-size: 400% 100%;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filtersContainer {
+    padding: 12px;
+  }
+  
+  .toggleBtn {
+    font-size: 11px;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    width: 48%;
+  }
+  
+  .filterLabel {
+    font-size: 12px;
+    margin-bottom: 2px;
+  }
+  
+  .dateRangeDisplay {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+  
+  .graphTitle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .metricPill {
+    align-self: flex-start;
+  }
+  
+  .errorContainer {
+    height: 250px;
+    padding: 16px;
+  }
+  
+  .skeletonChart {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .filtersContainer {
+    padding: 8px;
+  }
+  
+  .toggleBtn {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  
+  .dateRangeDisplay {
+    text-align: center;
+  }
+  
+  .warningMessage {
+    text-align: center;
+  }
+}
