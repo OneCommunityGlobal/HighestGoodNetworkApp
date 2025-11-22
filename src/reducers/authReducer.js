@@ -1,5 +1,10 @@
 import { isEmpty } from 'lodash';
-import { SET_CURRENT_USER, SET_HEADER_DATA, START_FORCE_LOGOUT, STOP_FORCE_LOGOUT } from '../constants/auth';
+import {
+  SET_CURRENT_USER,
+  SET_HEADER_DATA,
+  START_FORCE_LOGOUT,
+  STOP_FORCE_LOGOUT,
+} from '../constants/auth';
 
 const initialState = {
   isAuthenticated: false,
