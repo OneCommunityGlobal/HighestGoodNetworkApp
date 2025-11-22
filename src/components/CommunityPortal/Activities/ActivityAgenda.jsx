@@ -1,9 +1,25 @@
 import './ActivityAgenda.css';
 import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import ActivityImg from '../../../assets/images/yoga-img.png';
 
 function ActivityAgenda() {
+  const { activityid } = useParams();
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  // Validate activityid parameter
+  if (!activityid) {
+    return (
+      <div className={`activity-agenda-page ${darkMode ? 'activity-agenda-dark-mode' : ''}`}>
+        <div className="activity-agenda-container">
+          <div className="activity-agenda-content">
+            <h1>Error</h1>
+            <p>Activity ID is missing. Please provide a valid activity ID in the URL.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const eventData = {
     activityName: 'Yoga Session',
