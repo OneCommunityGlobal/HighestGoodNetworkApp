@@ -86,9 +86,26 @@ export function LBDashboard() {
     return (all.find(o => o.key === selectedMetricKey) || {}).label || '';
   })();
 
+  const getAvailableMetrics = () => {
+    return Object.values(METRIC_OPTIONS).flat();
+  };
+
   const handleCategoryClick = category => {
     setActiveCategory(category);
     setSelectedMetricKey(DEFAULTS[category]);
+  };
+
+  const handleMetricChange = newMetricKey => {
+    setSelectedMetricKey(newMetricKey);
+
+    // Update active category based on the selected metric
+    const allMetrics = Object.entries(METRIC_OPTIONS);
+    for (const [category, metrics] of allMetrics) {
+      if (metrics.some(m => m.key === newMetricKey)) {
+        setActiveCategory(category);
+        break;
+      }
+    }
   };
 
   const handleMetricPick = (category, key) => {
@@ -206,11 +223,13 @@ export function LBDashboard() {
               </Col>
               <Col>
                 <ComparePieChart
-                  title="Comparing Villages"
-                  data={VILLAGE_COMPARISON_DATA}
                   darkMode={darkMode}
-                  showMetricPill={true}
+                  selectedMetricKey={selectedMetricKey}
                   metricLabel={metricLabel}
+                  onMetricChange={handleMetricChange}
+                  availableMetrics={getAvailableMetrics()}
+                  showFilters={true}
+                  showMetricPill={true}
                   height={380}
                 />
               </Col>
