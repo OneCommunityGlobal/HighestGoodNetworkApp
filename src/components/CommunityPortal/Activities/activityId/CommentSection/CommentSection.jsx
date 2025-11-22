@@ -7,7 +7,7 @@ function CommentSection({ comments }) {
         {comments.map(comment => (
           <div key={comment.id} className="activity-comment">
             <div className="activity-comment-user">
-              <span className={`activity-icon ${Math.random() > 0.5 ? 'purple' : 'blue'}`}>
+              <span className={`activity-icon ${comment.id % 2 === 0 ? 'purple' : 'blue'}`}>
                 {comment.name[0]}
               </span>
             </div>
