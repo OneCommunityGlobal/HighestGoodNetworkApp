@@ -1,5 +1,5 @@
 import { Bar } from 'react-chartjs-2';
-import './ReviewsInsight.css';
+import styles from './ReviewsInsight.module.css';
 import { useSelector } from 'react-redux';
 
 function ActionDoneGraph({ selectedTeams, teamData }) {
@@ -10,7 +10,7 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
   }
 
   if (!teamData || Object.keys(teamData).length === 0) {
-    return <div className="no-data-ri">No data available for Action Done Graph.</div>;
+    return <div className={styles.noDataRi}>No data available for Action Done Graph.</div>;
   }
 
   const isAllTeams = selectedTeams.some(team => team.value === 'All');
@@ -81,9 +81,9 @@ function ActionDoneGraph({ selectedTeams, teamData }) {
   };
 
   return (
-    <div className="ri-action-done-graph">
+    <div className={styles.riActionDoneGraph}>
       <h2>PR: Action Done</h2>
-      <div className="ri-graph">
+      <div className={styles.riGraph}>
         <Bar data={data} options={options} />
       </div>
     </div>

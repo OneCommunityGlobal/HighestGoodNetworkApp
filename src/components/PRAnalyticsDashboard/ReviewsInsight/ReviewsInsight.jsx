@@ -93,11 +93,11 @@ function ReviewsInsight() {
   ];
 
   return (
-    <div className={`reviews-insight-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`${styles.reviewsInsightContainer} ${darkMode ? 'dark-mode' : ''}`}>
       <h1>PR Reviews Insights</h1>
 
-      <div className="ri-filters">
-        <div className="ri-filter-item">
+      <div className={styles.riFilters}>
+        <div className={styles.riFilterItem}>
           <label htmlFor="ri-duration-filter">Duration:</label>
           <select id="ri-duration-filter" value={duration} onChange={handleDurationChange}>
             <option value="Last Week">Last Week</option>
@@ -107,7 +107,7 @@ function ReviewsInsight() {
           </select>
         </div>
 
-        <div className="ri-filter-item">
+        <div className={styles.riFilterItem}>
           <label htmlFor="team-filter">Team Code:</label>
           <Select
             id="team-filter"
@@ -175,7 +175,7 @@ function ReviewsInsight() {
         </div>
       </div>
 
-      <div className="ri-selected-teams">
+      <div className={styles.riSelectedTeams}>
         {selectedTeams.length === 0 ? (
           <p>No teams selected</p>
         ) : selectedTeams.some(team => team.value === 'All') ? (
@@ -185,10 +185,10 @@ function ReviewsInsight() {
         )}
       </div>
 
-      {loading && <div className="ri-loading">Loading...</div>}
-      {error && <div className="ri-error">{error}</div>}
+      {loading && <div className={styles.riLoading}>Loading...</div>}
+      {error && <div className={styles.riError}>{error}</div>}
       {!loading && !error && (
-        <div className="ri-graphs">
+        <div className={styles.riGraphs}>
           <ActionDoneGraph selectedTeams={selectedTeams} teamData={teamData} />
           <PRQualityGraph selectedTeams={selectedTeams} qualityData={qualityData} />
         </div>
