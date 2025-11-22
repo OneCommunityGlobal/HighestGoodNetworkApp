@@ -128,7 +128,7 @@
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 4px;
-  color: #555;
+  color: var(--label-color);
 }
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-filter-group label {

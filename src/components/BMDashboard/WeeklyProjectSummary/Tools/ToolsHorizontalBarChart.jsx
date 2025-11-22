@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
-import './ToolsHorizontalBarChart.css';
+import styles from './ToolsHorizontalBarChart.module.css';
 
 // No mock data - use real backend data only
 
@@ -16,14 +16,14 @@ function CustomTooltip({ active, payload, label }) {
   const total = payload.reduce((sum, entry) => sum + (entry.value || 0), 0);
 
   return (
-    <div className="tools-horizontal-bar-chart-tooltip">
-      <p className="tools-horizontal-bar-chart-tooltip-label">{label}</p>
+    <div className={styles['tools-horizontal-bar-chart-tooltip']}>
+      <p className={styles['tools-horizontal-bar-chart-tooltip-label']}>{label}</p>
       {payload.map((entry, index) => (
         <p key={index} style={{ color: entry.color }}>
           {entry.name}: {entry.value}
         </p>
       ))}
-      <p className="tools-horizontal-bar-chart-tooltip-total">Total: {total}</p>
+      <p className={styles['tools-horizontal-bar-chart-tooltip-total']}>Total: {total}</p>
     </div>
   );
 }
@@ -181,18 +181,18 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
   if (loading) {
     return (
-      <div className="tools-horizontal-bar-chart-card">
-        <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
-        <div className="tools-horizontal-bar-chart-loading">Loading...</div>
+      <div className={styles['tools-horizontal-bar-chart-card']}>
+        <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
+        <div className={styles['tools-horizontal-bar-chart-loading']}>Loading...</div>
       </div>
     );
   }
 
   if (error && data.length === 0) {
     return (
-      <div className="tools-horizontal-bar-chart-card">
-        <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
-        <div className="tools-horizontal-bar-chart-error">{error}</div>
+      <div className={styles['tools-horizontal-bar-chart-card']}>
+        <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
+        <div className={styles['tools-horizontal-bar-chart-error']}>{error}</div>
       </div>
     );
   }
@@ -262,18 +262,22 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
   return (
     <div
-      className={`tools-horizontal-bar-chart-card ${
-        darkMode ? 'tools-horizontal-bar-chart-dark-mode' : ''
-      }`}
+      className={
+        styles[
+          `tools-horizontal-bar-chart-card ${
+            darkMode ? 'tools-horizontal-bar-chart-dark-mode' : ''
+          }`
+        ]
+      }
     >
-      <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
+      <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
 
       {/* Filters Section */}
-      <div className="tools-horizontal-bar-chart-filter-group">
+      <div className={styles['tools-horizontal-bar-chart-filter-group']}>
         <label htmlFor="tool-select">Tool(s)</label>
         <Select
           id="tool-select"
-          className="tools-horizontal-bar-chart-tool-select"
+          className={styles['tools-horizontal-bar-chart-tool-select']}
           classNamePrefix="select"
           value={selectedTools}
           onChange={handleToolChange}
@@ -287,12 +291,12 @@ function ToolsHorizontalBarChart({ darkMode }) {
         />
       </div>
 
-      <div className="tools-horizontal-bar-chart-filters">
-        <div className="tools-horizontal-bar-chart-filter-group">
+      <div className={styles['tools-horizontal-bar-chart-filters']}>
+        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
           <label htmlFor="project-select">Project</label>
           <Select
             id="project-select"
-            className="tools-horizontal-bar-chart-project-select"
+            className={styles['tools-horizontal-bar-chart-project-select']}
             classNamePrefix="select"
             value={selectedProject}
             onChange={handleProjectChange}
@@ -359,13 +363,13 @@ function ToolsHorizontalBarChart({ darkMode }) {
           />
         </div>
 
-        <div className="tools-horizontal-bar-chart-filter-group">
+        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
           <label htmlFor="start-date-picker">Date Range</label>
-          <div className="tools-horizontal-bar-chart-date-picker-group">
+          <div className={styles['tools-horizontal-bar-chart-date-picker-group']}>
             <input
               id="start-date-picker"
               type="date"
-              className="tools-horizontal-bar-chart-date-picker"
+              className={styles['tools-horizontal-bar-chart-date-picker']}
               value={startDate}
               onChange={handleStartDateChange}
               placeholder="Start date"
@@ -375,7 +379,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
             <input
               id="end-date-picker"
               type="date"
-              className="tools-horizontal-bar-chart-date-picker"
+              className={styles['tools-horizontal-bar-chart-date-picker']}
               value={endDate}
               onChange={handleEndDateChange}
               placeholder="End date"
@@ -383,7 +387,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
             />
             <button
               type="button"
-              className="tools-horizontal-bar-chart-clear-dates-btn"
+              className={styles['tools-horizontal-bar-chart-clear-dates-btn']}
               onClick={handleClearDates}
               aria-label="Clear date filters"
               title="Reset to default date range"
@@ -395,7 +399,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
       </div>
 
       {data.length > 0 ? (
-        <div className="tools-horizontal-bar-chart-content">
+        <div className={styles['tools-horizontal-bar-chart-content']}>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart
               layout="vertical"
@@ -423,7 +427,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className="tools-horizontal-bar-chart-empty">
+        <div className={styles['tools-horizontal-bar-chart-empty']}>
           <p>📊 No tools data available</p>
         </div>
       )}
