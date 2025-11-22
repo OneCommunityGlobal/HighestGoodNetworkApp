@@ -16,11 +16,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode {
-  background-color: var(--section-bg, #2c2c2c);
-  color: white;
-}
-
 .tools-horizontal-bar-chart-title {
   font-size: 16px;
   font-weight: 600;
