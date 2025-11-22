@@ -301,6 +301,7 @@ const AddTeamPopup = React.memo((props) => {
         }
       } catch (error) {
         setIsLoading(false);
+        // eslint-disable-next-line no-console
         console.error('Error updating team:', error);
         toast.error('An unexpected error occurred while updating the team');
       }
@@ -352,6 +353,7 @@ const AddTeamPopup = React.memo((props) => {
                 setDuplicateTeam(!!existingTeam);
               }}
               placeholder="Enter new team name"
+              // eslint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
             />
           ) : (
