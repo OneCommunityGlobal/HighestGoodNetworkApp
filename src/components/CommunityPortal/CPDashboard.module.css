@@ -1,11 +1,4 @@
-body {
-  font-family: 'Poppins', sans-serif;
-  background: #fff;
-  margin: 0;
-  padding: 0;
-}
-
-.dashboard-container {
+.dashboardContainer {
   padding: 40px 20px;
   max-width: 1400px;
   margin: 0 auto;
@@ -14,7 +7,7 @@ body {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-header {
+.dashboardHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,44 +18,77 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.dashboard-header h1 {
+.dashboardHeader h1 {
   font-size: 2.5rem;
   font-weight: bold;
   color: #2c3e50;
 }
 
-.dashboard-search-container input {
+.dashboardControls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dashboardSearchContainer {
+  flex: 1;
+  max-width: 600px;
+}
+
+.dashboardSearch {
   border: 2px solid #2c3e50;
   border-radius: 25px;
   padding: 12px 20px;
   font-size: 1rem;
   width: 100%;
-  max-width: 600px;
   transition: all 0.3s ease;
 }
 
-.dashboard-search-container input:focus {
+.dashboardSearch:focus {
   border-color: #34495e;
   box-shadow: 0 0 8px rgba(52, 73, 94, 0.3);
   outline: none;
 }
 
-.dashboard-sidebar {
+.dashboardSidebar {
   padding: 30px;
   background: #f9f9f9;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.filter-section h4 {
+.filterSection h4 {
   font-size: 1.8rem;
   color: #2c3e50;
   margin-bottom: 20px;
   font-weight: 600;
 }
 
-.filter-item input,
-.filter-item select {
+.filterOptionsHorizontal {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.dateFilter {
+  margin-top: 10px;
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 1rem;
+  background: #ffffff;
+  transition: all 0.3s ease;
+}
+
+.dateFilter:focus {
+  border-color: #2c3e50;
+  box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
+  outline: none;
+}
+
+.filterItem input,
+.filterItem select {
   padding: 12px 15px;
   margin-top: 10px;
   border: 1px solid #ddd;
@@ -73,29 +99,37 @@ body {
   transition: all 0.3s ease;
 }
 
-.filter-item input:focus,
-.filter-item select:focus {
+.filterItem input:focus,
+.filterItem select:focus {
   border-color: #2c3e50;
   box-shadow: 0 0 5px rgba(44, 62, 80, 0.4);
   outline: none;
 }
 
-.dashboard-main {
+.dashboardMain {
   padding: 30px;
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.section-title {
-  font-size: 2.2rem;
-  color: #2c3e50;
+.eventsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  font-weight: bold;
-  text-align: center;
+  width: 100%;
 }
 
-.event-card {
+.sectionTitle {
+  font-size: 2.2rem;
+  color: #2c3e50;
+  margin-bottom: 0;
+  font-weight: bold;
+  text-align: left;
+}
+
+.eventCard {
   margin-bottom: 20px;
   border-radius: 12px;
   overflow: hidden;
@@ -103,18 +137,38 @@ body {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.event-card:hover {
+.eventCard:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
-.event-card-img-container img {
+.eventCardCol {
+  margin-bottom: 20px;
+}
+
+.eventCardImgContainer img {
   width: 100%;
   height: auto;
   border-bottom: 3px solid #34495e;
 }
 
-.event-title {
+.eventCardImg {
+  width: 100%;
+  height: auto;
+}
+
+.eventIcon {
+  margin-right: 8px;
+}
+
+.noEvents {
+  text-align: center;
+  padding: 40px;
+  color: #555;
+  font-size: 1.2rem;
+}
+
+.eventTitle {
   text-align: center;
   color: #2c3e50;
   margin: 10px 0;
@@ -122,9 +176,9 @@ body {
   font-size: 1.5rem;
 }
 
-.event-date,
-.event-location,
-.event-organizer {
+.eventDate,
+.eventLocation,
+.eventOrganizer {
   font-size: 1rem;
   color: #555;
   display: flex;
@@ -133,12 +187,7 @@ body {
   margin: 5px 0;
 }
 
-.dashboard-actions {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.dashboard-actions button {
+.showPastEventsBtn {
   background-color: #2c3e50;
   color: #ffffff;
   border: none;
@@ -148,9 +197,11 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: bold;
+  white-space: nowrap;
 }
 
-.dashboard-actions button:hover {
+.showPastEventsBtn:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
+
