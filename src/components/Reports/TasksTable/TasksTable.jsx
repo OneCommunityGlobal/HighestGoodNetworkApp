@@ -3,7 +3,7 @@
 /* eslint-disable camelcase */
 /* eslint-disable import/prefer-default-export */
 import { useState, useEffect, useRef } from 'react';
-import '../../Teams/Team.css';
+import styles from '../../Teams/Team.module.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TasksTable.css';
 import Select from 'react-select';

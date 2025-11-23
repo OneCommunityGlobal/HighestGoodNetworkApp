@@ -17,7 +17,7 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import './TeamReport.css';
+import styles from './TeamReport.module.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 

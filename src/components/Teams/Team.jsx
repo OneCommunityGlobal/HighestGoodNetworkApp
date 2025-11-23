@@ -1,5 +1,5 @@
 /* eslint-disable react/destructuring-assignment */
-import './Team.css';
+import styles from './Team.module.css';
 import { connect, useSelector } from 'react-redux';
 import { Button } from 'reactstrap';
 import hasPermission from '~/utils/permissions';
