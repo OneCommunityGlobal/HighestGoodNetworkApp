@@ -1,4 +1,4 @@
-// recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
+//// recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
 const getAllSubpermissionKeys = permissions => {
   const keys = [];
   permissions.forEach(permission => {
@@ -68,6 +68,11 @@ export const permissionLabels = [
           'Makes ONLY the "Reports" -> "Weekly Summaries Reports" option appear/accessible.',
       },
       {
+        label: 'See/Edit PR Team Dashboard',
+        key: 'accessPRTeamDashboard',
+        description: 'Gives access to the PR Team dashboard, including view and edit rights.',
+      },
+      {
         label: 'Edit Total Valid Weekly Summaries',
         key: 'totalValidWeeklySummaries',
         description: 'Gives permission to edit total valid weekly summaries count under reports',
@@ -95,6 +100,11 @@ export const permissionLabels = [
         key: 'editTeamCode',
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
+      },
+      {
+        label: 'See Job Analytics Reports',
+        key: 'getJobReports',
+        description: 'Job Analytics Reports.',
       },
     ],
   },
@@ -165,12 +175,6 @@ export const permissionLabels = [
           'Gives the user permission to update the password of any user but Owner/Admin classes. ',
       },
       {
-        label: 'Reset / Change Password (Others)',
-        key: 'resetPassword',
-        description:
-          'Gives the user permission to Reset and/or Change the password of any user but Owner/Admin classes. ',
-      },
-      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
@@ -188,15 +192,20 @@ export const permissionLabels = [
           'Gives the user permission to use the "Pause" button to pause user activity on their profile page.',
       },
       {
-        label: 'Set Final Day for User',
-        key: 'setUserFinalDay',
-        description:
-          'Gives the user permission to use the "Set Final Day" button to set a final working day for a user on their profile page.',
+        label: 'Set Final Day',
+        key: 'setFinalDay',
+        description: 'Gives the user permission to use the set the final working day.',
       },
       {
         label: 'Tracking Management',
         key: 'setTrackingManagement',
         description: 'Gives the user permission to interact with the edit warnings list modal.',
+      },
+      {
+        label: 'HGN People +/- Setup',
+        key: 'manageHGNAccessSetup',
+        description:
+          'Gives the user permission to access the HGN Add Access button on user profile pages to add/remove user access to GitHub, Dropbox, Slack, and Sentry.',
       },
     ],
   },
@@ -244,6 +253,12 @@ export const permissionLabels = [
         key: 'deleteWarningTracker',
         description: 'Gives user permission to delete a warning tracker from the system.',
       },
+      {
+        label: 'Blue Square Email Management',
+        key: 'resendBlueSquareAndSummaryEmails',
+        description:
+          'Gives the user permission to access Blue Square Email Management and resend infringement emails and weekly summary emails.',
+      },
     ],
   },
   {
@@ -273,6 +288,12 @@ export const permissionLabels = [
         key: 'deleteBadges',
         description:
           'Gives the user permission to delete a badge on "Other Links" -> "Badge Management"',
+      },
+      {
+        label: 'Modify Badge Amount',
+        key: 'modifyBadgeAmount',
+        description:
+          'Gives the user permission to increase or decrease the count of a badge on the Badge Reports Component',
       },
       {
         label: 'Assign Badges',
