@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 
-import './TeamsOverview.css';
+import styles from './TeamsOverview.module.css';
 
 /**
  * The header row of the team table.
