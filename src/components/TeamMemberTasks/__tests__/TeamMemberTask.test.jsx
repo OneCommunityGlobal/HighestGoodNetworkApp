@@ -3,7 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import TeamMemberTask from '~/components/TeamMemberTasks/TeamMemberTask';
 import { authMock, rolesMock, userProfileMock, themeMock } from '../../../__tests__/mockStates.js';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { MemoryRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 

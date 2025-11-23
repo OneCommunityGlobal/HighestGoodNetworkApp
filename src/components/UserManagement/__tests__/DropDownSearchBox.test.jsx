@@ -1,6 +1,6 @@
 // import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import DropDownSearchBox from '../DropDownSearchBox';
 

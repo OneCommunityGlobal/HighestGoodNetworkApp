@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import Projects from '..';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { rolesMock } from '__tests__/mockStates';
 
 import axios from 'axios';
