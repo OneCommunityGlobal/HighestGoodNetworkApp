@@ -219,7 +219,7 @@
 .weeklyProjectSummaryDashboardCategoryContent {
   padding: 15px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* grid-template-columns: repeat(4, 1fr); */
   gap: 20px;
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;

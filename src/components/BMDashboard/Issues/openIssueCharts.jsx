@@ -119,7 +119,7 @@ function IssueCharts() {
   const noDataContentClass = `${styles.noDataContent} ${darkMode ? styles.noDataContentDark : ''}`;
 
   return (
-    <div className={containerClass}>
+    <div className={containerClass} style={{ width: '100%' }}>
       <h2>Longest Open Issues</h2>
 
       <div className={styles.filtersContainer}>
@@ -166,8 +166,51 @@ function IssueCharts() {
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            className={filterSelectClass}
+            // className={filterSelectClass}
             classNamePrefix="select"
+            styles={{
+              control: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#22272e' : '#ffffff',
+                borderColor: darkMode ? '#3d444d' : '#ccc',
+                color: darkMode ? '#cfd7e3' : '#333',
+                boxShadow: 'none',
+                '&:hover': {
+                  borderColor: darkMode ? '#4caf50' : '#4caf50',
+                },
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#22272e' : '#ffffff',
+                color: darkMode ? '#cfd7e3' : '#333',
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused
+                  ? darkMode
+                    ? '#2f3540'
+                    : '#e5e5e5'
+                  : 'transparent',
+                color: darkMode ? '#fff' : '#333',
+              }),
+              multiValue: base => ({
+                ...base,
+                backgroundColor: darkMode ? '#3d444d' : '#e2e8f0',
+                color: darkMode ? '#fff' : '#333',
+              }),
+              multiValueLabel: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#333',
+              }),
+              multiValueRemove: base => ({
+                ...base,
+                color: darkMode ? '#fff' : '#333',
+                ':hover': {
+                  backgroundColor: darkMode ? '#4caf50' : '#4caf50',
+                  color: '#fff',
+                },
+              }),
+            }}
           />
         </div>
       </div>
@@ -196,10 +239,28 @@ function IssueCharts() {
                 width={yAxisWidth}
               />
               <Tooltip
+                contentStyle={{
+                  backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
+                  border: `1px solid ${darkMode ? '#4a5568' : '#e2e8f0'}`,
+                  color: darkMode ? '#f3f4f6' : '#1a202c',
+                  borderRadius: '6px',
+                }}
+                labelStyle={{
+                  color: darkMode ? '#d1d5db' : '#111827',
+                  fontWeight: 600,
+                }}
+                itemStyle={{
+                  color: darkMode ? '#e5e7eb' : '#1a202c',
+                }}
                 formatter={value => `${value} months`}
                 labelFormatter={label => `Issue: ${label}`}
               />
-              <Bar dataKey="durationOpen" fill="#6495ED" barSize={30}>
+              <Bar
+                dataKey="durationOpen"
+                fill={darkMode ? '#4f83ff' : '#6495ED'}
+                barSize={30}
+                activeBar={{ fill: darkMode ? '#6b9dff' : '#3b6efb' }}
+              >
                 <LabelList
                   dataKey="durationOpen"
                   position="right"
