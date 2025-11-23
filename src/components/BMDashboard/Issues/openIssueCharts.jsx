@@ -18,7 +18,7 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
-import './issueCharts.css';
+import styles from './issueCharts.module.css';
 
 function IssueCharts() {
   const dispatch = useDispatch();
@@ -107,16 +107,27 @@ function IssueCharts() {
     );
   }
 
+  const containerClass = `${styles.issueChartContainer} ${
+    darkMode ? styles.issueChartContainerDark : ''
+  }`;
+  const labelClass = `${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`;
+  const filterSelectClass = `${styles.filterSelect} ${darkMode ? styles.filterSelectDark : ''}`;
+  const chartContainerClass = `${styles.chartContainer} ${
+    darkMode ? styles.chartContainerDark : ''
+  }`;
+  const noDataMessageClass = `${styles.noDataMessage} ${darkMode ? styles.noDataMessageDark : ''}`;
+  const noDataContentClass = `${styles.noDataContent} ${darkMode ? styles.noDataContentDark : ''}`;
+
   return (
-    <div className={`issue-chart-container ${darkMode ? 'dark' : ''}`}>
+    <div className={containerClass}>
       <h2>Longest Open Issues</h2>
 
-      <div className="filters-container">
-        <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+      <div className={styles.filtersContainer}>
+        <div className={styles.filter}>
+          <label className={labelClass} htmlFor="start-date">
             Date Range:
           </label>
-          <div className="date-range-picker">
+          <div className={styles.dateRangePicker}>
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -127,7 +138,7 @@ function IssueCharts() {
               maxDate={endDate}
               placeholderText="Start Date"
               isClearable
-              className="filter-select"
+              className={filterSelectClass}
             />
             <span>to</span>
             <DatePicker
@@ -140,13 +151,13 @@ function IssueCharts() {
               maxDate={new Date()}
               placeholderText="End Date"
               isClearable
-              className="filter-select"
+              className={filterSelectClass}
             />
           </div>
         </div>
 
-        <div className="filter">
-          <label className="issue-chart-label" htmlFor="start-date">
+        <div className={styles.filter}>
+          <label className={labelClass} htmlFor="start-date">
             Projects:
           </label>
           <Select
@@ -155,16 +166,16 @@ function IssueCharts() {
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            className="filter-select"
+            className={filterSelectClass}
             classNamePrefix="select"
           />
         </div>
       </div>
 
-      <div className="chart-container" ref={chartContainerRef}>
+      <div className={chartContainerClass} ref={chartContainerRef}>
         {!issues || issues.length === 0 ? (
-          <div className="no-data-message">
-            <div className="no-data-content">
+          <div className={noDataMessageClass}>
+            <div className={noDataContentClass}>
               <h3>No Open Issues Found</h3>
               <p>There are currently no open issues matching your selected criteria.</p>
               <p>Try adjusting your date range or project filters to see more results.</p>
