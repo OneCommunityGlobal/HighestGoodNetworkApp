@@ -72,11 +72,28 @@
   font-size: 12px;
 }
 
-/* Date picker container styles */
-.paidLaborCostDaterangeRow {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
+/* Date range picker container */
+.paidLaborCostDateRangePicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paidLaborCostDatePicker {
+  padding: 4px 8px;
+  height: 28px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.paidLaborCostDateSeparator {
+  font-size: 14px;
+  color: var(--text-color);
+  white-space: nowrap;
 }
 /* Date Picker */
 
@@ -289,6 +306,16 @@
 .dark-mode .paid-labor-cost-filter-select {
   background-color: var(--section-bg);
   border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostDatePicker {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostDateSeparator {
   color: var(--text-color);
 }
 
@@ -542,7 +569,4 @@
   border-radius: 3px;
 }
 
-/* .paidLaborCostChartScrollWrapper {
-  scrollbar-width: thin;
-  scrollbar-color: var(--button-bg) var(--card-shadow);
-} */
+/* Scrollbar styles merged with main .paidLaborCostChartScrollWrapper selector above */

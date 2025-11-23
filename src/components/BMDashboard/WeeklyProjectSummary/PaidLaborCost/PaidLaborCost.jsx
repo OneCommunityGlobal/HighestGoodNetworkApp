@@ -11,10 +11,11 @@ import {
 } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import styles from './PaidLaborCost.module.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import PaidLaborCostDatePicker from './PaidLaborCostDatePicker';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -65,17 +66,33 @@ const mockData = [
  * - If the Project Filter is "All Projects", aggregate all projects into one group labeled "All Projects"
  *   and—if the Task Filter is 'ALL'—include only the two most expensive sub-tasks (plus Total Cost).
  * - Otherwise, aggregate only for the selected project.
- * - If a custom date range is active, only data within that range is included.
+ * - Backend handles all date filtering, so this function works with pre-filtered data.
  */
-function aggregateData(data, taskFilter, projectFilter, dateMode, startDate, endDate) {
-  let filtered = data;
-  if (dateMode === 'CUSTOM' && startDate && endDate) {
-    filtered = data.filter(item => {
-      // Parse date - backend returns ISO 8601 format, moment can parse it automatically
-      const itemDate = moment(item.date);
-      return itemDate.isBetween(startDate, endDate, 'day', '[]');
-    });
+function aggregateData(data, taskFilter, projectFilter) {
+  // Validate data structure
+  if (!Array.isArray(data)) {
+    console.error('aggregateData: Expected array, received:', typeof data);
+    return { labels: [], aggregation: {}, tasksToInclude: [] };
   }
+
+  // Validate each item has required fields
+  const validData = data.filter(item => {
+    if (!item || typeof item !== 'object') return false;
+    if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
+    if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
+    if (!item.date) return false;
+    return true;
+  });
+
+  if (validData.length !== data.length) {
+    console.warn(
+      `aggregateData: Filtered out ${data.length - validData.length} invalid items from ${
+        data.length
+      } total`,
+    );
+  }
+
+  const filtered = validData;
 
   if (projectFilter === 'All Projects') {
     const label = 'All Projects';
@@ -143,7 +160,6 @@ export default function PaidLaborCost() {
   // Filter States
   const [taskFilter, setTaskFilter] = useState('ALL');
   const [projectFilter, setProjectFilter] = useState('All Projects');
-  const [dateMode, setDateMode] = useState('ALL');
   const [dateRange, setDateRange] = useState({
     startDate: null,
     endDate: null,
@@ -167,8 +183,9 @@ export default function PaidLaborCost() {
           params.append('tasks', JSON.stringify([taskFilter]));
         }
 
-        // Add date_range parameter only when date mode is CUSTOM and at least one date is selected
-        if (dateMode === 'CUSTOM' && (dateRange.startDate || dateRange.endDate)) {
+        // Add date_range parameter when at least one date is selected
+        // No dates selected means all data (no filter)
+        if (dateRange.startDate || dateRange.endDate) {
           params.append(
             'date_range',
             JSON.stringify({
@@ -199,7 +216,26 @@ export default function PaidLaborCost() {
 
         // Extract data array and totalCost from response
         if (Array.isArray(apiData.data)) {
-          setData(apiData.data);
+          // Validate data structure and format
+          const validatedData = apiData.data.filter(item => {
+            if (!item || typeof item !== 'object') return false;
+            if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
+            if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
+            if (!item.date) return false;
+            // Validate date format (should be ISO 8601)
+            const date = moment(item.date);
+            if (!date.isValid()) return false;
+            return true;
+          });
+
+          if (validatedData.length !== apiData.data.length) {
+            console.warn(
+              `Data validation: Filtered out ${apiData.data.length -
+                validatedData.length} invalid items`,
+            );
+          }
+
+          setData(validatedData);
         } else {
           throw new Error('Invalid response structure: data property is not an array');
         }
@@ -221,7 +257,7 @@ export default function PaidLaborCost() {
     };
 
     fetchData();
-  }, [projectFilter, taskFilter, dateMode, dateRange.startDate, dateRange.endDate]);
+  }, [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate]);
 
   // Use mock data initially until API data is loaded
   const currentData = data.length > 0 ? data : mockData;
@@ -233,14 +269,11 @@ export default function PaidLaborCost() {
 
   const distinctTasks = useMemo(() => [...new Set(currentData.map(d => d.task))], [currentData]);
 
-  // Aggregate data based on filters
+  // Aggregate data based on filters (backend handles date filtering)
   const { labels, aggregation, tasksToInclude } = aggregateData(
     currentData,
     taskFilter,
     projectFilter,
-    dateMode,
-    dateRange.startDate,
-    dateRange.endDate,
   );
 
   // Build stable option lists for selects
@@ -262,17 +295,13 @@ export default function PaidLaborCost() {
     [distinctProjects],
   );
 
-  const dateOptions = useMemo(
-    () => [
-      { id: uuidv4(), value: 'ALL', label: 'ALL' },
-      { id: uuidv4(), value: 'CUSTOM', label: 'CUSTOM' },
-    ],
-    [],
-  );
+  // Handle individual date changes - triggers immediate API call
+  const handleStartDateChange = date => {
+    setDateRange(prev => ({ ...prev, startDate: date }));
+  };
 
-  // Handle date range changes
-  const handleDateRangeChange = ({ startDate, endDate }) => {
-    setDateRange({ startDate, endDate });
+  const handleEndDateChange = date => {
+    setDateRange(prev => ({ ...prev, endDate: date }));
   };
 
   // Build Chart.js datasets
@@ -393,42 +422,49 @@ export default function PaidLaborCost() {
               </select>
             </div>
 
-            {/* Date Filter */}
+            {/* Date Range Filter */}
             <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="date-filter">
-                Dates
+              <label className={styles.paidLaborCostFilterLabel} htmlFor="date-range">
+                Date Range
               </label>
-              <select
-                id="date-filter"
-                value={dateMode}
-                onChange={e => {
-                  setDateMode(e.target.value);
-                  // Reset date range when the date filter changes
-                  setDateRange({ startDate: null, endDate: null });
-                }}
-                className={styles.paidLaborCostFilterSelect}
-              >
-                {dateOptions.map(option => (
-                  <option key={option.id} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+              <div className={styles.paidLaborCostDateRangePicker}>
+                <DatePicker
+                  id="start-date"
+                  selected={dateRange.startDate}
+                  onChange={handleStartDateChange}
+                  selectsStart
+                  startDate={dateRange.startDate}
+                  endDate={dateRange.endDate}
+                  maxDate={dateRange.endDate || new Date()}
+                  placeholderText="Start Date"
+                  isClearable
+                  dateFormat="MM/dd/yyyy"
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  className={styles.paidLaborCostDatePicker}
+                />
+                <span className={styles.paidLaborCostDateSeparator}>to</span>
+                <DatePicker
+                  id="end-date"
+                  selected={dateRange.endDate}
+                  onChange={handleEndDateChange}
+                  selectsEnd
+                  startDate={dateRange.startDate}
+                  endDate={dateRange.endDate}
+                  minDate={dateRange.startDate}
+                  maxDate={new Date()}
+                  placeholderText="End Date"
+                  isClearable
+                  dateFormat="MM/dd/yyyy"
+                  showYearDropdown
+                  showMonthDropdown
+                  dropdownMode="select"
+                  className={styles.paidLaborCostDatePicker}
+                />
+              </div>
             </div>
           </div>
-
-          {/* Our Custom DateRangePicker shown in CUSTOM mode - replacing Airbnb DateRangePicker */}
-          {dateMode === 'CUSTOM' && (
-            <div className={styles.paidLaborCostDaterangeRow}>
-              <PaidLaborCostDatePicker
-                startDate={dateRange.startDate}
-                endDate={dateRange.endDate}
-                onDatesChange={handleDateRangeChange}
-                minDate={new Date(1980, 0, 1)}
-                placeholder="Select date range"
-              />
-            </div>
-          )}
 
           {/* Chart Container */}
           <div className={styles.paidLaborCostChartScrollWrapper}>
