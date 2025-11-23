@@ -66,37 +66,51 @@ const TeamMemberTask = React.memo(
     const owner = 'Owner';
 
     const [catalog, setCatalog] = useState([]);
-    const [userStatesMap, setUserStatesMap] = useState({});
-    const [isStateModalOpen, setIsStateModalOpen] = useState(false);
-    const [modalUserId, setModalUserId] = useState(null);
+const [userStatesMap, setUserStatesMap] = useState({});
+const [isStateModalOpen, setIsStateModalOpen] = useState(false);
+const [modalUserId, setModalUserId] = useState(null);
 
-    useEffect(() => {
-      async function load() {
-        const ids = [user.personId];
-        const cat = await fetchCatalog();
-        const states = await fetchUserStatesBatch(ids);
-        setCatalog(cat);
-        setUserStatesMap(states);
+useEffect(() => {
+  let isMounted = true;
+  async function load() {
+    try {
+      const ids = [user.personId];
+      const cat = await fetchCatalog();
+      const states = await fetchUserStatesBatch(ids);
+      if (isMounted) {
+        setCatalog(cat || []);
+        setUserStatesMap(states || {});
       }
-      load();
-    }, [user.personId]);
+    } catch (e) {
+      console.error("Failed to load user states:", e.message);
+    }
+  }
+  load();
+  return () => {
+    isMounted = false;
+  };
+}, [user.personId]);
 
     const openUserStateModal = (uid) => {
-      setModalUserId(uid);
-      setIsStateModalOpen(true);
-    };
+  setModalUserId(uid);
+  setIsStateModalOpen(true);
+};
 
-    const closeUserStateModal = () => {
-      setIsStateModalOpen(false);
-      setModalUserId(null);
-    };
+const closeUserStateModal = () => {
+  setIsStateModalOpen(false);
+  setModalUserId(null);
+};
 
-    const handleUserStateUpdated = (newValues) => {
-      setUserStatesMap((prev) => ({
-        ...prev,
-        [modalUserId]: newValues,
-      }));
-    };
+const handleUserStateUpdated = (newValues) => {
+  setUserStatesMap((prev) => ({
+    ...prev,
+    [modalUserId]: newValues,
+  }));
+  if (modalUserId) {
+    userStatesMap[modalUserId] = newValues;
+  }
+};
+
 
 
     const handleDashboardAccess = () => {

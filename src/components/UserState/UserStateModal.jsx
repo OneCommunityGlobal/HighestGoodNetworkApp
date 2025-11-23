@@ -1,4 +1,3 @@
-// src/components/UserState/UserStateModal.jsx
 import React, { useEffect, useState } from "react";
 import {
   fetchCatalog,
@@ -8,14 +7,6 @@ import {
 import styles from "./userState.module.css";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
-/**
- * Props:
- * - isOpen
- * - toggle
- * - userId
- * - existingStates: [{key, assignedAt}]
- * - onUpdated (callback to parent)
- */
 export default function UserStateModal({
   isOpen,
   toggle,
@@ -31,9 +22,7 @@ export default function UserStateModal({
   const [newLabel, setNewLabel] = useState("");
   const [newColor, setNewColor] = useState("#3498db");
 
-  /* ---------------------------------------------------------
-     Load catalog + initial selections
-  ----------------------------------------------------------*/
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -48,9 +37,6 @@ export default function UserStateModal({
     load();
   }, [isOpen, existingStates]);
 
-  /* ---------------------------------------------------------
-     Toggle selection
-  ----------------------------------------------------------*/
   const toggleSelect = (key) => {
     setSelected((prev) => {
       const next = new Set(prev);
@@ -60,9 +46,7 @@ export default function UserStateModal({
     });
   };
 
-  /* ---------------------------------------------------------
-     Save new state to catalog
-  ----------------------------------------------------------*/
+  
   const handleCreateState = async () => {
     if (!newLabel.trim()) return;
 
@@ -80,9 +64,7 @@ export default function UserStateModal({
     setNewColor("#3498db");
   };
 
-  /* ---------------------------------------------------------
-     Save user selections
-  ----------------------------------------------------------*/
+  
   const handleSave = async () => {
     setLoadingSave(true);
 
@@ -101,7 +83,6 @@ export default function UserStateModal({
       <ModalHeader toggle={toggle}>Manage User States</ModalHeader>
 
       <ModalBody>
-        {/* State selection list */}
         <h6>Available States</h6>
 
         {catalog.map((c) => {
@@ -129,7 +110,6 @@ export default function UserStateModal({
 
         <hr />
 
-        {/* New state creation */}
         <h6>Create New State</h6>
 
         <input
