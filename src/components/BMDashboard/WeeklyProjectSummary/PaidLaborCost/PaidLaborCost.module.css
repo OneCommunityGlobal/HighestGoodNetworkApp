@@ -319,6 +319,18 @@
   color: var(--text-color);
 }
 
+.dark-mode .paidLaborCostSummary {
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostSummaryLabel {
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostSummaryValue {
+  color: var(--text-color);
+}
+
 .dark-mode .paid-labor-cost-loading {
   color: var(--text-color);
   opacity: 0.7;
@@ -569,4 +581,25 @@
   border-radius: 3px;
 }
 
-/* Scrollbar styles merged with main .paidLaborCostChartScrollWrapper selector above */
+/* Total Cost Summary Section */
+.paidLaborCostSummary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding: 16px;
+  text-align: center;
+}
+
+.paidLaborCostSummaryLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.paidLaborCostSummaryValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-color);
+}

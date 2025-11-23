@@ -306,14 +306,6 @@ export default function PaidLaborCost() {
   };
 
   // Build Chart.js datasets
-  // Always include the Total Cost dataset
-  const totalCostDataset = {
-    label: 'Total Cost',
-    backgroundColor: '#00A3A1',
-    borderRadius: 4,
-    data: labels.map(label => Math.round(aggregation[label].totalCost / 1000)),
-  };
-
   // Generate one distinct HSL color per task
   const taskDatasets = tasksToInclude.map((task, idx) => {
     // spread hues evenly around the 360° color wheel
@@ -331,7 +323,7 @@ export default function PaidLaborCost() {
 
   const chartData = {
     labels,
-    datasets: [totalCostDataset, ...taskDatasets],
+    datasets: taskDatasets,
   };
 
   // Chart options: grid lines, responsive layout, and tooltip callback for interactivity.
@@ -471,12 +463,24 @@ export default function PaidLaborCost() {
           <div className={styles.paidLaborCostChartScrollWrapper}>
             <div
               style={{
-                width: tasksToInclude.length > 3 ? `${(tasksToInclude.length + 1) * 50}px` : '100%',
+                width: tasksToInclude.length > 3 ? `${tasksToInclude.length * 50}px` : '100%',
                 height: '300px',
               }}
             >
               <Bar data={chartData} options={options} />
             </div>
+          </div>
+
+          {/* Total Cost Summary Section */}
+          <div className={styles.paidLaborCostSummary}>
+            <span className={styles.paidLaborCostSummaryLabel}>Total Labor Cost:</span>
+            <span className={styles.paidLaborCostSummaryValue}>
+              $
+              {totalCost.toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </span>
           </div>
         </>
       )}
