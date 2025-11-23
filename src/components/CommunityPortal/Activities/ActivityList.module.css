@@ -1,6 +1,6 @@
 /* Enhanced Aesthetic CSS for Activity List */
 
-body {
+.body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
   padding: 0;
@@ -8,7 +8,7 @@ body {
   color: #333;
 }
 
-h1 {
+.h1 {
   text-align: center;
   margin: 20px 0;
   color: #1e3a8a;
@@ -49,7 +49,7 @@ h1 {
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
-.activity-list {
+.activityList {
   max-width: 900px;
   margin: 0 auto;
   background: #ffffff;
@@ -58,12 +58,12 @@ h1 {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-.activity-list ul {
+.activityList ul {
   list-style-type: none;
   padding: 0;
 }
 
-.activity-list li {
+.activityList li {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -75,21 +75,21 @@ h1 {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.activity-list li:hover {
+.activityList li:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.activity-list li strong {
+.activityList li strong {
   color: #1e3a8a;
   font-size: 1.2rem;
 }
 
-.activity-list li span {
+.activityList li span {
   color: #4b5563;
 }
 
-.activity-list p {
+.activityList p {
   text-align: center;
   color: #6b7280;
   font-size: 1.1rem;
@@ -107,11 +107,11 @@ h1 {
     width: 100%;
   }
 
-  .activity-list {
+  .activityList {
     padding: 20px;
   }
 
-  .activity-list li {
+  .activityList li {
     flex-direction: column;
     padding: 10px;
   }
