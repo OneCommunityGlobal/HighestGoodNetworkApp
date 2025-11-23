@@ -45,3 +45,124 @@
   padding: 0.5rem;
   border-radius: 4px;
 }
+
+/* ------------------- HIGH-CONTRAST BAR COLORS ------------------- */
+.bar-high-contrast-dark {
+  fill: #4f9cff !important; /* bright blue */
+  stroke: #e5e7eb !important; /* light border */
+  stroke-width: 1.5px !important;
+}
+
+.bar-high-contrast-light {
+  fill: #2563eb !important; /* deep blue for light mode */
+  stroke: #1f2937 !important; /* dark border for separation */
+  stroke-width: 1.5px !important;
+}
+
+/* ------------------- AXIS & LABEL VISIBILITY IMPROVEMENTS ------------------- */
+.darkMode .injury-axis text,
+.darkMode .injury-y-axis text,
+.darkMode .injury-x-axis text {
+  fill: #e5e7eb !important; /* light grey */
+}
+
+.injury-axis text,
+.injury-y-axis text,
+.injury-x-axis text {
+  fill: #374151 !important; /* dark grey for light mode */
+}
+
+/* Rotate X-axis labels for readability */
+.rotate-x-labels text {
+  transform: rotate(-35deg);
+  text-anchor: end;
+  font-size: 0.85rem;
+}
+
+/* ------------------- LEGEND FIXES ------------------- */
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.legend-color-box {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+
+.darkMode .legend-color-box {
+  border: 1px solid #e5e7eb !important; /* ensure visible in dark mode */
+}
+
+.darkMode .legend-label {
+  color: #f3f4f6 !important;
+}
+
+.legend-label {
+  color: #111827;
+}
+
+/* ------------------- GRIDLINE IMPROVEMENTS ------------------- */
+.darkMode .injury-grid line {
+  stroke: #4b5563 !important; /* lighter grey gridlines */
+}
+
+.injury-grid line {
+  stroke: #d1d5db !important; /* light gridlines for light mode */
+}
+
+/* ------------------- RESPONSIVE LAYOUT FIXES ------------------- */
+@media (max-width: 1024px) {
+  .injury-chart-container {
+    padding: 0.75rem;
+  }
+
+  .injury-chart-title {
+    font-size: 1.3rem;
+    text-align: center;
+  }
+
+  .injury-chart-filters {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .injury-chart-container {
+    padding: 0.6rem;
+  }
+
+  .injury-chart-title {
+    font-size: 1.2rem;
+  }
+
+  .injury-chart-filters {
+    width: 100%;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .injury-select__control,
+  .react-datepicker__input-container input {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .injury-chart-container {
+    padding: 0.5rem;
+  }
+
+  .injury-chart-title {
+    font-size: 1.1rem;
+  }
+
+  .injury-chart-filters {
+    gap: 0.5rem;
+  }
+}

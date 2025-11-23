@@ -8,6 +8,7 @@ import {
   Legend,
   LabelList,
   ResponsiveContainer,
+  CartesianGrid,
 } from 'recharts';
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
@@ -130,6 +131,17 @@ function InjuryCategoryBarChart() {
 
   const showLabels = seriesProjectIds.length <= 4;
 
+  const COLOR_PALETTE = [
+    '#34D399', // green
+    '#60A5FA', // blue
+    '#F472B6', // pink
+    '#FBBF24', // amber
+    '#A78BFA', // purple
+    '#4ADE80', // light green
+    '#F87171', // red
+    '#38BDF8', // cyan
+  ];
+
   return (
     <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
       <div className="injury-chart-header">
@@ -209,40 +221,60 @@ function InjuryCategoryBarChart() {
       {!loading && error && <p className="error">Error: {String(error)}</p>}
 
       {!loading && !error && (
-        <ResponsiveContainer width="100%" height={420}>
-          <BarChart data={chartData} margin={{ top: 16, right: 24, bottom: 8, left: 8 }}>
-            <XAxis
-              dataKey="workerCategory"
-              interval={0}
-              angle={-45}
-              textAnchor="end"
-              height={80}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-            />
-            <YAxis allowDecimals={false} />
-            <Tooltip
-              formatter={(value, name) => [
-                value,
-                projectNameById.get(String(name)) || 'Unknown Project',
-              ]}
-            />
-            <Legend
-              wrapperStyle={{ maxHeight: 72, overflowY: 'auto' }}
-              payload={seriesProjectIds.map(pid => ({
-                id: pid,
-                type: 'square',
-                value: projectNameById.get(pid) || 'Unknown Project',
-              }))}
-            />
-            {seriesProjectIds.map((pid, index) => (
-              <Bar key={pid} dataKey={pid} fill={index % 2 === 0 ? '#17c9d3' : '#000'}>
-                {showLabels && (
-                  <LabelList dataKey={pid} position="top" formatter={v => (v > 0 ? v : '')} />
-                )}
-              </Bar>
-            ))}
-          </BarChart>
-        </ResponsiveContainer>
+        <div style={{ width: '100%', overflowX: 'auto' }}>
+          <ResponsiveContainer width="100%" height={420}>
+            <BarChart data={chartData} margin={{ top: 16, right: 24, bottom: 8, left: 8 }}>
+              <XAxis
+                dataKey="workerCategory"
+                interval={0}
+                angle={-45}
+                dy={12}
+                textAnchor="end"
+                height={90}
+                tick={{ fill: darkMode ? '#ffffff' : '#000000' }}
+              />
+              <YAxis allowDecimals={false} />
+              <CartesianGrid stroke={darkMode ? '#4a5568' : '#cccccc'} strokeDasharray="3 3" />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: darkMode ? '#1e1e1e' : '#ffffff',
+                  border: `1px solid ${darkMode ? '#4a5568' : '#cccccc'}`,
+                  color: darkMode ? '#ffffff' : '#000000',
+                  borderRadius: '6px',
+                }}
+                itemStyle={{
+                  color: darkMode ? '#ffffff' : '#000000',
+                }}
+                formatter={(value, name) => [
+                  value,
+                  projectNameById.get(String(name)) || 'Unknown Project',
+                ]}
+              />
+              <Legend
+                wrapperStyle={{ maxHeight: 72, overflowY: 'auto' }}
+                payload={seriesProjectIds.map((pid, index) => ({
+                  id: pid,
+                  type: 'square',
+                  color: COLOR_PALETTE[index % COLOR_PALETTE.length],
+                  value: projectNameById.get(pid) || 'Unknown Project',
+                }))}
+              />
+              {seriesProjectIds.map((pid, index) => (
+                <Bar
+                  key={pid}
+                  dataKey={pid}
+                  fill={COLOR_PALETTE[index % COLOR_PALETTE.length]}
+                  stroke={darkMode ? '#E5E7EB' : '#ffffff'}
+                  strokeWidth={1}
+                >
+                  {showLabels && (
+                    <LabelList dataKey={pid} position="top" formatter={v => (v > 0 ? v : '')} />
+                  )}
+                </Bar>
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       )}
 
       {!loading && !error && chartData.length === 0 && (
