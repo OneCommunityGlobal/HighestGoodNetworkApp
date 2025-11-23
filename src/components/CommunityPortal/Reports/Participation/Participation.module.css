@@ -1,11 +1,4 @@
-/* ---------- General Styling ---------- */
-.body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f5f5f5;
-}
-
+/* ---------- Page Container ---------- */
 .participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
@@ -14,412 +7,212 @@
 .participationLandingPageDark {
   max-width: 100%;
   margin: 0 auto;
-  background-color: #1B2A41;
+  background-color: #1b2a41;
   color: #ffffff;
 }
 
-/* ---------- Page Header ---------- */
+/* ---------- Header ---------- */
 .landingPageHeaderContainer {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
   padding: 12px 0;
   border-bottom: 2px solid #e0e0e0;
+  margin-bottom: 30px;
 }
 
 .landingPageHeader {
   font-size: 2.2rem;
   font-weight: 700;
   color: #111;
-  letter-spacing: 0.5px;
 }
 
 .landingPageHeaderDark {
   font-size: 2.2rem;
   font-weight: 700;
   color: #ffffff;
-  letter-spacing: 0.5px;
 }
 
-/* ---------- Save as PDF button ---------- */
+/* ---------- Save as PDF ---------- */
 .savePdfBtn {
-  font-size: 14px;
-  font-weight: 500;
   padding: 8px 14px;
+  font-weight: 500;
   border-radius: 8px;
-  border: none;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.1s ease;
 }
 
 .savePdfBtnLight {
   background: #f5f5f5;
-  color: #333;
   border: 1px solid #ccc;
-}
-
-.savePdfBtnLight:hover {
-  background: #e8e8e8;
-  transform: translateY(-1px);
 }
 
 .savePdfBtnDark {
   background: #333;
-  color: #f5f5f5;
   border: 1px solid #666;
-}
-
-.savePdfBtnDark:hover {
-  background: #444;
-  transform: translateY(-1px);
-}
-
-@media (max-width: 768px) {
-  .landingPageHeaderContainer {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-    text-align: center;
-  }
-}
-
-/* ---------- Section Headers ---------- */
-.myCasesHeader h2,
-.trackingHeader h3,
-.insightsHeader h3 {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-.trackingHeaderDark h3,
-.insightsHeaderDark h3 {
-  font-size: 1.4rem;
-  font-weight: 600;
-}
-
-/* ---------- My Cases Section ---------- */
-.myCases {
-  margin-bottom: 40px;
-}
-
-.myCasesHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.myCasesHeader h2 {
-  font-size: 20px;
-  color: #333;
-}
-
-.myCasesHeader button {
-  padding: 8px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.myCasesHeader button:hover {
-  background-color: #0056b3;
-}
-
-.myCasesList {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.myCaseItem {
-  padding: 15px;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: #fff;
 }
 
 /* ---------- Analytics Section ---------- */
 .analyticsSection {
   display: flex;
-  flex-wrap: nowrap;
   gap: 20px;
   justify-content: space-between;
-  align-items: flex-start;
-  padding-top: 20px;
 }
 
 .trackingContainer,
 .insights {
   flex: 1;
-  min-width: 48%;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 10px;
 }
 
 .trackingContainerDark,
 .insightsDark {
   flex: 1;
-  min-width: 48%;
-  background-color: #1C2541;
-  color: #ffffff;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  box-sizing: border-box;
+  background: #1c2541;
+  border-radius: 10px;
+  color: #ffffff;
 }
 
-@media (max-width: 768px) {
-  .analyticsSection {
-    flex-wrap: wrap;
-  }
-
-  .trackingContainer,
-  .insights {
-    width: 100%;
-  }
-}
-
-/* ---------- Tracking Section ---------- */
-.trackingHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
+/* ---------- Tracking Header ---------- */
+.trackingHeader,
 .trackingHeaderDark {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   margin-bottom: 20px;
-  color: #ffffff;
 }
 
 .trackingHeader h3 {
-  font-size: 1.3rem;
-  color: #333;
   margin: 0;
+  color: #333;
 }
 
 .trackingHeaderDark h3 {
-  color: #ffffff;
-  font-size: 1.3rem;
   margin: 0;
+  color: #ffffff;
 }
 
-.trackingFilters {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 12px;   /* spacing between dropdowns */
-}
-
-.trackingFilters select {
-  flex: 0 0 auto;
-  padding: 8px;
-  font-size: 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-/* Summary boxes */
+/* ---------- Summary Boxes ---------- */
 .trackingSummary {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-/* Light mode */
 .trackingRate {
   background: #f8f9fa;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
-  color: #333;
 }
 
-.trackingRate .trackingRateSubheading span,
-.trackingRate .trackingRateValue span {
-  color: #333;
-}
-
-/* Dark mode */
 .trackingRateDark {
-  background: #3A506B;
+  background: #3a506b;
   border-radius: 10px;
   width: 48%;
   padding: 10px;
   color: #ffffff;
 }
 
-.trackingRateDark .trackingRateSubheading span,
-.trackingRateDark .trackingRateValue span {
-  color: #ffffff;
-}
-
 .trackingRateValue {
   font-size: 0.9rem;
-  color: #f44336;
-  display: inline-block;
 }
 
-/* Tables */
-.trackingListContainer {
-  max-height: 600px;
-  overflow-y: auto;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  padding: 10px;
-  background: #fff;
+.trackingRateDark p {
+  color: #ffffff !important;
 }
 
+/* ---------- Table ---------- */
+.trackingListContainer,
 .trackingListContainerDark {
   max-height: 600px;
   overflow-y: auto;
   border: 1px solid #ccc;
-  border-radius: 10px;
   padding: 10px;
-  background: #3A506B;
-  color: #ffffff;
+  border-radius: 10px;
 }
 
 .trackingTable {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
-  word-wrap: break-word;
 }
 
-.trackingTable thead th {
-  text-align: left;
-  padding: 10px;
-  background: #f4f4f4;
-}
-
-.trackingTableDark thead th {
-  background: #1C2541;
+.trackingTableDark {
+  width: 100%;
+  border-collapse: collapse;
   color: #ffffff;
-}
-
-.trackingTable tbody td {
-  padding: 5px;
-  border-bottom: 1px solid #eee;
 }
 
 .trackingRateGreen {
   color: green;
-  font-weight: bold;
 }
 
 .trackingRateRed {
   color: red;
 }
 
+.trackingTableDark td,
+.trackingTableDark th {
+  color: #ffffff;
+}
+
+.trackingFilters select.darkSelect {
+  background-color: #1c2541;
+  color: white;
+  border: 1px solid #777;
+}
+
 /* ---------- Insights Section ---------- */
-.insightsHeader {
-  font-weight: bold;
-  color: #444;
-  margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
-}
-
+.insightsHeader,
 .insightsHeaderDark {
-  color: #ffffff;
-  font-weight: bold;
   margin-bottom: 15px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.insightsHeader h3 {
-  font-size: 1.3rem;
-  color: #333;
-  margin: 0;
-}
-
-.insightsHeaderDark h3 {
-  color: #ffffff;
-  font-size: 1.3rem;
-  margin: 0;
-}
-
-.insightsFilters select {
-  margin-left: 10px;
-  padding: 8px;
-  font-size: 0.8rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
 }
 
 .insightsTabs {
   display: flex;
   border: 1px solid #ccc;
   border-radius: 5px;
-  overflow: hidden;
   max-width: 60%;
+  overflow: hidden;
 }
 
 .insightsTab {
   flex: 1;
-  text-align: center;
-  padding: 10px 0;
+  background: #f8f9fa;
+  padding: 10px;
   font-size: 0.9rem;
-  color: #555;
-  background-color: #f8f9fa;
-  border: none;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  text-align: center;
 }
 
-.insightsTab:not(:last-child) {
-  border-right: 1px solid #ccc;
-}
-
-.insightsTab.activeTab {
-  border-radius: 4px;
-  background-color: #007bff;
+.activeTab {
+  background: #007bff;
   color: #fff;
   font-weight: bold;
 }
 
-.insightsTab:hover {
-  background-color: #e0e0e0;
-}
-
 .insightsContent {
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
-  padding-top: 20px;
   gap: 15px;
 }
 
 .insightItem {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 }
 
-.insightLabel,
-.insightsLabel {
-  flex: 1;
-  font-size: 0.9rem;
+.insightLabel {
   color: #555;
-  margin-right: 10px;
+  flex: 1;
 }
 
-.insightLabelDark,
-.insightsLabelDark {
+.insightLabelDark {
   color: #ffffff;
-  font-size: 0.9rem;
   flex: 1;
-  margin-right: 10px;
 }
 
 .insightBar {
@@ -427,279 +220,236 @@
   height: 8px;
   background: #e9ecef;
   border-radius: 4px;
-  overflow: hidden;
-  position: relative;
-  margin-right: 10px;
-  margin-left: 10px;
 }
 
 .insightFill {
   height: 100%;
   background: #007bff;
   border-radius: 4px;
-  transition: width 0.3s ease-in-out;
 }
 
-.insightPercentage,
-.insightsPercentage {
-  font-size: 0.9rem;
+.insightPercentage {
   font-weight: bold;
-  color: #333;
 }
 
-/* ---------- PDF/Print helpers ---------- */
-.pageBreakBefore { break-before: page; page-break-before: always; }
-.pageBreakAfter  { break-after: page;  page-break-after: always; }
-.avoidBreak       { break-inside: avoid; page-break-inside: avoid; }
-
-/* Use :global for data attributes and print styles */
-:global(html[data-exporting="true"]) .caseCards:global(.expanded),
-:global(html[data-exporting="true"]) .caseList:global(.expanded),
-:global(html[data-exporting="true"]) .trackingListContainer {
-  max-height: none !important;
-  overflow: visible !important;
-  -webkit-overflow-scrolling: auto !important;
+.insightsLabelDark {
+  color: #ffffff !important;
 }
 
-:global(html[data-exporting="true"]) * {
-  animation: none !important;
-  transition: none !important;
+.insightsPercentageDark {
+  color: #ffffff !important;
 }
 
-:global(html[data-exporting="true"]) .participationLandingPageDark {
-  background-color: #1B2A41 !important;
+.insightsTabsDark {
+  background-color: #1c2541;
+  border-color: #455b7c;
 }
 
-.printOnly { display: none; }
+.insightsFilters select.darkSelect {
+  background-color: #1c2541;
+  color: white;
+  border: 1px solid #777;
+}
 
-/* Print styles using global selectors */
-/* Print styles using global selectors */
+/* ---------- PRINT ---------- */
 @media print {
-  /* Hide everything except the participation component */
-  :global(body > *:not(#root)) { display: none !important; }
-  :global(#root > *:not(.participation-landing-page-global)) { display: none !important; }
-
-  /* Sonar fix: avoid duplicate selector by scoping the print version */
-  :global(#root) .participationLandingPage {
+  .participationLandingPage {
     max-width: 100% !important;
-    margin: 0 !important;
     background: white !important;
-    height: auto !important;
-    overflow: visible !important;
   }
 
-  @page { 
-    size: auto; /* Use auto instead of Letter to allow multiple pages */
-    margin: 0.5in; 
-  }
-
-  @supports (-webkit-print-color-adjust: exact) {
-    * { 
-      -webkit-print-color-adjust: exact; 
-    }
-  }
-  
-  @supports (print-color-adjust: exact) {
-    * { 
-      print-color-adjust: exact; 
-    }
-  }
-
-  /* Critical: Remove all height restrictions for printing */
-  :global(.my-cases-global),
-  :global(.case-cards-global),
-  :global(.case-list-global) {
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    display: block !important;
-  }
-
-  /* Ensure cards display properly in print with page breaks */
-  :global(.case-cards-global) {
-    display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
-    page-break-inside: auto !important;
-  }
-
-  /* Allow cards to break across pages */
-  :global(.case-card-global) {
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-    height: auto !important;
-  }
-
-  /* Allow list items to break across pages */
-  :global(.case-list-global) {
-    page-break-inside: auto !important;
-  }
-
-  :global(.case-list-item-global) {
-    break-inside: avoid-page !important;
-    page-break-inside: avoid !important;
-  }
-
-  /* Remove scroll containers for print */
   .trackingListContainer,
   .trackingListContainerDark {
     max-height: none !important;
     overflow: visible !important;
-    height: auto !important;
   }
 
-  /* Avoid breaking elements */
-  :global(.tracking-table-global) tr {
-    break-inside: avoid; 
-    page-break-inside: avoid; 
+  .insightItem,
+  .trackingTable tr {
+    page-break-inside: avoid !important;
   }
+}
 
-  .insightItem { 
-    break-inside: avoid; 
-    page-break-inside: avoid; 
-  }
+/* ---------- Demographics Page ---------- */
+.demographicsPage {
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  margin-top: 20px;
+}
 
-  /* Hide non-print elements */
-  :global(.view-switcher-global),
-  :global(.filter-wrapper-global),
-  :global(.create-new-global),
-  :global(.more-btn-global),
-  .noPrint { 
-    display: none !important; 
-  }
+.demographicsPageDark {
+  background: #1c2541;
+  color: #fff;
+}
 
-  .noPrintGap { margin-bottom: 8px; }
+.demographicsHeader {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
 
-  /* Ensure table headers are visible */
-  :global(.tracking-table-global) thead th { 
-    background: #f4f4f4 !important; 
-    color: #333 !important;
-  }
+.demographicsHeaderDark {
+  color: #ffffff;
+}
 
-  :global(.tracking-table-global-dark) thead th {
-    background: #1C2541 !important;
-    color: #ffffff !important;
-  }
+.demographicsContent {
+  display: flex;
+  justify-content: center;
+}
 
-  .printOnly { 
-    display: block !important; 
-  }
+.placeholderBox {
+  width: 100%;
+  padding: 20px;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  text-align: center;
+  color: #555;
+}
 
-  /* Force proper backgrounds for all elements */
-  .participationLandingPage,
-  .participationLandingPage * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
+.demographicsPageDark .placeholderBox {
+  border-color: #888;
+  color: #ddd;
+}
 
-  /* Light mode styles for print */
-  .participationLandingPage {
-    background: white !important;
-  }
-  
-  
-  :global(#root) .case-card-global {
-    background: white !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-  }
-  
-  .trackingContainer {
-    background: white !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-  }
-  
-  .insights {
-    background: white !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-  }
+.subPageNav {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+}
 
-  /* Dark mode styles for print */
-  .participationLandingPageDark {
-    background: #1B2A41 !important;
-    color: #ffffff !important;
-  }
-  
-  .participationLandingPageDark :global(.case-card-global) {
-    background: #3A506B !important;
-    color: #ffffff !important;
-    border: 1px solid #555 !important;
-  }
-  
-  .participationLandingPageDark .trackingContainerDark {
-    background: #1C2541 !important;
-    color: #ffffff !important;
-    border: 1px solid #555 !important;
-  }
-  
-  .participationLandingPageDark .insightsDark {
-    background: #1C2541 !important;
-    color: #ffffff !important;
-    border: 1px solid #555 !important;
-  }
-  
-  .participationLandingPageDark .trackingListContainerDark {
-    background: #3A506B !important;
-    color: #ffffff !important;
-  }
-  
-  .participationLandingPageDark :global(.tracking-table-global-dark) thead th {
-    background: #1C2541 !important;
-    color: #ffffff !important;
-  }
-  
-  .participationLandingPageDark .trackingRateDark {
-    background: #3A506B !important;
-    color: #ffffff !important;
-  }
+.subPageBtn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f1f1f1;
+  cursor: pointer;
+  font-weight: 500;
+  color: #333;
+}
 
-  /* Event badge colors for print */
-  :global(.event-badge-global)[data-type='Yoga Class'] {
-    background-color: #e9f7ef !important;
-    color: #28a745 !important;
-  }
+.subPageBtn:hover {
+  background: #e1e1e1;
+}
 
-  :global(.event-badge-global)[data-type='Cooking Workshop'] {
-    background-color: #fdecea !important;
-    color: #e74c3c !important;
-  }
+.subPageBtnDark {
+  background: #2b3a55;
+  border-color: #666;
+  color: #fff;
+}
 
-  :global(.event-badge-global)[data-type='Dance Class'] {
-    background-color: #fff5e6 !important;
-    color: #f39c12 !important;
-  }
+.subPageBtnDark:hover {
+  background: #3a4b66;
+}
 
-  :global(.event-badge-global)[data-type='Fitness Bootcamp'] {
-    background-color: #f5e6ff !important;
-    color: #9b59b6 !important;
-  }
+/* ---------- Personalization Page ---------- */
+.personalizationPage {
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  margin-top: 20px;
+}
 
-  /* Rate colors for print */
-  .trackingRateGreen {
-    color: green !important;
-    font-weight: bold !important;
-  }
+.personalizationPageDark {
+  background: #1c2541;
+  color: #fff;
+}
 
-  .trackingRateRed {
-    color: red !important;
-    font-weight: bold !important;
-  }
+.personalizationHeader {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
 
-  /* Insight bar colors */
-  .insightFill {
-    background: #007bff !important;
-  }
+.personalizationHeaderDark {
+  color: #ffffff;
+}
 
-  /* Text colors for dark mode */
-  .participationLandingPageDark .landingPageHeaderDark,
-  .participationLandingPageDark .sectionTitleDark,
-  .participationLandingPageDark .eventNameDark,
-  .participationLandingPageDark .eventTimeDark,
-  .participationLandingPageDark .attendeesCountDark,
-  .participationLandingPageDark .insightsLabelDark,
-  .participationLandingPageDark .insightsPercentageDark {
-    color: #ffffff !important;
-  }
+.personalizationContent {
+  display: flex;
+  justify-content: center;
+}
+
+.personalizationPageDark .placeholderBox {
+  border-color: #888;
+  color: #ddd;
+}
+
+/* ----- Actionable Insights ----- */
+.actionableSection {
+  margin-top: 30px;
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.actionableSectionDark {
+  background: #1c2541;
+  border: 1px solid #333;
+  color: #ffffff;
+}
+
+.actionableHeader {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  color: #333;
+}
+
+.actionableSectionDark .actionableHeader {
+  color: #ffffff;
+}
+
+.actionableGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 15px;
+}
+
+.actionCard {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  border: 1px solid #ddd;
+}
+
+.actionCard:hover {
+  background: #f1f1f1;
+}
+
+.actionableSectionDark .actionCard {
+  background: #3a506b;
+  border: 1px solid #555;
+  color: #ffffff;
+}
+
+.actionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.actionDescription {
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.actionableSectionDark .actionDescription {
+  color: #e0e0e0;
+}
+
+.actionTrendUp {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #28a745;
+}
+
+.actionTrendDown {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #e74c3c;
 }
