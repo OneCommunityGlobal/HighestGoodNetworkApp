@@ -1,6 +1,6 @@
 import React from "react";
 import { Provider } from "react-redux";
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { render, screen, fireEvent } from "@testing-library/react";
 import '@testing-library/jest-dom';
 import BlueSquaresTable from "../BlueSquaresTable";
@@ -13,7 +13,7 @@ vi.mock('axios');
 
 const mockHandleUserProfile = vi.fn();
 const mockHandleBlueSquare = vi.fn();
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const initialState = {
   auth: {

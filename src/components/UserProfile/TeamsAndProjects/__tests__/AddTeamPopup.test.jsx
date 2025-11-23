@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import AddTeamPopup from '../AddTeamPopup';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { postNewTeam, getAllUserTeams } from '~/actions/allTeamsAction';
 import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS } from '~/constants/allTeamsConstants';
@@ -17,7 +17,7 @@ const userTeams = [
   },
 ];
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const store = mockStore({
   allTeams: [
