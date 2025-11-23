@@ -118,9 +118,9 @@ function ActivityList() {
       {modalOpen && (
         <div className="styles.modal-overlay">
           <div className="styles.modal-content">
-            <span className="styles.close" onClick={closeModal}>
-              &times;
-            </span>
+            <button className={styles.close} onClick={closeModal} onKeyPress={handleKeyPress}>
+              &times; {/* Using button for close action */}
+            </button>
             <p>Past activity lookup is not supported.</p>
             <button className="dismiss-button" onClick={closeModal}>
               Dismiss
