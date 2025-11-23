@@ -775,7 +775,11 @@ export default (
           component={ResourceUsage}
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-        <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityid"
+          exact
+          component={ActivityAgenda}
+        />
         <CPProtectedRoute
           path="/communityportal/activity/:activityId/engagement/Comments"
           exact
