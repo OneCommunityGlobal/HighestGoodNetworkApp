@@ -71,7 +71,8 @@ function aggregateData(data, taskFilter, projectFilter, dateMode, startDate, end
   let filtered = data;
   if (dateMode === 'CUSTOM' && startDate && endDate) {
     filtered = data.filter(item => {
-      const itemDate = moment(item.date, 'YYYY-MM-DD');
+      // Parse date - backend returns ISO 8601 format, moment can parse it automatically
+      const itemDate = moment(item.date);
       return itemDate.isBetween(startDate, endDate, 'day', '[]');
     });
   }
@@ -135,6 +136,7 @@ function aggregateData(data, taskFilter, projectFilter, dateMode, startDate, end
 // Component for displaying the chart/dashboard
 export default function PaidLaborCost() {
   const [data, setData] = useState([]);
+  const [totalCost, setTotalCost] = useState(0);
   const [loading, setLoading] = useState(true);
   const darkMode = useSelector(state => state.theme.darkMode);
   const textColor = darkMode ? '#ffffff' : '#666';
@@ -152,26 +154,36 @@ export default function PaidLaborCost() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch('/api/labor-cost', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            projects: projectFilter !== 'All Projects' ? [projectFilter] : [],
-            tasks: taskFilter !== 'ALL' ? [taskFilter] : [],
-            date_range:
-              dateMode === 'CUSTOM'
-                ? {
-                    start_date: dateRange.startDate
-                      ? moment(dateRange.startDate).format('YYYY-MM-DD')
-                      : null,
-                    end_date: dateRange.endDate
-                      ? moment(dateRange.endDate).format('YYYY-MM-DD')
-                      : null,
-                  }
-                : null,
-          }),
+        // Build query parameters
+        const params = new URLSearchParams();
+
+        // Add projects parameter if a specific project is selected
+        if (projectFilter !== 'All Projects') {
+          params.append('projects', JSON.stringify([projectFilter]));
+        }
+
+        // Add tasks parameter if a specific task is selected
+        if (taskFilter !== 'ALL') {
+          params.append('tasks', JSON.stringify([taskFilter]));
+        }
+
+        // Add date_range parameter only when date mode is CUSTOM and at least one date is selected
+        if (dateMode === 'CUSTOM' && (dateRange.startDate || dateRange.endDate)) {
+          params.append(
+            'date_range',
+            JSON.stringify({
+              start_date: dateRange.startDate ? moment(dateRange.startDate).toISOString() : null,
+              end_date: dateRange.endDate ? moment(dateRange.endDate).toISOString() : null,
+            }),
+          );
+        }
+
+        // Build the URL with query string
+        const queryString = params.toString();
+        const url = queryString ? `/api/labor-cost?${queryString}` : '/api/labor-cost';
+
+        const response = await fetch(url, {
+          method: 'GET',
         });
 
         if (!response.ok) {
@@ -179,12 +191,30 @@ export default function PaidLaborCost() {
         }
 
         const apiData = await response.json();
-        setData(apiData);
+
+        // Validate response structure
+        if (!apiData || typeof apiData !== 'object') {
+          throw new Error('Invalid response structure: expected an object');
+        }
+
+        // Extract data array and totalCost from response
+        if (Array.isArray(apiData.data)) {
+          setData(apiData.data);
+        } else {
+          throw new Error('Invalid response structure: data property is not an array');
+        }
+
+        // Extract and set totalCost (handle 0 or undefined)
+        const cost = typeof apiData.totalCost === 'number' ? apiData.totalCost : 0;
+        setTotalCost(cost);
       } catch (error) {
         toast.info('Error fetching data:', error);
         // Fall back to mock data if API is unavailable
         toast.info('Using mock data as fallback');
         setData(mockData);
+        // Calculate total cost from mock data as fallback
+        const mockTotalCost = mockData.reduce((sum, item) => sum + item.cost, 0);
+        setTotalCost(mockTotalCost);
       } finally {
         setLoading(false);
       }
