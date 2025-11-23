@@ -1,14 +1,14 @@
 import { useSelector } from 'react-redux';
-import './RegistrationPopup.css';
+import styles from './RegistrationPopup.module.css';
 
 function Popup({ onClose }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   return (
-    <div className="popup-overlay">
-      <div className={`popup ${darkMode ? 'popup-dark' : ''}`}>
-        <div className="popup-header">
+    <div className={styles.popupOverlay}>
+      <div className={`${styles.popup} ${darkMode ? styles.popupDark : ''}`}>
+        <div className={styles.popupHeader}>
           <span>✅ Registration Successful!</span>
-          <button type="button" className="close-btn" onClick={onClose}>
+          <button type="button" className={styles.closeBtn} onClick={onClose}>
             ✖
           </button>
         </div>
@@ -17,26 +17,26 @@ function Popup({ onClose }) {
           You have successfully registered for the event. We have reserved your space. See you
           there!
         </p>
-        <div className="popup-content">
+        <div className={styles.popupContent}>
           <strong>Event Name</strong>
-          <p className="event-details">(Click for more details)</p>
-          <p className="user-full-name">User&apos;s Full Name</p>
+          <p className={styles.eventDetails}>(Click for more details)</p>
+          <p className={styles.userFullName}>User&apos;s Full Name</p>
 
-          <div className="event-info">
+          <div className={styles.eventInfo}>
             <span>📅 Tuesday, January 7th, 2025</span>
             <span>⏰ 7:00 PM CST</span>
             <span>📍 Location</span>
           </div>
 
-          <button type="button" className="calendar-btn">
+          <button type="button" className={styles.calendarBtn}>
             Add to my calendar
           </button>
 
-          <div className="popup-footer">
-            <button type="button" className="email-btn">
+          <div className={styles.popupFooter}>
+            <button type="button" className={styles.emailBtn}>
               View details in Email
             </button>
-            <button type="button" className="download-btn">
+            <button type="button" className={styles.downloadBtn}>
               Download Ticket
             </button>
           </div>

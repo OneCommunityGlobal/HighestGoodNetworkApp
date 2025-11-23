@@ -1,5 +1,5 @@
 /* Popup overlay */
-.popup-overlay {
+.popupOverlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -22,7 +22,8 @@
   text-align: center;
   position: relative;
 }
-.popup-dark{
+
+.popupDark {
   background: #3A506B;
   color: white;
   padding: 20px;
@@ -34,7 +35,7 @@
 }
 
 /* Popup header */
-.popup-header {
+.popupHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,7 +43,7 @@
   font-weight: bold;
 }
 
-.close-btn {
+.closeBtn {
   background: none;
   border: none;
   font-size: 18px;
@@ -50,24 +51,24 @@
 }
 
 /* Event details */
-.event-details {
+.eventDetails {
   color: blue;
   cursor: pointer;
   margin-bottom: 10px;
 }
 
 /* Event info */
-.event-info {
+.eventInfo {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
 }
 
 /* Buttons */
-.register-btn,
-.calendar-btn,
-.email-btn,
-.download-btn {
+.registerBtn,
+.calendarBtn,
+.emailBtn,
+.downloadBtn {
   display: block;
   margin: 10px auto;
   padding: 10px;
@@ -77,31 +78,40 @@
   cursor: pointer;
 }
 
-.register-btn {
+.registerBtn {
   background: #007bff;
   color: white;
 }
 
-.calendar-btn {
+.calendarBtn {
   background: #28a745;
   color: white;
 }
 
-.email-btn {
+.emailBtn {
   background: #17a2b8;
   color: white;
 }
 
-.download-btn {
+.downloadBtn {
   background: #ffc107;
   color: black;
 }
 
-.popup-footer {
+.popupFooter {
   display: flex;
   justify-content: space-between;
 }
-.popup-dark .event-details {
+
+.popupDark .eventDetails {
   color: #ffffff; /* White text for maximum contrast on dark background */
   text-shadow: 0 1px 2px rgba(0,0,0,0.8); /* Optional: add shadow for better visibility */
+}
+
+.userFullName {
+  /* Add any specific styles for user full name if needed */
+}
+
+.popupContent {
+  /* Add any specific styles for popup content if needed */
 }
