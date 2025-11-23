@@ -16,6 +16,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import styles from './PaidLaborCost.module.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import logger from '../../../services/logService';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -71,7 +72,7 @@ const mockData = [
 function aggregateData(data, taskFilter, projectFilter) {
   // Validate data structure
   if (!Array.isArray(data)) {
-    console.error('aggregateData: Expected array, received:', typeof data);
+    logger.logError(new Error(`aggregateData: Expected array, received: ${typeof data}`));
     return { labels: [], aggregation: {}, tasksToInclude: [] };
   }
 
@@ -85,7 +86,7 @@ function aggregateData(data, taskFilter, projectFilter) {
   });
 
   if (validData.length !== data.length) {
-    console.warn(
+    logger.logInfo(
       `aggregateData: Filtered out ${data.length - validData.length} invalid items from ${
         data.length
       } total`,
@@ -229,7 +230,7 @@ export default function PaidLaborCost() {
           });
 
           if (validatedData.length !== apiData.data.length) {
-            console.warn(
+            logger.logInfo(
               `Data validation: Filtered out ${apiData.data.length -
                 validatedData.length} invalid items`,
             );
