@@ -13,6 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select';
 import styles from './PaidLaborCost.module.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
@@ -94,9 +95,12 @@ const mockData = [
 /**
  * aggregateData:
  * - If the Project Filter is "All Projects", aggregate all projects into one group labeled "All Projects"
- *   and—if the Task Filter is 'ALL'—include only the two most expensive sub-tasks (plus Total Cost).
+ *   and—if the Task Filter is empty or 'ALL'—include only the two most expensive sub-tasks.
  * - Otherwise, aggregate only for the selected project.
  * - Backend handles all date filtering, so this function works with pre-filtered data.
+ * @param {Array} data - Array of labor cost records
+ * @param {Array|string} taskFilter - Array of selected task names, or 'ALL' for all tasks
+ * @param {string} projectFilter - Selected project name or 'All Projects'
  */
 function aggregateData(data, taskFilter, projectFilter) {
   // Validate data structure
@@ -142,12 +146,17 @@ function aggregateData(data, taskFilter, projectFilter) {
     });
 
     let tasksToInclude;
-    if (taskFilter === 'ALL') {
+    // Handle both array and 'ALL' string for backward compatibility
+    if (taskFilter === 'ALL' || (Array.isArray(taskFilter) && taskFilter.length === 0)) {
       // Pick the two most expensive tasks by cost
       tasksToInclude = tasks
         .sort((a, b) => aggregation[label][b] - aggregation[label][a])
         .slice(0, 2);
+    } else if (Array.isArray(taskFilter)) {
+      // Multiple tasks selected
+      tasksToInclude = taskFilter.filter(task => tasks.includes(task));
     } else {
+      // Single task (backward compatibility)
       tasksToInclude = [taskFilter];
     }
     return { labels: [label], aggregation, tasksToInclude };
@@ -158,7 +167,17 @@ function aggregateData(data, taskFilter, projectFilter) {
   const distinctTasks = [
     ...new Set(filtered.filter(d => d.project === projectFilter).map(d => d.task)),
   ];
-  const tasksToInclude = taskFilter === 'ALL' ? distinctTasks : [taskFilter];
+  let tasksToInclude;
+  // Handle both array and 'ALL' string for backward compatibility
+  if (taskFilter === 'ALL' || (Array.isArray(taskFilter) && taskFilter.length === 0)) {
+    tasksToInclude = distinctTasks;
+  } else if (Array.isArray(taskFilter)) {
+    // Multiple tasks selected
+    tasksToInclude = taskFilter.filter(task => distinctTasks.includes(task));
+  } else {
+    // Single task (backward compatibility)
+    tasksToInclude = [taskFilter];
+  }
 
   const aggregation = {};
   projectsToInclude.forEach(proj => {
@@ -188,7 +207,7 @@ export default function PaidLaborCost() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const textColor = darkMode ? '#ffffff' : '#666';
   // Filter States
-  const [taskFilter, setTaskFilter] = useState('ALL');
+  const [taskFilter, setTaskFilter] = useState([]); // Array of selected task names, empty = all tasks
   const [projectFilter, setProjectFilter] = useState('All Projects');
   const [dateRange, setDateRange] = useState({
     startDate: null,
@@ -217,9 +236,10 @@ export default function PaidLaborCost() {
           params.append('projects', JSON.stringify([projectFilter]));
         }
 
-        // Add tasks parameter if a specific task is selected
-        if (taskFilter !== 'ALL') {
-          params.append('tasks', JSON.stringify([taskFilter]));
+        // Add tasks parameter if tasks are selected
+        // Empty array means all tasks (no filter), so only send if tasks are selected
+        if (Array.isArray(taskFilter) && taskFilter.length > 0) {
+          params.append('tasks', JSON.stringify(taskFilter));
         }
 
         // Add date_range parameter when at least one date is selected
@@ -317,10 +337,11 @@ export default function PaidLaborCost() {
   );
 
   // Build stable option lists for selects
+  // react-select requires { label, value } format
   const taskOptions = useMemo(
     () =>
       distinctTasks.map(task => ({
-        id: uuidv4(),
+        label: task,
         value: task,
       })),
     [distinctTasks],
@@ -419,19 +440,40 @@ export default function PaidLaborCost() {
               <label className={styles.paidLaborCostFilterLabel} htmlFor="task-filter">
                 Tasks
               </label>
-              <select
+              <Select
                 id="task-filter"
-                value={taskFilter}
-                onChange={e => setTaskFilter(e.target.value)}
+                isMulti
+                options={taskOptions}
+                value={taskOptions.filter(option => taskFilter.includes(option.value))}
+                onChange={selected => {
+                  setTaskFilter(selected ? selected.map(option => option.value) : []);
+                }}
+                isClearable
+                placeholder="Select tasks (leave empty for all)"
                 className={styles.paidLaborCostFilterSelect}
-              >
-                <option value="ALL">ALL</option>
-                {taskOptions.map(option => (
-                  <option key={option.id} value={option.value}>
-                    {option.value}
-                  </option>
-                ))}
-              </select>
+                classNamePrefix="select"
+                styles={{
+                  control: base => ({
+                    ...base,
+                    minHeight: '28px',
+                    height: '28px',
+                    fontSize: '14px',
+                  }),
+                  valueContainer: base => ({
+                    ...base,
+                    height: '28px',
+                    padding: '0 8px',
+                  }),
+                  input: base => ({
+                    ...base,
+                    margin: '0px',
+                  }),
+                  indicatorsContainer: base => ({
+                    ...base,
+                    height: '28px',
+                  }),
+                }}
+              />
             </div>
 
             {/* Project Filter */}

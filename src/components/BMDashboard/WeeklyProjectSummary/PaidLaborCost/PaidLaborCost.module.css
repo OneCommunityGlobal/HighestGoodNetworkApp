@@ -55,6 +55,57 @@
   background-color: white;
 }
 
+/* react-select styles */
+.paidLaborCostFilterSelect :global(.select__control) {
+  min-height: 28px;
+  height: 28px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.paidLaborCostFilterSelect :global(.select__control--is-focused) {
+  border-color: #999;
+  box-shadow: 0 0 0 1px #999;
+}
+
+.paidLaborCostFilterSelect :global(.select__value-container) {
+  padding: 0 8px;
+  height: 28px;
+}
+
+.paidLaborCostFilterSelect :global(.select__input-container) {
+  margin: 0;
+  padding: 0;
+}
+
+.paidLaborCostFilterSelect :global(.select__indicators) {
+  height: 28px;
+}
+
+.paidLaborCostFilterSelect :global(.select__multi-value) {
+  background-color: #e0e0e0;
+  border-radius: 3px;
+  font-size: 12px;
+  margin: 2px;
+}
+
+.paidLaborCostFilterSelect :global(.select__multi-value__label) {
+  padding: 2px 6px;
+  color: #333;
+}
+
+.paidLaborCostFilterSelect :global(.select__multi-value__remove) {
+  padding: 2px 4px;
+  cursor: pointer;
+}
+
+.paidLaborCostFilterSelect :global(.select__multi-value__remove:hover) {
+  background-color: #d0d0d0;
+  color: #333;
+}
+
 
 /* Chart container */
 .paid-labor-cost-chart-container {
@@ -306,6 +357,75 @@
 .dark-mode .paid-labor-cost-filter-select {
   background-color: var(--section-bg);
   border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+/* Dark mode styles for react-select */
+.dark-mode .paidLaborCostFilterSelect :global(.select__control) {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__control--is-focused) {
+  border-color: var(--button-bg);
+  box-shadow: 0 0 0 1px var(--button-bg);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__single-value) {
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__input-container) {
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__placeholder) {
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__menu) {
+  background-color: var(--section-bg);
+  border-color: var(--section-title-bg);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__option) {
+  background-color: var(--section-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__option--is-focused) {
+  background-color: var(--section-title-hover);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__option--is-selected) {
+  background-color: var(--button-bg);
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__multi-value) {
+  background-color: var(--section-title-bg);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__multi-value__label) {
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__multi-value__remove) {
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__multi-value__remove:hover) {
+  background-color: var(--section-title-hover);
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__indicator-separator) {
+  background-color: var(--section-title-bg);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__dropdown-indicator) {
   color: var(--text-color);
 }
 
