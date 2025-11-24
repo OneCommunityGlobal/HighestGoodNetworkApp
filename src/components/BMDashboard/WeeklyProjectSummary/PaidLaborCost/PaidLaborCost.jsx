@@ -20,6 +20,35 @@ import logger from '../../../../services/logService';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
+/**
+ * Date Handling Strategy:
+ * - React state uses Date objects (or null) for maximum flexibility
+ * - API calls convert Date objects to ISO 8601 strings using moment.js
+ * - API responses contain ISO 8601 date strings which are validated but not converted back to Date objects
+ * - Date picker components work directly with Date objects
+ * - All date formatting and parsing uses moment.js consistently
+ */
+
+/**
+ * Converts a Date object to ISO 8601 string for API requests
+ * @param {Date|null} date - Date object to convert
+ * @returns {string|null} ISO 8601 string or null
+ */
+const dateToISOString = date => {
+  if (!date) return null;
+  return moment(date).toISOString();
+};
+
+/**
+ * Validates if a date string is a valid ISO 8601 format
+ * @param {string} dateString - Date string to validate
+ * @returns {boolean} True if valid ISO 8601 date
+ */
+const isValidISODate = dateString => {
+  if (!dateString) return false;
+  return moment(dateString).isValid();
+};
+
 // Sample data (cost in dollars) - Used as fallback when API is unavailable
 const mockData = [
   { project: 'Project A', task: 'Task 1', date: '2025-04-01', cost: 5000 },
@@ -195,12 +224,13 @@ export default function PaidLaborCost() {
 
         // Add date_range parameter when at least one date is selected
         // No dates selected means all data (no filter)
+        // Convert Date objects to ISO 8601 strings for API
         if (dateRange.startDate || dateRange.endDate) {
           params.append(
             'date_range',
             JSON.stringify({
-              start_date: dateRange.startDate ? moment(dateRange.startDate).toISOString() : null,
-              end_date: dateRange.endDate ? moment(dateRange.endDate).toISOString() : null,
+              start_date: dateToISOString(dateRange.startDate),
+              end_date: dateToISOString(dateRange.endDate),
             }),
           );
         }
@@ -232,9 +262,8 @@ export default function PaidLaborCost() {
             if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
             if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
             if (!item.date) return false;
-            // Validate date format (should be ISO 8601)
-            const date = moment(item.date);
-            if (!date.isValid()) return false;
+            // Validate date format (should be ISO 8601 from backend)
+            if (!isValidISODate(item.date)) return false;
             return true;
           });
 
