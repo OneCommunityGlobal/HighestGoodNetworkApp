@@ -11,6 +11,7 @@ export default function ItemsTable({
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
+  darkMode,
 }) {
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
@@ -96,45 +97,76 @@ export default function ItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className="items_table_container">
-        <Table>
-          <thead>
+      <div
+        className={`items_table_container ${darkMode ? 'items_table_container_dark' : ''}`}
+        style={darkMode ? { backgroundColor: '#1e1e1e' } : {}}
+      >
+        <Table
+          className={darkMode ? 'dark-table' : ''}
+          style={darkMode ? { backgroundColor: '#242424', color: '#ffffff', borderColor: '#444' } : {}}
+        >
+          <thead
+            className={darkMode ? 'dark-thead' : ''}
+            style={darkMode ? { backgroundColor: '#2c2c2c', color: '#ffffff' } : {}}
+          >
             <tr>
               {selectedProject === 'all' ? (
-                <th onClick={() => sortData('ProjectName')}>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={darkMode ? { color: '#ffffff', borderColor: '#555' } : {}}
+                  onClick={() => sortData('ProjectName')}
+                >
                   Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Project</th>
+                <th className={darkMode ? 'dark-th' : ''} style={darkMode ? { color: '#ffffff', borderColor: '#555' } : {}}>Project</th>
               )}
               {selectedItem === 'all' ? (
-                <th onClick={() => sortData('InventoryItemType')}>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={darkMode ? { color: '#ffffff', borderColor: '#555' } : {}}
+                  onClick={() => sortData('InventoryItemType')}
+                >
                   Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
                 </th>
               ) : (
-                <th>Name</th>
+                <th className={darkMode ? 'dark-th' : ''} style={darkMode ? { color: '#ffffff', borderColor: '#555' } : {}}>Name</th>
               )}
               {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
+                <th
+                  className={darkMode ? 'dark-th' : ''}
+                  style={darkMode ? { color: '#f1f1f1', borderColor: '#555' } : {}}
+                  key={label}
+                >
+                  {label}
+                </th>
               ))}
-              <th>Updates</th>
-              <th>Purchases</th>
+              <th className={darkMode ? 'dark-th' : ''} style={darkMode ? { color: '#f1f1f1', borderColor: '#555' } : {}}>Updates</th>
+              <th className={darkMode ? 'dark-th' : ''} style={darkMode ? { color: '#f1f1f1', borderColor: '#555' } : {}}>Purchases</th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody
+            className={darkMode ? 'dark-tbody' : ''}
+            style={darkMode ? { backgroundColor: '#1c1c1c', color: '#ffffff' } : {}}
+          >
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
                 return (
-                  <tr key={el._id}>
-                    <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
+                  <tr
+                    key={el._id}
+                    className={darkMode ? 'dark-row' : ''}
+                    style={darkMode ? { backgroundColor: '#1e1e1e', borderBottom: '1px solid #333' } : {}}
+                  >
+                    <td style={darkMode ? { color: '#ffffff' } : {}}>{el.project?.name}</td>
+                    <td style={darkMode ? { color: '#ffffff' } : {}}>{el.itemType?.name}</td>
                     {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
+                      <td key={label} style={darkMode ? { color: '#ffffff' } : {}}>{getNestedValue(el, key)}</td>
                     ))}
                     <td className="items_cell">
                       <button
                         type="button"
+                        style={darkMode ? { color: '#4a90e2' } : {}}
                         onClick={() => handleEditRecordsClick(el, 'Update')}
                         aria-label="Edit Record"
                       >
@@ -142,7 +174,8 @@ export default function ItemsTable({
                       </button>
                       <Button
                         color="primary"
-                        outline
+                        outline={!darkMode}
+                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
                         size="sm"
                         onClick={() => handleViewRecordsClick(el, 'Update')}
                       >
@@ -152,7 +185,8 @@ export default function ItemsTable({
                     <td>
                       <Button
                         color="primary"
-                        outline
+                        outline={!darkMode}
+                        style={darkMode ? { borderColor: '#4a90e2', color: '#ffffff' } : {}}
                         size="sm"
                         onClick={() => handleViewRecordsClick(el, 'Purchase')}
                       >

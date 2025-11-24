@@ -1,10 +1,11 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './RecordsModal.css';
 import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   if (record) {
     const toggle = () => {
       setModal(false);
@@ -12,16 +13,22 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
     };
 
     return (
-      <Modal isOpen={modal} size="xl">
-        <ModalHeader>{recordType} Record</ModalHeader>
-        <ModalBody>
+      <Modal
+        isOpen={modal}
+        size="xl"
+        className={darkMode ? 'dark-modal full-dark bg-yinmn-blue text-light' : ''}
+      >
+        <ModalHeader className={darkMode ? 'dark-modal-header bg-space-cadet text-white' : ''}>
+          {recordType} Record
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'dark-modal-body bg-yinmn-blue text-light' : ''}>
           <div className="records_modal_table_container">
-            <Table>
+            <Table className={darkMode ? 'dark-table bg-yinmn-blue text-white' : ''}>
               <Record record={record} recordType={recordType} setRecord={setRecord} />
             </Table>
           </div>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'dark-modal-footer bg-space-cadet text-white' : ''}>
           <Button onClick={toggle}>Close</Button>
         </ModalFooter>
       </Modal>
@@ -85,38 +92,39 @@ export function Record({ record, recordType, setRecord }) {
       // Optionally, you can handle UI feedback for the error
     }
   };
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   if (recordType === 'Update') {
     return (
       <>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Quantity Used</th>
-            <th>Quantity Wasted</th>
-            <th>Creator</th>
-            <th>Email</th>
+        <thead className={darkMode ? 'dark-thead bg-space-cadet text-white' : ''}>
+          <tr className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
+            <th className={darkMode ? 'text-light' : ''}>Date</th>
+            <th className={darkMode ? 'text-light' : ''}>Quantity Used</th>
+            <th className={darkMode ? 'text-light' : ''}>Quantity Wasted</th>
+            <th className={darkMode ? 'text-light' : ''}>Creator</th>
+            <th className={darkMode ? 'text-light' : ''}>Email</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className={darkMode ? 'dark-tbody bg-yinmn-blue text-light' : ''}>
           {record?.updateRecord && record?.updateRecord.length ? (
             record.updateRecord.map(data => {
               return (
-                <tr key={data._id}>
-                  <td>{moment.utc(data.date).format('LL')}</td>
-                  <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
-                  <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
-                  <td>
+                <tr key={data._id} className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
+                  <td className={darkMode ? 'text-light' : ''}>{moment.utc(data.date).format('LL')}</td>
+                  <td className={darkMode ? 'text-light' : ''}>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
+                  <td className={darkMode ? 'text-light' : ''}>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
+                  <td className={darkMode ? 'text-light' : ''}>
                     <a href={`/userprofile/${data.createdBy._id}`}>
                       {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
                     </a>
                   </td>
-                  <td>{data?.createdBy?.email}</td>
+                  <td className={darkMode ? 'text-light' : ''}>{data?.createdBy?.email}</td>
                 </tr>
               );
             })
           ) : (
-            <tr>
+            <tr className={darkMode ? 'text-light bg-space-cadet' : ''}>
               <td colSpan={4} style={{ fontWeight: 'bold' }}>
                 There are no updates for this item.
               </td>
@@ -129,39 +137,39 @@ export function Record({ record, recordType, setRecord }) {
   if (recordType === 'Purchase') {
     return (
       <>
-        <thead>
-          <tr>
-            <th>Priority</th>
-            <th>Brand</th>
-            <th>Quantity</th>
-            <th>Requested By</th>
-            <th>Email</th>
-            <th>Date</th>
-            <th>Status</th>
+        <thead className={darkMode ? 'dark-thead bg-space-cadet text-white' : ''}>
+          <tr className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
+            <th className={darkMode ? 'text-light' : ''}>Priority</th>
+            <th className={darkMode ? 'text-light' : ''}>Brand</th>
+            <th className={darkMode ? 'text-light' : ''}>Quantity</th>
+            <th className={darkMode ? 'text-light' : ''}>Requested By</th>
+            <th className={darkMode ? 'text-light' : ''}>Email</th>
+            <th className={darkMode ? 'text-light' : ''}>Date</th>
+            <th className={darkMode ? 'text-light' : ''}>Status</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className={darkMode ? 'dark-tbody bg-yinmn-blue text-light' : ''}>
           {record?.purchaseRecord && record?.purchaseRecord.length ? (
             record.purchaseRecord.map(
               ({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
                 return (
-                  <tr key={_id}>
-                    <td>{priority}</td>
-                    <td>{brandPref}</td>
-                    <td>{quantity || '-'}</td>
-                    <td>
+                  <tr key={_id} className={darkMode ? 'dark-row text-white bg-yinmn-blue' : ''}>
+                    <td className={darkMode ? 'text-light' : ''}>{priority}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{brandPref}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{quantity || '-'}</td>
+                    <td className={darkMode ? 'text-light' : ''}>
                       <a href={`/userprofile/${requestedBy._id}`}>
                         {`${requestedBy.firstName} ${requestedBy.lastName}`}
                       </a>
                     </td>
-                    <td>{requestedBy.email}</td>
-                    <td>{moment(date).format('MM/DD/YY')}</td>
-                    <td>{status}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{requestedBy.email}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{moment(date).format('MM/DD/YY')}</td>
+                    <td className={darkMode ? 'text-light' : ''}>{status}</td>
                     <td>
                       <Button
                         type="button"
                         onClick={() => handleApprove(_id, quantity)}
-                        className="approve-button"
+                        className={`approve-button ${darkMode ? 'dark-approve bg-space-cadet text-white' : ''}`}
                         disabled={status === 'Approved' || status === 'Rejected'}
                       >
                         Approve
@@ -169,7 +177,7 @@ export function Record({ record, recordType, setRecord }) {
                       <Button
                         type="button"
                         onClick={() => handleReject(_id)}
-                        className="reject-button"
+                        className={`reject-button ${darkMode ? 'dark-reject bg-space-cadet text-white' : ''}`}
                         disabled={status === 'Approved' || status === 'Rejected'}
                       >
                         Reject
@@ -180,7 +188,7 @@ export function Record({ record, recordType, setRecord }) {
               },
             )
           ) : (
-            <tr>
+            <tr className={darkMode ? 'text-light bg-space-cadet' : ''}>
               <td colSpan={6} style={{ fontWeight: 'bold' }}>
                 There are no purchase records.
               </td>

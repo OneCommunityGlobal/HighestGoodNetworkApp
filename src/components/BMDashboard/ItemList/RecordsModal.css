@@ -6,6 +6,18 @@
   white-space: nowrap;
 }
 
+.dark-mode .records_modal_table_container {
+  background-color: #0f1217;
+  color: #e5e7eb;
+}
+
+.dark-mode .records_modal_table_container table td,
+.dark-mode .records_modal_table_container table th {
+  background-color: #1a1d22 !important;
+  color: #f0f0f0 !important;
+  border-color: #2a2e33 !important;
+}
+
 @media (min-width: 1200px) {
   .records_modal_table_container {
     font-size: medium;
@@ -22,6 +34,12 @@
   margin-right: 8px;
 }
 
+.dark-mode .approve-button {
+  background-color: #2ea043;
+  color: #ffffff;
+  border: 1px solid #3fb655;
+}
+
 .reject-button {
   background-color: red;
   color: white;
@@ -30,4 +48,19 @@
   cursor: pointer;
   border-radius: 4px;
   margin-right: 8px;
+}
+
+.dark-mode .reject-button {
+  background-color: #d03838;
+  color: #ffffff;
+  border: 1px solid #e55353;
+}
+
+.dark-mode .records_modal_table_container::-webkit-scrollbar {
+  background: #1a1d22;
+}
+
+.dark-mode .records_modal_table_container::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 6px;
 }

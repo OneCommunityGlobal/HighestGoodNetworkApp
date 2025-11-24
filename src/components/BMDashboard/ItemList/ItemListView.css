@@ -46,3 +46,74 @@
   width: 300px;
   column-gap: 1rem;
 }
+
+/* 🌙 Dark Mode Support */
+.dark-mode .items_list_container {
+  background-color: #0d1117 !important;
+  color: #ffffff !important;
+  min-height: 100vh;
+  padding-bottom: 2rem;
+}
+
+.dark-mode .items_table_container {
+  background-color: transparent !important;
+}
+
+.dark-mode .items_list_container table {
+  background-color: #161b22;
+  color: #ffffff;
+  border: 1px solid #30363d;
+}
+
+.dark-mode .items_list_container th {
+  background-color: #1f2937;
+  color: #ffffff;
+  border-bottom: 1px solid #30363d;
+}
+
+.dark-mode .items_list_container td {
+  border-bottom: 1px solid #30363d;
+  color: #ffffff;
+}
+
+.dark-mode .items_list_container tr:hover {
+  background-color: #1f2a37;
+}
+
+.dark-mode .items_cell svg {
+  color: #ffffff;
+}
+
+.dark-mode .items_cell svg:hover {
+  color: #ffffff;
+}
+
+.dark-mode .select_input {
+  background-color: #1e2632;
+  color: #ffffff;
+  border: 1px solid #30363d;
+}
+
+.dark-mode select,
+.dark-mode input {
+  background-color: #1e2632;
+  color: #ffffff;
+  border: 1px solid #30363d;
+}
+
+.dark-mode option {
+  background-color: #111827;
+  color: #ffffff;
+}
+
+.dark-mode body,
+.dark-mode html,
+.dark-mode #root {
+  background-color: #0d1117 !important;
+}
+
+.items_list_container.dark-mode {
+  background-color: #1b1f27 !important;
+  color: #ffffff !important;
+  border-color: #2a2f3a !important;
+}

@@ -6,6 +6,7 @@ export default function SelectItem({
   selectedItem,
   setSelectedItem,
   label,
+  darkMode,
 }) {
   let itemSet = [];
   if (items.length) {
@@ -21,7 +22,7 @@ export default function SelectItem({
   return (
     <Form>
       <FormGroup className="select_input">
-        <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
+        <Label htmlFor="select-material" style={{ marginLeft: '10px', color: darkMode ? 'white' : 'inherit' }}>
           {label ? `${label}:` : 'Material:'}
         </Label>
         <Input

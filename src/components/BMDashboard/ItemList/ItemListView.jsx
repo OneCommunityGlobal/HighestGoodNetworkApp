@@ -6,8 +6,10 @@ import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
 import './ItemListView.css';
+import { useSelector } from 'react-redux';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
@@ -42,30 +44,39 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 
   if (isError) {
     return (
-      <main className="items_list_container">
-        <h2>{itemType} List</h2>
+      <main
+        className={`items_list_container ${darkMode ? 'dark-mode dm-text' : ''}`}
+      >
+        <h2 className={darkMode ? 'dm-text' : ''}>{itemType} List</h2>
         <BMError errors={errors} />
       </main>
     );
   }
 
   return (
-    <main className="items_list_container">
-      <h3>{itemType}</h3>
-      <section>
-        <span style={{ display: 'flex', margin: '5px' }}>
+    <main
+      className={`items_list_container ${darkMode ? 'dark-mode dm-text' : ''}`}
+    >
+      <h3 className={darkMode ? 'dm-text dm-heading' : ''}>{itemType}</h3>
+      <section className={darkMode ? 'dm-bg dm-border dm-section-solid' : ''}>
+        <span
+          style={{ display: 'flex', margin: '5px' }}
+          className={darkMode ? 'dm-bg dm-filter-contrast dm-border dm-text' : ''}
+        >
           {items && (
             <>
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
                 setSelectedItem={setSelectedItem}
+                darkMode={darkMode}
               />
               <SelectItem
                 items={items}
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                darkMode={darkMode}
               />
             </>
           )}
@@ -77,6 +88,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             filteredItems={filteredItems}
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}
+            darkMode={darkMode}
           />
         )}
       </section>
@@ -94,10 +106,6 @@ ItemListView.propTypes = {
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
-};
-
-ItemListView.defaultProps = {
-  errors: {},
 };
 
 ItemListView.defaultProps = {
