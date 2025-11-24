@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import styles from './CPDashboard.module.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [dateError, setDateError] = useState('');
 
   useEffect(() => {
     const mockEvents = [
@@ -36,6 +39,22 @@ export function CPDashboard() {
     ];
     setEvents(mockEvents);
   }, []);
+
+  const handleDateChange = e => {
+    const value = e.target.value;
+    setSelectedDate(value);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // midnight today
+
+    const chosen = new Date(value);
+
+    if (chosen < today) {
+      toast.error('Past dates are not supported. Please select a future date.');
+      setSelectedDate('');
+      return;
+    }
+  };
 
   return (
     <Container className={styles['dashboard-container']}>
