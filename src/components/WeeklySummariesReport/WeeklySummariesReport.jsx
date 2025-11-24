@@ -1830,18 +1830,16 @@ const WeeklySummariesReport = props => {
                 toggle={toggleCreateFilterModal}
                 initialState={{
                   filterName: '',
-                  teamCodes: state.teamCodes,
                   selectedCodes: state.selectedCodes,
-                  teamCodeWarningUsers: state.teamCodeWarningUsers,
-                  colorOptions: state.colorOptions,
                   selectedColors: state.selectedColors,
                   selectedExtraMembers: state.selectedExtraMembers,
-                  tableData: state.tableData,
-                  summaries: state.summaries,
                   selectedTrophies: state.selectedTrophies,
                   selectedSpecialColors: state.selectedSpecialColors,
                   selectedBioStatus: state.selectedBioStatus,
                   selectedOverTime: state.selectedOverTime,
+                  selectedCodesInvalid: [],
+                  selectedColorsInvalid: [],
+                  selectedExtraMembersInvalid: [],
                   membersFromUnselectedTeam: state.membersFromUnselectedTeam,
                 }}
                 darkMode={darkMode}
@@ -1849,6 +1847,11 @@ const WeeklySummariesReport = props => {
                 canSeeBioHighlight={permissionState.canSeeBioHighlight}
                 filters={state.filterChoices}
                 refetchFilters={fetchFilters}
+                teamCodes={state.teamCodes}
+                colorOptions={state.colorOptions}
+                tableData={state.tableData}
+                summaries={state.summaries}
+                teamCodeWarningUsers={state.teamCodeWarningUsers}
               />
             )}
           </div>

@@ -10,23 +10,20 @@ import {
   Label,
   Input,
   Form,
-  Row,
-  Col,
   FormGroup,
   Spinner,
 } from 'reactstrap';
 
-import { MultiSelect } from 'react-multi-select-component';
 import { ENDPOINTS } from '~/utils/URL';
 import Select from 'react-select';
 import mainStyles from './WeeklySummariesReport.module.css';
-import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
+import { setField } from '~/utils/stateHelper';
+import FilterPreviewForm from './FilterPreviewForm';
+import FilterEditForm from './FilterEditForm';
 
 const defaultState = {
   filterName: '',
   selectedCodes: [],
-  teamCodeWarningUsers: [],
-  colorOptions: [],
   selectedColors: [],
   selectedExtraMembers: [],
   selectedTrophies: false,
@@ -72,95 +69,8 @@ export default function UpdateFilterModal({
     }
   }, [isOpen]);
 
-  // Update members of membersFromUnselectedTeam dropdown
-  useEffect(() => {
-    // Add all selected member in a Set
-    const selectedMemberSet = new Set();
-
-    state.selectedCodes.forEach(code => {
-      if (code.value === '') return;
-      if (code.value in tableData) {
-        const team = tableData[code.value];
-        team.forEach(member => {
-          selectedMemberSet.add(member._id);
-        });
-      }
-    });
-
-    // Filter members from unselected set
-    const newMembersFromUnselectedTeam = [];
-    summaries.forEach(summary => {
-      if (!selectedMemberSet.has(summary._id)) {
-        newMembersFromUnselectedTeam.push({
-          label: `${summary.firstName} ${summary.lastName}`,
-          value: summary._id,
-          role: summary.role,
-        });
-      }
-    });
-    setState(prev => ({
-      ...prev,
-      membersFromUnselectedTeam: newMembersFromUnselectedTeam,
-      // Remove individuals that is in selected team
-      selectedExtraMembers: state.selectedExtraMembers.filter(
-        member => !selectedMemberSet.has(member.value),
-      ),
-    }));
-  }, [state.selectedCodes, summaries]);
-
   const handleFilterNameChange = value => {
     setField(setState, 'filterName', value);
-  };
-
-  const handleSelectCodesChange = event => {
-    setField(setState, 'selectedCodes', event);
-  };
-
-  const removeSelectedCode = removeCode => {
-    removeItemFromField(setState, 'selectedCodes', removeCode);
-  };
-
-  const removeInvalidSelectedCode = removeCode => {
-    removeItemFromField(setState, 'selectedCodesInvalid', removeCode);
-  };
-
-  const removeInvalidSelectedColor = removeCode => {
-    removeItemFromField(setState, 'selectedColorsInvalid', removeCode);
-  };
-
-  const removeInvalidSelectedExtraMember = removeCode => {
-    removeItemFromField(setState, 'selectedExtraMembersInvalid', removeCode);
-  };
-
-  const handleSelectColorChange = event => {
-    setField(setState, 'selectedColors', event);
-  };
-  const removeSelectedColor = removeColor => {
-    removeItemFromField(setState, 'selectedColors', removeColor);
-  };
-
-  const handleSelectExtraMembersChange = event => {
-    setField(setState, 'selectedExtraMembers', event);
-  };
-
-  const removeSelectedExtraMember = removeMember => {
-    removeItemFromField(setState, 'selectedExtraMembers', removeMember);
-  };
-
-  const handleTrophyToggleChange = () => {
-    toggleField(setState, 'selectedTrophies');
-  };
-
-  const handleSpecialColorToggleChange = (color, isEnabled) => {
-    setChildField(setState, 'selectedSpecialColors', color, isEnabled);
-  };
-
-  const handleBioStatusToggleChange = () => {
-    toggleField(setState, 'selectedBioStatus');
-  };
-
-  const handleOverHoursToggleChange = () => {
-    toggleField(setState, 'selectedOverTime');
   };
 
   const handleSelectedFilter = e => {
@@ -275,10 +185,22 @@ export default function UpdateFilterModal({
         } catch (error) {
           toast.error(`Failed to save new filter. Error ${error}`);
         }
+
         setSelectedFilter(prev => ({
           ...prev,
-          label: state.filterName,
+          label: data.filterName,
+          filterData: {
+            filterName: data.filterName,
+            selectedCodes: new Set(data.selectedCodes),
+            selectedColors: new Set(data.selectedColors),
+            selectedExtraMembers: new Set(data.selectedExtraMembers),
+            selectedTrophies: data.selectedTrophies,
+            selectedSpecialColors: data.selectedSpecialColors,
+            selectedBioStatus: data.selectedBioStatus,
+            selectedOverTime: data.selectedOverTime,
+          },
         }));
+
         setIsProcessing(false);
         setUpdate(false);
       } else {
@@ -428,326 +350,26 @@ export default function UpdateFilterModal({
                   </div>
                 )}
 
-                <Row className="pt-4">
-                  {update && (
-                    <Col md={6} sm={12}>
-                      <div>
-                        <b>Select Team Code</b>
-                      </div>
-                      <MultiSelect
-                        className={`${mainStyles['report-multi-select-filter']} second-select ${
-                          mainStyles.textDark
-                        } ${darkMode ? 'dark-mode' : ''} ${
-                          teamCodeWarningUsers.length > 0 ? 'warning-border' : ''
-                        }`}
-                        options={teamCodes.map(item => {
-                          const [code, count] = item.label.split(' (');
-                          return {
-                            ...item,
-                            label: `${code.padEnd(10, ' ')} (${count}`,
-                          };
-                        })}
-                        value={state.selectedCodes}
-                        onChange={handleSelectCodesChange}
-                        labelledBy="Select"
-                      />
-                    </Col>
-                  )}
-                  <Col md={update ? 6 : 12} sm={12}>
-                    <div>Selected Team Code</div>
-                    <div className={`${mainStyles.smScrollable}`}>
-                      {state.selectedCodes.map(item => (
-                        <div
-                          key={item.value}
-                          className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
-                        >
-                          {item.label}
-                          {update && (
-                            <Button
-                              close
-                              onClick={() => removeSelectedCode(item)}
-                              className={`${mainStyles.minSzButton} px-2`}
-                              aria-label={`Remove ${item.label}`}
-                            />
-                          )}
-                        </div>
-                      ))}
-                      {state.selectedCodesInvalid.map(item => (
-                        <div
-                          key={item.value}
-                          className={`${darkMode ? mainStyles.redChip : ''} ${
-                            mainStyles.invalidChip
-                          }`}
-                        >
-                          {item.label}
-                          {update && (
-                            <Button
-                              close
-                              onClick={() => removeInvalidSelectedCode(item)}
-                              className={`${mainStyles.minSzButton} px-2`}
-                              aria-label={`Remove ${item.label}`}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    {state.selectedCodesInvalid.length > 0 && (
-                      <div
-                        className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}
-                      >
-                        ** The team code in pink is the team code that no longer have any members
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-                <Row className="pt-4">
-                  {update && (
-                    <Col md={6} sm={12}>
-                      <div>
-                        <b>Select Color</b>
-                      </div>
-                      <MultiSelect
-                        className={`${mainStyles['report-multi-select-filter']} third-select ${
-                          mainStyles.textDark
-                        } ${darkMode ? 'dark-mode' : ''}`}
-                        options={colorOptions}
-                        value={state.selectedColors}
-                        onChange={handleSelectColorChange}
-                      />
-                    </Col>
-                  )}
-                  <Col md={update ? 6 : 12} sm={12}>
-                    <div>Selected Colors</div>
-                    <div className={`${mainStyles.smScrollable}`}>
-                      {state.selectedColors.map(item => (
-                        <div
-                          key={item.value}
-                          className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
-                        >
-                          {item.label}
-                          {update && (
-                            <Button
-                              close
-                              onClick={() => removeSelectedColor(item)}
-                              className={`${mainStyles.minSzButton} px-2`}
-                              aria-label={`Remove ${item.label}`}
-                            />
-                          )}
-                        </div>
-                      ))}
-                      {state.selectedColorsInvalid.map(item => (
-                        <div
-                          key={item.value}
-                          className={`${darkMode ? mainStyles.redChip : ''} ${
-                            mainStyles.invalidChip
-                          }`}
-                        >
-                          {item.label}
-                          {update && (
-                            <Button
-                              close
-                              onClick={() => removeInvalidSelectedColor(item)}
-                              className={`${mainStyles.minSzButton} px-2`}
-                              aria-label={`Remove ${item.label}`}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    {state.selectedColorsInvalid.length > 0 && (
-                      <div
-                        className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}
-                      >
-                        ** The colors in pink are the colors that no longer have any members
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-                <Row className="pt-4">
-                  {update && (
-                    <Col md={6} sm={12}>
-                      <div>
-                        <b>Select Extra Members</b>
-                      </div>
-                      <MultiSelect
-                        className={`${mainStyles['report-multi-select-filter']} ${
-                          mainStyles.textDark
-                        } ${darkMode ? 'dark-mode' : ''}`}
-                        options={state.membersFromUnselectedTeam}
-                        value={state.selectedExtraMembers}
-                        onChange={handleSelectExtraMembersChange}
-                      />
-                    </Col>
-                  )}
-                  <Col md={update ? 6 : 12} sm={12}>
-                    <div>Selected Extra Members</div>
-                    <div className={`${mainStyles.smScrollable}`}>
-                      {state.selectedExtraMembers.map(item => (
-                        <div
-                          key={item.value}
-                          className={`${mainStyles.chip} ${darkMode ? mainStyles.darkChip : ''}`}
-                        >
-                          {item.label}
-                          {update && (
-                            <Button
-                              close
-                              onClick={() => removeSelectedExtraMember(item)}
-                              className={`${mainStyles.minSzButton} px-2`}
-                              aria-label={`Remove ${item.label}`}
-                            />
-                          )}
-                        </div>
-                      ))}
-                      {state.selectedExtraMembersInvalid.map(item => (
-                        <div
-                          key={item.value}
-                          className={`${darkMode ? mainStyles.redChip : ''} ${
-                            mainStyles.invalidChip
-                          }`}
-                        >
-                          {item.label}
-                          {update && (
-                            <Button
-                              close
-                              onClick={() => removeInvalidSelectedExtraMember(item)}
-                              className={`${mainStyles.minSzButton} px-2`}
-                              aria-label={`Remove ${item.label}`}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                    {state.selectedExtraMembersInvalid.length > 0 && (
-                      <div
-                        className={`${darkMode ? mainStyles.errorTextDark : mainStyles.errorText}`}
-                      >
-                        ** The members in pink is the members that cannot be found in the dropdown.
-                        They might be inactive, deleted or in a selected team code.
-                      </div>
-                    )}
-                  </Col>
-                </Row>
-                <div className={`${mainStyles.filterContainer} pt-4`}>
-                  {hasPermissionToFilter && (
-                    <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
-                      <span>Filter by Special Colors</span>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          marginTop: '2px',
-                        }}
-                      >
-                        {['purple', 'green', 'navy'].map(color => (
-                          <div
-                            key={`${color}-toggle`}
-                            style={{ display: 'flex', alignItems: 'center' }}
-                          >
-                            <div className={`${mainStyles.switchToggleControl}`}>
-                              <input
-                                type="checkbox"
-                                className={`${mainStyles.switchToggle}`}
-                                id={`filter-modal-${color}-toggle`}
-                                checked={state.selectedSpecialColors[color]}
-                                disabled={!update}
-                                onChange={e =>
-                                  handleSpecialColorToggleChange(color, e.target.checked)
-                                }
-                              />
-                              <Label
-                                className={`${mainStyles.switchToggleLabel}`}
-                                for={`filter-modal-${color}-toggle`}
-                              >
-                                <span className={`${mainStyles.switchToggleInner}`} />
-                                <span className={`${mainStyles.switchToggleSwitch}`} />
-                              </Label>
-                            </div>
-                            <span
-                              style={{
-                                marginLeft: '3px',
-                                fontSize: 'inherit',
-                                textTransform: 'capitalize',
-                                whiteSpace: 'nowrap',
-                                fontWeight: 'normal',
-                              }}
-                            >
-                              {color}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className={`${mainStyles.filterContainer} pt-4`}>
-                  {(hasPermissionToFilter || canSeeBioHighlight) && (
-                    <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
-                      <span>Filter by Bio Status</span>
-                      <div className={`${mainStyles.switchToggleControl}`}>
-                        <input
-                          type="checkbox"
-                          className={`${mainStyles.switchToggle}`}
-                          id="filter-modal-bio-status-toggle"
-                          checked={state.selectedBioStatus}
-                          disabled={!update}
-                          onChange={handleBioStatusToggleChange}
-                        />
-                        <Label
-                          className={`${mainStyles.switchToggleLabel}`}
-                          for="filter-modal-bio-status-toggle"
-                        >
-                          <span className={`${mainStyles.switchToggleInner}`} />
-                          <span className={`${mainStyles.switchToggleSwitch}`} />
-                        </Label>
-                      </div>
-                    </div>
-                  )}
-                  {hasPermissionToFilter && (
-                    <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
-                      <span>Filter by Trophies</span>
-                      <div className={`${mainStyles.switchToggleControl}`}>
-                        <input
-                          type="checkbox"
-                          className={`${mainStyles.switchToggle}`}
-                          checked={state.selectedTrophies}
-                          id="filter-modal-trophy-toggle"
-                          onChange={handleTrophyToggleChange}
-                          disabled={!update}
-                        />
-                        <Label
-                          className={`${mainStyles.switchToggleLabel}`}
-                          for="filter-modal-trophy-toggle"
-                        >
-                          <span className={`${mainStyles.switchToggleInner}`} />
-                          <span className={`${mainStyles.switchToggleSwitch}`} />
-                        </Label>
-                      </div>
-                    </div>
-                  )}
-                  {hasPermissionToFilter && (
-                    <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
-                      <span>Filter by Over Hours</span>
-                      <div className={`${mainStyles.switchToggleControl}`}>
-                        <input
-                          type="checkbox"
-                          className={`${mainStyles.switchToggle}`}
-                          checked={state.selectedOverTime}
-                          id="filter-modal-over-hours-toggle"
-                          onChange={handleOverHoursToggleChange}
-                          disabled={!update}
-                        />
-                        <Label
-                          className={`${mainStyles.switchToggleLabel}`}
-                          for="filter-modal-over-hours-toggle"
-                        >
-                          <span className={`${mainStyles.switchToggleInner}`} />
-                          <span className={`${mainStyles.switchToggleSwitch}`} />
-                        </Label>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                {update ? (
+                  <FilterEditForm
+                    state={state}
+                    setState={setState}
+                    darkMode={darkMode}
+                    hasPermissionToFilter={hasPermissionToFilter}
+                    canSeeBioHighlight={canSeeBioHighlight}
+                    teamCodes={teamCodes}
+                    colorOptions={colorOptions}
+                    tableData={tableData}
+                    summaries={summaries}
+                    teamCodeWarningUsers={teamCodeWarningUsers}
+                  />
+                ) : (
+                  <FilterPreviewForm
+                    selectedFilter={selectedFilter}
+                    darkMode={darkMode}
+                    memberDict={memberDict}
+                  />
+                )}
               </FormGroup>
             )}
           </Form>
