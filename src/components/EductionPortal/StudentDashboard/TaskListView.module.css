@@ -1,0 +1,16 @@
+.listView {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+.emptyState p {
+  margin: 0;
+}

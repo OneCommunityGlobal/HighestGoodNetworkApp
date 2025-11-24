@@ -3,14 +3,26 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './ApplicationChart.module.css';
 
-function TimeFilter({ onFilterChange }) {
+function TimeFilter({ onFilterChange, darkMode }) {
   const [selectedOption, setSelectedOption] = useState('weekly');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    onFilterChange({ selectedOption, startDate, endDate });
-  }, [selectedOption, startDate, endDate]);
+    if (selectedOption === 'custom' && startDate && endDate) {
+      if (startDate > endDate) {
+        setError('Start date cannot be after end date.');
+        return;
+      } else {
+        setError('');
+      }
+    } else {
+      setError('');
+    }
+
+    onFilterChange({ selectedOption, startDate, endDate, error: '' });
+  }, [selectedOption, startDate, endDate]); // Removed onFilterChange from dependencies
 
   return (
     <div className={`${styles.TimeFilter}`}>
@@ -43,6 +55,8 @@ function TimeFilter({ onFilterChange }) {
           />
         </>
       )}
+
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 }
