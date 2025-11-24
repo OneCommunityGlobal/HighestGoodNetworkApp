@@ -43,13 +43,6 @@ export function CPDashboard() {
   }, []);
 
   const handleDateChange = date => {
-    setDateError('');
-
-    if (!date) {
-      setSelectedDate('');
-      return;
-    }
-
     const today = new Date();
     today.setHours(0, 0, 0, 0); // midnight today
 
@@ -58,7 +51,7 @@ export function CPDashboard() {
       setSelectedDate('');
       return;
     }
-
+    setDateError('');
     setSelectedDate(date);
   };
 
@@ -120,7 +113,6 @@ export function CPDashboard() {
                 )}
               </div>
             </div>
-
             <div className="filter-item">
               <label htmlFor="online-only">Online</label>
               <div>
