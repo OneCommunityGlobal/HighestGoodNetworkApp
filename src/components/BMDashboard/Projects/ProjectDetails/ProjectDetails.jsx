@@ -1,29 +1,53 @@
 import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
-import LogBar from './LogBar';
+import { LoggingButtons, AddItemButtons, TeamButtons } from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
 import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
 import styles from './ProjectDetails.module.css';
 
-const SectionHeader = ({ icon, title }) => (
-  <h3
+/* -------------------------------------------
+   REUSABLE DASHBOARD SECTION COMPONENT
+------------------------------------------- */
+const DashboardSection = ({ title, icon, children }) => (
+  <div
     style={{
-      backgroundColor: '#e6f2ff',
-      padding: '10px 15px',
-      borderRadius: '6px',
-      fontSize: '1.2rem',
-      fontWeight: '600',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
-      marginTop: '30px',
-      marginBottom: '10px',
+      textAlign: 'center',
+      marginTop: '25px',
+      marginBottom: '15px',
     }}
   >
-    <span style={{ fontSize: '1.4rem' }}>{icon}</span> {title}
-  </h3>
+    <h2
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '10px',
+        backgroundColor: '#e6f2ff',
+        padding: '8px 18px',
+        borderRadius: '8px',
+        fontWeight: '600',
+        fontSize: '1.2rem',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+      }}
+    >
+      <span style={{ fontSize: '1.4rem' }}>{icon}</span>
+      {title}
+    </h2>
+
+    {/* BUTTONS AREA */}
+    <div
+      style={{
+        marginTop: '12px',
+        display: 'flex',
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        gap: '10px',
+      }}
+    >
+      {children}
+    </div>
+  </div>
 );
 
 function ProjectDetails() {
@@ -44,42 +68,58 @@ function ProjectDetails() {
   return (
     <Container
       fluid
-      className={`${darkMode ? styles['project-details-dark'] : styles['project-details']}  `}
+      className={`${darkMode ? styles['project-details-dark'] : styles['project-details']}`}
     >
       <Row className="justify-content-center">
         <Col xs="12" lg="10">
+          {/* PAGE TITLE */}
           <h1
             className={`${
               darkMode ? styles['project-details-title-dark'] : styles['project-details-title']
-            } mb-2 `}
+            } mb-2`}
           >
-            {currProject.name} Dashboard{' '}
+            {currProject.name} Dashboard
           </h1>
 
-          <SectionHeader icon="🕒" title="Daily Logging" />
-          <div style={{ marginBottom: '25px' }}>
-            <LogBar projectId={projectId} />
-          </div>
+          {/* --------------------------- */}
+          {/*   DAILY LOGGING SECTION     */}
+          {/* --------------------------- */}
+          <DashboardSection icon="🕒" title="Daily Logging">
+            <LoggingButtons darkMode={darkMode} />
+          </DashboardSection>
 
+          {/* --------------------------- */}
+          {/*   ADD A NEW ITEM            */}
+          {/* --------------------------- */}
+          <DashboardSection icon="➕" title="Add a New Item">
+            <AddItemButtons darkMode={darkMode} />
+          </DashboardSection>
+
+          {/* --------------------------- */}
+          {/*           TEAM              */}
+          {/* --------------------------- */}
+          <DashboardSection icon="👥" title="Team">
+            <TeamButtons darkMode={darkMode} />
+          </DashboardSection>
+
+          {/* TOOLS + MATERIALS ROW */}
           <Row className="mt-4 mb-4 g-4">
+            {/* Rented Tools */}
             <Col md="6" className="mb-4">
-              <SectionHeader icon="🚚" title="Rented Tools or Equipment" />
-              <div style={{ marginBottom: '25px' }}>
-                <RentedToolsDisplay projectId={projectId} />
-              </div>
+              <DashboardSection icon="🚚" title="Rented Tools or Equipment" />
+              <RentedToolsDisplay projectId={projectId} />
             </Col>
+
+            {/* Materials */}
             <Col md="6" className="mb-4">
-              <SectionHeader icon="🧱" title="Materials with Quantity Less Than 20%" />
-              <div style={{ marginBottom: '25px' }}>
-                <MaterialsDisplay projectId={projectId} />
-              </div>
+              <DashboardSection icon="🧱" title="Materials with Quantity < 20%" />
+              <MaterialsDisplay projectId={projectId} />
             </Col>
           </Row>
 
-          <SectionHeader icon="👥" title="Team & Members Working Today" />
-          <div style={{ marginTop: '30px' }}>
-            <ProjectLog projectId={projectId} />
-          </div>
+          {/* Project Log */}
+          <DashboardSection icon="📋" title="Members Working Today" />
+          <ProjectLog projectId={projectId} />
         </Col>
       </Row>
     </Container>
