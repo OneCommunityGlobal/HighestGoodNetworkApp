@@ -7,6 +7,24 @@ import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
 import styles from './ProjectDetails.module.css';
 
+const SectionHeader = ({ icon, title }) => (
+  <h3
+    style={{
+      backgroundColor: '#e6f2ff',
+      padding: '10px 15px',
+      borderRadius: '6px',
+      fontSize: '1.2rem',
+      fontWeight: '600',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '8px',
+      marginTop: '30px',
+    }}
+  >
+    <span style={{ fontSize: '1.4rem' }}>{icon}</span> {title}
+  </h3>
+);
+
 function ProjectDetails() {
   const { projectId } = useParams();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -37,17 +55,21 @@ function ProjectDetails() {
             {currProject.name} Dashboard{' '}
           </h1>
 
+          <SectionHeader icon="🕒" title="Daily Logging" />
           <LogBar projectId={projectId} />
 
           <Row className="mt-4">
             <Col md="6" className="mb-4">
+              <SectionHeader icon="🚚" title="Rented Tools or Equipment" />
               <RentedToolsDisplay projectId={projectId} />
             </Col>
             <Col md="6" className="mb-4">
+              <SectionHeader icon="🧱" title="Materials with Quantity Less Than 20%" />
               <MaterialsDisplay projectId={projectId} />
             </Col>
           </Row>
 
+          <SectionHeader icon="👥" title="Team & Members Working Today" />
           <ProjectLog projectId={projectId} />
         </Col>
       </Row>
