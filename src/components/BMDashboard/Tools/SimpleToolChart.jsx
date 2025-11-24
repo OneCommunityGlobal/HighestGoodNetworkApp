@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
@@ -13,7 +14,6 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 
-// ---------- Sample Data ----------
 const toolsData = [
   {
     project: 'Project A',
@@ -58,6 +58,7 @@ const projects = ['All Projects', ...new Set(toolsData.map(item => item.project)
 
 // ---------- Date Range Picker ----------
 function DateRangePicker({ dateRange, setDateRange }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setIsOpen] = useState(false);
   const [tempRange, setTempRange] = useState(dateRange);
   const pickerRef = useRef(null);
@@ -73,11 +74,33 @@ function DateRangePicker({ dateRange, setDateRange }) {
   }, []);
 
   const handleStartDateChange = e => {
-    setTempRange({ ...tempRange, from: new Date(e.target.value) });
+    const val = e.target.value;
+
+    // allow free typing
+    setTempRange(prev => ({ ...prev, from: val }));
+
+    // only convert to Date object when full date exists (YYYY-MM-DD)
+    if (val && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      const parsed = new Date(val);
+      if (!isNaN(parsed.getTime())) {
+        setTempRange(prev => ({ ...prev, from: parsed }));
+      }
+    }
   };
 
   const handleEndDateChange = e => {
-    setTempRange({ ...tempRange, to: new Date(e.target.value) });
+    const val = e.target.value;
+
+    // allow free typing
+    setTempRange(prev => ({ ...prev, to: val }));
+
+    // only convert to Date object when full date exists (YYYY-MM-DD)
+    if (val && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
+      const parsed = new Date(val);
+      if (!isNaN(parsed.getTime())) {
+        setTempRange(prev => ({ ...prev, to: parsed }));
+      }
+    }
   };
 
   const applyDateRange = () => {
@@ -93,13 +116,14 @@ function DateRangePicker({ dateRange, setDateRange }) {
           width: '100%',
           padding: '8px 16px',
           textAlign: 'left',
-          border: '1px solid #d1d5db',
-          borderRadius: '6px',
+          border: '1px solid',
+          borderColor: darkMode ? '#444' : '#d1d5db',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: 'white',
+          backgroundColor: darkMode ? '#1a1a1a' : '#fff',
           cursor: 'pointer',
+          color: darkMode ? '#e5e5e5' : '#111',
         }}
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -133,41 +157,68 @@ function DateRangePicker({ dateRange, setDateRange }) {
             zIndex: 10,
             marginTop: '4px',
             width: '100%',
-            backgroundColor: 'white',
-            border: '1px solid #d1d5db',
-            borderRadius: '6px',
+            backgroundColor: darkMode ? '#1a1a1a' : 'white',
+            border: '1px solid',
+            borderColor: darkMode ? '#444' : '#d1d5db',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
             padding: '16px',
+            color: darkMode ? '#e5e5e5' : '#111',
           }}
         >
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div>
-              <label htmlFor="startDate">Start Date</label>
+              <label htmlFor="startDate" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+                Start Date
+              </label>
               <input
                 id="startDate"
-                type="date"
-                value={tempRange.from ? format(tempRange.from, 'yyyy-MM-dd') : ''}
+                type="text"
+                placeholder="YYYY-MM-DD"
+                maxLength="10"
+                pattern="\d{4}-\d{2}-\d{2}"
+                value={
+                  typeof tempRange.from === 'string'
+                    ? tempRange.from
+                    : tempRange.from
+                    ? format(tempRange.from, 'yyyy-MM-dd')
+                    : ''
+                }
                 onChange={handleStartDateChange}
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
+                  border: '1px solid',
+                  borderColor: darkMode ? '#444' : '#d1d5db',
+                  backgroundColor: darkMode ? '#0f0f0f' : '#fff',
+                  color: darkMode ? '#e5e5e5' : '#111',
                 }}
               />
             </div>
             <div>
-              <label htmlFor="endDate">End Date</label>
+              <label htmlFor="endDate" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+                End Date
+              </label>
               <input
                 id="endDate"
-                type="date"
-                value={tempRange.to ? format(tempRange.to, 'yyyy-MM-dd') : ''}
+                type="text"
+                placeholder="YYYY-MM-DD"
+                maxLength="10"
+                pattern="\d{4}-\d{2}-\d{2}"
+                value={
+                  typeof tempRange.to === 'string'
+                    ? tempRange.to
+                    : tempRange.to
+                    ? format(tempRange.to, 'yyyy-MM-dd')
+                    : ''
+                }
                 onChange={handleEndDateChange}
                 style={{
                   width: '100%',
                   padding: '8px 12px',
-                  border: '1px solid #d1d5db',
-                  borderRadius: '6px',
+                  border: '1px solid',
+                  borderColor: darkMode ? '#444' : '#d1d5db',
+                  backgroundColor: darkMode ? '#0f0f0f' : '#fff',
+                  color: darkMode ? '#e5e5e5' : '#111',
                 }}
               />
             </div>
@@ -180,7 +231,6 @@ function DateRangePicker({ dateRange, setDateRange }) {
                 backgroundColor: '#3b82f6',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
                 cursor: 'pointer',
               }}
             >
@@ -195,6 +245,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
 
 // ---------- Main Chart Component ----------
 export default function SimpleToolChart() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [selectedProject, setSelectedProject] = useState('All Projects');
   const [dateRange, setDateRange] = useState({
     from: new Date(2023, 0, 1),
@@ -206,9 +257,18 @@ export default function SimpleToolChart() {
 
     // Date filtering
     if (dateRange.from && dateRange.to) {
+      const fromDate =
+        typeof dateRange.from === 'string' ? new Date(dateRange.from) : dateRange.from;
+      const toDate = typeof dateRange.to === 'string' ? new Date(dateRange.to) : dateRange.to;
+
       filtered = filtered.filter(item => {
         const itemDate = new Date(item.date);
-        return itemDate >= dateRange.from && itemDate <= dateRange.to;
+        return (
+          !isNaN(fromDate.getTime()) &&
+          !isNaN(toDate.getTime()) &&
+          itemDate >= fromDate &&
+          itemDate <= toDate
+        );
       });
     }
 
@@ -239,15 +299,35 @@ export default function SimpleToolChart() {
   }, [selectedProject, dateRange]);
 
   return (
-    <div style={{ padding: '24px', backgroundColor: 'white', borderRadius: '8px' }}>
-      <h2 style={{ fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>
+    <div
+      className={darkMode ? 'dark-mode' : ''}
+      style={{
+        width: '100%',
+        maxWidth: '100%',
+        minWidth: '100%',
+        padding: '24px',
+        backgroundColor: darkMode ? '#0d0d0d' : '#ffffff',
+        color: darkMode ? '#e5e5e5' : '#111',
+        boxSizing: 'border-box',
+      }}
+    >
+      <h2
+        style={{
+          fontSize: '24px',
+          fontWeight: 'bold',
+          textAlign: 'center',
+          color: darkMode ? '#e5e5e5' : '#111',
+        }}
+      >
         Tools Most Susceptible to Breakdown
       </h2>
 
       {/* Filters */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', margin: '16px 0' }}>
         <div>
-          <label htmlFor="projectSelect">Project</label>
+          <label htmlFor="projectSelect" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+            Project
+          </label>
           <select
             id="projectSelect"
             value={selectedProject}
@@ -255,8 +335,10 @@ export default function SimpleToolChart() {
             style={{
               width: '100%',
               padding: '8px',
-              borderRadius: '6px',
-              border: '1px solid #d1d5db',
+              border: '1px solid',
+              borderColor: darkMode ? '#444' : '#d1d5db',
+              color: darkMode ? '#e5e5e5' : '#111',
+              backgroundColor: darkMode ? '#1a1a1a' : '#fff',
             }}
           >
             {projects.map(project => (
@@ -266,7 +348,9 @@ export default function SimpleToolChart() {
         </div>
 
         <div>
-          <label htmlFor="dateRangePicker">Date Range</label>
+          <label htmlFor="dateRangePicker" style={{ color: darkMode ? '#e5e5e5' : '#111' }}>
+            Date Range
+          </label>
           <div id="dateRangePicker">
             <DateRangePicker dateRange={dateRange} setDateRange={setDateRange} />
           </div>
@@ -274,22 +358,60 @@ export default function SimpleToolChart() {
       </div>
 
       {/* Chart */}
-      <div style={{ height: '400px' }}>
+      <div
+        style={{
+          height: '400px',
+          width: '100%',
+          backgroundColor: darkMode ? '#0f0f0f' : '#ffffff',
+          padding: '16px',
+          boxSizing: 'border-box',
+        }}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             layout="vertical"
             data={filteredData}
             margin={{ top: 20, right: 50, left: 70, bottom: 20 }}
           >
-            <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-            <XAxis type="number" domain={[0, 100]} unit="%" />
-            <YAxis type="category" dataKey="name" tick={{ fontSize: 14 }} />
-            <Tooltip formatter={value => [`${value}%`, 'Replaced Percentage']} />
-            <Bar dataKey="replacedPercentage" fill="#3b82f6" radius={[0, 4, 4, 0]}>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              horizontal={false}
+              stroke={darkMode ? '#333' : '#e5e5e5'}
+            />
+            <XAxis
+              type="number"
+              domain={[0, 100]}
+              unit="%"
+              tick={{ fill: darkMode ? '#e5e5e5' : '#111' }}
+              axisLine={{ stroke: darkMode ? '#555' : '#111' }}
+            />
+            <YAxis
+              type="category"
+              dataKey="name"
+              tick={{ fontSize: 14, fill: darkMode ? '#e5e5e5' : '#111' }}
+            />
+            <Tooltip
+              formatter={value => [`${value}%`, 'Replaced Percentage']}
+              contentStyle={{
+                backgroundColor: darkMode ? '#1c1c1c' : '#ffffff',
+                border: darkMode ? '1px solid #666' : '1px solid #ccc',
+                color: darkMode ? '#f5f5f5' : '#000',
+              }}
+            />
+            <Bar
+              dataKey="replacedPercentage"
+              fill={darkMode ? '#4f9bff' : '#3b82f6'}
+              stroke={darkMode ? '#a8c8ff' : '#1e40af'}
+              strokeWidth={1.5}
+            >
               <LabelList
                 dataKey="replacedPercentage"
                 position="right"
-                content={({ value }) => <text fill="#374151" fontWeight="500">{`${value}%`}</text>}
+                content={({ value }) => (
+                  <text fill={darkMode ? '#e5e5e5' : '#374151'} fontWeight="500">
+                    {`${value}%`}
+                  </text>
+                )}
               />
             </Bar>
           </BarChart>
