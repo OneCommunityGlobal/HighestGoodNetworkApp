@@ -655,6 +655,24 @@
   color: #fff;
 }
 
+.eventButton {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.eventButton:hover {
+  background-color: #f0f0f0;
+}
+
+.calendarActivityItemDarkMode .eventButton:hover {
+  background-color: #4a5568;
+}
+
 .calendarActivityItem.clickable {
   cursor: pointer;
   transition: background-color 0.2s ease;
