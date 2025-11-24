@@ -190,6 +190,7 @@
   min-height: 500px;
   border-radius: 8px;
   overflow: hidden;
+  grid-column: span 4;
 }
 
 .weeklyProjectSummaryDashboardSection {

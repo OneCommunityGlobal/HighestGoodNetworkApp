@@ -4,11 +4,14 @@ import './CPDashboard.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
   const [date, setDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [dateError, setDateError] = useState('');
 
   useEffect(() => {
     const mockEvents = [
@@ -39,6 +42,22 @@ export function CPDashboard() {
     ];
     setEvents(mockEvents);
   }, []);
+
+  const handleDateChange = e => {
+    const value = e.target.value;
+    setSelectedDate(value);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // midnight today
+
+    const chosen = new Date(value);
+
+    if (chosen < today) {
+      toast.error('Past dates are not supported. Please select a future date.');
+      setSelectedDate('');
+      return;
+    }
+  };
 
   return (
     <Container fluid className="dashboard-container">
@@ -92,6 +111,17 @@ export function CPDashboard() {
                   style={{ width: '100%' }}
                 />
               </div>
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={handleDateChange}
+                className="date-filter"
+              />
+              {dateError && (
+                <p className="date-error-message" style={{ color: 'red', marginTop: '5px' }}>
+                  {dateError}
+                </p>
+              )}
             </div>
             <div className="filter-item">
               <label htmlFor="online-only">Online</label>
