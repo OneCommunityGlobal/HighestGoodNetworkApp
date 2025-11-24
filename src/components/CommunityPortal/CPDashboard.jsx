@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
-  const [date, setDate] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [dateError, setDateError] = useState('');
 
@@ -43,20 +42,24 @@ export function CPDashboard() {
     setEvents(mockEvents);
   }, []);
 
-  const handleDateChange = e => {
-    const value = e.target.value;
-    setSelectedDate(value);
+  const handleDateChange = date => {
+    setDateError('');
+
+    if (!date) {
+      setSelectedDate('');
+      return;
+    }
 
     const today = new Date();
     today.setHours(0, 0, 0, 0); // midnight today
 
-    const chosen = new Date(value);
-
-    if (chosen < today) {
+    if (date < today) {
       toast.error('Past dates are not supported. Please select a future date.');
       setSelectedDate('');
       return;
     }
+
+    setSelectedDate(date);
   };
 
   return (
@@ -103,26 +106,21 @@ export function CPDashboard() {
               </div>
               <div style={{ width: '100%' }}>
                 <DatePicker
-                  selected={date}
-                  onChange={d => setDate(d)}
+                  selected={selectedDate}
+                  onChange={date => handleDateChange(date)}
                   placeholderText="Ending After"
                   id="ending-after"
                   className="date-filter"
                   style={{ width: '100%' }}
                 />
+                {dateError && (
+                  <p className="date-error-message" style={{ color: 'red', marginTop: '5px' }}>
+                    {dateError}
+                  </p>
+                )}
               </div>
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={handleDateChange}
-                className="date-filter"
-              />
-              {dateError && (
-                <p className="date-error-message" style={{ color: 'red', marginTop: '5px' }}>
-                  {dateError}
-                </p>
-              )}
             </div>
+
             <div className="filter-item">
               <label htmlFor="online-only">Online</label>
               <div>
