@@ -119,7 +119,17 @@ export function CPDashboard() {
                   <Input type="radio" name="dates" /> This Weekend
                 </div>
               </div>
-              <Input type="date" placeholder="Ending After" className="date-filter" />
+              <Input
+                type="date"
+                value={selectedDate}
+                onChange={handleDateChange}
+                className="date-filter"
+              />
+              {dateError && (
+                <p className="date-error-message" style={{ color: 'red', marginTop: '5px' }}>
+                  {dateError}
+                </p>
+              )}
             </div>
             <div className="filter-item">
               <label htmlFor="online-only">Online</label>
