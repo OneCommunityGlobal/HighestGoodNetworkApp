@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { MultiSelect } from 'react-multi-select-component';
-import { Button, Label, Row, Col, FormGroup } from 'reactstrap';
+import { Button, Row, Col, FormGroup } from 'reactstrap';
 import mainStyles from './WeeklySummariesReport.module.css';
-import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
+import WeeklySummariesToggleFilter from './WeeklySummariesToggleFilter.jsx';
+import { setField, removeItemFromField } from '~/utils/stateHelper';
 
 export default function FilterEditForm({
   state,
@@ -51,18 +52,6 @@ export default function FilterEditForm({
       ),
     }));
   }, [state.selectedCodes, summaries]);
-
-  const handleTrophyToggleChange = () => {
-    toggleField(setState, 'selectedTrophies');
-  };
-
-  const handleBioStatusToggleChange = () => {
-    toggleField(setState, 'selectedBioStatus');
-  };
-
-  const handleOverHoursToggleChange = () => {
-    toggleField(setState, 'selectedOverTime');
-  };
 
   return (
     <FormGroup>
@@ -236,110 +225,13 @@ export default function FilterEditForm({
           )}
         </Col>
       </Row>
-      <div className={`${mainStyles.filterContainer} pt-4`}>
-        {hasPermissionToFilter && (
-          <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
-            <span>Filter by Special Colors</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
-              {['purple', 'green', 'navy'].map(color => (
-                <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
-                  <div className={`${mainStyles.switchToggleControl}`}>
-                    <input
-                      type="checkbox"
-                      className={`${mainStyles.switchToggle}`}
-                      id={`filter-modal-${color}-toggle`}
-                      checked={state.selectedSpecialColors[color]}
-                      onChange={e =>
-                        setChildField(setState, 'selectedSpecialColors', color, e.target.checked)
-                      }
-                    />
-                    <Label
-                      className={`${mainStyles.switchToggleLabel}`}
-                      for={`filter-modal-${color}-toggle`}
-                    >
-                      <span className={`${mainStyles.switchToggleInner}`} />
-                      <span className={`${mainStyles.switchToggleSwitch}`} />
-                    </Label>
-                  </div>
-                  <span
-                    style={{
-                      marginLeft: '3px',
-                      fontSize: 'inherit',
-                      textTransform: 'capitalize',
-                      whiteSpace: 'nowrap',
-                      fontWeight: 'normal',
-                    }}
-                  >
-                    {color}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-      <div className={`${mainStyles.filterContainer} pt-4`}>
-        {(hasPermissionToFilter || canSeeBioHighlight) && (
-          <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
-            <span>Filter by Bio Status</span>
-            <div className={`${mainStyles.switchToggleControl}`}>
-              <input
-                type="checkbox"
-                className={`${mainStyles.switchToggle}`}
-                id="filter-modal-bio-status-toggle"
-                checked={state.selectedBioStatus}
-                onChange={handleBioStatusToggleChange}
-              />
-              <Label
-                className={`${mainStyles.switchToggleLabel}`}
-                for="filter-modal-bio-status-toggle"
-              >
-                <span className={`${mainStyles.switchToggleInner}`} />
-                <span className={`${mainStyles.switchToggleSwitch}`} />
-              </Label>
-            </div>
-          </div>
-        )}
-        {hasPermissionToFilter && (
-          <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
-            <span>Filter by Trophies</span>
-            <div className={`${mainStyles.switchToggleControl}`}>
-              <input
-                type="checkbox"
-                className={`${mainStyles.switchToggle}`}
-                checked={state.selectedTrophies}
-                id="filter-modal-trophy-toggle"
-                onChange={handleTrophyToggleChange}
-              />
-              <Label className={`${mainStyles.switchToggleLabel}`} for="filter-modal-trophy-toggle">
-                <span className={`${mainStyles.switchToggleInner}`} />
-                <span className={`${mainStyles.switchToggleSwitch}`} />
-              </Label>
-            </div>
-          </div>
-        )}
-        {hasPermissionToFilter && (
-          <div className={`${mainStyles.filterStyle} ${mainStyles.marginRight}`}>
-            <span>Filter by Over Hours</span>
-            <div className={`${mainStyles.switchToggleControl}`}>
-              <input
-                type="checkbox"
-                className={`${mainStyles.switchToggle}`}
-                checked={state.selectedOverTime}
-                id="filter-modal-over-hours-toggle"
-                onChange={handleOverHoursToggleChange}
-              />
-              <Label
-                className={`${mainStyles.switchToggleLabel}`}
-                for="filter-modal-over-hours-toggle"
-              >
-                <span className={`${mainStyles.switchToggleInner}`} />
-                <span className={`${mainStyles.switchToggleSwitch}`} />
-              </Label>
-            </div>
-          </div>
-        )}
-      </div>
+      <WeeklySummariesToggleFilter
+        state={state}
+        setState={setState}
+        hasPermissionToFilter={hasPermissionToFilter}
+        editable={true}
+        formId="filter-edit"
+      />
     </FormGroup>
   );
 }

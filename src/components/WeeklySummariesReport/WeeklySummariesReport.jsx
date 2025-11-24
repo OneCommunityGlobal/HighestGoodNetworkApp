@@ -60,6 +60,7 @@ import SelectFilterModal from './SelectFilterModal';
 import SaveFilterModal from './SaveFilterModal';
 import styles from './WeeklySummariesReport.module.css';
 import { setField, toggleField, removeItemFromField, setChildField } from '~/utils/stateHelper';
+import WeeklySummariesToggleFilter from './WeeklySummariesToggleFilter';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -2046,112 +2047,13 @@ const WeeklySummariesReport = props => {
               }),
             }}
           />
-          <div className={`${styles.filterContainer}`}>
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle}`}>
-                <span>Filter by Special Colors</span>
-                <div
-                  style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}
-                >
-                  {['purple', 'green', 'navy'].map(color => (
-                    <div key={`${color}-toggle`} style={{ display: 'flex', alignItems: 'center' }}>
-                      <div className={`${styles.switchToggleControl}`}>
-                        <input
-                          type="checkbox"
-                          className={`${styles.switchToggle}`}
-                          id={`${color}-toggle`}
-                          checked={state.selectedSpecialColors[color]}
-                          onChange={e => handleSpecialColorToggleChange(color, e.target.checked)}
-                        />
-                        <label
-                          className={`${styles.switchToggleLabel}`}
-                          htmlFor={`${color}-toggle`}
-                        >
-                          <span className={`${styles.switchToggleInner}`} />
-                          <span className={`${styles.switchToggleSwitch}`} />
-                        </label>
-                      </div>
-                      <span
-                        style={{
-                          marginLeft: '3px',
-                          fontSize: 'inherit',
-                          textTransform: 'capitalize',
-                          whiteSpace: 'nowrap',
-                          fontWeight: 'normal',
-                        }}
-                      >
-                        {color}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            {(hasPermissionToFilter || props.hasPermission('highlightEligibleBios')) && (
-              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
-                <span>Filter by Bio Status</span>
-                <div className={styles.switchToggleControl}>
-                  <input
-                    type="checkbox"
-                    className={styles.switchToggle}
-                    id="bio-status-toggle"
-                    checked={state.selectedBioStatus}
-                    onChange={handleBioStatusToggleChange}
-                  />
-                  <label className={styles.switchToggleLabel} htmlFor="bio-status-toggle">
-                    <span className={styles.switchToggleInner} />
-                    <span className={styles.switchToggleSwitch} />
-                  </label>
-                </div>
-              </div>
-            )}
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
-                <span>Filter by Trophies</span>
-                <div className={`${styles.switchToggleControl}`}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchToggle}`}
-                    id="trophy-toggle"
-                    checked={state.selectedTrophies}
-                    onChange={handleTrophyToggleChange}
-                  />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="trophy-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
-                  </label>
-                </div>
-              </div>
-            )}
-            {hasPermissionToFilter && (
-              <div className={`${styles.filterStyle} ml-3`} style={{ minWidth: 'max-content' }}>
-                <span>Filter by Over Hours</span>
-                <div className={`${styles.switchToggleControl}`}>
-                  <input
-                    type="checkbox"
-                    className={`${styles.switchToggle}`}
-                    id="over-hours-toggle"
-                    checked={state.selectedOverTime}
-                    onChange={handleOverHoursToggleChange}
-                  />
-                  <label className={`${styles.switchToggleLabel}`} htmlFor="over-hours-toggle">
-                    <span className={`${styles.switchToggleInner}`} />
-                    <span className={`${styles.switchToggleSwitch}`} />
-                  </label>
-                </div>
-                <ReactTooltip
-                  id="filterTooltip"
-                  place="top"
-                  effect="solid"
-                  className="custom-tooltip"
-                >
-                  <span style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}>
-                    Filter people who contributed more than 25% of their committed hours
-                  </span>
-                </ReactTooltip>
-              </div>
-            )}
-          </div>
+          <WeeklySummariesToggleFilter
+            state={state}
+            setState={setState}
+            hasPermissionToFilter={hasPermissionToFilter}
+            editable={true}
+            formId="report"
+          />
         </Col>
       </Row>
       <Row className={styles['mx-max-sm-0']}>

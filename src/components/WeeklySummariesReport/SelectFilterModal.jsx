@@ -6,6 +6,8 @@ import mainStyles from './WeeklySummariesReport.module.css';
 import FilterPreviewForm from './FilterPreviewForm.jsx';
 
 export default function SelectFilterModal({
+  state,
+  setState,
   isOpen,
   toggle,
   filters,
