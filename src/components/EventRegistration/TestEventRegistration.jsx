@@ -1,12 +1,21 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import styles from './TestEventRegistration.module.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
+import mockEvents from '../CommunityPortal/Reports/Participation/mockData';
 
 function TestEventRegistration() {
-  // State to store the event name and error message
-  const [formValues, setFormValues] = useState({
+  // Safe Redux selector with fallback
+  const darkMode = useSelector(state => state?.theme?.darkMode) || false;
+
+  const eventDetails = {
     eventName: '',
     firstName: '',
     lastName: '',
-    countryCode: '',
+    countryCode: '+1',
     phoneNumber: '',
     emailAddress: '',
     dateOfBirth: '',
@@ -17,609 +26,725 @@ function TestEventRegistration() {
     state: '',
     country: '',
     zipcode: '',
-    howDidYouHear: '',
+    howDidYouHear: [],
     otherHowDidYouHear: '',
-  });
-  const [errors, setErrors] = useState({});
+  };
 
-  // Handle changes in the input field
+  const howDidYouHearOptions = [
+    'Search Engine (Google, Bing, etc.)',
+    'Social Media',
+    'Radio',
+    'Television',
+    'Streaming Service Ad',
+    'Newspaper/Online Newspaper',
+    'Billboard',
+    'Word of Mouth',
+    'Referral',
+    'Others',
+  ];
+
+  const [formValues, setFormValues] = useState(eventDetails);
+  const [errors, setErrors] = useState({});
+  const [confirmation, setConfirmation] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  // Filter states
+  const [typeFilter, setTypeFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+
+  // Enhanced email regex validation following RFC 5322 standards
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+  function normalizeDigits(v = '') {
+    return v.replace(/\D/g, '');
+  }
+
+  function isAdult(dob) {
+    if (!dob) return false;
+    const d = new Date(dob);
+    const eighteen = new Date();
+    eighteen.setFullYear(eighteen.getFullYear() - 18);
+    return d <= eighteen;
+  }
+
+  function getSeatsLeft(ev) {
+    if (!ev) return undefined;
+    return ev.capacity;
+  }
+
+  // Helper function to extract date from eventTime
+  function extractDate(eventTime) {
+    if (!eventTime) return '';
+    const dateMatch = eventTime.match(/(\w{3} \d{1,2}, \d{4})/);
+    return dateMatch ? dateMatch[1] : '';
+  }
+
+  // Filter events based on current filter criteria
+  function getFilteredEvents() {
+    return mockEvents.filter(event => {
+      const matchesType =
+        !typeFilter || event.eventType.toLowerCase().includes(typeFilter.toLowerCase());
+      const matchesLocation =
+        !locationFilter || event.location.toLowerCase().includes(locationFilter.toLowerCase());
+
+      let matchesDate = true;
+      if (dateFilter) {
+        const eventDate = extractDate(event.eventTime);
+        matchesDate = eventDate.toLowerCase().includes(dateFilter.toLowerCase());
+      }
+
+      return matchesType && matchesLocation && matchesDate;
+    });
+  }
+
+  // Get unique values for filter dropdowns
+  const uniqueTypes = [...new Set(mockEvents.map(event => event.eventType))];
+  const uniqueLocations = [...new Set(mockEvents.map(event => event.location))];
+  const uniqueDates = [
+    ...new Set(mockEvents.map(event => extractDate(event.eventTime)).filter(Boolean)),
+  ];
+
+  function validate(values, currentEvent) {
+    const errs = {};
+    const phoneDigits = normalizeDigits(values.phoneNumber);
+    const isUS =
+      values.country?.toLowerCase().includes('united states') ||
+      values.country === 'United States' ||
+      values.country === 'USA';
+
+    // Event
+    if (!values.eventName.trim()) {
+      errs.eventName = 'Event Name is required.';
+    } else if (currentEvent) {
+      const seatsLeft = getSeatsLeft(currentEvent);
+      if (typeof seatsLeft === 'number' && seatsLeft <= 0) {
+        errs.eventName = 'This event is full.';
+      }
+    }
+
+    // Names
+    if (!values.firstName.trim()) errs.firstName = 'First Name is required.';
+    if (!values.lastName.trim()) errs.lastName = 'Last Name is required.';
+
+    // Phone
+    if (!values.countryCode.trim()) errs.countryCode = 'Country Code is required.';
+    if (!phoneDigits || phoneDigits.length !== 10) {
+      errs.phoneNumber = 'Enter a valid 10-digit phone number.';
+    }
+
+    // Email
+    if (!values.emailAddress.trim()) {
+      errs.emailAddress = 'Email Address is required.';
+    } else {
+      const email = values.emailAddress.trim().toLowerCase();
+
+      // Check length constraints
+      if (email.length > 254) {
+        errs.emailAddress = 'Email address is too long (maximum 254 characters).';
+      } else if (!emailRegex.test(email)) {
+        // Provide specific feedback based on common email format issues
+        if (!email.includes('@')) {
+          errs.emailAddress = 'Email address must contain an @ symbol.';
+        } else if (email.startsWith('@') || email.endsWith('@')) {
+          errs.emailAddress = 'Email address cannot start or end with @.';
+        } else if (!email.includes('.')) {
+          errs.emailAddress = 'Email address must contain a domain (e.g., .com, .org).';
+        } else if (email.includes('..')) {
+          errs.emailAddress = 'Email address cannot contain consecutive dots.';
+        } else {
+          errs.emailAddress = 'Please enter a valid email address (e.g., user@example.com).';
+        }
+      }
+    }
+
+    // DOB
+    if (!values.dateOfBirth.trim()) {
+      errs.dateOfBirth = 'Date of Birth is required.';
+    } else if (!isAdult(values.dateOfBirth)) {
+      errs.dateOfBirth = 'You must be at least 18 years old.';
+    }
+
+    // Gender
+    if (!values.gender.trim()) errs.gender = 'Gender is required.';
+    if (values.gender === 'Others' && !values.otherGender.trim()) {
+      errs.otherGender = 'Please specify your gender.';
+    }
+
+    // Address
+    if (!values.address.trim()) errs.address = 'Street Address is required.';
+    if (!values.city.trim()) errs.city = 'City is required.';
+    if (!values.state.trim()) errs.state = 'State/Province is required.';
+    if (!values.zipcode.trim()) errs.zipcode = 'Postal/ZIP code is required.';
+    if (!values.country.trim()) errs.country = 'Country is required.';
+
+    // How did you hear
+    if (!values.howDidYouHear || values.howDidYouHear.length === 0) {
+      errs.howDidYouHear = 'Please select at least one option.';
+    }
+    if (values.howDidYouHear?.includes('Others') && !values.otherHowDidYouHear?.trim()) {
+      errs.howDidYouHear = 'Please specify how you heard about us.';
+    }
+
+    return errs;
+  }
+
+  // Generic input change
   const handleChange = e => {
     const { name, value } = e.target;
-    setFormValues(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-    setErrors(prev => ({
-      ...prev,
-      [name]: '',
-    })); // Clear error when user starts typing
+    setFormValues(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
-  const [formSubmitted, setFormSubmitted] = useState(false);
-  // Handle form submission
+
+  // Checkboxes: how did you hear
+  const handleHearChange = option => {
+    setFormValues(prev => {
+      const selected = new Set(prev.howDidYouHear || []);
+      if (selected.has(option)) selected.delete(option);
+      else selected.add(option);
+      return { ...prev, howDidYouHear: Array.from(selected) };
+    });
+    setErrors(prev => ({ ...prev, howDidYouHear: '' }));
+  };
+
+  // Event dropdown
+  const handleEventChange = e => {
+    const value = e.target.value;
+    setFormValues(prev => ({ ...prev, eventName: value }));
+    setErrors(prev => ({ ...prev, eventName: '' }));
+    setConfirmation(null);
+  };
+
+  // Filter handlers
+  const handleTypeFilter = e => {
+    setTypeFilter(e.target.value);
+  };
+
+  const handleLocationFilter = e => {
+    setLocationFilter(e.target.value);
+  };
+
+  const handleDateFilter = e => {
+    setDateFilter(e.target.value);
+  };
+
+  const clearFilters = () => {
+    setTypeFilter('');
+    setLocationFilter('');
+    setDateFilter('');
+  };
+
+  // Submit
   const handleSubmit = e => {
     e.preventDefault();
-    const newErrors = {};
-    const emailRegex = /[a-z0-9]+@[a-z]+\.[a-z]{2,3}/;
-    if (!formValues.eventName.trim()) {
-      newErrors.eventName = 'Event Name is required.';
-    }
-    if (!formValues.firstName.trim()) {
-      newErrors.firstName = 'First Name is required.';
-    }
-    if (!formValues.lastName.trim()) {
-      newErrors.lastName = 'Last Name is required.';
-    }
-    if (!formValues.countryCode.trim()) {
-      newErrors.countryCode = 'Country Code is required.';
-    }
-    if (!formValues.phoneNumber.trim() || !/^[0-9]{10}$/.test(formValues.phoneNumber)) {
-      newErrors.phoneNumber = 'A valid 10-digit phone number is required.';
-    }
-    if (!formValues.emailAddress.trim()) {
-      newErrors.emailAddress = 'Email Address is required.';
-    }
-    if (!emailRegex.test(formValues.emailAddress)) {
-      newErrors.emailAddress = 'Please enter a valid email address';
-    }
-    if (!formValues.dateOfBirth.trim()) {
-      newErrors.dateOfBirth = 'Date of Birth is required.';
-    }
-    if (!formValues.gender.trim()) {
-      newErrors.gender = 'Gender is required.';
-    }
-    if (formValues.gender === 'Others' && !formValues.otherGender.trim()) {
-      newErrors.otherGender = 'Please specify your gender.';
-    }
-    if (!formValues.address.trim()) {
-      newErrors.address = 'Address is required.';
-    }
-    if (!formValues.city.trim()) {
-      newErrors.city = 'City is required.';
-    }
-    if (!formValues.state.trim()) {
-      newErrors.state = 'State is required.';
-    }
-    if (!formValues.country.trim()) {
-      newErrors.country = 'Country is required.';
-    }
-    if (!formValues.zipcode.trim() || !/^[0-9]{5}$/.test(formValues.zipcode)) {
-      newErrors.zipcode = 'A valid 5-digit ZIP code is required.';
-    }
-    if (!formValues.howDidYouHear.trim()) {
-      newErrors.howDidYouHear = 'Please select at least one option.';
-    }
-    if (formValues.howDidYouHear.includes('Others') && !formValues.otherHowDidYouHear.trim()) {
-      newErrors.howDidYouHear = 'Please specify how you heard about us.';
-    }
+    const currentEvent = filteredEvents.find(x => x.eventName === formValues.eventName) || null;
+    const newErrors = validate(formValues, currentEvent);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-    } else {
-      setFormSubmitted(true);
-      // Clear the form on successful submission
-      setFormValues({
-        eventName: '',
-        firstName: '',
-        lastName: '',
-        countryCode: '',
-        phoneNumber: '',
-        emailAddress: '',
-        dateOfBirth: '',
-        gender: '',
-        otherGender: '',
-        address: '',
-        city: '',
-        state: '',
-        country: '',
-        zipcode: '',
-        howDidYouHear: '',
-        otherHowDidYouHear: '',
-      });
+      toast.error('Please fix the highlighted fields.');
+      const first = Object.keys(newErrors)[0];
+      const el = document.getElementById(first);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el?.focus();
+      return;
     }
+
+    const eventDate = currentEvent?.date || 'TBD';
+    const eventLocation =
+      currentEvent?.location ||
+      [formValues.city, formValues.state, formValues.country].filter(Boolean).join(', ');
+
+    toast.success(`Registration confirmed for "${formValues.eventName}".`);
+    setConfirmation({
+      name: `${formValues.firstName} ${formValues.lastName}`.trim(),
+      eventName: formValues.eventName,
+      date: eventDate,
+      location: eventLocation,
+      email: formValues.emailAddress,
+      phone: `${formValues.countryCode}${formValues.phoneNumber}`,
+    });
+    setShowConfirm(true);
+
+    setFormValues(eventDetails);
   };
 
-  // Handle cancel button
   const handleCancel = () => {
-    setFormValues({
-      eventName: '',
-      firstName: '',
-      lastName: '',
-      countryCode: '',
-      phoneNumber: '',
-      emailAddress: '',
-      dateOfBirth: '',
-      address: '',
-      city: '',
-      state: '',
-      country: '',
-      zipcode: '',
-      howDidYouHear: '',
-      otherHowDidYouHear: '',
-    });
+    setFormValues(eventDetails);
     setErrors({});
   };
-  const closeModal = () => {
-    setFormSubmitted(false); // Close the popup
-  };
+
+  const handleCloseConfirm = () => setShowConfirm(false);
+
+  const maxDob = new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+    .toISOString()
+    .split('T')[0];
+
+  const filteredEvents = getFilteredEvents();
+  const noResults = filteredEvents.length === 0 && (typeFilter || locationFilter || dateFilter);
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="eventName" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Event Name: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="eventName"
-            name="eventName"
-            value={formValues.eventName}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.eventName && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.eventName}</span>
-          )}
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="firstName" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            First Name: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="firstName"
-            name="firstName"
-            value={formValues.firstName}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.firstName && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.firstName}</span>
+    <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.banner} ${darkMode ? styles.bannerDark : ''}`}>
+        <h1>Register Now!</h1>
+        <p>to be a part of the event.</p>
+      </div>
+
+      {/* Card */}
+      <div className={`${styles.card} ${darkMode ? styles.cardDark : ''}`}>
+        {/* Filter Section */}
+        <div className={styles.filterSection}>
+          <h3 className={`${styles.filterTitle} ${darkMode ? styles.textLight : ''}`}>
+            Find Events
+          </h3>
+          <div className={styles.filterGrid}>
+            <div className={styles.filterGroup}>
+              <label
+                htmlFor="typeFilter"
+                className={`${styles.filterLabel} ${darkMode ? styles.textLight : ''}`}
+              >
+                Event Type
+              </label>
+              <select
+                id="typeFilter"
+                value={typeFilter}
+                onChange={handleTypeFilter}
+                className={`${styles.filterInput} ${darkMode ? styles.inputDark : ''}`}
+              >
+                <option value="">All Types</option>
+                {uniqueTypes.map(type => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <label
+                htmlFor="locationFilter"
+                className={`${styles.filterLabel} ${darkMode ? styles.textLight : ''}`}
+              >
+                Location
+              </label>
+              <select
+                id="locationFilter"
+                value={locationFilter}
+                onChange={handleLocationFilter}
+                className={`${styles.filterInput} ${darkMode ? styles.inputDark : ''}`}
+              >
+                <option value="">All Locations</option>
+                {uniqueLocations.map(location => (
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <label
+                htmlFor="dateFilter"
+                className={`${styles.filterLabel} ${darkMode ? styles.textLight : ''}`}
+              >
+                Date
+              </label>
+              <select
+                id="dateFilter"
+                value={dateFilter}
+                onChange={handleDateFilter}
+                className={`${styles.filterInput} ${darkMode ? styles.inputDark : ''}`}
+              >
+                <option value="">All Dates</option>
+                {uniqueDates.map(date => (
+                  <option key={date} value={date}>
+                    {date}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterActions}>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className={`${styles.clearBtn} ${darkMode ? styles.clearBtnDark : ''}`}
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+
+          {noResults && (
+            <div className={`${styles.noResults} ${darkMode ? styles.noResultsDark : ''}`}>
+              <p>No events found matching your search criteria. Try adjusting your filters.</p>
+            </div>
           )}
         </div>
 
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="lastName" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Last Name: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="lastName"
-            name="lastName"
-            value={formValues.lastName}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.lastName && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.lastName}</span>
-          )}
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="phoneNumber" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Phone Number: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <select
-              name="countryCode"
-              value={formValues.countryCode}
-              onChange={handleChange}
-              style={{
-                padding: '0.5rem',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                width: '30%',
-              }}
+        <p className={`${styles.subheading} ${darkMode ? styles.textLight : ''}`}>
+          Please fill the information carefully!
+        </p>
+        <p className={styles.sectionLink} id="personal-info">
+          Personal Information
+        </p>
+        <p className={`${styles.requiredNote} ${darkMode ? styles.textLight : ''}`}>
+          * Indicates required question
+        </p>
+
+        <form onSubmit={handleSubmit} className={styles.form}>
+          {/* Event */}
+          <div className={styles.formGroup}>
+            <label
+              htmlFor="eventName"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
             >
-              <option value="">Select Code</option>
-              <option value="+1">+1 (US)</option>
-              <option value="+91">+91 (India)</option>
-              <option value="+44">+44 (UK)</option>
-              <option value="+61">+61 (Australia)</option>
+              Event Name <span className={styles.req}>*</span>
+            </label>
+            <select
+              id="eventName"
+              name="eventName"
+              value={formValues.eventName}
+              onChange={handleEventChange}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+            >
+              <option value="">Select the event name</option>
+              {filteredEvents.map(ev => (
+                <option key={ev.id} value={ev.eventName}>
+                  {ev.eventName} - {ev.eventType} ({ev.location}) - {extractDate(ev.eventTime)}{' '}
+                  {ev.capacity === 0 ? '(Full)' : `(Seats: ${ev.capacity})`}
+                </option>
+              ))}
             </select>
+            {filteredEvents.length === 0 && (typeFilter || locationFilter || dateFilter) && (
+              <div
+                className={`${styles.noEventsMessage} ${
+                  darkMode ? styles.noEventsMessageDark : ''
+                }`}
+              >
+                No events match your current filters. Please adjust the filters above.
+              </div>
+            )}
+            {errors.eventName && <span className={styles.error}>{errors.eventName}</span>}
+          </div>
+
+          {/* Name */}
+          <div className={styles.formGroup}>
+            <label
+              htmlFor="firstName"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
+              First Name <span className={styles.req}>*</span>
+            </label>
             <input
               type="text"
-              id="phoneNumber"
-              name="phoneNumber"
-              value={formValues.phoneNumber}
+              id="firstName"
+              name="firstName"
+              placeholder="Enter your first name"
+              value={formValues.firstName}
               onChange={handleChange}
-              placeholder="XXX-XXX-XXXX"
-              style={{
-                flex: 1,
-                padding: '0.5rem',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-              }}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
             />
-          </div>
-          {errors.countryCode && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.countryCode}</span>
-          )}
-          {errors.phoneNumber && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.phoneNumber}</span>
-          )}
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="emailAddress" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Email Address: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="emailAddress"
-            name="emailAddress"
-            value={formValues.emailAddress}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.emailAddress && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.emailAddress}</span>
-          )}
-        </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="dateOfBirth" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Date of Birth: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="date"
-            id="dateOfBirth"
-            name="dateOfBirth"
-            value={formValues.dateOfBirth}
-            onChange={handleChange}
-            max={
-              new Date(new Date().setFullYear(new Date().getFullYear() - 18))
-                .toISOString()
-                .split('T')[0]
-            } // Set max to today's date minus 18 years
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.dateOfBirth && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.dateOfBirth}</span>
-          )}
-        </div>
-        {/* Gender Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="gender" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Gender: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <div>
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="Male"
-                checked={formValues.gender === 'Male'}
-                onChange={handleChange}
-              />
-              Male
-            </label>
-            <label style={{ marginLeft: '1rem' }}>
-              <input
-                type="radio"
-                name="gender"
-                value="Female"
-                checked={formValues.gender === 'Female'}
-                onChange={handleChange}
-              />
-              Female
-            </label>
-            <label style={{ marginLeft: '1rem' }}>
-              <input
-                type="radio"
-                name="gender"
-                value="Binary/Non-Binary"
-                checked={formValues.gender === 'Binary/Non-Binary'}
-                onChange={handleChange}
-              />
-              Binary/Non-Binary
-            </label>
-            <label style={{ marginLeft: '1rem' }}>
-              <input
-                type="radio"
-                name="gender"
-                value="Prefer Not to Say"
-                checked={formValues.gender === 'Prefer Not to Say'}
-                onChange={handleChange}
-              />
-              Prefer Not to Say
-            </label>
-            <label style={{ marginLeft: '1rem' }}>
-              <input
-                type="radio"
-                name="gender"
-                value="Others"
-                checked={formValues.gender === 'Others'}
-                onChange={handleChange}
-              />
-              Others
-            </label>
+            {errors.firstName && <span className={styles.error}>{errors.firstName}</span>}
           </div>
 
-          {/* Conditional Text Box for "Others" */}
-          {formValues.gender === 'Others' && (
-            <div style={{ marginTop: '0.5rem' }}>
-              <label htmlFor="otherGender" style={{ display: 'block', marginBottom: '0.5rem' }}>
-                Please Specify: <span style={{ color: 'red' }}>*</span>
-              </label>
-              <input
-                type="text"
-                id="otherGender"
-                name="otherGender"
-                value={formValues.otherGender || ''}
-                onChange={handleChange}
-                style={{
-                  width: '100%',
-                  padding: '0.5rem',
-                  border: '1px solid #ccc',
-                  borderRadius: '4px',
-                }}
-              />
-              {errors.otherGender && (
-                <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.otherGender}</span>
-              )}
+          <div className={styles.formGroup}>
+            <label
+              htmlFor="lastName"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
+              Last Name <span className={styles.req}>*</span>
+            </label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              placeholder="Enter your last name"
+              value={formValues.lastName}
+              onChange={handleChange}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+            />
+            {errors.lastName && <span className={styles.error}>{errors.lastName}</span>}
+          </div>
+
+          {/* Phone */}
+          <div className={styles.formGroup}>
+            <label
+              htmlFor="phone"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
+              Phone Number <span className={styles.req}>*</span>
+            </label>
+            <PhoneInput
+              country="us"
+              enableSearch
+              countryCodeEditable={false}
+              inputProps={{ id: 'phone', name: 'phone' }}
+              value={`${formValues.countryCode || ''}${
+                formValues.phoneNumber ? formValues.phoneNumber.replace(/\D/g, '') : ''
+              }`}
+              onChange={(value, country) => {
+                const dial = `+${country?.dialCode || ''}`;
+                const national = value
+                  .replace(/^\+?/, '')
+                  .replace(new RegExp(`^${country?.dialCode || ''}`), '');
+                setFormValues(prev => ({
+                  ...prev,
+                  countryCode: dial,
+                  phoneNumber: national.replace(/\D/g, ''),
+                }));
+                setErrors(prev => ({ ...prev, countryCode: '', phoneNumber: '' }));
+              }}
+              inputClass={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+              containerClass={styles.phoneContainer}
+              buttonClass={styles.phoneButton}
+              dropdownClass={styles.phoneDropdown}
+            />
+            {errors.countryCode && <span className={styles.error}>{errors.countryCode}</span>}
+            {errors.phoneNumber && <span className={styles.error}>{errors.phoneNumber}</span>}
+          </div>
+
+          {/* Email */}
+          <div className={styles.formGroup}>
+            <label
+              htmlFor="emailAddress"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
+              Email Address <span className={styles.req}>*</span>
+            </label>
+            <input
+              type="text"
+              id="emailAddress"
+              name="emailAddress"
+              placeholder="Enter your email address"
+              value={formValues.emailAddress}
+              onChange={handleChange}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+            />
+            {errors.emailAddress && <span className={styles.error}>{errors.emailAddress}</span>}
+          </div>
+
+          {/* DOB */}
+          <div className={styles.formGroup}>
+            <label
+              htmlFor="dateOfBirth"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
+              Date of Birth <span className={styles.req}>*</span>
+            </label>
+            <input
+              type="date"
+              id="dateOfBirth"
+              name="dateOfBirth"
+              value={formValues.dateOfBirth}
+              onChange={handleChange}
+              max={maxDob}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+            />
+            {errors.dateOfBirth && <span className={styles.error}>{errors.dateOfBirth}</span>}
+          </div>
+
+          {/* Gender */}
+          <div className={styles.formGroup}>
+            <span className={`${styles.label} ${darkMode ? styles.textLight : ''}`}>
+              Gender <span className={styles.req}>*</span>
+            </span>
+            <div className={styles.radioGroup}>
+              {['Female', 'Male', 'Non-binary', 'Prefer not to say', 'Others'].map(option => (
+                <label key={option} className={styles.radioLabel}>
+                  <input
+                    type="radio"
+                    name="gender"
+                    value={option}
+                    checked={formValues.gender === option}
+                    onChange={handleChange}
+                  />
+                  {option}
+                </label>
+              ))}
             </div>
-          )}
-
-          {errors.gender && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.gender}</span>
-          )}
-        </div>
-
-        {/* Address Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="address" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Address: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="address"
-            name="address"
-            value={formValues.address}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.address && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.address}</span>
-          )}
-        </div>
-
-        {/* City Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="city" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            City: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="city"
-            name="city"
-            value={formValues.city}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.city && <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.city}</span>}
-        </div>
-
-        {/* State Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="state" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            State: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="state"
-            name="state"
-            value={formValues.state}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.state && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.state}</span>
-          )}
-        </div>
-
-        {/* Country Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="country" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            Country: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="country"
-            name="country"
-            value={formValues.country}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.country && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.country}</span>
-          )}
-        </div>
-
-        {/* ZIP Code Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="zipcode" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            ZIP Code: <span style={{ color: 'red' }}>*</span>
-          </label>
-          <input
-            type="text"
-            id="zipcode"
-            name="zipcode"
-            value={formValues.zipcode}
-            onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '0.5rem',
-              border: '1px solid #ccc',
-              borderRadius: '4px',
-            }}
-          />
-          {errors.zipcode && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.zipcode}</span>
-          )}
-        </div>
-        {/* How Did You Hear About Us Field */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label htmlFor="howDidYouHear" style={{ display: 'block', marginBottom: '0.5rem' }}>
-            How did you hear about us? <span style={{ color: 'red' }}>*</span>
-          </label>
-          {[
-            'Search Engine (Google, Bing, etc.)',
-            'Social Media',
-            'Radio',
-            'Television',
-            'Streaming Service Ad',
-            'Newspaper/Online Newspaper',
-            'Billboard',
-            'Word of Mouth',
-            'Referral',
-            'Others',
-          ].map(option => (
-            <div key={option} style={{ marginBottom: '0.5rem' }}>
-              <label>
-                <input
-                  type="radio"
-                  name="howDidYouHear" // Shared name for all radio buttons
-                  value={option}
-                  onChange={handleChange}
-                  checked={formValues.howDidYouHear === option} // Ensures correct selection
-                />
-                {option}
-              </label>
-              {option === 'Others' && formValues.howDidYouHear === 'Others' && (
+            {formValues.gender === 'Others' && (
+              <div className={styles.othersInput}>
+                <label
+                  htmlFor="otherGender"
+                  className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+                >
+                  Please Specify <span className={styles.req}>*</span>
+                </label>
                 <input
                   type="text"
-                  name="otherHowDidYouHear"
-                  placeholder="Please specify"
-                  value={formValues.otherHowDidYouHear}
+                  id="otherGender"
+                  name="otherGender"
+                  value={formValues.otherGender || ''}
                   onChange={handleChange}
-                  style={{
-                    marginLeft: '1rem',
-                    padding: '0.5rem',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px',
-                  }}
+                  className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
                 />
-              )}
-            </div>
-          ))}
-          {errors.howDidYouHear && (
-            <span style={{ color: 'red', fontSize: '0.875rem' }}>{errors.howDidYouHear}</span>
-          )}
-        </div>
+                {errors.otherGender && <span className={styles.error}>{errors.otherGender}</span>}
+              </div>
+            )}
+            {errors.gender && <span className={styles.error}>{errors.gender}</span>}
+          </div>
 
-        {/* buttons */}
-        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <button
-            type="button"
-            onClick={handleCancel}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#f44336',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-            }}
-          >
-            Submit
-          </button>
-        </div>
-      </form>
-      {formSubmitted && (
+          {/* Address */}
+          <fieldset className={styles.formGroup} aria-describedby="addressHelp">
+            <legend className={`${styles.label} ${darkMode ? styles.textLight : ''}`}>
+              Address <span className={styles.req}>*</span>
+            </legend>
+
+            <div className={styles.addrGrid}>
+              <input
+                type="text"
+                id="address"
+                name="address"
+                placeholder="Street Address"
+                value={formValues.address}
+                onChange={handleChange}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+              />
+              <input
+                type="text"
+                id="city"
+                name="city"
+                placeholder="City"
+                value={formValues.city}
+                onChange={handleChange}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+              />
+              <input
+                type="text"
+                id="state"
+                name="state"
+                placeholder="State/Province"
+                value={formValues.state}
+                onChange={handleChange}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+              />
+              <input
+                type="text"
+                id="zipcode"
+                name="zipcode"
+                placeholder="Postal/zip code"
+                value={formValues.zipcode}
+                onChange={handleChange}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+              />
+              <input
+                type="text"
+                id="country"
+                name="country"
+                placeholder="Country"
+                value={formValues.country}
+                onChange={handleChange}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+              />
+            </div>
+
+            {['address', 'city', 'state', 'zipcode', 'country'].some(k => errors[k]) && (
+              <span id="addressHelp" className={styles.error}>
+                {errors.address || errors.city || errors.state || errors.zipcode || errors.country}
+              </span>
+            )}
+          </fieldset>
+
+          {/* How did you hear */}
+          <fieldset className={styles.formGroup} aria-describedby="howHelp">
+            <legend
+              id="howLegend"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
+              How did you hear about us? (Select all that apply){' '}
+              <span className={styles.req}>*</span>
+            </legend>
+
+            <div className={styles.checkboxGroup} role="group" aria-labelledby="howLegend">
+              {howDidYouHearOptions.map(option => (
+                <label key={option} className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={formValues.howDidYouHear.includes(option)}
+                    onChange={() => handleHearChange(option)}
+                    aria-checked={formValues.howDidYouHear.includes(option)}
+                  />
+                  {option}
+                </label>
+              ))}
+            </div>
+
+            {formValues.howDidYouHear.includes('Others') && (
+              <input
+                type="text"
+                id="otherHowDidYouHear"
+                name="otherHowDidYouHear"
+                placeholder="Other (please specify)"
+                value={formValues.otherHowDidYouHear}
+                onChange={handleChange}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
+                aria-describedby="howHelp"
+              />
+            )}
+
+            {errors.howDidYouHear && (
+              <span id="howHelp" className={styles.error}>
+                {errors.howDidYouHear}
+              </span>
+            )}
+          </fieldset>
+
+          {/* Buttons */}
+          <div className={styles.buttonsRow}>
+            <button type="button" onClick={handleCancel} className={styles.cancelBtn}>
+              Cancel
+            </button>
+            <button type="submit" className={styles.submitBtn}>
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Toast container */}
+      <ToastContainer position="top-right" autoClose={4000} />
+
+      {/* Modal */}
+      {showConfirm && confirmation && (
         <div
-          style={{
-            position: 'fixed',
-            top: '0',
-            left: '0',
-            width: '100%',
-            height: '100%',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
+          className={styles.modalOverlay}
+          role="button"
+          tabIndex={0}
+          aria-label="Close confirmation"
+          onClick={handleCloseConfirm}
+          onKeyDown={e => {
+            if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') handleCloseConfirm();
           }}
         >
           <div
-            style={{
-              backgroundColor: 'white',
-              padding: '2rem',
-              borderRadius: '8px',
-              textAlign: 'center',
-              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-            }}
+            className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="confirmTitle"
+            tabIndex={-1}
           >
-            <h2 style={{ marginBottom: '1rem' }}>Form Submitted</h2>
-            <p>Your form has been successfully submitted!</p>
-            <button
-              type="button"
-              onClick={closeModal}
-              style={{
-                marginTop: '1rem',
-                padding: '0.5rem 1rem',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
+            <h2
+              id="confirmTitle"
+              className={`${styles.modalTitle} ${darkMode ? styles.textLight : ''}`}
             >
-              Close
-            </button>
+              Registration Successful
+            </h2>
+            <div className={styles.modalBody}>
+              <p>
+                <strong>Event:</strong> {confirmation.eventName}
+              </p>
+              <p>
+                <strong>Date:</strong> {confirmation.date}
+              </p>
+              <p>
+                <strong>Location:</strong> {confirmation.location}
+              </p>
+            </div>
+            <div className={styles.modalActions}>
+              <button type="button" className={styles.modalBtn} onClick={handleCloseConfirm}>
+                Done
+              </button>
+            </div>
           </div>
         </div>
       )}

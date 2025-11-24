@@ -1,0 +1,587 @@
+.page {
+  background: #eaf3f6;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.banner {
+  width: min(860px, 95%);
+  background: #f1faf6;
+  border: 1px solid #d7e9e0;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.banner h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #1e3a3a;
+  letter-spacing: 0.2px;
+}
+.banner p {
+  margin: 0.25rem 0 0;
+  color: #516a6a;
+  font-size: 0.95rem;
+}
+
+.card {
+  width: min(860px, 95%);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+
+.subheading {
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+  color: #234;
+}
+.sectionLink {
+  color: #1b6eb8;
+  text-decoration: underline;
+  cursor: default;
+  display: inline-block;
+  margin-bottom: 0.25rem;
+}
+.requiredNote {
+  color: #b04545;
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.form {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: #243445;
+  font-weight: 600;
+}
+
+.req {
+  color: #e53e3e;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid #cfd8e3;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.input::placeholder {
+  color: #9aa7b5;
+}
+
+.error {
+  display: block;
+  margin-top: 0.35rem;
+  color: #d43f3a;
+  font-size: 0.9rem;
+}
+
+.radioGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem 1.25rem;
+}
+.radioLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.addrGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.6rem;
+}
+@media (min-width: 640px) {
+  .addrGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .addrGrid input#address {
+    grid-column: 1 / -1;
+  }
+}
+
+.checkboxGroup {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.4rem;
+}
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buttonsRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 0.25rem;
+}
+.cancelBtn {
+  padding: 0.6rem 1rem;
+  background: #f44336;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancelBtn:hover {
+  background: #da190b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+}
+
+.submitBtn {
+  padding: 0.6rem 1.25rem;
+  background: #214b57;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitBtn:hover {
+  background: #1a3d47;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(33, 75, 87, 0.3);
+}
+
+.phoneContainer {
+  display: block;
+  width: 100%;
+}
+:global(.react-tel-input .form-control) {
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.48);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+.modalContent {
+  background: #fff;
+  padding: 1.25rem 1.25rem 1rem;
+  border-radius: 10px;
+  width: min(540px, 92%);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.18);
+}
+.modalTitle {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+  color: #19323c;
+}
+.modalBody p {
+  margin: 0.25rem 0;
+}
+.modalActions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.9rem;
+}
+.modalBtn {
+  padding: 0.55rem 1.2rem;
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalBtn:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+/* Dark Mode Styles */
+.darkMode {
+  background: #1b2a41;
+  color: #ffffff;
+}
+
+.bannerDark {
+  background: #23344f;
+  border-color: #3a506b;
+}
+
+.cardDark {
+  background: #2e5061;
+  color: #ffffff;
+}
+
+.textLight {
+  color: #ffffff;
+}
+
+.inputDark {
+  background: #1b2a41;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+.inputDark::placeholder {
+  color: #b8c5d1;
+}
+
+.inputDark:focus {
+  background: #23344f;
+  border-color: #4a6072;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
+}
+
+/* Dark mode for date input */
+.darkMode input[type="date"] {
+  background: #1b2a41;
+  color: #ffffff;
+  border-color: #3a506b;
+  color-scheme: dark;
+}
+
+.darkMode input[type="date"]:focus {
+  background: #23344f;
+  border-color: #4a6072;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
+}
+
+.darkMode input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+.modalContentDark {
+  background: #2e5061;
+  color: #ffffff;
+}
+
+/* Filter Styles */
+.filterSection {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filterTitle {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filterLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.filterInput {
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 0.875rem;
+}
+
+.filterActions {
+  display: flex;
+  align-items: end;
+}
+
+.clearBtn {
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.clearBtn:hover {
+  background: #5a6268;
+}
+
+.clearBtnDark {
+  background: #3a506b;
+}
+
+.clearBtnDark:hover {
+  background: #4a6072;
+}
+
+.noResults {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.noResultsDark {
+  background: #3a506b;
+  border-color: #4a6072;
+  color: #ffdd57;
+}
+
+.noEventsMessage {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.noEventsMessageDark {
+  background: #3a506b;
+  border-color: #4a6072;
+  color: #f8d7da;
+}
+
+/* Dark mode filter section */
+.filterSection.dark,
+.darkMode .filterSection {
+  background: #2e5061;
+  border-color: #3a506b;
+}
+
+.darkMode .filterTitle {
+  color: #ffffff !important;
+}
+
+.darkMode .filterLabel {
+  color: #ffffff !important;
+}
+
+.darkMode .filterInput {
+  background: #1b2a41;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+.darkMode .filterInput:focus {
+  background: #23344f;
+  border-color: #4a6072;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
+}
+
+/* Ensure all form labels have consistent white color in dark mode */
+.darkMode .label,
+.darkMode legend,
+.darkMode span.label {
+  color: #ffffff !important;
+}
+
+.darkMode .requiredNote {
+  color: #ff9999 !important;
+}
+
+.darkMode .radioLabel,
+.darkMode .checkboxLabel {
+  color: #ffffff !important;
+}
+
+.darkMode .sectionLink {
+  color: #6bb6ff !important;
+}
+
+.darkMode .subheading {
+  color: #ffffff !important;
+}
+
+.darkMode .modalBody p {
+  color: #ffffff !important;
+}
+
+.darkMode .modalBody strong {
+  color: #ffffff !important;
+}
+
+/* Dark mode for form fieldsets */
+.darkMode fieldset {
+  border-color: #3a506b;
+}
+
+.darkMode legend {
+  color: #ffffff !important;
+}
+
+/* Dark mode for radio buttons and checkboxes */
+.darkMode input[type="radio"],
+.darkMode input[type="checkbox"] {
+  accent-color: #66b3ff;
+}
+
+/* Dark mode for select dropdowns */
+.darkMode select {
+  background: #1b2a41;
+  color: #ffffff;
+  border-color: #3a506b;
+}
+
+.darkMode select:focus {
+  background: #23344f;
+  border-color: #4a6072;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25);
+}
+
+.darkMode option {
+  background: #1b2a41;
+  color: #ffffff;
+}
+
+/* Ensure all text is visible in dark mode */
+.darkMode * {
+  color: inherit;
+}
+
+/* Override specific elements that should stay light */
+.darkMode .req {
+  color: #ff6b6b !important;
+}
+
+.darkMode .error {
+  color: #ff8a8a !important;
+}
+
+/* Dark mode banner text */
+.darkMode .banner h1 {
+  color: #ffffff !important;
+}
+
+.darkMode .banner p {
+  color: #cccccc !important;
+}
+
+/* Dark mode for phone input component */
+.darkMode .react-tel-input .flag-dropdown {
+  background: #1b2a41 !important;
+  border-color: #3a506b !important;
+}
+
+.darkMode .react-tel-input .selected-flag {
+  background: #1b2a41 !important;
+  border-right: 1px solid #3a506b !important;
+}
+
+.darkMode .react-tel-input .selected-flag:hover,
+.darkMode .react-tel-input .flag-dropdown:hover {
+  background: #23344f !important;
+}
+
+.darkMode .react-tel-input .country-list {
+  background: #1b2a41 !important;
+  border-color: #3a506b !important;
+}
+
+.darkMode .react-tel-input .country-list .country {
+  background: #1b2a41 !important;
+  color: #ffffff !important;
+}
+
+.darkMode .react-tel-input .country-list .country:hover {
+  background: #23344f !important;
+}
+
+.darkMode .react-tel-input .form-control {
+  background: #1b2a41 !important;
+  color: #ffffff !important;
+  border-color: #3a506b !important;
+  /* Include bottom border to avoid duplicate selector later */
+  border-bottom: 1px solid #3a506b !important;
+}
+
+.darkMode .react-tel-input .form-control:focus {
+  background: #23344f !important;
+  border-color: #4a6072 !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 96, 114, 0.25) !important;
+}
+
+/* Removed duplicate .darkMode .react-tel-input .form-control selector (merged above) */
+
+/* Dark mode button styles */
+.darkMode .submitBtn {
+  background: #4CAF50;
+  color: #ffffff;
+  border: 1px solid #45a049;
+}
+
+.darkMode .submitBtn:hover {
+  background: #45a049;
+  border-color: #3d8b40;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.darkMode .cancelBtn {
+  background: #dc3545;
+  color: #ffffff;
+  border: 1px solid #c82333;
+}
+
+.darkMode .cancelBtn:hover {
+  background: #c82333;
+  border-color: #bd2130;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.darkMode .modalBtn {
+  background: #4CAF50;
+  color: #ffffff;
+  border: 1px solid #45a049;
+}
+
+.darkMode .modalBtn:hover {
+  background: #45a049;
+  border-color: #3d8b40;
+}
