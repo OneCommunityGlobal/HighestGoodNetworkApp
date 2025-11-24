@@ -124,7 +124,8 @@
   height: 80px;
   overflow: auto;
   height: -webkit-fill-available;
-  border: 1px solid #000000;
+  border: 1px solid #555454;
+  box-sizing: border-box;
 }
 
 .reactCalendar :global(.react-calendar__navigation) {
@@ -137,23 +138,15 @@
   display: grid;
   height: 100px;
   background: 1px solid #ddd;
-  transition: background 0.3s, border-color 0.3s;
+  border: 1px solid #dee2e6 !important;
+  box-sizing: border-box;
+  transition: background 0.3s, border-color 0.3s ease;
   overflow: hidden;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
   color: #FFFFFF;
-}
-
-.reactCalendar :global(.react-calendar__tile) {
-  border: 1px solid #dee2e6 !important;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
-}
-
-.reactCalendar :global(.react-calendar__month-view__days__day) {
-  border: 1px solid #555454;
-  box-sizing: border-box;
 }
 
 .reactCalendar :global(.react-calendar__tile):hover {
@@ -318,6 +311,7 @@
   background: #1a202c;
   color: #e2e8f0;
   border: 1px solid #4a5568;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
 }
 
 .modalHeader {
@@ -381,7 +375,7 @@
 }
 
 .eventModalDark .modalContent {
-  background: #1a202c;
+  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
 }
 
 .eventStatus {
@@ -574,17 +568,9 @@
 }
 
 /* Enhanced dark mode modal styling */
-.eventModalDark {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-}
-
 .eventModalDark .modalHeader,
 .eventModalDark .modalActions {
   background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-}
-
-.eventModalDark .modalContent {
-  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
 }
 
 /* Better dark mode contrast for all text elements */
@@ -663,10 +649,34 @@
   color: #fff;
 }
 
-.reactCalendarDarkMode :global(.react-calendar__tile) {
-  background: transparent;
-  color: #FFFFFF;
+.calendarActivityItem.clickable {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
+
+.calendarActivityItem.clickable:hover {
+  background-color: #f0f0f0;
+}
+
+.calendarActivityItemDarkMode.clickable:hover {
+  background-color: #4a5568;
+}
+
+.noEventsMessage {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+.noEventsMessage p {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.calendarActivitySectionDarkMode .noEventsMessage {
+  color: #cbd5e0;
+}
+
 .reactCalendarDarkMode :global(.react-calendar__tile--active) {
   background: #444;
   color: #fff;
