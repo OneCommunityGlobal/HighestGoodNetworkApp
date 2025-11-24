@@ -475,19 +475,94 @@ export default function PaidLaborCost() {
                     minHeight: '28px',
                     height: '28px',
                     fontSize: '14px',
+                    backgroundColor: darkMode ? 'var(--section-bg)' : base.backgroundColor,
+                    borderColor: darkMode ? 'var(--section-title-bg)' : base.borderColor,
+                    color: darkMode ? 'var(--text-color)' : base.color,
                   }),
                   valueContainer: base => ({
                     ...base,
                     height: '28px',
                     padding: '0 8px',
+                    color: darkMode ? 'var(--text-color)' : base.color,
                   }),
                   input: base => ({
                     ...base,
                     margin: '0px',
+                    color: darkMode ? 'var(--text-color)' : base.color,
                   }),
                   indicatorsContainer: base => ({
                     ...base,
                     height: '28px',
+                  }),
+                  multiValue: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? 'var(--section-title-bg)' : base.backgroundColor,
+                  }),
+                  multiValueLabel: base => ({
+                    ...base,
+                    color: darkMode ? 'var(--text-color)' : base.color,
+                  }),
+                  multiValueRemove: base => ({
+                    ...base,
+                    color: darkMode ? 'var(--text-color)' : base.color,
+                    ':hover': {
+                      backgroundColor: darkMode
+                        ? 'var(--section-title-hover)'
+                        : base[':hover']?.backgroundColor,
+                      color: darkMode ? 'var(--text-color)' : base[':hover']?.color,
+                    },
+                  }),
+                  placeholder: base => ({
+                    ...base,
+                    color: darkMode ? 'var(--text-color)' : base.color,
+                    opacity: darkMode ? 0.6 : base.opacity,
+                  }),
+                  singleValue: base => ({
+                    ...base,
+                    color: darkMode ? 'var(--text-color)' : base.color,
+                  }),
+                  menu: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? 'var(--section-bg)' : base.backgroundColor,
+                    borderColor: darkMode ? 'var(--section-title-bg)' : base.borderColor,
+                    zIndex: 9999,
+                  }),
+                  option: (base, state) => ({
+                    ...base,
+                    backgroundColor: state.isSelected
+                      ? darkMode
+                        ? 'var(--button-bg)'
+                        : base.backgroundColor
+                      : state.isFocused
+                      ? darkMode
+                        ? 'var(--section-title-hover)'
+                        : base.backgroundColor
+                      : darkMode
+                      ? 'var(--section-bg)'
+                      : base.backgroundColor,
+                    color: darkMode ? 'var(--text-color)' : base.color,
+                    ':hover': {
+                      backgroundColor: darkMode
+                        ? 'var(--section-title-hover)'
+                        : base[':hover']?.backgroundColor,
+                      color: darkMode ? 'var(--text-color)' : base[':hover']?.color,
+                    },
+                  }),
+                  indicatorSeparator: base => ({
+                    ...base,
+                    backgroundColor: darkMode ? 'var(--section-title-bg)' : base.backgroundColor,
+                  }),
+                  dropdownIndicator: base => ({
+                    ...base,
+                    color: darkMode ? 'var(--text-color)' : base.color,
+                  }),
+                  clearIndicator: base => ({
+                    ...base,
+                    color: darkMode ? 'var(--text-color)' : base.color,
+                    ':hover': {
+                      color: darkMode ? 'var(--text-color)' : base[':hover']?.color,
+                      opacity: 0.8,
+                    },
                   }),
                 }}
               />

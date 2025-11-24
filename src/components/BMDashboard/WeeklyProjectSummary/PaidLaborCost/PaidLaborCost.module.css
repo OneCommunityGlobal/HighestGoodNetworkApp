@@ -363,6 +363,12 @@
   color: var(--text-color);
 }
 
+/* Dark mode styles for regular select option elements */
+.dark-mode .paid-labor-cost-filter-select option {
+  background-color: var(--section-bg);
+  color: var(--text-color);
+}
+
 /* Dark mode styles for react-select */
 .dark-mode .paidLaborCostFilterSelect :global(.select__control) {
   background-color: var(--section-bg);
@@ -379,8 +385,16 @@
   color: var(--text-color);
 }
 
+.dark-mode .paidLaborCostFilterSelect :global(.select__value-container) {
+  color: var(--text-color);
+}
+
 .dark-mode .paidLaborCostFilterSelect :global(.select__input-container) {
   color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__input-container input) {
+  color: var(--text-color) !important;
 }
 
 .dark-mode .paidLaborCostFilterSelect :global(.select__placeholder) {
@@ -391,10 +405,23 @@
 .dark-mode .paidLaborCostFilterSelect :global(.select__menu) {
   background-color: var(--section-bg);
   border-color: var(--section-title-bg);
+  z-index: 9999;
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__menu-list) {
+  background-color: var(--section-bg);
+  color: var(--text-color);
+  padding: 0;
 }
 
 .dark-mode .paidLaborCostFilterSelect :global(.select__option) {
   background-color: var(--section-bg);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__option:hover) {
+  background-color: var(--section-title-hover);
   color: var(--text-color);
 }
 
@@ -432,10 +459,78 @@
   color: var(--text-color);
 }
 
+.dark-mode .paidLaborCostFilterSelect :global(.select__dropdown-indicator:hover) {
+  color: var(--text-color);
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__clear-indicator) {
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.dark-mode .paidLaborCostFilterSelect :global(.select__clear-indicator:hover) {
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
 .dark-mode .paidLaborCostDatePicker {
   background-color: var(--section-bg);
   border-color: var(--section-title-bg);
   color: var(--text-color);
+}
+
+/* Dark mode styles for react-datepicker month and year dropdowns */
+/* These need to be global since react-datepicker renders in a portal */
+:global(.dark-mode .react-datepicker__month-dropdown-container),
+:global(.dark-mode .react-datepicker__year-dropdown-container) {
+  background-color: var(--section-bg);
+  color: var(--text-color);
+}
+
+:global(.dark-mode .react-datepicker__month-dropdown),
+:global(.dark-mode .react-datepicker__year-dropdown) {
+  background-color: var(--section-bg) !important;
+  border: 1px solid var(--section-title-bg) !important;
+  border-radius: 4px;
+  color: var(--text-color) !important;
+}
+
+:global(.dark-mode .react-datepicker__month-option),
+:global(.dark-mode .react-datepicker__year-option) {
+  background-color: var(--section-bg) !important;
+  color: var(--text-color) !important;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+:global(.dark-mode .react-datepicker__month-option:hover),
+:global(.dark-mode .react-datepicker__year-option:hover) {
+  background-color: var(--section-title-hover) !important;
+  color: var(--text-color) !important;
+}
+
+:global(.dark-mode .react-datepicker__month-option--selected),
+:global(.dark-mode .react-datepicker__year-option--selected) {
+  background-color: var(--button-bg) !important;
+  color: var(--text-color) !important;
+  font-weight: 600;
+}
+
+:global(.dark-mode .react-datepicker__month-option--selected_month),
+:global(.dark-mode .react-datepicker__year-option--selected_year) {
+  background-color: var(--button-bg) !important;
+  color: var(--text-color) !important;
+}
+
+:global(.dark-mode .react-datepicker__month-read-view),
+:global(.dark-mode .react-datepicker__year-read-view) {
+  color: var(--text-color) !important;
+}
+
+:global(.dark-mode .react-datepicker__month-read-view:hover),
+:global(.dark-mode .react-datepicker__year-read-view:hover) {
+  color: var(--text-color) !important;
+  cursor: pointer;
 }
 
 .dark-mode .paidLaborCostDateSeparator {
