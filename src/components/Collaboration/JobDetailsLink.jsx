@@ -9,7 +9,6 @@ import { ENDPOINTS } from '../../utils/URL';
 
 import OneCommunityImage from '../../assets/images/logo2.png';
 import styles from '../Collaboration/JobDetailsLink.module.css';
-import { de } from 'date-fns/locale';
 import JobApplyLink from './JobApplyLink';
 
 function JobDetailsLink() {
@@ -29,6 +28,8 @@ function JobDetailsLink() {
 
   const [jobForms, setJobForms] = useState([]);
   const [uploadingFiles, setUploadingFiles] = useState({});
+  const [errors, setErrors] = useState({});
+
   const [resumeFile, setResumeFile] = useState(null);
   const [uploadedFile, setUploadedFile] = useState();
   const [uploadSuccess, setUploadSuccess] = useState(false);
@@ -129,9 +130,9 @@ function JobDetailsLink() {
       console.log(`res is ${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`);
       const response = await fetch(`${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`, {
         method: 'get',
-        headers: {
+        /* headers: {
           Authorization: localStorage.getItem('token'),
-        },
+        }, */
       });
       // eslint-disable-next-line no-console
       console.log(response);
@@ -176,11 +177,6 @@ function JobDetailsLink() {
     }
   }, [loading, jobsDetailById.applyLink]);
 
-  // Get current value for controlled inputs
-  /* const getValue = name => {
-    const found = formData.answers.find(a => a.name === name);
-    return found ? found.value : '';
-  }; */
   const getValue = name => {
     // console.log('getValue');
     // console.log(name);
@@ -188,35 +184,64 @@ function JobDetailsLink() {
     const found = formData.answers?.find(a => a.questionId === name || a.label === name);
     return found ? found.answer : '';
   };
-  const handleChange = event => {
-    const { name, value } = event.target;
-    console.log(`name  is ${name}`);
+  const handleChange = (event, idx) => {
+    const { id, name, value } = event.target;
+    /* console.log(`idx is ${idx}`);
+    console.log(`id is ${id}`);
+
     console.log(`value is ${value}`);
+    console.log(`name  is ${name}`); */
     //  if (!event.target.files[0]) setResumeFile(event.target.files[0]);
 
     setFormData(prev => ({
       ...prev,
       answers: Array.isArray(prev.answers)
-        ? [...prev.answers.filter(a => a.questionId !== name), { questionId: name, answer: value }]
-        : [{ questionId: name, answer: value }],
+        ? [
+            ...prev.answers.filter(a => a.questionId !== id),
+            { questionId: id, questionText: name, answer: value, order: idx },
+          ]
+        : [{ questionId: id, questionText: name, answer: value, order: idx }],
     }));
   };
 
   const handleFileChange = async event => {
-    const name = event.target.name;
+    const { id, name } = event.target;
     console.log(`name  is ${event.target.name}`);
 
     console.log(`name  is ${event.target.files[0].name}`);
     const selFile = event.target.files[0];
     if (!selFile) return;
+    if (selFile.size > 5 * 1024 * 1024) {
+      toast.error('File size exceeds 5MB limit. Please choose a smaller file. ');
+      selFile.value = null;
+      return;
+    }
+    if (
+      ![
+        'application/pdf',
+        'application/doc',
+        'application/docx',
+        'image/jpeg',
+        'image/png',
+        'image/bmp',
+      ].includes(selFile.type)
+    ) {
+      toast.error('Invalid file type. Please upload a PDF, DOC, DOCX, JPG, PNG, or BMP file.');
+      selFile.value = null;
 
-    setUploadingFiles(prev => ({ ...prev, [name]: true }));
-    console.log(uploadingFiles);
+      return;
+    }
+    //setUploadingFiles(prev => ({ ...prev, [name]: true }));
+    //    console.log(uploadingFiles);
+
     /* setUploadSuccess(false);
     console.log('Selected file:', selFile.name);
     setResumeFile(selFile); commented out */
     // setResumeFile(event.target.files[0]);
     try {
+      setUploadingFiles(prev => ({ ...prev, [name]: true }));
+      console.log(uploadingFiles);
+
       const formResumeData = new FormData();
       formResumeData.append('file', selFile);
       // eslint-disable-next-line no-console
@@ -251,43 +276,35 @@ function JobDetailsLink() {
         ...prev,
         answers: Array.isArray(prev.answers)
           ? [
-              ...prev.answers.filter(a => a.questionId !== name),
-              { questionId: name, answer: dropboxLink },
+              ...prev.answers.filter(a => a.questionId !== id),
+              { questionId: id, questionText: name, answer: dropboxLink },
             ]
-          : [{ questionId: name, answer: dropboxLink }],
+          : [{ questionId: id, questionText: name, answer: dropboxLink }],
       }));
       setUploadingFiles(prev => ({ ...prev, [name]: false }));
       console.log(uploadingFiles);
     } catch (err) {
       console.error('Upload failed', err);
+      let errorMessage = 'File upload failed.';
+      if (err.response) {
+        console.log('Backend response', err.response.data);
+        errorMessage = err.response.data?.message || `Server error (${err.response.status})`;
+        toast.error(errorMessage);
+      } else if (err.request) {
+        console.log('No response received');
+        errorMessage = 'No response from server. Check your connection.';
+      } else {
+        console.error('Request Error', err.request);
+        errorMessage = err.message;
+      }
+      console.log('err');
+      console.log(err);
+      toast.error(errorMessage);
       setUploadingFiles(prev => ({ ...prev, [name]: false }));
       console.log(uploadingFiles);
     }
   };
 
-  /*useEffect(() => {
-    const qname =
-      '12.) If you have one, please attach your Resumé, CV, Brochure, etc. in PDF or JPG format.';
-    console.log('uploadSuccess');
-    console.log(uploadSuccess);
-    console.log(qname);
-    console.log(uploadedFile);
-    console.log(uploadedFile?.url);
-    if (uploadSuccess && uploadedFile?.url) {
-      console.log('inside');
-      setFormData(prev => ({
-        ...prev,
-        answers: Array.isArray(prev.answers)
-          ? [
-              ...prev.answers.filter(a => a.questionId !== qname),
-              { questionId: qname, answer: uploadedFile?.url },
-            ]
-          : [{ questionId: qname, answer: uploadedFile?.url }],
-      }));
-      console.log(formData);
-    }
-  }, [uploadSuccess, uploadedFile]);
-*/
   const handleUpload = async () => {
     alert('Handle Upload');
     console.log(resumeFile);
@@ -324,19 +341,6 @@ function JobDetailsLink() {
   const submitJobforms = async () => {
     // eslint-disable-next-line no-console
     console.log('inside submitJobForms');
-    // eslint-disable-next-line no-console
-    let testData = {
-      formId: '68fba186bc0a73e90e5f19c6',
-
-      answers: [
-        {
-          questionId: 'Name',
-          answer: 'Swami',
-        },
-      ],
-    };
-    // eslint-disable-next-line no-console
-    console.log(testData);
     // eslint-disable-next-line no-console
     console.log(formData);
 
@@ -379,14 +383,66 @@ function JobDetailsLink() {
       }
     }
   };
+  const inputValidation = () => {
+    //check all the inputs are filled
+    console.log('jobForms.questions.length');
+    console.log(jobForms.form.questions.length);
+    console.log(formData.answers.length);
+    if (!jobForms?.form?.questions || !formData?.answers) {
+      console.error('Missing form structure or answers data.');
+      return false;
+    }
+    console.log('heree');
+    //    if (formData.answers.map(a => a.answer).includes('')) return false;
+    console.log(formData.answers.length);
+    // loop through jobForms.form.questions and check if each questionId is present in formsData.answers
+    for (let i = 0; i < jobForms.form.questions.length; i++) {
+      console.log(`i is ${i}`);
+      console.log(jobForms.form.questions[i]);
+      console.log(jobForms.form.questions[i].isRequired);
+
+      const questionId = jobForms.form.questions[i]._id;
+      const answerObj = formData.answers.find(a => a.questionId === questionId);
+      if ((!answerObj || !answerObj.answer) && jobForms.form.questions[i].isRequired) {
+        //    if (jobForms.form.questions[0].questionId !== formData.answers[0]?.questionId) {
+        // const firstEmptyIndex = formData?.answers?.findIndex(a => !a.answer);
+        // const question = jobForms?.form?.questions[firstEmptyIndex];
+
+        setErrors({
+          [jobForms.form.questions[i]
+            .questionText]: `${jobForms.form.questions[i].questionText} is required`,
+        });
+        console.log('errors');
+        console.log(errors);
+        toast.error(`${jobForms.form.questions[i].questionText} is required`);
+
+        return false;
+      } else {
+        setErrors({
+          [jobForms.form.questions[i].questionText]: ``,
+        });
+      }
+    }
+    return true;
+  };
+
   const handleSubmit = e => {
+    console.log(formData);
+
     e.preventDefault();
+    // inputValidation();
+    if (!inputValidation()) {
+      // toast.error('Please fill all the fields before submitting the form.');
+      return;
+    }
     submitJobforms();
-    alert('form submitted');
   };
   const resetForm = e => {
     alert('form cancelled');
   };
+  useEffect(() => {
+    console.log('updated errors:', errors);
+  }, [errors]);
 
   return (
     <div className={`${styles['job-details-landing']} ${darkMode ? styles['dark-mode'] : ''}`}>
@@ -401,6 +457,11 @@ function JobDetailsLink() {
       </div>
       {!loading ? (
         <div className={styles['job-details-container']}>
+          <img
+            className={styles['job-details-image-card']}
+            src={jobsDetailById.imageUrl}
+            alt="Job Details"
+          />
           <h2>
             {`Job Details for Category: ${jobsDetailById.category},
            Position: ${jobsDetailById.title}`}
@@ -416,99 +477,127 @@ function JobDetailsLink() {
               ),
           )}
           ;
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className={styles['job-form-questions']}>
             {jobForms.form && jobForms.form.questions && jobForms.form.questions.length > 0
               ? jobForms.form.questions.map((question, index) => (
                   <div key={question._id} className={styles['input-error']}>
-                    <h3> {question.label}</h3>
-                    {question.type === 'text' ? (
+                    <h3> {question.questionText}</h3>
+                    {question.questionType === 'text' || question.questionType === 'textbox' ? (
                       <input
-                        type="text"
-                        name={question.label}
-                        id={question.label}
-                        value={getValue(question.label)}
-                        onChange={handleChange}
+                        type="textbox"
+                        name={question.questionText}
+                        id={question._id}
+                        key={index}
+                        value={getValue(question._id)}
+                        onChange={e => handleChange(e, index)}
                       />
-                    ) : question.type === 'textarea' ? (
+                    ) : question.questionType === 'textarea' ? (
                       <textarea
                         rows={5}
-                        name={question.label}
-                        id={question.label}
-                        value={getValue(question.label)}
-                        onChange={handleChange}
+                        name={question.questionType}
+                        id={question._id}
+                        key={index}
+                        value={getValue(question._id)}
+                        onChange={e => handleChange(e, index)}
                       />
-                    ) : question.type === 'checkbox' ? (
-                      <fieldset>
+                    ) : question.questionType === 'dropdown' ? (
+                      <select
+                        name={question.questionType}
+                        id={question._id}
+                        value={getValue(question._id)}
+                        onChange={e => handleChange(e, index)}
+                      >
+                        <option value="">-- Select an option --</option>
                         {question.options && question.options.length > 0
                           ? question.options.map(option => (
+                              <option key={option.value} value={option}>
+                                {option}
+                              </option>
+                            ))
+                          : null}
+                      </select>
+                    ) : question.questionType === 'checkbox' ? (
+                      <fieldset>
+                        {question.options && question.options.length > 0
+                          ? question.options.map((option, optIndex) => (
                               <>
                                 <span> {option} </span>
                                 <input
-                                  key={option}
                                   type="checkbox"
-                                  name={question.label}
-                                  id={question.label}
-                                  value={getValue(question.label)}
-                                  onChange={handleChange}
+                                  id={`${question.questionText}-${optIndex}`}
+                                  name={question.questionText}
+                                  key={option}
+                                  value={option}
+                                  checked={
+                                    formData.answers
+                                      .find(a => a.questionId === question.questionText)
+                                      ?.answer?.includes(option) || false
+                                  }
+                                  onChange={e => handleChange(e, index)}
                                 ></input>
                               </>
                             ))
                           : null}
                       </fieldset>
-                    ) : question.type === 'radio' ? (
+                    ) : question.questionType === 'radio' ? (
                       <fieldset>
                         {question.options && question.options.length > 0
-                          ? question.options.map(option => (
+                          ? question.options.map((option, optIndex) => (
                               <>
                                 <input
-                                  key={option}
                                   type="radio"
-                                  name={question.label}
-                                  id={question.label}
-                                  value={getValue(question.label)}
-                                  onChange={handleChange}
+                                  key={option}
+                                  id={`${question.questionText}-${optIndex}`}
+                                  name={question.questionText}
+                                  value={option} // what’s sent when selected
+                                  checked={
+                                    formData.answers.find(
+                                      a => a.questionId === question.questionText,
+                                    )?.answer === option
+                                  }
+                                  onChange={e => handleChange(e, index)}
                                 />
                                 <span> {option} </span>
                               </>
                             ))
                           : null}
                       </fieldset>
-                    ) : question.type === 'email' ? (
+                    ) : question.questionType === 'email' ? (
                       <input
                         type="email"
-                        name={question.label}
-                        id={question.label}
-                        value={getValue(question.label)}
-                        onChange={handleChange}
+                        key={index}
+                        name={question.questionText}
+                        id={question._id}
+                        value={getValue(question._id)}
+                        onChange={e => handleChange(e, index)}
                       />
-                    ) : question.type === 'date' ? (
+                    ) : question.questionType === 'date' ? (
                       <input
                         type="date"
-                        name={question.label}
-                        id={question.label}
-                        value={getValue(question.label)}
-                        onChange={handleChange}
+                        name={question.questionText}
+                        id={question._id}
+                        key={index}
+                        value={getValue(question._id)}
+                        onChange={e => handleChange(e, index)}
                       />
-                    ) : question.type === 'file' ? (
+                    ) : question.questionType === 'file' ? (
                       <div className={styles['user-input']}>
                         <input
                           type="file"
-                          name={question.label}
-                          id={question.label}
+                          name={question.questionText}
+                          id={question._id}
                           accept=".pdf,.doc,.docx,.jpg,.png,.bmp"
-                          onChange={handleFileChange}
+                          onChange={e => handleFileChange(e, index)}
                         />
 
-                        {uploadingFiles[question.label] ? (
+                        {uploadingFiles[question.questionText] ? (
                           <p style={{ color: 'blue' }}> Uploading </p>
-                        ) : formData?.answers?.find(a => a.questionId === question.label)
-                            ?.answer ? (
+                        ) : formData?.answers?.find(a => a.questionId === question._id)?.answer ? (
                           <>
                             <p style={{ color: 'green' }}>File Uploaded Successfully </p>
                             <a
                               href={
-                                formData?.answers?.find(a => a.questionId === question.label)
-                                  ?.answer
+                                formData?.answers?.find(a => a.questionId === question._id)?.answer
                               }
                               target="_blank"
                               rel="noopener noreferrer"
@@ -518,24 +607,12 @@ function JobDetailsLink() {
                           </>
                         ) : null}
                       </div>
-                    ) : question.type === 'dropdown' ? (
-                      <select
-                        name={question.label}
-                        id={question.label}
-                        value={getValue(question.label)}
-                        onChange={handleChange}
-                      >
-                        {question.options && question.options.length > 0
-                          ? question.options.map(option => (
-                              <option key={option} value={option}>
-                                {option}
-                              </option>
-                            ))
-                          : null}
-                      </select>
                     ) : (
                       <p> another field type {question.type}</p>
                     )}
+                    <p className={styles['error-message']}>
+                      {errors?.[jobForms?.form?.questions[index]?.questionText]}
+                    </p>
                   </div>
                 ))
               : 'no Questions available'}

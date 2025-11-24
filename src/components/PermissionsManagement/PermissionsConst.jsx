@@ -621,6 +621,17 @@ export const permissionLabels = [
       },
     ],
   },
+  {
+    label: 'CollabJobAds',
+    description: 'Collaboration Job Ads related permissions',
+    subperms: [
+      {
+        label: 'Create CollabJobAds',
+        key: 'createCollabJobAds',
+        description: 'Gives the user permission to cr.eate CollabJobAds',
+      },
+    ],
+  },
 ];
 
 export const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
