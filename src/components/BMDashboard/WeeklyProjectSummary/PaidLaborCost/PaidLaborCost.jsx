@@ -367,6 +367,7 @@ export default function PaidLaborCost() {
 
   // Build Chart.js datasets
   // Generate one distinct HSL color per task
+  // Use consistent bar sizing for all bars regardless of number of tasks
   const taskDatasets = tasksToInclude.map((task, idx) => {
     // spread hues evenly around the 360° color wheel
     const hue = Math.round((idx * 360) / tasksToInclude.length);
@@ -378,6 +379,11 @@ export default function PaidLaborCost() {
       backgroundColor: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
       borderRadius: 4,
       data: labels.map(label => Math.round(aggregation[label][task] / 1000)),
+      // Consistent bar sizing - maxBarThickness ensures bars don't get too wide
+      maxBarThickness: 50,
+      // Category and bar percentages for consistent spacing
+      categoryPercentage: 0.8,
+      barPercentage: 0.9,
     };
   });
 
@@ -390,6 +396,14 @@ export default function PaidLaborCost() {
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: {
+      padding: {
+        left: 10,
+        right: 10,
+        top: 10,
+        bottom: 10,
+      },
+    },
     plugins: {
       legend: {
         position: 'top',
@@ -410,9 +424,12 @@ export default function PaidLaborCost() {
       x: {
         grid: { display: false },
         ticks: { font: { size: 12 }, color: textColor },
+        // Ensure proper spacing between categories
+        offset: true,
       },
       y: {
         grid: { color: '#ccc' },
+        beginAtZero: true,
         title: {
           display: true,
           text: 'Cost (000s)',
@@ -541,13 +558,8 @@ export default function PaidLaborCost() {
           </div>
 
           {/* Chart Container */}
-          <div className={styles.paidLaborCostChartScrollWrapper}>
-            <div
-              style={{
-                width: tasksToInclude.length > 3 ? `${tasksToInclude.length * 50}px` : '100%',
-                height: '300px',
-              }}
-            >
+          <div className={styles.paidLaborCostChartWrapper}>
+            <div className={styles.paidLaborCostChartContainer}>
               <Bar data={chartData} options={options} />
             </div>
           </div>
