@@ -6,7 +6,7 @@ import '@testing-library/jest-dom/extend-expect';
 import VolunteeringTimeTab from '../VolunteeringTimeTab';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../../__tests__/mockStates';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { renderWithProvider } from '../../../../__tests__/utils';
 
 vi.mock('axios');
@@ -23,7 +23,7 @@ afterAll(() => {
 describe('VolunteeringTimeTab Component', () => {
   let store;
   let props;
-  const mockStore = configureStore([thunk]);
+  const mockStore = configureMockStore([thunk]);
 
   beforeEach(() => {
     store = mockStore({

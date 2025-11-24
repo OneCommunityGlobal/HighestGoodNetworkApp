@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 import BMLogin from '../BMLogin';
@@ -14,7 +14,7 @@ vi.mock('jwt-decode', () => ({
   default: vi.fn(() => ({ decodedPayload: 'mocked_decoded_payload' })),
 }));
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 let store;
 
 beforeEach(() => {

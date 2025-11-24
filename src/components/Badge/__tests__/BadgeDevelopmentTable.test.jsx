@@ -2,12 +2,12 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import BadgeDevelopmentTable from '../BadgeDevelopmentTable';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
 import { themeMock } from '__tests__/mockStates';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 // mock data used for testing purpose. You can add your own data to test the component.
 

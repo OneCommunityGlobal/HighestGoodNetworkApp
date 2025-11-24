@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import thunk from 'redux-thunk';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { vi } from 'vitest';
 
@@ -61,7 +61,7 @@ vi.mock('../../../actions/badgeManagement', () => ({
 
 import AssignBadge from '../AssignBadge';
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 describe('AssignBadge component', () => {
   let store;

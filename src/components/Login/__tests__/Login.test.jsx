@@ -2,7 +2,7 @@ import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Login } from '../Login';
 
@@ -13,7 +13,7 @@ vi.mock('../../../actions/errorsActions', () => ({
   clearErrors: vi.fn(),
 }));
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 
 const renderWithProviders = (
   ui,
