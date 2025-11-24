@@ -1,20 +1,16 @@
 .project-details {
   text-align: center;
-  padding-top: 20px;
+  padding-top: 40px;
   padding-left: 3%;
   padding-right: 3%;
-  /* margin-top: 40px;
-  margin-bottom: 20px; */
   font-weight: bold;
 }
 .project-details-dark {
   text-align: center;
-  padding-top: 20px;
+  padding-top: 40px;
   padding-left: 3%;
   padding-right: 3%;
-/*   margin-top: 40px;
-  margin-bottom: 20px;
- */  font-weight: bold;
+  font-weight: bold;
   background-color: #1C1E1C;
 }
 
@@ -163,7 +159,7 @@
   padding: 1em;
   width: auto;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .cards-container__content {
@@ -181,7 +177,8 @@
   text-align: center;
   cursor: pointer;
   transition: box-shadow 0.3s, transform 0.3s;
-  overflow: hidden;
+  margin: 10px auto !important;
+  overflow: visible;
 }
 
 .single-card__img {

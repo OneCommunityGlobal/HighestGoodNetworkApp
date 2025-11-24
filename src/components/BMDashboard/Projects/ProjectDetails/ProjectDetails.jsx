@@ -19,6 +19,7 @@ const SectionHeader = ({ icon, title }) => (
       alignItems: 'center',
       gap: '8px',
       marginTop: '30px',
+      marginBottom: '10px',
     }}
   >
     <span style={{ fontSize: '1.4rem' }}>{icon}</span> {title}
@@ -56,21 +57,29 @@ function ProjectDetails() {
           </h1>
 
           <SectionHeader icon="🕒" title="Daily Logging" />
-          <LogBar projectId={projectId} />
+          <div style={{ marginBottom: '25px' }}>
+            <LogBar projectId={projectId} />
+          </div>
 
-          <Row className="mt-4">
+          <Row className="mt-4 mb-4 g-4">
             <Col md="6" className="mb-4">
               <SectionHeader icon="🚚" title="Rented Tools or Equipment" />
-              <RentedToolsDisplay projectId={projectId} />
+              <div style={{ marginBottom: '25px' }}>
+                <RentedToolsDisplay projectId={projectId} />
+              </div>
             </Col>
             <Col md="6" className="mb-4">
               <SectionHeader icon="🧱" title="Materials with Quantity Less Than 20%" />
-              <MaterialsDisplay projectId={projectId} />
+              <div style={{ marginBottom: '25px' }}>
+                <MaterialsDisplay projectId={projectId} />
+              </div>
             </Col>
           </Row>
 
           <SectionHeader icon="👥" title="Team & Members Working Today" />
-          <ProjectLog projectId={projectId} />
+          <div style={{ marginTop: '30px' }}>
+            <ProjectLog projectId={projectId} />
+          </div>
         </Col>
       </Row>
     </Container>
