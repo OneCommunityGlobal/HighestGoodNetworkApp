@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -16,7 +16,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import styles from './PaidLaborCost.module.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
-import logger from '../../../services/logService';
+import logger from '../../../../services/logService';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -166,9 +166,18 @@ export default function PaidLaborCost() {
     endDate: null,
   });
 
+  // Ref to track if an API call is in progress to prevent race conditions
+  const isFetchingRef = useRef(false);
+
   // API data fetching with fallback to mock data
   useEffect(() => {
+    // Prevent multiple simultaneous API calls
+    if (isFetchingRef.current) {
+      return;
+    }
+
     const fetchData = async () => {
+      isFetchingRef.current = true;
       setLoading(true);
       try {
         // Build query parameters
@@ -254,6 +263,7 @@ export default function PaidLaborCost() {
         setTotalCost(mockTotalCost);
       } finally {
         setLoading(false);
+        isFetchingRef.current = false;
       }
     };
 
