@@ -154,6 +154,12 @@
   border-color: #999;
 }
 
+.reactCalendarDarkMode :global(.react-calendar__tile):hover {
+  background-color: #4a5568;
+  color: #FFFFFF;
+  border-color: #718096;
+}
+
 
 
 .reactCalendar :global(.react-calendar__tile) .tileEvents {
