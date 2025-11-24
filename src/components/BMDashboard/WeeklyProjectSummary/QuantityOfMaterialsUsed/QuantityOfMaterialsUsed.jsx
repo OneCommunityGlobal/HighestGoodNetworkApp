@@ -72,7 +72,8 @@ function QuantityOfMaterialsUsed({ data }) {
   const [chartData, setChartData] = useState(null);
   const projects = useSelector(state => state.bmProjects);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
-  const [selectedProjects, setSelectedProjects] = useState(projects);
+  // const [selectedProjects, setSelectedProjects] = useState(projects);
+  const [selectedProjects, setSelectedProjects] = useState([]);
 
   const [selectedDate, setSelectedDate] = useState('Last Week');
   const [dateRangeOne, setDateRangeOne] = useState([null, null]);
@@ -167,9 +168,6 @@ function QuantityOfMaterialsUsed({ data }) {
     [darkMode],
   );
 
-  const handleProjectChange = selected => {
-    setProjectFilter(selected ? selected.map(option => option.value) : []);
-  };
   useEffect(() => {
     const handleResize = () => {
       setIsSmallScreen(window.innerWidth <= 1200);
@@ -198,7 +196,7 @@ function QuantityOfMaterialsUsed({ data }) {
 
   const orgOptions = useMemo(() => [{ value: selectedOrg, label: selectedOrg }], [selectedOrg]);
 
-  const projectOptions = selectedProjects.map(project => ({
+  const projectOptions = projects.map(project => ({
     value: project._id,
     label: project.name,
   }));
@@ -504,7 +502,7 @@ function QuantityOfMaterialsUsed({ data }) {
           : []),
       ],
     });
-  }, [data, selectedMaterials, selectedOrg, selectedDate, dateRangeOne, dateRangeTwo]);
+  }, [data, selectedMaterials, selectedProjects, selectedDate, dateRangeOne, dateRangeTwo]);
 
   const barWidth = 12;
   // Subtract the 40-px y-axis offset
@@ -738,7 +736,6 @@ function QuantityOfMaterialsUsed({ data }) {
           placeholder="All Materials testing"
           classNamePrefix="custom-select"
           className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
-          menuPosition="fixed"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           closeMenuOnSelect={false}
           hideSelectedOptions={false}
@@ -756,7 +753,7 @@ function QuantityOfMaterialsUsed({ data }) {
           placeholder="Projects"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"
-          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
           closeMenuOnSelect={false}
           hideSelectedOptions={false}
           styles={selectStyles}
