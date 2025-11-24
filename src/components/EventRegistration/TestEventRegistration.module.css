@@ -201,3 +201,273 @@
   border-radius: 6px;
   cursor: pointer;
 }
+
+/* Dark Mode Styles */
+.darkMode {
+  background: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.bannerDark {
+  background: #2d2d2d;
+  border-color: #4a4a4a;
+}
+
+.cardDark {
+  background: #2d2d2d;
+  color: #e0e0e0;
+}
+
+.textLight {
+  color: #e0e0e0;
+}
+
+.inputDark {
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.inputDark::placeholder {
+  color: #aaa;
+}
+
+.modalContentDark {
+  background: #2d2d2d;
+  color: #e0e0e0;
+}
+
+/* Filter Styles */
+.filterSection {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filterTitle {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #343a40;
+}
+
+.filterGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filterLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #495057;
+}
+
+.filterInput {
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  background: #fff;
+  font-size: 0.875rem;
+}
+
+.filterActions {
+  display: flex;
+  align-items: end;
+}
+
+.clearBtn {
+  padding: 0.5rem 1rem;
+  background: #6c757d;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.clearBtn:hover {
+  background: #5a6268;
+}
+
+.clearBtnDark {
+  background: #495057;
+}
+
+.clearBtnDark:hover {
+  background: #3d4449;
+}
+
+.noResults {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-top: 1rem;
+}
+
+.noResultsDark {
+  background: #3d3d00;
+  border-color: #666600;
+  color: #ffdd57;
+}
+
+.noEventsMessage {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.noEventsMessageDark {
+  background: #2d1b1f;
+  border-color: #5f1f2a;
+  color: #f8d7da;
+}
+
+/* Dark mode filter section */
+.filterSection.dark,
+.darkMode .filterSection {
+  background: #3a3a3a;
+  border-color: #555;
+}
+
+.darkMode .filterTitle {
+  color: #ffffff !important;
+}
+
+.darkMode .filterLabel {
+  color: #ffffff !important;
+}
+
+.darkMode .filterInput {
+  background: #4a4a4a;
+  color: #e0e0e0;
+  border-color: #666;
+}
+
+/* Ensure all form labels have consistent white color in dark mode */
+.darkMode .label,
+.darkMode legend,
+.darkMode span.label {
+  color: #ffffff !important;
+}
+
+/* Additional dark mode text styles */
+.darkMode .label,
+.darkMode legend,
+.darkMode span.label {
+  color: #ffffff !important;
+}
+
+.darkMode .requiredNote {
+  color: #ff9999 !important;
+}
+
+.darkMode .radioLabel,
+.darkMode .checkboxLabel {
+  color: #ffffff !important;
+}
+
+.darkMode .sectionLink {
+  color: #6bb6ff !important;
+}
+
+.darkMode .subheading {
+  color: #ffffff !important;
+}
+
+.darkMode .modalBody p {
+  color: #e0e0e0 !important;
+}
+
+.darkMode .modalBody strong {
+  color: #ffffff !important;
+}
+
+/* Dark mode for form fieldsets */
+.darkMode fieldset {
+  border-color: #555;
+}
+
+.darkMode legend {
+  color: #ffffff !important;
+}
+
+/* Dark mode for radio buttons and checkboxes */
+.darkMode input[type="radio"],
+.darkMode input[type="checkbox"] {
+  accent-color: #6bb6ff;
+}
+
+/* Dark mode for select dropdowns */
+.darkMode select {
+  background: #3a3a3a;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+.darkMode option {
+  background: #3a3a3a;
+  color: #e0e0e0;
+}
+
+/* Ensure all text is visible in dark mode */
+.darkMode * {
+  color: inherit;
+}
+
+/* Override specific elements that should stay light */
+.darkMode .req {
+  color: #ff6b6b !important;
+}
+
+.darkMode .error {
+  color: #ff8a8a !important;
+}
+
+/* Dark mode banner text */
+.darkMode .banner h1 {
+  color: #ffffff !important;
+}
+
+.darkMode .banner p {
+  color: #cccccc !important;
+}
+
+/* Dark mode for phone input component */
+.darkMode .react-tel-input .flag-dropdown {
+  background: #3a3a3a !important;
+  border-color: #555 !important;
+}
+
+.darkMode .react-tel-input .selected-flag {
+  background: #3a3a3a !important;
+}
+
+.darkMode .react-tel-input .country-list {
+  background: #3a3a3a !important;
+  border-color: #555 !important;
+}
+
+.darkMode .react-tel-input .country-list .country {
+  background: #3a3a3a !important;
+  color: #e0e0e0 !important;
+}
+
+.darkMode .react-tel-input .country-list .country:hover {
+  background: #4a4a4a !important;
+}

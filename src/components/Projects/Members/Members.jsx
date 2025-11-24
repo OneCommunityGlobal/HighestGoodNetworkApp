@@ -12,8 +12,8 @@ import {
   findProjectMembers,
   getAllUserProfiles,
   assignProject,
-} from '~/actions/projectMembers';
-import { foundUsers } from '~/actions/projectMembers'; 
+ foundUsers } from '~/actions/projectMembers';
+ 
 import Member from './Member';
 import FoundUser from './FoundUser';
 import './members.css';

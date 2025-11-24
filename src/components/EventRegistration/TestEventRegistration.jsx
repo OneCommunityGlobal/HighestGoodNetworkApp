@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './TestEventRegistration.module.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -7,6 +8,9 @@ import 'react-phone-input-2/lib/style.css';
 import mockEvents from '../CommunityPortal/Reports/Participation/mockData';
 
 function TestEventRegistration() {
+  // Safe Redux selector with fallback
+  const darkMode = useSelector(state => state?.theme?.darkMode) || false;
+
   const eventDetails = {
     eventName: '',
     firstName: '',
@@ -44,7 +48,13 @@ function TestEventRegistration() {
   const [confirmation, setConfirmation] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  // Filter states
+  const [typeFilter, setTypeFilter] = useState('');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState('');
+
+  // Enhanced email regex validation following RFC 5322 standards
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
   function normalizeDigits(v = '') {
     return v.replace(/\D/g, '');
@@ -62,6 +72,38 @@ function TestEventRegistration() {
     if (!ev) return undefined;
     return ev.capacity;
   }
+
+  // Helper function to extract date from eventTime
+  function extractDate(eventTime) {
+    if (!eventTime) return '';
+    const dateMatch = eventTime.match(/(\w{3} \d{1,2}, \d{4})/);
+    return dateMatch ? dateMatch[1] : '';
+  }
+
+  // Filter events based on current filter criteria
+  function getFilteredEvents() {
+    return mockEvents.filter(event => {
+      const matchesType =
+        !typeFilter || event.eventType.toLowerCase().includes(typeFilter.toLowerCase());
+      const matchesLocation =
+        !locationFilter || event.location.toLowerCase().includes(locationFilter.toLowerCase());
+
+      let matchesDate = true;
+      if (dateFilter) {
+        const eventDate = extractDate(event.eventTime);
+        matchesDate = eventDate.toLowerCase().includes(dateFilter.toLowerCase());
+      }
+
+      return matchesType && matchesLocation && matchesDate;
+    });
+  }
+
+  // Get unique values for filter dropdowns
+  const uniqueTypes = [...new Set(mockEvents.map(event => event.eventType))];
+  const uniqueLocations = [...new Set(mockEvents.map(event => event.location))];
+  const uniqueDates = [
+    ...new Set(mockEvents.map(event => extractDate(event.eventTime)).filter(Boolean)),
+  ];
 
   function validate(values, currentEvent) {
     const errs = {};
@@ -94,8 +136,26 @@ function TestEventRegistration() {
     // Email
     if (!values.emailAddress.trim()) {
       errs.emailAddress = 'Email Address is required.';
-    } else if (!emailRegex.test(values.emailAddress)) {
-      errs.emailAddress = 'Please enter a valid email address.';
+    } else {
+      const email = values.emailAddress.trim().toLowerCase();
+
+      // Check length constraints
+      if (email.length > 254) {
+        errs.emailAddress = 'Email address is too long (maximum 254 characters).';
+      } else if (!emailRegex.test(email)) {
+        // Provide specific feedback based on common email format issues
+        if (!email.includes('@')) {
+          errs.emailAddress = 'Email address must contain an @ symbol.';
+        } else if (email.startsWith('@') || email.endsWith('@')) {
+          errs.emailAddress = 'Email address cannot start or end with @.';
+        } else if (!email.includes('.')) {
+          errs.emailAddress = 'Email address must contain a domain (e.g., .com, .org).';
+        } else if (email.includes('..')) {
+          errs.emailAddress = 'Email address cannot contain consecutive dots.';
+        } else {
+          errs.emailAddress = 'Please enter a valid email address (e.g., user@example.com).';
+        }
+      }
     }
 
     // DOB
@@ -155,10 +215,29 @@ function TestEventRegistration() {
     setConfirmation(null);
   };
 
+  // Filter handlers
+  const handleTypeFilter = e => {
+    setTypeFilter(e.target.value);
+  };
+
+  const handleLocationFilter = e => {
+    setLocationFilter(e.target.value);
+  };
+
+  const handleDateFilter = e => {
+    setDateFilter(e.target.value);
+  };
+
+  const clearFilters = () => {
+    setTypeFilter('');
+    setLocationFilter('');
+    setDateFilter('');
+  };
+
   // Submit
   const handleSubmit = e => {
     e.preventDefault();
-    const currentEvent = mockEvents.find(x => x.eventName === formValues.eventName) || null;
+    const currentEvent = filteredEvents.find(x => x.eventName === formValues.eventName) || null;
     const newErrors = validate(formValues, currentEvent);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -200,25 +279,125 @@ function TestEventRegistration() {
     .toISOString()
     .split('T')[0];
 
+  const filteredEvents = getFilteredEvents();
+  const noResults = filteredEvents.length === 0 && (typeFilter || locationFilter || dateFilter);
+
   return (
-    <div className={styles.page}>
-      <div className={styles.banner}>
+    <div className={`${styles.page} ${darkMode ? styles.darkMode : ''}`}>
+      <div className={`${styles.banner} ${darkMode ? styles.bannerDark : ''}`}>
         <h1>Register Now!</h1>
         <p>to be a part of the event.</p>
       </div>
 
       {/* Card */}
-      <div className={styles.card}>
-        <p className={styles.subheading}>Please fill the information carefully!</p>
+      <div className={`${styles.card} ${darkMode ? styles.cardDark : ''}`}>
+        {/* Filter Section */}
+        <div className={styles.filterSection}>
+          <h3 className={`${styles.filterTitle} ${darkMode ? styles.textLight : ''}`}>
+            Find Events
+          </h3>
+          <div className={styles.filterGrid}>
+            <div className={styles.filterGroup}>
+              <label
+                htmlFor="typeFilter"
+                className={`${styles.filterLabel} ${darkMode ? styles.textLight : ''}`}
+              >
+                Event Type
+              </label>
+              <select
+                id="typeFilter"
+                value={typeFilter}
+                onChange={handleTypeFilter}
+                className={`${styles.filterInput} ${darkMode ? styles.inputDark : ''}`}
+              >
+                <option value="">All Types</option>
+                {uniqueTypes.map(type => (
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <label
+                htmlFor="locationFilter"
+                className={`${styles.filterLabel} ${darkMode ? styles.textLight : ''}`}
+              >
+                Location
+              </label>
+              <select
+                id="locationFilter"
+                value={locationFilter}
+                onChange={handleLocationFilter}
+                className={`${styles.filterInput} ${darkMode ? styles.inputDark : ''}`}
+              >
+                <option value="">All Locations</option>
+                {uniqueLocations.map(location => (
+                  <option key={location} value={location}>
+                    {location}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterGroup}>
+              <label
+                htmlFor="dateFilter"
+                className={`${styles.filterLabel} ${darkMode ? styles.textLight : ''}`}
+              >
+                Date
+              </label>
+              <select
+                id="dateFilter"
+                value={dateFilter}
+                onChange={handleDateFilter}
+                className={`${styles.filterInput} ${darkMode ? styles.inputDark : ''}`}
+              >
+                <option value="">All Dates</option>
+                {uniqueDates.map(date => (
+                  <option key={date} value={date}>
+                    {date}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={styles.filterActions}>
+              <button
+                type="button"
+                onClick={clearFilters}
+                className={`${styles.clearBtn} ${darkMode ? styles.clearBtnDark : ''}`}
+              >
+                Clear Filters
+              </button>
+            </div>
+          </div>
+
+          {noResults && (
+            <div className={`${styles.noResults} ${darkMode ? styles.noResultsDark : ''}`}>
+              <p>No events found matching your search criteria. Try adjusting your filters.</p>
+            </div>
+          )}
+        </div>
+
+        <p className={`${styles.subheading} ${darkMode ? styles.textLight : ''}`}>
+          Please fill the information carefully!
+        </p>
         <p className={styles.sectionLink} id="personal-info">
           Personal Information
         </p>
-        <p className={styles.requiredNote}>* Indicates required question</p>
+        <p className={`${styles.requiredNote} ${darkMode ? styles.textLight : ''}`}>
+          * Indicates required question
+        </p>
 
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* Event */}
           <div className={styles.formGroup}>
-            <label htmlFor="eventName" className={styles.label}>
+            <label
+              htmlFor="eventName"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
               Event Name <span className={styles.req}>*</span>
             </label>
             <select
@@ -226,21 +405,34 @@ function TestEventRegistration() {
               name="eventName"
               value={formValues.eventName}
               onChange={handleEventChange}
-              className={styles.input}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
             >
               <option value="">Select the event name</option>
-              {mockEvents.map(ev => (
+              {filteredEvents.map(ev => (
                 <option key={ev.id} value={ev.eventName}>
-                  {ev.eventName} {ev.capacity === 0 ? '(Full)' : `(Seats: ${ev.capacity})`}
+                  {ev.eventName} - {ev.eventType} ({ev.location}) - {extractDate(ev.eventTime)}{' '}
+                  {ev.capacity === 0 ? '(Full)' : `(Seats: ${ev.capacity})`}
                 </option>
               ))}
             </select>
+            {filteredEvents.length === 0 && (typeFilter || locationFilter || dateFilter) && (
+              <div
+                className={`${styles.noEventsMessage} ${
+                  darkMode ? styles.noEventsMessageDark : ''
+                }`}
+              >
+                No events match your current filters. Please adjust the filters above.
+              </div>
+            )}
             {errors.eventName && <span className={styles.error}>{errors.eventName}</span>}
           </div>
 
           {/* Name */}
           <div className={styles.formGroup}>
-            <label htmlFor="firstName" className={styles.label}>
+            <label
+              htmlFor="firstName"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
               First Name <span className={styles.req}>*</span>
             </label>
             <input
@@ -250,13 +442,16 @@ function TestEventRegistration() {
               placeholder="Enter your first name"
               value={formValues.firstName}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
             />
             {errors.firstName && <span className={styles.error}>{errors.firstName}</span>}
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="lastName" className={styles.label}>
+            <label
+              htmlFor="lastName"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
               Last Name <span className={styles.req}>*</span>
             </label>
             <input
@@ -266,14 +461,17 @@ function TestEventRegistration() {
               placeholder="Enter your last name"
               value={formValues.lastName}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
             />
             {errors.lastName && <span className={styles.error}>{errors.lastName}</span>}
           </div>
 
           {/* Phone */}
           <div className={styles.formGroup}>
-            <label htmlFor="phone" className={styles.label}>
+            <label
+              htmlFor="phone"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
               Phone Number <span className={styles.req}>*</span>
             </label>
             <PhoneInput
@@ -296,7 +494,7 @@ function TestEventRegistration() {
                 }));
                 setErrors(prev => ({ ...prev, countryCode: '', phoneNumber: '' }));
               }}
-              inputClass={styles.input}
+              inputClass={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
               containerClass={styles.phoneContainer}
               buttonClass={styles.phoneButton}
               dropdownClass={styles.phoneDropdown}
@@ -307,7 +505,10 @@ function TestEventRegistration() {
 
           {/* Email */}
           <div className={styles.formGroup}>
-            <label htmlFor="emailAddress" className={styles.label}>
+            <label
+              htmlFor="emailAddress"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
               Email Address <span className={styles.req}>*</span>
             </label>
             <input
@@ -317,14 +518,17 @@ function TestEventRegistration() {
               placeholder="Enter your email address"
               value={formValues.emailAddress}
               onChange={handleChange}
-              className={styles.input}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
             />
             {errors.emailAddress && <span className={styles.error}>{errors.emailAddress}</span>}
           </div>
 
           {/* DOB */}
           <div className={styles.formGroup}>
-            <label htmlFor="dateOfBirth" className={styles.label}>
+            <label
+              htmlFor="dateOfBirth"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
               Date of Birth <span className={styles.req}>*</span>
             </label>
             <input
@@ -334,14 +538,14 @@ function TestEventRegistration() {
               value={formValues.dateOfBirth}
               onChange={handleChange}
               max={maxDob}
-              className={styles.input}
+              className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
             />
             {errors.dateOfBirth && <span className={styles.error}>{errors.dateOfBirth}</span>}
           </div>
 
           {/* Gender */}
           <div className={styles.formGroup}>
-            <span className={styles.label}>
+            <span className={`${styles.label} ${darkMode ? styles.textLight : ''}`}>
               Gender <span className={styles.req}>*</span>
             </span>
             <div className={styles.radioGroup}>
@@ -360,7 +564,10 @@ function TestEventRegistration() {
             </div>
             {formValues.gender === 'Others' && (
               <div className={styles.othersInput}>
-                <label htmlFor="otherGender" className={styles.label}>
+                <label
+                  htmlFor="otherGender"
+                  className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+                >
                   Please Specify <span className={styles.req}>*</span>
                 </label>
                 <input
@@ -369,7 +576,7 @@ function TestEventRegistration() {
                   name="otherGender"
                   value={formValues.otherGender || ''}
                   onChange={handleChange}
-                  className={styles.input}
+                  className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
                 />
                 {errors.otherGender && <span className={styles.error}>{errors.otherGender}</span>}
               </div>
@@ -378,9 +585,8 @@ function TestEventRegistration() {
           </div>
 
           {/* Address */}
-          {/* Address */}
           <fieldset className={styles.formGroup} aria-describedby="addressHelp">
-            <legend className={styles.label}>
+            <legend className={`${styles.label} ${darkMode ? styles.textLight : ''}`}>
               Address <span className={styles.req}>*</span>
             </legend>
 
@@ -392,7 +598,7 @@ function TestEventRegistration() {
                 placeholder="Street Address"
                 value={formValues.address}
                 onChange={handleChange}
-                className={styles.input}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
               />
               <input
                 type="text"
@@ -401,7 +607,7 @@ function TestEventRegistration() {
                 placeholder="City"
                 value={formValues.city}
                 onChange={handleChange}
-                className={styles.input}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
               />
               <input
                 type="text"
@@ -410,7 +616,7 @@ function TestEventRegistration() {
                 placeholder="State/Province"
                 value={formValues.state}
                 onChange={handleChange}
-                className={styles.input}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
               />
               <input
                 type="text"
@@ -419,7 +625,7 @@ function TestEventRegistration() {
                 placeholder="Postal/zip code"
                 value={formValues.zipcode}
                 onChange={handleChange}
-                className={styles.input}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
               />
               <input
                 type="text"
@@ -428,7 +634,7 @@ function TestEventRegistration() {
                 placeholder="Country"
                 value={formValues.country}
                 onChange={handleChange}
-                className={styles.input}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
               />
             </div>
 
@@ -441,7 +647,10 @@ function TestEventRegistration() {
 
           {/* How did you hear */}
           <fieldset className={styles.formGroup} aria-describedby="howHelp">
-            <legend id="howLegend" className={styles.label}>
+            <legend
+              id="howLegend"
+              className={`${styles.label} ${darkMode ? styles.textLight : ''}`}
+            >
               How did you hear about us? (Select all that apply){' '}
               <span className={styles.req}>*</span>
             </legend>
@@ -468,7 +677,7 @@ function TestEventRegistration() {
                 placeholder="Other (please specify)"
                 value={formValues.otherHowDidYouHear}
                 onChange={handleChange}
-                className={styles.input}
+                className={`${styles.input} ${darkMode ? styles.inputDark : ''}`}
                 aria-describedby="howHelp"
               />
             )}
@@ -508,13 +717,16 @@ function TestEventRegistration() {
           }}
         >
           <div
-            className={styles.modalContent}
+            className={`${styles.modalContent} ${darkMode ? styles.modalContentDark : ''}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="confirmTitle"
             tabIndex={-1}
           >
-            <h2 id="confirmTitle" className={styles.modalTitle}>
+            <h2
+              id="confirmTitle"
+              className={`${styles.modalTitle} ${darkMode ? styles.textLight : ''}`}
+            >
               Registration Successful
             </h2>
             <div className={styles.modalBody}>

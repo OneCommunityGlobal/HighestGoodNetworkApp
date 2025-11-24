@@ -270,8 +270,6 @@ export default (
 
     <Route path="/mostsusceptibletoolschart" component={MostSusceptibleTools} />
 
-    <Route path="/TestEventReg" component={TestEventRegistration} />
-
     <Route path="/logattendance" component={AttendanceNoShow} />
 
     <>
@@ -643,6 +641,11 @@ export default (
         <CPProtectedRoute
           path="/communityportal/activities/FollowUpEmailTemplate"
           component={FollowUpEmailTemplate}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/TestEventReg"
+          exact
+          component={TestEventRegistration}
         />
 
         {/* Good Education  Portal Routes */}
