@@ -18,24 +18,19 @@ function ApplicantsDashboard() {
   // dark mode from Redux
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const handleFilterChange = async (option, start, end) => {
-    setLoading(true);
-    setError(null);
-
-    // validation for custom dates
-    if (option === 'custom') {
-      if (!start || !end) {
-        setLoading(false);
-        return;
-      }
-      if (start > end) {
-        setError('🚨 Start date cannot be after end date.');
-        setChartData([]);
-        setLoading(false);
-        return;
-      }
+  // Extract validation logic
+  const validateCustomDates = (start, end) => {
+    if (!start || !end) {
+      return { valid: false, error: null };
     }
+    if (start > end) {
+      return { valid: false, error: '🚨 Start date cannot be after end date.' };
+    }
+    return { valid: true, error: null };
+  };
 
+  // Extract data fetching logic
+  const fetchData = async (option, start, end) => {
     try {
       const filter = { selectedOption: option, startDate: start, endDate: end };
       const data = await fetchApplicantsData(filter);
@@ -43,21 +38,119 @@ function ApplicantsDashboard() {
       if (!data || data.length === 0) {
         setError('⚠️ No data available for the selected filter.');
         setChartData([]);
-      } else {
-        setChartData(data);
-        setCompareLabel(option === 'custom' ? null : `last ${option.slice(0, -2)}`);
+        return;
       }
+
+      setChartData(data);
+      const label = option === 'custom' ? null : `last ${option.slice(0, -2)}`;
+      setCompareLabel(label);
+      setError(null);
     } catch (err) {
+      // Handle exception properly
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+      // eslint-disable-next-line no-console
+      console.error('Failed to fetch applicants data:', errorMessage);
       setError('❌ Failed to load data. Please try again.');
       setChartData([]);
     }
+  };
 
+  const handleFilterChange = async (option, start, end) => {
+    setLoading(true);
+    setError(null);
+
+    // validation for custom dates
+    if (option === 'custom') {
+      const validation = validateCustomDates(start, end);
+      if (!validation.valid) {
+        if (validation.error) {
+          setError(validation.error);
+          setChartData([]);
+        }
+        setLoading(false);
+        return;
+      }
+    }
+
+    await fetchData(option, start, end);
     setLoading(false);
   };
+
+  // Extract chart content rendering
+  const renderChartContent = () => {
+    if (loading) {
+      return (
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: 'calc(100vh - 150px)',
+            minHeight: '600px',
+            width: '100%',
+            backgroundColor: darkMode ? '#1b2a41' : '#fff',
+          }}
+        >
+          <p
+            style={{
+              fontSize: 'clamp(18px, 2.5vw, 24px)',
+              fontWeight: 'bold',
+              color: darkMode ? '#e5e7eb' : '#000',
+              textAlign: 'center',
+            }}
+          >
+            Loading...
+          </p>
+        </div>
+      );
+    }
+
+    const hasData = !error && chartData.length > 0;
+    if (hasData) {
+      return <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />;
+    }
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 'calc(100vh - 150px)',
+          minHeight: '600px',
+          width: '100%',
+          backgroundColor: darkMode ? '#1b2a41' : '#fff',
+        }}
+      >
+        <p
+          style={{
+            fontSize: 'clamp(16px, 2.5vw, 18px)',
+            fontWeight: '600',
+            color: darkMode ? '#9ca3af' : '#6b7280',
+            textAlign: 'center',
+          }}
+        >
+          {error ? 'Unable to load chart data.' : 'No data available to display.'}
+        </p>
+      </div>
+    );
+  };
+
+  // Extract date picker styles
+  const getDatePickerStyles = () => ({
+    backgroundColor: darkMode ? '#1f2937' : '#fff',
+    color: darkMode ? '#e5e7eb' : '#000',
+    border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
+    borderRadius: darkMode ? '0' : '4px',
+    padding: '6px 12px',
+    fontSize: '14px',
+    cursor: 'pointer',
+  });
 
   // initial load
   useEffect(() => {
     handleFilterChange('weekly', null, null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -134,15 +227,7 @@ function ApplicantsDashboard() {
               className={darkMode ? 'hgn-datepicker-dark' : ''}
               calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : ''}
               wrapperClassName={darkMode ? styles.datePickerWrapper : ''}
-              style={{
-                backgroundColor: darkMode ? '#1f2937' : '#fff',
-                color: darkMode ? '#e5e7eb' : '#000',
-                border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
-                borderRadius: darkMode ? '0' : '4px',
-                padding: '6px 12px',
-                fontSize: '14px',
-                cursor: 'pointer',
-              }}
+              style={getDatePickerStyles()}
             />
             <span style={{ color: darkMode ? '#e5e7eb' : '#000' }}>to</span>
             <DatePicker
@@ -156,15 +241,7 @@ function ApplicantsDashboard() {
               className={darkMode ? 'hgn-datepicker-dark' : ''}
               calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : ''}
               wrapperClassName={darkMode ? styles.datePickerWrapper : ''}
-              style={{
-                backgroundColor: darkMode ? '#1f2937' : '#fff',
-                color: darkMode ? '#e5e7eb' : '#000',
-                border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
-                borderRadius: darkMode ? '0' : '4px',
-                padding: '6px 12px',
-                fontSize: '14px',
-                cursor: 'pointer',
-              }}
+              style={getDatePickerStyles()}
             />
           </>
         )}
@@ -192,55 +269,7 @@ function ApplicantsDashboard() {
           backgroundColor: darkMode ? '#1b2a41' : '#fff',
         }}
       >
-        {loading ? (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 'calc(100vh - 150px)',
-              minHeight: '600px',
-              width: '100%',
-              backgroundColor: darkMode ? '#1b2a41' : '#fff',
-            }}
-          >
-            <p
-              style={{
-                fontSize: 'clamp(18px, 2.5vw, 24px)',
-                fontWeight: 'bold',
-                color: darkMode ? '#e5e7eb' : '#000',
-                textAlign: 'center',
-              }}
-            >
-              Loading...
-            </p>
-          </div>
-        ) : !error && chartData.length > 0 ? (
-          <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />
-        ) : (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: 'calc(100vh - 150px)',
-              minHeight: '600px',
-              width: '100%',
-              backgroundColor: darkMode ? '#1b2a41' : '#fff',
-            }}
-          >
-            <p
-              style={{
-                fontSize: 'clamp(16px, 2.5vw, 18px)',
-                fontWeight: '600',
-                color: darkMode ? '#9ca3af' : '#6b7280',
-                textAlign: 'center',
-              }}
-            >
-              {error ? 'Unable to load chart data.' : 'No data available to display.'}
-            </p>
-          </div>
-        )}
+        {renderChartContent()}
       </div>
 
       {/* Error/Validation message below chart */}

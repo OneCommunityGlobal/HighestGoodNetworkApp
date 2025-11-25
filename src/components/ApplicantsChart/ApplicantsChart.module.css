@@ -29,7 +29,7 @@
 
 .text-light .hgn-datepicker-dark-calendar .react-datepicker__day--selected,
 .text-light .hgn-datepicker-dark-calendar .react-datepicker__day--keyboard-selected {
-  background-color: #3b82f6 !important;
+  background-color: #2563eb !important;
   color: #ffffff !important;
   border-radius: 0 !important;
 }
