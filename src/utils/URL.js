@@ -101,6 +101,7 @@ export const ENDPOINTS = {
   TASK_DEL: (taskId, motherId) => `${APIEndpoint}/task/del/${taskId}/${motherId}`,
   GET_TASK: taskId => `${APIEndpoint}/task/${taskId}`,
   TASK_UPDATE: taskId => `${APIEndpoint}/task/update/${taskId}`,
+  TASK_DELETE_BY_ID: (taskId, userId) => `${APIEndpoint}/task/deleteTask/${taskId}/${userId}`,
   TASK_UPDATE_STATUS: taskId => `${APIEndpoint}/task/updateStatus/${taskId}`,
   TASK_CHANGE_LOGS: taskId => `${APIEndpoint}/task/${taskId}/changeLogs`,
   DELETE_CHILDREN: taskId => `${APIEndpoint}/task/delete/children/${taskId}`,
