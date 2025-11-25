@@ -7,49 +7,50 @@ import { ENDPOINTS } from '../../utils/URL';
 import styles from './QuestionSetManager.module.css';
 import QuestionEditModal from './QuestionEditModal';
 
-function QuestionSetManager({ formFields, setFormFields, onImportQuestions, darkMode }) {
+function QuestionSetManager({
+  formFields,
+  setFormFields,
+  onImportQuestions,
+  darkMode,
+  templateName,
+  setTemplateName,
+  selectedTemplate,
+  setSelectedTemplate,
+}) {
   const [templates, setTemplates] = useState([]);
-  const [templateName, setTemplateName] = useState('');
-  const [selectedTemplate, setSelectedTemplate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
 
   const api = {
-    // Get all templates
     getTemplates: async () => {
       const response = await axios.get(ENDPOINTS.GET_ALL_TEMPLATES);
       return response.data.templates;
     },
-
-    // Create a new template
     createTemplate: async data => {
       const response = await axios.post(ENDPOINTS.CREATE_TEMPLATE, data);
       return response.data.template;
     },
-
-    // Update an existing template
     updateTemplate: async (id, data) => {
       const response = await axios.put(ENDPOINTS.UPDATE_TEMPLATE(id), data);
       return response.data.template;
     },
-
-    // Delete a template
     deleteTemplate: async id => {
       const response = await axios.delete(ENDPOINTS.DELETE_TEMPLATE(id));
       return response.data;
     },
-
-    // Get template by ID
     getTemplateById: async id => {
       const response = await axios.get(ENDPOINTS.GET_TEMPLATE_BY_ID(id));
       return response.data.template;
     },
   };
 
-  // Load templates from API on component mount
+  // --------------------------
+  // LOAD TEMPLATES
+  // --------------------------
   useEffect(() => {
     const fetchTemplates = async () => {
       setIsLoading(true);
@@ -61,15 +62,13 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
       } catch (err) {
         console.error('Failed to fetch templates:', err);
 
-        // Fallback to localStorage if API fails
         try {
-          const savedTemplates = localStorage.getItem('jobFormTemplates');
-          if (savedTemplates) {
-            setTemplates(JSON.parse(savedTemplates));
-            // setError('Using locally saved templates.');
+          const saved = localStorage.getItem('jobFormTemplates');
+          if (saved) {
+            setTemplates(JSON.parse(saved));
           }
-        } catch (localError) {
-          console.error('Failed to load local templates:', localError);
+        } catch (localErr) {
+          console.error('Failed to load local templates:', localErr);
         }
       } finally {
         setIsLoading(false);
@@ -79,6 +78,9 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     fetchTemplates();
   }, []);
 
+  // --------------------------
+  // SAVE TEMPLATE
+  // --------------------------
   const saveTemplate = async () => {
     if (templateName.trim() === '') {
       alert('Please enter a template name');
@@ -86,7 +88,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     }
 
     if (formFields.length === 0) {
-      alert('Your form is empty. Please add questions before saving as a template.');
+      alert('Your form is empty. Add questions first.');
       return;
     }
 
@@ -94,21 +96,18 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     setError(null);
 
     try {
-      const templateExists = templates.some(t => t.name === templateName);
+      const exists = templates.some(t => t.name === templateName);
 
-      if (templateExists) {
-        const confirmOverwrite = window.confirm(
-          `Template "${templateName}" already exists. Do you want to overwrite it?`,
-        );
+      if (exists) {
+        const confirmOverwrite = window.confirm(`Template "${templateName}" exists. Overwrite?`);
+
         if (!confirmOverwrite) {
           setIsLoading(false);
           return;
         }
 
-        // Find the existing template to get its ID
         const existingTemplate = templates.find(t => t.name === templateName);
 
-        // Update the template
         const updatedTemplate = await api.updateTemplate(existingTemplate._id, {
           name: templateName,
           fields: formFields.map(field => ({
@@ -121,10 +120,9 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           })),
         });
 
-        // Update local state
         setTemplates(templates.map(t => (t._id === updatedTemplate._id ? updatedTemplate : t)));
 
-        alert(`Template "${templateName}" updated successfully!`);
+        alert(`Template "${templateName}" updated.`);
       } else {
         const newTemplate = await api.createTemplate({
           name: templateName,
@@ -138,56 +136,51 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           })),
         });
 
-        // Update local state
-        const updatedTemplates = [...templates, newTemplate];
-        setTemplates(updatedTemplates);
+        const updated = [...templates, newTemplate];
+        setTemplates(updated);
 
-        // Also saved to localStorage as backup
-        localStorage.setItem('jobFormTemplates', JSON.stringify(updatedTemplates));
+        localStorage.setItem('jobFormTemplates', JSON.stringify(updated));
 
-        alert(`Template "${templateName}" created successfully!`);
+        alert(`Template "${templateName}" created.`);
       }
 
       setTemplateName('');
     } catch (err) {
       console.error('Failed to save template:', err);
+      alert('Failed to save. Check console.');
 
-      // Save to localStorage as fallback
-      try {
-        const templateExists = templates.some(t => t.name === templateName);
-        if (templateExists) {
-          const newTemplates = templates.map(t =>
-            t.name === templateName ? { ...t, fields: formFields } : t,
-          );
-          setTemplates(newTemplates);
-          localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
-        } else {
-          const newTemplates = [
-            ...templates,
-            {
-              id: Date.now(), // Add a temporary ID for local templates
-              name: templateName,
-              fields: formFields,
-            },
-          ];
+      // fallback local save
+      const exists = templates.some(t => t.name === templateName);
 
-          setTemplates(newTemplates);
-          localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
-        }
-        alert(`Template "${templateName}" saved locally.`);
-      } catch (localError) {
-        console.error('Failed to save local template:', localError);
-        alert('Failed to save template. Please try again.');
+      if (exists) {
+        const newTemplates = templates.map(t =>
+          t.name === templateName ? { ...t, fields: formFields } : t,
+        );
+        setTemplates(newTemplates);
+        localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
+      } else {
+        const newTemplates = [
+          ...templates,
+          {
+            id: Date.now(),
+            name: templateName,
+            fields: formFields,
+          },
+        ];
+        setTemplates(newTemplates);
+        localStorage.setItem('jobFormTemplates', JSON.stringify(newTemplates));
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Load template
+  // --------------------------
+  // LOAD TEMPLATE
+  // --------------------------
   const loadTemplate = async () => {
     if (selectedTemplate === '') {
-      alert('Please select a template to load');
+      alert('Please select a template.');
       return;
     }
 
@@ -198,40 +191,37 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
       const template = templates.find(t => t.name === selectedTemplate);
 
       if (template) {
-        // Confirm if user wants to replace current form fields
         if (formFields.length > 0) {
-          const confirmLoad = window.confirm('This will replace your current form. Continue?');
+          const confirmLoad = window.confirm('This replaces your current form. Continue?');
           if (!confirmLoad) {
             setIsLoading(false);
             return;
           }
         }
 
-        // Check if template has _id (server template) or not (local template)
         if (template._id) {
-          // Get the full template data from the server
           const fullTemplate = await api.getTemplateById(template._id);
           onImportQuestions(fullTemplate.fields);
         } else {
-          // Use the local template directly
           onImportQuestions(template.fields);
         }
 
-        alert(`Template "${selectedTemplate}" loaded successfully!`);
+        alert(`Template "${selectedTemplate}" loaded.`);
       }
     } catch (err) {
       console.error('Failed to load template:', err);
-      setError('Failed to load template. Please try again later.');
-      alert('Failed to load template. Please try again.');
+      alert('Failed to load template.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Add template to existing fields
+  // --------------------------
+  // APPEND TEMPLATE
+  // --------------------------
   const appendTemplate = async () => {
     if (selectedTemplate === '') {
-      alert('Please select a template to append');
+      alert('Select a template to append');
       return;
     }
 
@@ -242,37 +232,33 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
       const template = templates.find(t => t.name === selectedTemplate);
 
       if (template) {
-        // Check if template has _id (server template) or not (local template)
         if (template._id) {
-          // Get template fields for appending from the server
           const templateData = await api.getTemplateById(template._id);
           onImportQuestions([...formFields, ...templateData.fields]);
         } else {
-          // Use the local template directly
           onImportQuestions([...formFields, ...template.fields]);
         }
 
-        alert(`Template "${selectedTemplate}" appended successfully!`);
+        alert(`Template "${selectedTemplate}" appended.`);
       }
     } catch (err) {
       console.error('Failed to append template:', err);
-      setError('Failed to append template. Please try again later.');
-      alert('Failed to append template. Please try again.');
+      alert('Append failed.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Delete a template
+  // --------------------------
+  // DELETE TEMPLATE
+  // --------------------------
   const deleteTemplate = async () => {
     if (selectedTemplate === '') {
-      alert('Please select a template to delete');
+      alert('Select a template to delete');
       return;
     }
 
-    const confirmDelete = window.confirm(
-      `Are you sure you want to delete template "${selectedTemplate}"?`,
-    );
+    const confirmDelete = window.confirm(`Delete template "${selectedTemplate}"?`);
     if (!confirmDelete) return;
 
     setIsLoading(true);
@@ -282,39 +268,39 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
       const template = templates.find(t => t.name === selectedTemplate);
 
       if (template) {
-        // Check if template has _id (server template) or not (local template)
         if (template._id) {
-          // Delete from server
           await api.deleteTemplate(template._id);
         }
 
-        // Always remove from local state
-        const filteredTemplates = templates.filter(t => t.name !== selectedTemplate);
-        setTemplates(filteredTemplates);
-        localStorage.setItem('jobFormTemplates', JSON.stringify(filteredTemplates));
+        const filtered = templates.filter(t => t.name !== selectedTemplate);
+        setTemplates(filtered);
+        localStorage.setItem('jobFormTemplates', JSON.stringify(filtered));
 
         setSelectedTemplate('');
-        alert(`Template "${selectedTemplate}" deleted successfully!`);
+        alert(`Template "${selectedTemplate}" deleted.`);
       }
     } catch (err) {
       console.error('Failed to delete template:', err);
-      setError('Failed to delete template. Please try again later.');
 
-      // Still delete from local state
-      const filteredTemplates = templates.filter(t => t.name !== selectedTemplate);
-      setTemplates(filteredTemplates);
-      localStorage.setItem('jobFormTemplates', JSON.stringify(filteredTemplates));
+      const filtered = templates.filter(t => t.name !== selectedTemplate);
+      setTemplates(filtered);
+      localStorage.setItem('jobFormTemplates', JSON.stringify(filtered));
+
       setSelectedTemplate('');
-      alert(`Template deleted from local storage only.`);
+      alert('Deleted locally only.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // --------------------------
+  // QUESTION EDITING
+  // --------------------------
   const handleSaveEditedQuestion = editedQuestion => {
     if (editingIndex !== null) {
-      const updatedQuestion = {
-        ...formFields[editingIndex],
+      const updated = [...formFields];
+      updated[editingIndex] = {
+        ...updated[editingIndex],
         questionText: editedQuestion.label,
         questionType: editedQuestion.type,
         options: editedQuestion.options || [],
@@ -322,17 +308,9 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
         placeholder: editedQuestion.placeholder,
       };
 
-      const updatedFields = [...formFields];
-      updatedFields[editingIndex] = updatedQuestion;
-      setFormFields(updatedFields);
+      setFormFields(updated);
     }
 
-    setEditModalOpen(false);
-    setEditingQuestion(null);
-    setEditingIndex(null);
-  };
-
-  const handleCancelEdit = () => {
     setEditModalOpen(false);
     setEditingQuestion(null);
     setEditingIndex(null);
@@ -342,7 +320,9 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
     <div className={`${styles.questionSetManager} ${darkMode ? styles.darkMode : ''}`}>
       <h3>Question Set Templates</h3>
       {error && <div className={styles.errorMessage}>{error}</div>}
+
       <div className={styles.templateActions}>
+        {/* SAVE */}
         <div className={styles.saveTemplate}>
           <input
             type="text"
@@ -360,6 +340,8 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
             {isLoading ? 'Saving...' : 'Save Current set'}
           </button>
         </div>
+
+        {/* LOAD / APPEND / DELETE */}
         <div className={styles.loadTemplate}>
           <select
             value={selectedTemplate}
@@ -367,12 +349,13 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
             disabled={isLoading || templates.length === 0}
           >
             <option value="">Select a template</option>
-            {templates.map((template, i) => (
-              <option key={template._id || i} value={template.name}>
-                {template.name}
+            {templates.map((t, i) => (
+              <option key={t._id || i} value={t.name}>
+                {t.name}
               </option>
             ))}
           </select>
+
           <button
             type="button"
             onClick={loadTemplate}
@@ -381,6 +364,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           >
             {isLoading ? 'Loading...' : 'Clone with Template'}
           </button>
+
           <button
             type="button"
             onClick={appendTemplate}
@@ -389,6 +373,7 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           >
             {isLoading ? 'Appending...' : 'Append Template'}
           </button>
+
           <button
             type="button"
             onClick={deleteTemplate}
@@ -399,11 +384,16 @@ function QuestionSetManager({ formFields, setFormFields, onImportQuestions, dark
           </button>
         </div>
       </div>
+
       {editModalOpen && editingQuestion && (
         <QuestionEditModal
           question={editingQuestion}
           onSave={handleSaveEditedQuestion}
-          onCancel={handleCancelEdit}
+          onCancel={() => {
+            setEditModalOpen(false);
+            setEditingQuestion(null);
+            setEditingIndex(null);
+          }}
         />
       )}
     </div>
@@ -426,6 +416,11 @@ QuestionSetManager.propTypes = {
   ).isRequired,
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
+  darkMode: PropTypes.bool.isRequired,
+  templateName: PropTypes.string.isRequired,
+  setTemplateName: PropTypes.func.isRequired,
+  selectedTemplate: PropTypes.string.isRequired,
+  setSelectedTemplate: PropTypes.func.isRequired,
 };
 
 export default QuestionSetManager;

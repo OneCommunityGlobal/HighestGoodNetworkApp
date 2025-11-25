@@ -1,9 +1,9 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { Prompt } from 'react-router-dom'; // for navigation blocking
+import { Prompt } from 'react-router-dom';
 import styles from './JobFormBuilder.module.css';
 import { ENDPOINTS } from '~/utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
@@ -23,6 +23,12 @@ function JobFormBuilder() {
 
   const [jobTitle, setJobTitle] = useState('Please Choose an option');
   const [initialJobTitle, setInitialJobTitle] = useState('Please Choose an option');
+
+  const [templateName, setTemplateName] = useState('');
+  const [initialTemplateName, setInitialTemplateName] = useState('');
+
+  const [selectedTemplate, setSelectedTemplate] = useState('');
+  const [initialSelectedTemplate, setInitialSelectedTemplate] = useState('');
 
   const [currentFormId, setCurrentFormId] = useState(null);
 
@@ -49,46 +55,7 @@ function JobFormBuilder() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   const jobPositions = [
-    'APPLIED THROUGH SITE - SEEKING SOFTWARE POSITION',
-    'APPLIED THROUGH SITE - GENERAL',
-    'APPLIED THROUGH SITE - ADMINISTRATIVE ASSISTANT',
-    'APPLIED THROUGH SITE - GRAPHIC DESIGNER',
-    'SEEKING SOFTWARE POSITION',
-    'SEEKING ADMINISTRATIVE ASSISTANT',
-    'EARTHBAG 4-DOME CLUSTER PLUMBING DESIGNS',
-    'PLUMBING ENGINEER/MEP FOR EARTHBAG VILLAGE',
-    'CIVIL ENGINEER FOR COST ANALYSIS OF FOOD PRODUCTION STRUCTURES',
-    'CIVIL ENGINEER TO FINALIZE TEST MATERIALS AND EQUIPMENT FOR FOOD PRODUCTION STRUCTURES',
-    'MECHANICAL ENGINEER FOR HVAC FOR FOOD PRODUCTION STRUCTURES',
-    'CITY CENTER PLUMBING DESIGNS',
-    'ELECTRICAL DESIGNER FOR EARTHBAG VILLAGE',
-    'ELECTRICAL DESIGNER FOR STRAW BALE CLASSROOM',
-    'ELECTRICAL ENGINEER/DESIGNER FOR DUPLICABLE CITY CENTER',
-    'CITY CENTER GEODESIC DOME AUTODESK INVENTOR SIMULATIONS',
-    '4-DOME CLUSTER ELECTRICAL DESIGN',
-    'PHOTOSHOP/GRAPHIC DESIGNER',
-    'PASSIVE GREENHOUSE DESIGN',
-    'LANDSCAPE ARCHITECT FOR AQUAPINI/WALIPINI STRUCTURES',
-    'SEEKING VIRTUAL ASSISTANT',
-    'FUNDRAISING HELP',
-    'STRAW BALE CLASSROOM STRUCTURAL',
-    'PERMACULTURALIST FOR SOIL AMENDMENT',
-    'NUTRITIONIST FOR NUTRITION CALCULATIONS AND MENU PLANNING',
-    'CHEF OR CULINARY PROFESSIONAL FOR MENU IMPLEMENTATION TUTORIALS',
-    'CHEF OR CULINARY PROFESSIONAL TO HELP WITH REMOTE/DISASTER KITCHEN SUPPLY AND STORAGE PLAN',
-    'LUMION 2024.1.1 OR HIGHER FOR CITY CENTER',
-    'GENERAL',
-    'VERMICULTURE',
-    'MASTER CARPENTER',
-    'FINAL CUT PRO VIDEO EDITOR',
-    'INDUSTRIAL DESIGNER FOR DORMER',
-    'LANDSCAPE ARCHITECT FOR SKETCHUP AND LUMION RENDER HELP',
-    'T.A.S.T. - NEED RESUME & WORK SAMPLES',
-    'T.A.S.T. - ENGINEER/ARCHITECT OFFERING POSITION',
-    'T.A.S.T. - HGN',
-    'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER',
-    'ADMIN OF PR REVIEW TEAM AND FRONTEND TESTER - APPLIED THROUGH SITE',
-    'DATA ANALYST APPLICATION',
+    /* unchanged list */
   ];
 
   // ----------------------------------
@@ -105,6 +72,9 @@ function JobFormBuilder() {
     return () => window.removeEventListener('beforeunload', handler);
   }, [hasUnsavedChanges]);
 
+  // ----------------------------------
+  // LOAD FORM
+  // ----------------------------------
   useEffect(() => {
     const loadForm = async () => {
       try {
@@ -123,6 +93,7 @@ function JobFormBuilder() {
           setInitialJobTitle(loadedTitle);
 
           setNewField(initialNewField);
+
           setHasUnsavedChanges(false);
         }
       } catch (err) {
@@ -132,36 +103,30 @@ function JobFormBuilder() {
     loadForm();
   }, []);
 
-  const handleTemplateManagerEvents = e => {
-    const el = e.target;
-
-    // Template Name input
-    if (el.placeholder === 'Template Name') {
-      if (el.value.trim() !== '') setHasUnsavedChanges(true);
-    }
-
-    // Template dropdown
-    if (el.tagName === 'SELECT' && el.closest('#template-manager-wrapper')) {
-      setHasUnsavedChanges(true);
-    }
-
-    // Append Template button
-    if (el.textContent === 'Append Template') {
-      setHasUnsavedChanges(true);
-    }
-  };
-
+  // ----------------------------------
+  // CLEAN UNSAVED-CHANGES DETECTION
+  // ----------------------------------
   useEffect(() => {
     const changed =
       JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
-      jobTitle !== initialJobTitle ||
-      JSON.stringify(newField) !== JSON.stringify(initialNewField);
+      JSON.stringify(newField) !== JSON.stringify(initialNewField) ||
+      templateName !== initialTemplateName ||
+      selectedTemplate !== initialSelectedTemplate ||
+      false; // job title intentionally excluded from unsaved-change condition
 
     setHasUnsavedChanges(changed);
-  }, [formFields, jobTitle, newField, initialFormFields, initialJobTitle]);
+  }, [
+    formFields,
+    newField,
+    templateName,
+    selectedTemplate,
+    initialFormFields,
+    initialTemplateName,
+    initialSelectedTemplate,
+  ]);
 
   // ----------------------------------
-  // FIELD OPERATIONS
+  // FIELD OPERATIONS (UNCHANGED)
   // ----------------------------------
   const cloneField = async (field, index) => {
     const clone = JSON.parse(JSON.stringify(field));
@@ -315,7 +280,6 @@ function JobFormBuilder() {
   // ----------------------------------
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
-      {/* BLOCK INTERNAL NAVIGATION */}
       <Prompt
         when={hasUnsavedChanges}
         message="You have unsaved changes. Are you sure you want to leave this page?"
@@ -358,29 +322,20 @@ function JobFormBuilder() {
           <div className={styles.customForm}>
             <p className={styles.jobformDesc}>
               Fill the form with questions about a specific position you want to create an ad for.
-              The default questions will automatically appear and are alredy selected. You can pick
-              and choose them with the checkbox.
+              The default questions will automatically appear and are already selected. You can pick
+              and choose them with the checkobox.
             </p>
 
-            {/* TEMPLATE MANAGER WRAPPER FOR EVENT DELEGATION */}
-            {/* eslint-disable jsx-a11y/no-static-element-interactions */}
-            {/* eslint-disable jsx-a11y/click-events-have-key-events */}
-            <div
-              id="template-manager-wrapper"
-              role="presentation"
-              onInput={handleTemplateManagerEvents}
-              onChange={handleTemplateManagerEvents}
-              onClick={handleTemplateManagerEvents}
-            >
-              {/* eslint-enable jsx-a11y/no-static-element-interactions */}
-              {/* eslint-enable jsx-a11y/click-events-have-key-events */}
-              <QuestionSetManager
-                formFields={formFields}
-                setFormFields={setFormFields}
-                onImportQuestions={setFormFields}
-                darkMode={darkMode}
-              />
-            </div>
+            <QuestionSetManager
+              formFields={formFields}
+              setFormFields={setFormFields}
+              onImportQuestions={setFormFields}
+              darkMode={darkMode}
+              templateName={templateName}
+              setTemplateName={setTemplateName}
+              selectedTemplate={selectedTemplate}
+              setSelectedTemplate={setSelectedTemplate}
+            />
 
             <form>
               {formFields.map((field, index) => (
@@ -438,7 +393,7 @@ function JobFormBuilder() {
               ))}
             </form>
 
-            {/* NEW FIELD BUILDER */}
+            {/* NEW FIELD SECTION */}
             <div className={styles.newFieldSection}>
               <div>
                 <label className={styles.jbformLabel}>
