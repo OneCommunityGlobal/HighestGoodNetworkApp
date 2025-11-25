@@ -1,41 +1,35 @@
+/* =========================================
+   PROJECT DETAILS MAIN LAYOUT
+========================================= */
+
 .project-details {
   text-align: center;
-  padding-top: 40px;
-  padding-left: 3%;
-  padding-right: 3%;
+  padding: 40px 3% 0 3%;
   font-weight: bold;
-}
-.project-details-dark {
-  text-align: center;
-  padding-top: 40px;
-  padding-left: 3%;
-  padding-right: 3%;
-  font-weight: bold;
-  background-color: #1C1E1C;
 }
 
+.project-details-dark {
+  text-align: center;
+  padding: 40px 3% 0 3%;
+  font-weight: bold;
+  background-color: #1c1e1c;
+}
+
+/* Titles */
 .project-details-title {
   font-size: 1.5rem;
 }
 
 .project-details-title-dark {
   font-size: 1.5rem;
-  color: white;
+  color: #ffffff;
 }
 
-/* styling for the logBar component - i.e. dashboard with buttons */
+/* =========================================
+   LOG BAR SECTION
+========================================= */
 
-.log-bar {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  margin: 2em;
-  padding: 1em 2em;
-  width: 100%;
-  background-color: white;
-  color: #333333;
-}
-
+.log-bar,
 .log-bar-dark {
   display: flex;
   flex-direction: column;
@@ -43,6 +37,14 @@
   margin: 2em;
   padding: 1em 2em;
   width: 100%;
+}
+
+.log-bar {
+  background-color: #ffffff;
+  color: #333333;
+}
+
+.log-bar-dark {
   background-color: #1b2a41;
   color: #ffffff;
 }
@@ -52,6 +54,7 @@
   margin-top: 1em;
 }
 
+/* Section titles */
 .log-bar__section h2,
 .card.cards-container h2,
 .project-log h2 {
@@ -67,10 +70,13 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
+/* Buttons list */
 .log-bar__section ul {
   list-style-type: none;
+  padding: 0;
 }
 
+/* Buttons */
 .button.btn {
   border: 0;
   border-radius: 10px;
@@ -78,39 +84,38 @@
   width: 100%;
   color: #ffffff !important;
   font-weight: 500;
+  transition: filter 0.2s ease;
 }
 
 .button.btn:hover {
   outline: auto;
   filter: brightness(130%);
-  color: #ffffff !important;
 }
 
-/* buttons custom colors */
-.button.btn.button--green {
-  background-color: #015d4a;
-  color: #ffffff !important;
+/* Button colors */
+.button--green {
+  background-color: #015d4a !important;
 }
 
-.button.btn.button--blue {
-  background-color: #0f6386;
-  color: #ffffff !important;
+.button--blue {
+  background-color: #0f6386 !important;
 }
 
-.button.btn.button--indigo {
-  background-color: #203844;
-  color: #ffffff !important;
+.button--indigo {
+  background-color: #203844 !important;
 }
 
-.button.btn.button--maroon {
-  background-color: #980101;
+.button--maroon {
+  background-color: #980101 !important;
   margin-top: 2em;
-  color: #ffffff !important;
 }
+
+/* =========================================
+   RESPONSIVE LOG BAR
+========================================= */
 
 @media (min-width: 550px) {
   .log-bar {
-    display: flex;
     flex-direction: column;
   }
 
@@ -120,22 +125,20 @@
     justify-content: center;
   }
 
-  .button.btn.btn-secondary {
+  .button.btn {
     width: auto;
   }
 
-  .button.btn.btn-secondary.button--maroon {
+  .button--maroon {
     margin-top: auto;
   }
 }
 
 @media (min-width: 880px) {
   .log-bar {
-    display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    margin: 2em;
   }
 
   .log-bar__section {
@@ -143,16 +146,15 @@
     flex: auto;
   }
 
-  .button.btn.btn-secondary {
-    width: auto;
-  }
-
-  .button.btn.btn-secondary.button--maroon {
+  .button--maroon {
     margin-left: 2em;
   }
 }
 
-/* styling for containers with cards */
+/* =========================================
+   CARDS (TOOLS & MATERIALS)
+========================================= */
+
 .card.cards-container {
   align-items: center;
   margin: 1em 2em;
@@ -170,7 +172,7 @@
   gap: 10px;
 }
 
-/* styling for single card element */
+/* Individual cards */
 .single-card {
   border: 1px solid #eaeeef;
   border-radius: 5px;
@@ -181,31 +183,23 @@
   overflow: visible;
 }
 
+.single-card:hover {
+  box-shadow: 0 20px 20px rgba(0, 0, 0, 0.2), 0 6px 20px rgba(0, 0, 0, 0.2);
+  transform: translate3d(0.5px, 0.5px, 0.5px);
+}
+
 .single-card__img {
   width: 100%;
-  height: auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
   background-color: #ffffff;
   border-radius: 5px 5px 0 0;
 }
 
 .single-card__img img {
-  max-width: 100%;
-  height: auto;
+  width: 100%;
   object-fit: cover;
-  image-rendering: auto;
-  filter: none;
-  -webkit-filter: none;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-}
-
-.single-card:hover {
-  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
-  transform: translate3d(0.5px, 0.5px, 0.5px);
 }
 
 .single-card__body {
@@ -218,7 +212,7 @@
   margin-bottom: -0.2em;
 }
 
-/* button on a card */
+/* Card badge */
 .single-card__info {
   font-size: 0.5rem;
   padding: 1em;
@@ -227,17 +221,115 @@
   background-color: #f2c897;
 }
 
-/* TO DO: dynamic value to be added */
-/* .single-card__info .warning{
-  color: white;
-  background-color: #980101;
-} */
+/* =========================================
+   CARD WRAPPERS (TOOLS + MATERIALS)
+========================================= */
+
+.sectionCardWrapper {
+  background-color: var(--card-bg, #ffffff);
+  padding: 18px 12px;
+  border-radius: 10px;
+  min-height: 100%;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.project-details-dark .sectionCardWrapper {
+  --card-bg: #243447;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.sectionCardWrapper h2 {
+  margin-bottom: 15px !important;
+}
+
+/* =========================================
+   MEMBERS TABLE WRAPPER
+========================================= */
+
+.memberLogWrapper {
+  margin: 25px 0 40px 0;
+  padding: 20px 15px;
+  background-color: var(--member-bg, #ffffff);
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Dark Mode Variables */
+.project-details-dark .memberLogWrapper {
+  --member-bg: #243447;
+  --member-header-bg: #31445c;
+  --member-row-bg: #2f3d4f;
+  --member-header-text: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+
+/* Section Title */
+.memberLogWrapper h2 {
+  margin-bottom: 18px !important;
+}
+
+/* =========================================
+   TABLE BASE
+========================================= */
+
+.memberLogWrapper table {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+  border-collapse: separate;
+  border-spacing: 0 6px; /* space between rows */
+}
+
+/* =========================================
+   TABLE HEADER
+========================================= */
+
+.memberLogWrapper table thead tr th {
+  padding: 12px;
+  font-size: 0.9rem;
+  text-align: left;
+
+  /* Default + variable fallback */
+  background-color: var(--member-header-bg, #f0f6ff);
+  color: var(--member-header-text, #333333);
+
+  border-bottom: 2px solid #dbe6f9;
+}
+
+/* Dark mode border override */
+.project-details-dark .memberLogWrapper table thead tr th {
+  background-color: var(--member-header-bg, #476078);
+  border-bottom: 2px solid #476078 !important;
+}
+
+/* =========================================
+   TABLE BODY ROWS
+========================================= */
+
+.memberLogWrapper table tbody tr td {
+  padding: 10px 12px;
+  font-size: 0.9rem;
+
+  background-color: var(--member-row-bg, #ffffff);
+  color: var(--member-row-text, #333333);
+  border-radius: 6px;
+}
+
+/* Dark mode text for rows */
+.project-details-dark .memberLogWrapper table tbody tr td {
+  --member-row-text: #e8edf4;
+}
+
+/* =========================================
+   RESPONSIVE CARD GRID
+========================================= */
 
 @media (min-width: 992px) {
   .single-card {
     width: calc(33.333% - 20px);
     max-width: 180px;
-    margin-bottom: 15px;
   }
 }
 
@@ -245,18 +337,56 @@
   .single-card {
     width: calc(50% - 15px);
     max-width: 180px;
-    margin-bottom: 15px;
   }
 }
+
 @media (max-width: 575px) {
   .single-card {
     width: 90%;
     max-width: 180px;
-    margin-bottom: 15px;
+  }
+
+  .sectionCardWrapper {
+    padding: 15px 8px;
+  }
+
+  .memberLogWrapper {
+    padding: 12px 8px;
+  }
+
+  .project-details h1 {
+    font-size: 1.4rem;
+  }
+
+  .dashboardHeader {
+    font-size: 1rem !important;
+    padding: 6px 14px !important;
+    min-width: 200px !important;
+  }
+
+  .button.btn {
+    width: 100% !important;
+    font-size: 0.85rem;
+    padding: 8px;
   }
 }
 
-/* styling for project log - i.e.table at the bottom */
+/* Two columns stack */
+@media (max-width: 768px) {
+  .toolsMaterialRow {
+    flex-direction: column;
+  }
+
+  .sectionCardWrapper {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
+/* =========================================
+   PROJECT LOG TABLE (LEGACY STYLES)
+========================================= */
+
 .project-log {
   margin: 2em;
   padding: 1em 2em;
@@ -269,6 +399,12 @@
   background-color: transparent;
 }
 
+.project-log-table td,
+.project-log-table th {
+  padding: 12px !important;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .project-log td,
   .project-log th {
@@ -276,6 +412,8 @@
   }
 }
 
-ul.log-bar__btn-group {
-  padding: 0px;
+/* Prevent horizontal scroll */
+.project-details,
+.project-details-dark {
+  overflow-x: hidden;
 }

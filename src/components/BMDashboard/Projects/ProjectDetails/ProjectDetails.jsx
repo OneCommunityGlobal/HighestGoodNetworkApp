@@ -8,41 +8,45 @@ import ProjectLog from './ProjectLog';
 import styles from './ProjectDetails.module.css';
 
 /* -------------------------------------------
-   REUSABLE DASHBOARD SECTION COMPONENT
+   REUSABLE DASHBOARD SECTION COMPONENT (FIXED)
 ------------------------------------------- */
-const DashboardSection = ({ title, icon, children }) => (
+const DashboardSection = ({ title, icon, children, darkMode }) => (
   <div
     style={{
       textAlign: 'center',
-      marginTop: '25px',
-      marginBottom: '15px',
+      marginTop: '18px',
+      marginBottom: '10px',
     }}
   >
-    <h2
+    <div
       style={{
         display: 'inline-flex',
         alignItems: 'center',
         gap: '10px',
-        backgroundColor: '#e6f2ff',
-        padding: '8px 18px',
+        padding: '10px 22px',
         borderRadius: '8px',
         fontWeight: '600',
-        fontSize: '1.2rem',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+        fontSize: '1.1rem',
+        boxShadow: '0 2px 5px rgba(0,0,0,0.18)',
+        backgroundColor: darkMode ? '#243447' : '#eaf2ff', // FIXED for dark mode
+        color: darkMode ? 'white' : '#1a1a1a',
+        minWidth: '260px', // FIXED: uniform header width
+        justifyContent: 'center',
       }}
     >
-      <span style={{ fontSize: '1.4rem' }}>{icon}</span>
+      <span style={{ fontSize: '1.3rem' }}>{icon}</span>
       {title}
-    </h2>
+    </div>
 
-    {/* BUTTONS AREA */}
+    {/* BUTTON GROUP */}
     <div
       style={{
-        marginTop: '12px',
+        marginTop: '10px',
         display: 'flex',
         justifyContent: 'center',
         flexWrap: 'wrap',
-        gap: '10px',
+        gap: '8px',
+        paddingBottom: '5px',
       }}
     >
       {children}
@@ -84,42 +88,69 @@ function ProjectDetails() {
           {/* --------------------------- */}
           {/*   DAILY LOGGING SECTION     */}
           {/* --------------------------- */}
-          <DashboardSection icon="🕒" title="Daily Logging">
+          <DashboardSection icon="🕒" title="Daily Logging" darkMode={darkMode}>
             <LoggingButtons darkMode={darkMode} />
           </DashboardSection>
 
           {/* --------------------------- */}
           {/*   ADD A NEW ITEM            */}
           {/* --------------------------- */}
-          <DashboardSection icon="➕" title="Add a New Item">
+          <DashboardSection icon="➕" title="Add a New Item" darkMode={darkMode}>
             <AddItemButtons darkMode={darkMode} />
           </DashboardSection>
 
           {/* --------------------------- */}
           {/*           TEAM              */}
           {/* --------------------------- */}
-          <DashboardSection icon="👥" title="Team">
+          <DashboardSection icon="👥" title="Team" darkMode={darkMode}>
             <TeamButtons darkMode={darkMode} />
           </DashboardSection>
 
           {/* TOOLS + MATERIALS ROW */}
-          <Row className="mt-4 mb-4 g-4">
+          <Row className={`mt-4 mb-4 g-4 ${styles.toolsMaterialRow}`}>
             {/* Rented Tools */}
             <Col md="6" className="mb-4">
-              <DashboardSection icon="🚚" title="Rented Tools or Equipment" />
-              <RentedToolsDisplay projectId={projectId} />
+              <div className={styles.sectionCardWrapper}>
+                <DashboardSection icon="🚚" title="Rented Tools or Equipment" darkMode={darkMode} />
+                <RentedToolsDisplay projectId={projectId} />
+              </div>
             </Col>
 
             {/* Materials */}
             <Col md="6" className="mb-4">
-              <DashboardSection icon="🧱" title="Materials with Quantity < 20%" />
-              <MaterialsDisplay projectId={projectId} />
+              <div className={styles.sectionCardWrapper}>
+                <DashboardSection
+                  icon="🧱"
+                  title="Materials with Quantity < 20%"
+                  darkMode={darkMode}
+                />
+                <MaterialsDisplay projectId={projectId} />
+              </div>
             </Col>
           </Row>
 
-          {/* Project Log */}
-          <DashboardSection icon="📋" title="Members Working Today" />
-          <ProjectLog projectId={projectId} />
+          {/* Project Log Section */}
+          <div
+            style={{
+              maxWidth: '1100px',
+              margin: '30px auto',
+              padding: '0 15px',
+            }}
+          >
+            <DashboardSection icon="📋" title="Members Working Today" darkMode={darkMode} />
+
+            <div
+              style={{
+                background: 'white',
+                borderRadius: '12px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                overflowX: 'auto',
+                padding: '10px',
+              }}
+            >
+              <ProjectLog projectId={projectId} />
+            </div>
+          </div>
         </Col>
       </Row>
     </Container>

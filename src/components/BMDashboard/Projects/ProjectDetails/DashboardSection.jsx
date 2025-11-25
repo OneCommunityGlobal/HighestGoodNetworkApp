@@ -3,6 +3,7 @@ import React from 'react';
 const DashboardSection = ({ title, children }) => {
   return (
     <div
+      className="dashboardHeader"
       style={{
         textAlign: 'center',
         marginTop: '20px',
