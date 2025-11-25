@@ -56,12 +56,12 @@ export const getTaskStatusBadge = (task, styles, intermediateTasks = []) => {
   // Check if all sub-tasks are completed
   if (intermediateTasks && intermediateTasks.length > 0) {
     const allSubTasksCompleted = intermediateTasks.every(t => t.status === 'completed');
-    if (allSubTasksCompleted) {
+    // Only show as completed if task is marked completed AND all subtasks are done
+    if (allSubTasksCompleted && (task.status === 'completed' || task.status === 'graded')) {
       return { text: 'Completed', className: styles.completedBadge };
     }
-  }
-
-  if (task.status === 'completed' || task.status === 'graded') {
+  } else if (task.status === 'completed' || task.status === 'graded') {
+    // No subtasks, check task status only
     return { text: 'Completed', className: styles.completedBadge };
   }
 

@@ -95,8 +95,9 @@ const TaskCard = ({
             </svg>
           </button>
 
-          {task.is_completed ||
-          (intermediateTasks.length > 0 &&
+          {/* Show completed only if task is completed AND (no subtasks OR all subtasks are completed) */}
+          {task.is_completed &&
+          (intermediateTasks.length === 0 ||
             intermediateTasks.every(t => t.status === 'completed')) ? (
             <button className={styles.completedButton} disabled>
               <svg
