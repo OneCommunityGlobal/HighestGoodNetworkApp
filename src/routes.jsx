@@ -381,7 +381,6 @@ export default (
           fallback
           routePermissions={RoutePermissions.prDashboard}
         />
-
         <ProtectedRoute
           path="/reports"
           exact
