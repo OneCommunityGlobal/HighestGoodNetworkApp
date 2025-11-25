@@ -1,7 +1,8 @@
 import React from 'react';
 import styles from './TaskCard.module.css';
 import { useTaskLogic } from './useTaskLogic';
-import { canMarkIntermediateTaskAsDone, getMarkIntermediateAsDoneTooltip } from './taskUtils';
+import MarkAsDoneButton from './MarkAsDoneButton';
+import IntermediateTasksList from './IntermediateTasksList';
 
 const TaskCard = ({
   task,
@@ -19,12 +20,6 @@ const TaskCard = ({
     formattedTimeAndDate,
     progressText,
   } = useTaskLogic(task, styles, intermediateTasks);
-
-  const handleMarkAsDone = () => {
-    if (canMarkDone) {
-      onMarkAsDone(task.id);
-    }
-  };
 
   const handleToggleIntermediateTasks = () => {
     if (onToggleIntermediateTasks) {
@@ -95,43 +90,15 @@ const TaskCard = ({
             </svg>
           </button>
 
-          {/* Show completed only if task is completed AND (no subtasks OR all subtasks are completed) */}
-          {task.is_completed &&
-          (intermediateTasks.length === 0 ||
-            intermediateTasks.every(t => t.status === 'completed')) ? (
-            <button className={styles.completedButton} disabled>
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="20,6 9,17 4,12" />
-              </svg>
-              Completed
-            </button>
-          ) : (
-            <button
-              className={`${styles.markDoneButton} ${!canMarkDone ? styles.disabled : ''}`}
-              onClick={handleMarkAsDone}
-              disabled={!canMarkDone}
-              title={markAsDoneTooltip}
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <polyline points="20,6 9,17 4,12" />
-              </svg>
-              Mark as Done
-            </button>
-          )}
+          <MarkAsDoneButton
+            task={task}
+            intermediateTasks={intermediateTasks}
+            canMarkDone={canMarkDone}
+            markAsDoneTooltip={markAsDoneTooltip}
+            onMarkAsDone={onMarkAsDone}
+            styles={styles}
+            iconSize="16"
+          />
         </div>
 
         {/* Intermediate Tasks Section */}
@@ -160,76 +127,11 @@ const TaskCard = ({
 
             {isExpanded && (
               <div className={styles.intermediateTasksList}>
-                {intermediateTasks.length === 0 ? (
-                  <p className={styles.noIntermediateTasks}>No sub-tasks available</p>
-                ) : (
-                  intermediateTasks.map(subTask => {
-                    const subTaskProgress = subTask.status === 'completed' ? 100 : 0;
-                    const canMarkIntermediateDone = canMarkIntermediateTaskAsDone(subTask);
-                    const intermediateTooltip = getMarkIntermediateAsDoneTooltip(subTask);
-
-                    return (
-                      <div key={subTask._id || subTask.id} className={styles.intermediateTaskItem}>
-                        <div className={styles.intermediateTaskContent}>
-                          <h4 className={styles.intermediateTaskTitle}>{subTask.title}</h4>
-                          {subTask.description && (
-                            <p className={styles.intermediateTaskDescription}>
-                              {subTask.description}
-                            </p>
-                          )}
-                          {/* Progress Bar for Sub-task */}
-                          <div className={styles.subTaskProgressSection}>
-                            <div className={styles.subTaskProgressBar}>
-                              <div
-                                className={styles.subTaskProgressFill}
-                                style={{ width: `${subTaskProgress}%` }}
-                              />
-                            </div>
-                            <span className={styles.subTaskProgressText}>{subTaskProgress}%</span>
-                          </div>
-                          <div className={styles.intermediateTaskMeta}>
-                            <span className={styles.intermediateTaskHours}>
-                              {subTask.logged_hours || 0} / {subTask.expected_hours || 0}h
-                            </span>
-                            {subTask.due_date && (
-                              <span className={styles.intermediateTaskDueDate}>
-                                Due: {new Date(subTask.due_date).toLocaleDateString()}
-                              </span>
-                            )}
-                            <span
-                              className={`${styles.intermediateTaskStatus} ${
-                                styles[`status${subTask.status}`]
-                              }`}
-                            >
-                              {subTask.status || 'pending'}
-                            </span>
-                          </div>
-                        </div>
-                        {subTask.status !== 'completed' && (
-                          <button
-                            className={`${styles.markIntermediateDoneButton} ${
-                              !canMarkIntermediateDone ? styles.disabled : ''
-                            }`}
-                            onClick={() => handleMarkIntermediateAsDone(subTask._id || subTask.id)}
-                            disabled={!canMarkIntermediateDone}
-                            title={intermediateTooltip}
-                          >
-                            <svg
-                              width="16"
-                              height="16"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
-                            >
-                              <polyline points="20,6 9,17 4,12" />
-                            </svg>
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })
-                )}
+                <IntermediateTasksList
+                  intermediateTasks={intermediateTasks}
+                  styles={styles}
+                  onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+                />
               </div>
             )}
           </div>
