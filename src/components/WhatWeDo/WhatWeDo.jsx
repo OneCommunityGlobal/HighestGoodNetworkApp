@@ -78,8 +78,6 @@ function WhatWeDoSection() {
               src={section.src}
               alt={section.title}
               onError={e => {
-                // eslint-disable-next-line no-console
-                console.log(`Failed to load image: ${section.src}`);
                 e.target.style.display = 'none';
               }}
             />
