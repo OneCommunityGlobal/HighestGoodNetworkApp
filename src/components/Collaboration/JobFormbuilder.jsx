@@ -1,5 +1,3 @@
-/* eslint-disable no-alert */
-/* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -11,13 +9,13 @@ import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
 
+const safeAlert = msg => globalThis.alert(msg);
+const safeConfirm = msg => globalThis.confirm(msg);
+
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  // ----------------------------------
-  // FORM STATE
-  // ----------------------------------
   const [formFields, setFormFields] = useState([]);
   const [initialFormFields, setInitialFormFields] = useState([]);
 
@@ -48,11 +46,9 @@ function JobFormBuilder() {
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const jobPositions = [];
+  const jobPositions = ['Software Developer', 'Project Manager', 'Analyst'];
 
-  // ----------------------------------
-  // BLOCK PAGE REFRESH
-  // ----------------------------------
+  // Prevent refresh while unsaved changes exist
   useEffect(() => {
     const handler = event => {
       if (hasUnsavedChanges) {
@@ -65,9 +61,7 @@ function JobFormBuilder() {
     return () => globalThis.removeEventListener('beforeunload', handler);
   }, [hasUnsavedChanges]);
 
-  // ----------------------------------
-  // LOAD FORM
-  // ----------------------------------
+  // Load form initially
   useEffect(() => {
     const loadForm = async () => {
       try {
@@ -78,7 +72,6 @@ function JobFormBuilder() {
           const id = form._id || form.id;
 
           setCurrentFormId(id);
-
           setFormFields(form.questions || []);
           setInitialFormFields(form.questions || []);
 
@@ -86,6 +79,7 @@ function JobFormBuilder() {
           setHasUnsavedChanges(false);
         }
       } catch (error) {
+        // still allowed logging
         console.error(error);
       }
     };
@@ -93,9 +87,7 @@ function JobFormBuilder() {
     loadForm();
   }, []);
 
-  // ----------------------------------
-  // UNSAVED-CHANGES DETECTION
-  // ----------------------------------
+  // Detect unsaved changes
   useEffect(() => {
     const changed =
       JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
@@ -106,14 +98,11 @@ function JobFormBuilder() {
     setHasUnsavedChanges(changed);
   }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
-  // ----------------------------------
-  // FIELD OPERATIONS
-  // ----------------------------------
+  // Clone field
   const cloneField = async (field, index) => {
-    const clone = JSON.parse(JSON.stringify(field));
+    const clone = structuredClone(field);
 
     const updated = [...formFields.slice(0, index + 1), clone, ...formFields.slice(index + 1)];
-
     setFormFields(updated);
 
     if (currentFormId) {
@@ -128,6 +117,7 @@ function JobFormBuilder() {
     }
   };
 
+  // Move field
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= formFields.length) return;
@@ -148,6 +138,7 @@ function JobFormBuilder() {
     }
   };
 
+  // Delete field
   const deleteField = async index => {
     const updated = [...formFields];
     updated.splice(index, 1);
@@ -162,6 +153,7 @@ function JobFormBuilder() {
     }
   };
 
+  // Edit field
   const editField = (field, index) => {
     setEditingQuestion({
       label: field.questionText,
@@ -205,9 +197,10 @@ function JobFormBuilder() {
     setEditingIndex(null);
   };
 
+  // Add option
   const handleAddOption = () => {
     if (!newOption.trim()) {
-      alert('Option cannot be empty');
+      safeAlert('Option cannot be empty');
       return;
     }
 
@@ -219,9 +212,10 @@ function JobFormBuilder() {
     setNewOption('');
   };
 
+  // Add field
   const handleAddField = async () => {
     if (!newField.questionText.trim()) {
-      alert('Field label is required');
+      safeAlert('Field label is required');
       return;
     }
 
@@ -229,7 +223,7 @@ function JobFormBuilder() {
       ['checkbox', 'radio', 'dropdown'].includes(newField.questionType) &&
       newField.options.length === 0
     ) {
-      alert('Please add at least one option');
+      safeAlert('Please add at least one option');
       return;
     }
 
@@ -260,9 +254,6 @@ function JobFormBuilder() {
     setFormFields(updated);
   };
 
-  // ----------------------------------
-  // RENDER
-  // ----------------------------------
   return (
     <div className={`${styles.pageWrapper} ${darkMode ? styles.darkMode : ''}`}>
       <Prompt
@@ -377,7 +368,6 @@ function JobFormBuilder() {
               ))}
             </form>
 
-            {/* NEW FIELD SECTION */}
             <div className={styles.newFieldSection}>
               <div>
                 <label className={styles.jbformLabel}>

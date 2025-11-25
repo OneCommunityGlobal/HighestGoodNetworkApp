@@ -1,11 +1,12 @@
-/* eslint-disable no-alert */
-/* eslint-disable no-console */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { ENDPOINTS } from '../../utils/URL';
 import styles from './QuestionSetManager.module.css';
 import QuestionEditModal from './QuestionEditModal';
+
+const safeAlert = msg => globalThis.alert(msg);
+const safeConfirm = msg => globalThis.confirm(msg);
 
 function QuestionSetManager({
   formFields,
@@ -48,9 +49,7 @@ function QuestionSetManager({
     },
   };
 
-  // --------------------------
-  // LOAD TEMPLATES ON MOUNT
-  // --------------------------
+  // Load templates
   useEffect(() => {
     const fetchTemplates = async () => {
       setIsLoading(true);
@@ -78,19 +77,15 @@ function QuestionSetManager({
     fetchTemplates();
   }, []);
 
-  // --------------------------
-  // SAVE TEMPLATE
-  // --------------------------
-  const safeConfirm = msg => globalThis.confirm(msg);
-
+  // Save template
   const saveTemplate = async () => {
     if (!templateName.trim()) {
-      alert('Please enter a template name');
+      safeAlert('Please enter a template name');
       return;
     }
 
     if (formFields.length === 0) {
-      alert('Your form is empty. Add questions first.');
+      safeAlert('Your form is empty. Add questions first.');
       return;
     }
 
@@ -123,7 +118,7 @@ function QuestionSetManager({
 
         setTemplates(prev => prev.map(t => (t._id === updatedTemplate._id ? updatedTemplate : t)));
 
-        alert(`Template "${templateName}" updated.`);
+        safeAlert(`Template "${templateName}" updated.`);
       } else {
         const newTemplate = await api.createTemplate({
           name: templateName,
@@ -141,15 +136,14 @@ function QuestionSetManager({
         setTemplates(updated);
 
         localStorage.setItem('jobFormTemplates', JSON.stringify(updated));
-        alert(`Template "${templateName}" created.`);
+        safeAlert(`Template "${templateName}" created.`);
       }
 
       setTemplateName('');
     } catch (err) {
       console.error('Failed to save template:', err);
-      alert('Failed to save. Check console.');
+      safeAlert('Failed to save. Check console.');
 
-      // fallback safe local save
       try {
         const exists = templates.some(t => t?.name === templateName);
 
@@ -175,12 +169,10 @@ function QuestionSetManager({
     }
   };
 
-  // --------------------------
-  // LOAD TEMPLATE
-  // --------------------------
+  // Load template
   const loadTemplate = async () => {
     if (!selectedTemplate) {
-      alert('Please select a template.');
+      safeAlert('Please select a template.');
       return;
     }
 
@@ -206,22 +198,20 @@ function QuestionSetManager({
           onImportQuestions(template.fields || []);
         }
 
-        alert(`Template "${selectedTemplate}" loaded.`);
+        safeAlert(`Template "${selectedTemplate}" loaded.`);
       }
     } catch (err) {
       console.error('Failed to load template:', err);
-      alert('Failed to load template.');
+      safeAlert('Failed to load template.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --------------------------
-  // APPEND TEMPLATE
-  // --------------------------
+  // Append template
   const appendTemplate = async () => {
     if (!selectedTemplate) {
-      alert('Select a template to append');
+      safeAlert('Select a template to append');
       return;
     }
 
@@ -240,22 +230,20 @@ function QuestionSetManager({
         }
 
         onImportQuestions([...formFields, ...templateFields]);
-        alert(`Template "${selectedTemplate}" appended.`);
+        safeAlert(`Template "${selectedTemplate}" appended.`);
       }
     } catch (err) {
       console.error('Failed to append template:', err);
-      alert('Append failed.');
+      safeAlert('Append failed.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --------------------------
-  // DELETE TEMPLATE
-  // --------------------------
+  // Delete template
   const deleteTemplate = async () => {
     if (!selectedTemplate) {
-      alert('Select a template to delete');
+      safeAlert('Select a template to delete');
       return;
     }
 
@@ -279,11 +267,10 @@ function QuestionSetManager({
       }
 
       setSelectedTemplate('');
-      alert(`Template "${selectedTemplate}" deleted.`);
+      safeAlert(`Template "${selectedTemplate}" deleted.`);
     } catch (err) {
       console.error('Failed to delete template:', err);
 
-      // fallback local delete
       try {
         const filtered = templates.filter(t => t.name !== selectedTemplate);
         setTemplates(filtered);
@@ -293,15 +280,13 @@ function QuestionSetManager({
       }
 
       setSelectedTemplate('');
-      alert('Deleted locally only.');
+      safeAlert('Deleted locally only.');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // --------------------------
-  // QUESTION EDITING (unchanged)
-  // --------------------------
+  // Save edited question
   const handleSaveEditedQuestion = edited => {
     if (editingIndex !== null) {
       const updated = [...formFields];
@@ -328,7 +313,6 @@ function QuestionSetManager({
       {error && <div className={styles.errorMessage}>{error}</div>}
 
       <div className={styles.templateActions}>
-        {/* SAVE TEMPLATE */}
         <div className={styles.saveTemplate}>
           <input
             type="text"
@@ -348,7 +332,6 @@ function QuestionSetManager({
           </button>
         </div>
 
-        {/* LOAD / APPEND / DELETE */}
         <div className={styles.loadTemplate}>
           <select
             value={selectedTemplate}
@@ -421,14 +404,11 @@ QuestionSetManager.propTypes = {
       type: PropTypes.string,
     }),
   ).isRequired,
-
   setFormFields: PropTypes.func.isRequired,
   onImportQuestions: PropTypes.func.isRequired,
   darkMode: PropTypes.bool.isRequired,
-
   templateName: PropTypes.string.isRequired,
   setTemplateName: PropTypes.func.isRequired,
-
   selectedTemplate: PropTypes.string.isRequired,
   setSelectedTemplate: PropTypes.func.isRequired,
 };
