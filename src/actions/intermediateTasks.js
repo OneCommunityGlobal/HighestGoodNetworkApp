@@ -141,10 +141,15 @@ export const deleteIntermediateTask = (id, parentTaskId = null) => {
 /**
  * Mark an intermediate task as done (for students)
  */
-export const markIntermediateTaskAsDone = (id) => {
+export const markIntermediateTaskAsDone = (id, parentTaskId) => {
   return async (dispatch) => {
     try {
+      // First, fetch the current task data
+      const currentTask = await httpService.get(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(id));
+
+      // Update with the completed status while preserving all required fields
       const response = await httpService.put(ENDPOINTS.INTERMEDIATE_TASK_BY_ID(id), {
+        ...currentTask.data,
         status: 'completed'
       });
       toast.success('Sub-task marked as done');

@@ -22,14 +22,15 @@ export const useTaskLogic = (task, styles, intermediateTasks = []) => {
     intermediateTasks,
   ]);
 
-  const canMarkDone = useMemo(() => canMarkTaskAsDone(task), [
+  const canMarkDone = useMemo(() => canMarkTaskAsDone(task, intermediateTasks), [
     task.is_completed,
     task.task_type,
     task.logged_hours,
     task.suggested_total_hours,
+    intermediateTasks,
   ]);
 
-  const statusBadge = useMemo(() => getTaskStatusBadge(task, styles), [
+  const statusBadge = useMemo(() => getTaskStatusBadge(task, styles, intermediateTasks), [
     task.status,
     task.has_upload,
     task.task_type,
@@ -37,13 +38,15 @@ export const useTaskLogic = (task, styles, intermediateTasks = []) => {
     task.suggested_total_hours,
     task.has_comments,
     task.feedback,
+    intermediateTasks,
   ]);
 
-  const markAsDoneTooltip = useMemo(() => getMarkAsDoneTooltip(task), [
+  const markAsDoneTooltip = useMemo(() => getMarkAsDoneTooltip(task, intermediateTasks), [
     task.is_completed,
     task.task_type,
     task.logged_hours,
     task.suggested_total_hours,
+    intermediateTasks,
   ]);
 
   const formattedTimeAndDate = useMemo(() => getFormattedTimeAndDate(task, intermediateTasks), [

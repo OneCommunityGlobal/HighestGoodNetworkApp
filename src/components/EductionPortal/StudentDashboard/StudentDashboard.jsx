@@ -30,6 +30,31 @@ const StudentDashboard = () => {
     dispatch(fetchStudentTasks());
   }, [dispatch]);
 
+  // Fetch intermediate tasks for all parent tasks
+  useEffect(() => {
+    const fetchAllIntermediateTasks = async () => {
+      if (tasks && tasks.length > 0) {
+        const intermediateTasksData = {};
+
+        // Fetch intermediate tasks for each parent task
+        for (const task of tasks) {
+          try {
+            const subTasks = await dispatch(fetchIntermediateTasks(task.id));
+            if (subTasks && subTasks.length > 0) {
+              intermediateTasksData[task.id] = subTasks;
+            }
+          } catch (error) {
+            console.error(`Error fetching intermediate tasks for task ${task.id}:`, error);
+          }
+        }
+
+        setIntermediateTasks(intermediateTasksData);
+      }
+    };
+
+    fetchAllIntermediateTasks();
+  }, [tasks, dispatch]);
+
   // Calculate summary data when tasks change
   useEffect(() => {
     if (tasks && tasks.length > 0) {
@@ -91,16 +116,7 @@ const StudentDashboard = () => {
   const toggleIntermediateTasks = async taskId => {
     const isExpanded = expandedTasks[taskId];
 
-    if (!isExpanded && !intermediateTasks[taskId]) {
-      // Fetch intermediate tasks when expanding
-      try {
-        const tasks = await dispatch(fetchIntermediateTasks(taskId));
-        setIntermediateTasks(prev => ({ ...prev, [taskId]: tasks || [] }));
-      } catch (error) {
-        console.error('Error fetching intermediate tasks:', error);
-      }
-    }
-
+    // Just toggle the expanded state (tasks are already loaded)
     setExpandedTasks(prev => ({
       ...prev,
       [taskId]: !isExpanded,

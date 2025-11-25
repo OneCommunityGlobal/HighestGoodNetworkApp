@@ -9,14 +9,12 @@
  * @returns {number} Progress percentage (0-100)
  */
 export const calculateProgressPercentage = (task, intermediateTasks = []) => {
-  // If there are intermediate tasks, calculate progress based on completed hours
+  // If there are intermediate tasks, calculate progress based on number of completed tasks
   if (intermediateTasks && intermediateTasks.length > 0) {
-    const totalHours = intermediateTasks.reduce((sum, t) => sum + (t.expected_hours || 0), 0);
-    const completedHours = intermediateTasks
-      .filter(t => t.status === 'completed')
-      .reduce((sum, t) => sum + (t.expected_hours || 0), 0);
+    const totalTasks = intermediateTasks.length;
+    const completedTasks = intermediateTasks.filter(t => t.status === 'completed').length;
 
-    return totalHours > 0 ? Math.round((completedHours / totalHours) * 100) : 0;
+    return totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
   }
 
   // Otherwise, use logged hours vs suggested hours
@@ -28,18 +26,22 @@ export const calculateProgressPercentage = (task, intermediateTasks = []) => {
 /**
  * Determine if a task can be marked as done
  * @param {Object} task - The task object
+ * @param {Array} intermediateTasks - Array of intermediate tasks (optional)
  * @returns {boolean} Whether the task can be marked as done
  */
-export const canMarkTaskAsDone = task => {
+export const canMarkTaskAsDone = (task, intermediateTasks = []) => {
   if (task.is_completed) return false;
 
-  // Only read tasks can be marked as complete manually
-  // Must have logged hours >= suggested hours
+  // If there are intermediate tasks, ONLY check if all sub-tasks are completed
+  if (intermediateTasks && intermediateTasks.length > 0) {
+    return intermediateTasks.every(t => t.status === 'completed');
+  }
+
+  // Otherwise, use the original logic for tasks without sub-tasks
   if (task.task_type === 'read') {
     return task.logged_hours >= task.suggested_total_hours;
   }
 
-  // For other task types, cannot be marked done manually
   return false;
 };
 
@@ -47,9 +49,18 @@ export const canMarkTaskAsDone = task => {
  * Get status badge information for a task
  * @param {Object} task - The task object
  * @param {Object} styles - CSS module styles object
+ * @param {Array} intermediateTasks - Array of intermediate tasks (optional)
  * @returns {Object} Status badge info with text and className
  */
-export const getTaskStatusBadge = (task, styles) => {
+export const getTaskStatusBadge = (task, styles, intermediateTasks = []) => {
+  // Check if all sub-tasks are completed
+  if (intermediateTasks && intermediateTasks.length > 0) {
+    const allSubTasksCompleted = intermediateTasks.every(t => t.status === 'completed');
+    if (allSubTasksCompleted) {
+      return { text: 'Completed', className: styles.completedBadge };
+    }
+  }
+
   if (task.status === 'completed' || task.status === 'graded') {
     return { text: 'Completed', className: styles.completedBadge };
   }
@@ -76,13 +87,30 @@ export const getTaskStatusBadge = (task, styles) => {
 /**
  * Get tooltip text for mark as done button
  * @param {Object} task - The task object
+ * @param {Array} intermediateTasks - Array of intermediate tasks (optional)
  * @returns {string} Tooltip text
  */
-export const getMarkAsDoneTooltip = task => {
+export const getMarkAsDoneTooltip = (task, intermediateTasks = []) => {
   if (task.is_completed) {
     return 'Task is already completed';
   }
 
+  // If there are intermediate tasks, ONLY consider sub-task completion
+  if (intermediateTasks && intermediateTasks.length > 0) {
+    const completedCount = intermediateTasks.filter(t => t.status === 'completed').length;
+    const totalCount = intermediateTasks.length;
+
+    if (completedCount === totalCount) {
+      return 'Mark as Done - All sub-tasks completed';
+    }
+
+    const remaining = totalCount - completedCount;
+    return `Cannot mark as done: Complete ${remaining} more sub-task${
+      remaining !== 1 ? 's' : ''
+    } (${completedCount}/${totalCount} done)`;
+  }
+
+  // Otherwise, use original logic for tasks without sub-tasks
   if (task.task_type !== 'read') {
     return `Cannot mark as done: Only read tasks can be completed manually (Current type: ${task.task_type})`;
   }
@@ -128,15 +156,9 @@ export const formatDate = dateString => {
  * @returns {string} Formatted time and date string
  */
 export const getFormattedTimeAndDate = (task, intermediateTasks = []) => {
-  // If there are intermediate tasks, show completed hours from sub-tasks
+  // If there are intermediate tasks, just show the date (no hours)
   if (intermediateTasks && intermediateTasks.length > 0) {
-    const completedHours = intermediateTasks
-      .filter(t => t.status === 'completed')
-      .reduce((sum, t) => sum + (t.expected_hours || 0), 0);
-
-    return `${formatTime(completedHours)} • ${formatDate(
-      task.last_logged_date || task.created_at,
-    )}`;
+    return formatDate(task.last_logged_date || task.created_at);
   }
 
   // Otherwise, show logged hours
@@ -154,18 +176,52 @@ export const getFormattedTimeAndDate = (task, intermediateTasks = []) => {
 export const getProgressText = (task, intermediateTasks = []) => {
   const progressPercentage = calculateProgressPercentage(task, intermediateTasks);
 
-  // If there are intermediate tasks, show completion hours
+  // If there are intermediate tasks, show number of completed tasks
   if (intermediateTasks && intermediateTasks.length > 0) {
-    const totalHours = intermediateTasks.reduce((sum, t) => sum + (t.expected_hours || 0), 0);
-    const completedHours = intermediateTasks
-      .filter(t => t.status === 'completed')
-      .reduce((sum, t) => sum + (t.expected_hours || 0), 0);
+    const totalTasks = intermediateTasks.length;
+    const completedTasks = intermediateTasks.filter(t => t.status === 'completed').length;
 
-    return `Progress: ${completedHours} / ${totalHours} hrs (${progressPercentage}%)`;
+    return `Progress: ${completedTasks} / ${totalTasks} tasks (${progressPercentage}%)`;
   }
 
   // Otherwise, show logged hours
   return `Progress: ${task.logged_hours || 0} / ${
     task.suggested_total_hours
   } hrs (${progressPercentage}%)`;
+};
+
+/**
+ * Determine if an intermediate task can be marked as done
+ * @param {Object} intermediateTask - The intermediate task object
+ * @returns {boolean} Whether the intermediate task can be marked as done
+ */
+export const canMarkIntermediateTaskAsDone = intermediateTask => {
+  // Already completed
+  if (intermediateTask.status === 'completed') return false;
+
+  // Check if logged hours meet or exceed expected hours
+  const loggedHours = intermediateTask.logged_hours || 0;
+  const expectedHours = intermediateTask.expected_hours || 0;
+
+  return loggedHours >= expectedHours;
+};
+
+/**
+ * Get tooltip text for mark intermediate task as done button
+ * @param {Object} intermediateTask - The intermediate task object
+ * @returns {string} Tooltip text
+ */
+export const getMarkIntermediateAsDoneTooltip = intermediateTask => {
+  if (intermediateTask.status === 'completed') {
+    return 'Sub-task is already completed';
+  }
+
+  const loggedHours = intermediateTask.logged_hours || 0;
+  const expectedHours = intermediateTask.expected_hours || 0;
+
+  if (loggedHours >= expectedHours) {
+    return 'Mark as Done - Hour requirement met';
+  }
+
+  return `Cannot mark as done: Insufficient hours logged (${loggedHours}/${expectedHours} hrs required)`;
 };

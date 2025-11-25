@@ -66,6 +66,11 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
       status: formData.status,
     };
 
+    // Only set logged_hours to 0 when creating a new task (not editing)
+    if (!task) {
+      submitData.loggedHours = 0;
+    }
+
     // Only include dueDate if it's set
     if (formData.dueDate) {
       submitData.dueDate = new Date(formData.dueDate).toISOString();
@@ -145,7 +150,7 @@ const IntermediateTaskForm = ({ task, onSubmit, onCancel }) => {
             >
               <option value="pending">Pending</option>
               <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
+              {task && <option value="completed">Completed</option>}
             </Input>
           </FormGroup>
         </ModalBody>
