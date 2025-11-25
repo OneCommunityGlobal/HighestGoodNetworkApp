@@ -1,6 +1,6 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { Prompt } from 'react-router-dom';
@@ -21,14 +21,8 @@ function JobFormBuilder() {
   const [formFields, setFormFields] = useState([]);
   const [initialFormFields, setInitialFormFields] = useState([]);
 
-  const [jobTitle, setJobTitle] = useState('Please Choose an option');
-  const [initialJobTitle, setInitialJobTitle] = useState('Please Choose an option');
-
   const [templateName, setTemplateName] = useState('');
-  const [initialTemplateName, setInitialTemplateName] = useState('');
-
   const [selectedTemplate, setSelectedTemplate] = useState('');
-  const [initialSelectedTemplate, setInitialSelectedTemplate] = useState('');
 
   const [currentFormId, setCurrentFormId] = useState(null);
 
@@ -54,22 +48,21 @@ function JobFormBuilder() {
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
-  const jobPositions = [
-    /* unchanged list */
-  ];
+  const jobPositions = [];
 
   // ----------------------------------
   // BLOCK PAGE REFRESH
   // ----------------------------------
   useEffect(() => {
-    const handler = e => {
+    const handler = event => {
       if (hasUnsavedChanges) {
-        e.preventDefault();
-        e.returnValue = '';
+        event.preventDefault();
+        event.returnValue = '';
       }
     };
-    window.addEventListener('beforeunload', handler);
-    return () => window.removeEventListener('beforeunload', handler);
+
+    globalThis.addEventListener('beforeunload', handler);
+    return () => globalThis.removeEventListener('beforeunload', handler);
   }, [hasUnsavedChanges]);
 
   // ----------------------------------
@@ -85,52 +78,42 @@ function JobFormBuilder() {
           const id = form._id || form.id;
 
           setCurrentFormId(id);
+
           setFormFields(form.questions || []);
           setInitialFormFields(form.questions || []);
 
-          const loadedTitle = form.title || 'Please Choose an option';
-          setJobTitle(loadedTitle);
-          setInitialJobTitle(loadedTitle);
-
           setNewField(initialNewField);
-
           setHasUnsavedChanges(false);
         }
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
       }
     };
+
     loadForm();
   }, []);
 
   // ----------------------------------
-  // CLEAN UNSAVED-CHANGES DETECTION
+  // UNSAVED-CHANGES DETECTION
   // ----------------------------------
   useEffect(() => {
     const changed =
       JSON.stringify(formFields) !== JSON.stringify(initialFormFields) ||
       JSON.stringify(newField) !== JSON.stringify(initialNewField) ||
-      templateName !== initialTemplateName ||
-      selectedTemplate !== initialSelectedTemplate ||
-      false; // job title intentionally excluded from unsaved-change condition
+      templateName !== '' ||
+      selectedTemplate !== '';
 
     setHasUnsavedChanges(changed);
-  }, [
-    formFields,
-    newField,
-    templateName,
-    selectedTemplate,
-    initialFormFields,
-    initialTemplateName,
-    initialSelectedTemplate,
-  ]);
+  }, [formFields, newField, templateName, selectedTemplate, initialFormFields]);
 
   // ----------------------------------
-  // FIELD OPERATIONS (UNCHANGED)
+  // FIELD OPERATIONS
   // ----------------------------------
   const cloneField = async (field, index) => {
     const clone = JSON.parse(JSON.stringify(field));
+
     const updated = [...formFields.slice(0, index + 1), clone, ...formFields.slice(index + 1)];
+
     setFormFields(updated);
 
     if (currentFormId) {
@@ -139,8 +122,8 @@ function JobFormBuilder() {
           question: clone,
           position: index + 1,
         });
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
       }
     }
   };
@@ -159,8 +142,8 @@ function JobFormBuilder() {
           fromIndex: index,
           toIndex: newIndex,
         });
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
       }
     }
   };
@@ -173,8 +156,8 @@ function JobFormBuilder() {
     if (currentFormId) {
       try {
         await axios.delete(ENDPOINTS.DELETE_QUESTION(currentFormId, index));
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
       }
     }
   };
@@ -194,6 +177,7 @@ function JobFormBuilder() {
 
   const handleSaveEditedQuestion = async edited => {
     const updated = [...formFields];
+
     updated[editingIndex] = {
       ...updated[editingIndex],
       questionText: edited.label,
@@ -211,8 +195,8 @@ function JobFormBuilder() {
           ENDPOINTS.UPDATE_QUESTION(currentFormId, editingIndex),
           updated[editingIndex],
         );
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
       }
     }
 
@@ -231,6 +215,7 @@ function JobFormBuilder() {
       ...prev,
       options: [...prev.options, newOption],
     }));
+
     setNewOption('');
   };
 
@@ -257,18 +242,18 @@ function JobFormBuilder() {
           question: newField,
           position: formFields.length,
         });
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
       }
     }
 
     setNewField(initialNewField);
   };
 
-  const changeVisibility = (e, field) => {
+  const changeVisibility = (event, field) => {
     const updated = formFields.map(item =>
       item.questionText === field.questionText && item.questionType === field.questionType
-        ? { ...item, visible: e.target.checked }
+        ? { ...item, visible: event.target.checked }
         : item,
     );
 
@@ -301,14 +286,10 @@ function JobFormBuilder() {
           </div>
 
           <div>
-            <select
-              value={jobTitle}
-              onChange={e => setJobTitle(e.target.value)}
-              className={styles.jobformSelect}
-            >
+            <select className={styles.jobformSelect}>
               <option value="Please Choose an option">Please Choose an option</option>
-              {jobPositions.map((pos, i) => (
-                <option key={`pos-${i}`} value={pos}>
+              {jobPositions.map((pos, index) => (
+                <option key={`pos-${index}`} value={pos}>
                   {pos}
                 </option>
               ))}
@@ -323,7 +304,7 @@ function JobFormBuilder() {
             <p className={styles.jobformDesc}>
               Fill the form with questions about a specific position you want to create an ad for.
               The default questions will automatically appear and are already selected. You can pick
-              and choose them with the checkobox.
+              and choose them with the checkbox.
             </p>
 
             <QuestionSetManager
@@ -339,7 +320,7 @@ function JobFormBuilder() {
 
             <form>
               {formFields.map((field, index) => (
-                <div className={styles.formDiv} key={`field-${index}`}>
+                <div className={styles.formDiv} key={field._id || `${field.questionText}-${index}`}>
                   <QuestionFieldActions
                     field={field}
                     index={index}
@@ -372,7 +353,10 @@ function JobFormBuilder() {
 
                       {['checkbox', 'radio'].includes(field.questionType) &&
                         field.options.map((opt, i) => (
-                          <div key={`opt-${i}`} className={styles.optionItem}>
+                          <div
+                            key={`${field._id || field.questionText}-opt-${i}`}
+                            className={styles.optionItem}
+                          >
                             <input type={field.questionType} name={`field-${index}`} />
                             <label className={styles.jbformLabel}>{opt}</label>
                           </div>
@@ -381,7 +365,7 @@ function JobFormBuilder() {
                       {field.questionType === 'dropdown' && (
                         <select className={styles.jobformSelect}>
                           {field.options.map((opt, i) => (
-                            <option key={`drop-${i}`} value={opt}>
+                            <option key={`${field._id || field.questionText}-drop-${i}`}>
                               {opt}
                             </option>
                           ))}
@@ -461,7 +445,7 @@ function JobFormBuilder() {
                   <div className={styles.optionsList}>
                     <h4>Options:</h4>
                     {newField.options.map((opt, i) => (
-                      <div key={`optnew-${i}`} className={styles.optionItem}>
+                      <div key={`new-opt-${i}`} className={styles.optionItem}>
                         {opt}
                       </div>
                     ))}
