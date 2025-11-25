@@ -76,33 +76,83 @@ function ApplicantsDashboard() {
     setLoading(false);
   };
 
+  // Extract select change handler
+  const handleSelectChange = e => {
+    const val = e.target.value;
+    setSelectedOption(val);
+    setStartDate(null);
+    setEndDate(null);
+    handleFilterChange(val, null, null);
+  };
+
+  // Extract start date change handler
+  const handleStartDateChange = date => {
+    setStartDate(date);
+    handleFilterChange('custom', date, endDate);
+  };
+
+  // Extract end date change handler
+  const handleEndDateChange = date => {
+    setEndDate(date);
+    handleFilterChange('custom', startDate, date);
+  };
+
+  // Extract loading state rendering
+  const renderLoadingState = () => (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 'calc(100vh - 150px)',
+        minHeight: '600px',
+        width: '100%',
+        backgroundColor: darkMode ? '#1b2a41' : '#fff',
+      }}
+    >
+      <p
+        style={{
+          fontSize: 'clamp(18px, 2.5vw, 24px)',
+          fontWeight: 'bold',
+          color: darkMode ? '#e5e7eb' : '#000',
+          textAlign: 'center',
+        }}
+      >
+        Loading...
+      </p>
+    </div>
+  );
+
+  // Extract empty state rendering
+  const renderEmptyState = () => (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 'calc(100vh - 150px)',
+        minHeight: '600px',
+        width: '100%',
+        backgroundColor: darkMode ? '#1b2a41' : '#fff',
+      }}
+    >
+      <p
+        style={{
+          fontSize: 'clamp(16px, 2.5vw, 18px)',
+          fontWeight: '600',
+          color: darkMode ? '#9ca3af' : '#6b7280',
+          textAlign: 'center',
+        }}
+      >
+        {error ? 'Unable to load chart data.' : 'No data available to display.'}
+      </p>
+    </div>
+  );
+
   // Extract chart content rendering
   const renderChartContent = () => {
     if (loading) {
-      return (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: 'calc(100vh - 150px)',
-            minHeight: '600px',
-            width: '100%',
-            backgroundColor: darkMode ? '#1b2a41' : '#fff',
-          }}
-        >
-          <p
-            style={{
-              fontSize: 'clamp(18px, 2.5vw, 24px)',
-              fontWeight: 'bold',
-              color: darkMode ? '#e5e7eb' : '#000',
-              textAlign: 'center',
-            }}
-          >
-            Loading...
-          </p>
-        </div>
-      );
+      return renderLoadingState();
     }
 
     const hasData = !error && chartData.length > 0;
@@ -110,30 +160,7 @@ function ApplicantsDashboard() {
       return <AgeChart data={chartData} compareLabel={compareLabel} darkMode={darkMode} />;
     }
 
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: 'calc(100vh - 150px)',
-          minHeight: '600px',
-          width: '100%',
-          backgroundColor: darkMode ? '#1b2a41' : '#fff',
-        }}
-      >
-        <p
-          style={{
-            fontSize: 'clamp(16px, 2.5vw, 18px)',
-            fontWeight: '600',
-            color: darkMode ? '#9ca3af' : '#6b7280',
-            textAlign: 'center',
-          }}
-        >
-          {error ? 'Unable to load chart data.' : 'No data available to display.'}
-        </p>
-      </div>
-    );
+    return renderEmptyState();
   };
 
   // Extract date picker styles
@@ -143,6 +170,84 @@ function ApplicantsDashboard() {
     border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
     borderRadius: darkMode ? '0' : '4px',
     padding: '6px 12px',
+    fontSize: '14px',
+    cursor: 'pointer',
+  });
+
+  // Extract date picker props
+  const getDatePickerProps = () => ({
+    dateFormat: 'yyyy/MM/dd',
+    className: darkMode ? 'hgn-datepicker-dark' : '',
+    calendarClassName: darkMode ? 'hgn-datepicker-dark-calendar' : '',
+    wrapperClassName: darkMode ? styles.datePickerWrapper : '',
+    style: getDatePickerStyles(),
+  });
+
+  // Extract date pickers rendering
+  const renderDatePickers = () => {
+    if (selectedOption !== 'custom') {
+      return null;
+    }
+
+    return (
+      <>
+        <DatePicker
+          selected={startDate}
+          onChange={handleStartDateChange}
+          placeholderText="Start Date"
+          {...getDatePickerProps()}
+        />
+        <span style={{ color: darkMode ? '#e5e7eb' : '#000' }}>to</span>
+        <DatePicker
+          selected={endDate}
+          onChange={handleEndDateChange}
+          placeholderText="End Date"
+          {...getDatePickerProps()}
+        />
+      </>
+    );
+  };
+
+  // Extract error message rendering
+  const renderErrorMessage = () => {
+    if (!error || loading) {
+      return null;
+    }
+
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 'clamp(10px, 2vw, 20px)',
+          marginBottom: '0',
+          width: '100%',
+          padding: '10px 10px 0 10px',
+          backgroundColor: darkMode ? '#1b2a41' : '#fff',
+        }}
+      >
+        <p
+          style={{
+            fontSize: 'clamp(14px, 2vw, 16px)',
+            fontWeight: '600',
+            color: darkMode ? '#ef4444' : '#dc2626',
+            textAlign: 'center',
+          }}
+        >
+          {error}
+        </p>
+      </div>
+    );
+  };
+
+  // Extract select styles
+  const getSelectStyles = () => ({
+    padding: '6px 12px',
+    borderRadius: darkMode ? '0' : '4px',
+    border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
+    backgroundColor: darkMode ? '#1f2937' : '#fff',
+    color: darkMode ? '#e5e7eb' : '#000',
     fontSize: '14px',
     cursor: 'pointer',
   });
@@ -191,22 +296,8 @@ function ApplicantsDashboard() {
         <select
           id="timeFilterSelect"
           value={selectedOption}
-          onChange={e => {
-            const val = e.target.value;
-            setSelectedOption(val);
-            setStartDate(null);
-            setEndDate(null);
-            handleFilterChange(val, null, null);
-          }}
-          style={{
-            padding: '6px 12px',
-            borderRadius: darkMode ? '0' : '4px',
-            border: `1px solid ${darkMode ? '#374151' : '#ccc'}`,
-            backgroundColor: darkMode ? '#1f2937' : '#fff',
-            color: darkMode ? '#e5e7eb' : '#000',
-            fontSize: '14px',
-            cursor: 'pointer',
-          }}
+          onChange={handleSelectChange}
+          style={getSelectStyles()}
         >
           <option value="weekly">Weekly</option>
           <option value="monthly">Monthly</option>
@@ -214,37 +305,7 @@ function ApplicantsDashboard() {
           <option value="custom">Custom Dates</option>
         </select>
 
-        {selectedOption === 'custom' && (
-          <>
-            <DatePicker
-              selected={startDate}
-              onChange={date => {
-                setStartDate(date);
-                handleFilterChange('custom', date, endDate);
-              }}
-              placeholderText="Start Date"
-              dateFormat="yyyy/MM/dd"
-              className={darkMode ? 'hgn-datepicker-dark' : ''}
-              calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : ''}
-              wrapperClassName={darkMode ? styles.datePickerWrapper : ''}
-              style={getDatePickerStyles()}
-            />
-            <span style={{ color: darkMode ? '#e5e7eb' : '#000' }}>to</span>
-            <DatePicker
-              selected={endDate}
-              onChange={date => {
-                setEndDate(date);
-                handleFilterChange('custom', startDate, date);
-              }}
-              placeholderText="End Date"
-              dateFormat="yyyy/MM/dd"
-              className={darkMode ? 'hgn-datepicker-dark' : ''}
-              calendarClassName={darkMode ? 'hgn-datepicker-dark-calendar' : ''}
-              wrapperClassName={darkMode ? styles.datePickerWrapper : ''}
-              style={getDatePickerStyles()}
-            />
-          </>
-        )}
+        {renderDatePickers()}
       </div>
 
       {/* Chart Title - Always visible */}
@@ -272,32 +333,7 @@ function ApplicantsDashboard() {
         {renderChartContent()}
       </div>
 
-      {/* Error/Validation message below chart */}
-      {error && !loading && (
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 'clamp(10px, 2vw, 20px)',
-            marginBottom: '0',
-            width: '100%',
-            padding: '10px 10px 0 10px',
-            backgroundColor: darkMode ? '#1b2a41' : '#fff',
-          }}
-        >
-          <p
-            style={{
-              fontSize: 'clamp(14px, 2vw, 16px)',
-              fontWeight: '600',
-              color: darkMode ? '#ef4444' : '#dc2626',
-              textAlign: 'center',
-            }}
-          >
-            {error}
-          </p>
-        </div>
-      )}
+      {renderErrorMessage()}
     </div>
   );
 }
