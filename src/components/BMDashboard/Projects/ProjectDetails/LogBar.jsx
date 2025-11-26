@@ -30,7 +30,12 @@ function LogBar(props) {
     },
     team: {
       name: ['Create New Team', 'Edit Existing Team', 'Log Issue', 'View Issues'],
-      url: ['/teams', '/teams', `/bmdashboard/issues/add/${projectId}`, '/bmdashboard/issues/'],
+      url: [
+        '/teams',
+        `/bmdashboard/projects/${projectId}/teams`,
+        `/bmdashboard/issues/add/${projectId}`,
+        '/bmdashboard/issues/',
+      ],
     },
   };
 
