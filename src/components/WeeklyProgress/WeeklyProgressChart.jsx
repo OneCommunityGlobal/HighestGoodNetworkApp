@@ -44,27 +44,42 @@ const WeeklyProgressChart = ({ data, loading, error, weeks, startDate, endDate }
       {hasData && (
         <div className={styles.chartInner}>
           <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+            <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 30 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="week" tickFormatter={formatWeekLabel} tick={{ fontSize: 12 }} />
+              <XAxis
+                label={{
+                  value: 'Weeks',
+                  position: 'bottom',
+                  offset: 0,
+                  style: { fontSize: 12, fill: '#e5e7eb', fontWeight: 'bold' },
+                }}
+                dataKey="week"
+                tickFormatter={formatWeekLabel}
+                tick={{ fontSize: 12, fill: '#e5e7eb' }}
+                axisLine={{ stroke: '#e5e7eb' }}
+                tickLine={{ stroke: '#e5e7eb' }}
+              />
               <YAxis
                 label={{
                   value: 'Tasks Completed',
                   angle: -90,
                   position: 'insideLeft',
                   offset: 10,
-                  style: { fontSize: 12 },
+                  dy: 40,
+                  style: { fontSize: 12, fill: '#e5e7eb', fontWeight: 'bold' },
                 }}
                 allowDecimals={false}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: '#e5e7eb' }}
+                axisLine={{ stroke: '#e5e7eb' }}
+                tickLine={{ stroke: '#e5e7eb' }}
               />
               <Tooltip
                 formatter={value => [`${value} tasks`, 'Completed']}
                 labelFormatter={label => `Week of ${formatWeekLabel(label)}`}
               />
-              <Legend />
+              <Legend verticalAlign="bottom" align="center" wrapperStyle={{ bottom: -10 }} />
               <Line
-                type="monotone"
+                type="linear"
                 dataKey="completed"
                 name="This Week"
                 stroke="#3b82f6"
