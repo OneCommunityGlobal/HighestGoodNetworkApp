@@ -247,6 +247,148 @@
   background-color: #1769aa;
 }
 
+.selectedDatePanel {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background-color: #f9fafb;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.selectedDatePanelDarkMode {
+  background-color: #1a202c;
+  border-color: #2d3748;
+  color: #f7fafc;
+}
+
+.selectedDateHeader h2 {
+  margin: 0 0 4px;
+  font-size: 1.4rem;
+  color: #1a202c;
+}
+
+.selectedDateHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.selectedDatePanelDarkMode .selectedDateHeader h2 {
+  color: #f7fafc;
+}
+
+.selectedDateSummary {
+  margin: 0;
+  color: #4a5568;
+  font-size: 0.95rem;
+}
+
+.selectedDatePanelDarkMode .selectedDateSummary {
+  color: #cbd5e0;
+}
+
+.selectedEventList {
+  list-style: none;
+  margin: 20px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.selectedEventCard {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background-color: #ffffff;
+  padding: 16px 20px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.selectedEventCardDarkMode {
+  background-color: #1f2937;
+  border-color: #374151;
+  color: #f9fafb;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.selectedEventCardActive {
+  border-color: #3182ce;
+  box-shadow: 0 6px 20px rgba(49, 130, 206, 0.2);
+}
+
+.selectedEventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.selectedEventHeader h3 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  color: #1a202c;
+}
+
+.selectedEventCardDarkMode .selectedEventHeader h3 {
+  color: #f9fafb;
+}
+
+.selectedEventMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #4a5568;
+}
+
+.selectedEventCardDarkMode .selectedEventMeta {
+  color: #cbd5e0;
+}
+
+.eventDetailButton {
+  border: none;
+  background: #3182ce;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.eventDetailButton:hover {
+  background-color: #2c5282;
+  transform: translateY(-1px);
+}
+
+.selectedEventDescription {
+  margin: 12px 0 0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #2d3748;
+}
+
+.selectedEventCardDarkMode .selectedEventDescription {
+  color: #e2e8f0;
+}
+
+.noEventsMessage {
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #edf2f7;
+  color: #4a5568;
+  text-align: center;
+}
+
+.selectedDatePanelDarkMode .noEventsMessage {
+  background-color: #2d3748;
+  color: #e2e8f0;
+}
+
 /* Clickable Event Items */
 .eventItem.clickable {
   cursor: pointer;
@@ -613,12 +755,14 @@
   }
 }
 
-.calendarActivitySection h2 {
-  margin-bottom: 10px;
+.activityHeader {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+  color: #1a202c;
 }
-.calendarActivitySectionDarkMode h2 {
-  color: #fff;
-  margin-bottom: 10px;
+
+.activityHeaderDark {
+  color: #f7fafc;
 }
 
 .calendarActivityList {
@@ -633,15 +777,7 @@
   border-bottom: 1px solid #ccc;
 }
 
-.activityMessageDarkMode {
-  color: #fff;
-}
-
-.activityTimeDarkMode {
-  color: #fff !important;
-}
-
-.calendarActivitySection .calendarActivityItemDarkMode {
+.calendarActivityItemDark {
   color: #fff;
   border-bottom: 1px solid #ccc;
 }
@@ -659,8 +795,27 @@
   font-size: 0.85rem;
   color: #666;
 }
-.calendarActivityItemDarkMode small {
+
+.calendarActivityItemDark small {
   color: #fff;
+}
+
+.activityMessage {
+  margin: 0 0 4px;
+  color: #1a202c;
+}
+
+.activityMessageDark {
+  color: #f7fafc;
+}
+
+.activityTime {
+  font-size: 0.8rem;
+  color: #4a5568;
+}
+
+.activityTimeDark {
+  color: #e2e8f0 !important;
 }
 
 .reactCalendarDarkMode :global(.react-calendar__tile) {
@@ -677,6 +832,11 @@
 }
 .reactCalendarDarkMode :global(.react-calendar__navigation__label) {
   color: #fff;
+}
+
+.selectedDate {
+  box-shadow: inset 0 0 0 2px #3182ce;
+  border-radius: 8px;
 }
 
 .hasEvents {
