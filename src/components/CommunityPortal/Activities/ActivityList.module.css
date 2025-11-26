@@ -1,14 +1,14 @@
-/* Enhanced Aesthetic CSS for Activity List */
+/* Global Styles */
 
-.body {
+body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #fff;
+  background-color: #f3f4f6; /* Light background for contrast */
   color: #333;
 }
 
-.h1 {
+h1 {
   text-align: center;
   margin: 20px 0;
   color: #1e3a8a;
@@ -16,22 +16,27 @@
   font-weight: 600;
 }
 
+/* Filters Section */
+
 .filters {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  margin: 30px 0;
-  padding: 10px;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  gap: 20px; /* Reduced gap for a more compact look */
+  margin: 30px auto; /* Centered layout with automatic left/right margins */
+  padding: 15px;
+  background: #ffffff;  /* White background for filters */
+  border-radius: 12px; /* Soft rounded edges */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
+
+/* Filters Label and Input */
 
 .filters label {
   display: flex;
   flex-direction: column;
   font-weight: 500;
   color: #1f2937;
+  flex: 1; /* Equal width for all input areas */
 }
 
 .filters input {
@@ -49,24 +54,28 @@
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.3);
 }
 
-.activityList {
+/* Activity List Styles */
+
+.activity-list {
   max-width: 900px;
-  margin: 0 auto;
+  margin: 20px auto; /* Center with top spacing */
   background: #ffffff;
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Prevent overflow with soft rounded corners */
 }
 
-.activityList ul {
+/* Activity Item Styles */
+
+.activity-list ul {
   list-style-type: none;
   padding: 0;
 }
 
-.activityList li {
+.activity-list li {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   padding: 15px;
   margin-bottom: 15px;
   border: 1px solid #e5e7eb;
@@ -75,44 +84,39 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.activityList li:hover {
+.activity-list li:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.activityList li strong {
+.activity-list li strong {
   color: #1e3a8a;
   font-size: 1.2rem;
 }
 
-.activityList li span {
-  color: #4b5563;
-}
+/* No Activities Found Message */
 
-.activityList p {
+.activity-list p {
   text-align: center;
   color: #6b7280;
   font-size: 1.1rem;
   margin: 20px 0;
 }
 
+/* Media Queries for Responsive Design */
+
 @media (max-width: 768px) {
   .filters {
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
   }
 
-  .filters label {
-    width: 100%;
-  }
-
-  .activityList {
+  .activity-list {
     padding: 20px;
   }
 
-  .activityList li {
-    flex-direction: column;
+  .activity-list li {
     padding: 10px;
   }
 }
