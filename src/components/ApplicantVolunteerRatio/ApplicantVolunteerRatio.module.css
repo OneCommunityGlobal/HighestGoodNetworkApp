@@ -1,0 +1,73 @@
+/* ApplicantVolunteerRatio.module.css */
+
+/* Layout */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.containerDark {
+  background-color: #1b2a41;
+  color: #e0e0e0;
+}
+
+.header {
+  margin: 0 0 8px 0;
+}
+
+.headerDark {
+  color: #e0e0e0;
+}
+
+/* Controls row */
+.controls {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+/* Date controls */
+.dateGroup { display: flex; align-items: center; gap: 8px; }
+.label { font-weight: 500; }
+.labelDark { color: #e0e0e0; }
+.dateInput {
+  padding: 6px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #1f2937;
+}
+.dateInputDark {
+  background-color: #0f172a;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+.dateInputDark::placeholder {
+  color: #94a3b8;
+}
+
+/* Role select wrapper */
+.selectWrapper { min-width: 220px; }
+.select :global(.custom-select__control) {
+  min-height: 38px;
+}
+
+/* States */
+.loading { color: #3c4043; }
+.error { color: red; }
+.noData { text-align: center; padding: 40px 0; }
+.validationError {
+  color: #ffcc00;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+/* Optional: local tweaks for third-party styles without leaking globally */
+:global(.react-datepicker-wrapper) { display: inline-block; }
+:global(.react-datepicker__input-container input) {
+  padding: 6px 8px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+}
