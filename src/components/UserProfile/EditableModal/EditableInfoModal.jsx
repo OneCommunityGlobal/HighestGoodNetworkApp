@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import DOMPurify from 'dompurify';
 import PropTypes from 'prop-types';
 import {
   Button,
@@ -16,7 +15,6 @@ import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from '~/styles';
 import RichTextEditor from './RichTextEditor';
-import styles from './EditableInfoModal.module.css';
 
 const options = [
   { value: '0', label: 'All (default)' },
@@ -41,24 +39,6 @@ export class EditableInfoModal extends Component {
 
   _isMounted = false;
 
-   // Sanitize HTML content to prevent XSS attacks
-  sanitizeHTML = (htmlContent) => {
-    if (!htmlContent || typeof htmlContent !== 'string') return '';
-
-    return DOMPurify.sanitize(htmlContent, {
-      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'span', 'div'],
-      ALLOWED_ATTR: ['href', 'class'], // Removed 'style' to prevent CSS injection
-      ALLOW_DATA_ATTR: false,
-      ALLOWED_URI_REGEXP: /^https?:\/\//, // Only allow http/https URLs
-    });
-  };
-
-  // Sanitize text content to prevent XSS in props
-  sanitizeText = (textContent) => {
-    if (!textContent || typeof textContent !== 'string') return '';
-    return DOMPurify.sanitize(textContent, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] });
-  };
-
   
   async componentDidMount() {
     this._isMounted = true;
@@ -72,14 +52,13 @@ export class EditableInfoModal extends Component {
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
         if (info.infoName === areaName) {
-          content = this.sanitizeHTML(info.infoContent);
+          content = info.infoContent;
           visible = info.visibility;
         }
       });
     } 
 
-    // Safely add custom class to ul elements WITHIN the sanitized content
-    content = this.sanitizeHTML(content.replace(/<ul>/g, "<ul class='custom-ul'>"));
+    content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
     let CanRead = (visible === '0') ||
       (visible === '1' && (role === 'Owner' || role === 'Administrator')) ||
       (visible === '2' && (role !== 'Volunteer'));
@@ -138,8 +117,7 @@ export class EditableInfoModal extends Component {
   }
   handleInputChange = (content, editor) => {
     const infoContent = this.state.infoContent;
-    const sanitizedContent = this.sanitizeHTML(content);
-    this.setState({ infoContent: sanitizedContent });
+    this.setState({ infoContent: content });
   }
 
 
@@ -176,7 +154,6 @@ export class EditableInfoModal extends Component {
     try {
       await this.props.getInfoCollections();
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error(error);
       // Handle error appropriately here
     }
@@ -185,9 +162,9 @@ export class EditableInfoModal extends Component {
   mainSaveHandler = async () => {
     const { findIndex: updatedInfo, infoId } = this.handleChangeInInfos();
     const newInfo = {
-      infoName: this.sanitizeText(this.state.infoName),
-      infoContent: this.sanitizeHTML(this.state.infoContent),
-      visibility: this.sanitizeText(this.state.visibility),
+      infoName: this.state.infoName,
+      infoContent: this.state.infoContent,
+      visibility: this.state.visibility,
     }
     let saveResult;
     if (!updatedInfo) {
@@ -231,7 +208,9 @@ export class EditableInfoModal extends Component {
     } = this.state;
 
     const { darkMode } = this.props;
-    const sanitizedContent = infoContent;
+    const sanitizedContent = darkMode
+      ? infoContent.replace(/color\s*:\s*[^;"']+;?/gi, '')
+      : infoContent;
     return (
       (CanRead) && (
         <div>
@@ -246,9 +225,7 @@ export class EditableInfoModal extends Component {
           />
           {editableModalOpen && (
             <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
-              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>
-                Welcome to the {this.sanitizeText(this.props.areaTitle)} Information Page!
-              </ModalHeader>
+              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
               <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ padding: '20px 40px' }}>
                 {this.state.editing
                   ? <RichTextEditor
@@ -257,9 +234,9 @@ export class EditableInfoModal extends Component {
                     onEditorChange={this.handleInputChange}
                     darkMode={darkMode}
                   />
-                  // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
                   : <div
-                    className={darkMode ? `${styles.infoModalContent} ${styles.forceWhiteText}` : ''}
+                    className={darkMode ? 'info-modal-content force-white-text' : ''}
+                    style={{ paddingLeft: '20px' }}
                     dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                     onClick={() => this.handleEdit(true)} />
                 }
@@ -268,7 +245,7 @@ export class EditableInfoModal extends Component {
                 <Row className='no-gutters'>
                   {(this.state.editing) &&
                     (
-                      <Col md={6} style={{ paddingRight: '2px' }} className='my-2'>
+                      <Col md={6} style={{ paddingRight: '2px' }}>
                         <Select
                           options={options}
                           onChange={this.handleSelectChange}
@@ -276,18 +253,23 @@ export class EditableInfoModal extends Component {
                         />
                       </Col>)
                   }
-                  <div className='my-2'>
-                    {(CanEdit && this.state.editing) &&
-                      (
-                          <Button
-                            className='saveBtn mx-2'
-                            onClick={this.handleSave}
-                            color='primary'
-                            style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
-                      )
-                    }
+
+                  {(CanEdit && this.state.editing) &&
+                    (
+                      <Col md={3} style={{ paddingLeft: '4px' }}
+                      >
+                        <Button
+                          className='saveBtn'
+                          onClick={this.handleSave}
+                          color='primary'
+                          style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
+                      </Col>)
+                  }
+                  <Col
+                    md={3} className='d-flex justify-content-center'
+                  >
                     <Button onClick={this.handleClose} color='danger' style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
-                  </div>
+                  </Col>
                 </Row>
               </ModalFooter>
             </Modal>

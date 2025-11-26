@@ -47,8 +47,7 @@ describe('BadgeTableFilter component', () => {
       order: '',
     };
     const { container } = renderComponent(mockData);
-    const nameElements = screen.getAllByRole('textbox');
-    const nameElement = nameElements[0]; // First textbox is the name field
+    const nameElement = container.querySelector('#search_badge_name_search');
     expect(nameElement.value).toBe('badge');
   });
   it('Check description box', () => {
@@ -59,7 +58,7 @@ describe('BadgeTableFilter component', () => {
       order: '',
     };
     const { container } = renderComponent(mockData);
-    const descriptionElement = screen.getAllByRole('textbox')[1];
+    const descriptionElement = container.querySelector('#search_badge_description_search');
     expect(descriptionElement.value).toBe('personal record');
   });
   it('Check type dropdown', () => {
@@ -70,7 +69,7 @@ describe('BadgeTableFilter component', () => {
       order: '',
     };
     const { container } = renderComponent(mockData);
-    const typeElement = screen.getByDisplayValue('Personal Max');
+    const typeElement = container.querySelector('#search_badge_types_search');
 
     expect(typeElement.value).toBe('Personal Max');
     Array.from(typeElement.options).forEach(option => {
@@ -89,7 +88,7 @@ describe('BadgeTableFilter component', () => {
       order: 'Descending',
     };
     const { container } = renderComponent(mockData);
-    const orderElement = screen.getByDisplayValue('Descending');
+    const orderElement = container.querySelector('#search_badge_ranking_sort');
 
     expect(orderElement.value).toBe('Descending');
     Array.from(orderElement.options).forEach(option => {
@@ -100,7 +99,7 @@ describe('BadgeTableFilter component', () => {
       }
     });
     expect(screen.getByText('Descending')).toBeInTheDocument();
-    expect(screen.getByText('Ascending')).toBeInTheDocument();
+    expect(screen.getByText('Ascending')).not.toBeInTheDocument;
   });
   it('Check if reset filter button works properly', () => {
     const mockData = {

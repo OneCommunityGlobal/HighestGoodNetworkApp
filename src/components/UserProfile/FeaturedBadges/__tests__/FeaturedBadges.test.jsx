@@ -11,7 +11,6 @@ describe('FeaturedBadges Component', () => {
 
   it('sort the badge image correctly', () => {
     const { getAllByTestId } = render(<FeaturedBadges {...mockProps} />);
-    // eslint-disable-next-line testing-library/prefer-screen-queries
     const displayedBadges = getAllByTestId('badge_featured_count');
 
     expect(displayedBadges[0]).toHaveTextContent('4');

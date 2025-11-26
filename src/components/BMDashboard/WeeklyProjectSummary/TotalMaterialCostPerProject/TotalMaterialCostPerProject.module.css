@@ -6,7 +6,7 @@
 }
 
 .totalMaterialCostPerProjectChartTitleDark {
-  color: var(--text-color, #ffffff);
+  color: #ffffff; /* White for dark mode */
 }
 
 .selectValueContainer {
@@ -34,7 +34,7 @@
 }
 
 .selectMultiValueDark {
-  background-color: var(--input-bg, #375071);
+  background-color: #375071;
 }
 
 /* react-select multi value label */
@@ -43,7 +43,7 @@
 }
 
 .selectMultiValueLabelDark {
-  color: var(--text-color, white);
+  color: white;
 }
 
 /* react-select dropdown menu */
@@ -57,7 +57,7 @@
 
 /* Optional hover/focus state for dark dropdown items */
 .selectOptionHoverDark {
-  background-color: var(--accent-color, #0d55b3);
+  background-color: #0d55b3;
 }
 
 

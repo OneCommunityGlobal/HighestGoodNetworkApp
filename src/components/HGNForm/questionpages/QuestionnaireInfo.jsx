@@ -1,13 +1,9 @@
 import styles from '../styles/QuestionnaireInfo.module.css';
-import { useSelector } from 'react-redux';
 
 function QuestionnaireInfo() {
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const containerClass = `${styles.questionnaireInfo} ${darkMode ? styles.darkContainer : ''}`;
-  const stripClass = `${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`;
   return (
-    <div className={containerClass}>
-      <div className={stripClass} />
+    <div className={`${styles.questionnaireInfo}`}>
+      <div className={`${styles.blueStrip}`} />
       <h1>HGN Development Team Questionnaire</h1>
       <p>
         Your answers to this questionnaire are used for team collaboration and placing you on a

@@ -74,9 +74,6 @@ describe('SummaryBar Component', () => {
         },
       },
     },
-    badge: {
-      badgeCount: 0,
-    },
   };
 
   // Create the mock store with the initial state

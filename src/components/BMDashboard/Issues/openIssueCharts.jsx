@@ -18,23 +18,16 @@ import {
   fetchLongestOpenIssues,
   setProjectFilter,
 } from '../../../actions/bmdashboard/issueChartActions';
-import styles from './issueCharts.module.css';
+import './issueCharts.css';
 
 function IssueCharts() {
   const dispatch = useDispatch();
-  const darkMode = useSelector(state => state.theme.darkMode);
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const chartContainerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(window.innerWidth);
-
-  // Enhanced color scheme for accessibility
-  const textColor = darkMode ? '#f7fafc' : '#1a202c';
-  const gridColor = darkMode ? '#4a5568' : '#e2e8f0';
-  const tooltipBg = darkMode ? '#2d3748' : '#ffffff';
-  const tooltipBorder = darkMode ? '#4a5568' : '#e2e8f0';
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -90,44 +83,19 @@ function IssueCharts() {
 
   const { margin, yAxisWidth } = getChartLayout();
 
-  if (loading) {
-    return (
-      <div style={{ color: textColor, textAlign: 'center', padding: '20px' }}>
-        Loading chart data...
-      </div>
-    );
-  }
-  if (error) {
-    return (
-      <div
-        style={{ color: darkMode ? '#fca5a5' : '#dc2626', textAlign: 'center', padding: '20px' }}
-      >
-        Error: {error}
-      </div>
-    );
-  }
-
-  const containerClass = `${styles.issueChartContainer} ${
-    darkMode ? styles.issueChartContainerDark : ''
-  }`;
-  const labelClass = `${styles.issueChartLabel} ${darkMode ? styles.issueChartLabelDark : ''}`;
-  const filterSelectClass = `${styles.filterSelect} ${darkMode ? styles.filterSelectDark : ''}`;
-  const chartContainerClass = `${styles.chartContainer} ${
-    darkMode ? styles.chartContainerDark : ''
-  }`;
-  const noDataMessageClass = `${styles.noDataMessage} ${darkMode ? styles.noDataMessageDark : ''}`;
-  const noDataContentClass = `${styles.noDataContent} ${darkMode ? styles.noDataContentDark : ''}`;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className={containerClass}>
+    <div className="issue-chart-container">
       <h2>Longest Open Issues</h2>
 
-      <div className={styles.filtersContainer}>
-        <div className={styles.filter}>
-          <label className={labelClass} htmlFor="start-date">
+      <div className="filters-container">
+        <div className="filter">
+          <label className="issue-chart-label" htmlFor="start-date">
             Date Range:
           </label>
-          <div className={styles.dateRangePicker}>
+          <div className="date-range-picker">
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -138,7 +106,7 @@ function IssueCharts() {
               maxDate={endDate}
               placeholderText="Start Date"
               isClearable
-              className={filterSelectClass}
+              className="filter-select"
             />
             <span>to</span>
             <DatePicker
@@ -151,13 +119,13 @@ function IssueCharts() {
               maxDate={new Date()}
               placeholderText="End Date"
               isClearable
-              className={filterSelectClass}
+              className="filter-select"
             />
           </div>
         </div>
 
-        <div className={styles.filter}>
-          <label className={labelClass} htmlFor="start-date">
+        <div className="filter">
+          <label className="issue-chart-label" htmlFor="start-date">
             Projects:
           </label>
           <Select
@@ -166,16 +134,16 @@ function IssueCharts() {
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            className={filterSelectClass}
+            className="filter-select"
             classNamePrefix="select"
           />
         </div>
       </div>
 
-      <div className={chartContainerClass} ref={chartContainerRef}>
+      <div className="chart-container" ref={chartContainerRef}>
         {!issues || issues.length === 0 ? (
-          <div className={noDataMessageClass}>
-            <div className={noDataContentClass}>
+          <div className="no-data-message">
+            <div className="no-data-content">
               <h3>No Open Issues Found</h3>
               <p>There are currently no open issues matching your selected criteria.</p>
               <p>Try adjusting your date range or project filters to see more results.</p>

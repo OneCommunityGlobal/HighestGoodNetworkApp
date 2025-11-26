@@ -19,7 +19,6 @@ function TeamWeeklySummaries({ name, i, data, darkMode }) {
       .format('DD-MMM-YY'),
     
   });
-  // eslint-disable-next-line no-console
   console.log('darkMode', darkMode);
   return (
     <div className={`team-weekly-summaries ${darkMode ? 'bg-space-cadet' : ''}`} data-testid="team-weekly-summaries">

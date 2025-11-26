@@ -1,36 +1,40 @@
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import styles from './ApplicationChart.module.css';
 
-function TimeFilter({ onFilterChange, darkMode }) {
+function TimeFilter({ onFilterChange }) {
   const [selectedOption, setSelectedOption] = useState('weekly');
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (selectedOption === 'custom' && startDate && endDate) {
-      if (startDate > endDate) {
-        setError('Start date cannot be after end date.');
-        return;
-      } else {
-        setError('');
-      }
-    } else {
-      setError('');
-    }
-
-    onFilterChange({ selectedOption, startDate, endDate, error: '' });
-  }, [selectedOption, startDate, endDate]); // Removed onFilterChange from dependencies
+    onFilterChange({ selectedOption, startDate, endDate });
+  }, [selectedOption, startDate, endDate]);
 
   return (
-    <div className={`${styles.TimeFilter}`}>
-      <label htmlFor="timeFilterSelect">Time Filter:</label>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '16px',
+        margin: '20px auto',
+        flexWrap: 'wrap',
+      }}
+    >
+      <label htmlFor="timeFilterSelect" style={{ fontWeight: 500 }}>
+        Time Filter:
+      </label>
       <select
         id="timeFilterSelect"
         value={selectedOption}
         onChange={e => setSelectedOption(e.target.value)}
+        style={{
+          padding: '6px 12px',
+          borderRadius: '4px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
+        }}
       >
         <option value="weekly">Weekly</option>
         <option value="monthly">Monthly</option>
@@ -45,6 +49,7 @@ function TimeFilter({ onFilterChange, darkMode }) {
             onChange={date => setStartDate(date)}
             placeholderText="Start Date"
             dateFormat="yyyy/MM/dd"
+            style={{ marginRight: '10px' }}
           />
           <span>to</span>
           <DatePicker
@@ -55,8 +60,6 @@ function TimeFilter({ onFilterChange, darkMode }) {
           />
         </>
       )}
-
-      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 }

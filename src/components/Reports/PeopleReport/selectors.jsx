@@ -25,70 +25,89 @@ export const getPeopleReportData = state => ({
   darkMode: state.theme.darkMode,
 });
 
-export const peopleTasksPieChartViewData = (state) => {
-  const userProjects = state.userProjects;
-  const timeEntries = state.timeEntries;
-  const userId = state.userProfile?._id;
+export const peopleTasksPieChartViewData = ({ userProjects, timeEntries }) => {
 
-  const period = Array.isArray(timeEntries?.period) ? timeEntries.period : [];
+  // console.log('userProjects:', userProjects);
+  // console.log('timeEntries:', timeEntries);
 
-  const allUserEntries = period.filter(
-    e => (e.personId ?? e.userId) === userId
-  );
+  // const directProjectLogs = timeEntries.period.filter(entry => entry.wbsId === null);
+  // console.log('Direct-to-project time entries:', directProjectLogs);
+  // console.log(userProjects);
 
-  const completedUserEntries = allUserEntries.filter(e => e.isActive === true);
+  let hoursLoggedToProjectsOnly = {};
+  const tasksWithLoggedHoursOnly = {};
+  // let totalHours = 0;
+  //   for(let i=0; i<timeEntries.period.length; i++){
+  //     totalHours += timeEntries.period[i].hours + (timeEntries.period[i].minutes/60);
+  //  }
 
-  const projectHours = {};
-  allUserEntries.forEach(entry => {
+  timeEntries.period.forEach(entry => {
     const { projectId } = entry;
-    if (!projectId) return;
-    const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
-    projectHours[projectId] = (projectHours[projectId] || 0) + time;
+    if (!projectId) return; // Skip if projectId is missing
+
+    const time = entry.hours + entry.minutes / 60;
+    hoursLoggedToProjectsOnly[projectId] = (hoursLoggedToProjectsOnly[projectId] || 0) + time;
   });
 
-  const hoursLoggedToProjectsOnly = (userProjects?.projects || []).map(project => ({
-    projectId: project.projectId,
-    projectName: project.projectName,
-    totalTime: projectHours[project.projectId] || 0,
-  }));
+  timeEntries.period.forEach(entry => {
+    if (entry.wbsId !== null) {
+      const taskKey = entry.wbsId;
+      const taskName = entry.taskName || 'Unnamed Task'; // entry.taskName must exist in your data
 
-  const taskHours = {};
-  completedUserEntries.forEach(entry => {
-    if (entry.taskId == null) return;
-    const taskKey = entry.taskId;
-    const taskName = entry.taskName || 'Unnamed Task';
-    const time = (entry.hours || 0) + (entry.minutes || 0) / 60;
+      if (!tasksWithLoggedHoursOnly[taskKey]) {
+        tasksWithLoggedHoursOnly[taskKey] = {
+          totalTime: 0,
+          projectId: entry.projectId,
+          taskName,
+        };
+      }
 
-    if (!taskHours[taskKey]) {
-      taskHours[taskKey] = {
-        totalTime: 0,
-        projectId: entry.projectId,
-        taskName,
-      };
+      tasksWithLoggedHoursOnly[taskKey].totalTime += entry.hours + (entry.minutes / 60);
     }
-    taskHours[taskKey].totalTime += time;
   });
 
-  const tasksArray = Object.keys(taskHours).map(taskId => {
-    const t = taskHours[taskId];
+
+
+  const resultArray = userProjects?.projects.map(project => {
+    const totalTime = hoursLoggedToProjectsOnly[project.projectId] || 0;
     return {
-      projectId: taskId,   
-      projectName: t.taskName,
-      totalTime: t.totalTime,
+      projectId: project.projectId,
+      projectName: project.projectName,
+      totalTime,
+    };
+  })
+  // .filter(p => p.totalTime > 0); // commented this line to  display all the projects even though the hours are not logged
+
+  const resultArray2 = Object.keys(tasksWithLoggedHoursOnly).map(taskId => {
+    const task = tasksWithLoggedHoursOnly[taskId];
+    return {
+      projectId: taskId, // used for coloring; can change if needed
+      projectName: task.taskName,
+      totalTime: task.totalTime,
     };
   });
 
-  const tasksWithLoggedHoursById = tasksArray;
-  const tasksLegend = tasksArray;
 
+  hoursLoggedToProjectsOnly = resultArray;
+
+  let tasksWithLoggedHoursById = {};
+  const displayedTasksWithLoggedHoursById = {};
+  const projectsWithLoggedHoursById = {};
+  let tasksLegend = {};
+  const displayedTasksLegend = {};
+
+  tasksLegend = resultArray2;
+  tasksWithLoggedHoursById = resultArray2;
   return {
     hoursLoggedToProjectsOnly,
     tasksWithLoggedHoursById,
     tasksLegend,
-    showTasksPieChart: tasksWithLoggedHoursById.length > 0,
-    showProjectsPieChart: hoursLoggedToProjectsOnly.some(p => p.totalTime > 0),
-    displayedTasksWithLoggedHoursById: {},
-    displayedTasksLegend: {},
-    showViewAllTasksButton: false,
+    showTasksPieChart: Object.keys(tasksWithLoggedHoursById).length > 0,
+    showProjectsPieChart: Object.keys(projectsWithLoggedHoursById).length > 0,
+    displayedTasksWithLoggedHoursById,
+    displayedTasksLegend,
+    showViewAllTasksButton:
+      Object.keys(tasksWithLoggedHoursById).length >
+      Object.keys(displayedTasksWithLoggedHoursById).length,
   };
 };

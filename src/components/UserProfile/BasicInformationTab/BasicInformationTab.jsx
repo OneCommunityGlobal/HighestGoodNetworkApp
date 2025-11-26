@@ -1,16 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
 import PhoneInput from 'react-phone-input-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
-
-//// import 'react-phone-input-2/lib/style.css';
+// import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from '~/components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { connect , useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import SetUpFinalDayButton from '~/components/UserManagement/SetUpFinalDayButton';
 import './BasicInformationTab.css';
@@ -21,9 +19,9 @@ import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
+import { useDispatch } from 'react-redux';
 
-
-export const Name = props => {
+const Name = props => {
   const {
     userProfile,
     setUserProfile,
@@ -35,6 +33,7 @@ export const Name = props => {
   } = props;
 
   const { firstName, lastName } = userProfile;
+
   if (canEdit) {
     return (
       <>
@@ -45,11 +44,7 @@ export const Name = props => {
               type="text"
               name="firstName"
               id="firstName"
-
-              data-testid='firstName'
-
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
-
               value={firstName}
               // className={styleProfile.profileText}
               onChange={e => {
@@ -91,7 +86,6 @@ export const Name = props => {
               type="text"
               name="lastName"
               id="lastName"
-              data-testid='lastName'
               value={lastName}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               // className={styleProfile.profileText}
@@ -143,8 +137,9 @@ export const Name = props => {
   );
 };
 
-  export const Title = props => {
+const Title = props => {
   const { userProfile, setUserProfile, canEdit, desktopDisplay, darkMode } = props;
+
   const { jobTitle } = userProfile;
 
   if (canEdit) {
@@ -157,7 +152,6 @@ export const Name = props => {
               type="text"
               name="title"
               id="jobTitle"
-              data-testid="jobTitle"
               value={jobTitle}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
@@ -198,8 +192,7 @@ export const Name = props => {
   );
 };
 
-
-export const Email = props => {
+const Email = props => {
   const {
     userProfile,
     setUserProfile,
@@ -253,7 +246,6 @@ export const Email = props => {
             </div>
             <ToggleSwitch
               switchType="email"
-              id="emailPrivacy"
               state={privacySettings?.email}
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
@@ -261,28 +253,9 @@ export const Email = props => {
 
             <ToggleSwitch
               switchType="email-subcription"
-
-              id="emailSubscription"
-              state={emailSubscriptions? emailSubscriptions : false}
-
-              // state={emailSubscriptions ? emailSubscriptions : false}
-
+              state={emailSubscriptions ? emailSubscriptions : false}
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
-            />
-
-            <Input
-              type="email"
-              name="email"
-              id="email"
-              data-testid="email"
-              value={email}
-              onChange={e => {
-                setUserProfile({ ...userProfile, email: e.target.value });
-                setFormValid({ ...formValid, email: emailPattern.test(e.target.value) });
-              }}
-              placeholder="Email"
-              invalid={!formValid.email}
             />
 
             <FormFeedback>Email is not Valid</FormFeedback>
@@ -302,7 +275,7 @@ export const Email = props => {
   );
 };
 
-export const formatPhoneNumber = str => {
+const formatPhoneNumber = str => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -332,9 +305,15 @@ export const formatPhoneNumber = str => {
   // Unconventional
   return str;
 };
-
-export const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay ,darkMode} = props;
+const Phone = props => {
+  const {
+    userProfile,
+    setUserProfile,
+    handleUserProfile,
+    canEdit,
+    desktopDisplay,
+    darkMode,
+  } = props;
   const { phoneNumber, privacySettings } = userProfile;
   const phoneInputWrapperRef = useRef(null);
   if (canEdit) {
@@ -342,19 +321,11 @@ export const Phone = props => {
       <>
         <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
-            <ToggleSwitch
-              switchType="phone"
-              id="phone"
-              state={privacySettings?.phoneNumber}
-              handleUserProfile={handleUserProfile}
-              darkMode={darkMode}
-            />
+          <div style={{ position: 'relative' }} ref={phoneInputWrapperRef}>
             <PhoneInput
               buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
               inputClass={`phone-input-style ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               country={'us'}
-              data-testid="ph-input-style"
-              id="ph-input-style"
               value={phoneNumber}
               onChange={phoneNumber => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
@@ -381,6 +352,7 @@ export const Phone = props => {
                 zIndex: 2,
               }}
             />
+          </div>
             <ToggleSwitch
               switchType="phone"
               state={privacySettings?.phoneNumber}
@@ -405,8 +377,9 @@ export const Phone = props => {
   );
 };
 
-export const TimeZoneDifference = props => {
+const TimeZoneDifference = props => {
   const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay, darkMode } = props;
+
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -514,7 +487,6 @@ const BasicInformationTab = props => {
   };
   const onClickGetTimeZone = () => {
     if (!userProfile.location.userProvided) {
-      // eslint-disable-next-line no-alert
       alert('Please enter valid location');
       return;
     }
@@ -693,7 +665,6 @@ const BasicInformationTab = props => {
               type="text"
               name="collaborationPreference"
               id="collaborationPreference"
-              data-testid="collaborationPreference"
               value={userProfile.collaborationPreference}
               className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
@@ -718,34 +689,26 @@ const BasicInformationTab = props => {
         {canEditRole ? (
           <FormGroup>
             <select
-              id="role"
-              name="role"
-              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
-              value={userProfile.role || ''}   // make sure this is a string
+              value={userProfile.role}
               onChange={e => {
-                const newRole = e.target.value;
                 setUserProfile({
                   ...userProfile,
-                  role: newRole,
+                  role: e.target.value,
                   permissions: { ...userProfile.permissions, frontPermissions: [] },
                 });
               }}
+              id="role"
+              name="role"
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
             >
-              {/* Optional placeholder when no role selected */}
-              {!userProfile.role && <option value="">Select role</option>}
-  
-              {(roles || [])
-                .map(r => (typeof r === 'string' ? r : r.roleName)) // normalize
-                .filter(Boolean)
-                .map(roleName => {
-                  if (roleName === 'Owner') return null; // skip Owner in this list
-                  return (
-                    <option key={roleName} value={roleName}>
-                      {roleName}
-                    </option>
-                  );
-                })}
-  
+              {roles.map(({ roleName }) => {
+                if (roleName === 'Owner') return;
+                return (
+                  <option key={roleName} value={roleName}>
+                    {roleName}
+                  </option>
+                );
+              })}
               {canAddDeleteEditOwners && (
                 <option value="Owner" style={desktopDisplay ? { marginLeft: '5px' } : {}}>
                   Owner
@@ -759,7 +722,7 @@ const BasicInformationTab = props => {
       </Col>
       {desktopDisplay ? (
         <Col md="1">
-          <div style={{ marginTop: topMargin }}>
+          <div style={{ marginTop: topMargin, }}>
             <EditableInfoModal
               role={role}
               areaName={'roleInfo'}
@@ -774,7 +737,6 @@ const BasicInformationTab = props => {
       )}
     </>
   );
-  
 
   const locationComponent = (
     <>
@@ -788,7 +750,6 @@ const BasicInformationTab = props => {
               <Row className="ml-0">
                 <Col className="p-0">
                   <Input
-                    data-testid="location"
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
                     className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
@@ -809,7 +770,7 @@ const BasicInformationTab = props => {
             </Col>
           ) : (
             <Col className="cols">
-              <Input data-testid="location" onChange={handleLocation} value={userProfile.location.userProvided || ''} />
+              <Input onChange={handleLocation} value={userProfile.location.userProvided || ''} />
               <div>
                 <Button
                   color="secondary"
@@ -852,7 +813,6 @@ const BasicInformationTab = props => {
   const timeZoneDifferenceComponent = (
     <>
       <Col md={desktopDisplay ? '5' : ''}>
-        {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
         <label className={darkMode ? 'text-light' : ''}>
           Difference in this Time Zone from Your Local
         </label>
@@ -871,54 +831,62 @@ const BasicInformationTab = props => {
     </>
   );
 
-  const statusComponent = (
-    <>
-      <Col md={desktopDisplay ? '5' : ''}>
-        <Label className={darkMode ? 'text-light' : ''}>
-          Status
-        </Label>
-      </Col>
-      <Col md={desktopDisplay ? '7' : ''}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Label
-            style={{ margin: '0' }}
-            className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}
-          >
-            {userProfile.isActive
-              ? 'Active'
-              : userProfile.reactivationDate
-              ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-              : 'Inactive'}
+  const endDateComponent = (
+  <>
+    {desktopDisplay ? (
+      <Row
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          paddingLeft: '15px',
+        }}
+      >
+        <Col
+          md="7"
+          className="mr-5"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Label style={{ margin: '0' }} className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
+            {userProfile.endDate
+              ? 'End Date ' + userProfile.endDate.substring(0, 10)
+              : 'End Date ' + 'N/A'}
           </Label>
-          {canEdit && canEditStatus && (
-            <PauseAndResumeButton
-              setUserProfile={setUserProfile}
+        </Col>
+        {canEdit && canEditEndDate && (
+          <Col
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              alignItems: 'center',
+            }}
+          >
+            <SetUpFinalDayButton
               loadUserProfile={loadUserProfile}
+              setUserProfile={setUserProfile}
               isBigBtn={true}
               userProfile={userProfile}
               darkMode={darkMode}
+              onFinalDaySave={(updatedUser) => {
+                setUserProfile(updatedUser);
+                loadUserProfile();
+              }}
             />
-          )}
-        </div>
-      </Col>
-    </>
-  );
-
-  const endDateComponent = (
-    <>
-      <Col md={desktopDisplay ? '5' : ''}>
-        <Label className={darkMode ? 'text-light' : ''}>
-          End Date
-        </Label>
-      </Col>
-      <Col md={desktopDisplay ? '7' : ''}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Label className={darkMode ? 'text-light' : ''} style={{ margin: '0' }}>
+          </Col>
+        )}
+      </Row>
+    ) : (
+      <>
+        <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
+          <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
             {userProfile.endDate
-              ? formatDateLocal(userProfile.endDate)
-              : 'N/A'}
+              ? 'End Date ' + userProfile.endDate.substring(0, 10)
+              : 'End Date ' + 'N/A'}
           </Label>
-          {canEdit && canEditEndDate && (
+          {canEdit && canEditEndDate && !desktopDisplay && (
             <SetUpFinalDayButton
               loadUserProfile={loadUserProfile}
               setUserProfile={setUserProfile}
@@ -927,57 +895,108 @@ const BasicInformationTab = props => {
               darkMode={darkMode}
             />
           )}
-        </div>
-      </Col>
+        </Col>
+        {desktopDisplay && canEdit && canEditEndDate && (
+          <Col>
+            <SetUpFinalDayButton
+              loadUserProfile={loadUserProfile}
+              setUserProfile={setUserProfile}
+              isBigBtn={true}
+              userProfile={userProfile}
+              darkMode={darkMode}
+              onFinalDaySave={(updatedUser) => {
+                setUserProfile(updatedUser);
+                loadUserProfile();
+              }}
+            />
+          </Col>
+        )}
+      </>
+    )}
+  </>
+);
+
+  const statusComponent = (
+    <>
+      {desktopDisplay ? (
+        <Row
+          style={{
+            display: 'flex',
+            alignItems: 'center', // Ensures vertical alignment of all items
+            justifyContent: 'space-between', // Space between the columns
+          }}
+        >
+          <Col
+            md="2"
+            className="mr-5"
+            style={{
+              display: 'flex',
+              alignItems: 'center', // Align label vertically
+            }}
+          >
+            <Label className={darkMode ? 'text-light' : ''} style={{ margin: '0' }}>
+              Status
+            </Label>
+          </Col>
+
+          <Col
+            style={{
+              display: 'flex',
+              alignItems: 'center', // Align label and button vertically
+              justifyContent: 'flex-end', // Align button to the far right
+            }}
+          >
+            <Label
+              style={{ margin: '0' }}
+              className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}
+            >
+              {userProfile.isActive
+                ? 'Active'
+                : userProfile.reactivationDate
+                ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+                : 'Inactive'}
+            </Label>
+            &nbsp;
+            {canEdit && canEditStatus && (
+              <PauseAndResumeButton
+                setUserProfile={setUserProfile}
+                loadUserProfile={loadUserProfile}
+                isBigBtn={true}
+                userProfile={userProfile}
+                darkMode={darkMode}
+              />
+            )}
+          </Col>
+        </Row>
+      ) : (
+        // Non-desktop view
+        <>
+          <Col>
+            <Label className={darkMode ? 'text-light' : ''}>Status</Label>
+            <div>
+              <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
+                {userProfile.isActive
+                  ? 'Active'
+                  : userProfile.reactivationDate
+                  ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+                  : 'Inactive'}
+              </Label>
+              &nbsp;
+              {canEdit && canEditStatus && (
+                <PauseAndResumeButton
+                  setUserProfile={setUserProfile}
+                  loadUserProfile={loadUserProfile}
+                  isBigBtn={true}
+                  userProfile={userProfile}
+                  darkMode={darkMode}
+                />
+              )}
+            </div>
+          </Col>
+          {endDateComponent}
+        </>
+      )}
     </>
-  );
-
-  const statusComponentMobile = (
-    <Col>
-      <Label className={darkMode ? 'text-light' : ''}>Status</Label>
-      <div>
-        <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
-          {userProfile.isActive
-            ? 'Active'
-            : userProfile.reactivationDate
-            ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-            : 'Inactive'}
-        </Label>
-        &nbsp;
-        {canEdit && canEditStatus && (
-          <PauseAndResumeButton
-            setUserProfile={setUserProfile}
-            loadUserProfile={loadUserProfile}
-            isBigBtn={true}
-            userProfile={userProfile}
-            darkMode={darkMode}
-          />
-        )}
-      </div>
-    </Col>
-  );
-
-  const endDateComponentMobile = (
-    <Col>
-      <Label className={darkMode ? 'text-light' : ''}>End Date</Label>
-      <div>
-        <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
-          {userProfile.endDate
-            ? formatDateLocal(userProfile.endDate)
-            : 'N/A'}
-        </Label>
-        &nbsp;
-        {canEdit && canEditEndDate && (
-          <SetUpFinalDayButton
-            loadUserProfile={loadUserProfile}
-            setUserProfile={setUserProfile}
-            isBigBtn={true}
-            userProfile={userProfile}
-            darkMode={darkMode}
-          />
-        )}
-      </div>
-    </Col>
   );
 
   return (
@@ -1017,9 +1036,9 @@ const BasicInformationTab = props => {
               {timeZoneComponent}
               <Col md="1"></Col>
             </Row>
-            <Row style={{ marginBottom: '10px' }}>{timeZoneDifferenceComponent}</Row>
-            <Row style={{ marginBottom: '10px' }}>{statusComponent}</Row>
-            <Row style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
+            <Row>{timeZoneDifferenceComponent}</Row>
+            <Row className='custom-row' style={{ marginBottom: '10px' }}>{statusComponent}</Row>
+            <Row className='custom-row' style={{ marginBottom: '10px' }}>{endDateComponent}</Row>
           </>
         ) : (
           <>
@@ -1034,10 +1053,7 @@ const BasicInformationTab = props => {
             <Col className="cols">{timeZoneDifferenceComponent}</Col>
             <hr />
             <Row xs="2" style={{ marginLeft: '1rem' }}>
-              {statusComponentMobile}
-            </Row>
-            <Row xs="2" style={{ marginLeft: '1rem' }}>
-              {endDateComponentMobile}
+              {statusComponent}
             </Row>
           </>
         )}
@@ -1045,90 +1061,4 @@ const BasicInformationTab = props => {
     </div>
   );
 };
-
-BasicInformationTab.propTypes = {
-  userProfile: PropTypes.shape({
-    firstName: PropTypes.string,
-    lastName: PropTypes.string,
-    jobTitle: PropTypes.string,
-    email: PropTypes.string,
-    phoneNumber: PropTypes.string,
-    collaborationPreference: PropTypes.string,
-    role: PropTypes.string,
-    location: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.shape({
-        userProvided: PropTypes.string,
-        coords: PropTypes.shape({
-          lat: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-          lng: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-        }),
-        country: PropTypes.string,
-        city: PropTypes.string,
-      }),
-    ]),
-    timeZone: PropTypes.string,
-    isActive: PropTypes.bool,
-    reactivationDate: PropTypes.string,
-    endDate: PropTypes.string,
-    privacySettings: PropTypes.shape({
-      email: PropTypes.bool,
-      phoneNumber: PropTypes.bool,
-    }),
-    emailSubscriptions: PropTypes.bool,
-    permissions: PropTypes.shape({
-      frontPermissions: PropTypes.array,
-    }),
-  }).isRequired,
-  setUserProfile: PropTypes.func.isRequired,
-  isUserSelf: PropTypes.bool,
-  handleUserProfile: PropTypes.func.isRequired,
-  formValid: PropTypes.shape({
-    firstName: PropTypes.bool,
-    lastName: PropTypes.bool,
-    email: PropTypes.bool,
-  }).isRequired,
-  setFormValid: PropTypes.func.isRequired,
-  canEdit: PropTypes.bool,
-  canEditRole: PropTypes.bool,
-  roles: PropTypes.arrayOf(
-    PropTypes.shape({
-      roleName: PropTypes.string,
-    })
-  ),
-  role: PropTypes.string,
-  loadUserProfile: PropTypes.func.isRequired,
-  darkMode: PropTypes.bool,
-  hasPermission: PropTypes.func.isRequired,
-};
-Name.propTypes = {
-  userProfile: PropTypes.object.isRequired,
-  setUserProfile: PropTypes.func.isRequired,
-  formValid: PropTypes.object.isRequired,
-  setFormValid: PropTypes.func.isRequired,
-  canEdit: PropTypes.bool,
-  desktopDisplay: PropTypes.bool,
-  darkMode: PropTypes.bool,
-};
-
-Email.propTypes = {
-  userProfile: PropTypes.object.isRequired,
-  setUserProfile: PropTypes.func.isRequired,
-  formValid: PropTypes.object.isRequired,
-  setFormValid: PropTypes.func.isRequired,
-  canEdit: PropTypes.bool,
-  desktopDisplay: PropTypes.bool,
-  darkMode: PropTypes.bool,
-  handleUserProfile: PropTypes.func.isRequired,
-};
-
-Phone.propTypes = {
-  userProfile: PropTypes.object.isRequired,
-  setUserProfile: PropTypes.func.isRequired,
-  handleUserProfile: PropTypes.func.isRequired,
-  canEdit: PropTypes.bool,
-  desktopDisplay: PropTypes.bool,
-  darkMode: PropTypes.bool,
-};
-
 export default connect(null, { hasPermission })(BasicInformationTab);

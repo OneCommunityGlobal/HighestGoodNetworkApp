@@ -841,7 +841,7 @@ class UserManagement extends React.PureComponent {
     return (
       <Container
         fluid
-        className={darkMode ? ' bg-oxford-blue text-light p-3' : 'p-3'}
+        className={darkMode ? ' bg-oxford-blue text-light' : ''}
         style={{ minHeight: '100%' }}
       >
         {/* {fetching ? (

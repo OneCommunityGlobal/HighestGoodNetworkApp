@@ -16,7 +16,6 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-  // eslint-disable-next-line no-console
   console.log.mockRestore();
 });
 
@@ -60,7 +59,6 @@ describe('VolunteeringTimeTab Component', () => {
   });
 
   it('renders without crashing', async () => {
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       renderWithProvider(<VolunteeringTimeTab {...props} />, { store });
     });
@@ -68,7 +66,6 @@ describe('VolunteeringTimeTab Component', () => {
   });
 
   it('displays the correct Total Tangible Education Hours', async () => {
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       renderWithProvider(<VolunteeringTimeTab {...props} />, { store });
     });
@@ -77,7 +74,6 @@ describe('VolunteeringTimeTab Component', () => {
   });
 
   it('displays the correct Total Tangible Society Hours', async () => {
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       renderWithProvider(<VolunteeringTimeTab {...props} />, { store });
     });
@@ -86,7 +82,6 @@ describe('VolunteeringTimeTab Component', () => {
   });
 
   it('displays the correct Total Tangible Energy Hours', async () => {
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       renderWithProvider(<VolunteeringTimeTab {...props} />, { store });
     });
@@ -95,7 +90,6 @@ describe('VolunteeringTimeTab Component', () => {
   });
 
   it('displays the correct Total Tangible Food Hours', async () => {
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       renderWithProvider(<VolunteeringTimeTab {...props} />, { store });
     });
@@ -104,7 +98,6 @@ describe('VolunteeringTimeTab Component', () => {
   });
 
   it('displays the correct Total Tangible Housing Hours', async () => {
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       renderWithProvider(<VolunteeringTimeTab {...props} />, { store });
     });
@@ -113,7 +106,6 @@ describe('VolunteeringTimeTab Component', () => {
   });
 
   it('displays the correct Weekly Committed Hours', async () => {
-    // eslint-disable-next-line testing-library/no-unnecessary-act
     await act(async () => {
       renderWithProvider(<VolunteeringTimeTab {...props} />, { store });
     });

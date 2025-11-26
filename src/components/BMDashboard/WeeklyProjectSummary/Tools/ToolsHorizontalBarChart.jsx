@@ -3,7 +3,7 @@ import Select from 'react-select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
-import styles from './ToolsHorizontalBarChart.module.css';
+import './ToolsHorizontalBarChart.css';
 
 // No mock data - use real backend data only
 
@@ -16,14 +16,14 @@ function CustomTooltip({ active, payload, label }) {
   const total = payload.reduce((sum, entry) => sum + (entry.value || 0), 0);
 
   return (
-    <div className={styles['tools-horizontal-bar-chart-tooltip']}>
-      <p className={styles['tools-horizontal-bar-chart-tooltip-label']}>{label}</p>
+    <div className="tools-horizontal-bar-chart-tooltip">
+      <p className="tools-horizontal-bar-chart-tooltip-label">{label}</p>
       {payload.map((entry, index) => (
         <p key={index} style={{ color: entry.color }}>
           {entry.name}: {entry.value}
         </p>
       ))}
-      <p className={styles['tools-horizontal-bar-chart-tooltip-total']}>Total: {total}</p>
+      <p className="tools-horizontal-bar-chart-tooltip-total">Total: {total}</p>
     </div>
   );
 }
@@ -34,8 +34,6 @@ function ToolsHorizontalBarChart({ darkMode }) {
   const [error, setError] = useState(null);
   const [allProjects, setAllProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
-  const [allTools, setAllTools] = useState([]);
-  const [selectedTools, setSelectedTools] = useState([]);
 
   // Date range state for filters
   const currentDate = new Date();
@@ -79,7 +77,6 @@ function ToolsHorizontalBarChart({ darkMode }) {
     const fetchToolsData = async () => {
       if (!selectedProject?.value) {
         setData([]);
-        setAllTools([]);
         setLoading(false);
         return;
       }
@@ -89,76 +86,56 @@ function ToolsHorizontalBarChart({ darkMode }) {
         setError(null);
 
         const projectId = selectedProject.value;
+        // Fetching tools data for selected project
 
-        // 1. Fetch unfiltered dataset (for fallback + full tool list)
+        if (!projectId) {
+          throw new Error('No valid project ID found');
+        }
+
+        // First try without date filters to see if there's any data at all
         const toolsResponseNoFilter = await axios.get(
           ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId),
         );
 
-        // 2. Fetch filtered dataset
+        // Then try with date filters
         const toolsResponse = await axios.get(
           ENDPOINTS.TOOLS_AVAILABILITY_BY_PROJECT(projectId, startDate, endDate),
         );
-
         const toolsDataFiltered = toolsResponse.data;
         const toolsDataUnfiltered = toolsResponseNoFilter.data;
 
-        // Use filtered data if available; otherwise fallback to unfiltered
+        // Use filtered data if available, otherwise fall back to unfiltered
         const toolsData =
           toolsDataFiltered && toolsDataFiltered.length > 0
             ? toolsDataFiltered
             : toolsDataUnfiltered;
 
-        // Extract unique tool names for dropdown
-        if (toolsDataUnfiltered?.length > 0) {
-          const uniqueTools = [...new Set(toolsDataUnfiltered.map(item => item.toolName))]
-            .filter(Boolean) // remove null/undefined
-            .map(tool => ({
-              label: tool,
-              value: tool,
+        if (toolsData && toolsData.length > 0) {
+          // Process and format the data using correct backend field names
+          const formattedData = toolsData
+            .slice(0, 5) // Show only top 5 tools
+            .map(item => ({
+              name: item.toolName || 'Unknown Tool',
+              inUse: item.inUse || 0,
+              needsReplacement: item.needsReplacement || 0,
+              yetToReceive: item.yetToReceive || 0,
             }));
-
-          setAllTools(uniqueTools);
-        } else {
-          setAllTools([]);
-        }
-
-        // If tool filters active → apply them
-        let filteredForChart = toolsData;
-        if (selectedTools.length > 0) {
-          const selectedNames = selectedTools.map(t => t.value);
-          filteredForChart = toolsData.filter(item => selectedNames.includes(item.toolName));
-        }
-
-        // ✅ Format chart data
-        if (filteredForChart.length > 0) {
-          const formattedData = filteredForChart.map(item => ({
-            name: item.toolName || 'Unknown Tool',
-            inUse: item.inUse || 0,
-            needsReplacement: item.needsReplacement || 0,
-            yetToReceive: item.yetToReceive || 0,
-          }));
-
           setData(formattedData);
         } else {
           setData([]);
         }
       } catch (err) {
-        console.error(err);
         setError('Failed to load tools data');
         setData([]);
-        setAllTools([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchToolsData();
-  }, [selectedProject, startDate, endDate, selectedTools]);
+  }, [selectedProject, startDate, endDate]);
 
   // Filter handlers
-  const handleToolChange = selectedOption => setSelectedTools(selectedOption || []);
-
   const handleProjectChange = selectedOption => {
     setSelectedProject(selectedOption);
   };
@@ -181,118 +158,37 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
   if (loading) {
     return (
-      <div className={styles['tools-horizontal-bar-chart-card']}>
-        <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
-        <div className={styles['tools-horizontal-bar-chart-loading']}>Loading...</div>
+      <div className="tools-horizontal-bar-chart-card">
+        <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
+        <div className="tools-horizontal-bar-chart-loading">Loading...</div>
       </div>
     );
   }
 
   if (error && data.length === 0) {
     return (
-      <div className={styles['tools-horizontal-bar-chart-card']}>
-        <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
-        <div className={styles['tools-horizontal-bar-chart-error']}>{error}</div>
+      <div className="tools-horizontal-bar-chart-card">
+        <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
+        <div className="tools-horizontal-bar-chart-error">{error}</div>
       </div>
     );
   }
 
-  const darkSelectStyles = {
-    control: base => ({
-      ...base,
-      backgroundColor: '#2c3344',
-      borderColor: '#364156',
-      minHeight: '32px',
-      fontSize: '12px',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: '#2c3344',
-      fontSize: '12px',
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-      color: '#e0e0e0',
-      fontSize: '12px',
-    }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: '#364156',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      color: '#e0e0e0',
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: '#aaaaaa',
-      fontSize: '12px',
-    }),
-  };
-
-  const lightSelectStyles = {
-    control: base => ({
-      ...base,
-      minHeight: '32px',
-      fontSize: '12px',
-    }),
-    menu: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    option: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    multiValue: base => ({
-      ...base,
-      backgroundColor: '#e6e6e6',
-    }),
-    multiValueLabel: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      fontSize: '12px',
-    }),
-  };
-
   return (
     <div
-      className={`${styles['tools-horizontal-bar-chart-card']} ${
-        darkMode ? styles['tools-horizontal-bar-chart-dark-mode'] : ''
+      className={`tools-horizontal-bar-chart-card ${
+        darkMode ? 'tools-horizontal-bar-chart-dark-mode' : ''
       }`}
     >
-      <h4 className={styles['tools-horizontal-bar-chart-title']}>Tools by Availability</h4>
+      <h4 className="tools-horizontal-bar-chart-title">Tools by Availability</h4>
 
       {/* Filters Section */}
-      <div className={styles['tools-horizontal-bar-chart-filter-group']}>
-        <label htmlFor="tool-select">Tool(s)</label>
-        <Select
-          id="tool-select"
-          className={styles['tools-horizontal-bar-chart-tool-select']}
-          classNamePrefix="select"
-          value={selectedTools}
-          onChange={handleToolChange}
-          options={allTools}
-          placeholder="Select tools"
-          isMulti={true}
-          isClearable={true}
-          isDisabled={allTools.length === 0}
-          closeMenuOnSelect={false}
-          styles={darkMode ? darkSelectStyles : lightSelectStyles}
-        />
-      </div>
-
-      <div className={styles['tools-horizontal-bar-chart-filters']}>
-        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
+      <div className="tools-horizontal-bar-chart-filters">
+        <div className="tools-horizontal-bar-chart-filter-group">
           <label htmlFor="project-select">Project</label>
           <Select
             id="project-select"
-            className={styles['tools-horizontal-bar-chart-project-select']}
+            className="tools-horizontal-bar-chart-project-select"
             classNamePrefix="select"
             value={selectedProject}
             onChange={handleProjectChange}
@@ -359,13 +255,13 @@ function ToolsHorizontalBarChart({ darkMode }) {
           />
         </div>
 
-        <div className={styles['tools-horizontal-bar-chart-filter-group']}>
+        <div className="tools-horizontal-bar-chart-filter-group">
           <label htmlFor="start-date-picker">Date Range</label>
-          <div className={styles['tools-horizontal-bar-chart-date-picker-group']}>
+          <div className="tools-horizontal-bar-chart-date-picker-group">
             <input
               id="start-date-picker"
               type="date"
-              className={styles['tools-horizontal-bar-chart-date-picker']}
+              className="tools-horizontal-bar-chart-date-picker"
               value={startDate}
               onChange={handleStartDateChange}
               placeholder="Start date"
@@ -375,7 +271,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
             <input
               id="end-date-picker"
               type="date"
-              className={styles['tools-horizontal-bar-chart-date-picker']}
+              className="tools-horizontal-bar-chart-date-picker"
               value={endDate}
               onChange={handleEndDateChange}
               placeholder="End date"
@@ -383,7 +279,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
             />
             <button
               type="button"
-              className={styles['tools-horizontal-bar-chart-clear-dates-btn']}
+              className="tools-horizontal-bar-chart-clear-dates-btn"
               onClick={handleClearDates}
               aria-label="Clear date filters"
               title="Reset to default date range"
@@ -395,7 +291,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
       </div>
 
       {data.length > 0 ? (
-        <div className={styles['tools-horizontal-bar-chart-content']}>
+        <div className="tools-horizontal-bar-chart-content">
           <ResponsiveContainer width="100%" height={200}>
             <BarChart
               layout="vertical"
@@ -423,7 +319,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
           </ResponsiveContainer>
         </div>
       ) : (
-        <div className={styles['tools-horizontal-bar-chart-empty']}>
+        <div className="tools-horizontal-bar-chart-empty">
           <p>📊 No tools data available</p>
         </div>
       )}

@@ -27,12 +27,6 @@ export const VOLUNTEER_STATUS_TAB = {
     tabBackgroundColor: '#ffe9fa',
     shapeBackgroundColor: '#fecff3',
   },
-  mentors: {
-    title: 'Mentors',
-    type: 'mentors',
-    tabBackgroundColor: '#fdf5e5',
-    shapeBackgroundColor: '#F0E6D2',
-  },
   totalHoursWorked: {
     title: 'Total Hours Worked',
     type: 'total-hours-worked',

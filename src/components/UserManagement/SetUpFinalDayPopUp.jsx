@@ -8,7 +8,7 @@ import '../Header/DarkMode.css';
  * Modal popup to show the user profile in create mode
  */
 const SetUpFinalDayPopUpComponent = ({ open, onClose, onSave, darkMode }) => {
-  const [finalDayDate, onDateChange] = useState(moment().add(1, 'day').format('YYYY-MM-DD'));
+  const [finalDayDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
   const closePopup = () => {
@@ -16,14 +16,11 @@ const SetUpFinalDayPopUpComponent = ({ open, onClose, onSave, darkMode }) => {
   };
 
   const deactiveUser = () => {
-    const picked = moment(finalDayDate, 'YYYY-MM-DD', true);
-    if (!picked.isValid() || picked.isSameOrBefore(moment(), 'day')) {
+    if (moment().isBefore(moment(finalDayDate))) {
+      onSave(finalDayDate); // Pass the selected date to the parent component
+    } else {
       setDateError(true);
-      return;
     }
-    // Critical: store end-of-day so it stays the SAME calendar day in all timezones.
-    const finalDayEndOfDayISO = picked.endOf('day').toISOString();
-    onSave(finalDayEndOfDayISO);
   };
   const inputRef = useRef(null);
 
@@ -51,7 +48,6 @@ useEffect(() => {
           name="inactiveDate"
           id="inactiveDate"
           value={finalDayDate}
-          min={moment().add(1, 'day').format('YYYY-MM-DD')}
           onChange={event => {
             setDateError(false);
             onDateChange(event.target.value);

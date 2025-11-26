@@ -20,27 +20,16 @@ import { ENDPOINTS } from '~/utils/URL';
 
 export const ALERT_DELAY = process.env.NODE_ENV === 'test' ? 0 : 6000;
 
-const getAllBadges = allBadges => {
-  const action = {
-    type: GET_ALL_BADGE_DATA,
-    allBadges,
-  };  
-  return action;
-};
+const getAllBadges = allBadges => ({
+  type: GET_ALL_BADGE_DATA,
+  allBadges,
+});
 
-export const fetchAllBadges = (forceRefresh = false) => {
+export const fetchAllBadges = () => {
   return async dispatch => {
     try {
-      // Check the endpoint
-      const baseUrl = ENDPOINTS.BADGE();
-      const url = forceRefresh ? `${baseUrl}?t=${Date.now()}` : baseUrl;
-      
-      const response = await axios.get(url);
-      
-      const actionResult = getAllBadges(response.data);
-      
-      dispatch(actionResult);
-            
+      const response = await axios.get(ENDPOINTS.BADGE());
+      dispatch(getAllBadges(response.data));
       return response.status;
     } catch (err) {
       return err.response?.status || 500;
@@ -257,31 +246,55 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
           'danger',
         ),
       );
-      setTimeout(() => dispatch(closeAlert()), ALERT_DELAY || 0);
+      if (ALERT_DELAY === 0) {
+        dispatch(closeAlert());
+      } else {
+        setTimeout(() => dispatch(closeAlert()), ALERT_DELAY);
+      }
       return;
     }
 
     try {
       const res = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const userData = Array.isArray(res.data) ? res.data[0] : res.data;
-
-      if (!userData || !userData._id) {
-        dispatch(getMessage('User data is incomplete. Cannot assign badges.', 'danger'));
-        setTimeout(() => dispatch(closeAlert()), ALERT_DELAY || 0);
+      if (!res.data || (Array.isArray(res.data) && res.data.length === 0)) {
+        dispatch(
+          getMessage(
+            "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
+            'danger',
+          ),
+        );
+        if (ALERT_DELAY === 0) {
+            dispatch(closeAlert());
+        } else {
+          setTimeout(() => dispatch(closeAlert()), ALERT_DELAY);
+        }
         return;
       }
 
-      const badgeCollectionToSend = selectedBadges.map(badgeId => ({
-        badge: badgeId,
-        count: 1,
-        lastModified: Date.now(),
-        featured: false,
-        earnedDate: []
-      }));
+      const userData = Array.isArray(res.data) ? res.data[0] : res.data;
 
-      await axios.put(ENDPOINTS.BADGE_ASSIGN(userData._id), {
-        badgeCollection: badgeCollectionToSend,
-        newBadges: selectedBadges.length
+      if (!userData || !userData._id || !userData.badgeCollection) {
+        dispatch(getMessage('User data is incomplete. Cannot assign badges.', 'danger'));
+        if (ALERT_DELAY === 0) {
+            dispatch(closeAlert());
+        } else {
+          setTimeout(() => dispatch(closeAlert()), ALERT_DELAY);
+        }
+        return;
+      }
+
+      const { badgeCollection } = userData;
+      for (let i = 0; i < badgeCollection.length; i += 1) {
+        if (typeof badgeCollection[i].badge === 'object' && badgeCollection[i].badge) {
+          badgeCollection[i].badge = badgeCollection[i].badge._id;
+        }
+      }
+      const userToBeAssignedBadge = userData._id;
+      const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
+      const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
+      await axios.put(url, {
+        badgeCollection: newBadgeCollection,
+        newBadges: selectedBadges.length,
       });
 
       dispatch(
@@ -290,12 +303,19 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
           'success',
         ),
       );
-
-      setTimeout(() => dispatch(closeAlert()), ALERT_DELAY || 0);
+      if (ALERT_DELAY === 0) {
+        dispatch(closeAlert());
+      } else {
+        setTimeout(() => dispatch(closeAlert()), ALERT_DELAY);
+      }
     } catch (e) {
       toast.error('Badge assignment error:', e);
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
-      setTimeout(() => dispatch(closeAlert()), ALERT_DELAY || 0);
+      if (ALERT_DELAY === 0) {
+        dispatch(closeAlert());
+      } else {
+        setTimeout(() => dispatch(closeAlert()), ALERT_DELAY);
+      }
     }
   };
 };

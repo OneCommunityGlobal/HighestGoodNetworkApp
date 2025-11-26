@@ -26,8 +26,7 @@ function NewBadges(props) {
 
       return filteredList;
     } catch (error) {
-      // Swallow errors from invalid data to keep UI resilient in tests
-      return [];
+      console.log(error);
     }
   };
 

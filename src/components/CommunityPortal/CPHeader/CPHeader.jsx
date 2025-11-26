@@ -338,9 +338,9 @@ export function Header(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-                    <div style={{ padding: '0 1rem' }}>
+                    <DropdownItem className={darkMode ? 'text-light' : ''}>
                       <DarkModeButton />
-                    </div>
+                    </DropdownItem>
                     <DropdownItem divider />
                     <DropdownItem onClick={openModal} className={darkMode ? 'text-light' : ''}>
                       {LOGOUT}

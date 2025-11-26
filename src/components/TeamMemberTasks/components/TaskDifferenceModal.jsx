@@ -148,7 +148,7 @@ export function TaskDifferenceModal({
                       </tr>
                       <tr>
                         <td data-tip="Hours - Best-case">Hours - Best-case</td>
-                        <td data-tip="Hours - Best-case" data-testid="hours-best-value">
+                        <td data-tip="Hours - Best-case">
                           <DiffedText
                             oldText={numberToString(taskNotification.oldTask?.hoursBest)}
                             newText={numberToString(task.hoursBest)}
@@ -157,7 +157,7 @@ export function TaskDifferenceModal({
                       </tr>
                       <tr>
                         <td data-tip="Hours - Worst-case">Hours - Worst-case</td>
-                        <td data-tip="Hours - Worst-case" data-testid="hours-worst-value">
+                        <td data-tip="Hours - Worst-case">
                           <DiffedText
                             oldText={numberToString(taskNotification.oldTask?.hoursWorst)}
                             newText={numberToString(task.hoursWorst)}
@@ -166,7 +166,7 @@ export function TaskDifferenceModal({
                       </tr>
                       <tr>
                         <td data-tip="Hours - Most-case">Hours - Most-case</td>
-                        <td data-tip="Hours - Most-case" data-testid="hours-most-value">
+                        <td data-tip="Hours - Most-case">
                           <DiffedText
                             oldText={numberToString(taskNotification.oldTask?.hoursMost)}
                             newText={numberToString(task.hoursMost)}
@@ -175,7 +175,7 @@ export function TaskDifferenceModal({
                       </tr>
                       <tr>
                         <td data-tip="Estimated Hours">Estimated Hours</td>
-                        <td data-tip="Estimated Hours" data-testid="estimated-hours-value">
+                        <td data-tip="Estimated Hours">
                           <DiffedText
                             oldText={numberToString(taskNotification.oldTask?.estimatedHours)}
                             newText={numberToString(task.estimatedHours)}
@@ -234,7 +234,6 @@ export function TaskDifferenceModal({
                           <DiffedText
                             oldText={datetimeToDate(taskNotification.oldTask?.startedDatetime)}
                             newText={datetimeToDate(task.startedDatetime)}
-                            data-testid="start-date-value"
                           />
                         </td>
                       </tr>
@@ -244,7 +243,6 @@ export function TaskDifferenceModal({
                           <DiffedText
                             oldText={datetimeToDate(taskNotification.oldTask?.dueDatetime)}
                             newText={datetimeToDate(task.dueDatetime)}
-                            data-testid="end-date-value"
                           />
                         </td>
                       </tr>

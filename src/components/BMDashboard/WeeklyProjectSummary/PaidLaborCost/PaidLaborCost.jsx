@@ -11,7 +11,7 @@ import {
 } from 'chart.js';
 import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
-import styles from './PaidLaborCost.module.css';
+import './PaidLaborCost.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import PaidLaborCostDatePicker from './PaidLaborCostDatePicker';
@@ -313,26 +313,26 @@ export default function PaidLaborCost() {
   };
 
   return (
-    <div className={styles.paidLaborCostContainer}>
-      <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
+    <div className={`paid-labor-cost-container ${darkMode ? 'dark-mode' : ''}`}>
+      <h4 className="paid-labor-cost-title">Paid Labor Cost</h4>
 
       {/* Loading indicator */}
       {loading ? (
-        <div className={styles.paidLaborCostLoading}>Loading data...</div>
+        <div className="paid-labor-cost-loading">Loading data...</div>
       ) : (
         <>
           {/* Filter Row */}
-          <div className={styles.paidLaborCostFilters}>
+          <div className="paid-labor-cost-filters">
             {/* Task Filter */}
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="task-filter">
+            <div className="paid-labor-cost-filter-group">
+              <label className="paid-labor-cost-filter-label" htmlFor="task-filter">
                 Tasks
               </label>
               <select
                 id="task-filter"
                 value={taskFilter}
                 onChange={e => setTaskFilter(e.target.value)}
-                className={styles.paidLaborCostFilterSelect}
+                className="paid-labor-cost-filter-select"
               >
                 <option value="ALL">ALL</option>
                 {taskOptions.map(option => (
@@ -344,15 +344,15 @@ export default function PaidLaborCost() {
             </div>
 
             {/* Project Filter */}
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="project-filter">
+            <div className="paid-labor-cost-filter-group">
+              <label className="paid-labor-cost-filter-label" htmlFor="project-filter">
                 Project
               </label>
               <select
                 id="project-filter"
                 value={projectFilter}
                 onChange={e => setProjectFilter(e.target.value)}
-                className={styles.paidLaborCostFilterSelect}
+                className="paid-labor-cost-filter-select"
               >
                 <option value="All Projects">ALL</option>
                 {projectOptions.map(option => (
@@ -364,8 +364,8 @@ export default function PaidLaborCost() {
             </div>
 
             {/* Date Filter */}
-            <div className={styles.paidLaborCostFilterGroup}>
-              <label className={styles.paidLaborCostFilterLabel} htmlFor="date-filter">
+            <div className="paid-labor-cost-filter-group">
+              <label className="paid-labor-cost-filter-label" htmlFor="date-filter">
                 Dates
               </label>
               <select
@@ -376,7 +376,7 @@ export default function PaidLaborCost() {
                   // Reset date range when the date filter changes
                   setDateRange({ startDate: null, endDate: null });
                 }}
-                className={styles.paidLaborCostFilterSelect}
+                className="paid-labor-cost-filter-select"
               >
                 {dateOptions.map(option => (
                   <option key={option.id} value={option.value}>
@@ -389,7 +389,7 @@ export default function PaidLaborCost() {
 
           {/* Our Custom DateRangePicker shown in CUSTOM mode - replacing Airbnb DateRangePicker */}
           {dateMode === 'CUSTOM' && (
-            <div className={styles.paidLaborCostDaterangeRow}>
+            <div className="paid-labor-cost-daterange-row">
               <PaidLaborCostDatePicker
                 startDate={dateRange.startDate}
                 endDate={dateRange.endDate}
@@ -401,7 +401,7 @@ export default function PaidLaborCost() {
           )}
 
           {/* Chart Container */}
-          <div className={styles.paidLaborCostChartScrollWrapper}>
+          <div className="paid-labor-cost-chart-scroll-wrapper">
             <div
               style={{
                 width: tasksToInclude.length > 3 ? `${(tasksToInclude.length + 1) * 50}px` : '100%',

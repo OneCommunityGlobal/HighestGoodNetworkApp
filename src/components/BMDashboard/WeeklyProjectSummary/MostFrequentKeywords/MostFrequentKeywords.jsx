@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -17,7 +16,6 @@ function MostFrequentKeywords() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const API_BASE = process.env.REACT_APP_APIENDPOINT;
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   const fetchProjects = async () => {
     try {
@@ -129,8 +127,8 @@ function MostFrequentKeywords() {
 
       const getEllipseSize = text => {
         const len = text.length;
-        if (len > 14) return { rx: 48, ry: 22 };
-        if (len > 10) return { rx: 42, ry: 22 };
+        if (len > 14) return { rx: 48, ry: 18 };
+        if (len > 10) return { rx: 40, ry: 16 };
         return { rx: 32, ry: 16 };
       };
 
@@ -138,6 +136,9 @@ function MostFrequentKeywords() {
         x: Math.max(padding, Math.min(width - padding, x)),
         y: Math.max(padding, Math.min(height - padding, y)),
       });
+
+      const truncateText = (text, max = 14) =>
+        text.length <= max ? text : `${text.slice(0, max - 1)}…`;
 
       tags.forEach((tag, i) => {
         const angle = angles[i];
@@ -183,44 +184,16 @@ function MostFrequentKeywords() {
             window.open(`/tags/${tag.tag}`, '_blank');
           });
 
-        const textEl = svg
+        svg
           .append('text')
           .attr('x', x)
-          .attr('y', y)
+          .attr('y', y + 4)
           .attr('text-anchor', 'middle')
           .attr('font-size', '11px')
-          .attr('fill', '#111');
-
-        // Split text if it's longer than 14 characters
-        let words = [];
-        if (tag.tag.length > 14) {
-          const parts = tag.tag.split(' ');
-          if (parts.length > 1) {
-            const mid = Math.ceil(parts.length / 2);
-            words = [parts.slice(0, mid).join(' '), parts.slice(mid).join(' ')];
-          } else {
-            const midIndex = Math.ceil(tag.tag.length / 2);
-            words = [tag.tag.slice(0, midIndex), tag.tag.slice(midIndex)];
-          }
-        } else {
-          words = [tag.tag];
-        }
-
-        if (words.length > 1) {
-          textEl.attr('transform', `translate(0, -7)`);
-        }
-
-        // Add tspans for each line
-        words.forEach((line, index) => {
-          textEl
-            .append('tspan')
-            .attr('x', x)
-            .attr('dy', index === 0 ? 4 : 14)
-            .text(line);
-        });
-
-        // Tooltip with full text
-        textEl.append('title').text(tag.tag);
+          .attr('fill', '#111')
+          .text(truncateText(tag.tag))
+          .append('title')
+          .text(tag.tag);
       });
     }, 100);
 
@@ -228,7 +201,7 @@ function MostFrequentKeywords() {
   }, [tags]);
 
   return (
-    <div className={`${styles.mfkContainer} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.mfkContainer}>
       <h3 className={styles.mfkTitle}>📊 Most Frequent Keywords</h3>
       <div className={styles.mfkControls}>
         <div>
@@ -238,7 +211,6 @@ function MostFrequentKeywords() {
           <Select
             inputId="project-select"
             className={styles.mfkSelect}
-            classNamePrefix="project-select"
             options={projects.map(p => ({
               label: p.projectName,
               value: p._id,

@@ -88,71 +88,71 @@ export function Header(props) {
     [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
   );
 
+  const headerDisabled = isAuthUser ? false : !canInteractWithViewingUser;
   // Reports
   const canGetReports = props.hasPermission(
     'getReports',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser,
   );
   const canGetWeeklySummaries = props.hasPermission(
     'getWeeklySummaries',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
   const canGetJobAnalytics = props.hasPermission('getJobReports');
 
+
   // Users
   const canAccessUserManagement =
-    props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('postUserProfile', !isAuthUser ) ||
+    props.hasPermission('deleteUserProfile', !isAuthUser ) ||
+    props.hasPermission('changeUserStatus', !isAuthUser ) ||
+    props.hasPermission('getUserProfiles', !isAuthUser ) ||
     props.hasPermission('setFinalDay', !isAuthUser && canInteractWithViewingUser);
 
   // Badges
   const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('seeBadges', !isAuthUser ) ||
+    props.hasPermission('createBadges', !isAuthUser ) ||
+    props.hasPermission('updateBadges', !isAuthUser ) ||
+    props.hasPermission('deleteBadges', !isAuthUser );
   // Projects
   const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postProject', !isAuthUser ) ||
+    props.hasPermission('deleteProject', !isAuthUser ) ||
+    props.hasPermission('putProject', !isAuthUser ) ||
+    props.hasPermission('getProjectMembers', !isAuthUser ) ||
+    props.hasPermission('assignProjectToUsers', !isAuthUser ) ||
+    props.hasPermission('postWbs', !isAuthUser) ||
+    props.hasPermission('deleteWbs', !isAuthUser ) ||
+    props.hasPermission('postTask', !isAuthUser ) ||
+    props.hasPermission('updateTask', !isAuthUser ) ||
+    props.hasPermission('deleteTask', !isAuthUser );
   // Tasks
   const canUpdateTask = props.hasPermission(
     'updateTask',
-    !isAuthUser && canInteractWithViewingUser,
+    !isAuthUser ,
   );
   // Teams
   const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('postTeam', !isAuthUser ) ||
+    props.hasPermission('putTeam', !isAuthUser ) ||
+    props.hasPermission('deleteTeam', !isAuthUser ) ||
+    props.hasPermission('assignTeamToUsers', !isAuthUser);
   // Popups
   const canAccessPopups =
-    props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('createPopup', !isAuthUser ) ||
+    props.hasPermission('updatePopup', !isAuthUser );
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
   // Permissions
   const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
-  
-  // Blue Square Email Management
-  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
+    props.hasPermission('postRole', !isAuthUser) ||
+    props.hasPermission('putRole', !isAuthUser ) ||
+    props.hasPermission('deleteRole', !isAuthUser ) ||
+    props.hasPermission('putUserProfilePermissions', !isAuthUser);
 
+  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
   const [modalContent, setModalContent] = useState('');
@@ -413,7 +413,7 @@ export function Header(props) {
               >
                 {canUpdateTask && (
                   <NavItem className="responsive-spacing">
-                    <NavLink tag={Link} to="/taskeditsuggestions">
+                    <NavLink tag={Link} to="/taskeditsuggestions" disabled={headerDisabled}>
                       <div className="redBackGroupHeader">
                         <span>{props.taskEditSuggestionCount}</span>
                       </div>
@@ -421,22 +421,22 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/dashboard">
+                  <NavLink tag={Link} to="/dashboard" disabled={headerDisabled}>
                     <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/timelog#currentWeek">
+                  <NavLink tag={Link} to="/timelog#currentWeek" disabled={headerDisabled}>
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
 
                 {showProjectDropdown && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
-                    <DropdownToggle nav caret>
+                    <DropdownToggle nav caret disabled={headerDisabled}>
                       <span className="dashboard-text-link">{PROJECTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''} disabled={headerDisabled}>
                       <DropdownItem
                         tag={Link}
                         to="/bmdashboard/materials/add"
@@ -444,16 +444,17 @@ export function Header(props) {
                       >
                         Add Material
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor}>
+                      <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor} disabled={headerDisabled}>
                         Log Material
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor}>
+                      <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor} disabled={headerDisabled}>
                         Material List
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}
                         to="/bmdashboard/equipment/add"
                         className={fontColor}
+                        disabled={headerDisabled}
                       >
                         Add Equipment/Tool
                       </DropdownItem>
@@ -461,6 +462,7 @@ export function Header(props) {
                         tag={Link}
                         to="/bmdashboard/equipment/:equipmentId"
                         className={fontColor}
+                        disabled={headerDisabled}
                       >
                         Log Equipment/Tool
                       </DropdownItem>
@@ -468,16 +470,17 @@ export function Header(props) {
                         tag={Link}
                         to="/bmdashboard/tools/:equipmentId/update"
                         className={fontColor}
+                        disabled={headerDisabled}
                       >
                         Update Equipment/Tool
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}>
+                      <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor} disabled={headerDisabled}>
                         Equipment/Tool List
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor}>
+                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor} disabled={headerDisabled}>
                         Issue
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
+                      <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor} disabled={headerDisabled}>
                         Lesson
                       </DropdownItem>
                     </DropdownMenu>
@@ -486,23 +489,23 @@ export function Header(props) {
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing" >
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                       {canGetReports && (
-                        <DropdownItem tag={Link} to="/reports" className={`${fontColor}`}>
+                        <DropdownItem tag={Link} to="/reports" className={`${fontColor}`} disabled={headerDisabled}>
                           {REPORTS}
                         </DropdownItem>
                       )}
                       {canGetWeeklySummaries && (
-                        <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}>
+                        <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor} disabled={headerDisabled}>
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
                       )}
                       {canGetWeeklyVolunteerSummary && (
-                        <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
+                        <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor} disabled={headerDisabled}>
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
@@ -511,13 +514,14 @@ export function Header(props) {
                           {JOB_ANALYTICS_REPORT}
                         </DropdownItem>
                       )}
-                      <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
+                      <DropdownItem tag={Link} to="/teamlocations" className={fontColor} disabled={headerDisabled}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
                       <DropdownItem
                         tag={Link}
                         to="/bmdashboard/totalconstructionsummary"
                         className={fontColor}
+                        disabled={headerDisabled}
                       >
                         {TOTAL_CONSTRUCTION_SUMMARY}
                       </DropdownItem>
@@ -528,12 +532,12 @@ export function Header(props) {
                   </UncontrolledDropdown>
                 ) : (
                   <NavItem className="responsive-spacing">
-                    <NavLink tag={Link} to="/teamlocations">
+                    <NavLink tag={Link} to="/teamlocations" disabled={headerDisabled}>
                       <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className="responsive-spacing">
+                <NavItem className="responsive-spacing"  disabled={headerDisabled}>
                   <BellNotification userId={displayUserId} />
                 </NavItem>
                 {(canAccessUserManagement ||
@@ -550,27 +554,27 @@ export function Header(props) {
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                       {canAccessUserManagement && (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
+                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor} disabled={headerDisabled}>
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       )}
                       {canAccessBadgeManagement && (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
+                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor} disabled={headerDisabled}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       )}
                       {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
+                        <DropdownItem tag={Link} to="/projects" className={fontColor} disabled={headerDisabled}>
                           {PROJECTS}
                         </DropdownItem>
                       )}
                       {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                        <DropdownItem tag={Link} to="/teams" className={fontColor} disabled={headerDisabled}>
                           {TEAMS}
                         </DropdownItem>
                       )}
                       {canAccessSendEmails && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
+                        <DropdownItem tag={Link} to="/announcements" className={fontColor} disabled={headerDisabled}>
                           {SEND_EMAILS}
                         </DropdownItem>
                       )}
@@ -581,13 +585,14 @@ export function Header(props) {
                             tag={Link}
                             to="/permissionsmanagement"
                             className={fontColor}
+                            disabled={headerDisabled}
                           >
                             {PERMISSIONS_MANAGEMENT}
                           </DropdownItem>
                         </>
                       )}
                       <DropdownItem divider />
-                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
+                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor} disabled={headerDisabled}>
                         PR Team Analytics
                       </DropdownItem>
                       {canAccessBlueSquareEmailManagement && (
@@ -603,7 +608,7 @@ export function Header(props) {
                   </UncontrolledDropdown>
                 )}
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`} disabled={headerDisabled}>
                     <div
                       style={{
                         width: '60px',
@@ -634,6 +639,7 @@ export function Header(props) {
                       tag={Link}
                       to={`/userprofile/${displayUserId}`}
                       className={fontColor}
+                      disabled={headerDisabled}
                     >
                       {VIEW_PROFILE}
                     </DropdownItem>
@@ -641,19 +647,20 @@ export function Header(props) {
                       props.userProfile.email,
                       props.userProfile.email,
                     ) && (
-                        <DropdownItem
-                          tag={Link}
-                          to={`/updatepassword/${displayUserId}`}
-                          className={fontColor}
-                        >
-                          {UPDATE_PASSWORD}
-                        </DropdownItem>
-                      )}
+                      <DropdownItem
+                        tag={Link}
+                        to={`/updatepassword/${displayUserId}`}
+                        className={fontColor}
+                        disabled={headerDisabled}
+                      >
+                        {UPDATE_PASSWORD}
+                      </DropdownItem>
+                    )}
                     <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={openModal} className={fontColor}>
+                    <DropdownItem onClick={openModal} className={fontColor} disabled={headerDisabled}>
                       {LOGOUT}
                     </DropdownItem>
                   </DropdownMenu>

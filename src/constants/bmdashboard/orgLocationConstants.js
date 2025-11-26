@@ -1,2 +1,0 @@
-export const GET_MAP_ORGS = 'GET_MAP_ORGS';
-export const GET_MAP_ORG_DETAILS = 'GET_MAP_ORG_DETAILS';

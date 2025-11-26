@@ -47,11 +47,7 @@ class ViewReportByDate extends Component {
     return (
       <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
         <div id="task_startDate" className="date-picker-item">
-          <label 
-            htmlFor="task_startDate" 
-            className={`date-picker-label ${textColor}`}
-            style={{ color: darkMode ? '#ffffff' : '#000000', fontWeight: '500' }}
-          >
+          <label htmlFor="task_startDate" className={`date-picker-label ${textColor}`}>
             Start Date
           </label>
           <DatePicker
@@ -64,11 +60,7 @@ class ViewReportByDate extends Component {
           />
         </div>
         <div id="task_EndDate" className="date-picker-item">
-          <label 
-            htmlFor="task_EndDate" 
-            className={`date-picker-label ${textColor}`}
-            style={{ color: darkMode ? '#ffffff' : '#000000', fontWeight: '500' }}
-          >
+          <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`}>
             End Date
           </label>
           <DatePicker

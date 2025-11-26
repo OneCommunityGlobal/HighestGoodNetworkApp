@@ -1,102 +1,54 @@
-import React, { useState, useEffect, useRef , useMemo, useCallback } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect, useRef , useMemo } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, Col } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DayPicker } from 'react-day-picker';
+import { DayPicker, useInput } from 'react-day-picker';
 import 'react-day-picker/dist/style.css';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
-import dateFnsParse from 'date-fns/parse';
-import { isValid } from 'date-fns';
 import { boxStyle, boxStyleDark } from '~/styles';
+
 import { addNewTask } from '../../../../../actions/task';
 import { faPlusCircle, faMinusCircle } from '@fortawesome/free-solid-svg-icons';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   START_DATE_ERROR_MESSAGE,
   END_DATE_ERROR_MESSAGE,
 } from '../../../../../languages/en/messages';
-import clsx from 'clsx';
+
 import '../../../../Header/DarkMode.css';
 import TagsSearch from '../components/TagsSearch';
-import styles from './AddTaskModal.module.css';
+import './AddTaskModal.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
-import { fetchAllProjects } from '../../../../../actions/projects';
-import { getProjectDetail } from '../../../../../actions/project';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-/** small v8 DateInput - manual control without useInput **/
+/** small v8 DateInput: uses useInput + DayPicker under the hood **/
 function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled }) {
-  const FORMAT = 'MM/dd/yy';
-  const [isOpen, setIsOpen] = React.useState(false);
-  
-  // Parse the value properly - it could be in MM/dd/yy format or empty
-  let selectedDate;
-  if (value) {
-    try {
-      if (value.includes('T')) {
-        // ISO format
-        selectedDate = new Date(value);
-      } else {
-        // MM/dd/yy format
-        selectedDate = dateFnsParse(value, FORMAT, new Date());
-      }
-      // Validate the parsed date
-      if (!isValid(selectedDate)) {
-        selectedDate = undefined;
-      }
-    } catch (error) {
-      selectedDate = undefined;
-    }
-  }
-
-  const handleDaySelect = (date) => {
-    if (date) {
+  const { inputProps, dayPickerProps, show, toggle } = useInput({
+    mode: 'single',
+    selected: value ? new Date(value) : undefined,
+    onDayChange(date) {
       // format back to your MM/dd/yy
       const f = dateFnsFormat(date, FORMAT);
       onChange(f);
-      setIsOpen(false);
-    }
-  };
+      toggle(false);
+    },
+  });
 
   return (
     <div style={{ position: 'relative' }}>
       <input
+        {...inputProps}
         id={id}
         aria-label={ariaLabel}
         placeholder={placeholder}
-        value={value || ''}
-        onFocus={() => !disabled && setIsOpen(true)}
+        onFocus={() => !disabled && toggle(true)}
         readOnly
         disabled={disabled}
-        className="form-control"
-        style={{ 
-          cursor: disabled ? 'default' : 'pointer',
-          backgroundColor: disabled ? '#e9ecef' : 'white',
-          opacity: 1
-        }}
+        className="form-control" /* or whatever styling you need */
       />
-      {isOpen && !disabled && (
-        <div style={{ position: 'absolute', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
-          <DayPicker 
-            mode="single"
-            selected={selectedDate}
-            onSelect={handleDaySelect}
-          />
-          <button
-            type="button"
-            onClick={() => setIsOpen(false)}
-            style={{ 
-              width: '100%', 
-              padding: '8px', 
-              border: 'none', 
-              borderTop: '1px solid #ddd',
-              background: '#f5f5f5',
-              cursor: 'pointer'
-            }}
-          >
-            Close
-          </button>
+      {show && !disabled && (
+        <div style={{ position: 'absolute', zIndex: 10 }}>
+          <DayPicker {...dayPickerProps} />
         </div>
       )}
     </div>
@@ -122,8 +74,7 @@ function AddTaskModal(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { copiedTask, allMembers, allProjects, error, darkMode, projectById, fetchAllProjects } = props;
-  const tasksList = Array.isArray(props.tasks) ? props.tasks : [];
+  const { copiedTask, allMembers, allProjects, error, darkMode, tasks } = props;
 
   const handleBestHoursChange = e => {
     setHoursBest(e.target.value);
@@ -151,38 +102,19 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
-  const activeMembers = useMemo(() => {
-    const members = Array.isArray(allMembers) ? allMembers : [];
-    const filtered = members.filter(u => {
-      if (!u) return false;
-      // Treat only explicit "inactive" as excluded; accept truthy/unknown as active
-      const isInactive =
-        u.status === 'Inactive' ||
-        u.isActive === false ||
-        String(u?.isActive).toLowerCase() === 'false';
-      return !isInactive;
-    });
-    return filtered.length ? filtered : members; // fallback so the list isn't empty
-  }, [allMembers]);
 
-  const projectsList = Array.isArray(allProjects?.projects) ? allProjects.projects : [];
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
-      const task = tasksList.find(t => t?._id === props.taskId);
-      return task?.category ?? 'Unspecified';
+      const task = tasks.find(({ _id }) => _id === props.taskId);
+      return task?.category || 'Unspecified';
     }
     if (props.projectId) {
-      // Prefer the category from projectById if available (covers page refresh case)
-      const categoryFromProjectById = projectById?.category;
-      if (typeof categoryFromProjectById === 'string' && categoryFromProjectById.length) {
-        return categoryFromProjectById;
-      }
-      const project = projectsList.find(p => p?._id === props.projectId);
-      return project?.category ?? 'Unspecified';
+      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
+      return project?.category || 'Unspecified';
     }
-    return 'Unspecified';
-  }, [props.taskId, props.projectId, projectById?.category, tasksList.length, projectsList.length]);
 
+    return 'Unspecified';
+  }, [props.taskId, props.projectId, tasks, allProjects.projects]);
 
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -196,25 +128,20 @@ function AddTaskModal(props) {
   const [hasNegativeHours, setHasNegativeHours] = useState(false);
   const [link, setLink] = useState('');
   const [links, setLinks] = useState([]);
-  const [category, setCategory] = useState('Unspecified');
+  const [category, setCategory] = useState(defaultCategory);
   const [whyInfo, setWhyInfo] = useState('');
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
   const [endstateInfo, setEndstateInfo] = useState('');
   const [startDateError, setStartDateError] = useState(false);
   const [endDateError, setEndDateError] = useState(false);
-  const [startDateFormatError, setStartDateFormatError] = useState(false);
-  const [endDateFormatError, setEndDateFormatError] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [newTaskNum, setNewTaskNum] = useState('1');
   const [dateWarning, setDateWarning] = useState(false);
   const [hoursWarning, setHoursWarning] = useState(false);
-  const [showReplicateConfirm, setShowReplicateConfirm] = useState(false);
-  const [isReplicating, setIsReplicating] = useState(false);
   const priorityRef = useRef(null);
-
 
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
@@ -227,83 +154,6 @@ function AddTaskModal(props) {
     { value: 'Stewardship', label: 'Stewardship' },
     { value: 'Other', label: 'Other' },
   ];
-
-  const bumpNumAtLevel = (numStr, levelIdxZeroBased, bumpBy) => {
-    try {
-      const segs = String(numStr || '1').split('.').map(s => Number.parseInt(s || '0', 10));
-      const idx = Math.max(0, Math.min(levelIdxZeroBased, segs.length - 1));
-      segs[idx] = (Number.isNaN(segs[idx]) ? 0 : segs[idx]) + bumpBy;
-      return segs.join('.');
-    } catch {
-      const base = Number.parseInt(numStr, 10) || 1;
-      return String(base + bumpBy);
-    }
-  };
-
-  const openReplicateConfirm = () => {
-    if (!resourceItems?.length) {
-      globalThis?.toast?.error?.('Select at least one Resource to replicate to.') || alert('Select at least one Resource to replicate to.');
-      return;
-    }
-    if (!taskName?.trim()) {
-      globalThis?.toast?.error?.('Task Name is required to replicate.') || alert('Task Name is required to replicate.');
-      return;
-    }
-    if (hoursWarning || hasNegativeHours || startDateError || endDateError || startDateFormatError || endDateFormatError) {
-      globalThis?.toast?.error?.('Fix validation errors before replicating.') || alert('Fix validation errors before replicating.');
-      return;
-    }
-    setShowReplicateConfirm(true);
-  };
-
-  const doReplicate = async () => {
-    setIsReplicating(true);
-    try {
-      const baseNum = newTaskNum || '1';
-      const levelIdxZeroBased = (props.taskId ? (props.level + 1) : 1) - 1;
-  
-      for (let i = 0; i < resourceItems.length; i += 1) {
-        const singleResource = [resourceItems[i]];
-        const replicated = {
-          taskName,
-          wbsId: props.wbsId,
-          num: bumpNumAtLevel(baseNum, levelIdxZeroBased, i),
-          level: props.taskId ? props.level + 1 : 1,
-          priority,
-          resources: singleResource,           
-          isAssigned: true,                    
-          status,
-          hoursBest: Number.parseFloat(hoursBest),
-          hoursWorst: Number.parseFloat(hoursWorst),
-          hoursMost: Number.parseFloat(hoursMost),
-          estimatedHours: Number.parseFloat(hoursEstimate), 
-          startedDatetime: startedDate,
-          dueDatetime: dueDate,
-          links,
-          category,
-          parentId1: props.level === 1 ? props.taskId : props.parentId1,
-          parentId2: props.level === 2 ? props.taskId : props.parentId2,
-          parentId3: props.level === 3 ? props.taskId : props.parentId3,
-          mother: props.taskId,
-          position: 0,
-          isActive: true,
-          whyInfo,
-          intentInfo,
-          endstateInfo,
-        };
-        // eslint-disable-next-line no-await-in-loop
-        await props.addNewTask(replicated, props.wbsId, props.pageLoadTime);
-      }
-      setShowReplicateConfirm(false);
-      props.load?.(); 
-      globalThis?.toast?.success?.(`Replicated to ${resourceItems.length} ${resourceItems.length === 1 ? 'person' : 'people'}.`);
-    } catch (e) {
-      globalThis?.toast?.error?.('Replication failed.');
-    } finally {
-      setIsReplicating(false);
-    }
-  };
-
   const FORMAT = 'MM/dd/yy';
 
   /*
@@ -317,10 +167,12 @@ function AddTaskModal(props) {
   };
 
   const getNewNum = () => {
-    if (!tasksList.length) return '1';
+    if (!Array.isArray(props.tasks)) return '1';
     let newNum;
+    // eslint-disable-next-line no-console
+    console.log(props)
     if (props.taskId) {
-      const numOfLastInnerLevelTask = tasksList.reduce((num, task) => {
+      const numOfLastInnerLevelTask = props.tasks.reduce((num, task) => {
         if (task.mother === props.taskId) {
           const numIndexArray = task.num.split('.');
           const numOfInnerLevel = numIndexArray[props.level];
@@ -332,7 +184,7 @@ function AddTaskModal(props) {
       currentLevelIndexes[props.level] = `${numOfLastInnerLevelTask + 1}`;
       newNum = currentLevelIndexes.join('.');
     } else {
-      const numOfLastLevelOneTask = tasksList.reduce((num, task) => {
+      const numOfLastLevelOneTask = props.tasks.reduce((num, task) => {
         if (task.level === 1) {
           const numIndexArray = task.num.split('.');
           const indexOfFirstNum = numIndexArray[0];
@@ -366,37 +218,6 @@ function AddTaskModal(props) {
 
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
 
-  const parseDate = (str, format, locale) => {
-    // Allow empty string for partial typing
-    if (!str || str.trim() === '') return undefined;
-    
-    try {
-      const parsed = dateFnsParse(str, format, new Date(), { locale });
-      if (isValid(parsed)) {
-        return parsed;
-      }
-    } catch (error) {
-      // Return undefined for invalid dates while typing
-    }
-    return undefined;
-  };
-
-  const validateDateFormat = (dateString) => {
-    if (!dateString || dateString.trim() === '') return true;
-    
-    // Check if it matches the expected format pattern MM/dd/yy
-    const formatRegex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|[12]\d|3[01])\/\d{2}$/;
-    if (!formatRegex.test(dateString)) return false;
-    
-    // Check if it's a valid date
-    try {
-      const parsed = dateFnsParse(dateString, FORMAT, new Date());
-      return isValid(parsed);
-    } catch (error) {
-      return false;
-    }
-  };
-
   const calHoursEstimate = (isOn = null) => {
     let currHoursMost = parseInt(hoursMost);
     let currHoursWorst = parseInt(hoursWorst);
@@ -422,12 +243,6 @@ function AddTaskModal(props) {
   };
 
   useEffect(() => {
-    if (!allProjects?.fetched && !allProjects?.fetching) {
-      fetchAllProjects();
-    }
-  }, [allProjects?.fetched, allProjects?.fetching, fetchAllProjects]);
-
-  useEffect(() => {
     if (hoursBest < 0 || hoursWorst < 0 || hoursMost < 0 || hoursEstimate < 0) {
       setHasNegativeHours(true);
     } else {
@@ -435,24 +250,16 @@ function AddTaskModal(props) {
     }
   }, [hoursBest, hoursWorst, hoursMost, hoursEstimate]);
 
-  const changeDateStart = (value) => {
-    setStartedDate(value);
-    
-    // Validate format
-    const isValidFormat = validateDateFormat(value);
-    setStartDateFormatError(!isValidFormat);
+  const changeDateStart = startDate => {
+    setStartedDate(startDate);
   };
 
-  const changeDateEnd = (value) => {
-    if (!startedDate && value) {
+  const changeDateEnd = dueDate => {
+    if (!startedDate) {
       const newDate = dateFnsFormat(new Date(), FORMAT);
       setStartedDate(newDate);
     }
-    setDueDate(value);
-    
-    // Validate format
-    const isValidFormat = validateDateFormat(value);
-    setEndDateFormatError(!isValidFormat);
+    setDueDate(dueDate);
   };
 
   useEffect(() => {
@@ -463,36 +270,7 @@ function AddTaskModal(props) {
       setEndDateError(false);
       setStartDateError(false);
     }
-    if (!startedDate || !dueDate) {
-      setStartDateError(false);
-      setEndDateError(false);
-      return;
-    }
-    const s = dateFnsParse(startedDate, FORMAT, new Date());
-    const d = dateFnsParse(dueDate,   FORMAT, new Date());
-    const bad = isValid(s) && isValid(d) ? d.getTime() < s.getTime() : false;
-    setStartDateError(bad);
-    setEndDateError(bad);
   }, [startedDate, dueDate]);
-
-  // Validate date formats when dates change
-  useEffect(() => {
-    if (startedDate) {
-      const isValidFormat = validateDateFormat(startedDate);
-      setStartDateFormatError(!isValidFormat);
-    } else {
-      setStartDateFormatError(false);
-    }
-  }, [startedDate]);
-
-  useEffect(() => {
-    if (dueDate) {
-      const isValidFormat = validateDateFormat(dueDate);
-      setEndDateFormatError(!isValidFormat);
-    } else {
-      setEndDateFormatError(false);
-    }
-  }, [dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);
@@ -522,8 +300,6 @@ function AddTaskModal(props) {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
-    setStartDateFormatError(false);
-    setEndDateFormatError(false);
     setHasNegativeHours(false);
   };
 
@@ -594,7 +370,7 @@ function AddTaskModal(props) {
       setNewTaskNum(getNewNum());
     }
     // setNewTaskNum(getNewNum());
-  }, [modal, tasksList.length, props.taskId, props.level, props.taskNum]);
+  }, [modal]);
 
   useEffect(() => {
     ReactTooltip.rebuild();
@@ -603,12 +379,12 @@ function AddTaskModal(props) {
   useEffect(() => {
     if (error === 'outdated') {
       // eslint-disable-next-line no-alert
-      // alert('Database changed since your page loaded , click OK to get the newest data!');
+      alert('Database changed since your page loaded , click OK to get the newest data!');
       props.load();
     } else {
       clear();
     }
-  }, [error, tasksList.length]);
+  }, [error, tasks]);
 
   useEffect(() => {
     if (!modal) {
@@ -616,37 +392,15 @@ function AddTaskModal(props) {
       setDueDate('');
       setStartDateError(false);
       setEndDateError(false);
-      setStartDateFormatError(false);
-      setEndDateFormatError(false);
     }
   }, [modal]);
 
   useEffect(() => {
-        if (modal) {
-          // Fetch for this project whenever modal opens (or project changes)
-          props.fetchAllMembers(props.projectId ?? '');
-        }
-      }, [modal, props.projectId]);
-
-  useEffect(() => {
-    if (!modal || !props.projectId) return;
-
-    const categoryKnownFromProjectById =
-      Boolean(projectById && projectById._id === props.projectId && projectById.category);
-    const categoryKnownFromAllProjects =
-      Boolean(projectsList.find(p => p?._id === props.projectId)?.category);
-
-    if (!categoryKnownFromProjectById && !categoryKnownFromAllProjects) {
-      props.getProjectDetail(props.projectId);
+    if (modal && props.projectId) {
+      props.fetchAllMembers(props.projectId);
     }
-  }, [modal, props.projectId, projectById, projectsList]);
+  }, [modal, props.projectId]);
 
-  useEffect(() => {
-    setCategory(defaultCategory);
-  }, [defaultCategory]);
-  
-  const closeConfirm = useCallback(() => setShowReplicateConfirm(false), []);
-  const confirmLabel = isReplicating ? 'Processing…' : 'YES, make it so! 💪';
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -682,14 +436,14 @@ function AddTaskModal(props) {
           <div className="table table-bordered responsive">
             <div>
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label`} data-tip="WBS ID">
+                <span className={`add_new_task_form-label ${fontColor}`} data-tip="WBS ID">
                   WBS #
                 </span>
 
-                <span className={`add_new_task_form-input_area`}>{newTaskNum}</span>
+                <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
               </div>
               <div className="add_new_task_form-group">
-                <label htmlFor="taskNameInput" className={`add_new_task_form-label`}>
+                <label htmlFor="taskNameInput" className={`add_new_task_form-label ${fontColor}`}>
                   Task Name
                 </label>
                 <span className="add_new_task_form-input_area">
@@ -704,7 +458,7 @@ function AddTaskModal(props) {
               </div>
 
               <div className="add_new_task_form-group">
-                <label htmlFor="priority" className={`add_new_task_form-label`}>
+                <label htmlFor="priority" className={`add_new_task_form-label ${fontColor}`}>
                   Priority
                 </label>
                 <span className="add_new_task_form-input_area">
@@ -721,53 +475,26 @@ function AddTaskModal(props) {
               </div>
 
               <div className="add_new_task_form-group">
-  <label htmlFor="resource-input" className={`add_new_task_form-label`}>
-    Resources
-  </label>
-
-  <div className="add_new_task_form-input_area">
-    <div className={styles.resourceRow}>
-      <div className={styles.tagsWrapper}>
-        <TagsSearch
-          key={`tags-${props.projectId}-${activeMembers.length}`}
-          placeholder="Add resources"
-          members={activeMembers}
-          addResources={addResources}
-          removeResource={removeResource}
-          resourceItems={resourceItems}
-          disableInput={false}
-          inputTestId="resource-input"
-          projectId={props.projectId}
-        />
-      </div>
-
-      <div className={clsx(styles['replicate-control'], styles.replicateInline)}>
-        <button
-          type="button"
-          className={styles['replicate-btn']}
-          onClick={openReplicateConfirm}
-          data-tip
-          data-for="replicateTip"
-          disabled={!resourceItems?.length || isLoading || isReplicating}
-          aria-label="Replicate Task"
-          title="Replicate Task"
-        >
-          <span style={{ fontWeight: 700 }}>RT</span>
-        </button>
-      </div>
-    </div>
-
-    <ReactTooltip id="replicateTip" effect="solid" place="top">
-      Replicate Task: Clicking this button will replicate this task and add it to all the
-      individuals chosen as Resources. Hours and all other details will be copied (not divided)
-      for all people.
-    </ReactTooltip>
-  </div>
-</div>
+                <label htmlFor="resource-input" className={`add_new_task_form-label ${fontColor}`}>
+                  Resources
+                </label>
+                <div className="add_new_task_form-input_area">
+                  <TagsSearch
+                    placeholder="Add resources"
+                    members={allMembers?.filter(user => user.isActive)}
+                    addResources={addResources}
+                    removeResource={removeResource}
+                    resourceItems={resourceItems}
+                    disableInput={false}
+                    inputTestId="resource-input"
+                    projectId={props.projectId}
+                  />
+                </div>
+              </div>
 
               <div className="add_new_task_form-group">
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`add_new_task_form-label`}>Assigned</label>
+                <label className={`add_new_task_form-label ${fontColor}`}>Assigned</label>
                 <div className="add_new_task_form-input_area">
                   <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
@@ -780,7 +507,7 @@ function AddTaskModal(props) {
                         checked={assigned === true}
                         onChange={() => setAssigned(true)}
                       />
-                      <label className={`form-check-label`} htmlFor="assigned-yes">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-yes">
                         Yes
                       </label>
                     </div>
@@ -794,7 +521,7 @@ function AddTaskModal(props) {
                         checked={assigned === false}
                         onChange={() => setAssigned(false)}
                       />
-                      <label className={`form-check-label`} htmlFor="assigned-no">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-no">
                         No
                       </label>
                     </div>
@@ -803,7 +530,7 @@ function AddTaskModal(props) {
               </div>
 
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label`}>Status</span>
+                <span className={`add_new_task_form-label ${fontColor}`}>Status</span>
                 <span className="add_new_task_form-input_area">
                   <div className="d-flex align-items-center flex-wrap">
                     <span className="form-check form-check-inline mr-5">
@@ -816,7 +543,7 @@ function AddTaskModal(props) {
                         checked={status === 'Active' || status === 'Started'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label`} htmlFor="active">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="active">
                         Active
                       </label>
                     </span>
@@ -830,7 +557,7 @@ function AddTaskModal(props) {
                         checked={status === 'Not Started'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label`} htmlFor="notStarted">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="notStarted">
                         Not Started
                       </label>
                     </span>
@@ -846,7 +573,7 @@ function AddTaskModal(props) {
                         checked={status === 'Paused'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label`} htmlFor="paused">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="paused">
                         Paused
                       </label>
                     </span>
@@ -860,7 +587,7 @@ function AddTaskModal(props) {
                         checked={status === 'Complete'}
                         onChange={e => setStatus(e.target.value)}
                       />
-                      <label className={`form-check-label`} htmlFor="complete">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="complete">
                         Complete
                       </label>
                     </span>
@@ -869,12 +596,12 @@ function AddTaskModal(props) {
               </div>
               <div className="add_new_task_form-group">
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`add_new_task_form-label`}>Hours</label>
+                <label className={`add_new_task_form-label ${fontColor}`}>Hours</label>
                 <div className="add_new_task_form-input_area">
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="bestCaseInput"
-                      className={`${styles['hours-label']} text-nowrap align-self-center`}
+                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
                     >
                       Best-case
                     </label>
@@ -886,7 +613,7 @@ function AddTaskModal(props) {
                       onChange={handleBestHoursChange}
                       onBlur={handleBestHoursBlur}
                       id="bestCaseInput"
-                      className={styles['hours-input']}
+                      className="hours-input"
                       aria-label="Best-case hours"
                     />
                   </div>
@@ -896,7 +623,7 @@ function AddTaskModal(props) {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="worstCaseInput"
-                      className={`${styles['hours-label']} text-nowrap align-self-center`}
+                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
                     >
                       Worst-case
                     </label>
@@ -908,7 +635,7 @@ function AddTaskModal(props) {
                       onChange={handleWorstHoursChange}
                       onBlur={handleWorstHoursBlur}
                       id="worstCaseInput"
-                      className={styles['hours-input']}
+                      className="hours-input"
                       aria-label="Worst-case hours"
                     />
                   </div>
@@ -920,7 +647,7 @@ function AddTaskModal(props) {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="mostCaseInput"
-                      className={`${styles['hours-label']} text-nowrap align-self-center`}
+                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
                     >
                       Most-case
                     </label>
@@ -932,7 +659,7 @@ function AddTaskModal(props) {
                       onChange={handleMostHoursChange}
                       onBlur={handleMostHoursBlur}
                       id="mostCaseInput"
-                      className={styles['hours-input']}
+                      className="hours-input"
                       aria-label="Most-case hours"
                     />
                   </div>
@@ -944,7 +671,7 @@ function AddTaskModal(props) {
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="estimatedInput"
-                      className={`${styles['hours-label']} text-nowrap align-self-center`}
+                      className={`hours-label text-nowrap align-self-center ${fontColor}`}
                     >
                       Estimated
                     </label>
@@ -955,7 +682,7 @@ function AddTaskModal(props) {
                       value={hoursEstimate}
                       onChange={handleEstimateHoursChange}
                       id="estimatedInput"
-                      className={styles['hours-input']}
+                      className="hours-input"
                       aria-label="Estimated hours"
                     />
                   </div>
@@ -966,7 +693,7 @@ function AddTaskModal(props) {
               </div>
 
               <div className="add_new_task_form-group">
-                <label htmlFor="linkInput" className={`add_new_task_form-label`}>
+                <label htmlFor="linkInput" className={`add_new_task_form-label ${fontColor}`}>
                   Links
                 </label>
                 <span className="add_new_task_form-input_area">
@@ -1041,7 +768,7 @@ function AddTaskModal(props) {
               </div>
 
               <div className="d-flex border align-items-center">
-                <label htmlFor="category-select" className={`add_new_task_form-label`}>
+                <label htmlFor="category-select" className={`add_new_task_form-label ${fontColor}`}>
                   Category
                 </label>
                 <span className="add_new_task_form-input_area">
@@ -1060,7 +787,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div>
-                <div className={`border p-1`} aria-labelledby="why-task-label">
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="why-task-label">
                   <div id="why-task-label">Why this Task is Important</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -1074,7 +801,7 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div>
-                <div className={`border p-1`} aria-labelledby="design-intent-label">
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="design-intent-label">
                   <div id="design-intent-label">Design Intent</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -1088,7 +815,7 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div>
-                <div className={`border p-1`} aria-labelledby="endstate-label">
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="endstate-label">
                   <div id="endstate-label">Endstate</div>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -1101,9 +828,9 @@ function AddTaskModal(props) {
                   />
                 </div>
               </div>
-              <div className={`d-flex border ${styles['add-modal-dt']}`}>
+              <div className="d-flex border add-modal-dt">
                 {/* eslint-disable-next-line jsx-a11y/scope */}
-                <span scope="col" className={`${styles['form-date']} p-1`}>Start Date</span>
+                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
                 {/* eslint-disable-next-line jsx-a11y/scope */}
                 <span scope="col" className="border-left p-1">
                   <div>
@@ -1115,17 +842,14 @@ function AddTaskModal(props) {
                       onChange={changeDateStart}
                       disabled={false} // always enabled here
                     />
-                    <div className="warning text-danger">
-                      {startDateFormatError && 'Please enter date in MM/dd/yy format'}
-                    </div>
                     <div className="warning">{startDateError ? START_DATE_ERROR_MESSAGE : ''}</div>
                   </div>
                 </span>
               </div>
-              <div className={`d-flex border align-items-center ${styles['add-modal-dt']}`}>
+              <div className="d-flex border align-items-center  add-modal-dt">
                 <label
                   htmlFor="end-date-input"
-                  className={`${styles['form-date']} p-1`}
+                  className={`form-date p-1 ${fontColor}`}
                   // eslint-disable-next-line jsx-a11y/scope
                   scope="col"
                 >
@@ -1141,9 +865,6 @@ function AddTaskModal(props) {
                     onChange={changeDateEnd}
                     disabled={false}
                   />
-                  <div className="warning text-danger">
-                    {endDateFormatError && 'Please enter date in MM/dd/yy format'}
-                  </div>
                   <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
               </div>
@@ -1160,41 +881,12 @@ function AddTaskModal(props) {
               isLoading ||
               startDateError ||
               endDateError ||
-              startDateFormatError ||
-              endDateFormatError ||
               hasNegativeHours
             }
             style={darkMode ? boxStyleDark : boxStyle}
           >
             {isLoading ? 'Adding Task...' : 'Save'}
           </Button>
-          
-          {/* [RT] Confirmation modal */}
-          <Modal isOpen={showReplicateConfirm} 
-            toggle={closeConfirm} 
-            lassName={clsx(darkMode && 'text-light dark-mode')}
-            contentClassName={clsx(darkMode && styles.confirmContentDark)}
-            backdropClassName={clsx(darkMode && styles.confirmBackdropDark)}
-            >
-            <ModalHeader toggle={closeConfirm}>Confirm Replication</ModalHeader>
-
-            <ModalBody>
-              <p style={{ whiteSpace: 'pre-wrap', margin: 0 }}>
-                <strong>Whoa, steady there, hero! 🦸</strong><br />
-                This doesn’t divide work—it duplicates it. Everyone gets the full deal.<br />
-                Are you sure you want to hit replicate?
-              </p>
-            </ModalBody>
-
-            <ModalFooter>
-              <button className="btn btn-outline-danger" onClick={closeConfirm}>
-                NO, take me back! 🛑
-              </button>
-              <button className="btn btn-primary" onClick={doReplicate} disabled={isReplicating}>
-                {confirmLabel}
-              </button>
-            </ModalFooter>
-          </Modal>
         </ModalFooter>
       </Modal>
       <Button
@@ -1210,70 +902,18 @@ function AddTaskModal(props) {
   );
 }
 
-// PropTypes validation
-AddTaskModal.propTypes = {
-  copiedTask: PropTypes.object,
-  allMembers: PropTypes.array,
-  allProjects: PropTypes.shape({
-    projects: PropTypes.array,
-    fetched: PropTypes.bool,
-    fetching: PropTypes.bool,
-  }),
-  error: PropTypes.string,
-  darkMode: PropTypes.bool,
-  tasks: PropTypes.array,
-  projectById: PropTypes.object,
-  fetchAllProjects: PropTypes.func.isRequired,
-  addNewTask: PropTypes.func.isRequired,
-  fetchAllMembers: PropTypes.func.isRequired,
-  getProjectDetail: PropTypes.func.isRequired,
-  projectId: PropTypes.string,
-  taskId: PropTypes.string,
-  match: PropTypes.shape({
-    params: PropTypes.shape({
-      projectId: PropTypes.string,
-      wbsId: PropTypes.string,
-    }),
-  }),
-};
-
-// Default props
-AddTaskModal.defaultProps = {
-  copiedTask: null,
-  allMembers: [],
-  allProjects: {
-    projects: [],
-    fetched: false,
-    fetching: false,
-  },
-  error: null,
-  darkMode: false,
-  tasks: [],
-  projectId: '',
-  taskId: '',
-  match: {
-    params: {
-      projectId: '',
-      wbsId: '',
-    },
-  },
-};
-
 const mapStateToProps = state => ({
   copiedTask: state.tasks.copiedTask,
   allMembers: state.projectMembers.members,
   allProjects: state.allProjects,
-  projectById: state.projectById,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
-  // tasks: state.tasks.taskItems,
+  tasks: state.tasks.taskItems,
 });
 
 const mapDispatchToProps = {
   addNewTask,
   fetchAllMembers,
-  fetchAllProjects,
-  getProjectDetail,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddTaskModal);

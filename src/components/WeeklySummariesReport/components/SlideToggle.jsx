@@ -5,7 +5,7 @@ import cn from 'classnames';
 import styles from './SlideToggle.module.scss';
 
 // eslint-disable-next-line react/function-component-definition
-const SlideToggle = ({ color = 'default', className = '', onChange }) => {
+const SlideToggle = ({ color = 'default', onChange, className }) => {
   const [checked, setChecked] = useState(false);
 
   return (
@@ -24,7 +24,10 @@ const SlideToggle = ({ color = 'default', className = '', onChange }) => {
   );
 };
 
-// ...existing code...
+SlideToggle.defaultProps = {
+  color: 'default',
+  className: '',
+};
 
 SlideToggle.propTypes = {
   color: PropTypes.oneOf(['default', 'purple', 'green', 'navy']),

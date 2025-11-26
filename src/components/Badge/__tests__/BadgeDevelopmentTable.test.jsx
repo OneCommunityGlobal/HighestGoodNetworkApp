@@ -117,20 +117,22 @@ describe('BadgeDevelopmentTable component', () => {
   });
   it('tooltip associated with ranking works properly', async () => {
     const { container } = renderComponent(mockData);
-    const iconElement = screen.getByTestId('sort-ranking-info-icon');
+    const iconElement = container.querySelector('.fa.fa-info-circle');
 
     fireEvent.mouseEnter(iconElement);
 
-    const updatedText = await screen.findByRole('tooltip');
-    expect(updatedText.textContent).toContain(
-      'Sort the number by ascending or descending order. The lower the number (other than zero) the higher the badge ranking.',
-    );
-    expect(updatedText.textContent).toContain(
-      'Note that 0 is treated as the largest number (thus the lowest ranking). When no number is specified for the ranking field, the default value is 0.',
-    );
-    expect(updatedText.textContent).toContain(
-      'All badges of the same number in ranking sort alphabetically by their names.',
-    );
+    await waitFor(() => {
+      const updatedText = screen.getByRole('tooltip');
+      expect(updatedText.textContent).toContain(
+        'Sort the number by ascending or descending order. The lower the number (other than zero) the higher the badge ranking.',
+      );
+      expect(updatedText.textContent).toContain(
+        'Note that 0 is treated as the largest number (thus the lowest ranking). When no number is specified for the ranking field, the default value is 0.',
+      );
+      expect(updatedText.textContent).toContain(
+        'All badges of the same number in ranking sort alphabetically by their names.',
+      );
+    });
 
     fireEvent.mouseLeave(iconElement);
     await waitFor(() => {
@@ -140,8 +142,8 @@ describe('BadgeDevelopmentTable component', () => {
   });
   it('check if the right images are printing beside each badge row', () => {
     const { container } = renderComponent(mockData);
-    mockData.allBadgeData.forEach(item => {
-      const imageElement = screen.getByTestId(`badge-image-${item._id}`);
+    mockData.allBadgeData.forEach((item, index) => {
+      const imageElement = container.querySelector(`#popover_${item._id}`);
       expect(imageElement.src).toBe(item.imageUrl);
     });
   });
@@ -177,9 +179,8 @@ describe('BadgeDevelopmentTable component', () => {
   });
   it('check action: edit button', () => {
     const { container } = renderComponent(mockData);
-    mockData.allBadgeData.forEach((item, index) => {
-      const editElements = screen.getAllByRole('button', { name: 'Edit' });
-      const editElement = editElements[index];
+    mockData.allBadgeData.forEach(item => {
+      const editElement = container.querySelector('.btn.btn-outline-info');
       fireEvent.click(editElement);
       expect(screen.getByText('Update')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
@@ -187,9 +188,8 @@ describe('BadgeDevelopmentTable component', () => {
   });
   it('check action: delete button', () => {
     const { container } = renderComponent(mockData);
-    mockData.allBadgeData.forEach((item, index) => {
-      const deleteElements = screen.getAllByRole('button', { name: 'Delete' });
-      const deleteElement = deleteElements[index];
+    mockData.allBadgeData.forEach(item => {
+      const deleteElement = container.querySelector('.btn.btn-outline-danger');
       fireEvent.click(deleteElement);
       expect(screen.getByText('Confirm Delete Badge')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
@@ -207,11 +207,15 @@ describe('BadgeDevelopmentTable component', () => {
   });
   it('check reports page notification checkmark', () => {
     const { container } = renderComponent(mockData);
-    const checkElement = screen.getByTestId('report-checkbox-abc1');
+    const checkElement = container.querySelector('#abc1');
     fireEvent.click(checkElement);
-    mockData.allBadgeData.forEach(item => {
-      const checkbox = screen.getByTestId(`report-checkbox-${item._id}`);
-      expect(checkbox.checked).toBe(false);
+    mockData.allBadgeData.forEach(async (item, index) => {
+      const checkbox = container.querySelector(`#${item._id}`);
+      if (index == 0) {
+        expect(checkbox.checked).toBe(false);
+      } else {
+        expect(checkbox.checked).toBe(false);
+      }
     });
   });
 });

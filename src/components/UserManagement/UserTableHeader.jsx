@@ -7,7 +7,6 @@ import { toast } from 'react-toastify';
 import { getAllUserProfile } from '../../actions/userManagement';
 import { ENDPOINTS } from '~/utils/URL';
 import userTableDataPermissions from '../../utils/userTableDataPermissions';
-import PropTypes from 'prop-types';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -317,18 +316,6 @@ const UserTableHeaderComponent = ({ authRole, roleSearchText, darkMode, editUser
       </tr>
     );
   };
-
-UserTableHeaderComponent.propTypes = {
-  authRole: PropTypes.string.isRequired,
-  roleSearchText: PropTypes.string,
-  darkMode: PropTypes.bool,
-  editUser: PropTypes.object,
-  enableEditUserInfo: PropTypes.func.isRequired,
-  disableEditUserInfo: PropTypes.func.isRequired,
-  isMobile: PropTypes.bool,
-  mobileFontSize: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
- 
-};
 
 const UserTableHeader = React.memo(UserTableHeaderComponent);
 UserTableHeader.displayName = 'UserTableHeader';

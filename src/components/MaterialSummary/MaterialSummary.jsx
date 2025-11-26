@@ -3,7 +3,6 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { mockProjects, mockMaterialData, chartColors } from './Data';
 import styles from './MaterialSummary.module.css';
-import { useSelector } from 'react-redux';
 
 // Register ChartJS components
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -15,8 +14,6 @@ export default function MaterialUsageDashboard() {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [increasePercentage, setIncreasePercentage] = useState(0);
-
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Update the updateChartData function to handle the new material types with appropriate colors
   const updateChartData = () => {
@@ -108,7 +105,6 @@ export default function MaterialUsageDashboard() {
         const fontSize = (height / 240).toFixed(2); // Smaller font size
         ctx.font = `${fontSize}em sans-serif`;
         ctx.textBaseline = 'middle';
-        ctx.fillStyle = darkMode ? '#ffffff' : '#000000';
 
         const text = 'Materials';
         const textX = Math.round((width - ctx.measureText(text).width) / 2);
@@ -121,7 +117,7 @@ export default function MaterialUsageDashboard() {
   ];
 
   return (
-    <div className={`${styles.dashboardWrapper} ${darkMode ? styles.darkMode : ''}`}>
+    <div className={styles.dashboardWrapper}>
       <h1 className={styles.dashboardTitle}>Material Usage Dashboard</h1>
       <div className={styles.gridContainer}>
         {/* Filters Section */}
@@ -231,7 +227,7 @@ export default function MaterialUsageDashboard() {
               {loading && (
                 <div className={styles.loadingArea}>
                   <div className={styles.loadingSpinner} />
-                  <p className={styles.loadingText}>Loading data...</p>
+                  <p>Loading data...</p>
                 </div>
               )}
               {!loading && chartData && (
@@ -266,7 +262,7 @@ export default function MaterialUsageDashboard() {
                   />
                 </div>
               )}
-              {!loading && !chartData && <p className={styles.noDataText}>No data available</p>}
+              {!loading && !chartData && <p>No data available</p>}
             </div>
             {/* Material Breakdown List */}
             {chartData && !loading && (

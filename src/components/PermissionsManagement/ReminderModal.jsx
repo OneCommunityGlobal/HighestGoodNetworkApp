@@ -1,5 +1,5 @@
 /* eslint-disable react/button-has-type */
-import styles from './PermissionsManagement.module.css';
+import './PermissionsManagement.css';
 import { ModalContext } from '~/context/ModalContext';
 import { useContext } from 'react';
 
@@ -13,16 +13,16 @@ function ReminderModal({
   const { modalStatus, updateModalStatus } = useContext(ModalContext);
 
   return (
-    <div className={styles['ContainerReminder']}>
-      <div className={styles['ReminderTitle']}>
+    <div className="ContainerReminder">
+      <div className="ReminderTitle">
         <h2>Remember to Save Your Changes!</h2>
       </div>
-      <div className={`${styles['ReminderBody']} ${darkMode ? styles['text-space-cadet'] : ''}`}>
+      <div className={`ReminderBody ${darkMode ? 'text-space-cadet' : ''}`}>
         <span>
           Please log out and log back in to your account, {changedAccount} to apply the changes.
         </span>
       </div>
-      <div className={styles['ReminderButton']}>
+      <div className="ReminderButton">
         <button
           onClick={e => {
             updateProfileOnSubmit(e);

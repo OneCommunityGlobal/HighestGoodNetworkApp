@@ -53,9 +53,8 @@ const addNewProject = ({ newProject, status, error }) => ({
  * @param error: error message
  */
 // const updateProject = (projectId, projectName, category, isActive, status, error) => {
-const updateProject = ({ projectId, updatedProject, status, error }) => ({
+const updateProject = ({ updatedProject, status, error }) => ({
   type: types.UPDATE_PROJECT,
-  projectId: projectId ?? updatedProject?._id,
   updatedProject,
   status,
   error,
@@ -142,15 +141,10 @@ export const postNewProject = (projectName, projectCategory) => {
 };
 
 export const modifyProject = updatedProject => {
-  return async (dispatch, getState) => {
+  return async dispatch => {
     const url = ENDPOINTS.PROJECT + updatedProject._id;
     let status;
     let error;
-    
-    // Get the previous project state to check if category changed
-    const previousProject = getState().allProjects.projects.find(p => p._id === updatedProject._id);
-    const categoryChanged = previousProject && previousProject.category !== updatedProject.category;
-    
     try {
       const res = await axios.put(url, updatedProject);
       status = res.status;

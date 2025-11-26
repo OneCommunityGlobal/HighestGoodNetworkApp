@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  render,
-  screen,
-  fireEvent,
-  waitForElementToBeRemoved,
-  within,
-} from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
 import { configureStore } from 'redux-mock-store';
 import Badge from '../Badge';
+import { waitForElementToBeRemoved } from '@testing-library/react';
 import thunk from 'redux-thunk';
 
 const mockStore = configureStore([thunk]);
@@ -42,24 +37,26 @@ describe('Badge Component', () => {
     describe('Title check', () => {
       it('should display the correct title upon render', () => {
         // Render the Badge component with the provided props and mock store
-        renderWithProvider(<Badge {...badgeProps} />, { store });
-        expect(screen.getByRole('button', { name: /badges/i })).toBeInTheDocument();
+        const { container } = renderWithProvider(<Badge {...badgeProps} />, { store });
+        const titleElement = container.querySelector('.card-header');
+        expect(titleElement).toHaveTextContent('Badges');
       });
     });
 
     describe('Footer text check with empty badge collection', () => {
       it('should display the correct footer message upon render', () => {
         // Ensure the footer text is correct for an empty badge collection
-        renderWithProvider(<Badge {...badgeProps} />, { store });
-        expect(screen.getByText('You have no badges.')).toBeInTheDocument();
+        const { container } = renderWithProvider(<Badge {...badgeProps} />, { store });
+        const titleElement = container.querySelector('.card-text');
+        expect(titleElement).toHaveTextContent('You have no badges.');
       });
     });
 
     describe('Footer icon hover check', () => {
       it('should display the tooltip content upon hovering over and then disappear when moving out of the CountInfo icon', async () => {
         // Test tooltip visibility on hover and disappearance on mouse out
-        renderWithProvider(<Badge {...badgeProps} />, { store });
-        const countInfoIcon = screen.getByTestId('count-info-icon');
+        const { container } = renderWithProvider(<Badge {...badgeProps} />, { store });
+        const countInfoIcon = container.querySelector('#CountInfo');
         fireEvent.mouseOver(countInfoIcon);
         const tooltipContent = await screen.findByText(
           /This is the total number of badges you have earned./i,
@@ -79,8 +76,8 @@ describe('Badge Component', () => {
     describe('Header icon hover check', () => {
       it('should display the tooltip content upon hovering over the BadgeInfo icon and then disappear when moving out', async () => {
         // Test tooltip visibility on hover and disappearance on mouse out for BadgeInfo icon
-        renderWithProvider(<Badge {...badgeProps} />, { store });
-        const badgeInfoIcon = screen.getByTestId('badge-info-icon');
+        const { container } = renderWithProvider(<Badge {...badgeProps} />, { store });
+        const badgeInfoIcon = container.querySelector('#BadgeInfo');
         fireEvent.mouseOver(badgeInfoIcon);
         const tooltipContent = await screen.findByText(
           /There are several types of badges you can earn/i,
@@ -136,9 +133,10 @@ describe('Badge Component', () => {
           role: rolesMock.role,
           theme: themeMock,
         });
-        renderWithProvider(<Badge {...badgeProps} />, { store });
-        expect(screen.getByTestId('total_badges')).toHaveTextContent(
-          /Bravo! You earned 13 badges total and have a personal best of 50 hours in a week!/i,
+        const { container } = renderWithProvider(<Badge {...badgeProps} />, { store });
+        const titleElement = container.querySelector('.card-text');
+        expect(titleElement).toHaveTextContent(
+          'Bravo! You have earned 13 badges and a personal best of 50 hours in a week!',
         );
       });
     });
@@ -153,13 +151,14 @@ describe('Badge Component', () => {
           theme: themeMock,
         };
         let store = mockStore(initialState);
-        const { rerender } = render(
+        const { container, rerender } = render(
           <Provider store={store}>
             <Badge {...badgeProps} />
           </Provider>,
         );
 
-        expect(screen.getByText('You have no badges.')).toBeInTheDocument();
+        const initialTitleElement = container.querySelector('.card-text');
+        expect(initialTitleElement).toHaveTextContent('You have no badges.');
 
         const updatedUserProfile = {
           ...userProfileMock,
@@ -192,7 +191,9 @@ describe('Badge Component', () => {
             <Badge {...badgeProps} />
           </Provider>,
         );
-        expect(screen.getByTestId('total_badges')).toHaveTextContent(/Bravo! You earned 1 badge!/i);
+
+        const updatedTitleElement = container.querySelector('.card-text');
+        expect(updatedTitleElement).toHaveTextContent('Bravo! You have earned 1 badge!');
       });
     });
   });

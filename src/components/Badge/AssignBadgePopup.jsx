@@ -23,12 +23,8 @@ function AssignBadgePopup(props) {
     );
   };
 
-  const { submit: submitCallback } = props;
-
   const handleSubmit = () => {
-    if (typeof submitCallback === 'function') {
-      submitCallback();
-    }
+    props.submit();
     dispatch(clearSelected());
   };
 
@@ -52,7 +48,7 @@ function AssignBadgePopup(props) {
               <th>Badge</th>
               <th>Name</th>
               <th>
-                <i className="fa fa-info-circle" id="SelectInfo" data-testid="select-info-icon" />
+                <i className="fa fa-info-circle" id="SelectInfo" />
                 <UncontrolledTooltip
                   placement="right"
                   target="SelectInfo"
@@ -60,8 +56,7 @@ function AssignBadgePopup(props) {
                 >
                   <p className="badge_info_icon_text">
                     Check those boxes to select the badges you wish to assign a person. Click the
-                    &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish
-                    to add.
+                    "Confirm" button at the bottom when you've selected all you wish to add.
                   </p>
                   <p className="badge_info_icon_text">
                     Want to assign multiple of the same badge to a person? Repeat the process!

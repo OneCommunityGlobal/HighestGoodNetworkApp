@@ -12,7 +12,7 @@ import {
 import Select from 'react-select';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import styles from './InjuryCategoryBarChart.module.css';
+import './InjuryCategoryBarChart.css';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchInjuryData,
@@ -131,17 +131,13 @@ function InjuryCategoryBarChart() {
   const showLabels = seriesProjectIds.length <= 4;
 
   return (
-    <div className={`${styles['injury-chart-container']} ${darkMode ? styles.darkMode : ''}`}>
-      <div className={styles['injury-chart-header']}>
-        <h3 className={styles['injury-chart-title']}>
-          Injury Severity by Category of Worker Injured
-        </h3>
+    <div className={`injury-chart-container ${darkMode ? 'darkMode' : ''}`}>
+      <div className="injury-chart-header">
+        <h3 className="injury-chart-title">Injury Severity by Category of Worker Injured</h3>
 
-        <div className={styles['injury-chart-filters']}>
-          <div className={styles.filter}>
-            <label htmlFor="project-names-select" className={styles['injury-chart-label']}>
-              Projects
-            </label>
+        <div className="injury-chart-filters">
+          <div className="filter">
+            <label htmlFor="project-names-select">Projects</label>
             <Select
               inputId="project-names-select"
               classNamePrefix="injury-select"
@@ -153,10 +149,8 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className={styles.filter}>
-            <label htmlFor="severities-select" className={styles['injury-chart-label']}>
-              Severities
-            </label>
+          <div className="filter">
+            <label htmlFor="severities-select">Severities</label>
             <Select
               inputId="severities-select"
               classNamePrefix="injury-select"
@@ -168,10 +162,8 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className={styles.filter}>
-            <label htmlFor="injury-types-select" className={styles['injury-chart-label']}>
-              Injury types
-            </label>
+          <div className="filter">
+            <label htmlFor="injury-types-select">Injury types</label>
             <Select
               inputId="injury-types-select"
               classNamePrefix="injury-select"
@@ -183,10 +175,8 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className={styles.filter}>
-            <label htmlFor="start-date" className={styles['injury-chart-label']}>
-              Start date
-            </label>
+          <div className="filter">
+            <label htmlFor="start-date">Start date</label>
             <DatePicker
               id="start-date"
               selected={startDate}
@@ -199,10 +189,8 @@ function InjuryCategoryBarChart() {
             />
           </div>
 
-          <div className={styles.filter}>
-            <label htmlFor="end-date" className={styles['injury-chart-label']}>
-              End date
-            </label>
+          <div className="filter">
+            <label htmlFor="end-date">End date</label>
             <DatePicker
               id="end-date"
               selected={endDate}
@@ -218,19 +206,11 @@ function InjuryCategoryBarChart() {
       </div>
 
       {loading && <p>Loading…</p>}
-      {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
+      {!loading && error && <p className="error">Error: {String(error)}</p>}
 
       {!loading && !error && (
         <ResponsiveContainer width="100%" height={420}>
-          <BarChart
-            data={chartData}
-            margin={{ top: 16, right: 24, bottom: 8, left: 8 }}
-            style={{
-              backgroundColor: darkMode ? '#1e2a3a' : '#fff',
-              borderRadius: '8px',
-              padding: '8px',
-            }}
-          >
+          <BarChart data={chartData} margin={{ top: 16, right: 24, bottom: 8, left: 8 }}>
             <XAxis
               dataKey="workerCategory"
               interval={0}
@@ -238,35 +218,16 @@ function InjuryCategoryBarChart() {
               textAnchor="end"
               height={80}
               tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
             />
-            <YAxis
-              allowDecimals={false}
-              tick={{ fill: darkMode ? '#fff' : '#000' }}
-              axisLine={{ stroke: darkMode ? '#888' : '#000' }}
-              tickLine={{ stroke: darkMode ? '#888' : '#000' }}
-            />
+            <YAxis allowDecimals={false} />
             <Tooltip
-              contentStyle={{
-                backgroundColor: darkMode ? '#2b3e59' : '#fff',
-                color: darkMode ? '#fff' : '#000',
-                border: 'none',
-              }}
-              labelStyle={{
-                color: darkMode ? '#fff' : '#000',
-              }}
               formatter={(value, name) => [
                 value,
                 projectNameById.get(String(name)) || 'Unknown Project',
               ]}
             />
             <Legend
-              wrapperStyle={{
-                maxHeight: 72,
-                overflowY: 'auto',
-                color: darkMode ? '#fff' : '#000',
-              }}
+              wrapperStyle={{ maxHeight: 72, overflowY: 'auto' }}
               payload={seriesProjectIds.map(pid => ({
                 id: pid,
                 type: 'square',
@@ -274,26 +235,9 @@ function InjuryCategoryBarChart() {
               }))}
             />
             {seriesProjectIds.map((pid, index) => (
-              <Bar
-                key={pid}
-                dataKey={pid}
-                fill={
-                  darkMode
-                    ? index % 2 === 0
-                      ? '#00A3A1'
-                      : '#1E90FF'
-                    : index % 2 === 0
-                    ? '#17c9d3'
-                    : '#000'
-                }
-              >
+              <Bar key={pid} dataKey={pid} fill={index % 2 === 0 ? '#17c9d3' : '#000'}>
                 {showLabels && (
-                  <LabelList
-                    dataKey={pid}
-                    position="top"
-                    formatter={v => (v > 0 ? v : '')}
-                    fill={darkMode ? '#fff' : '#000'}
-                  />
+                  <LabelList dataKey={pid} position="top" formatter={v => (v > 0 ? v : '')} />
                 )}
               </Bar>
             ))}
@@ -302,7 +246,7 @@ function InjuryCategoryBarChart() {
       )}
 
       {!loading && !error && chartData.length === 0 && (
-        <div className={styles.empty}>No data for selected filters.</div>
+        <div className="empty">No data for selected filters.</div>
       )}
     </div>
   );

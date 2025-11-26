@@ -78,10 +78,10 @@ describe('UserProfileModal', () => {
 });
 
 describe('UserProfileModal', () => {
-  it('should call setUserProfle() after clicking Delete Edit button', async () => {
+  it('should call setUserProfle() after clicking Delete Edit button', () => {
     render(<Provider store={store}> <TimeEntryEditHistory {...props} /> </Provider> );
     const deleteEdit = screen.getByRole('button', { name: 'Delete Edit' });
-    await userEvent.click(deleteEdit);
+    userEvent.click(deleteEdit);
     expect(props.setUserProfile).toHaveBeenCalled();
   });
 });

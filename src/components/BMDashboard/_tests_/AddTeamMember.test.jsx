@@ -1,38 +1,19 @@
-/* eslint-disable testing-library/no-node-access */
-/* eslint-disable testing-library/no-container */
-/* eslint-disable import/no-extraneous-dependencies */
-import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import AddTeamMember from '../AddTeamMember/AddTeamMember';
 import { ENDPOINTS } from '../../../utils/URL';
 
-// ---- Local, file-scoped mocks (no global setup needed) ----
-vi.mock('axios', () => {
-  const mock = {
-    get: vi.fn(),
-    post: vi.fn(),
-    put: vi.fn(),
-    delete: vi.fn(),
-    patch: vi.fn(),
-    create: vi.fn(),
-  };
-  // Important: axios.create() must return the same mock instance
-  mock.create.mockReturnValue(mock);
-  return { default: mock };
-});
-
+// Mock dependencies
+vi.mock('axios');
 vi.mock('react-toastify', () => ({
   __esModule: true,
   toast: {
     success: vi.fn(),
     error: vi.fn(),
-    info: vi.fn(),
-    warn: vi.fn(),
   },
-  ToastContainer: () => null,
 }));
 
 const mockedAxios = axios;
@@ -40,8 +21,6 @@ const mockedAxios = axios;
 describe('AddTeamMember Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Resolve any GETs the component fires on mount so tests don’t hang.
-    mockedAxios.get.mockResolvedValue({ data: {} });
   });
 
   describe('Component Rendering', () => {
@@ -54,30 +33,37 @@ describe('AddTeamMember Component', () => {
   describe('Form Input Changes', () => {
     it('updates first name field when typed', async () => {
       render(<AddTeamMember />);
+
       const firstNameInput = screen.getByLabelText('First Name');
       await userEvent.type(firstNameInput, 'John');
+
       expect(firstNameInput).toHaveValue('John');
     });
 
     it('updates last name field when typed', async () => {
       render(<AddTeamMember />);
+
       const lastNameInput = screen.getByLabelText('Last Name');
       await userEvent.type(lastNameInput, 'Doe');
+
       expect(lastNameInput).toHaveValue('Doe');
     });
 
     it('updates email field when typed', async () => {
       render(<AddTeamMember />);
+
       const emailInput = screen.getByLabelText('Email Address');
       await userEvent.type(emailInput, 'john.doe@example.com');
+
       expect(emailInput).toHaveValue('john.doe@example.com');
     });
 
     it('updates teamSpecify field when typed', async () => {
       render(<AddTeamMember />);
-      // Assumes second empty input corresponds to teamSpecify in your UI
-      const teamSpecifyInput = screen.getAllByDisplayValue('')[1];
+
+      const teamSpecifyInput = screen.getAllByDisplayValue('')[1]; // Second empty input is teamSpecify
       await userEvent.type(teamSpecifyInput, 'Custom Team');
+
       expect(teamSpecifyInput).toHaveValue('Custom Team');
     });
   });
@@ -85,21 +71,27 @@ describe('AddTeamMember Component', () => {
   describe('Phone Number Formatting', () => {
     it('formats phone number correctly as user types', async () => {
       render(<AddTeamMember />);
+
       const phoneInput = screen.getByPlaceholderText('123-456-7890');
+
       await userEvent.type(phoneInput, '1234567890');
       expect(phoneInput).toHaveValue('123-456-7890');
     });
 
     it('formats partial phone numbers correctly', async () => {
       render(<AddTeamMember />);
+
       const phoneInput = screen.getByPlaceholderText('123-456-7890');
+
       await userEvent.type(phoneInput, '123456');
       expect(phoneInput).toHaveValue('123-456');
     });
 
     it('handles short phone numbers correctly', async () => {
       render(<AddTeamMember />);
+
       const phoneInput = screen.getByPlaceholderText('123-456-7890');
+
       await userEvent.type(phoneInput, '123');
       expect(phoneInput).toHaveValue('123');
     });
@@ -108,7 +100,10 @@ describe('AddTeamMember Component', () => {
   describe('Form Validation', () => {
     it('shows validation errors for empty required fields', async () => {
       render(<AddTeamMember />);
-      await userEvent.click(screen.getByText('Submit'));
+
+      const submitButton = screen.getByText('Submit');
+      await userEvent.click(submitButton);
+
       await waitFor(() => {
         expect(screen.getByText('First name is required')).toBeInTheDocument();
       });
@@ -120,46 +115,58 @@ describe('AddTeamMember Component', () => {
 
     it('shows validation error for invalid email format', async () => {
       render(<AddTeamMember />);
-      await userEvent.type(screen.getByLabelText('Email Address'), 'invalid-email');
-      await userEvent.click(screen.getByText('Submit'));
-      expect(await screen.findByText('Please enter a valid email address')).toBeInTheDocument();
+
+      const emailInput = screen.getByLabelText('Email Address');
+      await userEvent.type(emailInput, 'invalid-email');
+
+      const submitButton = screen.getByText('Submit');
+      await userEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Please enter a valid email address')).toBeInTheDocument();
+      });
     });
 
     it('shows validation error for invalid phone number', async () => {
       render(<AddTeamMember />);
-      await userEvent.type(screen.getByPlaceholderText('123-456-7890'), '123');
-      await userEvent.click(screen.getByText('Submit'));
-      expect(
-        await screen.findByText('Please enter a valid 10-digit phone number'),
-      ).toBeInTheDocument();
+
+      const phoneInput = screen.getByPlaceholderText('123-456-7890');
+      await userEvent.type(phoneInput, '123');
+
+      const submitButton = screen.getByText('Submit');
+      await userEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(screen.getByText('Please enter a valid 10-digit phone number')).toBeInTheDocument();
+      });
     });
   });
 
   describe('Form Submission', () => {
     it('submits form successfully with valid data', async () => {
-      // If your component fetches roles/teams from API on mount,
-      // you can specialize responses here. Otherwise, the default GET mock above is fine.
-      mockedAxios.post.mockResolvedValue({ data: { success: true } });
+      const mockResponse = { data: { success: true } };
+      mockedAxios.post.mockResolvedValue(mockResponse);
 
       render(<AddTeamMember />);
 
-      // Fill required fields
+      // Fill all required fields
       await userEvent.type(screen.getByLabelText('First Name'), 'John');
       await userEvent.type(screen.getByLabelText('Last Name'), 'Doe');
       await userEvent.type(screen.getByLabelText('Email Address'), 'john@example.com');
       await userEvent.type(screen.getByPlaceholderText('123-456-7890'), '1234567890');
 
       // Select role
-      const roleSelect = screen.getAllByRole('combobox')[0];
+      const roleSelect = screen.getAllByRole('combobox')[0]; // First combobox is roles
       fireEvent.keyDown(roleSelect, { key: 'ArrowDown' });
-      await userEvent.click(await screen.findByText('Carpenter'));
+      await userEvent.click(screen.getByText('Carpenter'));
 
       // Select team
-      const teamSelect = screen.getAllByRole('combobox')[1];
+      const teamSelect = screen.getAllByRole('combobox')[1]; // Second combobox is teams
       fireEvent.keyDown(teamSelect, { key: 'ArrowDown' });
-      await userEvent.click(await screen.findByText('XYZ Carpentry'));
+      await userEvent.click(screen.getByText('XYZ Carpentry'));
 
-      await userEvent.click(screen.getByText('Submit'));
+      const submitButton = screen.getByText('Submit');
+      await userEvent.click(submitButton);
 
       await waitFor(() => {
         expect(mockedAxios.post).toHaveBeenCalledWith(
@@ -175,48 +182,60 @@ describe('AddTeamMember Component', () => {
             countryCode: '+1',
             phone: '1234567890',
           },
-          { headers: { 'Content-Type': 'application/json' } },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
         );
       });
 
-      // success toast asserted in component-specific wording
-      // (toast is mocked above)
-    }, 10000);
+      expect(toast.success).toHaveBeenCalledWith('Team member created successfully!');
+    });
 
     it('handles submission error correctly', async () => {
       mockedAxios.post.mockRejectedValue(new Error('Network error'));
+
       render(<AddTeamMember />);
 
+      // Fill all required fields
       await userEvent.type(screen.getByLabelText('First Name'), 'John');
       await userEvent.type(screen.getByLabelText('Last Name'), 'Doe');
       await userEvent.type(screen.getByLabelText('Email Address'), 'john@example.com');
 
+      // Select role
       const roleSelect = screen.getAllByRole('combobox')[0];
       fireEvent.keyDown(roleSelect, { key: 'ArrowDown' });
-      await userEvent.click(await screen.findByText('Carpenter'));
+      await userEvent.click(screen.getByText('Carpenter'));
 
+      // Select team
       const teamSelect = screen.getAllByRole('combobox')[1];
       fireEvent.keyDown(teamSelect, { key: 'ArrowDown' });
-      await userEvent.click(await screen.findByText('XYZ Carpentry'));
+      await userEvent.click(screen.getByText('XYZ Carpentry'));
 
-      await userEvent.click(screen.getByText('Submit'));
+      const submitButton = screen.getByText('Submit');
+      await userEvent.click(submitButton);
 
-      // Just wait for POST to have been attempted. Your component likely shows a toast.
       await waitFor(() => {
-        expect(mockedAxios.post).toHaveBeenCalled();
+        expect(toast.error).toHaveBeenCalledWith('Failed to create team member. Please try again.');
       });
-    }, 10000);
+    });
   });
 
   describe('Cancel Functionality', () => {
     it('resets form when cancel button is clicked', async () => {
       render(<AddTeamMember />);
+
+      // Fill some fields
       await userEvent.type(screen.getByLabelText('First Name'), 'John');
       await userEvent.type(screen.getByLabelText('Last Name'), 'Doe');
       await userEvent.type(screen.getByLabelText('Email Address'), 'john@example.com');
 
-      await userEvent.click(screen.getByText('Cancel'));
+      // Click cancel
+      const cancelButton = screen.getByText('Cancel');
+      await userEvent.click(cancelButton);
 
+      // Check that fields are cleared
       expect(screen.getByLabelText('First Name')).toHaveValue('');
       expect(screen.getByLabelText('Last Name')).toHaveValue('');
       expect(screen.getByLabelText('Email Address')).toHaveValue('');
@@ -225,29 +244,37 @@ describe('AddTeamMember Component', () => {
 
   describe('Form Reset After Successful Submission', () => {
     it('resets form after successful submission', async () => {
-      mockedAxios.post.mockResolvedValue({ data: { success: true } });
+      const mockResponse = { data: { success: true } };
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
       render(<AddTeamMember />);
 
+      // Fill all required fields
       await userEvent.type(screen.getByLabelText('First Name'), 'John');
       await userEvent.type(screen.getByLabelText('Last Name'), 'Doe');
       await userEvent.type(screen.getByLabelText('Email Address'), 'john@example.com');
 
+      // Select role
       const roleSelect = screen.getAllByRole('combobox')[0];
       fireEvent.keyDown(roleSelect, { key: 'ArrowDown' });
-      await userEvent.click(await screen.findByText('Carpenter'));
+      await userEvent.click(screen.getByText('Carpenter'));
 
+      // Select team
       const teamSelect = screen.getAllByRole('combobox')[1];
       fireEvent.keyDown(teamSelect, { key: 'ArrowDown' });
-      await userEvent.click(await screen.findByText('XYZ Carpentry'));
+      await userEvent.click(screen.getByText('XYZ Carpentry'));
 
-      await userEvent.click(screen.getByText('Submit'));
+      const submitButton = screen.getByText('Submit');
+      await userEvent.click(submitButton);
 
-      // Wait for “success” to have been processed; then verify reset
       await waitFor(() => {
-        expect(screen.getByLabelText('First Name')).toHaveValue('');
+        expect(toast.success).toHaveBeenCalledWith('Team member created successfully!');
       });
+
+      // Check that form is reset
+      expect(screen.getByLabelText('First Name')).toHaveValue('');
       expect(screen.getByLabelText('Last Name')).toHaveValue('');
       expect(screen.getByLabelText('Email Address')).toHaveValue('');
-    }, 10000);
+    });
   });
 });

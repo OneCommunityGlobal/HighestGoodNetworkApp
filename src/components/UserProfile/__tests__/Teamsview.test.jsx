@@ -60,7 +60,7 @@ describe('Team Table Data component', () => {
         />
       </Provider>,
     );
-    expect(screen.getByText('team11')).toBeInTheDocument();
+    expect(screen.queryByText('team11')).toBeInTheDocument();
   });
   it('check if team name not getting displayed when user is not assigned to a team', () => {
     const teamsData = [];
@@ -99,7 +99,6 @@ describe('Team Table Data component', () => {
         />
       </Provider>,
     );
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     const deleteElement = container.querySelector('[data-item="aaa123"]');
     fireEvent.click(deleteElement);
     expect(mockhandleTeam).toHaveBeenCalled();
@@ -156,7 +155,7 @@ describe('Teams component', () => {
         />
       </Provider>,
     );
-    expect(screen.getByText('Teams')).toBeInTheDocument();
+    expect(screen.queryByText('Teams')).toBeInTheDocument();
   });
   it('check modal opens when add a team button is clicked', () => {
     const teamsData = [];
@@ -172,7 +171,7 @@ describe('Teams component', () => {
     );
     const buttonElement = screen.getByText('Add a Team');
     fireEvent.click(buttonElement);
-    expect(screen.getByText('Modal title')).toBeInTheDocument();
+    expect(screen.queryByText('Modal title')).toBeInTheDocument();
   });
   it('check if modal does not open when add a team button is not clicked', () => {
     const teamsData = [];

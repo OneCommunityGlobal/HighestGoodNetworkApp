@@ -18,11 +18,11 @@ import {
   FaTimes,
   FaChevronLeft,
   FaChevronRight,
+  FaSearch,
 } from 'react-icons/fa';
 import { BsSliders } from 'react-icons/bs';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useHistory } from 'react-router-dom';
 import L from 'leaflet';
 import logo from '../../../assets/images/logo2.png';
 import { fetchVillages, fetchListings, fetchBiddings, FIXED_VILLAGES } from './data';
@@ -73,7 +73,6 @@ function Home() {
   });
 
   const pageSizeOptions = [12, 24, 36, 48];
-  const navigate = useHistory();
 
   useEffect(() => {
     const fetchVillagesData = async () => {
@@ -122,8 +121,9 @@ function Home() {
               pagination.pageSize,
               filters,
             );
+
             setAllListings(listingsData.items || []);
-            console.log('fetching listings', listingsData.items);
+
             setPagination(prev => ({
               ...prev,
               totalPages: listingsData.pagination.totalPages || 1,
@@ -135,7 +135,6 @@ function Home() {
             setAllListings([]);
           }
         } else {
-          console.log('fetching biddings');
           try {
             const biddingsData = await fetchBiddings(
               pagination.currentPage,
@@ -736,17 +735,8 @@ function Home() {
                 <button className={`${styles.lbActionButton} ${styles.lbContactButton}`}>
                   Contact Owner
                 </button>
-                <button
-                  className={`${styles.lbActionButton} ${styles.lbBookButton}`}
-                  onClick={() => {
-                    if (activeTab === 'listings') {
-                      navigate.push(`/lbdashboard/listOverview/${selectedProperty.id}`); // Redirect to booking page
-                    } else {
-                      navigate.push(`/lbdashboard/bidOverview/${selectedProperty.id}`); // Redirect to bidding page
-                    }
-                  }}
-                >
-                  View Property
+                <button className={`${styles.lbActionButton} ${styles.lbBookButton}`}>
+                  {activeTab === 'listings' ? 'Book Now' : 'Accept Bid'}
                 </button>
               </div>
             </div>

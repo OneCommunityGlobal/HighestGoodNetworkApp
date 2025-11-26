@@ -70,7 +70,29 @@ const renderCustomizedLabel = ({
   );
 };
 
-import CustomTooltip from '../../CustomTooltip';
+function CustomTooltip({ active, payload }) {
+  if (active && payload && payload.length) {
+    return (
+      <div
+        style={{
+          backgroundColor: 'white',
+          border: '1px solid #ccc',
+          padding: '10px 20px',
+          borderRadius: '3px',
+          display: 'grid',
+          justifyItems: 'center',
+        }}
+      >
+        <p>
+          <strong>{payload[0].name} Hours</strong>
+        </p>
+        <p>{payload[0].value}</p>
+      </div>
+    );
+  }
+
+  return null;
+}
 
 export default function HoursWorkedPieChart({ userData, windowSize, comparisonType, colors }) {
   let innerRadius = 80;
@@ -100,7 +122,7 @@ export default function HoursWorkedPieChart({ userData, windowSize, comparisonTy
                 <Cell key={`cell-${entry.value}`} fill={colors[index % colors.length]} />
               ))}
           </Pie>
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={CustomTooltip} />
         </PieChart>
       </ResponsiveContainer>
     </div>

@@ -136,17 +136,20 @@ describe('DeleteBadgePopup Component', () => {
     renderComponent(false);
 
     expect(screen.getByText(/Confirm Delete Badge/i)).not.toHaveClass('bg-space-cadet');
-    const bodyNode = screen.getByText(/Hold up there Sparky/i);
-    expect(bodyNode).toBeInTheDocument();
+    expect(screen.getByText(/Hold up there Sparky/i).parentElement).not.toHaveClass(
+      'bg-yinmn-blue',
+    );
     expect(screen.getByRole('button', { name: /Delete/i })).toHaveClass('btn-danger');
   });
 
   test('applies correct styles in dark mode', () => {
     renderComponent(true);
 
-    // Validate presence of modal classes by role and text rather than DOM traversal
-    expect(screen.getByText(/Confirm Delete Badge/i)).toBeInTheDocument();
-    expect(screen.getByText(/Hold up there Sparky/i)).toBeInTheDocument();
+    const header = screen.getByText(/Confirm Delete Badge/i).closest('.modal-header');
+    expect(header).toHaveClass('bg-space-cadet');
+
+    const body = screen.getByText(/Hold up there Sparky/i).closest('.modal-body');
+    expect(body).toHaveClass('bg-yinmn-blue');
 
     const deleteButton = screen.getByRole('button', { name: /Delete/i });
     expect(deleteButton).toHaveClass('btn-danger');

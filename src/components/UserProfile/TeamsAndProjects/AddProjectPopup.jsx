@@ -19,7 +19,7 @@ import { assignProject } from '~/actions/projectMembers';
      isActive: true,
    });
  };
-/*const AddProjectPopup = React.memo(function AddProjectPopup(props) {
+const AddProjectPopup = React.memo(function AddProjectPopup(props) {
   const {
     open,
     onClose,
@@ -42,11 +42,13 @@ import { assignProject } from '~/actions/projectMembers';
       new Set(safeProjects.map(p => p?.category).filter(Boolean))
     );
     setCategoryOptions(categories.length ? categories : ['Unspecified']);
-  }, [projects]);*/
+  }, [projects]);
 
-// eslint-disable-next-line react/display-name
-const AddProjectPopup = React.memo(props => {
-  const { darkMode, projects = [], onClose } = props;
+  // quick lookup set for duplicate check
+  const assignedIds = useMemo(
+    () => new Set(safeUserProjects.map(p => p?._id).filter(Boolean)),
+    [userProjects]
+  );
 
   const dispatch = useDispatch();
 
@@ -116,7 +118,6 @@ const AddProjectPopup = React.memo(props => {
     toast.success(`Assigned to "${selectedProject.projectName}".`);
     props.onClose?.();
   } catch (e) {
-    // eslint-disable-next-line no-console
     console.error('Error Assigning Project:', e);
     toast.error('Failed to assign project. Please try again.');
   }
@@ -165,15 +166,9 @@ const AddProjectPopup = React.memo(props => {
   };
 
   return (
-    <Modal
-      isOpen={props.open}
-      toggle={onClose}
-      // eslint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus={false}
-      className={darkMode ? 'text-light dark-mode' : ''}
-    >
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose}>
-        {creatingNew ? 'Create' : '  Add'} Project{' '}
+    <Modal isOpen={open} toggle={close} autoFocus={false} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={close}>
+        {creatingNew ? 'Create Project' : 'Add Project'}
       </ModalHeader>
 
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>

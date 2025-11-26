@@ -78,15 +78,14 @@ describe('permissions management page structure', () => {
   });
 
   describe('permissions management behavior', () => {
-    it.skip('should fire newRole modal with a form to create a new Role', async () => {
+    it('should fire newRole modal with a form to create a new Role', async () => {
       renderPermissionsManagement();
       const addNewRoleButton = screen.queryByRole('button', { name: /add new role/i });
       if (addNewRoleButton) {
         await userEvent.click(addNewRoleButton);
 
         // Wait for the modal to appear
-        const modal = await screen.findByRole('dialog', { timeout: 10000 });
-        expect(modal).toBeInTheDocument();
+        await screen.findByRole('dialog');
 
         expect(screen.getByRole('dialog')).toBeInTheDocument();
         expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();

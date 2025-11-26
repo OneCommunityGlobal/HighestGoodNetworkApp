@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { boxStyle, boxStyleDark } from '~/styles';
 import '../../Header/DarkMode.css';
 import { toast } from 'react-toastify';
+import '../../Header/DarkMode.css';
 
 const TaskCompletedModal = React.memo(props => {
   const { darkMode } = props;
@@ -29,7 +30,6 @@ const TaskCompletedModal = React.memo(props => {
     const updatedTask = { ...task, resources: newResources };
 
     props.updateTask(task._id, updatedTask);
-    toast.success('Task is successfully marked as done.');
 
     if (props.setUpdatedTasks) {
       props.setUpdatedTasks(prevTasks =>
@@ -93,7 +93,5 @@ const TaskCompletedModal = React.memo(props => {
     </Modal>
   );
 });
-
-TaskCompletedModal.displayName = 'TaskCompletedModal';
 
 export default TaskCompletedModal;

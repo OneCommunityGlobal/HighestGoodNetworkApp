@@ -63,7 +63,6 @@ function AssignBadge(props) {
       }
       setError(null);
     } catch (err) {
-      /* eslint-disable no-console */
       console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);

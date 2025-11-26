@@ -11,7 +11,6 @@ import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
-import styles from '../../SummaryBar/SummaryBar.module.css'
 
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -38,7 +37,6 @@ function QuickSetupModal(props) {
       .then(res => {
         setTitles(res.data);
       })
-      // eslint-disable-next-line no-console
       .catch(err => console.log(err));
   }, [editModal, refreshTrigger]);
 
@@ -50,7 +48,6 @@ function QuickSetupModal(props) {
       const sortedData = response.data.sort((a, b) => a.order - b.order);
       setTitles(sortedData);
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error(err);
     }
   };
@@ -64,7 +61,6 @@ function QuickSetupModal(props) {
           setQSTTeamCodes(formatted);
         }
       })
-      // eslint-disable-next-line no-console
       .catch((err) => console.error('Failed to fetch team codes:', err));
   }
 }, [stateTeamCodes.length, props.teamsData && props.teamsData.allTeamCode]);
@@ -89,7 +85,7 @@ function QuickSetupModal(props) {
         ''
       )}
 
-      <div className={`col ${styles['text-center']} mt-3 flex`}>
+      <div className="col text-center mt-3 flex">
         {canAddTitle ? (
           <Button
             color="primary"

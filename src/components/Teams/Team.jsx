@@ -16,8 +16,7 @@ export function Team(props) {
       <th className="teams__order--input" scope="row">
         <div>{(props.index ?? 0) + 1}</div>
       </th>
-      {/*  Wrap long names vertically */}
-      <td className="team-name-col">{props.name}</td>
+      <td>{props.name}</td>
       <td className="teams__active--input">
         <button
           data-testid="active-marker"
@@ -32,9 +31,7 @@ export function Team(props) {
           }}
           aria-label={`Change status for team ${props.name}`}
         >
-          <div className={props.active ? 'isActive' : 'isNotActive'}>
-            <i className="fa fa-circle" aria-hidden="true"></i>
-          </div>
+          {/* Your content or indicator goes here */}
         </button>
       </td>
       <td className="centered-cell">

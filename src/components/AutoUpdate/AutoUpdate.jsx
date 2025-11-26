@@ -17,15 +17,7 @@ function AutoUpdate() {
     headers: noCacheHeaders,
   };
 
-  // Create the hash request with proper URL handling for test environment
-  const hashRequest = (() => {
-    try {
-      return new Request('/hash.txt');
-    } catch (error) {
-      // In test environment, use a fallback URL
-      return new Request('http://localhost/hash.txt');
-    }
-  })();
+  const hashRequest = new Request('/hash.txt');
 
   useEffect(() => {
     fetch(hashRequest, requestParams)

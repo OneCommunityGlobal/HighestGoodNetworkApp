@@ -13,7 +13,6 @@ function BackendQuestions() {
   const navigate = useHistory();
   const [questions, setQuestions] = useState([]);
   const formData = useSelector(state => state.hgnForm);
-  const darkMode = useSelector(state => state.theme.darkMode);
   const [newVolunteer, setNewVolunteer] = useState(formData);
   const dispatch = useDispatch();
   const [editingIndex, setEditingIndex] = useState(null);
@@ -115,10 +114,8 @@ function BackendQuestions() {
   }
 
   return (
-    <div className={`${styles.frontendBackendQuestions} ${darkMode ? styles.darkContainer : ''}`}>
-      <h3 className={`${styles.blueStrip} ${darkMode ? styles.darkStrip : ''}`}>
-        Backend Questions
-      </h3>
+    <div className={`${styles.frontendBackendQuestions}`}>
+      <h3 className={`${styles.blueStrip}`}>Backend Questions</h3>
       <form onSubmit={handleNext}>
         {questions.map((question, index) => {
           const fieldName = fieldNameMap[index] || `backend_Question_${index}`;

@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux';
-import styles from '../BlueSquares/BlueSquare.module.css'
 
 function QuickSetupCodes({
   titles,
@@ -12,11 +11,10 @@ function QuickSetupCodes({
 }) {
 
   return (
-    <div className={`${styles.blueSquares} mt-3`} id="qsc-outer-wrapper">
+    <div className="blueSquares mt-3" id="qsc-outer-wrapper">
       {titles.map(title => {
         const isTeamCodeInList = teamCodes.some(code => code.value === title.teamCode);
         return (
-          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/interactive-supports-focus
           <div
             key={title._id}
             role="button"

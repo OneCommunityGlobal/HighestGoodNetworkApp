@@ -58,14 +58,12 @@ describe('TabToolTip Component Tests', () => {
 
   it('Test case 1: Renders without crashing', () => {
     const { getByTestId } = mockComponentWithoutNavLink();
-    // eslint-disable-next-line testing-library/prefer-screen-queries
     expect(getByTestId('test-basictabtips')).toBeInTheDocument();
   });
 
   it('Test case 2: Renders with correct structure', () => {
     const { container } = mockComponentWithoutNavLink();
     // Check if the root div exists
-    // eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
     expect(container.querySelector('div[data-testid="test-basictabtips"]')).toBeInTheDocument();
   });
 
@@ -88,36 +86,36 @@ describe('TabToolTip Component Tests', () => {
     expect(screen.queryByText(tooltipTitle)).not.toBeInTheDocument();
   });
 
-  it('Test case 5: Assert clicking Email component sets the correct ID', async () => {
+  it('Test case 5: Assert clicking Email component sets the correct ID', () => {
     mockComponentWithNavLink();
     const emailComp = screen.getByText('Email');
-    await userEvent.click(emailComp);
+    userEvent.click(emailComp);
 
     // Check if the clicked link ID matches
     expect(clickedLinkId).toBe('info-email');
   });
 
   // Similar tests for other tooltip interactions
-  it('Test case 6: Assert clicking Phone component sets the correct ID', async () => {
+  it('Test case 6: Assert clicking Phone component sets the correct ID', () => {
     mockComponentWithNavLink();
     const phoneComp = screen.getByText('Phone');
-    await userEvent.click(phoneComp);
+    userEvent.click(phoneComp);
 
     expect(clickedLinkId).toBe('info-phone');
   });
 
-  it('Test case 7: Assert clicking Title component sets the correct ID', async () => {
+  it('Test case 7: Assert clicking Title component sets the correct ID', () => {
     mockComponentWithNavLink();
     const titleComp = screen.getByText('Title');
-    await userEvent.click(titleComp);
+    userEvent.click(titleComp);
 
     expect(clickedLinkId).toBe('info-title');
   });
 
-  it('Test case 8: Assert clicking Name component sets the correct ID', async () => {
+  it('Test case 8: Assert clicking Name component sets the correct ID', () => {
     mockComponentWithNavLink();
     const nameComp = screen.getByText('Name');
-    await userEvent.click(nameComp);
+    userEvent.click(nameComp);
 
     expect(clickedLinkId).toBe('info-name');
   });

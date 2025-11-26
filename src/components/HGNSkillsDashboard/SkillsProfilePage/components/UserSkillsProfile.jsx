@@ -35,7 +35,12 @@ function UserSkillsProfile() {
         }
 
         const response = await axios.get(
-          `${process.env.REACT_APP_APIENDPOINT}/skills/profile/${effectiveUserId}`,
+          `http://localhost:4500/api/skills/profile/${effectiveUserId}`,
+          {
+            headers: {
+              Authorization: `${token}`,
+            },
+          },
         );
         // console.log('Profile Data:', response.data);
 
