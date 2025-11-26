@@ -12,6 +12,13 @@
   padding: 0;
 }
 
+.weeklyProjectSummaryDashboardContainer {
+  width: 95%;
+  margin: auto;
+  padding: 20px;
+  background: var(--bg-color);
+  color: var(--text-color);
+}
 
 .weeklyProjectSummaryHeaderWrapper {
   background-color: var(--bg-color) !important;
@@ -56,12 +63,17 @@
 /* Dropdown Styling */
 .weeklySummaryHeaderControls select {
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color, #ccc);
   border-radius: 6px;
   min-width: 200px;
   font-size: 14px;
   background: var(--section-bg);
   color: var(--text-color);
+}
+
+.weeklySummaryHeaderControls select:focus {
+  outline: none;
+  border-color: var(--focus-border-color, #3b82f6);
 }
 
 /* Dropdown Hover */
@@ -84,13 +96,6 @@
 }
 
 /* ---------------- DASHBOARD ---------------- */
-.weeklyProjectSummaryDashboardContainer {
-  width: 95%;
-  margin: auto;
-  padding: 20px;
-  background: var(--bg-color);
-  color: var(--text-color);
-}
 
 .weeklyProjectSummaryDashboardGrid {
   display: grid;
@@ -185,6 +190,7 @@
   min-height: 500px;
   border-radius: 8px;
   overflow: hidden;
+  grid-column: span 4;
 }
 
 .weeklyProjectSummaryDashboardSection {
@@ -253,6 +259,8 @@
   --section-title-hover: #3a506b;
   --button-bg: #e8a71c;
   --button-hover: #f5b13a;
+  --border-color: #4a5a77;
+  --focus-border-color: #e8a71c;
 }
 
 .darkMode .weeklyProjectSummaryDashboardCategoryTitle {
@@ -274,14 +282,6 @@
   color: var(--text-color);
 }
 
-/* .weeklySummaryShareBtn {
-  background-color: var(--button-bg) !important;
-}
-
-.weeklySummaryShareBtn:hover {
-  background-color: var(--button-hover) !important;
-} */
-
 /* First, set a max-height and make it scrollable */
 .quantityOfMaterialsUsedChartTooltip {
   max-height: 80vh !important; /* Limit to 80% of viewport height */
@@ -292,7 +292,7 @@
   scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.1);
 }
 
-/* Style the scrollbar for better visibility */
+/* Style the scrollbar for better visibility - Webkit browsers */
 .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar {
   width: 8px;
 }
@@ -306,8 +306,6 @@
   background: rgba(0, 0, 0, 0.3);
   border-radius: 4px;
 }
-
-
 
 /* Additional adjustments for dark mode if needed */
 .darkMode .quantityOfMaterialsUsedChartTooltip::-webkit-scrollbar-track {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
-import './ToolStatusDonutChart.css';
+import styles from './ToolStatusDonutChart.module.css';
 
 const COLORS = {
   AVAILABLE: '#220F57',
@@ -198,13 +198,15 @@ export default function ToolStatusDonutChart() {
     chartHeight = 220;
   }
 
-  return (
-    <div className={`tool-donut-wrapper ${darkMode ? 'dark-mode' : ''}`}>
-      <h3 className="tool-donut-title">Proportion of Tools/Equipment</h3>
+  const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;
 
-      <div className="tool-donut-filters">
-        <div className="filter-item">
-          <label htmlFor="tool-select" className="filter-label">
+  return (
+    <div className={wrapperClass}>
+      <h3 className={styles.toolDonutTitle}>Proportion of Tools/Equipment</h3>
+
+      <div className={styles.toolDonutFilters}>
+        <div className={styles.filterItem}>
+          <label htmlFor="tool-select" className={styles.filterLabel}>
             Tool/Equipment Name
           </label>
           <select id="tool-select" value={toolId} onChange={e => setToolId(e.target.value)}>
@@ -217,8 +219,8 @@ export default function ToolStatusDonutChart() {
           </select>
         </div>
 
-        <div className="filter-item">
-          <label htmlFor="project-select" className="filter-label">
+        <div className={styles.filterItem}>
+          <label htmlFor="project-select" className={styles.filterLabel}>
             Project
           </label>
           <select
@@ -326,11 +328,11 @@ export default function ToolStatusDonutChart() {
       )}
 
       {!hasNoData && !hasNoToolsMatch && (
-        <div className="tool-donut-legend">
+        <div className={styles.toolDonutLegend}>
           {chartData.map(entry => (
             <div
               key={entry.status}
-              className="tool-donut-legend-item"
+              className={styles.toolDonutLegendItem}
               style={{ backgroundColor: COLORS[entry.status.toUpperCase()] }}
             >
               {entry.status}

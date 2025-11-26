@@ -167,14 +167,12 @@ function TotalMaterialCostPerProject() {
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected
-          ? '#0d55b3'
-          : state.isFocused
-          ? '#0d55b3'
-          : darkMode
-          ? '#22272e'
-          : '#fff',
+        backgroundColor: state.isSelected ? '#0d55b3' : darkMode ? '#22272e' : '#fff',
         color: state.isSelected ? '#fff' : darkMode ? '#fff' : '#232323',
+        ':hover': {
+          color: '#fff',
+          backgroundColor: '#0d55b3',
+        },
         fontSize: 13,
         padding: '10px 16px',
         cursor: 'pointer',
