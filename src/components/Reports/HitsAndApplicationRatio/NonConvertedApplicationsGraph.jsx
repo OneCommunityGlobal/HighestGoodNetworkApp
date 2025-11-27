@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import {
   BarChart,
   Bar,
@@ -10,20 +11,20 @@ import {
   Label,
 } from 'recharts';
 
-const toNum = (v, d = 0) => {
-  const n = Number(v);
-  return Number.isFinite(n) ? n : d;
+const toNum = (value) => {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
 };
 
 const fmtPct = (v) => `${toNum(v)}%`;
 const fmtInt = (v) => toNum(v).toLocaleString();
 
 const truncate = (str, max = 22) =>
-  str.length > max ? str.slice(0, max) + '…' : str;
+  typeof str === 'string' && str.length > max ? str.slice(0, max) + '…' : str;
 
 const CustomTooltip = ({ active, payload, usePercentage, isDark }) => {
   if (active && payload && payload.length) {
-    const job = payload[0].payload;
+    const job = payload[0]?.payload || {};
     return (
       <div
         className={`p-2 rounded shadow ${
@@ -33,20 +34,20 @@ const CustomTooltip = ({ active, payload, usePercentage, isDark }) => {
         }`}
         style={{ fontSize: '0.875rem' }}
       >
-        <p><span style={{ fontWeight: 900 }}>Role:</span> {job.title}</p>
-        <p><span style={{ fontWeight: 900 }}>Conversion Rate:</span> {fmtPct(job.conversionRate)}</p>
-        <p><span style={{ fontWeight: 900 }}>Hits:</span> {fmtInt(job.hits)}</p>
-        <p><span style={{ fontWeight: 900 }}>Applications:</span> {fmtInt(job.applications)}</p>
+        <p><strong>Role:</strong> {job.title}</p>
+        <p><strong>Conversion Rate:</strong> {fmtPct(job.conversionRate)}</p>
+        <p><strong>Hits:</strong> {fmtInt(job.hits)}</p>
+        <p><strong>Applications:</strong> {fmtInt(job.applications)}</p>
       </div>
     );
   }
   return null;
 };
 
-function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark }) {
+function NonConvertedApplicationsGraph({ data = [], usePercentage, isDark }) {
   const normalized = useMemo(
     () =>
-      (data || []).map((d) => ({
+      data.map((d) => ({
         ...d,
         hits: toNum(d.hits),
         applications: toNum(d.applications),
@@ -56,23 +57,25 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark
   );
 
   const metricKey = usePercentage ? 'conversionRate' : 'applications';
+
   const rows = useMemo(() => {
     const sorted = [...normalized].sort((a, b) => {
       const diff = toNum(a[metricKey]) - toNum(b[metricKey]);
-      return diff !== 0 ? diff : toNum(a.conversionRate) - toNum(b.conversionRate);
+      return diff !== 0
+        ? diff
+        : toNum(a.conversionRate) - toNum(b.conversionRate);
     });
     return sorted.slice(0, 10);
   }, [normalized, metricKey]);
 
   const maxValue = useMemo(() => {
     if (rows.length === 0) return 1;
-    const m = Math.max(...rows.map((r) => toNum(r[metricKey], 0)));
-    return Math.max(1, Math.ceil(m * 1.05));
+    const max = Math.max(...rows.map((r) => toNum(r[metricKey])));
+    return Math.max(1, Math.ceil(max * 1.05));
   }, [rows, metricKey]);
 
   const xDomain = usePercentage ? [0, 100] : [0, maxValue];
-  const xTickFormatter = (v) => (usePercentage ? `${v}%` : fmtInt(v));
-  const labelFormatter = (v) => (usePercentage ? fmtPct(v) : fmtInt(v));
+  const xTickFormatter = usePercentage ? fmtPct : fmtInt;
 
   return (
     <div
@@ -108,7 +111,6 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark
                     : 'Applications'
                 }
                 position="bottom"
-                offset={0}
                 fill={isDark ? '#e2e8f0' : '#374151'}
               />
             </XAxis>
@@ -117,7 +119,7 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark
               type="category"
               dataKey="title"
               width={180}
-              tickFormatter={(v) => truncate(v)}
+              tickFormatter={(v) => v}
               tick={{ fill: isDark ? '#e2e8f0' : '#374151', fontSize: 12 }}
               stroke={isDark ? '#e2e8f0' : '#374151'}
             >
@@ -125,7 +127,6 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark
                 value="Job Role"
                 angle={-90}
                 position="left"
-                offset={-5}
                 fill={isDark ? '#e2e8f0' : '#374151'}
               />
             </YAxis>
@@ -136,7 +137,7 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark
               <LabelList
                 dataKey={metricKey}
                 position="right"
-                formatter={labelFormatter}
+                formatter={xTickFormatter}
                 style={{
                   fill: isDark ? '#FFFFFF' : '#374151',
                   fontWeight: 600,
@@ -149,5 +150,18 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark
     </div>
   );
 }
+
+NonConvertedApplicationsGraph.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      hits: PropTypes.number,
+      applications: PropTypes.number,
+      conversionRate: PropTypes.number,
+    })
+  ),
+  usePercentage: PropTypes.bool.isRequired,
+  isDark: PropTypes.bool.isRequired,
+};
 
 export default NonConvertedApplicationsGraph;

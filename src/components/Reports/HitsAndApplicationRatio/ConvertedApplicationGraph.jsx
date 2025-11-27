@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
 import {
   BarChart,
   Bar,
@@ -11,11 +12,12 @@ import {
 } from 'recharts';
 
 const truncate = (str, max = 22) =>
-  str.length > max ? str.slice(0, max) + '…' : str;
+  typeof str === 'string' && str.length > max ? str.slice(0, max) + '…' : str;
 
 const CustomTooltip = ({ active, payload, isDark, usePercentage }) => {
   if (active && payload && payload.length) {
-    const job = payload[0].payload;
+    const job = payload[0]?.payload || {};
+
     return (
       <div
         className={`p-2 rounded shadow ${
@@ -25,24 +27,25 @@ const CustomTooltip = ({ active, payload, isDark, usePercentage }) => {
         }`}
         style={{ fontSize: '0.875rem' }}
       >
-        <p><span style={{ fontWeight: 900 }}>Role:</span> {job.title}</p>
-        <p><span style={{ fontWeight: 900 }}>Conversion Rate:</span> {usePercentage ? `${job.conversionRate}%` : job.conversionRate}</p>
-        <p><span style={{ fontWeight: 900 }}>Hits:</span> {job.hits}</p>
-        <p><span style={{ fontWeight: 900 }}>Applications:</span> {job.applications}</p>
+        <p><strong>Role:</strong> {job.title}</p>
+        <p><strong>Conversion Rate:</strong> {usePercentage ? `${job.conversionRate}%` : job.conversionRate}</p>
+        <p><strong>Hits:</strong> {job.hits}</p>
+        <p><strong>Applications:</strong> {job.applications}</p>
       </div>
     );
   }
   return null;
 };
 
-function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
+function ConvertedApplicationGraph({ data = [], usePercentage, isDark }) {
   const sortedData = useMemo(() => {
     const key = usePercentage ? 'conversionRate' : 'applications';
-    const toNum = (val) => (val == null ? 0 : Number(val));
+    const toNum = (v) => Number(v) || 0;
 
-    return [...data]
-      .sort((a, b) => toNum(b[key]) - toNum(a[key]))
-      .slice(0, 10);
+    const cloned = [...data];
+    cloned.sort((a, b) => toNum(b[key]) - toNum(a[key]));
+
+    return cloned.slice(0, 10);
   }, [data, usePercentage]);
 
   return (
@@ -59,25 +62,15 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
         <p>No data available for the selected date range.</p>
       ) : (
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            layout="vertical"
-            data={sortedData}
-            margin={{ top: 20, right: 90, bottom: 40, left: 180 }}
-          >
+          <BarChart layout="vertical" data={sortedData} margin={{ top: 20, right: 90, bottom: 40, left: 180 }}>
             <XAxis
               type="number"
               domain={usePercentage ? [0, 100] : ['auto', 'auto']}
-              unit={usePercentage ? '%' : ''}
               stroke={isDark ? '#e2e8f0' : '#374151'}
             >
               <Label
-                value={
-                  usePercentage
-                    ? 'Percentage of hits converted to applications'
-                    : 'Applications'
-                }
+                value={usePercentage ? 'Percentage of hits converted to applications' : 'Applications'}
                 position="bottom"
-                offset={0}
                 fill={isDark ? '#e2e8f0' : '#374151'}
               />
             </XAxis>
@@ -86,7 +79,7 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
               type="category"
               dataKey="title"
               width={180}
-              tickFormatter={(v) => truncate(v)}
+              tickFormatter={(v) => v}
               tick={{ fill: isDark ? '#e2e8f0' : '#374151', fontSize: 12 }}
               stroke={isDark ? '#e2e8f0' : '#374151'}
             >
@@ -94,7 +87,6 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
                 value="Job Role"
                 angle={-90}
                 position="left"
-                offset={-5}
                 fill={isDark ? '#e2e8f0' : '#374151'}
               />
             </YAxis>
@@ -105,11 +97,7 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
               <LabelList
                 dataKey={usePercentage ? 'conversionRate' : 'applications'}
                 position="right"
-                formatter={(value) => `${value}${usePercentage ? '%' : ''}`}
-                style={{
-                  fill: isDark ? '#FFFFFF' : '#374151',
-                  fontWeight: 600,
-                }}
+                style={{ fill: isDark ? '#FFFFFF' : '#374151', fontWeight: 600 }}
               />
             </Bar>
           </BarChart>
@@ -118,5 +106,18 @@ function ConvertedApplicationGraph({ data, usePercentage, isDark }) {
     </div>
   );
 }
+
+ConvertedApplicationGraph.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string,
+      hits: PropTypes.number,
+      applications: PropTypes.number,
+      conversionRate: PropTypes.number,
+    })
+  ),
+  usePercentage: PropTypes.bool.isRequired,
+  isDark: PropTypes.bool.isRequired,
+};
 
 export default ConvertedApplicationGraph;

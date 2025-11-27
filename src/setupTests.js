@@ -133,9 +133,9 @@ afterAll(() => {
 });
 
 class ResizeObserver {
-  observe() { }
-  unobserve() { }
-  disconnect() { }
+  observe() { return undefined; }      // noop
+  unobserve() { return undefined; }    // noop
+  disconnect() { return undefined; }   // noop
 }
 
 global.ResizeObserver = ResizeObserver;

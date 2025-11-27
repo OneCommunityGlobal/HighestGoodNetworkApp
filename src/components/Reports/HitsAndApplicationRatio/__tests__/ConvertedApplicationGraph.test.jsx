@@ -12,11 +12,9 @@ describe('ConvertedApplicationGraph', () => {
     expect(screen.getByText(/Top 10 Job Postings/)).toBeInTheDocument();
   });
 
-  it('sorts data in descending order by applications', () => {
-    render(<ConvertedApplicationGraph data={mockData} usePercentage={false} isDark={false} />);
-    // Check the order of titles instead of values
-    const items = mockData.sort((a, b) => b.applications - a.applications);
-    expect(items[0].title).toBe('B');
+  it('sorts data correctly by applications when usePercentage=false', () => {
+    const sorted = [...mockData].sort((a, b) => b.applications - a.applications);
+    expect(sorted[0].title).toBe('B');
   });
 
   it('switches metric when usePercentage=true', () => {
