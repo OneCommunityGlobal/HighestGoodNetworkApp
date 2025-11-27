@@ -54,6 +54,109 @@ const buildRows = list =>
     };
   });
 
+// Dark mode styles for react-select
+const getSelectStyles = darkMode => ({
+  container: base => ({
+    ...base,
+    width: 300,
+    minWidth: 300,
+    maxWidth: 300,
+  }),
+  control: (base, state) => ({
+    ...base,
+    width: '100%',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    backgroundColor: darkMode ? '#374151' : '#fff',
+    borderColor: darkMode ? '#4B5563' : '#d1d5db',
+    color: darkMode ? '#fff' : '#000',
+    '&:hover': {
+      borderColor: darkMode ? '#6B7280' : '#9CA3AF',
+    },
+  }),
+  input: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#000',
+  }),
+  placeholder: base => ({
+    ...base,
+    color: darkMode ? '#9CA3AF' : '#6B7280',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }),
+  singleValue: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#000',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }),
+  multiValue: base => ({
+    ...base,
+    maxWidth: '60%',
+    overflow: 'hidden',
+    backgroundColor: darkMode ? '#4B5563' : '#E5E7EB',
+  }),
+  multiValueLabel: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#000',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }),
+  multiValueRemove: base => ({
+    ...base,
+    color: darkMode ? '#9CA3AF' : '#6B7280',
+    ':hover': {
+      backgroundColor: darkMode ? '#EF4444' : '#DC2626',
+      color: '#fff',
+    },
+  }),
+  indicatorsContainer: base => ({
+    ...base,
+    flexWrap: 'nowrap',
+  }),
+  dropdownIndicator: base => ({
+    ...base,
+    color: darkMode ? '#9CA3AF' : '#6B7280',
+    ':hover': {
+      color: darkMode ? '#D1D5DB' : '#374151',
+    },
+  }),
+  clearIndicator: base => ({
+    ...base,
+    color: darkMode ? '#9CA3AF' : '#6B7280',
+    ':hover': {
+      color: darkMode ? '#EF4444' : '#DC2626',
+    },
+  }),
+  menu: base => ({
+    ...base,
+    width: 300,
+    minWidth: 300,
+    maxWidth: 300,
+    zIndex: 9999,
+    backgroundColor: darkMode ? '#374151' : '#fff',
+    border: darkMode ? '1px solid #4B5563' : '1px solid #E5E7EB',
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused
+      ? darkMode
+        ? '#4B5563'
+        : '#F3F4F6'
+      : darkMode
+      ? '#374151'
+      : '#fff',
+    color: darkMode ? '#fff' : '#000',
+    ':active': {
+      backgroundColor: darkMode ? '#6B7280' : '#E5E7EB',
+    },
+  }),
+  menuPortal: base => ({ ...base, zIndex: 9999 }),
+});
+
 function EDailyActivityLog(props) {
   const dispatch = useDispatch();
 
@@ -137,10 +240,12 @@ function EDailyActivityLog(props) {
     dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
   };
 
+  const selectStyles = useMemo(() => getSelectStyles(darkMode), [darkMode]);
+
   return (
     <div
-      className={`container-fluid ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
-      style={{ height: '100%' }}
+      className={`container-fluid ${darkMode ? 'bg-dark text-light' : 'bg-light text-dark'}`}
+      style={{ minHeight: '100vh', padding: '20px 0' }}
     >
       <div className="container">
         <h4 className="mb-4">Daily Equipment Log</h4>
@@ -154,7 +259,7 @@ function EDailyActivityLog(props) {
             <input
               type="date"
               id="date"
-              className="form-control"
+              className={`form-control ${darkMode ? 'bg-secondary border-dark text-light' : ''}`}
               value={date}
               onChange={e => setDate(e.target.value)}
             />
@@ -165,13 +270,14 @@ function EDailyActivityLog(props) {
               Project
             </label>
             <Select
-              inputId="project-select" // associate label via inputId for react-select
+              inputId="project-select"
               value={selectedProject}
               onChange={setSelectedProject}
               options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
               placeholder="Select project…"
               isClearable
-              styles={{ maxWidth: '150px' }}
+              styles={selectStyles}
+              classNamePrefix="react-select"
             />
           </div>
 
@@ -181,14 +287,24 @@ function EDailyActivityLog(props) {
             </p>
             <ButtonGroup className="d-block" aria-labelledby="log-type-label">
               <Button
-                color={logType === 'check-in' ? 'primary' : 'secondary'}
                 onClick={() => flipLogType('check-in')}
+                style={{
+                  backgroundColor: logType === 'check-in' ? '#0d6efd' : 'transparent',
+                  color: logType === 'check-in' ? '#fff' : '#0d6efd',
+                  border: '1px solid #0d6efd',
+                  fontWeight: '500',
+                }}
               >
                 Check In
               </Button>
               <Button
-                color={logType === 'check-out' ? 'primary' : 'secondary'}
                 onClick={() => flipLogType('check-out')}
+                style={{
+                  backgroundColor: logType === 'check-out' ? '#0d6efd' : 'transparent',
+                  color: logType === 'check-out' ? '#fff' : '#0d6efd',
+                  border: '1px solid #0d6efd',
+                  fontWeight: '500',
+                }}
               >
                 Check Out
               </Button>
@@ -197,14 +313,72 @@ function EDailyActivityLog(props) {
         </div>
 
         {/* table */}
-        <Table bordered responsive>
-          <thead className={`${darkMode ? 'table-dark' : 'table-light'} align-middle`}>
-            <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-              <th>Name</th>
-              <th>Working</th>
-              <th>Available</th>
-              <th>Using</th>
-              <th>Tool / Equipment&nbsp;#</th>
+        <Table
+          bordered
+          responsive
+          className={darkMode ? 'table-dark' : ''}
+          style={{
+            border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+            borderCollapse: 'collapse',
+          }}
+        >
+          <thead>
+            <tr>
+              <th
+                style={{
+                  padding: '12px',
+                  fontWeight: '600',
+                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                  color: darkMode ? '#fff' : '#374151',
+                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa', // Subtle gray background
+                }}
+              >
+                Name
+              </th>
+              <th
+                style={{
+                  padding: '12px',
+                  fontWeight: '600',
+                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                  color: darkMode ? '#fff' : '#374151',
+                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                }}
+              >
+                Working
+              </th>
+              <th
+                style={{
+                  padding: '12px',
+                  fontWeight: '600',
+                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                  color: darkMode ? '#fff' : '#374151',
+                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                }}
+              >
+                Available
+              </th>
+              <th
+                style={{
+                  padding: '12px',
+                  fontWeight: '600',
+                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                  color: darkMode ? '#fff' : '#374151',
+                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                }}
+              >
+                Using
+              </th>
+              <th
+                style={{
+                  padding: '12px',
+                  fontWeight: '600',
+                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                  color: darkMode ? '#fff' : '#374151',
+                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                }}
+              >
+                Tool / Equipment&nbsp;#
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -212,7 +386,10 @@ function EDailyActivityLog(props) {
               <tr>
                 <td
                   colSpan={5}
-                  className={`text-center py-3 ${darkMode ? 'text-light' : 'text-dark'} `}
+                  className="text-center py-3"
+                  style={{
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                  }}
                 >
                   Select a project to load equipments.
                 </td>
@@ -220,8 +397,14 @@ function EDailyActivityLog(props) {
             )}
 
             {selectedProject && rows.length === 0 && (
-              <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-                <td colSpan={5} className="text-center py-3">
+              <tr>
+                <td
+                  colSpan={5}
+                  className="text-center py-3"
+                  style={{
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                  }}
+                >
                   No equipments found for this project.
                 </td>
               </tr>
@@ -234,12 +417,41 @@ function EDailyActivityLog(props) {
                 const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
 
                 return (
-                  <tr key={r.id} className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-                    <td>{r.name}</td>
-                    <td>{r.workingQty}</td>
-                    <td>{r.availableQty}</td>
-                    <td>{r.usingQty}</td>
-                    <td style={{ textAlign: 'center' }}>
+                  <tr key={r.id}>
+                    <td
+                      style={{
+                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                      }}
+                    >
+                      {r.name}
+                    </td>
+                    <td
+                      style={{
+                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                      }}
+                    >
+                      {r.workingQty}
+                    </td>
+                    <td
+                      style={{
+                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                      }}
+                    >
+                      {r.availableQty}
+                    </td>
+                    <td
+                      style={{
+                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                      }}
+                    >
+                      {r.usingQty}
+                    </td>
+                    <td
+                      style={{
+                        textAlign: 'center',
+                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                      }}
+                    >
                       <Select
                         isMulti
                         closeMenuOnSelect={false}
@@ -248,61 +460,8 @@ function EDailyActivityLog(props) {
                         onChange={sel => onToolSelect(idx, sel)}
                         placeholder={`Pick up to ${limit}…`}
                         menuPortalTarget={document.body}
-                        styles={{
-                          container: base => ({
-                            ...base,
-                            width: 300, // lock it to 300px
-                            minWidth: 300,
-                            maxWidth: 300,
-                          }),
-                          control: base => ({
-                            ...base,
-                            width: '100%', // fill the container
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }),
-                          placeholder: base => ({
-                            ...base,
-                            color: '#000',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          singleValue: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          multiValue: base => ({
-                            ...base,
-                            maxWidth: '60%',
-                            overflow: 'hidden',
-                          }),
-                          multiValueLabel: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          indicatorsContainer: base => ({
-                            ...base,
-                            flexWrap: 'nowrap',
-                          }),
-                          menu: base => ({
-                            ...base,
-                            width: 300,
-                            minWidth: 300,
-                            maxWidth: 300,
-                            zIndex: 9999,
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            color: '#000',
-                            backgroundColor: state.isFocused ? '#f0f0f0' : '#fff',
-                          }),
-                          menuPortal: base => ({ ...base, zIndex: 9999 }),
-                        }}
+                        styles={selectStyles}
+                        classNamePrefix="react-select"
                       />
                     </td>
                   </tr>
@@ -312,11 +471,30 @@ function EDailyActivityLog(props) {
         </Table>
 
         {/* actions */}
-        <div className="d-flex justify-content-end gap-2">
-          <Button color="secondary" onClick={handleCancel}>
+        <div className="d-flex justify-content-end gap-4 mt-4">
+          <Button
+            color="secondary"
+            onClick={handleCancel}
+            outline={darkMode}
+            className={
+              darkMode ? 'border-secondary text-secondary px-4 py-2' : 'px-4 py-2 border-secondary'
+            }
+            style={{
+              minWidth: '120px',
+              marginRight: '8px',
+            }}
+          >
             Cancel
           </Button>
-          <Button color="primary" onClick={handleSubmit}>
+          <Button
+            color="primary"
+            onClick={handleSubmit}
+            className="px-4 py-2"
+            style={{
+              minWidth: '120px',
+              marginLeft: '8px',
+            }}
+          >
             Submit
           </Button>
         </div>
