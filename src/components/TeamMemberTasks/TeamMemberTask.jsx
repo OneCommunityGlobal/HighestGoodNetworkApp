@@ -508,8 +508,6 @@ const TeamMemberTask = React.memo(
                                           data-testid={`${task.taskName}`}
                                           style={{ color: darkMode ? '#339CFF' : undefined }}
                                         >
-                                          {/* <span>aaaaaaaa aaaaaaaaaa aaaaaa aaaaaaaaaaaaaaaa aaaa aaaaaaaaaaaaaaa aaa aaaaaa aaaa aaaaaaa aaaaaaaa aaaaaaaa aaaaaa aa bb</span> */}
-
                                           <span>{`${task.num} ${task.taskName}`} </span>
                                         </Link>
                                         <CopyToClipboard

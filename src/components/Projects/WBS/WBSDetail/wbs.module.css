@@ -216,6 +216,10 @@
   max-width: 4rem;
 }
 
+.hoursLabel {
+  width: 85px;
+}
+
 @media (max-width: 250px) {
   .flex-responsive{
     flex-direction: column;
@@ -298,6 +302,16 @@
   .wbs-button-group {
     align-items: flex-start;
     margin-bottom: 10px;
+  }
+
+  .datePicker {
+    font-size: small !important; 
+    --rdp-cell-size: auto !important;
+    width: 100%;
+    overflow: auto;
+  }
+  .datePicker :global(.rdp-cell) {
+    padding: 0px !important;
   }
 }
 

@@ -151,7 +151,7 @@ function SingleTask(props) {
               <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <tr>
                   <th scope="row">
-                    <div className="d-flex">
+                    <div className="d-flex flex-column">
                       <EditTaskModal
                         key={`editTask_${task._id}`}
                         parentNum={task.num}

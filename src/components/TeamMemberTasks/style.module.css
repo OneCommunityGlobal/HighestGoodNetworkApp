@@ -671,7 +671,7 @@
     max-width: none;
   }
 
-  .task-table {
+  .task_table-container{
     max-height: 900px;
   }
   .header-box {

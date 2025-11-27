@@ -20,7 +20,7 @@ import UserSearch from './UserSearch';
 import UserTag from './UserTag';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css';
-import '../wbs.module.css';
+import styles from '../wbs.module.css';
 import TagsSearch from '../components/TagsSearch';
 
 
@@ -74,11 +74,12 @@ function DateInput({ id, ariaLabel, placeholder, value, onChange, disabled, dark
         }}
       />
       {isOpen && !disabled && (
-        <div style={{ position: 'absolute', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
+        <div style={{ position: 'absolute', right: 0, overflow: 'auto', zIndex: 10, backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', borderRadius: '4px' }}>
           <DayPicker 
             mode="single"
             selected={selectedDate}
             onSelect={handleDaySelect}
+            className={styles['datePicker']}
           />
           <button
             type="button"
@@ -739,7 +740,7 @@ function EditTaskModal(props) {
                     <label
                       htmlFor="bestCase"
                      
-                      className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}
+                      className={`text-nowrap ${styles.hoursLabel} mr-2 ${darkMode ? 'text-light' : ''}`}
                     >
                       Best-case
                     </label>
@@ -769,7 +770,7 @@ function EditTaskModal(props) {
                     <label
                       htmlFor="worstCase"
                      
-                      className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}
+                      className={`text-nowrap ${styles.hoursLabel} mr-2 ${darkMode ? 'text-light' : ''}`}
                     >
                       Worst-case
                     </label>
@@ -798,7 +799,7 @@ function EditTaskModal(props) {
                     <label
                       htmlFor="mostCase"
                      
-                      className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}
+                      className={`text-nowrap ${styles.hoursLabel} mr-2 ${darkMode ? 'text-light' : ''}`}
                     >
                       Most-case
                     </label>
@@ -829,7 +830,7 @@ function EditTaskModal(props) {
                     <label
                       htmlFor="Estimated"
                      
-                      className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}
+                      className={`text-nowrap ${styles.hoursLabel} mr-2 ${darkMode ? 'text-light' : ''}`}
                     >
                       Estimated
                     </label>
