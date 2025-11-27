@@ -17,10 +17,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { connect, useSelector } from 'react-redux';
 import MembersAutoComplete from './MembersAutoComplete';
-
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
-
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
@@ -39,6 +37,7 @@ export const TeamMembersPopup = React.memo(props => {
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
   const [infoModal, setInfoModal] = useState(false);
+  const [isLoading, setisLoading] = useState(false);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const validation = props.members.teamMembers || props.members;
@@ -59,19 +58,24 @@ export const TeamMembersPopup = React.memo(props => {
     setFilterMode('active');
   };
   const onAddUser = () => {
+    setisLoading(true);
     if (selectedUser) {
       const isDuplicate = validation.some(x => x._id === selectedUser._id);
       if (!isDuplicate) {
         props.onAddUser(selectedUser);
         setSearchText('');
         setDuplicateUserAlert(false);
+        setTimeout(() => setisLoading(false), 2000);
       } else {
         setSearchText('');
         setDuplicateUserAlert(true);
+        setDuplicateUserAlert(false);
+        setisLoading(false);
       }
     } else {
       setDuplicateUserAlert(false);
       setIsValidUser(false);
+      setisLoading(false);
     }
   };
   const selectUser = user => {
@@ -243,8 +247,9 @@ export const TeamMembersPopup = React.memo(props => {
                 color="primary"
                 onClick={onAddUser}
                 style={darkMode ? boxStyleDark : boxStyle}
+                disabled={isLoading}
               >
-                Add
+                {isLoading ? <Spinner color="light" size="sm" /> : 'Add'}
               </Button>
             </div>
           )}
