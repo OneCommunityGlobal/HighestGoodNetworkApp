@@ -220,7 +220,7 @@ function InjuryCategoryBarChart() {
       {loading && <p>Loading…</p>}
       {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
 
-      {!loading && !error && (
+      {!loading && !error && chartData.length > 0 && (
         <ResponsiveContainer width="100%" height={420}>
           <BarChart
             data={chartData}
