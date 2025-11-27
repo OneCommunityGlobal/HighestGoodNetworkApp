@@ -58,9 +58,9 @@ const buildRows = list =>
 const getSelectStyles = darkMode => ({
   container: base => ({
     ...base,
-    width: 300,
-    minWidth: 300,
-    maxWidth: 300,
+    width: '100%',
+    minWidth: '100%',
+    maxWidth: '100%',
   }),
   control: (base, state) => ({
     ...base,
@@ -133,9 +133,9 @@ const getSelectStyles = darkMode => ({
   }),
   menu: base => ({
     ...base,
-    width: 300,
-    minWidth: 300,
-    maxWidth: 300,
+    width: '100%',
+    minWidth: '100%',
+    maxWidth: '100%',
     zIndex: 9999,
     backgroundColor: darkMode ? '#374151' : '#fff',
     border: darkMode ? '1px solid #4B5563' : '1px solid #E5E7EB',
@@ -188,6 +188,14 @@ function EDailyActivityLog(props) {
   const derived = useMemo(() => buildRows(equipments), [equipments]);
   useEffect(() => setRows(derived), [derived]);
 
+  const hasSelectedTools = useMemo(() => {
+    return rows.some(row => row.selectedNumbers.length > 0);
+  }, [rows]);
+
+  const isSubmitDisabled = useMemo(() => {
+    return !selectedProject || !hasSelectedTools;
+  }, [selectedProject, hasSelectedTools]);
+
   const onToolSelect = (rowIdx, selected) => {
     setRows(prev => {
       const row = prev[rowIdx];
@@ -225,6 +233,10 @@ function EDailyActivityLog(props) {
   };
 
   const handleSubmit = () => {
+    if (!hasSelectedTools) {
+      return;
+    }
+
     const payload = rows.flatMap(r =>
       r.selectedNumbers.map(() => ({
         equipmentId: r.id,
@@ -251,8 +263,9 @@ function EDailyActivityLog(props) {
         <h4 className="mb-4">Daily Equipment Log</h4>
 
         {/* header */}
-        <div className="row mb-3">
-          <div className="col-md-3">
+        <div className="row mb-3 g-3">
+          {/* Date - Full width on mobile, 1/3 on medium+ */}
+          <div className="col-12 col-md-4 col-lg-3">
             <label className="form-label fw-bold" htmlFor="date">
               Date
             </label>
@@ -265,7 +278,8 @@ function EDailyActivityLog(props) {
             />
           </div>
 
-          <div className="col-md-5">
+          {/* Project - Full width on mobile, 1/2 on medium, 2/5 on large+ */}
+          <div className="col-12 col-md-8 col-lg-5">
             <label className="form-label fw-bold" htmlFor="project-select">
               Project
             </label>
@@ -281,11 +295,12 @@ function EDailyActivityLog(props) {
             />
           </div>
 
-          <div className="col-md-4">
-            <p className="form-label fw-bold" id="log-type-label">
+          {/* Log Type - Full width on mobile, full width on medium, 2/5 on large+ */}
+          <div className="col-12 col-md-12 col-lg-4">
+            <p className="form-label fw-bold mb-2" id="log-type-label">
               Log Type
             </p>
-            <ButtonGroup className="d-block" aria-labelledby="log-type-label">
+            <ButtonGroup className="w-100" aria-labelledby="log-type-label">
               <Button
                 onClick={() => flipLogType('check-in')}
                 style={{
@@ -293,7 +308,10 @@ function EDailyActivityLog(props) {
                   color: logType === 'check-in' ? '#fff' : '#0d6efd',
                   border: '1px solid #0d6efd',
                   fontWeight: '500',
+                  flex: 1,
+                  whiteSpace: 'nowrap',
                 }}
+                className="text-nowrap"
               >
                 Check In
               </Button>
@@ -304,7 +322,10 @@ function EDailyActivityLog(props) {
                   color: logType === 'check-out' ? '#fff' : '#0d6efd',
                   border: '1px solid #0d6efd',
                   fontWeight: '500',
+                  flex: 1,
+                  whiteSpace: 'nowrap',
                 }}
+                className="text-nowrap"
               >
                 Check Out
               </Button>
@@ -313,165 +334,167 @@ function EDailyActivityLog(props) {
         </div>
 
         {/* table */}
-        <Table
-          bordered
-          responsive
-          className={darkMode ? 'table-dark' : ''}
-          style={{
-            border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-            borderCollapse: 'collapse',
-          }}
-        >
-          <thead>
-            <tr>
-              <th
-                style={{
-                  padding: '12px',
-                  fontWeight: '600',
-                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                  color: darkMode ? '#fff' : '#374151',
-                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa', // Subtle gray background
-                }}
-              >
-                Name
-              </th>
-              <th
-                style={{
-                  padding: '12px',
-                  fontWeight: '600',
-                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                  color: darkMode ? '#fff' : '#374151',
-                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
-                }}
-              >
-                Working
-              </th>
-              <th
-                style={{
-                  padding: '12px',
-                  fontWeight: '600',
-                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                  color: darkMode ? '#fff' : '#374151',
-                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
-                }}
-              >
-                Available
-              </th>
-              <th
-                style={{
-                  padding: '12px',
-                  fontWeight: '600',
-                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                  color: darkMode ? '#fff' : '#374151',
-                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
-                }}
-              >
-                Using
-              </th>
-              <th
-                style={{
-                  padding: '12px',
-                  fontWeight: '600',
-                  border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                  color: darkMode ? '#fff' : '#374151',
-                  backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
-                }}
-              >
-                Tool / Equipment&nbsp;#
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {!selectedProject && (
+        <div className="table-responsive">
+          <Table
+            bordered
+            className={darkMode ? 'table-dark' : ''}
+            style={{
+              border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+              borderCollapse: 'collapse',
+              minWidth: '800px',
+            }}
+          >
+            <thead>
               <tr>
-                <td
-                  colSpan={5}
-                  className="text-center py-3"
+                <th
                   style={{
+                    padding: '12px',
+                    fontWeight: '600',
                     border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
                   }}
                 >
-                  Select a project to load equipments.
-                </td>
-              </tr>
-            )}
-
-            {selectedProject && rows.length === 0 && (
-              <tr>
-                <td
-                  colSpan={5}
-                  className="text-center py-3"
+                  Name
+                </th>
+                <th
                   style={{
+                    padding: '12px',
+                    fontWeight: '600',
                     border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
                   }}
                 >
-                  No equipments found for this project.
-                </td>
+                  Working
+                </th>
+                <th
+                  style={{
+                    padding: '12px',
+                    fontWeight: '600',
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                  }}
+                >
+                  Available
+                </th>
+                <th
+                  style={{
+                    padding: '12px',
+                    fontWeight: '600',
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                  }}
+                >
+                  Using
+                </th>
+                <th
+                  style={{
+                    padding: '12px',
+                    fontWeight: '600',
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                  }}
+                >
+                  Tool / Equipment&nbsp;#
+                </th>
               </tr>
-            )}
+            </thead>
+            <tbody>
+              {!selectedProject && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="text-center py-3"
+                    style={{
+                      border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    }}
+                  >
+                    Select a project to load equipments.
+                  </td>
+                </tr>
+              )}
 
-            {selectedProject &&
-              rows.length > 0 &&
-              rows.map((r, idx) => {
-                const validList = logType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
-                const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
+              {selectedProject && rows.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="text-center py-3"
+                    style={{
+                      border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    }}
+                  >
+                    No equipments found for this project.
+                  </td>
+                </tr>
+              )}
 
-                return (
-                  <tr key={r.id}>
-                    <td
-                      style={{
-                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                      }}
-                    >
-                      {r.name}
-                    </td>
-                    <td
-                      style={{
-                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                      }}
-                    >
-                      {r.workingQty}
-                    </td>
-                    <td
-                      style={{
-                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                      }}
-                    >
-                      {r.availableQty}
-                    </td>
-                    <td
-                      style={{
-                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                      }}
-                    >
-                      {r.usingQty}
-                    </td>
-                    <td
-                      style={{
-                        textAlign: 'center',
-                        border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
-                      }}
-                    >
-                      <Select
-                        isMulti
-                        closeMenuOnSelect={false}
-                        value={r.selectedNumbers.map(v => ({ label: v, value: v }))}
-                        options={validList.map(n => ({ label: n, value: n }))}
-                        onChange={sel => onToolSelect(idx, sel)}
-                        placeholder={`Pick up to ${limit}…`}
-                        menuPortalTarget={document.body}
-                        styles={selectStyles}
-                        classNamePrefix="react-select"
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </Table>
+              {selectedProject &&
+                rows.length > 0 &&
+                rows.map((r, idx) => {
+                  const validList = logType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
+                  const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
+
+                  return (
+                    <tr key={r.id}>
+                      <td
+                        style={{
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        {r.name}
+                      </td>
+                      <td
+                        style={{
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        {r.workingQty}
+                      </td>
+                      <td
+                        style={{
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        {r.availableQty}
+                      </td>
+                      <td
+                        style={{
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        {r.usingQty}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: 'center',
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        <Select
+                          isMulti
+                          closeMenuOnSelect={false}
+                          value={r.selectedNumbers.map(v => ({ label: v, value: v }))}
+                          options={validList.map(n => ({ label: n, value: n }))}
+                          onChange={sel => onToolSelect(idx, sel)}
+                          placeholder={`Pick up to ${limit}…`}
+                          menuPortalTarget={document.body}
+                          styles={selectStyles}
+                          classNamePrefix="react-select"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </Table>
+        </div>
 
         {/* actions */}
-        <div className="d-flex justify-content-end gap-4 mt-4">
+        <div className="d-flex justify-content-end mt-4 flex-wrap">
           <Button
             color="secondary"
             onClick={handleCancel}
@@ -481,7 +504,7 @@ function EDailyActivityLog(props) {
             }
             style={{
               minWidth: '120px',
-              marginRight: '8px',
+              marginRight: '16px',
             }}
           >
             Cancel
@@ -489,15 +512,30 @@ function EDailyActivityLog(props) {
           <Button
             color="primary"
             onClick={handleSubmit}
+            disabled={isSubmitDisabled}
             className="px-4 py-2"
             style={{
               minWidth: '120px',
-              marginLeft: '8px',
+              opacity: isSubmitDisabled ? 0.6 : 1,
+              cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
             }}
           >
             Submit
           </Button>
         </div>
+
+        {/* Helper text to indicate why submit is disabled */}
+        {isSubmitDisabled && (
+          <div className="text-center mt-2">
+            <small className={darkMode ? 'text-warning' : 'text-muted'}>
+              {!selectedProject
+                ? 'Please select a project to enable submission'
+                : !hasSelectedTools
+                ? 'Please select at least one tool to check in/out'
+                : ''}
+            </small>
+          </div>
+        )}
       </div>
     </div>
   );
