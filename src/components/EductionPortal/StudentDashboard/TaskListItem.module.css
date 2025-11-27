@@ -5,7 +5,8 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
   gap: 1.5rem;
   transition: all 0.2s ease;
 }
@@ -170,6 +171,181 @@
   cursor: default;
 }
 
+.toggleIntermediateButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #3b82f6;
+}
+
+.toggleIntermediateButton:hover {
+  background-color: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.expandedIcon {
+  transform: rotate(180deg);
+}
+
+/* Intermediate Tasks Wrapper */
+.intermediateTasksWrapper {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.intermediateTasksList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.noIntermediateTasks {
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  padding: 1rem;
+  margin: 0;
+}
+
+.intermediateTaskItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.intermediateTaskItem:hover {
+  background-color: #f3f4f6;
+}
+
+.intermediateTaskContent {
+  flex: 1;
+}
+
+.intermediateTaskTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 0.25rem 0;
+}
+
+.intermediateTaskDescription {
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+}
+
+.subTaskProgressSection {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.subTaskProgressBar {
+  flex: 1;
+  height: 6px;
+  background-color: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.subTaskProgressFill {
+  height: 100%;
+  background-color: #10b981;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.subTaskProgressText {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 35px;
+  text-align: right;
+}
+
+.intermediateTaskMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.intermediateTaskHours {
+  font-weight: 500;
+}
+
+.intermediateTaskStatus {
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  font-weight: 500;
+  text-transform: capitalize;
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+.intermediateTaskStatus.statuscompleted {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.intermediateTaskStatus.statuspending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.markIntermediateDoneButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #10b981;
+  flex-shrink: 0;
+}
+
+.markIntermediateDoneButton:hover:not(.disabled) {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.markIntermediateDoneButton.disabled {
+  background-color: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #d1d5db;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.markIntermediateDoneButton.disabled:hover {
+  background-color: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #d1d5db;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .taskListItem {
@@ -177,9 +353,17 @@
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .actionIcons {
     flex-direction: row;
     align-self: flex-end;
+  }
+
+  .intermediateTaskItem {
+    flex-direction: column;
+  }
+
+  .markIntermediateDoneButton {
+    width: 100%;
   }
 }

@@ -101,27 +101,38 @@ function IssueChart() {
           display: true,
           position: 'top',
           labels: {
-            font: { size: 13 },
+            font: { size: 13, weight: '500' },
             usePointStyle: true,
-            color: darkMode ? '#cfd7e3' : '#232323',
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            padding: 16,
           },
         },
         title: {
           display: true,
           text: 'Number of Issues Reported by Type',
-          font: { size: 17 },
-          color: darkMode ? '#cfd7e3' : '#232323',
+          font: { size: 17, weight: '600' },
+          color: darkMode ? '#e8f0fe' : '#1a1a1a',
+          padding: { bottom: 20 },
         },
         tooltip: {
           enabled: true,
           mode: 'index',
           intersect: false,
-          backgroundColor: darkMode ? '#232323' : '#fff',
-          titleColor: darkMode ? '#fff' : '#232323',
-          bodyColor: darkMode ? '#fff' : '#232323',
+          backgroundColor: darkMode ? '#2d3748' : '#ffffff',
+          titleColor: darkMode ? '#f7fafc' : '#1a1a1a',
+          bodyColor: darkMode ? '#f7fafc' : '#1a1a1a',
+          borderColor: darkMode ? '#4a5568' : '#e2e8f0',
+          borderWidth: 1,
+          cornerRadius: 8,
+          titleFont: { size: 14, weight: '600' },
+          bodyFont: { size: 13, weight: '500' },
           callbacks: {
             label: ctx => `${ctx.dataset.label}: ${ctx.formattedValue}`,
           },
+          // Enhanced tooltip styling for better accessibility
+          displayColors: true,
+          titleAlign: 'left',
+          bodyAlign: 'left',
         },
       },
       scales: {
@@ -129,25 +140,56 @@ function IssueChart() {
           title: {
             display: true,
             text: 'Issue Type',
-            font: { size: 14 },
-            color: darkMode ? '#cfd7e3' : '#232323',
+            font: { size: 14, weight: '600' },
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            padding: { top: 10 },
           },
-          grid: { display: false },
+          grid: {
+            display: false,
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+          },
           barPercentage: 0.9,
           categoryPercentage: 0.8,
-          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
+          ticks: {
+            stepSize: 1,
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            font: { size: 12, weight: '500' },
+            padding: 8,
+          },
+          border: {
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+            width: 1,
+          },
         },
         y: {
           title: {
             display: true,
             text: 'No. of Issues',
-            font: { size: 14 },
-            color: darkMode ? '#cfd7e3' : '#232323',
+            font: { size: 14, weight: '600' },
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            padding: { bottom: 10 },
           },
           beginAtZero: true,
-          ticks: { stepSize: 1, color: darkMode ? '#cfd7e3' : '#232323' },
-          grid: { color: darkMode ? '#353535' : '#efefef' },
+          ticks: {
+            stepSize: 1,
+            color: darkMode ? '#e8f0fe' : '#1a1a1a',
+            font: { size: 12, weight: '500' },
+            padding: 8,
+          },
+          grid: {
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+            lineWidth: 1,
+          },
+          border: {
+            color: darkMode ? '#4a5568' : '#e2e8f0',
+            width: 1,
+          },
         },
+      },
+      // Enhanced interaction for better accessibility
+      interaction: {
+        intersect: false,
+        mode: 'index',
       },
     }),
     [darkMode],
@@ -158,39 +200,83 @@ function IssueChart() {
     return {
       control: provided => ({
         ...provided,
-        backgroundColor: '#22272e',
-        borderColor: '#3d444d',
-        color: '#cfd7e3',
+        backgroundColor: '#2d3748',
+        borderColor: '#4a5568',
+        color: '#f7fafc',
+        '&:hover': {
+          borderColor: '#718096',
+        },
+        boxShadow: 'none',
+        minHeight: '42px',
       }),
       menu: provided => ({
         ...provided,
-        backgroundColor: '#1e1e1e',
-        color: '#cfd7e3',
+        backgroundColor: '#2d3748',
+        border: '1px solid #4a5568',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.3)',
+        zIndex: 9999,
       }),
       input: provided => ({
         ...provided,
-        color: '#cfd7e3',
+        color: '#f7fafc',
       }),
       singleValue: provided => ({
         ...provided,
-        color: '#cfd7e3',
+        color: '#f7fafc',
       }),
       multiValue: provided => ({
         ...provided,
-        backgroundColor: '#3d444d',
+        backgroundColor: '#4a5568',
+        borderRadius: '6px',
       }),
       multiValueLabel: provided => ({
         ...provided,
-        color: '#cfd7e3',
+        color: '#f7fafc',
+        fontSize: '14px',
+        fontWeight: '500',
+      }),
+      multiValueRemove: provided => ({
+        ...provided,
+        color: '#cbd5e0',
+        '&:hover': {
+          backgroundColor: '#e53e3e',
+          color: '#ffffff',
+        },
       }),
       option: (provided, state) => ({
         ...provided,
-        backgroundColor: state.isFocused ? '#4caf50' : '#1e1e1e',
-        color: state.isFocused ? '#fff' : '#cfd7e3',
+        backgroundColor: state.isFocused ? '#4a5568' : state.isSelected ? '#2b6cb0' : '#2d3748',
+        color: state.isSelected ? '#ffffff' : '#f7fafc',
+        '&:hover': {
+          backgroundColor: '#4a5568',
+          color: '#ffffff',
+        },
+        cursor: 'pointer',
+        fontSize: '14px',
+        fontWeight: '500',
       }),
       placeholder: provided => ({
         ...provided,
-        color: '#aab1bf',
+        color: '#a0aec0',
+        fontSize: '14px',
+      }),
+      indicatorSeparator: provided => ({
+        ...provided,
+        backgroundColor: '#4a5568',
+      }),
+      dropdownIndicator: provided => ({
+        ...provided,
+        color: '#a0aec0',
+        '&:hover': {
+          color: '#f7fafc',
+        },
+      }),
+      clearIndicator: provided => ({
+        ...provided,
+        color: '#a0aec0',
+        '&:hover': {
+          color: '#e53e3e',
+        },
       }),
     };
   }, [darkMode]);
@@ -262,8 +348,16 @@ function IssueChart() {
           </div>
         </div>
 
-        {loading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
+        {loading && (
+          <p className={`${styles.loadingText} ${darkMode ? styles.loadingTextDark : ''}`}>
+            Loading chart data...
+          </p>
+        )}
+        {error && (
+          <p className={`${styles.errorText} ${darkMode ? styles.errorTextDark : ''}`}>
+            Error: {error}
+          </p>
+        )}
 
         {!loading && !error && (
           <div

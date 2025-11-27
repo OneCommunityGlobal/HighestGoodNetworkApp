@@ -6,12 +6,16 @@ body {
 }
 
 .dashboard-container {
-  padding: 40px 20px;
+  padding: 20px 15px;
   max-width: 1400px;
   margin: 0 auto;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+  width: min(95%, 1400px);
 }
 
 .dashboard-header {
@@ -57,19 +61,26 @@ body {
 .filter-section h4 {
   font-size: 1.8rem;
   color: #2c3e50;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
   font-weight: 600;
 }
 
-.filter-item input,
-.filter-item select {
-  padding: 12px 15px;
+.filter-section-divider {
+  height: fit-content;
+  margin: 10px 10px;;
+  border-radius: 1px;
+  display: flex;
+  flex-direction: column;
+}
+
+.filter-item{
+  padding: 8px 15px;
   margin-top: 10px;
-  border: 1px solid #ddd;
+  /* border: 1px solid #ddd; */
   border-radius: 8px;
   width: 100%;
   font-size: 1rem;
-  background: #ffffff;
+  /* background: #ffffff; */
   transition: all 0.3s ease;
 }
 
@@ -81,11 +92,16 @@ body {
 }
 
 .dashboard-main {
+  margin-top: 25px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  background-color: #e5e5e5;
   padding: 30px;
-  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px #0000001a;
 }
+
 
 .section-title {
   font-size: 2.2rem;
@@ -153,4 +169,8 @@ body {
 .dashboard-actions button:hover {
   background-color: #34495e;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.date-filter {
+  margin-top: 15px;
 }
