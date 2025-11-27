@@ -112,6 +112,58 @@
   border: none;
 }
 
+.disconnectedInline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(82, 92, 102, 1);
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding: 0.25rem 0.4rem;
+  gap: 0.35rem;
+}
+
+.disconnectedText {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: rgb(238, 10, 10);
+}
+
+.reconnectInlineBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+
+
+
+.reconnectInlineBtn:hover {
+  transform: scale(1.1);
+}
+
+.reconnectBtnDisabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.reconnectIcon {
+  font-size: 1.1rem;
+  color: white;
+}
+
+/* simple spin while reconnecting */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+
 .transitionColor {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
