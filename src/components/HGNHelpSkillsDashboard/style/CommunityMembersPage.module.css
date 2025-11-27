@@ -1,0 +1,88 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 48px;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #222222;
+}
+
+.controlsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.searchWrapper {
+  flex: 1 1 280px;
+  min-width: 240px;
+}
+
+.searchInput {
+  width: 100%;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 16px;
+}
+
+.filterButton,
+.sortButton,
+.clearButton {
+  border: 1px solid #1f6feb;
+  background-color: transparent;
+  color: #1f6feb;
+  border-radius: 6px;
+  font-size: 15px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.filterButton:hover,
+.sortButton:hover,
+.clearButton:hover {
+  background-color: #1f6feb;
+  color: #ffffff;
+}
+
+.clearButton {
+  border-color: #d93d3d;
+  color: #d93d3d;
+}
+
+.clearButton:hover {
+  background-color: #d93d3d;
+  color: #ffffff;
+}
+
+.filtersPanel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.filterOption {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  color: #333333;
+}
+
+.helperText {
+  font-size: 14px;
+  color: #555555;
+  margin-bottom: 20px;
+}
