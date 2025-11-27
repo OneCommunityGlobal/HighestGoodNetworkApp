@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 import React, { useMemo } from 'react';
 import {
   BarChart,
@@ -19,6 +18,9 @@ const toNum = (v, d = 0) => {
 const fmtPct = (v) => `${toNum(v)}%`;
 const fmtInt = (v) => toNum(v).toLocaleString();
 
+const truncate = (str, max = 22) =>
+  str.length > max ? str.slice(0, max) + '…' : str;
+
 const CustomTooltip = ({ active, payload, usePercentage, isDark }) => {
   if (active && payload && payload.length) {
     const job = payload[0].payload;
@@ -26,15 +28,15 @@ const CustomTooltip = ({ active, payload, usePercentage, isDark }) => {
       <div
         className={`p-2 rounded shadow ${
           isDark
-            ? 'bg-space-cadet border border-yinmn-blue text-light'
+            ? 'bg-space-cadet border border-yinmn-blue text-gray-100'
             : 'bg-white border border-gray-300 text-gray-900'
         }`}
         style={{ fontSize: '0.875rem' }}
       >
-        <p><span className="font-semibold">Role:</span> {job.title}</p>
-        <p><span className="font-semibold">Conversion Rate:</span> {fmtPct(job.conversionRate)}</p>
-        <p><span className="font-semibold">Hits:</span> {fmtInt(job.hits)}</p>
-        <p><span className="font-semibold">Applications:</span> {fmtInt(job.applications)}</p>
+        <p><span style={{ fontWeight: 900 }}>Role:</span> {job.title}</p>
+        <p><span style={{ fontWeight: 900 }}>Conversion Rate:</span> {fmtPct(job.conversionRate)}</p>
+        <p><span style={{ fontWeight: 900 }}>Hits:</span> {fmtInt(job.hits)}</p>
+        <p><span style={{ fontWeight: 900 }}>Applications:</span> {fmtInt(job.applications)}</p>
       </div>
     );
   }
@@ -91,13 +93,13 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark
           <BarChart
             layout="vertical"
             data={rows}
-            margin={{ top: 20, right: 20, bottom: 40, left: 150 }}
+            margin={{ top: 20, right: 90, bottom: 40, left: 180 }}
           >
             <XAxis
               type="number"
               domain={xDomain}
               tickFormatter={xTickFormatter}
-              stroke={isDark ? '#4682B4' : '#374151'}
+              stroke={isDark ? '#e2e8f0' : '#374151'}
             >
               <Label
                 value={
@@ -107,33 +109,38 @@ function NonConvertedApplicationsGraph({ data = [], usePercentage = true, isDark
                 }
                 position="bottom"
                 offset={0}
-                fill={isDark ? '#4682B4' : '#374151'}
+                fill={isDark ? '#e2e8f0' : '#374151'}
               />
             </XAxis>
+
             <YAxis
               type="category"
               dataKey="title"
-              width={140}
-              stroke={isDark ? '#4682B4' : '#374151'}
+              width={180}
+              tickFormatter={(v) => truncate(v)}
+              tick={{ fill: isDark ? '#e2e8f0' : '#374151', fontSize: 12 }}
+              stroke={isDark ? '#e2e8f0' : '#374151'}
             >
               <Label
                 value="Job Role"
                 angle={-90}
                 position="left"
                 offset={-5}
-                style={{ textAnchor: 'middle' }}
-                fill={isDark ? '#4682B4' : '#374151'}
+                fill={isDark ? '#e2e8f0' : '#374151'}
               />
             </YAxis>
-            <Tooltip
-              content={<CustomTooltip usePercentage={usePercentage} isDark={isDark} />}
-            />
+
+            <Tooltip content={<CustomTooltip usePercentage={usePercentage} isDark={isDark} />} />
+
             <Bar dataKey={metricKey} fill="#F44336" minPointSize={3}>
               <LabelList
                 dataKey={metricKey}
                 position="right"
                 formatter={labelFormatter}
-                fill={isDark ? '#4682B4' : '#374151'}
+                style={{
+                  fill: isDark ? '#FFFFFF' : '#374151',
+                  fontWeight: 600,
+                }}
               />
             </Bar>
           </BarChart>
