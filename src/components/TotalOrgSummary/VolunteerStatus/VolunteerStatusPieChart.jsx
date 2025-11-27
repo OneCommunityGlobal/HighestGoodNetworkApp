@@ -2,16 +2,14 @@ import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart, ArcElement } from 'chart.js';
-import './VolunteerStatusPieChart.css';
+import styles from './VolunteerStatusPieChart.module.css';
 
-Chart.register(ArcElement);
+Chart.register(ArcElement, ChartDataLabels);
 
 function VolunteerStatusPieChart({
   data: { totalVolunteers, percentageChange, data: volunteerData },
   comparisonType,
 }) {
-  // Debug: Log the data used for the chart
-  // console.log('VolunteerStatusPieChart data:', { volunteerData, totalVolunteers });
   const chartData = {
     labels: volunteerData.map(item => item.label),
     datasets: [
@@ -28,43 +26,45 @@ function VolunteerStatusPieChart({
       datalabels: {
         color: '#000',
         font: {
-          size: 20,
-          weight: 'bolder',
-          lineHeight: 1.8,
+          size: 16,
+          weight: 'bold',
+          lineHeight: 1.4,
         },
-        formatter: function(value, context) {
-          const percentage = ((value / totalVolunteers) * 100).toFixed(0);
-          // Show value and percent as two lines for clarity
-          return [`${value}`, `(${percentage}%)`];
+        formatter(value) {
+          const percentage = (value / totalVolunteers) * 100;
+          // Only show labels for slices >= 10%
+          if (percentage < 10) return '';
+          return `${value} (${percentage.toFixed(0)}%)`;
         },
         display: true,
-        offset: 0,
-        align: 'center',
         anchor: 'center',
+        align: 'center',
+        offset: 0,
+        clamp: true,
       },
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: false,
-      },
+      legend: { display: false },
+      tooltip: { enabled: false },
     },
     maintainAspectRatio: false,
-    cutout: '55%',
+    cutout: '65%',
   };
 
   const percentageChangeColor = percentageChange >= 0 ? 'green' : 'red';
 
   return (
-    <section className="volunteer-status-container" aria-label="Volunteer Status Overview">
-      <div className="volunteer-status-chart" role="img" aria-label="Volunteer Status Pie Chart">
-        <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
-        <div className="volunteer-status-center">
-          <h2 className="volunteer-status-heading">TOTAL VOLUNTEERS</h2>
-          <p className="volunteer-count">{totalVolunteers}</p>
+    <section className={styles.volunteerStatusContainer} aria-label="Volunteer Status Overview">
+      <div
+        className={styles.volunteerStatusChart}
+        role="img"
+        aria-label="Volunteer Status Pie Chart"
+      >
+        <Doughnut data={chartData} options={options} />
+        <div className={styles.volunteerStatusCenter}>
+          <h2 className={styles.volunteerStatusHeading}>TOTAL VOLUNTEERS</h2>
+          <p className={styles.volunteerCount}>{totalVolunteers}</p>
           {comparisonType !== 'No Comparison' && (
             <p
-              className="percentage-change"
+              className={styles.percentageChange}
               style={{ color: percentageChangeColor }}
               aria-label={`Percentage change: ${percentageChange}% ${comparisonType.toLowerCase()}`}
             >
@@ -75,17 +75,26 @@ function VolunteerStatusPieChart({
           )}
         </div>
       </div>
-      <div className="volunteer-status-labels">
-        {volunteerData.map((item, index) => (
-          <div key={item.label} className="volunteer-status-label">
-            <span
-              className="volunteer-status-color"
-              style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
-              aria-hidden="true"
-            />
-            <span>{item.label}</span>
-          </div>
-        ))}
+
+      <div className={styles.volunteerStatusLabels}>
+        {volunteerData.map((item, index) => {
+          const percentage = ((item.value / totalVolunteers) * 100).toFixed(1);
+          return (
+            <div key={item.label} className={styles.volunteerStatusLabel}>
+              <span
+                className={styles.volunteerStatusColor}
+                style={{
+                  backgroundColor: chartData.datasets[0].backgroundColor[index],
+                }}
+                aria-hidden="true"
+              />
+              <span>{item.label}</span>
+              <span className={styles.volunteerStatusValue}>
+                {item.value} ({percentage}%)
+              </span>
+            </div>
+          );
+        })}
       </div>
     </section>
   );
