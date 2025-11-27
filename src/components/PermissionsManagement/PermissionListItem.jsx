@@ -7,7 +7,7 @@ import { boxStyle, boxStyleDark } from '~/styles';
 import { ModalContext } from '~/context/ModalContext';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
-import './UserRoleTab.css';
+import styles from './UserRoleTab.module.css';
 
 function PermissionListItem(props) {
   const {

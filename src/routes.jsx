@@ -157,6 +157,7 @@ import FollowUpEmailTemplate from './components/CommunityPortal/Activities/Follo
 import Register from './components/CommunityPortal/Activities/Register/Register';
 import ActivitiesPage from './components/CommunityPortal/Activities/ActivitiesPage';
 import EventStats from './components/CommunityPortal/EventPersonalization/EventStats';
+import RegistrationPopup from './components/CommunityPortal/RegistrationConfirmation/Registration';
 
 // Community Calendar
 import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCalendar';
@@ -708,6 +709,11 @@ export default (
           path="/communityportal/ActivityAttendance"
           exact
           component={ActivityAttendance}
+        />
+        <CPProtectedRoute
+          path="/communityportal/activities/registration"
+          exact
+          component={RegistrationPopup}
         />
         <CPProtectedRoute
           path="/communityportal/activities/Feedbackform/:eventId/:email"

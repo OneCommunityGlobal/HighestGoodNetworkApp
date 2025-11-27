@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import DisplayBox from './DisplayBox';
-import './DisplayBox.css';
 
 export default function PromotionsPage() {
   const [showModal, setShowModal] = useState(false);
@@ -16,7 +15,7 @@ export default function PromotionsPage() {
   return (
     <div>
       <h1>Promotions Page</h1>
-      <button type="button" className="button" onClick={handleOpenModal}>
+      <button type="button" onClick={handleOpenModal}>
         Promote ?
       </button>
       {showModal && <DisplayBox onClose={handleCloseModal} />}

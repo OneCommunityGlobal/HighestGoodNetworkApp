@@ -1,5 +1,15 @@
 {
   "rules": {
-    "no-duplicate-selectors": true
-  }
+    "no-duplicate-selectors": [true, {
+      "disallowInList": false
+    }]
+  },
+  "overrides": [
+    {
+      "files": ["**/*.module.css"],
+      "rules": {
+        "no-duplicate-selectors": null
+      }
+    }
+  ]
 }

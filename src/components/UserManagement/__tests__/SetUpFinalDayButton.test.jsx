@@ -1,7 +1,7 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { toast } from 'react-toastify';
 import '@testing-library/jest-dom/extend-expect';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import axios from 'axios';
 import { themeMock } from '../../../__tests__/mockStates';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './DisplayBox.css';
+import styles from './DisplayBox.module.css';
 
 export default function DisplayBox({ onClose }) {
   const mockPromotionData = [
@@ -43,10 +43,12 @@ export default function DisplayBox({ onClose }) {
   };
 
   return (
-    <div className="overlay">
-      <div className="popup">
-        <h2 className="popup-heading">Are you sure you want to promote these PR reviewers?</h2>
-        <table className="popup-table">
+    <div className={styles.overlay}>
+      <div className={styles.popup}>
+        <h2 className={styles['popup-heading']}>
+          Are you sure you want to promote these PR reviewers?
+        </h2>
+        <table className={styles['popup-table']}>
           <thead>
             <tr>
               <th>
@@ -78,24 +80,27 @@ export default function DisplayBox({ onClose }) {
                 <td>{promotion.teamCode}</td>
                 <td>{promotion.teamReviewerName}</td>
                 <td>
-                  {promotion.weeklyPRs.map(pr => (
-                    <span
-                      key={`${promotion.prReviewer}-${pr.week}`}
-                      className={`pr-count-badge color-${pr.week}`}
-                    >
-                      {pr.prCount}
-                    </span>
-                  ))}
+                  {promotion.weeklyPRs.map((pr, prIndex) => {
+                    const colorClass = styles[`color-${prIndex % 5}`] || '';
+                    return (
+                      <span
+                        key={`${promotion.prReviewer}-${pr.week}`}
+                        className={`${styles['pr-count-badge']} ${colorClass}`}
+                      >
+                        {pr.prCount}
+                      </span>
+                    );
+                  })}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        <div className="button-row">
-          <button type="button" className="button" onClick={onClose}>
+        <div className={styles['button-row']}>
+          <button type="button" className={styles.button} onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="button" disabled={!checkedItems.some(Boolean)}>
+          <button type="button" className={styles.button} disabled={!checkedItems.some(Boolean)}>
             Confirm
           </button>
         </div>

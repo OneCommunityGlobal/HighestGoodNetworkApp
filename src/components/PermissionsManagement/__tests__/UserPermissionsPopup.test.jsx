@@ -12,7 +12,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import { configureStore } from 'redux-mock-store';
+import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
