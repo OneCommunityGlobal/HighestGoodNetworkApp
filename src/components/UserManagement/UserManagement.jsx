@@ -336,9 +336,9 @@ class UserManagement extends React.PureComponent {
       let lastNameMatches = true;
       if (trimmedLastNameSearch) {
         if (isLastNameExactMatch) {
-          lastNameMatches = lastName === trimmedLastNameSearch.toLowerCase();
+          lastNameMatches = lastName === trimmedLastNameSearch.toLowerCase().replace(/\s+/g, '').trim();
         } else {
-          lastNameMatches = lastName.includes(trimmedLastNameSearch.toLowerCase());
+          lastNameMatches = lastName.includes(trimmedLastNameSearch.toLowerCase().replace(/\s+/g, '').trim());
         }
       }
 
