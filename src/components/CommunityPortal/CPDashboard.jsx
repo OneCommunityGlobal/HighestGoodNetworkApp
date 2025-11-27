@@ -2,59 +2,91 @@ import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import styles from './CPDashboard.module.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
-import { toast } from 'react-toastify';
+import { ENDPOINTS } from '../../utils/URL';
+import axios from 'axios';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
-  const [dateError, setDateError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 5,
+    total: 0,
+    limit: 6,
+  });
+
+  const FALLBACK_IMG =
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
+
+  const FixedRatioImage = ({ src, alt, fallback }) => (
+    <div
+      style={{
+        width: '100%',
+        aspectRatio: '4 / 3',
+        overflow: 'hidden',
+        background: '#f2f2f2',
+      }}
+    >
+      <img
+        src={src || fallback}
+        alt={alt}
+        loading="lazy"
+        onError={e => {
+          if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+        }}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block',
+        }}
+      />
+    </div>
+  );
 
   useEffect(() => {
-    const mockEvents = [
-      {
-        id: 1,
-        title: 'PGSA Lunch Talks',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'Disque 919',
-        organizer: 'Physics Graduate Student Association',
-        image: 'https://via.placeholder.com/300',
-      },
-      {
-        id: 2,
-        title: 'Hot Chocolate/Bake Sale',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'G.C LeBow - Lobby Tabling Space 2',
-        organizer: 'Kappa Phi Gamma, Sorority Inc.',
-        image: 'https://via.placeholder.com/300',
-      },
-      {
-        id: 3,
-        title: 'Holiday Lunch',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'Hill Conference Room',
-        organizer: 'Chemical and Biological Engineering Graduate Society',
-        image: 'https://via.placeholder.com/300',
-      },
-    ];
-    setEvents(mockEvents);
+    const fetchEvents = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await axios.get(ENDPOINTS.EVENTS);
+        console.log('Fetched events:', response.data.events);
+        setEvents(response.data.events);
+      } catch (err) {
+        console.error('Here', err);
+        setError('Failed to load events');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
-  const handleDateChange = e => {
-    const value = e.target.value;
-    setSelectedDate(value);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // midnight today
-
-    const chosen = new Date(value);
-
-    if (chosen < today) {
-      toast.error('Past dates are not supported. Please select a future date.');
-      setSelectedDate('');
-      return;
-    }
+  const formatDate = dateStr => {
+    if (!dateStr) return 'Date TBD';
+    const date = new Date(dateStr);
+    return date.toLocaleString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
   };
+
+  const filteredEvents = events.filter(event =>
+    event.title?.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const totalPages = Math.ceil(filteredEvents.length / pagination.limit);
+
+  const displayedEvents = filteredEvents.slice(
+    (pagination.currentPage - 1) * pagination.limit,
+    pagination.currentPage * pagination.limit,
+  );
 
   return (
     <Container className={styles['dashboard-container']}>
@@ -70,17 +102,6 @@ export function CPDashboard() {
               className={styles['dashboard-search']}
             />
           </div>
-          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
-            <DropdownToggle caret color="secondary">
-              Community Portal
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={() => handleNavigation('/home')}>Home</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/events')}>Events</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
-            </DropdownMenu>
-          </Dropdown> */}
         </div>
       </header>
 
