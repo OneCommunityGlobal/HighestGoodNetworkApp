@@ -119,12 +119,12 @@
   text-decoration: none !important;
 }
 
-
 .reactCalendar :global(.react-calendar__month-view__days__day) {
   height: 80px;
   overflow: auto;
   height: -webkit-fill-available;
-  border: 1px solid #000000;
+  border: 1px solid #555454;
+  box-sizing: border-box; 
 }
 
 .reactCalendar :global(.react-calendar__navigation) {
@@ -136,23 +136,9 @@
 .reactCalendar :global(.react-calendar__tile) {
   display: grid;
   height: 100px;
-  background: 1px solid #ddd;
-  transition: background 0.3s, border-color 0.3s;
+  transition: background-color 0.3s, border-color 0.3s ease; 
   overflow: hidden;
-}
-.reactCalendarDarkMode :global(.react-calendar__tile) {
-  background: transparent;
-  color: #FFFFFF;
-}
-
-.reactCalendar :global(.react-calendar__tile) {
   border: 1px solid #dee2e6 !important;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
-}
-
-.reactCalendar :global(.react-calendar__month-view__days__day) {
-  border: 1px solid #555454;
   box-sizing: border-box;
 }
 
@@ -178,6 +164,34 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.reactCalendar :global(.react-calendar__tile) .eventItem.statusNew {
+  background-color: #e6fffa;
+  color: #065666;
+  padding: 3px 5px;
+  font-weight: 500;
+}
+
+.reactCalendar :global(.react-calendar__tile) .eventItem.statusNeedsAttendees {
+  background-color: #f3e5f5; 
+  color: #6a1b9a; 
+  padding: 3px 5px;
+  font-weight: 500;
+}
+
+.reactCalendar :global(.react-calendar__tile) .eventItem.statusFillingFast {
+  background-color: #fff9e6;
+  color: #856404;
+  padding: 3px 5px;
+  font-weight: 500;
+}
+
+.reactCalendar :global(.react-calendar__tile) .eventItem.statusFull {
+  background-color: #fce7e7;
+  color: #721c24;
+  padding: 3px 5px;
+  font-weight: 500;
 }
 
 .eventDetails {
@@ -574,17 +588,9 @@
 }
 
 /* Enhanced dark mode modal styling */
-.eventModalDark {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-}
-
 .eventModalDark .modalHeader,
 .eventModalDark .modalActions {
   background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-}
-
-.eventModalDark .modalContent {
-  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
 }
 
 /* Better dark mode contrast for all text elements */
