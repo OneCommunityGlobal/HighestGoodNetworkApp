@@ -12,12 +12,14 @@ import '../../Header/DarkMode.css'
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from '~/actions/userProfile';
 import { postTimeEntry } from '~/actions/timeEntries';
+import { toast } from 'react-toastify';
 
 function AddLostTime(props) {
 
   const darkMode = useSelector((state) => state.theme.darkMode);
   const fontColor = getFontColor(darkMode);
   const boxStyling = getBoxStyling(darkMode);
+  const MAX_HOURS_PER_ENTRY = 40;
 
   const initialForm = {
     projectId: undefined,
@@ -236,33 +238,45 @@ function AddLostTime(props) {
 
   const validateInputs = () => {
     const result = {};
-
+  
     const date = moment(inputs.dateOfWork);
     const today = moment(
       moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
     );
+  
     if (!date.isValid()) {
       result.dateOfWork = 'Invalid date';
-    } else if (
-        today.diff(date, 'days') < 0
-    ) {
+    } else if (today.diff(date, 'days') < 0) {
       result.dateOfWork = 'Cannot add lost time for future dates.';
     }
-
-    if (inputs.hours === 0 && inputs.minutes === 0) {
+  
+    const hours = Number(inputs.hours);
+    const minutes = Number(inputs.minutes);
+  
+    if ((Number.isNaN(hours) || Number.isNaN(minutes)) || (hours === 0 && minutes === 0)) {
       result.time = 'Time is required';
     } else {
-      const hours = inputs.hours * 1;
-      const minutes = inputs.minutes * 1;
       if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
         result.time = 'Hours and minutes should be integers';
-      }
-      if (hours < 0 || minutes < 0) {
+      } else if (hours < 0 || minutes < 0) {
         result.time = 'Time should be greater than 0';
+      } else {
+        // 🔴 40-hour limit check (including minutes)
+        const totalMinutes = hours * 60 + minutes;
+        const maxMinutes = MAX_HOURS_PER_ENTRY * 60;
+  
+        if (totalMinutes > maxMinutes) {
+          result.time = `You can’t log more than ${MAX_HOURS_PER_ENTRY} hours in a single entry.`;
+          toast.error(
+            "Hold up, workhorse! You’ve hit the 40-hour limit for a single entry. You can pop in a new time log for any additional hours.",
+            { autoClose: 5000 }
+          );
+        }
       }
     }
+  
     if (entryType === '') {
       result.events = 'Type is required';
     }
@@ -275,10 +289,11 @@ function AddLostTime(props) {
     if (entryType === 'team' && inputs.teamId === undefined) {
       result.teamId = 'Team is required';
     }
-
+  
     setErrors(result);
     return isEmpty(result);
   };
+  
 
   const handleSubmit = async event => {
     if (event) event.preventDefault();
