@@ -66,40 +66,40 @@ function FaqSearch() {
     setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
   };
 
-  const handleLogUnanswered = async () => {
-    if (!searchQuery.trim()) return;
+ const handleLogUnanswered = async () => {
+  if (!searchQuery.trim()) return;
 
-    setLogging(true);
-    try {
-      const response = await logUnansweredQuestion(searchQuery);
-      const { message, emailSent, emailNote } = response?.data || {};
+  setLogging(true);
+  try {
+    const response = await logUnansweredQuestion(searchQuery);
+    const { message, emailSent, emailNote } = response?.data || {};
 
-      toast.success(message || 'Your question has been recorded.');
+    toast.success(message || 'Your question has been recorded.');
 
-      // show a warning toast if owners not emailed
-      if (emailSent === false && emailNote) {
-        toast.warn(emailNote);
-      }
-    } catch (error) {
-      const status = error?.response?.status;
-      const msg = (error?.response?.data?.message || '').toString();
-
-      // If backend complains about missing owner email, treat as success + warning
-      if (/owner/i.test(msg) && /email/i.test(msg)) {
-        toast.success('Your question has been recorded.');
-        toast.warn(msg || 'Owner email not configured; email skipped.');
-        return;
-      }
-
-      if (status === 409) {
-        toast.error(msg || 'That question is already logged.');
-      } else {
-        toast.error(msg || 'Failed to log question.');
-      }
-    } finally {
-      setLogging(false);
+    // show a warning toast if owners not emailed
+    if (emailSent === false && emailNote) {
+      toast.warn(emailNote);
     }
-  };
+  } catch (error) {
+    const status = error?.response?.status;
+    const msg = (error?.response?.data?.message || '').toString();
+    if (status === 409) {
+      toast.error(msg || 'This question is already logged.');
+      return;
+    }
+
+    // If backend complains about missing owner email, treat as success + warning
+    if (/owner/i.test(msg) && /email/i.test(msg)) {
+      toast.success('Your question has been recorded.');
+      toast.warn(msg || 'Owner email not configured; email skipped.');
+      return;
+    }
+
+    toast.error(msg || 'Failed to log question.');
+  } finally {
+    setLogging(false);
+  }
+};
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
