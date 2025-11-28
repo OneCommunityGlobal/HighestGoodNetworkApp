@@ -64,7 +64,7 @@ const mockEvents = [
     date: new Date(2025, 0, 28),
     status: 'Filling Fast',
     description: 'Detailed description of Event 5.',
-    registeredCount: 45,
+    registeredCount: 49,
     capacity: 50,
   },
 ];
