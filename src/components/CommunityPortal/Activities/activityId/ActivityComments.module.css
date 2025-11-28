@@ -229,3 +229,181 @@
 .loadMoreBtn:hover {
   background: #ddd;
 }
+
+/* ============================================
+   DARK MODE STYLES - Commit 1: Comment Cards, Backgrounds, and Borders
+   ============================================ */
+
+/* Comment Item - Dark Mode */
+:global(body.dark-mode) .commentItem,
+:global(body.bm-dashboard-dark) .commentItem {
+  background: #2e5061 !important;
+  border: 1px solid #3a506b;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentItem .commentName,
+:global(body.bm-dashboard-dark) .commentItem .commentName {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentItem .commentText,
+:global(body.bm-dashboard-dark) .commentItem .commentText {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentItem .commentTimestamp,
+:global(body.bm-dashboard-dark) .commentItem .commentTimestamp {
+  color: #b8c5d1 !important;
+}
+
+/* Comment Box - Dark Mode */
+:global(body.dark-mode) .commentBox,
+:global(body.bm-dashboard-dark) .commentBox {
+  background: transparent;
+}
+
+/* Comments List - Dark Mode */
+:global(body.dark-mode) .commentsList,
+:global(body.bm-dashboard-dark) .commentsList {
+  background: transparent;
+}
+
+/* Reply Form Container */
+.replyFormContainer {
+  margin-top: 12px;
+  margin-left: 40px;
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.replyFormInner {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.replyProfilePic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.replyTextarea {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.replySubmitBtn {
+  padding: 8px 16px;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.replyCancelBtn {
+  padding: 8px 12px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+/* Reply Card */
+.replyCard {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.replyCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.replyCardProfilePic {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.replyCardName {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.replyCardTimestamp {
+  color: #666;
+  font-size: 0.8rem;
+}
+
+.replyCardText {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.repliesContainer {
+  margin-top: 12px;
+  margin-left: 40px;
+}
+
+/* Reply Form Background - Dark Mode */
+:global(body.dark-mode) .replyFormContainer,
+:global(body.bm-dashboard-dark) .replyFormContainer {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyTextarea,
+:global(body.bm-dashboard-dark) .replyTextarea {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyTextarea::placeholder,
+:global(body.bm-dashboard-dark) .replyTextarea::placeholder {
+  color: #b8c5d1 !important;
+}
+
+/* Reply Card Background - Dark Mode */
+:global(body.dark-mode) .replyCard,
+:global(body.bm-dashboard-dark) .replyCard {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyCardName,
+:global(body.bm-dashboard-dark) .replyCardName {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyCardTimestamp,
+:global(body.bm-dashboard-dark) .replyCardTimestamp {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .replyCardText,
+:global(body.bm-dashboard-dark) .replyCardText {
+  color: #ffffff !important;
+}
