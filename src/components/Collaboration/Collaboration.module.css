@@ -10,6 +10,7 @@
 .jobAd {
   text-align: center;
 }
+
 .jobContainer {
   width: 90%;
   margin: 0 auto;
@@ -38,12 +39,13 @@
   margin: 0 auto;
   flex-direction: column;
 }
+
 .jobNavbar {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.1rem; 
+  margin-bottom: 0.1rem;
   padding: 1rem;
   flex-flow: row wrap;
   background-color: #9c0;
@@ -124,6 +126,7 @@
   margin-right: 10px;
   align-items: center;
 }
+
 .jobNavbar-left,
 .jobNavbar-right,
 .jobSearchForm {
@@ -131,6 +134,7 @@
   align-items: center;
   padding: 4px;
 }
+
 .jobSearchForm input {
   margin-right: 10px;
   padding: 5px;
@@ -138,17 +142,20 @@
   border-radius: 4px;
   border-radius: 4px;
 }
+
 .jobPagination button,
 .search {
   padding: 5px 10px;
   cursor: pointer;
 }
+
 .jobSelect {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: background-image 0.2s;
 }
+
 .jobSelect {
   appearance: none;
   -webkit-appearance: none;
@@ -166,6 +173,7 @@
 .jobSelect:active {
   background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 15l5-5 5 5z'/></svg>");
 }
+
 .jobList {
   display: flex;
   flex-wrap: wrap;
@@ -173,6 +181,7 @@
   gap: 20px;
   width: 100%;
 }
+
 .jobAd {
   width: 23%;
   border: 1px solid #ddd;
@@ -183,11 +192,13 @@
   transition: transform 0.3s, box-shadow 0.3s;
   padding: 10px;
 }
+
 .jobAd img {
   max-width: 100%;
   height: auto;
   border-bottom: 1px solid #ddd;
 }
+
 .jobAd h3 {
   font-size: 1.1rem;
   font-weight: 700;
@@ -197,18 +208,22 @@
   margin: 10px 0;
   transition: color 0.3s;
 }
+
 .jobAd a {
   text-decoration: none;
   color: inherit;
-  display:flex;
+  display: flex;
 }
+
 .jobAd a:hover h3 {
   color: #007acc;
 }
+
 .jobAd:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
+
 .jobPagination {
   display: flex;
   justify-content: center;
@@ -216,14 +231,17 @@
   margin-top: 20px;
   margin-bottom: 20px;
 }
+
 .jobPagination button:disabled {
   background-color: #ccc;
   color: #333;
   cursor: default;
 }
+
 .headings {
   margin-bottom: 10px;
 }
+
 .search {
   background-color: #fff;
   border: 10px solid #fff;
@@ -233,6 +251,7 @@
 .jobPagination button:hover {
   background-color: #4a99ee;
 }
+
 .jobSearchForm button {
   padding: 10px 15px;
   border: none;
@@ -245,7 +264,7 @@
   color: black;
 }
 
-.darkMode .jobNoResults h2{
+.darkMode .jobNoResults h2 {
   color: #9c0;
 }
 
@@ -306,6 +325,12 @@
   color: #07471e;
 }
 
+/* Dark Mode Fix for No Results */
+.user-collaboration-dark-mode .no-results h2 {
+  color: #ffffff;
+}
+
+/* Dark Mode Styles */
 
 .responsiveImg {
   max-width: 100%;
@@ -425,7 +450,13 @@
 .darkMode {
   background-color: #1b2a41;
   color: #f1f1f1;
+
+  /* Needed fix from reviewer */
+  width: 100%;
+  min-height: 100%;
+  overflow-x: visible;
 }
+
 /* #1C1C1C 
 #3A506B
 #1C2541

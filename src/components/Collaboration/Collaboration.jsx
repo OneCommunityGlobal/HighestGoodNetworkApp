@@ -84,7 +84,9 @@ function Collaboration() {
   };
 
   const handleSearch = event => {
-    setQuery(event.target.value);
+    const value = event.target.value;
+    setQuery(value);
+    setSearchTerm(value);
     if (!selectedCategory && !localStorage.getItem('tooltipDismissed')) {
       setTooltipPosition('category');
       setShowTooltip(true);
@@ -328,7 +330,6 @@ function Collaboration() {
       </div>
     );
   }
-
   return (
     <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.jobHeader}>
