@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import styles from './ReportVew.module.css';
+import styles from './ReportView.module.css';
 
 const EXPORT_FORMATS = [
   { value: 'pdf', label: 'PDF' },
@@ -19,6 +20,8 @@ const ReportDownloadButton = ({
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFormat, setSelectedFormat] = useState('pdf');
   const [error, setError] = useState(null);
+
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
 
   const formattedReportType = useMemo(
     () => reportType.charAt(0).toUpperCase() + reportType.slice(1),
@@ -98,7 +101,7 @@ const ReportDownloadButton = ({
 
   return (
     <div
-      className={styles.downloadButtonContainer}
+      className={`${styles.downloadButtonContainer} ${darkMode ? styles.darkMode : ''}`}
       role="region"
       aria-label="Report download section"
     >
@@ -111,7 +114,7 @@ const ReportDownloadButton = ({
           value={selectedFormat}
           onChange={handleFormatChange}
           disabled={isLoading}
-          className={styles.formatSelect}
+          className={`${styles.formatSelect} ${darkMode ? styles.darkModeSelect : ''}`}
           aria-label="Select report export format"
           aria-disabled={isLoading}
         >
@@ -125,7 +128,9 @@ const ReportDownloadButton = ({
         <button
           onClick={handleDownload}
           disabled={isLoading}
-          className={`${styles.downloadButton} ${isLoading ? styles.loading : ''}`}
+          className={`${styles.downloadButton} ${isLoading ? styles.loading : ''} ${
+            darkMode ? styles.darkModeButton : ''
+          }`}
           aria-busy={isLoading}
           aria-label={
             isLoading
@@ -151,12 +156,15 @@ const ReportDownloadButton = ({
       </div>
 
       {error && (
-        <div className={styles.errorMessage} role="alert">
+        <div
+          className={`${styles.errorMessage} ${darkMode ? styles.darkModeError : ''}`}
+          role="alert"
+        >
           <small>⚠️ {error}</small>
         </div>
       )}
 
-      <div className={styles.reportMetadata}>
+      <div className={`${styles.reportMetadata} ${darkMode ? styles.darkModeMetadata : ''}`}>
         <small>
           Report Type: <strong>{formattedReportType}</strong> | Educator:{' '}
           <strong>{educatorName}</strong>

@@ -4,6 +4,12 @@
   background-color: #f8f9fa;
   border-radius: 8px;
   border-left: 4px solid #007bff;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.downloadButtonContainer.darkMode {
+  background-color: #1e1e1e;
+  border-left-color: #0d7bd6;
 }
 
 .downloadControlsWrapper {
@@ -20,6 +26,11 @@
   font-size: 14px;
   display: block;
   margin-bottom: 4px;
+  transition: color 0.3s ease;
+}
+
+.downloadButtonContainer.darkMode .formatLabel {
+  color: #e0e0e0;
 }
 
 .formatSelect {
@@ -29,8 +40,9 @@
   border-radius: 4px;
   font-size: 14px;
   background-color: #fff;
+  color: #333;
   cursor: pointer;
-  transition: border-color 0.3s ease, box-shadow 0.2s ease;
+  transition: border-color 0.3s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 .formatSelect:hover:not(:disabled) {
@@ -48,6 +60,22 @@
   background-color: #e9ecef;
   cursor: not-allowed;
   opacity: 0.65;
+}
+
+.formatSelect.darkModeSelect {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #444;
+}
+
+.formatSelect.darkModeSelect:hover:not(:disabled) {
+  border-color: #0d7bd6;
+  box-shadow: 0 0 0 2px rgba(13, 123, 214, 0.1);
+}
+
+.formatSelect.darkModeSelect:disabled {
+  background-color: #3a3a3a;
+  color: #666;
 }
 
 .downloadButton {
@@ -89,8 +117,22 @@
   background-color: #6c757d;
 }
 
+.downloadButton.darkModeButton {
+  background-color: #0d7bd6;
+}
+
+.downloadButton.darkModeButton:hover:not(:disabled) {
+  background-color: #0a5fa8;
+  box-shadow: 0 4px 8px rgba(13, 123, 214, 0.3);
+}
+
 .downloadButton:focus {
   outline: 2px solid #0056b3;
+  outline-offset: 2px;
+}
+
+.downloadButton.darkModeButton:focus {
+  outline: 2px solid #0a5fa8;
   outline-offset: 2px;
 }
 
@@ -124,6 +166,12 @@
   font-size: 12px;
   word-break: break-word;
   overflow-wrap: break-word;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.reportMetadata.darkModeMetadata {
+  border-top-color: #444;
+  color: #a0a0a0;
 }
 
 .reportMetadata small {
@@ -133,6 +181,11 @@
 
 .reportMetadata strong {
   color: #495057;
+  transition: color 0.3s ease;
+}
+
+.reportMetadata.darkModeMetadata strong {
+  color: #d0d0d0;
 }
 
 .errorMessage {
@@ -144,6 +197,13 @@
   color: #721c24;
   font-size: 13px;
   animation: slideIn 0.3s ease;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.errorMessage.darkModeError {
+  background-color: #3d1f1f;
+  border-color: #5c2e2e;
+  color: #ff9999;
 }
 
 @keyframes slideIn {
@@ -281,7 +341,6 @@
   }
 }
 
-/* Landscape orientation optimization */
 @media (max-height: 500px) and (orientation: landscape) {
   .downloadButtonContainer {
     margin: 12px 0;
@@ -308,6 +367,10 @@
   .downloadButton:active:not(:disabled) {
     background-color: #0056b3;
   }
+
+  .downloadButton.darkModeButton:active:not(:disabled) {
+    background-color: #0a5fa8;
+  }
 }
 
 @media (prefers-contrast: more) {
@@ -315,15 +378,27 @@
     border: 2px solid #0056b3;
   }
 
+  .downloadButton.darkModeButton {
+    border: 2px solid #0a5fa8;
+  }
+
   .formatSelect {
     border: 2px solid #333;
+  }
+
+  .formatSelect.darkModeSelect {
+    border: 2px solid #666;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .downloadButton,
   .formatSelect,
-  .spinner {
+  .spinner,
+  .downloadButtonContainer,
+  .formatLabel,
+  .reportMetadata,
+  .errorMessage {
     transition: none;
   }
 
