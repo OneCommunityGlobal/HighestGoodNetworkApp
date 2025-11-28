@@ -218,6 +218,7 @@ export class WeeklySummary extends Component {
       summaries,
       fetchError,
       loading,
+      initialActiveTab,
     } = this.props;
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
@@ -308,7 +309,7 @@ export class WeeklySummary extends Component {
       dueDateBeforeLast,
       dueDateThreeWeeksAgo,
       submittedCountInFourWeeks,
-      activeTab: '1',
+      activeTab: initialActiveTab || '1',
       fetchError,
       loading,
       editPopup: false,
@@ -630,6 +631,7 @@ export class WeeklySummary extends Component {
       autoClose: 3000,
     });
     this.updateUserData(displayUserId || currentUser.userid);
+    window.location.reload();
   };
 
   // Handler for error scenario after save
@@ -1103,7 +1105,7 @@ export class WeeklySummary extends Component {
                         style={{ marginLeft: '10px', lineHeight: '1.5', cursor: 'pointer' }}
                         className={darkMode ? 'text-light' : 'text-dark'}
                       >
-                        I used GPT (or other AI editor) with the most current prompt.
+                        I used ChatGPT (or other AI editor) with the most current prompt.
                       </label>
                     </FormGroup>
                     {errors.editorConfirm && (
@@ -1177,6 +1179,7 @@ WeeklySummary.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   summaries: PropTypes.object.isRequired,
   updateWeeklySummaries: PropTypes.func.isRequired,
+  initialActiveTab: PropTypes.string,
 };
 
 const mapStateToProps = ({ auth, weeklySummaries }) => ({

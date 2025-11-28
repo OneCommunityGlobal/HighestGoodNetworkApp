@@ -24,6 +24,7 @@ import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
 import { boxStyle, boxStyleDark } from '~/styles';
+import { v4 as uuidv4 } from 'uuid';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
@@ -33,6 +34,7 @@ import { ENDPOINTS } from '~/utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
+import teamStyles from '../TeamMemberTasks/style.module.css';
 import TeamsTab from './TeamsAndProjects/TeamsTab';
 import ProjectsTab from './TeamsAndProjects/ProjectsTab';
 import BasicInformationTab from './BasicInformationTab/BasicInformationTab';
@@ -75,6 +77,7 @@ import {
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from '~/utils/formatDate.js';
 import AccessManagementModal from './UserProfileModal/AccessManagementModal';
+import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
 
 function UserProfile(props) { 
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -153,6 +156,7 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
+  const [specialWarnings, setSpecialWarnings] = useState([]);
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
   const [loadingSummaries, setLoadingSummaries] = useState(false);
@@ -194,7 +198,19 @@ function UserProfile(props) {
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   const canEditTeamCode = props.hasPermission('editTeamCode');
-  const [titleOnSet, setTitleOnSet] = useState(false);
+  const [titleOnSet, setTitleOnSet] = useState(false); // added by development
+
+  /* useEffect functions */ // added by luis, the below useEffect
+  useEffect(() => {
+    loadUserProfile();
+    getCurretLoggedinUserEmail();
+    dispatch(fetchAllProjects());
+    dispatch(getAllUserTeams());
+    dispatch(getAllTimeOffRequests());
+    dispatch(getAllTeamCode());
+    fetchSpecialWarnings();
+    canEditTeamCode && fetchTeamCodeAllUsers();
+  }, []);
 
  
   const updateProjectTouserProfile = () => {
@@ -416,6 +432,8 @@ function UserProfile(props) {
       const [response] = await Promise.all([axios.get(ENDPOINTS.USER_PROFILE(userId))]);
 
       const newUserProfile = response.data;
+      // Assuming newUserProfile contains isRehireable attribute
+      setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       // sanitize data first
@@ -475,13 +493,14 @@ function UserProfile(props) {
       setUserProfile(profileWithFormattedDates);
       setOriginalUserProfile(profileWithFormattedDates);
       setIsRehireable(newUserProfile.isRehireable);
+      setUserStartDate(profileWithFormattedDates.startDate || '');
 
       // Fetch calculated start date from first time entry
       await fetchCalculatedStartDate(userId, newUserProfile);
 
       // run after main profile is loaded
-      const teamId = newUserProfile?.teams[0]?._id;
-      loadSummaryIntroDetails(teamId, newUserProfile);
+      const teamId = newUserProfile?.teams?.[0]?._id || null;
+      await loadSummaryIntroDetails(teamId, response.data);
 
       // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
       // Users can now toggle between manual and calculated startDate via button
@@ -724,18 +743,20 @@ const onAssignProject = assignedProject => {
               },
             ];
             toast.success('Blue Square Added!');
+            const updatedInfringements = res.data.infringements;
+
             setOriginalUserProfile({
               ...originalUserProfile,
-              infringements: newBlueSqrs,
+              infringements: updatedInfringements,
             });
             setUserProfile({
               ...userProfile,
-              infringements: newBlueSqrs,
+              infringements: updatedInfringements,
             });
           })
           .catch(error => {
             // eslint-disable-next-line no-console
-            console.log('error in modifying bluequare', error);
+            console.log('error in modifying bluesquare', error);
             toast.error('Failed to add Blue Square!');
           });
       }
@@ -770,6 +791,80 @@ const onAssignProject = assignedProject => {
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
       }
     }
+  };
+  const fetchSpecialWarnings = async () => {
+    const userId = props?.match?.params?.userId;
+    try {
+      dispatch(getSpecialWarnings(userId)).then(res => {
+        if (res.error) {
+          console.log(res.error);
+          return;
+        }
+        setSpecialWarnings(res);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleLogWarning = async newWarningData => {
+    let warningData = {};
+    let warningsArray = null;
+    if (newWarningData.bothTriggered) {
+      warningsArray = Object.entries(newWarningData)
+        .filter(([key]) => key !== 'issueBlueSquare' && key !== 'bothTriggered')
+        .map(([title, color]) => ({
+          userId: props?.match?.params?.userId,
+          iconId: uuidv4(),
+          color: color.color,
+          date: moment().format('MM/DD/YYYY'), // Use a dynamic timestamp or pass it explicitly
+          description: title, // Use the title as the description
+        }));
+    } else {
+      warningData = {
+        description: newWarningData.title,
+        color: newWarningData.colorAssigned,
+        iconId: uuidv4(),
+        date: moment().format('MM/DD/YYYY'),
+      };
+    }
+
+    warningData = {
+      ...warningData,
+      warningsArray,
+      issueBlueSquare: newWarningData.issueBlueSquare,
+      userId: props?.match?.params?.userId,
+      monitorData: {
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        email: userProfile.email,
+        userId: props.auth.user.userid,
+      },
+    };
+
+    let toastMessage = '';
+    dispatch(postWarningByUserId(warningData))
+      .then(response => {
+        if (response.error) {
+          toast.error('Warning failed to log try again');
+          return;
+        } else {
+          setShowModal(false);
+          fetchSpecialWarnings();
+
+          if (warningData.color === 'blue') {
+            toastMessage = 'Successfully logged and tracked';
+          } else if (warningData.color === 'yellow') {
+            toastMessage = 'Warning successfully logged';
+          } else {
+            toastMessage = 'Successfully logged and Blue Square issued';
+          }
+        }
+        toast.success(toastMessage);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   // const handleSubmit = async updatedUserProfile => {
@@ -817,14 +912,14 @@ const onAssignProject = assignedProject => {
     projects: projectsIds,  // single source of truth
   };
 
-  console.log('Submitting UserProfile:', userProfileToUpdate);
 
   // update tasks (optionally await if you need sequencing)
   for (let i = 0; i < updatedTasks.length; i += 1) {
     const updatedTask = updatedTasks[i];
     const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
     // consider await here if order matters
-    axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+    // eslint-disable-next-line no-console
+    axios.put(url, updatedTask.updatedTask).catch(err => console.error(err));
   }
 
   try {
@@ -837,6 +932,7 @@ const onAssignProject = assignedProject => {
     setSaved(false);
   } catch (err) {
     if (err?.response?.data?.error) {
+      // eslint-disable-next-line no-alert
       alert(err.response.data.error.join('\n'));
     }
     return err;
@@ -857,16 +953,6 @@ const onAssignProject = assignedProject => {
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
-
-  /* useEffect functions */
-  useEffect(() => {
-    getCurretLoggedinUserEmail();
-    dispatch(fetchAllProjects());
-    dispatch(getAllUserTeams());
-    dispatch(getAllTimeOffRequests());
-    dispatch(getAllTeamCode());
-    canEditTeamCode && getAllTeamCode();
-  }, []);
 
   useEffect(() => {
     userProfileRef.current = userProfile;
@@ -1098,13 +1184,13 @@ const onAssignProject = assignedProject => {
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
+  const canManageHGNAccessSetup = props.hasPermission('manageHGNAccessSetup');
   const canEditVisibility = props.hasPermission('toggleInvisibility');
   const canSeeReports = props.hasPermission('getReports');
   const { role: userRole } = userProfile;
   const canResetPassword =
-    props.hasPermission('resetPassword') && !(userRole === 'Administrator' || userRole === 'Owner'); 
+    props.hasPermission('updatePassword')&& !(userProfile.role === 'Administrator' || userProfile.role === 'Owner');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
-
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner' || userProfile.role === 'Administrator'
@@ -1167,7 +1253,9 @@ const onAssignProject = assignedProject => {
           userProfile={userProfile}
           id={id}
           handleLinkModel={props.handleLinkModel}
-          role={requestorRole}
+          role={requestorRole}      
+          handleLogWarning={handleLogWarning}
+          specialWarnings={specialWarnings}
         />
       )}
       <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
@@ -1364,20 +1452,19 @@ const onAssignProject = assignedProject => {
             {canSeeReports && (
               <span className="mr-2">
                 <Link
-                  className="team-member-tasks-user-report-link"
-                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                  className={teamStyles["team-member-tasks-user-report-link"]}
                   to={`/peoplereport/${userProfile._id}`}
                   onClick={event => handleReportClick(event, userProfile._id)}
                 >
                   <img
                     src="/report_icon.png"
                     alt="reportsicon"
-                    className="team-member-tasks-user-report-link-image"
+                    className={teamStyles["team-member-tasks-user-report-link-image"]}
                   />
                 </Link>
               </span>
             )}
-            {(requestorRole === 'Owner' || requestorRole === 'Administrator') && (
+            {(canManageHGNAccessSetup) && (
               <span className="mr-2">
                 <Button
                   color="link"
@@ -1428,6 +1515,7 @@ const onAssignProject = assignedProject => {
             ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
               <Button
                 onClick={() => {
+                  console.log(summaryIntro)
                   navigator.clipboard.writeText(summaryIntro);
                   toast.success('Summary Intro Copied!');
                 }}
@@ -1676,12 +1764,12 @@ const onAssignProject = assignedProject => {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {canResetPassword && (
+              {canResetPassword && !isUserSelf &&  (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canUpdatePassword
+                  canUpdatePassword={canResetPassword}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1809,7 +1897,7 @@ const onAssignProject = assignedProject => {
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
-                      {canResetPassword && (
+                      {canUpdatePassword && canEdit && !isUserSelf && (
                         <ResetPasswordButton
                           className="mr-1 btn-bottom"
                           user={userProfile}

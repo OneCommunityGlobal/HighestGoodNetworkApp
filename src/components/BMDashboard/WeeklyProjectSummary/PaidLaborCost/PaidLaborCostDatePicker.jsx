@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Info } from 'lucide-react';
 import { format, startOfDay, isAfter, isBefore, isEqual } from 'date-fns';
-import './PaidLaborCost.css';
+import './PaidLaborCost.module.css';
 
 function PaidLaborCostDatePicker({
   startDate,
