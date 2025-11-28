@@ -1,18 +1,19 @@
 /* Dark mode placeholder style */
-input.dark-mode-placeholder::placeholder {
+.darkModePlaceholder::placeholder {
   color: #ffffff;
-  opacity: 0.7; /* Optional: adjust to make it a bit subtle */
+  opacity: 0.7;
 }
-.no-jobs-notice img {
+
+.noJobsNotice img {
   filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-.job-placeholder button,
-.no-jobs-notice button {
+.jobPlaceholder button,
+.noJobsNotice button {
   min-width: 120px;
 }
 
-.job-location-tag {
+.jobLocationTag {
   padding: 6px 12px;
   border-radius: 20px;
   font-weight: 600;
@@ -22,51 +23,22 @@ input.dark-mode-placeholder::placeholder {
   font-size: 0.9rem;
 }
 
-.job-location-tag.remote {
+.jobLocationTagRemote {
   background-color: #d1ecf1;
   color: #0c5460;
 }
 
-.job-location-tag.in-person {
+.jobLocationTagInPerson {
   background-color: #ffeb3b;
   color: #333;
 }
 
-.job-details {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.job-requirements h4 {
-  margin-bottom: 0.25rem;
-}
-
-.job-requirements ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-  margin-bottom: 1rem;
-}
-
-.apply-now-btn {
-  background-color: #007bff;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  border-radius: 4px;
-  text-align: center;
-}
-
-.apply-now-btn:hover {
-  background-color: #0056b3;
-}
-.job-ad a {
+.jobAd a {
   display: flex;
   justify-content: center;
 }
 
-.pagination-controls {
+.paginationControls {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -74,19 +46,19 @@ input.dark-mode-placeholder::placeholder {
   margin-top: 1rem;
 }
 
-.pagination-controls button {
+.paginationControls button {
   padding: 0.4rem 0.8rem;
   font-size: 1rem;
   cursor: pointer;
   border-radius: 4px;
 }
 
-.pagination-controls button:disabled {
+.paginationControls button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-.job-header {
+.jobHeader {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -94,52 +66,51 @@ input.dark-mode-placeholder::placeholder {
   color: #fff;
 }
 
-.job-landing {
+.jobLanding {
   width: 100%;
   height: 100%;
 }
 
-.job-landing .job-header img {
+.jobLanding .jobHeader img {
   height: auto;
   margin: 0 auto;
   flex-direction: column;
 }
 
-.job-navbar {
+.jobNavbar {
   width: 100%;
   display: flex;
-  justify-content: center; /* keep items together */
+  justify-content: center;
   align-items: center;
   margin-bottom: 20px;
   background-color: #9c0;
   padding: 20px;
-  flex-wrap: wrap; /* allows wrapping on very small screens */
-  gap: 12px; /* space between form and dropdown */
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.search-form {
+.searchForm {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.job-select {
+.jobSelect {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
   background-color: #fff;
   font-size: 14px;
-  min-width: 200px; /* ensures dropdown has consistent width */
+  min-width: 200px;
 }
 
-
-.search-form input {
+.searchForm input {
   padding: 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
-.search-form button {
+.searchForm button {
   padding: 6px 10px;
   border: none;
   border-radius: 2px;
@@ -147,37 +118,36 @@ input.dark-mode-placeholder::placeholder {
   font-size: 14px;
 }
 
-.job-list {
+.jobList {
   display: flex;
   flex-direction: column;
-  grid-template-columns: 1fr; /* Column layout by default */
+  grid-template-columns: 1fr;
   gap: 20px;
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
 }
 
-.job-ad {
+.jobAd {
   background: #fff;
   border: 1px solid #ccc;
-  padding: 30px 25px; /* Increased padding for bigger box */
+  padding: 30px 25px;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex: 0 1 350px; /* Bigger min width */
-  /* Max width to keep uniform size */
+  flex: 0 1 350px;
   transition: transform 0.3s, box-shadow 0.3s;
   margin-bottom: 30px;
 }
 
-.job-ad:hover {
+.jobAd:hover {
   transform: translateY(-8px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
 }
 
-.job-role-name {
+.jobRoleName {
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 1rem;
@@ -185,7 +155,7 @@ input.dark-mode-placeholder::placeholder {
   color: #0069d9;
 }
 
-.job-details {
+.jobDetails {
   font-size: 1.1rem;
   color: #555;
   line-height: 1.6;
@@ -193,14 +163,14 @@ input.dark-mode-placeholder::placeholder {
   text-align: center;
 }
 
-.job-requirements h4 {
+.jobRequirements h4 {
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #333;
   text-align: left;
 }
 
-.job-requirements ul {
+.jobRequirements ul {
   list-style-type: disc;
   padding-left: 1.75rem;
   margin-bottom: 1.5rem;
@@ -208,7 +178,7 @@ input.dark-mode-placeholder::placeholder {
   color: #444;
 }
 
-.apply-now-btn {
+.applyNowBtn {
   background-color: #007bff;
   color: white;
   padding: 0.75rem 1.5rem;
@@ -217,24 +187,24 @@ input.dark-mode-placeholder::placeholder {
   font-size: 1.1rem;
   border-radius: 6px;
   text-align: center;
-  align-self: center; /* Center button */
+  align-self: center;
   width: fit-content;
   transition: background-color 0.3s;
 }
 
-.apply-now-btn:hover {
+.applyNowBtn:hover {
   background-color: #0056b3;
 }
 
-.job-grid {
+.jobGrid {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 30px; /* More gap for bigger cards */
+  gap: 30px;
   margin: 0 auto;
 }
 
-.category-icon {
+.categoryIcon {
   width: 150px;
   height: 150px;
   object-fit: contain;
@@ -243,17 +213,18 @@ input.dark-mode-placeholder::placeholder {
 }
 
 @media (max-width: 600px) {
-  .category-icon {
+  .categoryIcon {
     width: 100px;
     height: 100px;
   }
 }
 
 @media screen and (min-width: 768px) {
-  .job-grid {
+  .jobGrid {
     justify-content: center;
   }
-  .job-ad {
+  .jobAd {
     flex: 0 1 400px;
   }
 }
+

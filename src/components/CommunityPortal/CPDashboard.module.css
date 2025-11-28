@@ -7,11 +7,14 @@
 
 .dashboard-container {
   padding: 40px 10px;
-  max-width: 1400px;
   margin: 0 auto;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 0.2px;
+  width: 100%;
 }
 
 .dashboard-header {
@@ -97,14 +100,14 @@
 /* blue circular search button inside the bar */
 .dashboard-search-icon-btn {
   position: absolute;
-  right: 1px;
-  top: 50%;
+  right: 1%;
+  top: 48%;
   transform: translateY(-50%);
   width: 34px;
   height: 34px;
   border-radius: 50%;
   cursor: pointer;
-  background: #ffffff;          /* 🔹 icon background now white */
+  background: transparent;          /* 🔹 icon background now white */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -141,7 +144,6 @@
 .filter-section h4 {
   font-size: 1.8rem;
   color: #2c3e50;
-  margin-bottom: 20px;
   font-weight: 600;
 }
 
@@ -153,7 +155,6 @@
   width: 100%;
   height: auto;
   font-size: 1rem;
-  background: #ffffff;
   transition: all 0.3s ease;
 }
 
@@ -176,10 +177,10 @@
 .dashboard-main {
   width: 65%;
   padding: 30px;
-  background: #ffffff;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px #0000001a;
 }
+
 
 .section-title {
   font-size: 2.2rem;
@@ -196,6 +197,12 @@
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.event-card-col {
+  display: flex;
+}
+
+
 
 .event-card:hover {
   transform: scale(1.05);
