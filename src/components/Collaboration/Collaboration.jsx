@@ -4,6 +4,7 @@ import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
+
 function Collaboration() {
   const [searchTerm, setSearchTerm] = useState('');
   const [jobAdsQueryTerm, setJobAdsQueryTerm] = useState('');
@@ -14,7 +15,6 @@ function Collaboration() {
   const [totalPages, setTotalPages] = useState(0);
   const [categories, setCategories] = useState([]);
   const [positions, setPositions] = useState([]);
-
   const [summaries, setSummaries] = useState([]);
   const [loading, setLoading] = useState();
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -22,7 +22,6 @@ function Collaboration() {
 
   const fetchSummaries = async (givenSearchTerm, givenCategory, givenPosition) => {
     setLoading(true);
-
     try {
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?search=${encodeURIComponent(
@@ -30,9 +29,6 @@ function Collaboration() {
         )}&category=${encodeURIComponent(givenCategory)}&position=${encodeURIComponent(
           givenPosition,
         )}&_=${Date.now()}`,
-        {
-          method: 'GET',
-        },
       );
 
       if (!response.ok) {
@@ -40,15 +36,15 @@ function Collaboration() {
       }
 
       const data = await response.json();
-
       setSummaries(data);
       setLoading(false);
     } catch (error) {
       toast.error('Error fetching summaries');
     }
   };
+
   const fetchJobAds = async (givenSearchTerm, givenCategory, givenPosition) => {
-    const adsPerPage = 10; // 20; previous value
+    const adsPerPage = 10;
     setLoading(true);
     try {
       const response = await fetch(
@@ -57,9 +53,6 @@ function Collaboration() {
         )}&category=${encodeURIComponent(givenCategory)}&position=${encodeURIComponent(
           givenPosition,
         )}&_=${Date.now()}`,
-        {
-          method: 'GET',
-        },
       );
 
       if (!response.ok) {
@@ -77,9 +70,8 @@ function Collaboration() {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-      if (!response.ok) throw new Error(`Failed to fetch categories: ${response.statusText}`);
-
+      const response = await fetch(`${ApiEndpoint}/jobs/categories`);
+      if (!response.ok) throw new Error(`Failed to fetch categories`);
       const data = await response.json();
       const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
       setCategories(sortedCategories);
@@ -90,11 +82,8 @@ function Collaboration() {
 
   const fetchPositions = async () => {
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/positions`, { method: 'GET' });
-      if (!response.ok) {
-        throw new Error(`Failed to fetch positions: ${response.statusText}`);
-      }
-
+      const response = await fetch(`${ApiEndpoint}/jobs/positions`);
+      if (!response.ok) throw new Error(`Failed to fetch positions`);
       const data = await response.json();
       const sortedPositions = data.positions.sort((a, b) => a.localeCompare(b));
       setPositions(sortedPositions);
@@ -103,13 +92,11 @@ function Collaboration() {
     }
   };
 
-  const handleSearch = event => {
-    setSearchTerm(event.target.value);
-  };
+  const handleSearch = e => setSearchTerm(e.target.value);
 
   const handleSubmit = event => {
-    setJobAds([]);
     event.preventDefault();
+    setJobAds([]);
     setSummaries(null);
     setCurrentPage(1);
     setJobAdsQueryTerm(searchTerm);
@@ -117,20 +104,18 @@ function Collaboration() {
     fetchJobAds(searchTerm, category, position);
   };
 
-  const handleCategoryChange = event => {
-    const selectedValue = event.target.value;
-
-    setCategory(selectedValue);
-    fetchSummaries(searchTerm, selectedValue, position);
-    fetchJobAds(searchTerm, selectedValue, position);
+  const handleCategoryChange = e => {
+    const val = e.target.value;
+    setCategory(val);
+    fetchSummaries(searchTerm, val, position);
+    fetchJobAds(searchTerm, val, position);
   };
 
-  const handlePositionChange = event => {
-    const selectedValue = event.target.value;
-
-    setPosition(selectedValue);
-    fetchSummaries(searchTerm, category, selectedValue);
-    fetchJobAds(searchTerm, category, selectedValue);
+  const handlePositionChange = e => {
+    const val = e.target.value;
+    setPosition(val);
+    fetchSummaries(searchTerm, category, val);
+    fetchJobAds(searchTerm, category, val);
   };
 
   const handleRemoveSearchTerm = () => {
@@ -152,11 +137,12 @@ function Collaboration() {
     fetchJobAds(searchTerm, category, '');
   };
 
-  const handleShowSummaries = async () => {
+  const handleShowSummaries = () => {
     fetchJobAds(searchTerm, category, position);
     fetchSummaries(searchTerm, category, position);
     setHideSummaries(!hideSummaries);
   };
+
   function renderContent() {
     if (loading) return 'Loading';
     if (hideSummaries)
@@ -169,25 +155,20 @@ function Collaboration() {
                   src={`${ad.imageUrl}`}
                   onError={e => {
                     e.target.onerror = null;
-                    if (ad.category === 'Engineering') {
-                      e.target.src =
-                        'https://img.icons8.com/external-prettycons-flat-prettycons/200/external-job-social-media-prettycons-flat-prettycons.png';
-                    } else if (ad.category === 'Marketing') {
-                      e.target.src =
-                        'https://img.icons8.com/external-justicon-lineal-color-justicon/200/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png';
-                    } else if (ad.category === 'Design') {
-                      e.target.src = 'https://img.icons8.com/arcade/200/design.png';
-                    } else if (ad.category === 'Finance') {
-                      e.target.src = 'https://img.icons8.com/cotton/200/merchant-account--v2.png';
-                    } else {
-                      e.target.src =
-                        'https://img.icons8.com/cotton/200/working-with-a-laptop--v1.png';
-                    }
+                    e.target.src =
+                      ad.category === 'Engineering'
+                        ? 'https://img.icons8.com/external-prettycons-flat-prettycons/200/external-job-social-media-prettycons-flat-prettycons.png'
+                        : ad.category === 'Marketing'
+                        ? 'https://img.icons8.com/external-justicon-lineal-color-justicon/200/external-marketing-marketing-and-growth-justicon-lineal-color-justicon-1.png'
+                        : ad.category === 'Design'
+                        ? 'https://img.icons8.com/arcade/200/design.png'
+                        : ad.category === 'Finance'
+                        ? 'https://img.icons8.com/cotton/200/merchant-account--v2.png'
+                        : 'https://img.icons8.com/cotton/200/working-with-a-laptop--v1.png';
                   }}
-                  alt={ad.title || 'Job Position'}
+                  alt={ad.title}
                   loading="lazy"
                 />
-
                 <a href={`${ad.jobDetailsLink}`} target="_blank" rel="noreferrer">
                   <h5>
                     {ad.title} - {ad.category}
@@ -196,10 +177,10 @@ function Collaboration() {
               </div>
             ))}
           </div>
+
           <div className={styles['pagination']}>
             {Array.from({ length: totalPages }, (_, i) => (
               <button
-                type="button"
                 key={i}
                 onClick={() => setCurrentPage(i + 1)}
                 disabled={currentPage === i + 1}
@@ -214,6 +195,7 @@ function Collaboration() {
           <h2>No job ads found.</h2>
         </div>
       );
+
     return summaries && summaries.jobs && summaries.jobs.length > 0 ? (
       <div className={styles['jobs-summaries-list']}>
         {summaries.jobs.map(summary => (
@@ -229,7 +211,6 @@ function Collaboration() {
             </div>
           </div>
         ))}
-        {/* Total jobs count */}
         <div className={styles['job-summary-total']}>
           <h3>Total Jobs: {summaries.jobs.length}</h3>
         </div>
@@ -240,17 +221,19 @@ function Collaboration() {
       </div>
     );
   }
+
   useEffect(() => {
     fetchJobAds(searchTerm, category, position);
     fetchCategories();
     fetchPositions();
-  }, [currentPage]); // Re-fetch job ads when page or category changes
+  }, [currentPage]);
 
   const filters = [
     jobAdsQueryTerm && { label: jobAdsQueryTerm, onRemove: handleRemoveSearchTerm },
     category && { label: category, onRemove: handleRemoveCategory },
     position && { label: position, onRemove: handleRemovePosition },
   ].filter(Boolean);
+
   return (
     <div
       className={`${styles['job-landing']} ${
@@ -266,6 +249,7 @@ function Collaboration() {
           <img src={OneCommunityImage} alt="One Community Logo" />
         </a>
       </div>
+
       <div className={styles['user-collaboration-container']}>
         <nav className={styles['job-navbar']}>
           <form className={styles['search-form']}>
@@ -273,48 +257,40 @@ function Collaboration() {
               type="text"
               placeholder="Search by title..."
               value={searchTerm}
-              name="searchTer"
               onChange={handleSearch}
             />
             <button className={`${styles.btn} btn-primary`} type="submit" onClick={handleSubmit}>
               Go
             </button>
           </form>
-          <select
-            className={styles['job-select']}
-            value={category}
-            onChange={handleCategoryChange}
-            name="selectCategory"
-          >
+
+          <select className={styles['job-select']} value={category} onChange={handleCategoryChange}>
             <option value="">Select from Categories</option>
-            {categories.map(specificCategory => (
-              <option key={specificCategory} value={specificCategory}>
-                {specificCategory}
+            {categories.map(c => (
+              <option key={c} value={c}>
+                {c}
               </option>
             ))}
           </select>
-          <select
-            className={styles['job-select']}
-            value={position}
-            name="SelectPosition"
-            onChange={handlePositionChange}
-          >
+
+          <select className={styles['job-select']} value={position} onChange={handlePositionChange}>
             <option value="">Select from Positions</option>
-            {positions.map(specificPosition => (
-              <option key={specificPosition} value={specificPosition}>
-                {specificPosition}
+            {positions.map(p => (
+              <option key={p} value={p}>
+                {p}
               </option>
             ))}
           </select>
+
           <button
             className={`${styles.btn} btn-primary`}
             type="button"
             onClick={handleShowSummaries}
-            id="SummariesButton"
           >
             {hideSummaries ? 'Show Summaries' : 'Hide Summaries'}
           </button>
         </nav>
+
         <div className={styles['job-queries-title']}>
           {!jobAdsQueryTerm && !category && !position ? (
             <h3 className={styles['job-query']}>Listing all job ads.</h3>
@@ -327,12 +303,10 @@ function Collaboration() {
         </div>
 
         <div className={styles['filter-chips-container']}>
-          {/*onClick={filter.onRemove} */}
           {filters.map((filter, index) => (
             <div key={index} className={styles['filter-chips']}>
-              <h4 className={`${styles['filter-chip-heading']}`}>{filter.label}</h4>
+              <h4 className={styles['filter-chip-heading']}>{filter.label}</h4>
               <button
-                className={`btn btn-primary`}
                 type="button"
                 onClick={e => {
                   e.stopPropagation();
@@ -350,7 +324,8 @@ function Collaboration() {
             </div>
           ))}
         </div>
-        <div> {renderContent()}</div>
+
+        <div>{renderContent()}</div>
       </div>
     </div>
   );
