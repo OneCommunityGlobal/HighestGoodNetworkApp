@@ -100,7 +100,7 @@ export function CPDashboard() {
         </div>
       </header>
 
-      <Row>
+      <Row className={styles['dashboard-content']}>
         <Col md={3} className={styles['dashboard-sidebar']}>
           <div className={styles['filter-section']}>
             <h4>Search Filters</h4>
