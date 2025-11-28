@@ -10,7 +10,6 @@ import ToolStatusDonutChart from './ToolStatusDonutChart/ToolStatusDonutChart';
 import PaidLaborCost from './PaidLaborCost/PaidLaborCost';
 import { fetchAllMaterials } from '../../../actions/bmdashboard/materialsActions';
 import QuantityOfMaterialsUsed from './QuantityOfMaterialsUsed/QuantityOfMaterialsUsed';
-import ToolsStoppageHorizontalBarChart from '../Tools/ToolsStoppageHorizontalBarChart';
 import ProjectRiskProfileOverview from './ProjectRiskProfileOverview';
 import IssuesBreakdownChart from './IssuesBreakdownChart';
 import InjuryCategoryBarChart from './GroupedBarGraphInjurySeverity/InjuryCategoryBarChart';
@@ -25,6 +24,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 
 const projectStatusButtons = [
   {
@@ -287,9 +287,6 @@ function WeeklyProjectSummary() {
         className: 'full',
         content: (
           <>
-            <div className={`${styles.weeklyProjectSummaryCard} ${styles.wideCard}`}>
-              <ToolsStoppageHorizontalBarChart darkMode={darkMode} />
-            </div>
             {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
             <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolStatusDonutChart />
@@ -302,6 +299,12 @@ function WeeklyProjectSummary() {
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
               <SupplierPerformanceGraph />
+            </div>
+            <div
+              className="weekly-project-summary-card normal-card"
+              style={{ minHeight: '300px', gridColumn: 'span 2' }}
+            >
+              <ToolsStoppageHorizontalBarChart />
             </div>
           </>
         ),
