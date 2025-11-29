@@ -16,11 +16,6 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode {
-  background-color: var(--section-bg, #2c2c2c);
-  color: white;
-}
-
 .tools-horizontal-bar-chart-title {
   font-size: 16px;
   font-weight: 600;
@@ -133,7 +128,7 @@
   font-size: 12px;
   font-weight: 500;
   margin-bottom: 4px;
-  color: #555;
+  color: var(--label-color);
 }
 
 .tools-horizontal-bar-chart-card.tools-horizontal-bar-chart-dark-mode .tools-horizontal-bar-chart-filter-group label {
@@ -175,7 +170,7 @@
 
 .tools-horizontal-bar-chart-date-picker-group span {
   font-size: 12px;
-  color: #666;
+  color: var(--text-color);
   white-space: nowrap;
 }
 

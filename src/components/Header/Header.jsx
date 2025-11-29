@@ -66,6 +66,7 @@ import BellNotification from './BellNotification';
 import { getUserProfile } from '../../actions/userProfile';
 import PermissionWatcher from '../Auth/PermissionWatcher';
 import DisplayBox from '../PRPromotions/DisplayBox';
+import PropTypes from 'prop-types';
 
 export function Header(props) {
   const location = useLocation();
@@ -104,7 +105,8 @@ export function Header(props) {
     props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('setFinalDay', !isAuthUser && canInteractWithViewingUser);
 
   // Badges
   const canAccessBadgeManagement =
@@ -158,6 +160,7 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
+   const [isAckLoading, setIsAckLoading] = useState(false);
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
@@ -245,10 +248,10 @@ export function Header(props) {
       props.getAllRoles();
     }
     // Fetch unread notification
-    if (isAuthenticated && userId) {
-      dispatch(getUnreadUserNotifications(userId));
+    if (isAuthenticated && displayUserId) {
+      dispatch(getUnreadUserNotifications(displayUserId));
     }
-  }, []);
+  }, [isAuthenticated, displayUserId, roles.length]);
 
   useEffect(() => {
     if (props.notification?.error) {
@@ -639,14 +642,14 @@ export function Header(props) {
                       props.userProfile.email,
                       props.userProfile.email,
                     ) && (
-                      <DropdownItem
-                        tag={Link}
-                        to={`/updatepassword/${displayUserId}`}
-                        className={fontColor}
-                      >
-                        {UPDATE_PASSWORD}
-                      </DropdownItem>
-                    )}
+                        <DropdownItem
+                          tag={Link}
+                          to={`/updatepassword/${displayUserId}`}
+                          className={fontColor}
+                        >
+                          {UPDATE_PASSWORD}
+                        </DropdownItem>
+                      )}
                     <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
@@ -727,7 +730,28 @@ const mapStateToProps = state => ({
   notification: state.notification,
   darkMode: state.theme.darkMode,
 });
-
+Header.propTypes = {
+  hasPermission: PropTypes.func.isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    user: PropTypes.shape({
+      userid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      role: PropTypes.string
+    }),
+    firstName: PropTypes.string,
+    profilePic: PropTypes.string
+  }),
+  getHeaderData: PropTypes.func,
+  getAllRoles: PropTypes.func,
+  getWeeklySummaries: PropTypes.func,
+  role: PropTypes.shape({
+    roles: PropTypes.array
+  }),
+  notification: PropTypes.object,
+  userProfile: PropTypes.object,
+  darkMode: PropTypes.bool,
+  taskEditSuggestionCount: PropTypes.number,
+};
 export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
