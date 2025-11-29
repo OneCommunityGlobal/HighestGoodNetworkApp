@@ -1,5 +1,5 @@
 .reviewsInsightContainer {
-  padding: 20px;
+  padding: 20px 20px 60px;
   font-family: Arial, sans-serif;
   background-color: #ffffff;
   color: #000000;
@@ -7,109 +7,144 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-.reviewsInsightContainer h1 {
- color: #000000;
+.heading {
+  color: #000000;
+  text-align: center;
 }
 
-:global(.dark-mode) .reviewsInsightContainer h1 {
+.darkModeForeground {
   color: #f1f1f1;
 }
 
-:global(.dark-mode) .reviewsInsightContainer {
+.darkModeBackground{
   background-color: #1b2a41;
-  color: #f1f1f1;
-}
-
-@media screen and (max-width: 1080px) {
-  .riGraphs {
-    flex-direction: column;
-    gap: 5px;
-  }
-
-  .riActionDoneGraph{
-    width: 100% !important;
-    height: 500px;
-  }
-
-  .riQualityGraph {
-    width: 100% !important;
-  }
-
-  .riGraph{
-    min-height: 300px;
-  }
 }
 
 .riFilters {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-:global(.dark-mode) .riFilters {
-  background-color: #1c2541;
-  color: #f1f1f1;
-  box-shadow: 2px 2px 4px 1px black;
+  margin-bottom: 15px;
   padding: 10px;
-  border-radius: 8px;
-}
-
-.riFilterItem {
-  display: flex;
-  flex-direction: column;
-  margin-right: 20px;
-}
-
-:global(.dark-mode) :global(#ri-duration-filter) {
-  background-color: #1c2541;
-  box-shadow: 2px 2px 4px 1px black;
-  border: none;
-  color: #f1f1f1;
-}
-
-.riFilterItem :global(label) {
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-:global(.dark-mode) .riFilterItem :global(label) {
-  color: #f1f1f1;
-}
-
-.riSelectedTeams :global(p) {
-  margin-bottom: 20px;
-  font-style: italic;
-  text-align: center;
-  font-size: 24px;
-}
-
-.noDataRi {
-  text-align: center;
-  font-size: 18px;
-  margin-top: 20px;
-}
-
-:global(.dark-mode) .riSelectedTeams :global(p) {
-  color: #f1f1f1;
 }
 
 .riGraphs {
   display: flex;
   justify-content: space-around;
 }
+.riFilterItem {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 25px;
+  min-width: 23ch;
+}
+
+.riDurationFilter {
+  min-height: 40px;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2px 8px;
+  box-sizing: border-box;
+  box-shadow: 2px 2px 4px 1px black;
+}
+
+.riDurationFilterDarkMode{
+  background-color: #1c2541;
+  box-shadow: 2px 2px 4px 1px black;
+  border: none;
+  color: #f1f1f1;
+}
+
+.riFilterItemLabel {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.riSelectedTeams {
+  margin: 20px 0 40px;
+  font-style: italic;
+  text-align: center;
+  font-size: 24px;
+}
+
+.riToggleWrap {
+  display: inline-flex;
+  gap: 13px;
+  white-space: nowrap;
+}
+
+.riDataviewTitle {
+  font-weight: 600;
+  font-size: 16px;
+  margin-right: 4px;
+}
+
+.riSwitch {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  width: 42px;
+  height: 24px;
+}
+
+.riSwitchInput {
+  opacity: 1;
+  width: 0;
+  height: 0;
+}
+
+.riSwitch input:checked + .riSlider::before {
+  transform: translateX(18px);
+}
+
+.riSlider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #1c1c1c;
+  border-radius: 999px;
+  transition: background 0.2s ease;
+}
+
+.riSlider::before {
+  content: '';
+  position: absolute;
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+.riModeLabel {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: #4a4a4a;
+}
+
+.riSliderDarkMode{
+  background: #e6e6e6;
+}
+
+.riSliderDarkMode::before{
+  background: #1c2541;
+}
+
+.noData {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}
 
 .riQualityGraph {
   width: 50%;
   display: flex;
   flex-direction: column;
-}
-
-.riQualityGraph h2 {
-  color: #000000;
-}
-
-:global(.dark-mode) .riQualityGraph h2 {
-  color: #f1f1f1;
 }
 
 .riCharts {
@@ -130,33 +165,16 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-:global(.dark-mode) .riChart {
+.riChartDarkMode{
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
   border: none;
 }
-
-.riChart h3 {
-  color: #000000;
-}
-
-:global(.dark-mode) .riChart h3 {
-  color: #f1f1f1;
-}
-
 .riActionDoneGraph {
   width: 50%;
   display: flex;
   flex-direction: column;
-}
-
-.riActionDoneGraph h2 {
-  color: #000000;
-}
-
-:global(.dark-mode) .riActionDoneGraph h2 {
-  color: #f1f1f1;
 }
 
 .riGraph {
@@ -170,42 +188,16 @@
   transition: background-color 0.3s, color 0.3s;
 }
 
-:global(.dark-mode) .riGraph {
+.riGraphDarkMode{
   background-color: #1c2541;
   color: #f1f1f1;
   box-shadow: 2px 2px 4px 1px black;
   border: none;
 }
 
-.riGraph :global(canvas) {
-  height: auto !important;
+.riGraph canvas {
+  height: 100% !important;
 }
-
-.riGraphPlaceholder {
-  height: 300px;
-  background-color: #f0f0f0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  font-size: 14px;
-}
-
-:global(.dark-mode) .riGraphPlaceholder {
-  background-color: #1c1c1c;
-  color: #f1f1f1;
-}
-
-.riTeamName {
-  font-weight: bold;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-:global(.dark-mode) .riTeamName {
-  color: #f1f1f1;
-}
-
 .riLoading {
   text-align: center;
   font-size: 18px;
@@ -219,3 +211,22 @@
 }
 
 
+@media screen and (max-width: 1080px) {
+  .riGraphs {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .riActionDoneGraph {
+    width: 100% !important;
+    height: 500px;
+  }
+
+  .riQualityGraph {
+    width: 100% !important;
+  }
+
+  .riGraph {
+    min-height: 300px;
+  }
+}

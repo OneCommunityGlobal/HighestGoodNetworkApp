@@ -10,7 +10,7 @@
   justify-content: space-between;
 }
 
-.darkMode {
+.toolDonutWrapperDark {
   --donut-text-color: #fff;
   --legend-text-color: #fff;
 }
@@ -85,5 +85,4 @@
     width: 100%;
   }
 }
-
 

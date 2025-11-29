@@ -198,10 +198,11 @@ export default function ToolStatusDonutChart() {
     chartHeight = 220;
   }
 
-  return (
-    <div className={`${styles.toolDonutWrapper} ${darkMode ? styles.darkMode : ''}`}>
-      <h3 className={styles.toolDonutTitle}>Proportion of Tools/Equipment</h3>
+  const wrapperClass = `${styles.toolDonutWrapper} ${darkMode ? styles.toolDonutWrapperDark : ''}`;
 
+  return (
+    <div className={wrapperClass}>
+      <h3 className={styles.toolDonutTitle}>Proportion of Tools/Equipment</h3>
       <div className={styles.toolDonutFilters}>
         <div className={styles.filterItem}>
           <label htmlFor="tool-select" className={styles.filterLabel}>
