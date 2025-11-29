@@ -1,0 +1,151 @@
+.job-details-landing {
+  display:flex;
+  flex-direction:column;
+  flex-wrap: wrap;
+  align-content: center;
+}
+.job-details-header {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.job-details-container {
+  display:flex;
+  width: 90%;
+  margin: 0 auto;
+  flex-direction: column;
+  align-items: stretch; /* center */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  /* border-radius: 10px; */
+}
+.job-details-card {  
+  display:flex;
+  flex-direction: column;
+ /* flex-wrap:wrap;
+  /*width:70%; */
+  border: 1px solid #ddd;
+  margin:10px;
+  padding:10px;
+  /*justify-content:center;
+  align-items: center; */
+  
+  text-align: justify;
+  font-weight: 500;
+  font-size: 1.5rem;     
+  line-height: 1.6;  
+  /* width: 100%; */
+}
+.job-details-card p {   
+  font-size: 30px;
+}
+.job-details-card ul {
+  text-align: left;
+  padding-left: 1.5rem;
+  list-style-position: outside; /* keep bullets outside text */
+ }
+.job-details-image {
+  width:100%;
+  height:100%;
+}
+.lightModeContainer {
+  background-color:#ffffff;
+  color:#000000;
+  margin:10px;
+  padding:10px;
+
+}
+.darkModeContainer {
+  background-color:#1e1e1e;
+  color:#ffffff;
+  margin:10px;
+  padding:10px;
+}
+.ApplyLink-header{
+  display:flex;
+  flex-direction: column;;
+  align-items: center;
+}
+.buttonGroup{
+  display:flex;
+  flex-direction: row;
+  justify-content:space-around;
+  gap:3px;
+  padding:15px;
+  margin:50px;
+  border-radius: 5px;
+  border: solid 2px #000000;
+}
+.buttonGroup button{
+  border:5px;
+}
+.input-error {
+  display: flex;
+  flex-direction: column;
+  gap:10px;
+  width:1000px;
+}
+iframe {
+  display:flex;
+}
+h1 {
+  width:100%;
+  margin:0 auto;
+}
+h1 img,
+h2 img,
+h3 img,
+h4 img,
+h5 img,
+h6 img,
+p img {
+  display: block;
+  height:auto;
+  width:100%; 
+  max-width: none; 
+  }
+@media (max-width: 768px) {
+h1 img,
+h2 img,
+h3 img,
+h4 img,
+h5 img,
+h6 img,
+p img {
+  display: block;
+  height:auto;
+  width:100%; 
+  max-width:none;  
+}  
+}
+.job-details-image-card {
+  display: block;
+  height:auto;
+  width:100%;
+  max-width: none;
+}
+.input-error {
+  display: flex;
+  flex-direction: column;
+}
+.upload-button {
+  display: flex;
+}
+.job-form-questions {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+  margin: 10px;
+  padding:10px;
+  justify-items: center;
+  gap: 30px;
+}
+.user-input {
+  display:flex;
+  flex-direction: row;
+}
+.error-message {
+  color: red;
+  font-size: 0.9rem;  
+}

@@ -38,5 +38,6 @@ const RoutePermissions = {
   faq: [''],
   faqManagement: ['manageFAQs'],
   accessHgnSkillsDashboard: ['accessHgnSkillsDashboard'],
+  createCollabJobAds: ['createCollabJobAds']
 };
 export default RoutePermissions;
