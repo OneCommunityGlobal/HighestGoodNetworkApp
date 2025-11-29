@@ -20,7 +20,6 @@ function CollaborationJobFilters({
 }) {
   return (
     <nav className={styles.jobNavbar}>
-      {/* LEFT SECTION: SEARCH + REORDER */}
       <div className={styles.jobNavbarLeft}>
         <form className={styles.jobSearchForm} onSubmit={handleSubmit}>
           <input
@@ -59,7 +58,6 @@ function CollaborationJobFilters({
         )}
       </div>
 
-      {/* RIGHT SECTION: CATEGORY DROPDOWN */}
       <div className={styles.jobNavbarRight} ref={dropdownRef}>
         <button
           type="button"

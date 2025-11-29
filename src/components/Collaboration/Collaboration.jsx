@@ -5,7 +5,7 @@ import styles from './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from '~/utils/URL';
 import OneCommunityImage from '../../assets/images/logo2.png';
-import CollaborationJobFilters from './CollaborationJobFilters'; // ✅ NEW IMPORT
+import CollaborationJobFilters from './CollaborationJobFilters';
 
 function Collaboration() {
   /* -------------------------------------- */
@@ -190,6 +190,43 @@ function Collaboration() {
   };
 
   /* -------------------------------------- */
+  /* RENDER HELPERS TO REMOVE DUPLICATION    */
+  /* -------------------------------------- */
+
+  const renderFilters = () => (
+    <CollaborationJobFilters
+      query={query}
+      handleSearch={handleSearch}
+      handleSubmit={handleSubmit}
+      canReorderJobs={canReorderJobs}
+      toggleReorderModal={toggleReorderModal}
+      showTooltip={showTooltip}
+      tooltipPosition={tooltipPosition}
+      dismissSearchTooltip={dismissSearchTooltip}
+      dismissCategoryTooltip={dismissCategoryTooltip}
+      dropdownRef={dropdownRef}
+      isDropdownOpen={isDropdownOpen}
+      setIsDropdownOpen={setIsDropdownOpen}
+      categories={categories}
+      selectedCategories={selectedCategories}
+      toggleCategory={toggleCategory}
+    />
+  );
+
+  const renderCategoryChips = () => (
+    <div className={styles.chipContainer}>
+      {selectedCategories.map(cat => (
+        <div key={cat} className={`${styles.chip} btn btn-secondary`}>
+          {cat}
+          <button className={styles.chipClose} onClick={() => removeCategory(cat)}>
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+
+  /* -------------------------------------- */
   /* SUMMARY VIEW                            */
   /* -------------------------------------- */
   if (summaries) {
@@ -206,35 +243,8 @@ function Collaboration() {
         </div>
 
         <div className={styles.jobContainer}>
-          <CollaborationJobFilters
-            query={query}
-            handleSearch={handleSearch}
-            handleSubmit={handleSubmit}
-            canReorderJobs={canReorderJobs}
-            toggleReorderModal={toggleReorderModal}
-            showTooltip={showTooltip}
-            tooltipPosition={tooltipPosition}
-            dismissSearchTooltip={dismissSearchTooltip}
-            dismissCategoryTooltip={dismissCategoryTooltip}
-            dropdownRef={dropdownRef}
-            isDropdownOpen={isDropdownOpen}
-            setIsDropdownOpen={setIsDropdownOpen}
-            categories={categories}
-            selectedCategories={selectedCategories}
-            toggleCategory={toggleCategory}
-          />
-
-          {/* CHIPS */}
-          <div className={styles.chipContainer}>
-            {selectedCategories.map(cat => (
-              <div key={cat} className={`${styles.chip} btn btn-secondary`}>
-                {cat}
-                <button className={styles.chipClose} onClick={() => removeCategory(cat)}>
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
+          {renderFilters()}
+          {renderCategoryChips()}
 
           {/* SUMMARY LIST */}
           <div className={styles.jobsSummariesList}>
@@ -260,7 +270,7 @@ function Collaboration() {
   }
 
   /* -------------------------------------- */
-  /* MAIN VIEW (NO SUMMARIES)               */
+  /* MAIN VIEW                              */
   /* -------------------------------------- */
   return (
     <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
@@ -275,35 +285,8 @@ function Collaboration() {
       </div>
 
       <div className={styles.jobContainer}>
-        <CollaborationJobFilters
-          query={query}
-          handleSearch={handleSearch}
-          handleSubmit={handleSubmit}
-          canReorderJobs={canReorderJobs}
-          toggleReorderModal={toggleReorderModal}
-          showTooltip={showTooltip}
-          tooltipPosition={tooltipPosition}
-          dismissSearchTooltip={dismissSearchTooltip}
-          dismissCategoryTooltip={dismissCategoryTooltip}
-          dropdownRef={dropdownRef}
-          isDropdownOpen={isDropdownOpen}
-          setIsDropdownOpen={setIsDropdownOpen}
-          categories={categories}
-          selectedCategories={selectedCategories}
-          toggleCategory={toggleCategory}
-        />
-
-        {/* CATEGORY CHIPS */}
-        <div className={styles.chipContainer}>
-          {selectedCategories.map(cat => (
-            <div key={cat} className={`${styles.chip} btn btn-secondary`}>
-              {cat}
-              <button className={styles.chipClose} onClick={() => removeCategory(cat)}>
-                ✕
-              </button>
-            </div>
-          ))}
-        </div>
+        {renderFilters()}
+        {renderCategoryChips()}
 
         {/* RESULTS */}
         {showSearchResults ? (
