@@ -1,12 +1,27 @@
 import axios from "axios";
 import { toast } from "react-toastify";
 import { ENDPOINTS } from "~/utils/URL";
-import { GET_ERRORS } from "~/constants/errors";
-import { FETCH_KNOWLEDGE_EVOLUTION_DATA_REQUEST } from "../../constants/bmdashboard/knowledgeEvolutionConstants";
+import {
+  FETCH_KNOWLEDGE_EVOLUTION_DATA_REQUEST,
+  FETCH_KNOWLEDGE_EVOLUTION_DATA_SUCCESS,
+  FETCH_KNOWLEDGE_EVOLUTION_DATA_FAILURE,
+} from "../../constants/bmdashboard/knowledgeEvolutionConstants";
 
-export const fetchKnowledgeEvolutionData = userId => {
-  return async dispatch => {
+
+const fetchKnowledgeEvolutionDataSuccess = (data) => ({
+  type: FETCH_KNOWLEDGE_EVOLUTION_DATA_SUCCESS,
+  payload: data,
+});
+
+const fetchKnowledgeEvolutionDataFailure = (error) => ({
+  type: FETCH_KNOWLEDGE_EVOLUTION_DATA_FAILURE,
+  payload: error,
+});
+
+export const fetchKnowledgeEvolutionData = (userId) => {
+  return async (dispatch) => {
     try {
+      dispatch({ type: FETCH_KNOWLEDGE_EVOLUTION_DATA_REQUEST });
       console.log("Fetching Knowledge Evolution for userId:", userId);
 
       const url = `${ENDPOINTS.KNOWLEDGE_EVOLUTION}/?studentId=${userId}`;
@@ -30,8 +45,10 @@ export const fetchKnowledgeEvolutionData = userId => {
         console.log("Error message:", err.message);
       }
 
-      dispatch(fetchKnowledgeEvolutionDataFailure(err.response?.data || { message: err.message }));
+      const errorPayload = err.response?.data || { message: err.message };
+      dispatch(fetchKnowledgeEvolutionDataFailure(errorPayload));
       toast.error(err.response?.data?.error || "Failed to fetch knowledge evolution data");
+
       return null;
     }
   };
