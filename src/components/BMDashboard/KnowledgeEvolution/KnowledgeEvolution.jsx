@@ -82,28 +82,40 @@ const KnowledgeEvolution = () => {
     });
 
     const allNodes = [subjectNode, ...courseNodes];
-    const allLinks = courseNodes.map(atom => ({
-      source: subjectNode,
-      target: atom,
-      status: atom.status,
-    }));
 
-    // LINKS
+    const allLinks = courseNodes.map(atom => {
+      const dx = atom.x - subjectNode.x;
+      const dy = atom.y - subjectNode.y;
+      const angle = Math.atan2(dy, dx);
+
+      const sourceX = subjectNode.x + subjectRadius * Math.cos(angle);
+      const sourceY = subjectNode.y + subjectRadius * Math.sin(angle);
+      const targetX = atom.x - courseRadius * Math.cos(angle);
+      const targetY = atom.y - courseRadius * Math.sin(angle);
+
+      return {
+        x1: sourceX,
+        y1: sourceY,
+        x2: targetX,
+        y2: targetY,
+        status: atom.status,
+      };
+    });
+
     svg
       .append('g')
       .selectAll('line')
       .data(allLinks)
       .enter()
       .append('line')
-      .attr('x1', d => d.source.x)
-      .attr('y1', d => d.source.y)
-      .attr('x2', d => d.target.x)
-      .attr('y2', d => d.target.y)
+      .attr('x1', d => d.x1)
+      .attr('y1', d => d.y1)
+      .attr('x2', d => d.x2)
+      .attr('y2', d => d.y2)
       .attr('stroke', d => colorMap[d.status])
       .attr('stroke-width', 2)
       .attr('stroke-dasharray', d => (d.status === 'not_started' ? '6,4' : '0'));
 
-    // NODES
     svg
       .append('g')
       .selectAll('circle')
@@ -122,7 +134,6 @@ const KnowledgeEvolution = () => {
       .attr('stroke', d => (d.type === 'subject' ? '#cc7000' : darkerMap[d.status]))
       .attr('stroke-width', 3);
 
-    // LABELS
     svg
       .append('g')
       .selectAll('text')
@@ -133,8 +144,20 @@ const KnowledgeEvolution = () => {
       .attr('y', d => d.y)
       .attr('text-anchor', 'middle')
       .attr('font-size', d => (d.type === 'subject' ? 18 : 12))
-      .text(d => (d.type === 'subject' ? d.id : d.name));
-  }, [selectedSubject, data]);
+      .each(function(d) {
+        const node = d3.select(this);
+        const words = (d.type === 'subject' ? d.id : d.name).split(' ');
+        let yOffset = -(words.length - 1) * 6;
+        words.forEach(word => {
+          node
+            .append('tspan')
+            .attr('x', d.x)
+            .attr('dy', yOffset)
+            .text(word);
+          yOffset = 12;
+        });
+      });
+  }, [data, selectedSubject]);
 
   if (loading || !data) return <div>Loading Knowledge Evolution...</div>;
 
