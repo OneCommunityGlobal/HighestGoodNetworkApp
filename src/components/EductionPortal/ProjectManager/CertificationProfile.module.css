@@ -1,29 +1,47 @@
-/* Unique namespace prefix: cprof_ */
-
+/* Modal backdrop */
 .modalBackdrop {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 5000;
+  z-index: 1000;
 }
 
+/* Modal container */
 .modal {
   background: #fff;
-  padding: 24px;
-  width: 480px;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  animation: fadeIn 0.2s ease-out;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh; /* limit modal height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* prevent content spilling out */
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  padding: 0; /* remove padding here; we’ll add inside modalBody */
 }
 
+.modalBody {
+  padding: 30px; /* your old modal padding */
+  overflow-y: auto; /* scroll if content is too tall */
+  flex-grow: 1;
+}
+
+/* Modal title */
 .modalTitle {
-  margin-bottom: 16px;
-  font-size: 1.2rem;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #222;
 }
 
+/* Certification list */
 .certList {
   margin-bottom: 20px;
 }
@@ -32,92 +50,141 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #eee;
 }
 
 .certName {
-  font-weight: 600;
+  font-weight: 500;
+  font-size: 15px;
+  color: #333;
 }
 
 .certStatus {
-  margin-top: 4px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.Completed {
-  color: #0a7b0a;
-}
-
-.InProgress {
-  color: #d69e00;
-}
-
-.NotStarted {
-  color: #888;
-}
-
-.editButton,
-.addButton,
-.saveButton,
-.cancelButton {
-  cursor: pointer;
-  border: none;
-  padding: 8px 12px;
-  font-size: 0.9rem;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
   border-radius: 6px;
+  display: inline-block;
 }
 
-.editButton {
-  background: #1976d2;
-  color: #fff;
+/* Status colors */
+.status_active {
+  background: #e6f8ec;
+  color: #1a8b3c;
 }
 
+.status_inprogress {
+  background: #fff5d9;
+  color: #d19900;
+}
+
+.status_inactive {
+  background: #f0f0f0;
+  color: #666;
+}
+
+/* Edit & Add buttons */
+.editButton,
 .addButton {
-  background: #28a745;
+  background: #007bff;
   color: #fff;
-  width: 100%;
-  margin-bottom: 18px;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: 0.2s ease;
+}
+
+.editButton:hover,
+.addButton:hover {
+  background: #0069d9;
+}
+
+/* Add button spacing */
+.addButton {
   margin-top: 10px;
 }
 
+/* Form section */
+.formSection {
+  margin-top: 20px;
+}
+
 .formGroup {
-  margin-bottom: 16px;
+  margin-bottom: 15px;
   display: flex;
   flex-direction: column;
 }
 
-.input,
-.select {
-  padding: 8px;
-  border-radius: 6px;
-  border: 1px solid #aaa;
-  margin-top: 4px;
+.formGroup label {
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 
+.input,
+.select {
+  padding: 8px 10px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.input:focus,
+.select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+/* Modal actions */
 .modalActions {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: 10px;
+  margin-top: 20px;
 }
 
 .saveButton {
-  background: #007bff;
-  color: white;
+  background: #28a745;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.saveButton:hover {
+  background: #218838;
 }
 
 .cancelButton {
   background: #ccc;
+  color: #333;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
+.cancelButton:hover {
+  background: #b3b3b3;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .modal {
+    padding: 20px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+
+  .modalTitle {
+    font-size: 20px;
   }
 }
