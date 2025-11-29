@@ -10,9 +10,11 @@ const KnowledgeEvolution = () => {
   const svgRef = useRef();
   const dispatch = useDispatch();
   const { data, loading } = useSelector(state => state.knowledgeEvolution);
+  const user = useSelector(state => state.auth.user);
+  const userId = user ? user.userid : null;
 
   useEffect(() => {
-    dispatch(fetchKnowledgeEvolutionData('6652347c57ca141fe891e1ca'));
+    dispatch(fetchKnowledgeEvolutionData(userId));
   }, []);
 
   const [selectedSubject, setSelectedSubject] = useState(null);
