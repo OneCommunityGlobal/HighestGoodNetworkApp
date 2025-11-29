@@ -51,7 +51,7 @@ function Collaboration() {
   const fetchCategories = async () => {
     try {
       const response = await fetch(`${ApiEndpoint}/jobs/categories`);
-      if (!response.ok) throw new Error();
+      if (!response.ok) throw new Error('Failed to Fetch');
 
       const data = await response.json();
       setCategories([...data.categories].sort((a, b) => a.localeCompare(b)));
@@ -72,7 +72,7 @@ function Collaboration() {
         `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${term}&category=${categoryParam}`,
       );
 
-      if (!response.ok) throw new Error();
+      if (!response.ok) throw new Error('Request failed while fetching Job Ads');
 
       const data = await response.json();
 
@@ -179,7 +179,7 @@ function Collaboration() {
       const response = await fetch(
         `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${categoryParam}`,
       );
-      if (!response.ok) throw new Error();
+      if (!response.ok) throw new Error('Error Fetching Job Summaries');
 
       setSummaries(await response.json());
     } catch {
