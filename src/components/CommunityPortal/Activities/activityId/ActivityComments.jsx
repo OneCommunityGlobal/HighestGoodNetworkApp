@@ -864,7 +864,7 @@ function ActivityComments() {
             <div>
               <div className={styles.commentHeaderRow}>
                 <span className={styles.commentCount}>
-                  Comment <span style={{ color: '#888', fontWeight: 400 }}>{comments.length}</span>
+                  Comment <span className={styles.commentCountNumber}>{comments.length}</span>
                 </span>
                 <button className={styles.sortBtn}>
                   <span style={{ fontSize: '1.1em' }}>⇅</span> Sort
@@ -917,65 +917,27 @@ function ActivityComments() {
 
                     {/* Reply Form */}
                     {replyingTo === comment.id && (
-                      <div
-                        style={{
-                          marginTop: '12px',
-                          marginLeft: '40px',
-                          padding: '12px',
-                          backgroundColor: '#f8f9fa',
-                          borderRadius: '8px',
-                          border: '1px solid #e9ecef',
-                        }}
-                      >
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
+                      <div className={styles.replyFormContainer}>
+                        <div className={styles.replyFormInner}>
                           <img
                             src="/pfp-default.png"
                             alt="profile"
-                            style={{
-                              width: '32px',
-                              height: '32px',
-                              borderRadius: '50%',
-                              objectFit: 'cover',
-                            }}
+                            className={styles.replyProfilePic}
                           />
                           <textarea
-                            style={{
-                              flex: 1,
-                              padding: '8px 12px',
-                              border: '1px solid #ddd',
-                              borderRadius: '6px',
-                              fontSize: '0.9rem',
-                              resize: 'vertical',
-                              minHeight: '60px',
-                            }}
+                            className={styles.replyTextarea}
                             placeholder={`Reply to ${comment.name}...`}
                             value={replyInput}
                             onChange={e => setReplyInput(e.target.value)}
                           />
                           <button
-                            style={{
-                              padding: '8px 16px',
-                              backgroundColor: '#1976d2',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '6px',
-                              fontSize: '0.9rem',
-                              cursor: 'pointer',
-                            }}
+                            className={styles.replySubmitBtn}
                             onClick={() => handlePostReply(comment.id)}
                           >
                             Reply
                           </button>
                           <button
-                            style={{
-                              padding: '8px 12px',
-                              backgroundColor: '#6c757d',
-                              color: 'white',
-                              border: 'none',
-                              borderRadius: '6px',
-                              fontSize: '0.9rem',
-                              cursor: 'pointer',
-                            }}
+                            className={styles.replyCancelBtn}
                             onClick={() => setReplyingTo(null)}
                           >
                             Cancel
@@ -986,44 +948,21 @@ function ActivityComments() {
 
                     {/* Display Replies */}
                     {comment.replies && comment.replies.length > 0 && (
-                      <div style={{ marginTop: '12px', marginLeft: '40px' }}>
+                      <div className={styles.repliesContainer}>
                         {comment.replies.map(reply => (
-                          <div
-                            key={reply.id}
-                            style={{
-                              padding: '12px',
-                              backgroundColor: '#f8f9fa',
-                              borderRadius: '8px',
-                              marginBottom: '8px',
-                              border: '1px solid #e9ecef',
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                marginBottom: '8px',
-                              }}
-                            >
+                          <div key={reply.id} className={styles.replyCard}>
+                            <div className={styles.replyCardHeader}>
                               <img
                                 src={reply.profilePic}
                                 alt="profile"
-                                style={{
-                                  width: '24px',
-                                  height: '24px',
-                                  borderRadius: '50%',
-                                  objectFit: 'cover',
-                                }}
+                                className={styles.replyCardProfilePic}
                               />
-                              <span style={{ fontWeight: '500', fontSize: '0.9rem' }}>
-                                {reply.name}
-                              </span>
-                              <span style={{ color: '#666', fontSize: '0.8rem' }}>
+                              <span className={styles.replyCardName}>{reply.name}</span>
+                              <span className={styles.replyCardTimestamp}>
                                 {reply.fixedTimestamp || getRelativeTime(reply.createdAt)}
                               </span>
                             </div>
-                            <div style={{ fontSize: '0.9rem', color: '#333' }}>{reply.text}</div>
+                            <div className={styles.replyCardText}>{reply.text}</div>
                           </div>
                         ))}
                       </div>
@@ -1120,24 +1059,12 @@ function ActivityComments() {
                   placeholder="Search feedback..."
                   value={feedbackSearch}
                   onChange={e => setFeedbackSearch(e.target.value)}
-                  style={{
-                    flex: 1,
-                    minWidth: '200px',
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                  }}
+                  className={styles.feedbackSearchInput}
                 />
                 <select
                   value={feedbackSort}
                   onChange={e => setFeedbackSort(e.target.value)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                  }}
+                  className={styles.feedbackSelect}
                 >
                   <option value="Newest">Newest First</option>
                   <option value="Oldest">Oldest First</option>
@@ -1147,12 +1074,7 @@ function ActivityComments() {
                 <select
                   value={feedbackFilter}
                   onChange={e => setFeedbackFilter(e.target.value)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                  }}
+                  className={styles.feedbackSelect}
                 >
                   <option value="All">All Ratings</option>
                   <option value="5">5 Stars</option>
