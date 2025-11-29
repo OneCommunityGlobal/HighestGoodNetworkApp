@@ -7,7 +7,7 @@ import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { deleteTimeEntry, editTimeEntry } from '~/actions/timeEntries';
 import './EditHistoryModal.css';
-import '../../Header/DarkMode.css'
+import '../../Header/index.css'
 
 function EditHistoryModal(props) {
   const {darkMode} = props;

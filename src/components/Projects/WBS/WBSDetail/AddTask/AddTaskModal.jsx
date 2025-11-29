@@ -17,7 +17,7 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE ,
   END_DATE_ERROR_MESSAGE,
 } from '../../../../../languages/en/messages';
 import clsx from 'clsx';
-import '../../../../Header/DarkMode.css';
+import '../../../../Header/index.css';
 import TagsSearch from '../components/TagsSearch';
 import styles from './AddTaskModal.module.css';
 import { fetchAllMembers } from '../../../../../actions/projectMembers';
