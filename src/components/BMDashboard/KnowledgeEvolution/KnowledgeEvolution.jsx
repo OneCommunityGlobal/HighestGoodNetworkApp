@@ -15,7 +15,7 @@ const KnowledgeEvolution = () => {
 
   useEffect(() => {
     dispatch(fetchKnowledgeEvolutionData(userId));
-  }, []);
+  }, [dispatch, userId]);
 
   const [selectedSubject, setSelectedSubject] = useState(null);
 
@@ -30,6 +30,8 @@ const KnowledgeEvolution = () => {
   const totalInProgress = allAtoms.filter(a => a.atomStatus === 'in_progress').length;
   const totalNotStarted = allAtoms.filter(a => a.atomStatus === 'not_started').length;
   const savedInterest = 2;
+  const tooltipRef = useRef(null);
+  const [tooltipData, setTooltipData] = useState(null);
 
   useEffect(() => {
     if (!data || !selectedSubject) return;
@@ -37,10 +39,12 @@ const KnowledgeEvolution = () => {
     const subjectData = data.knowledgeEvolution.find(s => s._id === selectedSubject);
     if (!subjectData) return;
 
-    const courses = subjectData.atoms;
+    const courses = subjectData.atoms || [];
+
     const width = 700;
     const height = 500;
     const svg = d3.select(svgRef.current);
+    svg.attr('viewBox', `0 0 ${width} ${height}`);
     svg.selectAll('*').remove();
 
     const centerX = width / 2;
@@ -49,7 +53,6 @@ const KnowledgeEvolution = () => {
     const courseRadius = 45;
     const orbitRadius = 180;
 
-    // COLOR MAP
     const colorMap = {
       completed: '#28a745',
       in_progress: '#ffc107',
@@ -62,7 +65,6 @@ const KnowledgeEvolution = () => {
       not_started: '#5a6268',
     };
 
-    // SUBJECT NODE
     const subjectNode = {
       id: subjectData.subjectName,
       type: 'subject',
@@ -70,9 +72,8 @@ const KnowledgeEvolution = () => {
       y: centerY,
     };
 
-    // ATOM NODES
     const courseNodes = courses.map((atom, i) => {
-      const angle = (2 * Math.PI * i) / courses.length;
+      const angle = (2 * Math.PI * i) / (courses.length || 1);
       return {
         id: atom.atomId,
         name: atom.atomName,
@@ -89,17 +90,11 @@ const KnowledgeEvolution = () => {
       const dx = atom.x - subjectNode.x;
       const dy = atom.y - subjectNode.y;
       const angle = Math.atan2(dy, dx);
-
-      const sourceX = subjectNode.x + subjectRadius * Math.cos(angle);
-      const sourceY = subjectNode.y + subjectRadius * Math.sin(angle);
-      const targetX = atom.x - courseRadius * Math.cos(angle);
-      const targetY = atom.y - courseRadius * Math.sin(angle);
-
       return {
-        x1: sourceX,
-        y1: sourceY,
-        x2: targetX,
-        y2: targetY,
+        x1: subjectNode.x + subjectRadius * Math.cos(angle),
+        y1: subjectNode.y + subjectRadius * Math.sin(angle),
+        x2: atom.x - courseRadius * Math.cos(angle),
+        y2: atom.y - courseRadius * Math.sin(angle),
         status: atom.status,
       };
     });
@@ -116,7 +111,8 @@ const KnowledgeEvolution = () => {
       .attr('y2', d => d.y2)
       .attr('stroke', d => colorMap[d.status])
       .attr('stroke-width', 2)
-      .attr('stroke-dasharray', d => (d.status === 'not_started' ? '6,4' : '0'));
+      .attr('stroke-dasharray', d => (d.status === 'not_started' ? '6,4' : '0'))
+      .attr('opacity', 0.95);
 
     svg
       .append('g')
@@ -128,13 +124,13 @@ const KnowledgeEvolution = () => {
       .attr('cy', d => d.y)
       .attr('r', d => (d.type === 'subject' ? subjectRadius : courseRadius))
       .attr('fill', d => {
-        if (d.type === 'subject') return 'orange';
-        let base = d3.color(colorMap[d.status]);
-        base.opacity = 0.4;
-        return base;
+        if (d.type === 'subject') return '#ffffff';
+        const c = d3.color(colorMap[d.status]);
+        c.opacity = 0.3;
+        return c;
       })
-      .attr('stroke', d => (d.type === 'subject' ? '#cc7000' : darkerMap[d.status]))
-      .attr('stroke-width', 3);
+      .attr('stroke', d => (d.type === 'subject' ? '#8b5a00' : darkerMap[d.status]))
+      .attr('stroke-width', d => (d.type === 'subject' ? 4 : 3));
 
     svg
       .append('g')
@@ -146,9 +142,10 @@ const KnowledgeEvolution = () => {
       .attr('y', d => d.y)
       .attr('text-anchor', 'middle')
       .attr('font-size', d => (d.type === 'subject' ? 18 : 12))
+      .attr('fill', '#222')
       .each(function(d) {
         const node = d3.select(this);
-        const words = (d.type === 'subject' ? d.id : d.name).split(' ');
+        const words = (d.type === 'subject' ? d.id : d.name || '').split(' ');
         let yOffset = -(words.length - 1) * 6;
         words.forEach(word => {
           node
@@ -162,6 +159,27 @@ const KnowledgeEvolution = () => {
   }, [data, selectedSubject]);
 
   if (loading || !data) return <div>Loading Knowledge Evolution...</div>;
+  const handleChartMouseEnter = () => {
+    const subjectData = data?.knowledgeEvolution?.find(s => s._id === selectedSubject);
+    if (!subjectData) return;
+    const atoms = subjectData.atoms || [];
+    const completed = atoms.filter(a => a.atomStatus === 'completed').length;
+    const inProgress = atoms.filter(a => a.atomStatus === 'in_progress').length;
+    const notStarted = atoms.filter(a => a.atomStatus === 'not_started').length;
+
+    setTooltipData({
+      subject: subjectData.subjectName,
+      completed,
+      inProgress,
+      notStarted,
+    });
+    if (tooltipRef.current) tooltipRef.current.style.visibility = 'visible';
+  };
+
+  const handleChartMouseLeave = () => {
+    setTooltipData(null);
+    if (tooltipRef.current) tooltipRef.current.style.visibility = 'hidden';
+  };
 
   return (
     <div className={styles.pageContainer}>
@@ -175,17 +193,17 @@ const KnowledgeEvolution = () => {
 
           <div className={styles.summaryStats}>
             <div className={styles.statBox}>
-              <h3>{totalCompleted}</h3>
+              <h3 className={styles.completedText}>{totalCompleted}</h3>
               <p>Total Completed</p>
             </div>
 
             <div className={styles.statBox}>
-              <h3>{totalInProgress}</h3>
+              <h3 className={styles.inProgressText}>{totalInProgress}</h3>
               <p>Total In Progress</p>
             </div>
 
             <div className={styles.statBox}>
-              <h3>{totalNotStarted}</h3>
+              <h3 className={styles.notStartedText}>{totalNotStarted}</h3>
               <p>Total Not Started</p>
             </div>
 
@@ -226,10 +244,50 @@ const KnowledgeEvolution = () => {
           </button>
         ))}
       </div>
+      <div ref={tooltipRef} className={styles.subjectTooltipTop} aria-hidden={!tooltipData}>
+        {tooltipData ? (
+          <>
+            <div className={styles.tooltipTitle}>{tooltipData.subject} Progress</div>
+            <div className={styles.tooltipCounts}>
+              <div className={styles.tooltipCount}>
+                <span className={styles.completedText}>{tooltipData.completed}</span>
+                <div> Completed</div>
+              </div>
 
-      {/* D3 CHART */}
-      <div className={styles.chartWrapper}>
-        <svg ref={svgRef} width={700} height={500}></svg>
+              <div className={styles.tooltipCount}>
+                <span className={styles.inProgressText}>{tooltipData.inProgress}</span>
+                <div> In Progress</div>
+              </div>
+
+              <div className={styles.tooltipCount}>
+                <span className={styles.notStartedText}>{tooltipData.notStarted}</span>
+                <div> Not Started</div>
+              </div>
+            </div>
+          </>
+        ) : null}
+      </div>
+
+      {/* D3 CHART with subject-level hover */}
+      <div
+        className={styles.chartWrapper}
+        onMouseEnter={handleChartMouseEnter}
+        onMouseLeave={handleChartMouseLeave}
+      >
+        <svg ref={svgRef} width={700} height={500} />
+      </div>
+
+      {/* Legend placed below chart */}
+      <div className={styles.subjectTooltipBottomLegend}>
+        <div className={styles.legendItem}>
+          <span className={styles.completedDotSmall} /> Completed
+        </div>
+        <div className={styles.legendItem}>
+          <span className={styles.inProgressDotSmall} /> In Progress
+        </div>
+        <div className={styles.legendItem}>
+          <span className={styles.notStartedDotSmall} /> Not Started
+        </div>
       </div>
     </div>
   );
