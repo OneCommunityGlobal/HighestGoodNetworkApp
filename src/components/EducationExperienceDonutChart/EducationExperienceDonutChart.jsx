@@ -212,15 +212,49 @@ const EducationExperienceDonutChart = () => {
               styles={
                 darkMode
                   ? {
-                      control: provided => ({
+                      control: (provided, state) => ({
                         ...provided,
                         backgroundColor: '#1f2937',
-                        borderColor: '#3b82f6',
+                        borderColor: state.isFocused ? '#3b82f6' : '#374151',
                         color: '#e5e7eb',
+                        boxShadow: state.isFocused ? '0 0 0 1px #3b82f6' : 'none',
+                        '&:hover': {
+                          borderColor: '#3b82f6',
+                        },
                       }),
                       menu: provided => ({
                         ...provided,
                         backgroundColor: '#111827',
+                        border: '1px solid #374151',
+                        borderRadius: '4px',
+                      }),
+                      menuList: provided => ({
+                        ...provided,
+                        padding: '4px',
+                      }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isSelected
+                          ? '#2563eb'
+                          : state.isFocused
+                          ? '#1f2937'
+                          : 'transparent',
+                        color: state.isSelected ? '#ffffff' : '#e5e7eb',
+                        cursor: 'pointer',
+                        '&:active': {
+                          backgroundColor: '#2563eb',
+                        },
+                      }),
+                      input: provided => ({
+                        ...provided,
+                        color: '#e5e7eb',
+                      }),
+                      placeholder: provided => ({
+                        ...provided,
+                        color: '#9ca3af',
+                      }),
+                      singleValue: provided => ({
+                        ...provided,
                         color: '#e5e7eb',
                       }),
                       multiValue: provided => ({
@@ -230,6 +264,34 @@ const EducationExperienceDonutChart = () => {
                       multiValueLabel: provided => ({
                         ...provided,
                         color: '#f8fafc',
+                      }),
+                      multiValueRemove: provided => ({
+                        ...provided,
+                        color: '#f8fafc',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          backgroundColor: '#1e40af',
+                          color: '#ffffff',
+                        },
+                      }),
+                      indicatorSeparator: provided => ({
+                        ...provided,
+                        backgroundColor: '#374151',
+                      }),
+                      dropdownIndicator: provided => ({
+                        ...provided,
+                        color: '#9ca3af',
+                        '&:hover': {
+                          color: '#e5e7eb',
+                        },
+                      }),
+                      clearIndicator: provided => ({
+                        ...provided,
+                        color: '#9ca3af',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          color: '#e5e7eb',
+                        },
                       }),
                     }
                   : undefined
