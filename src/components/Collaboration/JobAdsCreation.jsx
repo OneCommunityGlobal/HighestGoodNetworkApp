@@ -294,22 +294,6 @@ function JobAdsCreation() {
       textareaRef.current?.focus();
       return;
     }
-    /* if (!formData.skills) {
-      setErrors({ skills: 'Skills is required' });
-      toast.error('Skills is required');
-      return;
-    } */
-    //
-    // const skillsWordCount = getWordCount(formData.skills);
-    // eslint-disable-next-line no-console
-    // console.log(`word count ${skillsWordCount}`);
-
-    /* if (skillsWordCount < 30) {
-      setErrors({ skills: 'Skills must be at least 30 words long' });
-      toast.error('Skills must be at least 30 words long');
-      textareaRef.current?.focus();
-      return;
-    } */
     if (!formData.projects) {
       setErrors({ projects: 'Projects is required' });
       toast.error('Projects is required');
@@ -326,22 +310,6 @@ function JobAdsCreation() {
       textareaRef.current?.focus();
       return;
     }
-    /* if (!formData.whoareyou) {
-      setErrors({ whoareyou: 'Who are you is required' });
-      toast.error('Who are you is required');
-      return;
-    } */
-    //
-    // const whoareyouWordCount = getWordCount(formData.whoareyou);
-    // eslint-disable-next-line no-console
-    // console.log(`word count ${whoareyouWordCount}`);
-
-    /* if (whoareyouWordCount < 30) {
-      setErrors({ whoareyou: 'Who are you must be at least 30 words long' });
-      toast.error('Who are you must be at least 30 words long');
-      textareaRef.current?.focus();
-      return;
-    } */
     if (!formData.ourCommunity) {
       setErrors({ ourCommunity: 'Our Community is required' });
       toast.error('Our Community is required');
@@ -398,26 +366,10 @@ function JobAdsCreation() {
       return;
     }
     // eslint-disable-next-line no-console
-    //console.log(formData.jobDetailsLink);
-    // eslint-disable-next-line no-console
-    // console.log(isValidUrl(formData.jobDetailsLink));
-
-    /*    if (!formData.jobDetailsLink) {
-      setErrors({ jobDetailsLink: 'Job Details Link is required' });
-      toast.error('Job Details Link is required');
-      return;
-    } */
-    // eslint-disable-next-line no-console
     console.log(formData.jobDetailsLink);
     // eslint-disable-next-line no-console
     console.log(isValidUrl(formData.jobDetailsLink));
 
-    /* if (!formData.jobDetailsLink || !isValidUrl(formData.jobDetailsLink)) {
-      setErrors({ jobDetailsLink: 'Enter the valid Job Details Link' });
-      toast.error('Enter the valid Job Details Link');
-      return;
-    }
-*/
     const emptyMsg = '';
     setErrors(emptyMsg);
     submitJobAds();
@@ -448,13 +400,6 @@ function JobAdsCreation() {
       // eslint-disable-next-line no-console
       console.log(value);
     }
-    /*    if (name === 'applyLinktest') {
-      // eslint-disable-next-line no-console
-      console.log('APPLYLINKTEST');
-
-      // eslint-disable-next-line no-console
-      console.log(value);
-    } */
   };
 
   useEffect(() => {
@@ -463,22 +408,6 @@ function JobAdsCreation() {
     fetchJobFormsAll();
     fetchTemplates();
   }, []);
-  /*useEffect(() => {
-  if (canCreateCollabJobAds === false) {
-    return <div>You do not have permission to create Collaboration Job Ads.</div>;
-  }
-
-  if (canCreateCollabJobAds === null) {
-    return null;
-  }
-
-  return (
-    <div
-      className={`${styles['jobAds-creation']} ${
-        darkMode ? styles['user-collaboration-dark-mode'] : ''
-      }`}
-    >
-  }, [formData.category, formData.title]); */
 
   return (
     <div
@@ -550,16 +479,7 @@ function JobAdsCreation() {
                 <label className={styles['input-label']} htmlFor={field.key}>
                   {field.display}
                 </label>
-                {/*<textarea
-                className={styles['jobAds-input']}
-                value={formData[field.key] || ''}
-                id={field.key}
-                placeholder={`Enter the ${field.display}`}
-                onChange={handleChange}
-                name={field.key}
-                ref={textareaRef}
-                rows={15}
-              />*/}
+
                 <Editor
                   className={styles['jobAds-input']}
                   tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -591,51 +511,6 @@ function JobAdsCreation() {
                 {errors[field.key] && <div className={styles.error}>{errors[field.key]}</div>}
               </div>
             ))}
-            {/*}
-        <div className={styles['input-error']}>
-          <div className={styles['input-item']}>
-            <label className={styles['input-label']} htmlFor="jobDetailsLink">
-              Job Details Link
-            </label>
-            <input
-              className={styles['jobAds-input']}
-              id="jobDetailsLink"
-              value={formData.jobDetailsLink}
-              placeholder={`Enter the jobDetailsLink`}
-              onChange={handleChange}
-              name="jobDetailsLink"
-              disabled
-            />
-          </div>
-          {errors.jobDetailsLink && <div className={styles.error}>{errors.jobDetailsLink}</div>}
-        </div>
-
-{/*
-        <div className={styles['input-error']}>
-          <div className={styles['input-item']}>
-            <label className={styles['input-label']} htmlFor="applyLink">
-              Apply Link
-            </label>
-            <select
-              className={styles['jobAds-input']}
-              id="applyLink"
-              value={formData.applyLink}
-              onChange={handleChange}
-              name="applyLink"
-            >
-              <option value="">Select from Templates</option>
-              {jobTemplates.map(({ _id, name }) => {
-                return (
-                  <option key={_id} value={`${ENDPOINTS.APIEndpoint()}/templates/${_id}`}>
-                    {name}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-          {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
-        </div>
-   */}
             <div className={styles['input-error']}>
               <label className={styles['input-label']} htmlFor="applyLinktest2">
                 Apply Link

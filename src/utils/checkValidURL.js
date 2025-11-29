@@ -30,12 +30,18 @@ export const isValidDropboxImageUrl= (string) => {
    if (!validHosts.includes(url.hostname)) {
     return false;
    }
+   
+   let target = url.href;
 
-    // Optionally: enforce file extension (jpg, png, etc.)
-    if (!url.pathname.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-      return false;
-    }
+// If Dropbox hides filename in the "preview" query:
+const preview = url.searchParams.get("preview");
+if (preview) target += preview;
 
+if (!target.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+  return false;
+}
+
+  
     return true;
   } catch {
     return false;
