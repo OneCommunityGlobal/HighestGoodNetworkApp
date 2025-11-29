@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, React } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from '~/actions/weeklySummaries';
