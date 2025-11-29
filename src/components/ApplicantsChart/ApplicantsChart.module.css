@@ -101,13 +101,28 @@
 
 /* Additional styles for react-datepicker input in dark mode */
 :global(.text-light) .datePickerWrapper :global(input.react-datepicker-ignore-onclickoutside),
-:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container input) {
+:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container input),
+:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container) :global(input) {
   color: #e5e7eb !important;
   background-color: #1f2937 !important;
 }
 
 :global(.text-light) .datePickerWrapper :global(input.react-datepicker-ignore-onclickoutside)::placeholder,
-:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container input)::placeholder {
+:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container input)::placeholder,
+:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container) :global(input)::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+/* More specific targeting for react-datepicker input wrapper */
+:global(.text-light) :global(.react-datepicker-wrapper) :global(.hgn-datepicker-dark),
+:global(.text-light) :global(.react-datepicker-wrapper) :global(input) {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+:global(.text-light) :global(.react-datepicker-wrapper) :global(.hgn-datepicker-dark)::placeholder,
+:global(.text-light) :global(.react-datepicker-wrapper) :global(input)::placeholder {
   color: #9ca3af !important;
   opacity: 1 !important;
 }

@@ -81,6 +81,28 @@
   border-color: #ffffff !important;
 }
 
+/* Dark mode styles for react-datepicker input field */
+.text-light .react-datepicker__input-container input,
+.text-light .hgn-datepicker-dark,
+.text-light .react-datepicker-wrapper input {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+.text-light .react-datepicker__input-container input::placeholder,
+.text-light .hgn-datepicker-dark::placeholder,
+.text-light .react-datepicker-wrapper input::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+.text-light .react-datepicker__input-container input:focus,
+.text-light .hgn-datepicker-dark:focus,
+.text-light .react-datepicker-wrapper input:focus {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
 .no-hover tr:hover {
   background-color: inherit !important;
   color: inherit !important;
