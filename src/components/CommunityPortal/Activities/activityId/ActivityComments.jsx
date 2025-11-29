@@ -864,7 +864,7 @@ function ActivityComments() {
             <div>
               <div className={styles.commentHeaderRow}>
                 <span className={styles.commentCount}>
-                  Comment <span style={{ color: '#888', fontWeight: 400 }}>{comments.length}</span>
+                  Comment <span className={styles.commentCountNumber}>{comments.length}</span>
                 </span>
                 <button className={styles.sortBtn}>
                   <span style={{ fontSize: '1.1em' }}>⇅</span> Sort

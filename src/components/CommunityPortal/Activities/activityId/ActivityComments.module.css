@@ -116,6 +116,11 @@
   font-size: 1.2rem;
   font-weight: 500;
 }
+
+.commentCountNumber {
+  color: #888;
+  font-weight: 400;
+}
 .sortBtn {
   background: none;
   border: none;
@@ -454,4 +459,141 @@
 :global(body.dark-mode) .feedbackSearchInput::placeholder,
 :global(body.bm-dashboard-dark) .feedbackSearchInput::placeholder {
   color: #b8c5d1 !important;
+}
+
+/* ============================================
+   Tabs, Buttons, and Interactive Elements - Dark Mode
+   ============================================ */
+
+/* Main Tabs - Dark Mode */
+:global(body.dark-mode) .tabs,
+:global(body.bm-dashboard-dark) .tabs {
+  border-bottom: 2px solid #3a506b !important;
+}
+
+:global(body.dark-mode) .tab,
+:global(body.bm-dashboard-dark) .tab {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .tabActive,
+:global(body.bm-dashboard-dark) .tabActive {
+  border-bottom: 2px solid #66b3ff !important;
+  color: #66b3ff !important;
+}
+
+/* Comment Tabs - Dark Mode */
+:global(body.dark-mode) .commentTabBtn,
+:global(body.bm-dashboard-dark) .commentTabBtn {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .commentTabBtnActive,
+:global(body.bm-dashboard-dark) .commentTabBtnActive {
+  border-bottom: 2px solid #66b3ff !important;
+  color: #66b3ff !important;
+}
+
+/* Sort Button - Dark Mode */
+:global(body.dark-mode) .sortBtn,
+:global(body.bm-dashboard-dark) .sortBtn {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .sortBtn:hover,
+:global(body.bm-dashboard-dark) .sortBtn:hover {
+  color: #ffffff !important;
+  background-color: rgba(58, 80, 107, 0.3) !important;
+}
+
+/* Post Button - Dark Mode */
+:global(body.dark-mode) .postBtn,
+:global(body.bm-dashboard-dark) .postBtn {
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .postBtn:hover,
+:global(body.bm-dashboard-dark) .postBtn:hover {
+  background: #4a6072 !important;
+}
+
+/* Action Buttons (Upvote, Downvote, Reply) - Dark Mode */
+:global(body.dark-mode) .upvoteBtn,
+:global(body.dark-mode) .downvoteBtn,
+:global(body.dark-mode) .replyBtn,
+:global(body.bm-dashboard-dark) .upvoteBtn,
+:global(body.bm-dashboard-dark) .downvoteBtn,
+:global(body.bm-dashboard-dark) .replyBtn {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .upvoteBtn:hover,
+:global(body.dark-mode) .downvoteBtn:hover,
+:global(body.dark-mode) .replyBtn:hover,
+:global(body.bm-dashboard-dark) .upvoteBtn:hover,
+:global(body.bm-dashboard-dark) .downvoteBtn:hover,
+:global(body.bm-dashboard-dark) .replyBtn:hover {
+  background: rgba(58, 80, 107, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* Load More Button - Dark Mode */
+:global(body.dark-mode) .loadMoreBtn,
+:global(body.bm-dashboard-dark) .loadMoreBtn {
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .loadMoreBtn:hover,
+:global(body.bm-dashboard-dark) .loadMoreBtn:hover {
+  background: #4a6072 !important;
+}
+
+:global(body.dark-mode) .loadMoreBtn:disabled,
+:global(body.bm-dashboard-dark) .loadMoreBtn:disabled {
+  background: #2e5061 !important;
+  color: #888 !important;
+  cursor: not-allowed;
+}
+
+/* Reply Submit Button - Dark Mode */
+:global(body.dark-mode) .replySubmitBtn,
+:global(body.bm-dashboard-dark) .replySubmitBtn {
+  background-color: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replySubmitBtn:hover,
+:global(body.bm-dashboard-dark) .replySubmitBtn:hover {
+  background-color: #4a6072 !important;
+}
+
+/* Reply Cancel Button - Dark Mode */
+:global(body.dark-mode) .replyCancelBtn,
+:global(body.bm-dashboard-dark) .replyCancelBtn {
+  background-color: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .replyCancelBtn:hover,
+:global(body.bm-dashboard-dark) .replyCancelBtn:hover {
+  background-color: #3a506b !important;
+}
+
+/* Comment Count - Dark Mode */
+:global(body.dark-mode) .commentCount,
+:global(body.bm-dashboard-dark) .commentCount {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentCountNumber,
+:global(body.bm-dashboard-dark) .commentCountNumber {
+  color: #b8c5d1 !important;
+}
+
+/* Comment Visibility - Dark Mode */
+:global(body.dark-mode) .commentVisibility,
+:global(body.bm-dashboard-dark) .commentVisibility {
+  color: #66b3ff !important;
 }
