@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { debounce } from 'lodash';
 import { Button } from 'reactstrap';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { getAllFAQs, searchFAQs, logUnansweredQuestion } from './api';
+import styles from './FaqSearch.module.css';
 
 toast.configure();
 
@@ -27,140 +27,105 @@ function FaqSearch() {
           setSuggestions(response.data);
         }
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Error fetching FAQs:', error);
       }
     };
 
     fetchFAQs();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, []);
 
-  const fetchSuggestions = debounce(async query => {
-    try {
-      const response = await searchFAQs(query);
-      setSuggestions(response.data);
-      setNotFound(response.data.length === 0);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error('Error fetching FAQ suggestions:', error);
-    }
-  }, 300);
+  const debouncedSearch = useMemo(
+    () =>
+      debounce(async (query) => {
+        try {
+          const response = await searchFAQs(query);
+          setSuggestions(response.data);
+          setNotFound(response.data.length === 0);
+        } catch (error) {
+          console.error('Error searching FAQs:', error);
+        }
+      }, 300),
+    []
+  );
 
-  const handleSearchChange = e => {
+  const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
 
-    if (query.length >= 1) {
-      fetchSuggestions(query);
-    } else {
+    if (query.trim().length === 0) {
       setSuggestions(allFAQs);
       setNotFound(false);
+      return;
     }
+
+    debouncedSearch(query);
   };
 
-  const toggleFAQ = faqId => {
+  const toggleFAQ = (faqId) => {
     setExpandedFAQ(expandedFAQ === faqId ? null : faqId);
   };
 
- const handleLogUnanswered = async () => {
-  if (!searchQuery.trim()) return;
+  const handleLogUnanswered = async () => {
+    if (!searchQuery.trim()) return;
 
-  setLogging(true);
-  try {
-    const response = await logUnansweredQuestion(searchQuery);
-    const { message, emailSent, emailNote } = response?.data || {};
+    setLogging(true);
+    try {
+      const response = await logUnansweredQuestion(searchQuery);
+      const { message, emailSent, emailNote } = response?.data || {};
 
-    toast.success(message || 'Your question has been recorded.');
+      toast.success(message || 'Your question has been recorded.');
+      if (emailSent === false && emailNote) toast.warn(emailNote);
+    } catch (error) {
+      const status = error?.response?.status;
+      const msg = error?.response?.data?.message || '';
 
-    // show a warning toast if owners not emailed
-    if (emailSent === false && emailNote) {
-      toast.warn(emailNote);
+      if (status === 409) {
+        toast.warn(msg || 'This question is already logged.');
+        return;
+      }
+
+      toast.error(msg || 'Failed to log question.');
+    } finally {
+      setLogging(false);
     }
-  } catch (error) {
-    const status = error?.response?.status;
-    const msg = (error?.response?.data?.message || '').toString();
-    if (status === 409) {
-      toast.error(msg || 'This question is already logged.');
-      return;
-    }
-
-    // If backend complains about missing owner email, treat as success + warning
-    if (/owner/i.test(msg) && /email/i.test(msg)) {
-      toast.success('Your question has been recorded.');
-      toast.warn(msg || 'Owner email not configured; email skipped.');
-      return;
-    }
-
-    toast.error(msg || 'Failed to log question.');
-  } finally {
-    setLogging(false);
-  }
-};
+  };
 
   return (
-    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <h2 style={{ textAlign: 'center' }}>Frequently Asked Questions</h2>
+    <div className={styles.container}>
+      <h2 className={styles.heading}>Frequently Asked Questions</h2>
+
       <input
         type="text"
         value={searchQuery}
         onChange={handleSearchChange}
         placeholder="Search FAQs"
-        style={{
-          width: '100%',
-          padding: '10px',
-          marginBottom: '20px',
-          borderRadius: '5px',
-          border: '1px solid #ccc',
-        }}
+        className={styles.searchInput}
       />
 
       {suggestions.length > 0 && (
-        <ul style={{ listStyle: 'none', padding: 0 }}>
-          {suggestions.map(faq => (
-            <li key={faq._id} style={{ marginBottom: '10px' }}>
+        <ul className={styles.faqList}>
+          {suggestions.map((faq) => (
+            <li key={faq._id} className={styles.faqItem}>
               <button
                 type="button"
                 onClick={() => toggleFAQ(faq._id)}
-                style={{
-                  padding: '10px',
-                  border: '1px solid #ddd',
-                  borderRadius: '5px',
-                  cursor: 'pointer',
-                  backgroundColor: expandedFAQ === faq._id ? '#e0e0e0' : '#f9f9f9',
-                  transition: 'background-color 0.3s',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  width: '100%',
-                  textAlign: 'left',
-                }}
-                aria-expanded={expandedFAQ === faq._id}
-                aria-controls={`faq-answer-${faq._id}`}
+                className={`${styles.faqButton} ${
+                  expandedFAQ === faq._id ? styles.faqButtonExpanded : ''
+                }`}
               >
                 <strong>{faq.question}</strong>
                 {expandedFAQ === faq._id ? <FaChevronUp /> : <FaChevronDown />}
               </button>
+
               {expandedFAQ === faq._id && (
-                <div
-                  style={{
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '5px',
-                    marginTop: '5px',
-                    backgroundColor: '#fff',
-                  }}
-                >
+                <div className={styles.answerBox}>
                   <p>{faq.answer}</p>
                   <p>
                     <a
                       href="https://onecommunityglobal.org/collaboration/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      style={{ color: '#007bff', textDecoration: 'underline' }}
                     >
                       Visit here to learn more
                     </a>
@@ -173,7 +138,7 @@ function FaqSearch() {
       )}
 
       {notFound && (
-        <div style={{ textAlign: 'center' }}>
+        <div className={styles.noResults}>
           <p>No results found.</p>
           <Button color="primary" onClick={handleLogUnanswered} disabled={logging}>
             {logging ? 'Logging...' : 'Log this question and notify Owner'}
