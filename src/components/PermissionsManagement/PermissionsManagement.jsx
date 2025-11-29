@@ -10,7 +10,7 @@ import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip
 // eslint-disable-next-line import/named
 import { updateUserProfile, getUserProfile } from '../../actions/userProfile';
 import { boxStyle, boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import { ENDPOINTS } from '~/utils/URL';
 import { ModalContext } from '~/context/ModalContext';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';

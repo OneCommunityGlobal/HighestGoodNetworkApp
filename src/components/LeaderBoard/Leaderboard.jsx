@@ -37,7 +37,7 @@ import axios from 'axios';
 import { getUserProfile } from '~/actions/userProfile';
 import { useDispatch, useSelector } from 'react-redux';
 import { boxStyleDark } from '../../styles';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '~/utils/URL';
 

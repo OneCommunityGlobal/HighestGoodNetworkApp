@@ -10,7 +10,7 @@ import {
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
 import './task.css';
-import '../../../../Header/DarkMode.css'
+import '../../../../Header/index.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from '~/styles';

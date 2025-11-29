@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import _ from 'lodash';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 
 const SetupNewUserPopupComponent = (props) => {
   const darkMode = useSelector(state => state.theme.darkMode);

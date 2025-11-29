@@ -27,7 +27,7 @@ import TotalProjectReport from './TotalReport/TotalProjectReport';
 import TotalContributorsReport from './TotalReport/TotalContributorsReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';

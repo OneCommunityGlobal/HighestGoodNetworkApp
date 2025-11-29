@@ -10,7 +10,7 @@ import AddNewTitleModal from './AddNewTitleModal';
 import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import styles from '../../SummaryBar/SummaryBar.module.css'
 
 function QuickSetupModal(props) {

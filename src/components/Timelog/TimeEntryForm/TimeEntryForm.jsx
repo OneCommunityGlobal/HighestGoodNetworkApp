@@ -35,7 +35,7 @@ import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '~/utils/URL';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
 // Images are not allowed in timelog

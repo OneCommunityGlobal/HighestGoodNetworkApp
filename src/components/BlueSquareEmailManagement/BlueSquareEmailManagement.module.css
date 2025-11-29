@@ -23,18 +23,18 @@
 }
 
 /* Button styling to remove weird lining */
-.btn {
+:global(.btn) {
   border: none !important;
   outline: none !important;
   text-decoration: none !important;
 }
 
-.btn:focus {
+:global(.btn:focus) {
   box-shadow: none !important;
   outline: none !important;
 }
 
-.btn:active {
+:global(.btn:active) {
   transform: none !important;
 }
 
@@ -47,4 +47,3 @@
 .faSpinner {
   animation: spin 1s linear infinite;
 }
-
