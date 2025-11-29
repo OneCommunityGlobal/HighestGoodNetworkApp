@@ -1,12 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useSelector } from 'react-redux';
 import styles from './InsightsWidget.module.css';
 
-// Constants
 const FETCH_DELAY = 800;
 const MIN_SCORE = 0;
 const MAX_SCORE = 100;
 
-// Mock data with better structure
 const MOCK_ANALYTICS_DATA = {
   averageScore: 78.5,
   scoreChange: 5.2,
@@ -30,7 +29,6 @@ const MOCK_ANALYTICS_DATA = {
   ],
 };
 
-// Validation utilities
 const validateMetrics = data => {
   if (!data || typeof data !== 'object') return false;
   const required = ['averageScore', 'completionRate', 'totalStudents'];
@@ -42,6 +40,7 @@ const validateScore = score => {
 };
 
 const InsightsWidget = () => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,7 +71,6 @@ const InsightsWidget = () => {
       setError(errorMessage);
       console.error('Error fetching analytics:', err);
 
-      // Auto-retry logic
       if (retryCount < MAX_RETRIES) {
         setTimeout(() => setRetryCount(prev => prev + 1), 2000);
       }
@@ -95,12 +93,14 @@ const InsightsWidget = () => {
   }, [metrics]);
 
   if (loading) {
-    return <div className={styles.loading}>Loading insights...</div>;
+    return (
+      <div className={`${styles.loading} ${darkMode ? styles.dark : ''}`}>Loading insights...</div>
+    );
   }
 
   if (error) {
     return (
-      <div className={styles.error}>
+      <div className={`${styles.error} ${darkMode ? styles.darkError : ''}`}>
         <p>Error: {error}</p>
         {retryCount < MAX_RETRIES && (
           <p className={styles.retryInfo}>
@@ -108,7 +108,7 @@ const InsightsWidget = () => {
           </p>
         )}
         <button
-          className={styles.retryButton}
+          className={`${styles.retryButton} ${darkMode ? styles.darkRetryButton : ''}`}
           onClick={() => {
             setRetryCount(0);
             fetchAnalyticsOverview();
@@ -124,7 +124,7 @@ const InsightsWidget = () => {
   if (!sortedMetrics) return null;
 
   return (
-    <div className={styles.insightsContainer}>
+    <div className={`${styles.insightsContainer} ${darkMode ? styles.dark : ''}`}>
       <h2 className={styles.title}>Key Insights</h2>
 
       <div className={styles.metricsGrid}>
@@ -133,33 +133,36 @@ const InsightsWidget = () => {
           value={sortedMetrics.averageScore}
           trend={sortedMetrics.scoreChange}
           unit="%"
+          darkMode={darkMode}
         />
         <MetricCard
           label="Completion Rate"
           value={sortedMetrics.completionRate}
           trend={sortedMetrics.completionChange}
           unit="%"
+          darkMode={darkMode}
         />
         <MetricCard
           label="Total Students"
           value={sortedMetrics.totalStudents}
           trend={sortedMetrics.studentGrowth}
           isCount
+          darkMode={darkMode}
         />
       </div>
 
       {sortedMetrics.topStudents && sortedMetrics.topStudents.length > 0 && (
-        <TopPerformersSection students={sortedMetrics.topStudents} />
+        <TopPerformersSection students={sortedMetrics.topStudents} darkMode={darkMode} />
       )}
 
       {sortedMetrics.topSubjects && sortedMetrics.topSubjects.length > 0 && (
-        <TopSubjectsSection subjects={sortedMetrics.topSubjects} />
+        <TopSubjectsSection subjects={sortedMetrics.topSubjects} darkMode={darkMode} />
       )}
     </div>
   );
 };
 
-const MetricCard = ({ label, value, trend, unit = '', isCount = false }) => {
+const MetricCard = ({ label, value, trend, unit = '', isCount = false, darkMode = false }) => {
   if (!label || value === null || value === undefined) {
     return null;
   }
@@ -168,7 +171,11 @@ const MetricCard = ({ label, value, trend, unit = '', isCount = false }) => {
   const trendClass = isTrendPositive ? styles.positive : styles.negative;
 
   return (
-    <div className={styles.metricCard} role="region" aria-label={label}>
+    <div
+      className={`${styles.metricCard} ${darkMode ? styles.darkMetricCard : ''}`}
+      role="region"
+      aria-label={label}
+    >
       <div className={styles.metricLabel}>{label}</div>
       <div className={styles.metricValue}>
         {isCount ? value : value.toFixed(2)}
@@ -188,12 +195,19 @@ const MetricCard = ({ label, value, trend, unit = '', isCount = false }) => {
   );
 };
 
-const TopPerformersSection = ({ students }) => (
-  <div className={styles.topPerformersSection} role="region" aria-label="Top performing students">
+const TopPerformersSection = ({ students, darkMode = false }) => (
+  <div
+    className={`${styles.topPerformersSection} ${darkMode ? styles.darkSection : ''}`}
+    role="region"
+    aria-label="Top performing students"
+  >
     <h3 className={styles.sectionTitle}>Top Performing Students</h3>
     <ul className={styles.performersList}>
       {students.map(student => (
-        <li key={student.id} className={styles.performerItem}>
+        <li
+          key={student.id}
+          className={`${styles.performerItem} ${darkMode ? styles.darkPerformerItem : ''}`}
+        >
           <span className={styles.name}>{student.name}</span>
           <span className={styles.score}>{student.score.toFixed(2)}</span>
         </li>
@@ -202,12 +216,19 @@ const TopPerformersSection = ({ students }) => (
   </div>
 );
 
-const TopSubjectsSection = ({ subjects }) => (
-  <div className={styles.topSubjectsSection} role="region" aria-label="Top performing subjects">
+const TopSubjectsSection = ({ subjects, darkMode = false }) => (
+  <div
+    className={`${styles.topSubjectsSection} ${darkMode ? styles.darkSection : ''}`}
+    role="region"
+    aria-label="Top performing subjects"
+  >
     <h3 className={styles.sectionTitle}>Top Subjects</h3>
     <ul className={styles.subjectsList}>
       {subjects.map(subject => (
-        <li key={subject.id} className={styles.subjectItem}>
+        <li
+          key={subject.id}
+          className={`${styles.subjectItem} ${darkMode ? styles.darkSubjectItem : ''}`}
+        >
           <span className={styles.subjectName}>{subject.name}</span>
           <div
             className={styles.progressBar}
@@ -215,6 +236,7 @@ const TopSubjectsSection = ({ subjects }) => (
             aria-valuenow={subject.averageScore}
             aria-valuemin="0"
             aria-valuemax="100"
+            style={{ background: darkMode ? '#404040' : '#e9ecef' }}
           >
             <div
               className={styles.progressFill}
