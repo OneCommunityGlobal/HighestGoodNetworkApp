@@ -1059,24 +1059,12 @@ function ActivityComments() {
                   placeholder="Search feedback..."
                   value={feedbackSearch}
                   onChange={e => setFeedbackSearch(e.target.value)}
-                  style={{
-                    flex: 1,
-                    minWidth: '200px',
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                  }}
+                  className={styles.feedbackSearchInput}
                 />
                 <select
                   value={feedbackSort}
                   onChange={e => setFeedbackSort(e.target.value)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                  }}
+                  className={styles.feedbackSelect}
                 >
                   <option value="Newest">Newest First</option>
                   <option value="Oldest">Oldest First</option>
@@ -1086,12 +1074,7 @@ function ActivityComments() {
                 <select
                   value={feedbackFilter}
                   onChange={e => setFeedbackFilter(e.target.value)}
-                  style={{
-                    padding: '8px 12px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '0.9rem',
-                  }}
+                  className={styles.feedbackSelect}
                 >
                   <option value="All">All Ratings</option>
                   <option value="5">5 Stars</option>

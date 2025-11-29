@@ -231,7 +231,7 @@
 }
 
 /* ============================================
-   DARK MODE STYLES - Commit 1: Comment Cards, Backgrounds, and Borders
+   DARK MODE STYLES - Comment Cards, Backgrounds, and Borders
    ============================================ */
 
 /* Comment Item - Dark Mode */
@@ -365,6 +365,19 @@
   margin-left: 40px;
 }
 
+/* Comment Input - Dark Mode */
+:global(body.dark-mode) .commentInput,
+:global(body.bm-dashboard-dark) .commentInput {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .commentInput::placeholder,
+:global(body.bm-dashboard-dark) .commentInput::placeholder {
+  color: #b8c5d1 !important;
+}
+
 /* Reply Form Background - Dark Mode */
 :global(body.dark-mode) .replyFormContainer,
 :global(body.bm-dashboard-dark) .replyFormContainer {
@@ -406,4 +419,39 @@
 :global(body.dark-mode) .replyCardText,
 :global(body.bm-dashboard-dark) .replyCardText {
   color: #ffffff !important;
+}
+
+/* ============================================
+   Feedback Controls - Inputs & Selects
+   ============================================ */
+
+.feedbackSearchInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.feedbackSelect {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Feedback Controls - Dark Mode */
+:global(body.dark-mode) .feedbackSearchInput,
+:global(body.bm-dashboard-dark) .feedbackSearchInput,
+:global(body.dark-mode) .feedbackSelect,
+:global(body.bm-dashboard-dark) .feedbackSelect {
+  background-color: #2e5061 !important;
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .feedbackSearchInput::placeholder,
+:global(body.bm-dashboard-dark) .feedbackSearchInput::placeholder {
+  color: #b8c5d1 !important;
 }
