@@ -56,6 +56,44 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
     }
   });
 
+  const DEFAULT_RECIPIENT = {
+    _id: '63feae337186de1898fa8f51',
+    email: 'onecommunityhospitality@gmail.com',
+    assignedTo: {
+      firstName: 'Sara',
+      lastName: 'Sabol',
+      role: 'Administrator',
+      isActive: true,
+    },
+    locked: true,
+  };
+
+  const assignmentsWithDefault = useMemo(() => {
+  const list = blueSquareEmailAssignments || [];
+
+  const withLockFlag = list.map(a => ({
+    ...a,
+    locked:
+      a.locked ||
+      (a.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase(),
+  }));
+
+  const hasDefault = withLockFlag.some(
+    a => (a.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase()
+  );
+
+  const combined = hasDefault
+    ? withLockFlag
+    : [DEFAULT_RECIPIENT, ...withLockFlag];
+
+  return combined.sort((a, b) =>
+    (a.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase()
+      ? -1
+      : (b.email || '').toLowerCase() === DEFAULT_RECIPIENT.email.toLowerCase()
+      ? 1
+      : 0
+  );
+}, [blueSquareEmailAssignments]);
 
   
   
@@ -108,12 +146,17 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
                 <DropdownItem
                   key={index}
                   onClick={() => {
-                    setAddUser(user);
-                    setSearchWord(`${user.firstName} ${user.lastName}`);
+                   setAddUser(user);
+                   setSearchWord(`${user.firstName} ${user.lastName} (${user.email})`);
                   }}
                 >
-                  {user.firstName} {user.lastName}
-                </DropdownItem>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                    <span>
+                      {user.firstName} {user.lastName}
+                      </span>
+                      <small className="text-muted">{user.email}</small>
+                      </div>
+                  </DropdownItem>
               ))}
             </DropdownMenu>
           </Dropdown>
@@ -129,8 +172,8 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
             </tr>
           </thead>
           <tbody>
-            {blueSquareEmailAssignments.length > 0 &&
-              blueSquareEmailAssignments.map((assignment, index) => {
+            {assignmentsWithDefault.length > 0 &&
+              assignmentsWithDefault.map((assignment, index) => {
                 return (
                   <tr key={assignment._id}>
                     <td>
@@ -147,6 +190,7 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
                     <td className='d-flex justify-content-center align-items-center'>
                       <Button
                         color="danger"
+                        disabled={assignment.locked}
                         onClick={()=>handleAssignementDelete(assignment._id)}
                         style={props.darkMode ? boxStyleDark : boxStyle}
                       >
