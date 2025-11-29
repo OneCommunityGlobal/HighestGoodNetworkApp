@@ -1,0 +1,93 @@
+/* Dark mode hover styles for DatePicker calendar */
+.text-light .hgn-datepicker-dark-calendar .react-datepicker {
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  border-radius: 0 !important;
+}
+
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__header {
+  background-color: #111827 !important;
+  border-bottom: 1px solid #374151 !important;
+  border-radius: 0 !important;
+}
+
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__month-container {
+  background-color: #1f2937 !important;
+  border-radius: 0 !important;
+}
+
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__day {
+  color: #e5e7eb !important;
+  border-radius: 0 !important;
+}
+
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__day:hover {
+  background-color: #374151 !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+}
+
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__day--selected,
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__day--keyboard-selected {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+}
+
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__day--in-range,
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__day--in-selecting-range {
+  background-color: #1e3a8a !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+}
+
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__current-month,
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__day-name {
+  color: #e5e7eb !important;
+}
+
+.text-light .hgn-datepicker-dark-calendar .react-datepicker__navigation-icon::before {
+  border-color: #e5e7eb !important;
+}
+
+/* Dark mode hover for DatePicker input */
+.text-light .hgn-datepicker-dark:hover {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+.text-light .hgn-datepicker-dark:focus {
+  background-color: #374151 !important;
+  border-color: #3b82f6 !important;
+  outline: none;
+}
+
+/* Dark mode hover for select dropdown */
+.text-light select:hover {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+.text-light select:focus {
+  background-color: #374151 !important;
+  border-color: #3b82f6 !important;
+  outline: none;
+}
+
+.datePickerWrapper {
+  display: inline-block;
+}
+
+/* Dark mode styles for recharts surface */
+:global(.bg-oxford-blue) :global(.recharts-surface) {
+  background-color: #1b2a41 !important;
+}
+
+:global(.bg-oxford-blue) :global(.recharts-wrapper) {
+  background-color: #1b2a41 !important;
+}
+
+:global(.bg-oxford-blue) :global(.recharts-cartesian-grid) {
+  stroke: #555 !important;
+}
+
