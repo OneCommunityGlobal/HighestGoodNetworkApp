@@ -124,30 +124,45 @@ function ApplicantsDashboard() {
   );
 
   // Extract empty state rendering
-  const renderEmptyState = () => (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 'calc(100vh - 150px)',
-        minHeight: '600px',
-        width: '100%',
-        backgroundColor: darkMode ? '#1b2a41' : '#fff',
-      }}
-    >
-      <p
+  const renderEmptyState = () => {
+    // Check if it's a validation error (start date > end date)
+    const isValidationError = error && error.includes('Start date cannot be after end date');
+
+    return (
+      <div
         style={{
-          fontSize: 'clamp(16px, 2.5vw, 18px)',
-          fontWeight: '600',
-          color: darkMode ? '#9ca3af' : '#6b7280',
-          textAlign: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: 'calc(100vh - 150px)',
+          minHeight: '600px',
+          width: '100%',
+          backgroundColor: darkMode ? '#1b2a41' : '#fff',
         }}
       >
-        {error ? 'Unable to load chart data.' : 'No data available to display.'}
-      </p>
-    </div>
-  );
+        <p
+          style={{
+            fontSize: 'clamp(16px, 2.5vw, 18px)',
+            fontWeight: '600',
+            color: isValidationError
+              ? darkMode
+                ? '#ef4444'
+                : '#dc2626'
+              : darkMode
+              ? '#9ca3af'
+              : '#6b7280',
+            textAlign: 'center',
+          }}
+        >
+          {isValidationError
+            ? error
+            : error
+            ? 'Unable to load chart data.'
+            : 'No data available to display.'}
+        </p>
+      </div>
+    );
+  };
 
   // Extract chart content rendering
   const renderChartContent = () => {
@@ -206,41 +221,6 @@ function ApplicantsDashboard() {
           {...getDatePickerProps()}
         />
       </>
-    );
-  };
-
-  // Extract error message rendering
-  const renderErrorMessage = () => {
-    if (!error || loading) {
-      return null;
-    }
-
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 'clamp(10px, 2vw, 20px)',
-          marginBottom: '0',
-          width: '100%',
-          padding: '10px',
-          backgroundColor: darkMode ? '#1b2a41' : '#fff',
-        }}
-      >
-        <p
-          style={{
-            fontSize: 'clamp(14px, 2vw, 16px)',
-            fontWeight: '600',
-            color: darkMode ? '#ef4444' : '#dc2626',
-            textAlign: 'center',
-            width: '100%',
-            margin: '0',
-          }}
-        >
-          {error}
-        </p>
-      </div>
     );
   };
 
@@ -335,8 +315,6 @@ function ApplicantsDashboard() {
       >
         {renderChartContent()}
       </div>
-
-      {renderErrorMessage()}
     </div>
   );
 }
