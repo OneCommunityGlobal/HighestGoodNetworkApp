@@ -5,7 +5,6 @@ function QuestionFieldActions({
   field,
   index,
   totalFields,
-  onClone,
   onMove,
   onDelete,
   onEdit,
@@ -29,15 +28,6 @@ function QuestionFieldActions({
           title="Edit this question"
         >
           Edit
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onClone(field, index)}
-          className={styles.cloneButton}
-          title="Clone this question"
-        >
-          Clone
         </button>
         <button
           type="button"
@@ -84,7 +74,6 @@ QuestionFieldActions.propTypes = {
   }).isRequired,
   index: PropTypes.number.isRequired,
   totalFields: PropTypes.number.isRequired,
-  onClone: PropTypes.func.isRequired,
   onMove: PropTypes.func.isRequired,
   onDelete: PropTypes.func.isRequired,
   onEdit: PropTypes.func.isRequired,

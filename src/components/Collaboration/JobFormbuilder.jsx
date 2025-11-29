@@ -99,39 +99,7 @@ function JobFormBuilder() {
     loadFirstAvailableForm();
   }, []);
 
-  // const ensureFormExists = async () => {
-  //   if (!currentFormId) {
-  //     console.warn('No form ID available for this operation');
-  //     return false;
-  //   }
-  //   return true;
-  // };
-
   // CRUD Functions with Dynamic Form ID
-  const cloneField = async (field, index) => {
-    const clonedField = JSON.parse(JSON.stringify(field));
-
-    // Update local state immediately
-    const newFields = [
-      ...formFields.slice(0, index + 1),
-      clonedField,
-      ...formFields.slice(index + 1),
-    ];
-    setFormFields(newFields);
-
-    // Sync with backend if form exists
-    if (currentFormId) {
-      try {
-        await axios.post(ENDPOINTS.ADD_QUESTION(currentFormId), {
-          question: clonedField,
-          position: index + 1,
-        });
-      } catch (error) {
-        console.error('Error cloning question on server:', error);
-      }
-    }
-  };
-
   const moveField = async (index, direction) => {
     const newIndex = direction === 'up' ? index - 1 : index + 1;
 
@@ -362,7 +330,6 @@ function JobFormBuilder() {
                     index={index}
                     className={styles.formDivCheckbox}
                     totalFields={formFields.length}
-                    onClone={cloneField}
                     onMove={moveField}
                     onDelete={deleteField}
                     onEdit={editField}
