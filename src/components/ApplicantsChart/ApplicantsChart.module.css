@@ -78,6 +78,40 @@
   display: inline-block;
 }
 
+/* Ensure date picker input text is visible in dark mode */
+:global(.text-light) :global(.hgn-datepicker-dark),
+:global(.text-light) :global(.hgn-datepicker-dark) input,
+:global(.text-light) :global(.hgn-datepicker-dark) input[type="text"] {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+:global(.text-light) :global(.hgn-datepicker-dark)::placeholder,
+:global(.text-light) :global(.hgn-datepicker-dark) input::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
+:global(.text-light) :global(.hgn-datepicker-dark):focus,
+:global(.text-light) :global(.hgn-datepicker-dark):focus input,
+:global(.text-light) :global(.hgn-datepicker-dark):focus input[type="text"] {
+  color: #e5e7eb !important;
+  background-color: #374151 !important;
+}
+
+/* Additional styles for react-datepicker input in dark mode */
+:global(.text-light) .datePickerWrapper :global(input.react-datepicker-ignore-onclickoutside),
+:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container input) {
+  color: #e5e7eb !important;
+  background-color: #1f2937 !important;
+}
+
+:global(.text-light) .datePickerWrapper :global(input.react-datepicker-ignore-onclickoutside)::placeholder,
+:global(.text-light) .datePickerWrapper :global(.react-datepicker__input-container input)::placeholder {
+  color: #9ca3af !important;
+  opacity: 1 !important;
+}
+
 /* Dark mode styles for recharts surface */
 :global(.bg-oxford-blue) :global(.recharts-surface) {
   background-color: #1b2a41 !important;

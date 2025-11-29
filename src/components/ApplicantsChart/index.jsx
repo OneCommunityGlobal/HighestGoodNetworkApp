@@ -172,6 +172,7 @@ function ApplicantsDashboard() {
     padding: '6px 12px',
     fontSize: '14px',
     cursor: 'pointer',
+    width: '150px',
   });
 
   // Extract date picker props
@@ -223,7 +224,7 @@ function ApplicantsDashboard() {
           marginTop: 'clamp(10px, 2vw, 20px)',
           marginBottom: '0',
           width: '100%',
-          padding: '10px 10px 0 10px',
+          padding: '10px',
           backgroundColor: darkMode ? '#1b2a41' : '#fff',
         }}
       >
@@ -233,6 +234,8 @@ function ApplicantsDashboard() {
             fontWeight: '600',
             color: darkMode ? '#ef4444' : '#dc2626',
             textAlign: 'center',
+            width: '100%',
+            margin: '0',
           }}
         >
           {error}
