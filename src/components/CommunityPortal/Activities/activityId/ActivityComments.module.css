@@ -597,3 +597,283 @@
 :global(body.bm-dashboard-dark) .commentVisibility {
   color: #66b3ff !important;
 }
+
+/* ============================================
+   Event Card, Calendar, and Feedback Section - Dark Mode
+   ============================================ */
+
+/* Event Card - Dark Mode */
+:global(body.dark-mode) .eventCard,
+:global(body.bm-dashboard-dark) .eventCard {
+  background: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .eventImage,
+:global(body.bm-dashboard-dark) .eventImage {
+  background: #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .eventTitle,
+:global(body.bm-dashboard-dark) .eventTitle {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .eventMeta,
+:global(body.bm-dashboard-dark) .eventMeta {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .eventMetaItem,
+:global(body.bm-dashboard-dark) .eventMetaItem {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .eventMetaItem a,
+:global(body.bm-dashboard-dark) .eventMetaItem a {
+  color: #66b3ff !important;
+}
+
+:global(body.dark-mode) .eventAvatars span,
+:global(body.bm-dashboard-dark) .eventAvatars span {
+  color: #b8c5d1 !important;
+}
+
+/* Calendar - Dark Mode */
+:global(body.dark-mode) .calendar,
+:global(body.bm-dashboard-dark) .calendar {
+  background: #2e5061 !important;
+  color: #ffffff !important;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.calendarNavBtn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.calendarMonth {
+  font-weight: 500;
+}
+
+.calendarTable {
+  width: 100%;
+  font-size: 0.95rem;
+}
+
+.calendarWeekday {
+  padding: 4px;
+  text-align: center;
+  color: #888;
+}
+
+.calendarDayBtn {
+  cursor: pointer;
+  padding: 6px;
+  text-align: center;
+  border: none;
+  background: none;
+  width: 100%;
+  border-radius: 4px;
+  position: relative;
+}
+
+.calendarDayEmpty {
+  padding: 6px;
+}
+
+.calendarDayDot {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  background-color: white;
+  border-radius: 50%;
+}
+
+/* Calendar - Dark Mode */
+:global(body.dark-mode) .calendarNavBtn,
+:global(body.bm-dashboard-dark) .calendarNavBtn {
+  border: 1px solid #3a506b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .calendarNavBtn:hover,
+:global(body.bm-dashboard-dark) .calendarNavBtn:hover {
+  background: #3a506b !important;
+  border-color: #4a6072 !important;
+}
+
+:global(body.dark-mode) .calendarMonth,
+:global(body.bm-dashboard-dark) .calendarMonth {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .calendarWeekday,
+:global(body.bm-dashboard-dark) .calendarWeekday {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .calendarDayBtn,
+:global(body.bm-dashboard-dark) .calendarDayBtn {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .calendarDayBtn:hover,
+:global(body.bm-dashboard-dark) .calendarDayBtn:hover {
+  background: rgba(58, 80, 107, 0.3) !important;
+}
+
+:global(body.dark-mode) .calendarDayDot,
+:global(body.bm-dashboard-dark) .calendarDayDot {
+  background-color: #ffffff !important;
+}
+
+/* Feedback Stats Section */
+.feedbackStats {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.feedbackStatsLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+.feedbackStatsRating {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1976d2;
+}
+
+.feedbackStatsStars {
+  color: #666;
+}
+
+.feedbackStatsReviews {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.feedbackStatsRight {
+  text-align: right;
+}
+
+.feedbackStatsCount {
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.feedbackFormWrapper {
+  flex: 1;
+}
+
+.feedbackRatingLabel {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.feedbackControlsContainer {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.feedbackList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feedbackRatingContainer {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.feedbackRatingText {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.feedbackEmpty {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+/* Feedback Stats - Dark Mode */
+:global(body.dark-mode) .feedbackStats,
+:global(body.bm-dashboard-dark) .feedbackStats {
+  background: #2e5061 !important;
+  color: #ffffff !important;
+  border: 1px solid #3a506b !important;
+}
+
+:global(body.dark-mode) .feedbackStatsRating,
+:global(body.bm-dashboard-dark) .feedbackStatsRating {
+  color: #66b3ff !important;
+}
+
+:global(body.dark-mode) .feedbackStatsStars,
+:global(body.bm-dashboard-dark) .feedbackStatsStars {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackStatsReviews,
+:global(body.bm-dashboard-dark) .feedbackStatsReviews {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackStatsCount,
+:global(body.bm-dashboard-dark) .feedbackStatsCount {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .feedbackRatingLabel,
+:global(body.bm-dashboard-dark) .feedbackRatingLabel {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackRatingText,
+:global(body.bm-dashboard-dark) .feedbackRatingText {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackEmpty,
+:global(body.bm-dashboard-dark) .feedbackEmpty {
+  color: #b8c5d1 !important;
+}
+
+:global(body.dark-mode) .feedbackEmpty h3,
+:global(body.bm-dashboard-dark) .feedbackEmpty h3 {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .feedbackEmpty p,
+:global(body.bm-dashboard-dark) .feedbackEmpty p {
+  color: #b8c5d1 !important;
+}
