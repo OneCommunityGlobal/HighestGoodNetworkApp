@@ -1,3 +1,4 @@
+/* eslint-disable */
 /* Light Mode Map */
 :global(.light-mode-map) {
   background-color: white;
@@ -7,6 +8,15 @@
 :global(.dark-mode-map) {
   filter: brightness(0.9) contrast(1.1);
   background-color: #0d1b2a;
+}
+
+/* Remove underline from zoom controls */
+:global(.leaflet-control-zoom a) {
+  text-decoration: none !important;
+}
+
+:global(.leaflet-control-zoom a:hover) {
+  text-decoration: none !important;
 }
 
 /* Remove default popup background and styling */
@@ -137,11 +147,13 @@
   color: white !important;
   border-color: #3a506b !important;
   transition: all 0.2s ease;
+  text-decoration: none !important;
 }
 
 :global(.dark-mode-map .leaflet-control-zoom a:hover) {
   background-color: #3a506b !important;
   transform: translateY(-1px);
+  text-decoration: none !important;
 }
 
 :global(.light-mode-map .leaflet-control-zoom a) {
@@ -149,10 +161,12 @@
   color: #222 !important;
   border-color: #ddd !important;
   transition: all 0.2s ease;
+  text-decoration: none !important;
 }
 
 :global(.light-mode-map .leaflet-control-zoom a:hover) {
   background-color: #f5f5f5 !important;
+  text-decoration: none !important;
 }
 
 :global(.dark-mode-map .leaflet-control-zoom-in),

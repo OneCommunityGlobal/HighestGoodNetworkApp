@@ -6,7 +6,13 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
-import { MapThemeUpdater, Legend, ProjectMarkers, MapUtils } from './MapSharedComponents';
+import {
+  MapThemeUpdater,
+  ProjectMarkers,
+  MapUtils,
+  MapLegend,
+  ProjectCounter,
+} from './MapSharedComponents';
 import 'leaflet/dist/leaflet.css';
 import styles from './InteractiveMap.module.css';
 
@@ -22,9 +28,6 @@ export default function InteractiveMap() {
   const [mapKey, setMapKey] = useState(0);
   const [errMsg, setErrMsg] = useState('');
 
-  /* -----------------------------------------
-     FETCH
-  ----------------------------------------- */
   const fetchOrgs = async () => {
     try {
       let response;
@@ -35,11 +38,8 @@ export default function InteractiveMap() {
       }
 
       const data = response.data.data || [];
-
-      // Print fetched data to check if backend is correct
       console.log('Backend data fetched:', data);
 
-      // If no data from backend, use pseudo data
       if (data.length === 0) {
         console.log('No data from backend, using pseudo data');
         const pseudoData = MapUtils.getPseudoOrgs();
@@ -51,7 +51,6 @@ export default function InteractiveMap() {
       }
     } catch (e) {
       console.error('Error fetching data:', e);
-      // If fetch fails, use pseudo data
       const pseudoData = MapUtils.getPseudoOrgs();
       setOrgs(pseudoData);
       setFilteredOrgs(pseudoData);
@@ -60,9 +59,6 @@ export default function InteractiveMap() {
     }
   };
 
-  /* -----------------------------------------
-     FILTERING
-  ----------------------------------------- */
   const applyDateFilters = () => {
     if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
       setErrMsg('End date cannot be earlier than start date');
@@ -86,9 +82,6 @@ export default function InteractiveMap() {
 
   const handleProjectClick = org => history.push(`/bmdashboard/projects/${org.orgId}`);
 
-  /* -----------------------------------------
-     EFFECTS
-  ----------------------------------------- */
   useEffect(() => {
     fetchOrgs();
   }, []);
@@ -97,17 +90,10 @@ export default function InteractiveMap() {
     setMapKey(k => k + 1);
   }, [darkMode]);
 
-  /* -----------------------------------------
-     STYLES
-  ----------------------------------------- */
   const S = MapUtils.getMapStyles(darkMode);
 
-  /* -----------------------------------------
-     RENDER
-  ----------------------------------------- */
   return (
     <div style={S.container}>
-      {/* HEADER ROW — Title (left) + Filters (right) */}
       <div style={S.headerRow}>
         <h2 style={S.titleText}>Global Distribution and Project Status Overview</h2>
 
@@ -137,12 +123,14 @@ export default function InteractiveMap() {
         </div>
       </div>
 
-      {/* MAP — full width, flexible height */}
       <div style={S.mapArea}>
-        {/* Bottom-left label inside map */}
-        <div style={S.bottomLeftLabel}>
-          Showing {filteredOrgs.length} of {orgs.length} projects
-        </div>
+        <ProjectCounter
+          count={filteredOrgs.length}
+          total={orgs.length}
+          darkMode={darkMode}
+          position="bottomleft"
+        />
+        <MapLegend position="bottomright" darkMode={darkMode} />
 
         {loading ? (
           <div
@@ -161,10 +149,12 @@ export default function InteractiveMap() {
             center={[40, 0]}
             zoom={3}
             scrollWheelZoom
-            style={{ width: '100%', height: '100%' }}
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
           >
             <MapThemeUpdater darkMode={darkMode} />
-
             <TileLayer
               url={
                 darkMode
@@ -173,9 +163,6 @@ export default function InteractiveMap() {
               }
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
-
-            <Legend />
-
             <MarkerClusterGroup maxClusterRadius={70} chunkedLoading spiderfyOnMaxZoom={true}>
               <ProjectMarkers
                 orgs={filteredOrgs}

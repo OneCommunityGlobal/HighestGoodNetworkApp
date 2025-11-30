@@ -5,34 +5,33 @@ import { useHistory } from 'react-router-dom';
 import { MapContainer, TileLayer } from 'react-leaflet';
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
 import axios from 'axios';
-import L from 'leaflet';
 import { ENDPOINTS } from '../../../utils/URL';
-import { MapThemeUpdater, Legend, ProjectMarkers, MapUtils } from './MapSharedComponents';
+import {
+  MapThemeUpdater,
+  ProjectMarkers,
+  MapUtils,
+  MapLegend,
+  ProjectCounter,
+} from './MapSharedComponents';
 
-/* -----------------------------------------------------
-   EMBED INTERACTIVE MAP
------------------------------------------------------ */
 function EmbedInteractiveMap() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const history = useHistory();
   const [orgs, setOrgs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // fetch projects/orgs
   const fetchOrgs = async () => {
     try {
       let response;
       try {
         response = await axios.get(ENDPOINTS.BM_PROJECTS_WITH_LOCATION);
       } catch (projectError) {
-        // Fallback to organization data for now
         console.log('Projects with location endpoint not available, using organization data');
         response = await axios.get(ENDPOINTS.BM_ORGS_WITH_LOCATION);
       }
 
       const data = response.data.data || [];
 
-      // If no data from backend, use pseudo data
       if (data.length === 0) {
         console.log('No data from backend, using pseudo data');
         const pseudoData = MapUtils.getPseudoOrgs();
@@ -43,7 +42,6 @@ function EmbedInteractiveMap() {
       return data;
     } catch (error) {
       console.error('Error fetching project/org data:', error);
-      // If fetch fails, use pseudo data
       const pseudoData = MapUtils.getPseudoOrgs();
       setOrgs(pseudoData);
       return [];
@@ -53,7 +51,6 @@ function EmbedInteractiveMap() {
   };
 
   const handleProjectClick = org => {
-    // Navigate to project details page
     history.push(`/bmdashboard/projects/${org.orgId}`);
   };
 
@@ -71,25 +68,13 @@ function EmbedInteractiveMap() {
         background: darkMode ? '#0d1b2a' : 'white',
       }}
     >
-      {/* Project counter for embed version */}
-      <div
-        style={{
-          position: 'absolute',
-          left: '15px',
-          top: '15px',
-          padding: '8px 12px',
-          background: darkMode ? 'rgba(30, 42, 58, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-          borderRadius: '6px',
-          fontSize: '13px',
-          backdropFilter: 'blur(10px)',
-          color: darkMode ? 'white' : '#222',
-          border: darkMode ? '1px solid #3a506b' : '1px solid rgba(0,0,0,0.1)',
-          zIndex: 1000,
-          fontWeight: '500',
-        }}
-      >
-        Showing {orgs.length} projects
-      </div>
+      <ProjectCounter
+        count={orgs.length}
+        darkMode={darkMode}
+        position="bottomleft"
+        isEmbed={true}
+      />
+      <MapLegend position="bottomleft" darkMode={darkMode} isEmbed={true} />
 
       <MapContainer
         center={[20, 0]}
@@ -109,7 +94,6 @@ function EmbedInteractiveMap() {
         worldCopyJump
       >
         <MapThemeUpdater darkMode={darkMode} />
-
         <TileLayer
           noWrap={false}
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -121,9 +105,6 @@ function EmbedInteractiveMap() {
           minZoom={1}
           maxZoom={15}
         />
-
-        <Legend position="bottomleft" />
-
         <MarkerClusterGroup
           disableClusteringAtZoom={13}
           spiderfyOnMaxZoom={true}

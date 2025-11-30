@@ -1,13 +1,123 @@
 /* eslint-disable */
 import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { useMap } from 'react-leaflet';
 import { CircleMarker, Popup, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 
 /* -----------------------------------------------------
-   THEME UPDATER
+   SHARED LEGEND COMPONENT
 ----------------------------------------------------- */
+export function MapLegend({ position = 'bottomright', darkMode, isEmbed = false }) {
+  const labels = isEmbed
+    ? ['Active - Red', 'Delayed - Yellow', 'Completed - Blue']
+    : ['Active', 'Delayed', 'Completed'];
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        [position === 'bottomleft' ? 'left' : 'right']: isEmbed ? '15px' : '20px',
+        bottom: isEmbed ? '15px' : '20px',
+        padding: '12px 15px',
+        background: darkMode ? 'rgba(30, 42, 58, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+        color: darkMode ? 'white' : '#222',
+        borderRadius: '8px',
+        boxShadow: darkMode ? '0 4px 15px rgba(0,0,0,0.4)' : '0 4px 15px rgba(0,0,0,0.15)',
+        border: darkMode ? '1px solid #3a506b' : '1px solid #ccc',
+        fontSize: '14px',
+        fontFamily: 'Arial, sans-serif',
+        minWidth: '160px',
+        backdropFilter: 'blur(10px)',
+        fontWeight: '500',
+        zIndex: 1000,
+        maxWidth: '200px',
+      }}
+    >
+      <div
+        style={{
+          color: darkMode ? 'white' : '#333',
+          fontWeight: 'bold',
+          marginBottom: '8px',
+          fontSize: '16px',
+        }}
+      >
+        Project Status
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
+        <div
+          style={{
+            width: '14px',
+            height: '14px',
+            borderRadius: '50%',
+            backgroundColor: '#DE6A6A',
+            marginRight: '10px',
+            border: darkMode ? '1px solid rgba(255,255,255,0.3)' : '1px solid #333',
+          }}
+        ></div>
+        <span style={{ color: darkMode ? 'white' : '#333', fontWeight: '500' }}>{labels[0]}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '6px' }}>
+        <div
+          style={{
+            width: '14px',
+            height: '14px',
+            borderRadius: '50%',
+            backgroundColor: '#E3D270',
+            marginRight: '10px',
+            border: darkMode ? '1px solid rgba(255,255,255,0.3)' : '1px solid #333',
+          }}
+        ></div>
+        <span style={{ color: darkMode ? 'white' : '#333', fontWeight: '500' }}>{labels[1]}</span>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0px' }}>
+        <div
+          style={{
+            width: '14px',
+            height: '14px',
+            borderRadius: '50%',
+            backgroundColor: '#6ACFDE',
+            marginRight: '10px',
+            border: darkMode ? '1px solid rgba(255,255,255,0.3)' : '1px solid #333',
+          }}
+        ></div>
+        <span style={{ color: darkMode ? 'white' : '#333', fontWeight: '500' }}>{labels[2]}</span>
+      </div>
+    </div>
+  );
+}
+
+/* -----------------------------------------------------
+   SHARED PROJECT COUNTER COMPONENT  
+----------------------------------------------------- */
+export function ProjectCounter({
+  count,
+  total,
+  darkMode,
+  position = 'bottomleft',
+  isEmbed = false,
+}) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        [position.includes('left') ? 'left' : 'right']: isEmbed ? '15px' : '20px',
+        [position.includes('bottom') ? 'bottom' : 'top']: isEmbed ? '15px' : '20px',
+        padding: '8px 12px',
+        background: darkMode ? 'rgba(30, 42, 58, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+        borderRadius: '6px',
+        fontSize: '13px',
+        backdropFilter: 'blur(10px)',
+        color: darkMode ? 'white' : '#222',
+        border: darkMode ? '1px solid #3a506b' : '1px solid rgba(0,0,0,0.1)',
+        zIndex: 1000,
+        fontWeight: '500',
+      }}
+    >
+      Showing {count} {total ? `of ${total}` : ''} projects
+    </div>
+  );
+}
+
 export function MapThemeUpdater({ darkMode }) {
   const map = useMap();
   useEffect(() => {
@@ -46,111 +156,6 @@ export function MapThemeUpdater({ darkMode }) {
       }
     });
   }, [darkMode, map]);
-  return null;
-}
-
-/* -----------------------------------------------------
-   LEGEND
------------------------------------------------------ */
-export function Legend({ position = 'bottomright' }) {
-  const map = useMap();
-  const darkMode = useSelector(state => state.theme.darkMode);
-
-  useEffect(() => {
-    const legend = L.control({ position });
-
-    legend.onAdd = () => {
-      const div = L.DomUtil.create('div', 'info legend');
-
-      if (position === 'bottomright') {
-        div.style.transform = 'translate(-5px, -50px)';
-      }
-
-      // Enhanced styling for better visibility when position is bottomleft
-      if (position === 'bottomleft') {
-        div.style.backgroundColor = darkMode
-          ? 'rgba(30, 42, 58, 0.95)'
-          : 'rgba(255, 255, 255, 0.95)';
-        div.style.color = darkMode ? 'white' : '#222';
-        div.style.padding = '12px 15px';
-        div.style.borderRadius = '8px';
-        div.style.boxShadow = darkMode
-          ? '0 4px 15px rgba(0,0,0,0.4)'
-          : '0 4px 15px rgba(0,0,0,0.15)';
-        div.style.border = darkMode ? '1px solid #3a506b' : '1px solid #ccc';
-        div.style.fontSize = '14px';
-        div.style.fontFamily = 'Arial, sans-serif';
-        div.style.minWidth = '160px';
-        div.style.backdropFilter = 'blur(10px)';
-
-        const statuses = ['active', 'delayed', 'completed'];
-        const colors = ['#DE6A6A', '#E3D270', '#6ACFDE'];
-        const labels = ['Active - Red', 'Delayed - Yellow', 'Completed - Blue'];
-
-        div.innerHTML = `<div style="color: ${
-          darkMode ? 'white' : '#333'
-        }; font-weight: bold; margin-bottom: 8px; font-size: 16px;">Project Status</div>`;
-
-        statuses.forEach((status, i) => {
-          div.innerHTML +=
-            `<div style="display: flex; align-items: center; margin-bottom: 6px;">` +
-            `<div style="width: 14px; height: 14px; border-radius: 50%; background-color: ${
-              colors[i]
-            }; margin-right: 10px; border: ${
-              darkMode ? '1px solid rgba(255,255,255,0.3)' : '1px solid #333'
-            };"></div>` +
-            `<span style="text-transform: capitalize; color: ${
-              darkMode ? 'white' : '#333'
-            }; font-weight: 500;">${labels[i]}</span>` +
-            `</div>`;
-        });
-      } else {
-        div.style.backgroundColor = darkMode ? '#1e2a3a' : 'white';
-        div.style.color = darkMode ? 'white' : '#222';
-        div.style.padding = '12px 15px';
-        div.style.borderRadius = '8px';
-        div.style.boxShadow = darkMode
-          ? '0 4px 15px rgba(0,0,0,0.6)'
-          : '0 4px 15px rgba(0,0,0,0.15)';
-        div.style.border = darkMode ? '1px solid #3a506b' : '1px solid #ddd';
-        div.style.fontSize = '14px';
-        div.style.fontWeight = '500';
-        div.style.backdropFilter = 'blur(10px)';
-        div.style.position = 'relative';
-        div.style.zIndex = 1000;
-
-        const statuses = ['active', 'delayed', 'completed'];
-        const colors = ['#DE6A6A', '#E3D270', '#6ACFDE'];
-
-        div.innerHTML = `
-        <h4 style="margin:0 0 10px;font-size:15px;font-weight:600;color:${
-          darkMode ? 'white' : '#222'
-        };">Project Status</h4>
-        ${statuses
-          .map(
-            (s, i) => `
-          <div style="display:flex;align-items:center;margin-bottom:8px;">
-            <span style="
-              width:14px;height:14px;border-radius:50%;
-              background:${colors[i]};
-              margin-right:10px;
-              border: ${darkMode ? '1px solid rgba(255,255,255,0.3)' : '1px solid rgba(0,0,0,0.2)'};
-            "></span>
-            <span style="color:${
-              darkMode ? 'white' : '#222'
-            };text-transform:capitalize;">${s}</span>
-          </div>`,
-          )
-          .join('')}
-        `;
-      }
-      return div;
-    };
-
-    legend.addTo(map);
-    return () => legend.remove();
-  }, [map, darkMode, position]);
-
   return null;
 }
 
@@ -493,20 +498,6 @@ export const MapUtils = {
       overflow: 'hidden',
       width: '100%',
       height: '100%',
-    },
-    bottomLeftLabel: {
-      position: 'absolute',
-      left: '15px',
-      bottom: '15px',
-      padding: '8px 12px',
-      background: darkMode ? 'rgba(30, 42, 58, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-      borderRadius: '6px',
-      fontSize: '13px',
-      backdropFilter: 'blur(10px)',
-      color: darkMode ? 'white' : '#222',
-      border: darkMode ? '1px solid #3a506b' : '1px solid rgba(0,0,0,0.1)',
-      zIndex: 1000,
-      fontWeight: '500',
     },
   }),
 };
