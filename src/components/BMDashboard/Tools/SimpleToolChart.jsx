@@ -75,36 +75,22 @@ function DateRangePicker({ dateRange, setDateRange }) {
 
   const handleStartDateChange = e => {
     const val = e.target.value;
-
-    // allow free typing
     setTempRange(prev => ({ ...prev, from: val }));
-
-    // only convert to Date object when full date exists (YYYY-MM-DD)
-    if (val && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-      const parsed = new Date(val);
-      if (!isNaN(parsed.getTime())) {
-        setTempRange(prev => ({ ...prev, from: parsed }));
-      }
-    }
   };
 
   const handleEndDateChange = e => {
     const val = e.target.value;
-
-    // allow free typing
     setTempRange(prev => ({ ...prev, to: val }));
-
-    // only convert to Date object when full date exists (YYYY-MM-DD)
-    if (val && /^\d{4}-\d{2}-\d{2}$/.test(val)) {
-      const parsed = new Date(val);
-      if (!isNaN(parsed.getTime())) {
-        setTempRange(prev => ({ ...prev, to: parsed }));
-      }
-    }
   };
 
   const applyDateRange = () => {
-    setDateRange(tempRange);
+    const parsedFrom = /^\d{4}-\d{2}-\d{2}$/.test(tempRange.from)
+      ? new Date(tempRange.from + 'T00:00:00')
+      : tempRange.from;
+    const parsedTo = /^\d{4}-\d{2}-\d{2}$/.test(tempRange.to)
+      ? new Date(tempRange.to + 'T23:59:59')
+      : tempRange.to;
+    setDateRange({ from: parsedFrom, to: parsedTo });
     setIsOpen(false);
   };
 
@@ -121,7 +107,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          backgroundColor: darkMode ? '#1a1a1a' : '#fff',
+          backgroundColor: darkMode ? '#1C2541' : '#fff',
           cursor: 'pointer',
           color: darkMode ? '#e5e5e5' : '#111',
         }}
@@ -157,7 +143,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
             zIndex: 10,
             marginTop: '4px',
             width: '100%',
-            backgroundColor: darkMode ? '#1a1a1a' : 'white',
+            backgroundColor: darkMode ? '#1C2541' : 'white',
             border: '1px solid',
             borderColor: darkMode ? '#444' : '#d1d5db',
             boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
@@ -189,7 +175,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
                   padding: '8px 12px',
                   border: '1px solid',
                   borderColor: darkMode ? '#444' : '#d1d5db',
-                  backgroundColor: darkMode ? '#0f0f0f' : '#fff',
+                  backgroundColor: darkMode ? '#3A506B' : '#fff',
                   color: darkMode ? '#e5e5e5' : '#111',
                 }}
               />
@@ -217,7 +203,7 @@ function DateRangePicker({ dateRange, setDateRange }) {
                   padding: '8px 12px',
                   border: '1px solid',
                   borderColor: darkMode ? '#444' : '#d1d5db',
-                  backgroundColor: darkMode ? '#0f0f0f' : '#fff',
+                  backgroundColor: darkMode ? '#3A506B' : '#fff',
                   color: darkMode ? '#e5e5e5' : '#111',
                 }}
               />
@@ -258,8 +244,11 @@ export default function SimpleToolChart() {
     // Date filtering
     if (dateRange.from && dateRange.to) {
       const fromDate =
-        typeof dateRange.from === 'string' ? new Date(dateRange.from) : dateRange.from;
-      const toDate = typeof dateRange.to === 'string' ? new Date(dateRange.to) : dateRange.to;
+        typeof dateRange.from === 'string'
+          ? new Date(dateRange.from + 'T00:00:00')
+          : dateRange.from;
+      const toDate =
+        typeof dateRange.to === 'string' ? new Date(dateRange.to + 'T23:59:59') : dateRange.to;
 
       filtered = filtered.filter(item => {
         const itemDate = new Date(item.date);
@@ -306,7 +295,7 @@ export default function SimpleToolChart() {
         maxWidth: '100%',
         minWidth: '100%',
         padding: '24px',
-        backgroundColor: darkMode ? '#0d0d0d' : '#ffffff',
+        backgroundColor: darkMode ? '#1B2A41' : '#ffffff',
         color: darkMode ? '#e5e5e5' : '#111',
         boxSizing: 'border-box',
       }}
@@ -338,7 +327,7 @@ export default function SimpleToolChart() {
               border: '1px solid',
               borderColor: darkMode ? '#444' : '#d1d5db',
               color: darkMode ? '#e5e5e5' : '#111',
-              backgroundColor: darkMode ? '#1a1a1a' : '#fff',
+              backgroundColor: darkMode ? '#1C2541' : '#fff',
             }}
           >
             {projects.map(project => (
@@ -362,7 +351,7 @@ export default function SimpleToolChart() {
         style={{
           height: '400px',
           width: '100%',
-          backgroundColor: darkMode ? '#0f0f0f' : '#ffffff',
+          backgroundColor: darkMode ? '#3A506B' : '#ffffff',
           padding: '16px',
           boxSizing: 'border-box',
         }}
@@ -393,7 +382,7 @@ export default function SimpleToolChart() {
             <Tooltip
               formatter={value => [`${value}%`, 'Replaced Percentage']}
               contentStyle={{
-                backgroundColor: darkMode ? '#1c1c1c' : '#ffffff',
+                backgroundColor: darkMode ? '#1C2541' : '#ffffff',
                 border: darkMode ? '1px solid #666' : '1px solid #ccc',
                 color: darkMode ? '#f5f5f5' : '#000',
               }}
