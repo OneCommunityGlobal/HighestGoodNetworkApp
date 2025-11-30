@@ -12,6 +12,7 @@ export default function SubmitPost({
   onSaved = () => {},
   onCancelEdit = () => {},
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const isEditing = Boolean(initialData && (initialData.id || initialData._id));
 
   const [postType, setPostType] = useState('text');
@@ -25,8 +26,6 @@ export default function SubmitPost({
   // Calculate max schedule date (6 months from now)
   const maxScheduleDate = new Date();
   maxScheduleDate.setMonth(maxScheduleDate.getMonth() + 6);
-
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // helper function to convert ISO/date to "YYYY-MM-DDTHH:MM" to local string for <input type="datetime-local" />
   const toInputDateTime = iso => {
@@ -104,8 +103,13 @@ export default function SubmitPost({
 
     try {
       const res = await axios.post(`${ENDPOINTS.AP_REDDIT_SUBMIT_POST}`, postData);
+      if (res.status === 201) {
+        toast.success(`Reddit post submitted successfully`);
+      } else {
+        throw new Error('Unable to submit reddit post');
+      }
     } catch (error) {
-      toast.error('Unable to submit post to reddit');
+      toast.error(error.message || 'Unable to submit post to reddit');
     }
   };
 
@@ -183,20 +187,30 @@ export default function SubmitPost({
   };
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <div
+      className={`${isEditing ? 'reddit-form-container' : ''} ${
+        darkMode ? 'reddit-form-container dark-mode' : ''
+      }`}
+    >
       <div>
         <form onSubmit={handleSubmit}>
-          <div>
-            <select value={postType} onChange={e => setPostType(e.target.value)}>
+          <div className="form-group">
+            <select
+              id="postType"
+              className="form-select"
+              value={postType}
+              onChange={e => setPostType(e.target.value)}
+            >
               <option value="text">Text</option>
               <option value="link">Link</option>
             </select>
           </div>
-          <div>
+          <div className="form-group">
             <input
+              id="postTitle"
               type="text"
               placeholder="Enter Post Title*"
-              className="input-text-for-announcement w-50"
+              className=" w-50 form-input"
               name="title"
               value={title}
               required
@@ -207,11 +221,11 @@ export default function SubmitPost({
             />
             {errors.title && <div style={{ color: 'red' }}>{errors.title}</div>}
           </div>
-          <div>
+          <div className="form-group">
             <input
               type="text"
               placeholder="Subreddit* e.g., programming"
-              className="input-text-for-announcement w-50"
+              className="form-input w-50"
               name="subreddit"
               value={subreddit}
               required
@@ -221,7 +235,7 @@ export default function SubmitPost({
             {errors.subreddit && <div style={{ color: 'red' }}>{errors.subreddit}</div>}
           </div>
           {postType === 'text' && (
-            <div>
+            <div className="form-group">
               <textarea
                 name="content"
                 value={content}
@@ -229,38 +243,36 @@ export default function SubmitPost({
                 required
                 rows={5}
                 placeholder="Write your Reddit post here*...."
+                className="form-textarea"
                 style={{
                   width: '60%',
                   height: '300px',
-                  padding: '12px',
-                  border: '1px solid #ccc',
-                  marginBottom: '1rem',
                 }}
               />
               {errors.content && <div style={{ color: 'red' }}>{errors.content}</div>}
             </div>
           )}
           {postType === 'link' && (
-            <div>
+            <div className="form-group">
               <input
                 type="url"
                 value={url}
                 required
                 placeholder="Enter link URL"
-                className="input-text-for-announcement"
+                className="form-input w-50"
                 onChange={e => setUrl(e.target.value)}
               />
               {errors.url && <div style={{ color: 'red' }}>{errors.url}</div>}
             </div>
           )}
-          <div>
+          <div className="form-group">
             <input
               type="datetime-local"
               value={redditScheduleTime}
               onChange={e => setRedditScheduleTime(e.target.value)}
               min={new Date().toISOString().slice(0, 16)}
               max={maxScheduleDate.toISOString().slice(0, 16)}
-              className="input-text-for-announcement"
+              className="form-input w-30"
               style={{
                 width: '15%',
               }}
