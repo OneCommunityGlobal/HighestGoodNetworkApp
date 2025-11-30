@@ -116,3 +116,56 @@
     padding: 10px;
   }
 }
+
+.bodyDark {
+  background-color: #121212 !important;
+  color: #ffffff;
+}
+
+.textLight {
+  color: #ffffff !important;
+}
+.textDark {
+  color: #111111;
+}
+
+.filtersDark {
+  background-color: #1a1a1a !important;
+  border: 1px solid #333;
+}
+
+.inputDark {
+  background-color: #222 !important;
+  color: #fff !important;
+  border: 1px solid #444 !important;
+}
+
+.inputDark::placeholder {
+  color: #bbb;
+}
+
+.activityListDark {
+  background-color: #111 !important;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.listItemDark {
+  background-color: #1e1e1e !important;
+  color: #fafafa !important;
+  border: 1px solid #333 !important;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.listItem {
+  background-color: #f7f7f7;
+  color: #000;
+}
+
+.errorMessage {
+  color: #ff4d4d;
+  margin-top: 6px;
+  font-size: 0.9rem;
+}
