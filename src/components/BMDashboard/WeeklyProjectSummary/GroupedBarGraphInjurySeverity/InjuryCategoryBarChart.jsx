@@ -217,7 +217,7 @@ function InjuryCategoryBarChart() {
         </div>
       </div>
 
-      {loading && <p>Loading…</p>}
+      {loading && <p className={darkMode ? styles.darkMode : ''}>Loading…</p>}
       {!loading && error && <p className={styles.error}>Error: {String(error)}</p>}
 
       {!loading && !error && (
@@ -251,7 +251,7 @@ function InjuryCategoryBarChart() {
               contentStyle={{
                 backgroundColor: darkMode ? '#2b3e59' : '#fff',
                 color: darkMode ? '#fff' : '#000',
-                border: 'none',
+                border: darkMode ? '1px solid #555' : '1px solid #ccc',
               }}
               labelStyle={{
                 color: darkMode ? '#fff' : '#000',
