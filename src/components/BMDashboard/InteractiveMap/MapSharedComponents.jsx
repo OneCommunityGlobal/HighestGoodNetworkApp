@@ -501,3 +501,20 @@ export const MapUtils = {
     },
   }),
 };
+
+/* -----------------------------------------------------
+   MAP CONFIGURATION CONSTANTS
+----------------------------------------------------- */
+export const MapConfig = {
+  tileUrls: {
+    dark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+    light: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  },
+  maxZoom: 15,
+  minZoom: 1,
+  clusterSettings: {
+    disableClusteringAtZoom: 13,
+    spiderfyOnMaxZoom: true,
+    chunkedLoading: true,
+  },
+};

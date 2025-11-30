@@ -1,18 +1,10 @@
-/* eslint-disable */
+// components/InteractiveMap.jsx
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { MapContainer, TileLayer } from 'react-leaflet';
-import MarkerClusterGroup from '@changey/react-leaflet-markercluster';
-import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL';
-import {
-  MapThemeUpdater,
-  ProjectMarkers,
-  MapUtils,
-  MapLegend,
-  ProjectCounter,
-} from './MapSharedComponents';
+import { useProjectsData } from '../../../hooks/useProjectsData';
+import BaseInteractiveMap from './BaseInteractiveMap';
+import { MapUtils } from './MapSharedComponents';
 import 'leaflet/dist/leaflet.css';
 import styles from './InteractiveMap.module.css';
 
@@ -20,44 +12,12 @@ export default function InteractiveMap() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const history = useHistory();
 
-  const [orgs, setOrgs] = useState([]);
+  const { orgs, loading } = useProjectsData();
   const [filteredOrgs, setFilteredOrgs] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [mapKey, setMapKey] = useState(0);
   const [errMsg, setErrMsg] = useState('');
-
-  const fetchOrgs = async () => {
-    try {
-      let response;
-      try {
-        response = await axios.get(ENDPOINTS.BM_PROJECTS_WITH_LOCATION);
-      } catch {
-        response = await axios.get(ENDPOINTS.BM_ORGS_WITH_LOCATION);
-      }
-
-      const data = response.data.data || [];
-      console.log('Backend data fetched:', data);
-
-      if (data.length === 0) {
-        console.log('No data from backend, using pseudo data');
-        const pseudoData = MapUtils.getPseudoOrgs();
-        setOrgs(pseudoData);
-        setFilteredOrgs(pseudoData);
-      } else {
-        setOrgs(data);
-        setFilteredOrgs(data);
-      }
-    } catch (e) {
-      console.error('Error fetching data:', e);
-      const pseudoData = MapUtils.getPseudoOrgs();
-      setOrgs(pseudoData);
-      setFilteredOrgs(pseudoData);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const applyDateFilters = () => {
     if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
@@ -77,14 +37,10 @@ export default function InteractiveMap() {
     setStartDate('');
     setEndDate('');
     setErrMsg('');
-    setFilteredOrgs(orgs);
+    setFilteredOrgs([]);
   };
 
   const handleProjectClick = org => history.push(`/bmdashboard/projects/${org.orgId}`);
-
-  useEffect(() => {
-    fetchOrgs();
-  }, []);
 
   useEffect(() => {
     setMapKey(k => k + 1);
@@ -124,55 +80,20 @@ export default function InteractiveMap() {
       </div>
 
       <div style={S.mapArea}>
-        <ProjectCounter
-          count={filteredOrgs.length}
-          total={orgs.length}
+        <BaseInteractiveMap
+          orgs={orgs}
+          filteredOrgs={filteredOrgs}
+          loading={loading}
           darkMode={darkMode}
+          onProjectClick={handleProjectClick}
+          showFilters={true}
+          mapKey={mapKey}
+          center={[40, 0]}
+          zoom={3}
+          maxClusterRadius={70}
+          markerRadius={8}
           position="bottomleft"
         />
-        <MapLegend position="bottomright" darkMode={darkMode} />
-
-        {loading ? (
-          <div
-            style={{
-              padding: '40px',
-              textAlign: 'center',
-              color: darkMode ? 'white' : '#222',
-              background: darkMode ? '#0d1b2a' : 'white',
-            }}
-          >
-            Loading…
-          </div>
-        ) : (
-          <MapContainer
-            key={mapKey}
-            center={[40, 0]}
-            zoom={3}
-            scrollWheelZoom
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-          >
-            <MapThemeUpdater darkMode={darkMode} />
-            <TileLayer
-              url={
-                darkMode
-                  ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-                  : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-              }
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            <MarkerClusterGroup maxClusterRadius={70} chunkedLoading spiderfyOnMaxZoom={true}>
-              <ProjectMarkers
-                orgs={filteredOrgs}
-                darkMode={darkMode}
-                onProjectClick={handleProjectClick}
-                markerRadius={8}
-              />
-            </MarkerClusterGroup>
-          </MapContainer>
-        )}
       </div>
     </div>
   );
