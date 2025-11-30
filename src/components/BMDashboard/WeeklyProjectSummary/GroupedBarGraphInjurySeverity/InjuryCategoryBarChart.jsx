@@ -205,8 +205,10 @@ function InjuryCategoryBarChart() {
         </div>
       </div>
 
-      {loading && <p>Loading…</p>}
-      {!loading && error && <p className="error">Error: {String(error)}</p>}
+      {loading && <p className={darkMode ? 'darkMode' : ''}>Loading…</p>}
+      {!loading && error && (
+        <p className={`error ${darkMode ? 'darkMode' : ''}`}>Error: {String(error)}</p>
+      )}
 
       {!loading && !error && (
         <ResponsiveContainer width="100%" height={420}>
@@ -219,15 +221,24 @@ function InjuryCategoryBarChart() {
               height={80}
               tick={{ fill: darkMode ? '#fff' : '#000' }}
             />
-            <YAxis allowDecimals={false} />
+            <YAxis allowDecimals={false} tick={{ fill: darkMode ? '#fff' : '#000' }} />
             <Tooltip
+              contentStyle={{
+                backgroundColor: darkMode ? '#2b3e59' : '#fff',
+                border: darkMode ? '1px solid #555' : '1px solid #ccc',
+                color: darkMode ? '#fff' : '#000',
+              }}
               formatter={(value, name) => [
                 value,
                 projectNameById.get(String(name)) || 'Unknown Project',
               ]}
             />
             <Legend
-              wrapperStyle={{ maxHeight: 72, overflowY: 'auto' }}
+              wrapperStyle={{
+                maxHeight: 72,
+                overflowY: 'auto',
+                color: darkMode ? '#fff' : '#000',
+              }}
               payload={seriesProjectIds.map(pid => ({
                 id: pid,
                 type: 'square',
@@ -235,9 +246,18 @@ function InjuryCategoryBarChart() {
               }))}
             />
             {seriesProjectIds.map((pid, index) => (
-              <Bar key={pid} dataKey={pid} fill={index % 2 === 0 ? '#17c9d3' : '#000'}>
+              <Bar
+                key={pid}
+                dataKey={pid}
+                fill={index % 2 === 0 ? '#17c9d3' : darkMode ? '#888' : '#000'}
+              >
                 {showLabels && (
-                  <LabelList dataKey={pid} position="top" formatter={v => (v > 0 ? v : '')} />
+                  <LabelList
+                    dataKey={pid}
+                    position="top"
+                    formatter={v => (v > 0 ? v : '')}
+                    fill={darkMode ? '#fff' : '#000'}
+                  />
                 )}
               </Bar>
             ))}
@@ -246,7 +266,7 @@ function InjuryCategoryBarChart() {
       )}
 
       {!loading && !error && chartData.length === 0 && (
-        <div className="empty">No data for selected filters.</div>
+        <div className={`empty ${darkMode ? 'darkMode' : ''}`}>No data for selected filters.</div>
       )}
     </div>
   );
