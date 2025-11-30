@@ -252,6 +252,10 @@ const JobAnalyticsPage = lazy(() =>
 );
 
 const SuggestedJobsListBuilder = lazy(() => import('./components/Collaboration/SuggestedJobsList'));
+
+//Autoposter routes
+import RedditRedirect from './components/Announcements/platforms/reddit/Redirect';
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing Starts----- */}
@@ -498,6 +502,12 @@ export default (
           path="/announcements"
           exact
           component={Announcements}
+          routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/announcements/platforms/reddit/redirect"
+          exact
+          component={RedditRedirect}
           routePermissions={RoutePermissions.announcements}
         />
         <ProtectedRoute
