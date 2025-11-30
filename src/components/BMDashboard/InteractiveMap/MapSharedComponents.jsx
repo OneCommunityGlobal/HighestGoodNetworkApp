@@ -1,8 +1,6 @@
 /* eslint-disable */
 import { useEffect } from 'react';
-import { useMap } from 'react-leaflet';
-import { CircleMarker, Popup, Tooltip } from 'react-leaflet';
-import L from 'leaflet';
+import { useMap, CircleMarker, Popup, Tooltip } from 'react-leaflet';
 
 /* -----------------------------------------------------
    SHARED LEGEND COMPONENT

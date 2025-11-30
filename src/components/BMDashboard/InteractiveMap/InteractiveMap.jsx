@@ -1,4 +1,3 @@
-// components/InteractiveMap.jsx
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -6,7 +5,6 @@ import { useProjectsData } from '../../../hooks/useProjectsData';
 import BaseInteractiveMap from './BaseInteractiveMap';
 import { MapUtils } from './MapSharedComponents';
 import 'leaflet/dist/leaflet.css';
-import styles from './InteractiveMap.module.css';
 
 export default function InteractiveMap() {
   const darkMode = useSelector(state => state.theme.darkMode);

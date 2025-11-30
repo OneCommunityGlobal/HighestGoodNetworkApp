@@ -183,6 +183,7 @@
 :global(.dark-mode-map .marker-cluster-small) {
   background-color: rgba(110, 204, 57, 0.7) !important;
 }
+
 :global(.dark-mode-map .marker-cluster-small div) {
   background-color: rgba(81, 163, 32, 0.8) !important;
   color: white !important;
@@ -191,6 +192,7 @@
 :global(.dark-mode-map .marker-cluster-medium) {
   background-color: rgba(240, 194, 12, 0.7) !important;
 }
+
 :global(.dark-mode-map .marker-cluster-medium div) {
   background-color: rgba(200, 160, 0, 0.8) !important;
   color: white !important;
@@ -199,6 +201,7 @@
 :global(.dark-mode-map .marker-cluster-large) {
   background-color: rgba(241, 128, 23, 0.7) !important;
 }
+
 :global(.dark-mode-map .marker-cluster-large div) {
   background-color: rgba(200, 100, 0, 0.8) !important;
   color: white !important;
@@ -208,6 +211,7 @@
 :global(.marker-cluster-small) {
   background-color: rgba(181, 226, 140, 0.8);
 }
+
 :global(.marker-cluster-small div) {
   background-color: rgba(110, 204, 57, 0.8);
   color: white;
@@ -216,6 +220,7 @@
 :global(.marker-cluster-medium) {
   background-color: rgba(241, 211, 87, 0.8);
 }
+
 :global(.marker-cluster-medium div) {
   background-color: rgba(240, 194, 12, 0.8);
   color: white;
@@ -224,6 +229,7 @@
 :global(.marker-cluster-large) {
   background-color: rgba(253, 156, 115, 0.8);
 }
+
 :global(.marker-cluster-large div) {
   background-color: rgba(241, 128, 23, 0.8);
   color: white;
