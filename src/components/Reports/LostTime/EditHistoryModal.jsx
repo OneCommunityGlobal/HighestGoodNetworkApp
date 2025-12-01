@@ -112,10 +112,9 @@ function EditHistoryModal(props) {
     toggleEdit();
   };
 
-  const validateInputs = () => {
-    const result = {};
-  
-    const date = moment(inputs.dateOfWork);
+  const validateDate = (dateOfWork) => {
+    const errors = {};
+    const date = moment(dateOfWork);
     const today = moment(
       moment()
         .tz('America/Los_Angeles')
@@ -123,49 +122,76 @@ function EditHistoryModal(props) {
     );
   
     if (!date.isValid()) {
-      result.dateOfWork = 'Invalid date';
+      errors.dateOfWork = 'Invalid date';
     } else if (today.diff(date, 'days') < 0) {
-      result.dateOfWork = 'Cannot add lost time for future dates.';
+      errors.dateOfWork = 'Cannot add lost time for future dates.';
     }
   
-    // 🔢 Normalize hours/minutes as numbers
-    const hours = Number(inputs.hours);
-    const minutes = Number(inputs.minutes);
+    return errors;
+  };
+  
+  const validateTime = (hoursInput, minutesInput) => {
+    const errors = {};
+    const hours = Number(hoursInput);
+    const minutes = Number(minutesInput);
   
     if (
       Number.isNaN(hours) ||
       Number.isNaN(minutes) ||
       (hours === 0 && minutes === 0)
     ) {
-      result.time = 'Time is required';
-    } else {
-      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers';
-      } else if (hours < 0 || minutes < 0) {
-        result.time = 'Time should be greater than 0';
-      } else {
-        const totalMinutes = hours * 60 + minutes;
-        const maxMinutes = MAX_HOURS_PER_ENTRY * 60;
-  
-        if (totalMinutes > maxMinutes) {
-          result.time = `You can’t log more than ${MAX_HOURS_PER_ENTRY} hours in a single entry.`;
-          toast.error(
-            "Hold up, workhorse! You’ve hit the 40-hour limit for a single entry. You can pop in a new time log for any additional hours.",
-            { autoClose: 5000 }
-          );
-        }
-      }
+      errors.time = 'Time is required';
+      return errors;
     }
   
-    if (props.entryType === 'project' && inputs.projectId === undefined) {
-      result.projectId = 'Project is required';
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+      errors.time = 'Hours and minutes should be integers';
+      return errors;
     }
-    if (props.entryType === 'person' && inputs.personId === undefined) {
-      result.personId = 'Person is required';
+  
+    if (hours < 0 || minutes < 0) {
+      errors.time = 'Time should be greater than 0';
+      return errors;
     }
-    if (props.entryType === 'team' && inputs.teamId === undefined) {
-      result.teamId = 'Team is required';
+  
+    const totalMinutes = hours * 60 + minutes;
+    const maxMinutes = MAX_HOURS_PER_ENTRY * 60;
+  
+    if (totalMinutes > maxMinutes) {
+      errors.time = `You can’t log more than ${MAX_HOURS_PER_ENTRY} hours in a single entry.`;
+      toast.error(
+        "Hold up, workhorse! You’ve hit the 40-hour limit for a single entry. You can pop in a new time log for any additional hours.",
+        { autoClose: 5000 }
+      );
     }
+  
+    return errors;
+  };
+  
+  const validateEntryType = (inputs, entryType) => {
+    const errors = {};
+  
+    if (entryType === 'project' && inputs.projectId === undefined) {
+      errors.projectId = 'Project is required';
+    } else if (entryType === 'person' && inputs.personId === undefined) {
+      errors.personId = 'Person is required';
+    } else if (entryType === 'team' && inputs.teamId === undefined) {
+      errors.teamId = 'Team is required';
+    }
+  
+    return errors;
+  };
+  
+  const validateInputs = () => {
+    const dateErrors = validateDate(inputs.dateOfWork);
+    const timeErrors = validateTime(inputs.hours, inputs.minutes);
+    const entryTypeErrors = validateEntryType(inputs, props.entryType);
+  
+    const result = {
+      ...dateErrors,
+      ...timeErrors,
+      ...entryTypeErrors,
+    };
   
     setErrors(result);
     return isEmpty(result);
