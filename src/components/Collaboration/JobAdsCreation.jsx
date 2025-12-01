@@ -386,6 +386,11 @@ function JobAdsCreation() {
   const handleChange = event => {
     const { name, value } = event.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error for this specific field automatically
+    setErrors(prev => ({
+      ...prev,
+      [name]: '',
+    }));
     if (name === 'category') {
       if (value === '') {
         setPositions([]);
@@ -432,7 +437,7 @@ function JobAdsCreation() {
             <h3> Collaboration Ads Creation </h3>
           </div>
 
-          <form className={styles['user-collaboration-container']} onSubmit={handleSubmit}>
+          <form className={styles['jobAds-creation-container']} onSubmit={handleSubmit}>
             <div className={styles['input-error']}>
               <label className={styles['input-label']} htmlFor="category">
                 Category
@@ -451,8 +456,9 @@ function JobAdsCreation() {
                   </option>
                 ))}
               </select>
-              {!errors.category ? null : <div className={styles.error}>{errors.category}</div>}
             </div>
+
+            {!errors.category ? null : <div className={styles.error}>{errors.category}</div>}
 
             <div className={styles['input-error']}>
               <label className={styles['input-label']} htmlFor="title">
@@ -472,44 +478,50 @@ function JobAdsCreation() {
                   </option>
                 ))}
               </select>
-              {!errors.title ? null : <div className={styles.error}>{errors.title}</div>}
             </div>
-            {textareaFields.map((field, display, idx) => (
-              <div className={styles['input-error']} key={field.key}>
-                <label className={styles['input-label']} htmlFor={field.key}>
-                  {field.display}
-                </label>
 
-                <Editor
-                  className={styles['jobAds-input']}
-                  tinymceScriptSrc="/tinymce/tinymce.min.js"
-                  init={TINY_MCE_INIT_OPTIONS_MEDIA}
-                  id={field.key}
-                  value={formData[field.key] || ''}
-                  onEditorChange={newVal => setFormData(prev => ({ ...prev, [field.key]: newVal }))}
-                />
+            {!errors.title ? null : <div className={styles.error}>{errors.title}</div>}
+            {textareaFields.map((field, display, idx) => (
+              <>
+                <div className={styles['input-error']} key={field.key}>
+                  <label className={styles['input-label']} htmlFor={field.key}>
+                    {field.display}
+                  </label>
+
+                  <Editor
+                    className={styles['jobAds-input']}
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    init={TINY_MCE_INIT_OPTIONS_MEDIA}
+                    id={field.key}
+                    value={formData[field.key] || ''}
+                    onEditorChange={newVal =>
+                      setFormData(prev => ({ ...prev, [field.key]: newVal }))
+                    }
+                  />
+                </div>
                 {!errors[field.key] ? null : (
                   <div className={styles.error}>{errors[field.key]}</div>
                 )}
-              </div>
+              </>
             ))}
             {formFields.map((field, display, idx) => (
-              <div className={styles['input-error']} key={field.key}>
-                <label className={styles['input-label']} htmlFor={field.key}>
-                  {field.display}
-                </label>
-                <input
-                  className={styles['jobAds-input']}
-                  id={field.key}
-                  value={formData[field.key] || ''}
-                  placeholder={`Enter the ${field.display}`}
-                  onChange={handleChange}
-                  name={field.key}
-                  disabled={idx === 1}
-                />
-
+              <>
+                <div className={styles['input-error']} key={field.key}>
+                  <label className={styles['input-label']} htmlFor={field.key}>
+                    {field.display}
+                  </label>
+                  <input
+                    className={styles['jobAds-input']}
+                    id={field.key}
+                    value={formData[field.key] || ''}
+                    placeholder={`Enter the ${field.display}`}
+                    onChange={handleChange}
+                    name={field.key}
+                    disabled={idx === 1}
+                  />
+                </div>
                 {errors[field.key] && <div className={styles.error}>{errors[field.key]}</div>}
-              </div>
+              </>
             ))}
             <div className={styles['input-error']}>
               <label className={styles['input-label']} htmlFor="applyLinktest2">
@@ -531,8 +543,9 @@ function JobAdsCreation() {
                   );
                 })}
               </select>
-              {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
             </div>
+
+            {!errors.applyLink ? null : <div className={styles.error}>{errors.applyLink}</div>}
 
             <div className={styles['jobAds-creation-button-group']}>
               <button type="submit" className={`${styles['submit-button']} btn-primary`}>

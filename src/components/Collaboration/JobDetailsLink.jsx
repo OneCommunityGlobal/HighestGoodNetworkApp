@@ -9,7 +9,6 @@ import { ENDPOINTS } from '../../utils/URL';
 
 import OneCommunityImage from '../../assets/images/logo2.png';
 import styles from '../Collaboration/JobDetailsLink.module.css';
-import JobApplyLink from './JobApplyLink';
 
 function JobDetailsLink() {
   const { givenId } = useParams();
@@ -71,21 +70,6 @@ function JobDetailsLink() {
     }
   };
 
-  const handleApplyNow = e => {
-    // eslint-disable-next-line no-console
-    console.log('handleApplyNow clicked');
-    //const templateId = jobsDetailById.applyLink.split('templates/')[1];
-    //console.log(templateId);
-    //window.location.href = `/JobApplyLink/${templateId}`;
-    // eslint-disable-next-line no-console
-    console.log(jobsDetailById.applyLink);
-    const formId = jobsDetailById.applyLink.split('jobforms/')[1];
-    // eslint-disable-next-line no-console
-    console.log(formId);
-    window.location.href = `/JobApplyLink/${formId}`;
-
-    //JobApplyLink/templateId;
-  };
   const getJobDetailsById = async id => {
     setLoading(true);
 
@@ -130,9 +114,6 @@ function JobDetailsLink() {
       console.log(`res is ${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`);
       const response = await fetch(`${ENDPOINTS.APIEndpoint()}/jobforms/${formId}`, {
         method: 'get',
-        /* headers: {
-          Authorization: localStorage.getItem('token'),
-        }, */
       });
       // eslint-disable-next-line no-console
       console.log(response);
@@ -143,12 +124,6 @@ function JobDetailsLink() {
       console.log(data);
 
       setJobForms(data);
-      /* setFormData({
-        formId,
-        questions: data.questions,
-        answers: {}, // reset answers when form changes
-      });*/
-      //setLoading(false);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log('error');
@@ -159,7 +134,6 @@ function JobDetailsLink() {
   };
 
   useEffect(() => {
-    // getJobDetails(category, position);
     getJobDetailsById(givenId);
     if (!loading && jobsDetailById?.applyLink) getJobForms(jobsDetailById.applyLink);
   }, []);
@@ -178,20 +152,12 @@ function JobDetailsLink() {
   }, [loading, jobsDetailById.applyLink]);
 
   const getValue = name => {
-    // console.log('getValue');
-    // console.log(name);
     if (!Array.isArray(formData.answers)) return ''; // ✅ fallback
     const found = formData.answers?.find(a => a.questionId === name || a.label === name);
     return found ? found.answer : '';
   };
   const handleChange = (event, idx) => {
     const { id, name, value } = event.target;
-    /* console.log(`idx is ${idx}`);
-    console.log(`id is ${id}`);
-
-    console.log(`value is ${value}`);
-    console.log(`name  is ${name}`); */
-    //  if (!event.target.files[0]) setResumeFile(event.target.files[0]);
 
     setFormData(prev => ({
       ...prev,
@@ -231,13 +197,6 @@ function JobDetailsLink() {
 
       return;
     }
-    //setUploadingFiles(prev => ({ ...prev, [name]: true }));
-    //    console.log(uploadingFiles);
-
-    /* setUploadSuccess(false);
-    console.log('Selected file:', selFile.name);
-    setResumeFile(selFile); commented out */
-    // setResumeFile(event.target.files[0]);
     try {
       setUploadingFiles(prev => ({ ...prev, [name]: true }));
       console.log(uploadingFiles);
@@ -269,9 +228,6 @@ function JobDetailsLink() {
       console.log(responseData);
       console.log(responseData?.data?.url);
       const dropboxLink = responseData?.data?.url;
-      /* commented setUploadedFile(responseData?.data);
-    setUploadSuccess(true);
-    */
       setFormData(prev => ({
         ...prev,
         answers: Array.isArray(prev.answers)
@@ -356,9 +312,6 @@ function JobDetailsLink() {
       // eslint-disable-next-line no-console
       console.log(response);
 
-      /*if (!response.ok)
-        throw new Error(`Failed to submit the form responses: ${response.statusText}`);
-      */
       const data = await response.data;
       // eslint-disable-next-line no-console
       console.log('data');
@@ -404,10 +357,6 @@ function JobDetailsLink() {
       const questionId = jobForms.form.questions[i]._id;
       const answerObj = formData.answers.find(a => a.questionId === questionId);
       if ((!answerObj || !answerObj.answer) && jobForms.form.questions[i].isRequired) {
-        //    if (jobForms.form.questions[0].questionId !== formData.answers[0]?.questionId) {
-        // const firstEmptyIndex = formData?.answers?.findIndex(a => !a.answer);
-        // const question = jobForms?.form?.questions[firstEmptyIndex];
-
         setErrors({
           [jobForms.form.questions[i]
             .questionText]: `${jobForms.form.questions[i].questionText} is required`,
@@ -432,7 +381,6 @@ function JobDetailsLink() {
     e.preventDefault();
     // inputValidation();
     if (!inputValidation()) {
-      // toast.error('Please fill all the fields before submitting the form.');
       return;
     }
     submitJobforms();

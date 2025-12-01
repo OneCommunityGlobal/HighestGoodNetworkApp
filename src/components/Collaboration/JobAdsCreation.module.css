@@ -74,19 +74,17 @@ input {
   width:100%;
   height:30px;
 }
-.error {
-  color: red;
+.error { color: red;
   font-size: 0.9em;
-  margin-top: -10px;
+  margin-top: 5px;
   margin-bottom: 10px;  
   text-align: center;
 }
 .jobAds-creation-button-group {
   margin-top:20px;
   display: flex;
-  width: 70%;
-  justify-content: space-evenly;
-  background-color: aliceblue;   
+  width: 90%;
+  justify-content: space-evenly;  
 }
 .submit-button,.cancel-button {
   /*padding: 10px 20px; */
@@ -96,7 +94,7 @@ input {
   transition: background 0.2s ease;
 
 }
-.user-collaboration-container {
+.jobAds-creation-container {
   display: flex;
   flex-direction: column;
   justify-items: center;
@@ -111,10 +109,10 @@ input {
   background-color: #121212; /*#1B2A41;*/
   color: #E0E0E0; /* #f1f1f1; */
 }
-.user-collaboration-dark-mode .user-collaboration-container {
+.user-collaboration-dark-mode .jobAds-creation-container {
    background-color: #1E1E1E;
 }
-.user-collaboration-dark-mode .user-collaboration-container .jobAds-creation-button-group{
+.user-collaboration-dark-mode .jobAds-creation-container .jobAds-creation-button-group{
     background-color:#2A2A2A; 
     /* #32455A; /* lighter gray-blue background */
     color:#E0E0E0;
@@ -141,7 +139,7 @@ input {
   background-color: #2A2A2A;
   color: #E0E0E0;
 }
-.user-collaboration-dark-mode .user-collaboration-container .input-label{
+.user-collaboration-dark-mode .jobAds-creation-container .input-label{
    background-color:transparent; /* #2E3A4D; /* slightly lighter than main bg */
   color:#A0A0A0; /* #f1f1f1;            /* keep text readable */
 }
@@ -206,7 +204,7 @@ input {
     font-size: 0.9em;
     padding: 8px 16px;
   }
-  .user-collaboration-container {
+  .jobAds-creation-container {
     width: 100%;
     padding-top: 10px;
     padding-bottom: 50px;
