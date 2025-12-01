@@ -1,4 +1,12 @@
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
@@ -265,43 +273,46 @@ export default function VolunteerTrendsLineChart({ darkMode }) {
           </div>
         </div>
       ) : (
-        <LineChart
-          width={chartSize.width}
-          height={chartSize.height}
-          data={data}
-          margin={{ right: 50, top: 50, left: 20 }}
-        >
-          <CartesianGrid stroke="#ccc" vertical={false} />
-          <XAxis
-            dataKey="xLabel"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: darkMode ? '#ccc' : undefined }}
-          />
-          <YAxis
-            tickFormatter={formatNumber}
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: darkMode ? '#ccc' : undefined }}
-            label={{
-              value: 'Total Hours',
-              angle: -90,
-              position: 'insideLeft',
-              dy: 20,
-              dx: -15,
-              style: { fontSize: 18, fill: darkMode ? '#ccc' : undefined },
-            }}
-          />
-          <Line
-            type="linear"
-            dataKey="totalHours"
-            stroke="#328D1B"
-            strokeWidth={4}
-            dot={renderCustomDot}
-            strokeLinecap="round"
-          />
-          <Tooltip content={renderCustomTooltip} />
-        </LineChart>
+        <div style={{ width: '100%', height: 350 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data} margin={{ top: 50, right: 50, left: 70, bottom: 30 }}>
+              <CartesianGrid stroke="#ccc" vertical={false} />
+
+              <XAxis
+                dataKey="xLabel"
+                axisLine={false}
+                tickLine={false}
+                padding={{ left: 20, right: 20 }} // keeps first/last points away from the edges
+                tick={{ fill: darkMode ? '#ccc' : undefined }}
+              />
+
+              <YAxis
+                tickFormatter={formatNumber}
+                axisLine={false}
+                tickLine={false}
+                domain={[0, 'dataMax']} // aligns Y range to your data
+                tick={{ fill: darkMode ? '#ccc' : undefined }}
+                label={{
+                  value: 'Total Hours',
+                  angle: -90,
+                  position: 'insideLeft',
+                  offset: -50,
+                  style: { fontSize: 18, fill: darkMode ? '#ccc' : undefined },
+                }}
+              />
+
+              <Line
+                type="linear"
+                dataKey="totalHours"
+                stroke="#328D1B"
+                strokeWidth={4}
+                dot={renderCustomDot}
+                strokeLinecap="round"
+              />
+              <Tooltip content={renderCustomTooltip} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       )}
     </div>
   );
