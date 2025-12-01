@@ -112,6 +112,70 @@
   height: 300px;
 }
 
+/* Dark mode support */
+[data-theme="dark"] .page {
+  background-color: #1e2329;
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .title,
+[data-theme="dark"] .sectionTitle,
+[data-theme="dark"] .chartTitle {
+  color: #f0f0f0;
+}
+
+[data-theme="dark"] .select {
+  background-color: #24292f;
+  color: #f0f0f0;
+  border-color: #383e44;
+  box-shadow: none;
+}
+
+[data-theme="dark"] .card {
+  background-color: #24292f;
+  color: #f0f0f0;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .detailLabel {
+  color: #9ca3af;
+}
+
+[data-theme="dark"] .detailValue {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .eventLink {
+  color: #6ca8ff;
+}
+
+[data-theme="dark"] .eventLink:hover,
+[data-theme="dark"] .eventLink:focus {
+  text-decoration: underline;
+}
+
+/* Chart area containers */
+[data-theme="dark"] .chartArea {
+  background-color: #2d333b;
+}
+
+/* Chart blocks */
+[data-theme="dark"] .chartBlock {
+  background-color: transparent;
+}
+
+/* Responsive titles (dark mode) */
+@media (max-width: 480px) {
+  [data-theme="dark"] .title,
+  [data-theme="dark"] .sectionTitle {
+    color: #f0f0f0;
+  }
+
+  [data-theme="dark"] .chartTitle {
+    color: #f0f0f0;
+  }
+}
+
 @media (min-width: 768px) {
   .chartsContainer {
     flex-direction: row;
