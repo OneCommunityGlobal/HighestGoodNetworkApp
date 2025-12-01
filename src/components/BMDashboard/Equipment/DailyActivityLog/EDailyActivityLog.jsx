@@ -54,6 +54,109 @@ const buildRows = list =>
     };
   });
 
+// Dark mode styles for react-select
+const getSelectStyles = darkMode => ({
+  container: base => ({
+    ...base,
+    width: '100%',
+    minWidth: '100%',
+    maxWidth: '100%',
+  }),
+  control: (base, state) => ({
+    ...base,
+    width: '100%',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    backgroundColor: darkMode ? '#374151' : '#fff',
+    borderColor: darkMode ? '#4B5563' : '#d1d5db',
+    color: darkMode ? '#fff' : '#000',
+    '&:hover': {
+      borderColor: darkMode ? '#6B7280' : '#9CA3AF',
+    },
+  }),
+  input: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#000',
+  }),
+  placeholder: base => ({
+    ...base,
+    color: darkMode ? '#9CA3AF' : '#6B7280',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }),
+  singleValue: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#000',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }),
+  multiValue: base => ({
+    ...base,
+    maxWidth: '60%',
+    overflow: 'hidden',
+    backgroundColor: darkMode ? '#4B5563' : '#E5E7EB',
+  }),
+  multiValueLabel: base => ({
+    ...base,
+    color: darkMode ? '#fff' : '#000',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  }),
+  multiValueRemove: base => ({
+    ...base,
+    color: darkMode ? '#9CA3AF' : '#6B7280',
+    ':hover': {
+      backgroundColor: darkMode ? '#EF4444' : '#DC2626',
+      color: '#fff',
+    },
+  }),
+  indicatorsContainer: base => ({
+    ...base,
+    flexWrap: 'nowrap',
+  }),
+  dropdownIndicator: base => ({
+    ...base,
+    color: darkMode ? '#9CA3AF' : '#6B7280',
+    ':hover': {
+      color: darkMode ? '#D1D5DB' : '#374151',
+    },
+  }),
+  clearIndicator: base => ({
+    ...base,
+    color: darkMode ? '#9CA3AF' : '#6B7280',
+    ':hover': {
+      color: darkMode ? '#EF4444' : '#DC2626',
+    },
+  }),
+  menu: base => ({
+    ...base,
+    width: '100%',
+    minWidth: '100%',
+    maxWidth: '100%',
+    zIndex: 9999,
+    backgroundColor: darkMode ? '#374151' : '#fff',
+    border: darkMode ? '1px solid #4B5563' : '1px solid #E5E7EB',
+  }),
+  option: (base, state) => ({
+    ...base,
+    backgroundColor: state.isFocused
+      ? darkMode
+        ? '#4B5563'
+        : '#F3F4F6'
+      : darkMode
+      ? '#374151'
+      : '#fff',
+    color: darkMode ? '#fff' : '#000',
+    ':active': {
+      backgroundColor: darkMode ? '#6B7280' : '#E5E7EB',
+    },
+  }),
+  menuPortal: base => ({ ...base, zIndex: 9999 }),
+});
+
 function EDailyActivityLog(props) {
   const dispatch = useDispatch();
 
@@ -84,6 +187,14 @@ function EDailyActivityLog(props) {
   /* build rows whenever equipments slice updates */
   const derived = useMemo(() => buildRows(equipments), [equipments]);
   useEffect(() => setRows(derived), [derived]);
+
+  const hasSelectedTools = useMemo(() => {
+    return rows.some(row => row.selectedNumbers.length > 0);
+  }, [rows]);
+
+  const isSubmitDisabled = useMemo(() => {
+    return !selectedProject || !hasSelectedTools;
+  }, [selectedProject, hasSelectedTools]);
 
   const onToolSelect = (rowIdx, selected) => {
     setRows(prev => {
@@ -122,6 +233,10 @@ function EDailyActivityLog(props) {
   };
 
   const handleSubmit = () => {
+    if (!hasSelectedTools) {
+      return;
+    }
+
     const payload = rows.flatMap(r =>
       r.selectedNumbers.map(() => ({
         equipmentId: r.id,
@@ -137,58 +252,80 @@ function EDailyActivityLog(props) {
     dispatch(updateMultipleEquipmentLogs(selectedProject.value, payload));
   };
 
+  const selectStyles = useMemo(() => getSelectStyles(darkMode), [darkMode]);
+
   return (
     <div
-      className={`container-fluid ${darkMode ? 'bg-oxford-blue text-light' : ''}`}
-      style={{ height: '100%' }}
+      className={`container-fluid ${darkMode ? 'bg-dark text-light' : 'bg-light text-dark'}`}
+      style={{ minHeight: '100vh', padding: '20px 0' }}
     >
       <div className="container">
         <h4 className="mb-4">Daily Equipment Log</h4>
 
         {/* header */}
-        <div className="row mb-3">
-          <div className="col-md-3">
+        <div className="row mb-3 g-3">
+          {/* Date - Full width on mobile, 1/3 on medium+ */}
+          <div className="col-12 col-md-4 col-lg-3">
             <label className="form-label fw-bold" htmlFor="date">
               Date
             </label>
             <input
               type="date"
               id="date"
-              className="form-control"
+              className={`form-control ${darkMode ? 'bg-secondary border-dark text-light' : ''}`}
               value={date}
               onChange={e => setDate(e.target.value)}
             />
           </div>
 
-          <div className="col-md-5">
+          {/* Project - Full width on mobile, 1/2 on medium, 2/5 on large+ */}
+          <div className="col-12 col-md-8 col-lg-5">
             <label className="form-label fw-bold" htmlFor="project-select">
               Project
             </label>
             <Select
-              inputId="project-select" // associate label via inputId for react-select
+              inputId="project-select"
               value={selectedProject}
               onChange={setSelectedProject}
               options={bmProjects.map(p => ({ label: p.name, value: p._id }))}
               placeholder="Select project…"
               isClearable
-              styles={{ maxWidth: '150px' }}
+              styles={selectStyles}
+              classNamePrefix="react-select"
             />
           </div>
 
-          <div className="col-md-4">
-            <p className="form-label fw-bold" id="log-type-label">
+          {/* Log Type - Full width on mobile, full width on medium, 2/5 on large+ */}
+          <div className="col-12 col-md-12 col-lg-4">
+            <p className="form-label fw-bold mb-2" id="log-type-label">
               Log Type
             </p>
-            <ButtonGroup className="d-block" aria-labelledby="log-type-label">
+            <ButtonGroup className="w-100" aria-labelledby="log-type-label">
               <Button
-                color={logType === 'check-in' ? 'primary' : 'secondary'}
                 onClick={() => flipLogType('check-in')}
+                style={{
+                  backgroundColor: logType === 'check-in' ? '#0d6efd' : 'transparent',
+                  color: logType === 'check-in' ? '#fff' : '#0d6efd',
+                  border: '1px solid #0d6efd',
+                  fontWeight: '500',
+                  flex: 1,
+                  whiteSpace: 'nowrap',
+                }}
+                className="text-nowrap"
               >
                 Check In
               </Button>
               <Button
-                color={logType === 'check-out' ? 'primary' : 'secondary'}
                 onClick={() => flipLogType('check-out')}
+                style={{
+                  backgroundColor: logType === 'check-out' ? '#0d6efd' : 'transparent',
+                  color: logType === 'check-out' ? '#fff' : '#0d6efd',
+                  border: '1px solid #0d6efd',
+                  fontWeight: '500',
+                  flex: 1,
+                  whiteSpace: 'nowrap',
+                }}
+                className="text-nowrap"
               >
                 Check Out
               </Button>
@@ -197,129 +334,208 @@ function EDailyActivityLog(props) {
         </div>
 
         {/* table */}
-        <Table bordered responsive>
-          <thead className={`${darkMode ? 'table-dark' : 'table-light'} align-middle`}>
-            <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-              <th>Name</th>
-              <th>Working</th>
-              <th>Available</th>
-              <th>Using</th>
-              <th>Tool / Equipment&nbsp;#</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!selectedProject && (
+        <div className="table-responsive">
+          <Table
+            bordered
+            className={darkMode ? 'table-dark' : ''}
+            style={{
+              border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+              borderCollapse: 'collapse',
+              minWidth: '800px',
+            }}
+          >
+            <thead>
               <tr>
-                <td
-                  colSpan={5}
-                  className={`text-center py-3 ${darkMode ? 'text-light' : 'text-dark'} `}
+                <th
+                  style={{
+                    padding: '12px',
+                    fontWeight: '600',
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                  }}
                 >
-                  Select a project to load equipments.
-                </td>
+                  Name
+                </th>
+                <th
+                  style={{
+                    padding: '12px',
+                    fontWeight: '600',
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                  }}
+                >
+                  Working
+                </th>
+                <th
+                  style={{
+                    padding: '12px',
+                    fontWeight: '600',
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                  }}
+                >
+                  Available
+                </th>
+                <th
+                  style={{
+                    padding: '12px',
+                    fontWeight: '600',
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                  }}
+                >
+                  Using
+                </th>
+                <th
+                  style={{
+                    padding: '12px',
+                    fontWeight: '600',
+                    border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    color: darkMode ? '#fff' : '#374151',
+                    backgroundColor: darkMode ? '#4B5563' : '#f8f9fa',
+                  }}
+                >
+                  Tool / Equipment&nbsp;#
+                </th>
               </tr>
-            )}
+            </thead>
+            <tbody>
+              {!selectedProject && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="text-center py-3"
+                    style={{
+                      border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    }}
+                  >
+                    Select a project to load equipments.
+                  </td>
+                </tr>
+              )}
 
-            {selectedProject && rows.length === 0 && (
-              <tr className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-                <td colSpan={5} className="text-center py-3">
-                  No equipments found for this project.
-                </td>
-              </tr>
-            )}
+              {selectedProject && rows.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="text-center py-3"
+                    style={{
+                      border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                    }}
+                  >
+                    No equipments found for this project.
+                  </td>
+                </tr>
+              )}
 
-            {selectedProject &&
-              rows.length > 0 &&
-              rows.map((r, idx) => {
-                const validList = logType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
-                const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
+              {selectedProject &&
+                rows.length > 0 &&
+                rows.map((r, idx) => {
+                  const validList = logType === 'check-in' ? r.availableNumbers : r.inUseNumbers;
+                  const limit = logType === 'check-in' ? r.availableQty : r.usingQty;
 
-                return (
-                  <tr key={r.id} className={`${darkMode ? 'text-light' : 'text-dark'} `}>
-                    <td>{r.name}</td>
-                    <td>{r.workingQty}</td>
-                    <td>{r.availableQty}</td>
-                    <td>{r.usingQty}</td>
-                    <td style={{ textAlign: 'center' }}>
-                      <Select
-                        isMulti
-                        closeMenuOnSelect={false}
-                        value={r.selectedNumbers.map(v => ({ label: v, value: v }))}
-                        options={validList.map(n => ({ label: n, value: n }))}
-                        onChange={sel => onToolSelect(idx, sel)}
-                        placeholder={`Pick up to ${limit}…`}
-                        menuPortalTarget={document.body}
-                        styles={{
-                          container: base => ({
-                            ...base,
-                            width: 300, // lock it to 300px
-                            minWidth: 300,
-                            maxWidth: 300,
-                          }),
-                          control: base => ({
-                            ...base,
-                            width: '100%', // fill the container
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                          }),
-                          placeholder: base => ({
-                            ...base,
-                            color: '#000',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          singleValue: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          multiValue: base => ({
-                            ...base,
-                            maxWidth: '60%',
-                            overflow: 'hidden',
-                          }),
-                          multiValueLabel: base => ({
-                            ...base,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }),
-                          indicatorsContainer: base => ({
-                            ...base,
-                            flexWrap: 'nowrap',
-                          }),
-                          menu: base => ({
-                            ...base,
-                            width: 300,
-                            minWidth: 300,
-                            maxWidth: 300,
-                            zIndex: 9999,
-                          }),
-                          option: (base, state) => ({
-                            ...base,
-                            color: '#000',
-                            backgroundColor: state.isFocused ? '#f0f0f0' : '#fff',
-                          }),
-                          menuPortal: base => ({ ...base, zIndex: 9999 }),
+                  return (
+                    <tr key={r.id}>
+                      <td
+                        style={{
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
                         }}
-                      />
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </Table>
+                      >
+                        {r.name}
+                      </td>
+                      <td
+                        style={{
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        {r.workingQty}
+                      </td>
+                      <td
+                        style={{
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        {r.availableQty}
+                      </td>
+                      <td
+                        style={{
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        {r.usingQty}
+                      </td>
+                      <td
+                        style={{
+                          textAlign: 'center',
+                          border: darkMode ? '1px solid #4B5563' : '1px solid #dee2e6',
+                        }}
+                      >
+                        <Select
+                          isMulti
+                          closeMenuOnSelect={false}
+                          value={r.selectedNumbers.map(v => ({ label: v, value: v }))}
+                          options={validList.map(n => ({ label: n, value: n }))}
+                          onChange={sel => onToolSelect(idx, sel)}
+                          placeholder={`Pick up to ${limit}…`}
+                          menuPortalTarget={document.body}
+                          styles={selectStyles}
+                          classNamePrefix="react-select"
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </Table>
+        </div>
 
         {/* actions */}
-        <div className="d-flex justify-content-end gap-2">
-          <Button color="secondary" onClick={handleCancel}>
+        <div className="d-flex justify-content-end mt-4 flex-wrap">
+          <Button
+            color="secondary"
+            onClick={handleCancel}
+            outline={darkMode}
+            className={
+              darkMode ? 'border-secondary text-secondary px-4 py-2' : 'px-4 py-2 border-secondary'
+            }
+            style={{
+              minWidth: '120px',
+              marginRight: '16px',
+            }}
+          >
             Cancel
           </Button>
-          <Button color="primary" onClick={handleSubmit}>
+          <Button
+            color="primary"
+            onClick={handleSubmit}
+            disabled={isSubmitDisabled}
+            className="px-4 py-2"
+            style={{
+              minWidth: '120px',
+              opacity: isSubmitDisabled ? 0.6 : 1,
+              cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
+            }}
+          >
             Submit
           </Button>
         </div>
+
+        {/* Helper text to indicate why submit is disabled */}
+        {isSubmitDisabled && (
+          <div className="text-center mt-2">
+            <small className={darkMode ? 'text-warning' : 'text-muted'}>
+              {!selectedProject
+                ? 'Please select a project to enable submission'
+                : !hasSelectedTools
+                ? 'Please select at least one tool to check in/out'
+                : ''}
+            </small>
+          </div>
+        )}
       </div>
     </div>
   );
