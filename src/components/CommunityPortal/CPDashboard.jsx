@@ -8,6 +8,7 @@ import axios from 'axios';
 export function CPDashboard() {
   const [allEvents, setAllEvents] = useState([]);
   const [search, setSearch] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
@@ -53,7 +54,7 @@ export function CPDashboard() {
       try {
         const response = await axios.get(ENDPOINTS.EVENTS);
         console.log('Fetched events:', response.data.events);
-        setEvents(response.data.events);
+        setAllEvents(response.data.events);
       } catch (err) {
         console.error('Here', err);
         setError('Failed to load events');
@@ -77,9 +78,45 @@ export function CPDashboard() {
     });
   };
 
-  const filteredEvents = events.filter(event =>
-    event.title?.toLowerCase().includes(search.toLowerCase()),
-  );
+  // Helper function to extract date in YYYY-MM-DD format from event date
+  const parseEventDate = dateString => {
+    if (!dateString) return null;
+
+    try {
+      // Try to parse as ISO date string or standard date
+      const parsedDate = new Date(dateString);
+      if (!isNaN(parsedDate.getTime())) {
+        const year = parsedDate.getFullYear();
+        const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(parsedDate.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      }
+    } catch (error) {
+      console.error('Error parsing date:', error);
+    }
+    return null;
+  };
+
+  // Filter events based on search and date
+  const filteredEvents = allEvents.filter(event => {
+    // Filter by search text
+    const matchesSearch =
+      !search ||
+      event.title?.toLowerCase().includes(search.toLowerCase()) ||
+      event.location?.toLowerCase().includes(search.toLowerCase()) ||
+      event.organizer?.toLowerCase().includes(search.toLowerCase());
+
+    // Filter by date
+    const eventDate = event.date ? parseEventDate(event.date) : null;
+    const matchesDate = !selectedDate || eventDate === selectedDate;
+
+    return matchesSearch && matchesDate;
+  });
+
+  // Reset pagination to page 1 when filters change
+  useEffect(() => {
+    setPagination(prev => ({ ...prev, currentPage: 1 }));
+  }, [search, selectedDate]);
 
   const totalPages = Math.ceil(filteredEvents.length / pagination.limit);
 
@@ -120,7 +157,13 @@ export function CPDashboard() {
                     <Input type="radio" name="dates" /> This Weekend
                   </div>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                <Input
+                  type="date"
+                  placeholder="Select Date"
+                  className={styles['date-filter']}
+                  value={selectedDate}
+                  onChange={e => setSelectedDate(e.target.value)}
+                />
               </div>
               <div className={styles['filter-item']}>
                 <label htmlFor="online-only">Online</label>
@@ -153,27 +196,37 @@ export function CPDashboard() {
         <Col md={9} className={styles['dashboard-main']}>
           <h2 className={styles['section-title']}>Events</h2>
           <Row>
-            {events.length > 0 ? (
-              events.map(event => (
+            {isLoading ? (
+              <div className={styles['no-events']}>Loading events...</div>
+            ) : error ? (
+              <div className={styles['no-events']}>{error}</div>
+            ) : displayedEvents.length > 0 ? (
+              displayedEvents.map(event => (
                 <Col md={4} key={event.id} className={styles['event-card-col']}>
                   <Card className={styles['event-card']}>
                     <div className={styles['event-card-img-container']}>
                       <img
-                        src={event.image}
+                        src={event.image || FALLBACK_IMG}
                         alt={event.title}
                         className={styles['event-card-img']}
+                        onError={e => {
+                          if (e.currentTarget.src !== FALLBACK_IMG)
+                            e.currentTarget.src = FALLBACK_IMG;
+                        }}
                       />
                     </div>
                     <CardBody>
                       <h5 className={styles['event-title']}>{event.title}</h5>
                       <p className={styles['event-date']}>
-                        <FaCalendarAlt className={styles['event-icon']} /> {event.date}
+                        <FaCalendarAlt className={styles['event-icon']} /> {formatDate(event.date)}
                       </p>
                       <p className={styles['event-location']}>
-                        <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
+                        <FaMapMarkerAlt className={styles['event-icon']} />{' '}
+                        {event.location || 'Location TBD'}
                       </p>
                       <p className={styles['event-organizer']}>
-                        <FaUserAlt className={styles['event-icon']} /> {event.organizer}
+                        <FaUserAlt className={styles['event-icon']} />{' '}
+                        {event.organizer || 'Organizer TBD'}
                       </p>
                     </CardBody>
                   </Card>
