@@ -101,7 +101,7 @@ function PermissionWatcher() {
 
       if (!userProfile || !userProfile._id) {
         // eslint-disable-next-line no-console
-        console.error('User profile not available');
+        //console.error('User profile not available');
         setIsAckLoading(false);
         return;
       }
@@ -123,12 +123,12 @@ function PermissionWatcher() {
         })
         .catch(error => {
           // eslint-disable-next-line no-console
-          console.error('Error updating user profile:', error);
+          // console.error('Error updating user profile:', error);
           setIsAckLoading(false);
         });
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error acknowledging permission changes:', error);
+      // console.error('Error acknowledging permission changes:', error);
       setIsAckLoading(false);
     }
   };
