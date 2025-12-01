@@ -1,0 +1,412 @@
+/* Analytics Dashboard Styles */
+.dashboard {
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--bg);
+  color: var(--fg);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light Theme Defaults */
+:root {
+  --bg: #f9fafb;
+  --fg: #111827;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --card-border: #e5e7eb;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+  --primary: #3b82f6;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --hover: #f3f4f6;
+}
+
+/* Dark Theme Support */
+[data-theme="dark"] {
+  --bg: #111827;
+  --fg: #f9fafb;
+  --muted: #9ca3af;
+  --card: #1f2937;
+  --card-border: #374151;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --primary: #60a5fa;
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --hover: #374151;
+}
+
+/* Header Section */
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Filter Panel */
+.filterPanel {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: var(--shadow);
+}
+
+.filterRow {
+  margin: 0;
+}
+
+.filterGroup {
+  margin-bottom: 16px;
+}
+
+.filterLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 8px;
+}
+
+.filterSelect,
+.filterInput {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 0.9375rem;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--fg);
+  transition: all 0.2s ease;
+}
+
+.filterSelect:hover,
+.filterInput:hover {
+  border-color: var(--primary);
+}
+
+.filterSelect:focus,
+.filterInput:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filterSelect option {
+  background: var(--card);
+  color: var(--fg);
+}
+
+/* Date Input Specific Styling */
+.filterInput[type="date"] {
+  position: relative;
+  cursor: pointer;
+}
+
+.filterInput[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0);
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.filterInput[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Dark mode date input calendar icon */
+[data-theme="dark"] .filterInput[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+[data-theme="dark"] .filterInput[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
+/* Date input text color in dark mode */
+/* [data-theme="dark"] .filterInput[type="date"] {
+  color-scheme: dark;
+} */
+
+/* Ensure date input placeholder/selected text is visible */
+.filterInput[type="date"]::-webkit-datetime-edit-text,
+.filterInput[type="date"]::-webkit-datetime-edit-month-field,
+.filterInput[type="date"]::-webkit-datetime-edit-day-field,
+.filterInput[type="date"]::-webkit-datetime-edit-year-field {
+  color: var(--fg);
+  padding: 0 2px;
+}
+
+.filterInput[type="date"]::-webkit-datetime-edit-month-field:focus,
+.filterInput[type="date"]::-webkit-datetime-edit-day-field:focus,
+.filterInput[type="date"]::-webkit-datetime-edit-year-field:focus {
+  background-color: var(--primary);
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+/* Firefox date input styling */
+.filterInput[type="date"]::-moz-placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+.filterInput[type="date"]::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+/* Additional dark mode enhancements for date inputs */
+[data-theme="dark"] .filterInput[type="date"] {
+  background-color: var(--card);
+  border-color: var(--card-border);
+}
+
+[data-theme="dark"] .filterInput[type="date"]:hover {
+  border-color: var(--primary);
+  background-color: var(--card);
+}
+
+[data-theme="dark"] .filterInput[type="date"]:focus {
+  border-color: var(--primary);
+  background-color: var(--card);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+/* Metrics Row */
+.metricsRow {
+  margin-bottom: 32px;
+}
+
+/* Metric Card */
+.metricCard {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.metricHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metricIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.metricTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metricValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--fg);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.metricSubtitle {
+  font-size: 0.875rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Charts Row */
+.chartsRow {
+  margin-bottom: 32px;
+}
+
+/* Chart Card */
+.chartCard {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.chartCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chartTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.chartContainer {
+  width: 100%;
+  min-height: 300px;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--card-border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading p {
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+/* Error State */
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+  text-align: center;
+}
+
+.error p {
+  color: var(--danger);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.retryBtn {
+  padding: 10px 24px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retryBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.retryBtn:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .filterPanel {
+    padding: 16px;
+  }
+
+  .filterGroup {
+    min-width: 100%;
+  }
+
+  .metricCard {
+    padding: 20px;
+  }
+
+  .metricValue {
+    font-size: 1.5rem;
+  }
+
+  .chartCard {
+    padding: 16px;
+  }
+
+  .chartContainer {
+    min-height: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .subtitle {
+    font-size: 0.875rem;
+  }
+
+  .filterPanel {
+    padding: 12px;
+  }
+
+  .metricCard {
+    padding: 16px;
+  }
+
+  .metricValue {
+    font-size: 1.25rem;
+  }
+}
+
