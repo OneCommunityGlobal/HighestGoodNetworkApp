@@ -3,6 +3,8 @@ import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt, FaSearch, FaTimes } from 'react-icons/fa';
 import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import axios from 'axios';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
@@ -35,6 +37,8 @@ export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [dateError, setDateError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
@@ -43,6 +47,19 @@ export function CPDashboard() {
     total: 0,
     limit: 6,
   });
+
+  const handleDateChange = date => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // midnight today
+
+    if (date < today) {
+      toast.error('Past dates are not supported. Please select a future date.');
+      setSelectedDate('');
+      return;
+    }
+    setDateError('');
+    setSelectedDate(date);
+  };
 
   const FALLBACK_IMG =
     'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
@@ -193,7 +210,22 @@ export function CPDashboard() {
                     <Input type="radio" name="dates" /> This Weekend
                   </div>
                 </div>
-                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+                {/* <Input type="date" placeholder="Ending After" className={styles['date-filter']} /> */}
+                <div style={{ width: '100%' }}>
+                  <DatePicker
+                    selected={selectedDate}
+                    onChange={date => handleDateChange(date)}
+                    placeholderText="Ending After"
+                    id="ending-after"
+                    className={styles['date-filter']}
+                    style={{ width: '100%' }}
+                  />
+                  {dateError && (
+                    <p className="date-error-message" style={{ color: 'red', marginTop: '5px' }}>
+                      {dateError}
+                    </p>
+                  )}
+                </div>
               </div>
 
               <div className={styles['filter-item']}>
