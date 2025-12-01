@@ -187,7 +187,8 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
   right: 4px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: white;
+  background-color: var(--card-bg);
+  color: var(--text-color);
   z-index: 3;
   z-index: 5;
 }
@@ -437,4 +438,42 @@ div.weeklyProjectSummaryCard.normalCard .dropdownItem {
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* =======================
+   DARK MODE — FILTER FIXES
+   ======================= */
+
+.darkMode .quantityOfMaterialsUsedCard .customSelect_control {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--text-color) !important;
+}
+
+.darkMode .quantityOfMaterialsUsedCard .customSelect_menu {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.darkMode .quantityOfMaterialsUsedCard .customSelect_option {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.darkMode .quantityOfMaterialsUsedCard .customSelect_option-IsFocused {
+  background-color: var(--button-hover) !important;
+  color: var(--card-bg) !important;
+}
+
+.darkMode .quantityOfMaterialsUsedCard .customSelect_placeholder,
+.darkMode .quantityOfMaterialsUsedCard .customSelect_input,
+.darkMode .quantityOfMaterialsUsedCard .customSelect_singleValue {
+  color: var(--text-color) !important;
+}
+
+.darkMode .quantityOfMaterialsUsedCard .customSelect_indicators,
+.darkMode .quantityOfMaterialsUsedCard .customSelect_dropdownIndicator,
+.darkMode .quantityOfMaterialsUsedCard .customSelect_clearIndicator {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
 }

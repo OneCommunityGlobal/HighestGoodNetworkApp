@@ -24,6 +24,7 @@ function IssueCharts() {
   const dispatch = useDispatch();
   const { issues, loading, error, selectedProjects } = useSelector(state => state.bmissuechart);
   const projects = useSelector(state => state.bmProjects);
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const chartContainerRef = useRef(null);
@@ -87,10 +88,10 @@ function IssueCharts() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="issue-chart-container">
-      <h2>Longest Open Issues</h2>
+    <div className={`issue-chart-container ${darkMode ? 'darkMode' : ''}`}>
+      <h2 style={{ color: darkMode ? '#ffffff' : undefined }}>Longest Open Issues</h2>
 
-      <div className="filters-container">
+      <div className={`filters-container ${darkMode ? 'darkMode' : ''}`}>
         <div className="filter">
           <label className="issue-chart-label" htmlFor="start-date">
             Date Range:
@@ -106,7 +107,7 @@ function IssueCharts() {
               maxDate={endDate}
               placeholderText="Start Date"
               isClearable
-              className="filter-select"
+              className={`filter-select ${darkMode ? 'darkMode' : ''}`}
             />
             <span>to</span>
             <DatePicker
@@ -119,7 +120,7 @@ function IssueCharts() {
               maxDate={new Date()}
               placeholderText="End Date"
               isClearable
-              className="filter-select"
+              className={`filter-select ${darkMode ? 'darkMode' : ''}`}
             />
           </div>
         </div>
@@ -134,7 +135,39 @@ function IssueCharts() {
             options={projectOptions}
             onChange={handleProjectChange}
             value={projectOptions.filter(option => (selectedProjects ?? []).includes(option.value))}
-            className="filter-select"
+            styles={{
+              control: base => ({
+                ...base,
+                backgroundColor: undefined,
+                color: darkMode ? '#ffffff' : base.color,
+                borderColor: undefined,
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? 'rgba(28,37,65,0.95)' : base.backgroundColor,
+                color: darkMode ? '#ffffff' : base.color,
+              }),
+              menuList: base => ({
+                ...base,
+                backgroundColor: undefined,
+                color: darkMode ? '#ffffff' : base.color,
+              }),
+              container: base => ({
+                ...base,
+                backgroundColor: undefined,
+                color: darkMode ? '#ffffff' : base.color,
+              }),
+              singleValue: base => ({
+                ...base,
+                color: darkMode ? '#ffffff' : base.color,
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: undefined,
+                color: darkMode ? '#ffffff' : base.color,
+              }),
+            }}
+            className={`filter-select ${darkMode ? 'darkMode' : ''}`}
             classNamePrefix="select"
           />
         </div>
@@ -155,12 +188,20 @@ function IssueCharts() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis
                 type="number"
-                label={{ value: 'Duration in Months', position: 'insideBottom', offset: -5 }}
+                label={{
+                  value: 'Duration in Months',
+                  position: 'insideBottom',
+                  offset: -5,
+                  fill: darkMode ? '#ffffff' : undefined,
+                }}
+                tick={{ fill: darkMode ? '#ffffff' : undefined }}
+                stroke={darkMode ? '#ffffff' : undefined}
               />
               <YAxis
                 dataKey="issueName"
                 type="category"
-                tick={{ fontSize: 14, fontWeight: 500 }}
+                tick={{ fontSize: 14, fontWeight: 500, fill: darkMode ? '#ffffff' : undefined }}
+                stroke={darkMode ? '#ffffff' : undefined}
                 width={yAxisWidth}
               />
               <Tooltip

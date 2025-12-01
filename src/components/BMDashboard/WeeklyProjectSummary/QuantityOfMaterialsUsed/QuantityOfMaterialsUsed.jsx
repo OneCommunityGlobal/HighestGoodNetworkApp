@@ -637,6 +637,39 @@ function QuantityOfMaterialsUsed({ data }) {
         <Select
           isMulti
           isSearchable
+          styles={{
+            control: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+              color: darkMode ? '#ffffff' : base.color,
+              borderColor: darkMode ? '#3A506B' : base.borderColor,
+            }),
+            menu: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+            }),
+            menuList: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+            }),
+            placeholder: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            input: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            singleValue: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            option: (base, state) => ({
+              ...base,
+              backgroundColor: state.isFocused && darkMode ? '#3A506B' : base.backgroundColor,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+          }}
           options={materialOptions}
           value={materialOptions.filter(option => selectedMaterials.includes(option.value))}
           onChange={selectedOptions =>
@@ -644,7 +677,9 @@ function QuantityOfMaterialsUsed({ data }) {
           }
           placeholder="All Materials"
           classNamePrefix="custom-select"
-          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} custom-scrollbar ${styles.multiSelect}`}
+          className={`quantity-of-materials-used-dropdown-item 
+          ${styles.dropdownItem}
+          custom-scrollbar ${styles.multiSelect} ${darkMode ? 'darkMode' : ''}`}
           menuPosition="fixed"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           closeMenuOnSelect={false}
@@ -653,15 +688,83 @@ function QuantityOfMaterialsUsed({ data }) {
 
         <Select
           options={orgOptions}
+          styles={{
+            control: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+              color: darkMode ? '#ffffff' : base.color,
+              borderColor: darkMode ? '#3A506B' : base.borderColor,
+            }),
+            menu: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+            }),
+            menuList: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+            }),
+            placeholder: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            singleValue: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            input: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            option: (base, state) => ({
+              ...base,
+              backgroundColor: state.isFocused && darkMode ? '#3A506B' : base.backgroundColor,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+          }}
           value={orgOptions.find(option => option.value === selectedOrg)}
           placeholder="Organization"
           menuPlacement={isSmallScreen ? 'top' : 'auto'}
           classNamePrefix="custom-select"
-          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} ${
+            darkMode ? 'darkMode' : ''
+          }`}
           // isDisabled
         />
         <Select
           options={dateOptions}
+          styles={{
+            control: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+              color: darkMode ? '#ffffff' : base.color,
+              borderColor: darkMode ? '#3A506B' : base.borderColor,
+            }),
+            menu: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+            }),
+            menuList: base => ({
+              ...base,
+              backgroundColor: darkMode ? '#1C2541' : base.backgroundColor,
+            }),
+            placeholder: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            singleValue: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            input: base => ({
+              ...base,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+            option: (base, state) => ({
+              ...base,
+              backgroundColor: state.isFocused && darkMode ? '#3A506B' : base.backgroundColor,
+              color: darkMode ? '#ffffff' : base.color,
+            }),
+          }}
           value={dateOptions.find(option => option.value === selectedDate)}
           onChange={selectedOption => {
             setSelectedDate(selectedOption.value);
@@ -672,7 +775,9 @@ function QuantityOfMaterialsUsed({ data }) {
           }}
           placeholder="Date"
           classNamePrefix="custom-select"
-          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem}`}
+          className={`quantity-of-materials-used-dropdown-item ${styles.dropdownItem} ${
+            darkMode ? 'darkMode' : ''
+          }`}
         />
       </div>
 

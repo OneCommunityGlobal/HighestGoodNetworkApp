@@ -2,9 +2,9 @@
   padding: 2rem;
   max-width: 1000px;
   margin: 0 auto;
-  background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
 }
 
 .chartTitle {
@@ -44,4 +44,33 @@
 .utilizationChartError {
   color: red;
   text-align: center;
+}
+
+/* =======================
+   DARK MODE SUPPORT
+   ======================= */
+
+.darkMode .utilizationChartContainer {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #ffffff !important; /* Text Light */
+}
+
+.darkMode .chartTitle {
+  color: #ffffff !important;
+}
+
+.darkMode .filters {
+  color: #ffffff !important;
+}
+
+.darkMode .select,
+.darkMode .datepickerWrapper,
+.darkMode .button {
+  background-color: #3A506B !important; /* Yinmn Blue */
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+.darkMode .button:hover {
+  background-color: #5BC0EB !important; /* Azure hover */
 }

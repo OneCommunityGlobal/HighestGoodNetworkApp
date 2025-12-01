@@ -5,8 +5,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import * as d3 from 'd3';
 import styles from './MostFrequentKeywords.module.css';
 import Select from 'react-select';
+import { useSelector } from 'react-redux';
 
 function MostFrequentKeywords() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const svgRef = useRef();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState('');
@@ -100,7 +102,7 @@ function MostFrequentKeywords() {
         .attr('cy', centerY)
         .attr('rx', ellipseRx)
         .attr('ry', ellipseRy)
-        .attr('fill', '#3B82F6');
+        .attr('fill', darkMode ? '#1C2541' : '#3B82F6');
 
       svg
         .append('text')
@@ -122,7 +124,7 @@ function MostFrequentKeywords() {
         .attr('font-size', '10px')
         .text('Keywords');
 
-      const angleStep = (2.3 * Math.PI) / tags.length;
+      const angleStep = (2 * Math.PI) / tags.length;
       const angles = tags.map((_, i) => i * angleStep + Math.PI / 2 + 0.1);
 
       const getEllipseSize = text => {
@@ -143,11 +145,11 @@ function MostFrequentKeywords() {
       tags.forEach((tag, i) => {
         const angle = angles[i];
         const isLeftOrRight = Math.abs(Math.cos(angle)) > 0.9;
-        const adjustedRadius = isLeftOrRight ? radius * 1.35 : radius;
+        const adjustedRadius = radius * 1.7;
 
         let x = centerX + adjustedRadius * Math.cos(angle);
         let y = centerY + adjustedRadius * Math.sin(angle);
-        ({ x, y } = ensureInBounds(x, y));
+        ({ x, y } = ensureInBounds(x + Math.cos(angle) * 12, y + Math.sin(angle) * 12));
 
         const xStart = centerX + ellipseRx * Math.cos(angle);
         const yStart = centerY + ellipseRy * Math.sin(angle);
@@ -167,18 +169,18 @@ function MostFrequentKeywords() {
           .attr('cy', y)
           .attr('rx', rx)
           .attr('ry', ry)
-          .attr('fill', '#E0F2FE')
+          .attr('fill', darkMode ? '#3A506B' : '#E0F2FE')
           .style('cursor', 'pointer')
           .attr('tabindex', 0)
           .attr('role', 'button')
           .attr('aria-label', `Keyword: ${tag.tag}`)
           .on('mouseover', function() {
             // eslint-disable-next-line testing-library/no-node-access
-            d3.select(this).attr('fill', '#BFDBFE');
+            d3.select(this).attr('fill', darkMode ? '#5BC0EB' : '#BFDBFE');
           })
           .on('mouseout', function() {
             // eslint-disable-next-line testing-library/no-node-access
-            d3.select(this).attr('fill', '#E0F2FE');
+            d3.select(this).attr('fill', darkMode ? '#3A506B' : '#E0F2FE');
           })
           .on('click', () => {
             window.open(`/tags/${tag.tag}`, '_blank');
@@ -190,7 +192,7 @@ function MostFrequentKeywords() {
           .attr('y', y + 4)
           .attr('text-anchor', 'middle')
           .attr('font-size', '11px')
-          .attr('fill', '#111')
+          .attr('fill', darkMode ? '#ffffff' : '#111')
           .text(truncateText(tag.tag))
           .append('title')
           .text(tag.tag);
@@ -198,19 +200,25 @@ function MostFrequentKeywords() {
     }, 100);
 
     return () => clearTimeout(timeout);
-  }, [tags]);
+  }, [tags, darkMode]);
 
   return (
-    <div className={styles.mfkContainer}>
-      <h3 className={styles.mfkTitle}>📊 Most Frequent Keywords</h3>
-      <div className={styles.mfkControls}>
+    <div className={`${styles.mfkContainer} ${darkMode ? 'darkMode' : ''}`}>
+      <h3 className={styles.mfkTitle} style={{ color: darkMode ? '#ffffff' : undefined }}>
+        📊 Most Frequent Keywords
+      </h3>
+      <div className={`${styles.mfkControls} ${darkMode ? 'darkMode' : ''}`}>
         <div>
-          <label htmlFor="project-select" className={styles.mfkLabel}>
+          <label
+            htmlFor="project-select"
+            className={styles.mfkLabel}
+            style={{ color: darkMode ? '#ffffff' : undefined }}
+          >
             Project
           </label>
           <Select
             inputId="project-select"
-            className={styles.mfkSelect}
+            className={`${styles.mfkSelect} ${darkMode ? 'darkMode' : ''}`}
             options={projects.map(p => ({
               label: p.projectName,
               value: p._id,
@@ -221,30 +229,78 @@ function MostFrequentKeywords() {
             onChange={selected => setSelectedProject(selected?.value || '')}
             placeholder="Select a project..."
             isSearchable
+            styles={{
+              control: base => ({
+                ...base,
+                backgroundColor: undefined,
+                color: darkMode ? '#ffffff' : '#111',
+                borderColor: darkMode ? '#3A506B' : base.borderColor,
+              }),
+              menu: base => ({
+                ...base,
+                backgroundColor: darkMode ? 'rgba(28,37,65,0.95)' : base.backgroundColor,
+              }),
+              option: (base, state) => ({
+                ...base,
+                backgroundColor: state.isFocused ? (darkMode ? '#5BC0EB' : '#E0F2FE') : undefined,
+                color: darkMode ? '#fff' : '#111',
+              }),
+              singleValue: base => ({
+                ...base,
+                color: darkMode ? '#ffffff' : '#111',
+              }),
+              input: base => ({
+                ...base,
+                color: darkMode ? '#ffffff' : '#111',
+              }),
+              menuPortal: base => ({
+                ...base,
+                backgroundColor: undefined,
+                color: darkMode ? '#ffffff' : '#111',
+              }),
+              container: base => ({
+                ...base,
+                backgroundColor: undefined,
+                color: darkMode ? '#ffffff' : '#111',
+                borderColor: darkMode ? '#1C2541' : base.borderColor,
+              }),
+            }}
           />
         </div>
-        <div>
-          <label htmlFor="start-date" className={styles.mfkLabel}>
+        <div style={{ padding: '4px', borderRadius: '4px' }}>
+          <label
+            htmlFor="start-date"
+            className={styles.mfkLabel}
+            style={{ color: darkMode ? '#ffffff' : undefined }}
+          >
             From
           </label>
           <DatePicker
             id="start-date"
             selected={startDate}
             onChange={date => setStartDate(date)}
-            className={styles.mfkDatepicker}
+            className={`${styles.mfkDatepicker} ${darkMode ? 'darkMode' : ''}`}
+            wrapperClassName={darkMode ? 'darkDateInput' : ''}
             placeholderText="Start date"
+            style={{ color: darkMode ? '#ffffff' : undefined }}
           />
         </div>
-        <div>
-          <label htmlFor="end-date" className={styles.mfkLabel}>
+        <div style={{ padding: '4px', borderRadius: '4px' }}>
+          <label
+            htmlFor="end-date"
+            className={styles.mfkLabel}
+            style={{ color: darkMode ? '#ffffff' : undefined }}
+          >
             To
           </label>
           <DatePicker
             id="end-date"
             selected={endDate}
             onChange={date => setEndDate(date)}
-            className={styles.mfkDatepicker}
+            className={`${styles.mfkDatepicker} ${darkMode ? 'darkMode' : ''}`}
+            wrapperClassName={darkMode ? 'darkDateInput' : ''}
             placeholderText="End date"
+            style={{ color: darkMode ? '#ffffff' : undefined }}
           />
         </div>
       </div>

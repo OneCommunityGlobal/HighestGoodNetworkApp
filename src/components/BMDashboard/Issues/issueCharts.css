@@ -183,3 +183,55 @@
   }
 }
 
+/* =======================
+   DARK MODE STYLES
+   ======================= */
+.darkMode .issue-chart-event-container {
+  background: #1B2A41 !important; /* Oxford Blue */
+  color: #ffffff !important;
+}
+
+.darkMode .issue-chart-event-title {
+  color: #ffffff !important;
+}
+
+.darkMode .chart-button {
+  background-color: #1C2541 !important; /* Space Cadet */
+  color: #ffffff !important;
+  border-color: #3A506B !important; /* Yinmn Blue */
+}
+
+.darkMode .chart-button.active {
+  background-color: #3A506B !important; 
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+.darkMode .chart-wrapper {
+  background: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+.darkMode .issue-chart-label {
+  color: #ffffff !important;
+}
+
+.darkMode .issue-chart-select {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+.darkMode .filters-container span {
+  color: #ffffff !important;
+}
+
+.darkMode .chart-container {
+  background: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+.darkMode .no-data-content h3,
+.darkMode .no-data-content p {
+  color: #ffffff !important;
+}
