@@ -9,6 +9,7 @@ function CommunityCalendar() {
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [hoveredEventId, setHoveredEventId] = useState(null);
 
   const mockEvents = [
     {
@@ -162,11 +163,28 @@ function CommunityCalendar() {
             className={`${styles.eventItem} ${styles.clickable}`}
             onClick={() => handleEventClick(event)}
             onKeyDown={e => handleEventKeyPress(e, event)}
+            onMouseEnter={() => setHoveredEventId(event.id)}
+            onMouseLeave={() => setHoveredEventId(null)}
             role="button"
             tabIndex={0}
             aria-label={`Click to view details for ${event.title}`}
           >
             {event.title}
+            {hoveredEventId === event.id && (
+              <div className={`${styles.eventTooltip} ${darkMode ? styles.eventTooltipDark : ''}`}>
+                <strong>{event.title}</strong>
+                <span className={styles.tooltipDetail}>
+                  <strong>Time:</strong> {event.time}
+                </span>
+                <span className={styles.tooltipDetail}>
+                  <strong>Location:</strong> {event.location}
+                </span>
+                <span className={styles.tooltipDetail}>
+                  <strong>Status:</strong> {event.status}
+                </span>
+                <small>Click for more details</small>
+              </div>
+            )}
           </div>
         ));
         return eventsForTile.length > 0 ? (
@@ -175,7 +193,7 @@ function CommunityCalendar() {
       }
       return null;
     },
-    [getEventsForDate, handleEventClick, handleEventKeyPress],
+    [getEventsForDate, handleEventClick, handleEventKeyPress, hoveredEventId],
   );
 
   // Memoized tile class name function - optimized for performance
