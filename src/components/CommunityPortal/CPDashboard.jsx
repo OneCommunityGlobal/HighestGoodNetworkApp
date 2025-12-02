@@ -5,6 +5,7 @@ import styles from './CPDashboard.module.css';
 import { ENDPOINTS } from '../../utils/URL';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
 import axios from 'axios';
 
 const FixedRatioImage = ({ src, alt, fallback }) => (
@@ -210,7 +211,6 @@ export function CPDashboard() {
                     <Input type="radio" name="dates" /> This Weekend
                   </div>
                 </div>
-                {/* <Input type="date" placeholder="Ending After" className={styles['date-filter']} /> */}
                 <div style={{ width: '100%' }}>
                   <DatePicker
                     selected={selectedDate}
