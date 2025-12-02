@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Button, Col, Tooltip , NavItem, UncontrolledTooltip } from 'reactstrap';
+import PropTypes from "prop-types";
+import { Button, Col, UncontrolledTooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
 // import styles from './UserProjectsTable.css';
@@ -33,7 +34,7 @@ const UserProjectsTable = React.memo(props => {
   const currentRoute = location.pathname;
   const isUserProfilePage = currentRoute === '/usermanagement';
 
-  const toggleTooltip = () => setTooltip(!tooltipOpen);
+  // const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   //Situation can be all, active, or complete
   const filterTasksAndUpdateFilter = situation => {
@@ -522,3 +523,14 @@ const removeOrAddTaskFromUser = (task, method) => {
 });
 
 export default connect(null, { hasPermission })(UserProjectsTable);
+UserProjectsTable.propTypes = {
+  userId: PropTypes.string,
+  userProjectsById: PropTypes.array,
+  userTasks: PropTypes.array,
+  role: PropTypes.string,
+  edit: PropTypes.bool,
+  hasPermission: PropTypes.func,
+  onDeleteClick: PropTypes.func,
+  updateTask: PropTypes.func,
+  darkMode: PropTypes.bool,
+};

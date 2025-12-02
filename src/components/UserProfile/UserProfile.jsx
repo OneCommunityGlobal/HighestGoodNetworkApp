@@ -576,6 +576,7 @@ function UserProfile(props) {
     toast.success(`User removed from Project "${removedProject?.projectName || 'Unknown'}"`);
   } catch (e) {
     toast.error('Failed to remove project, please try again.');
+    console.error(e);
   }
   return updatedProjects;
 };
@@ -608,6 +609,7 @@ const onAssignProject = async (assignedProject) => {
     toast.success(`User assigned to Project "${assignedProject.projectName || 'Unknown'}"`);
   } catch (e) {
     toast.error('Failed to assign project, please try again.');
+    console.error(e);
   }
   return updatedProjects;
 };
@@ -629,6 +631,7 @@ const onUpdateTask = async (taskId, updatedTask, method) => {
     return newTasks;
   } catch (e) {
     toast.error('Failed to remove task, please try again.');
+    console.error(e);
     return tasks;
   }
   } else {
@@ -654,6 +657,7 @@ setUpdatedTasks(prev => {
     toast.success("Task updated");
   } catch (e) {
     toast.error("Failed to update task");
+    console.error(e);
   }
 };
 
