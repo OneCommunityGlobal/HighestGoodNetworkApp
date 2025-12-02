@@ -255,21 +255,26 @@
 }
 
 .jobList {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  justify-items: center; 
+  align-items: start;
+  margin-top: 20px;
 }
 
 .jobAd {
-  width: 23%;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  overflow: hidden;
-  background: linear-gradient(135deg, #fff, #f9f9f9);
-  padding: 10px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  width: 100%;
+  max-width: 320px;
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .jobAd:hover {

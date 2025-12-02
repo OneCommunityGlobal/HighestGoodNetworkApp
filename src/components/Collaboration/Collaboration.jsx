@@ -8,11 +8,9 @@ import OneCommunityImage from '../../assets/images/logo2.png';
 import CollaborationJobFilters from './CollaborationJobFilters';
 
 function Collaboration() {
-  /* -------------------------------------- */
-  /* STATE                                  */
-  /* -------------------------------------- */
   const [query, setQuery] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
 
@@ -36,9 +34,7 @@ function Collaboration() {
   const userHasPermission = perm => dispatch(hasPermission(perm));
   const canReorderJobs = userHasPermission('reorderJobs');
 
-  /* -------------------------------------- */
-  /* TOOLTIP INIT                           */
-  /* -------------------------------------- */
+  /** TOOLTIP INIT */
   useEffect(() => {
     if (!localStorage.getItem('tooltipDismissed')) {
       setShowTooltip(true);
@@ -46,9 +42,7 @@ function Collaboration() {
     }
   }, []);
 
-  /* -------------------------------------- */
-  /* FETCH CATEGORIES                       */
-  /* -------------------------------------- */
+  /** FETCH CATEGORIES */
   const fetchCategories = async () => {
     try {
       const response = await fetch(`${ApiEndpoint}/jobs/categories`);
@@ -61,16 +55,17 @@ function Collaboration() {
     }
   };
 
-  /* -------------------------------------- */
-  /* FETCH JOB ADS                           */
-  /* -------------------------------------- */
-  const fetchJobAds = async (term, cats) => {
+  /** FETCH JOB ADS */
+  const fetchJobAds = async (search, cats, page) => {
     const adsPerPage = 20;
-    const categoryParam = cats.join(',');
+
+    const categoryParam = cats.length ? encodeURIComponent(cats.join(',')) : '';
 
     try {
       const response = await fetch(
-        `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${term}&category=${categoryParam}`,
+        `${ApiEndpoint}/jobs?page=${page}&limit=${adsPerPage}&search=${encodeURIComponent(
+          search,
+        )}&category=${categoryParam}`,
       );
 
       if (!response.ok) throw new Error('Request failed while fetching Job Ads');
@@ -90,19 +85,19 @@ function Collaboration() {
     }
   };
 
-  /* -------------------------------------- */
-  /* INITIAL FETCH ON PAGE LOAD + PAGINATION */
-  /* -------------------------------------- */
+  /** INITIAL CATEGORY FETCH */
   useEffect(() => {
     fetchCategories();
-    fetchJobAds(query, selectedCategories);
-  }, [currentPage]);
+  }, []);
 
-  /* -------------------------------------- */
-  /* SEARCH HANDLERS                        */
-  /* -------------------------------------- */
+  useEffect(() => {
+    fetchJobAds(query, selectedCategories, currentPage);
+  }, [query, selectedCategories, currentPage]);
+
+  /** SEARCH HANDLERS */
   const handleSearch = e => {
-    setQuery(e.target.value);
+    const value = e.target.value;
+    setQuery(value);
 
     if (!selectedCategories.length && !localStorage.getItem('tooltipDismissed')) {
       setTooltipPosition('category');
@@ -112,38 +107,28 @@ function Collaboration() {
 
   const handleSubmit = e => {
     e.preventDefault();
+
     setSearchTerm(query);
     setShowSearchResults(true);
     setSummaries(null);
     setCurrentPage(1);
-    fetchJobAds(query, selectedCategories);
   };
 
-  /* -------------------------------------- */
-  /* CATEGORY SELECTION                      */
-  /* -------------------------------------- */
+  /** CATEGORY SELECTION */
   const toggleCategory = category => {
     setSelectedCategories(prev => {
-      if (prev.includes(category)) {
-        const updated = prev.filter(c => c !== category);
-        fetchJobAds(query, updated);
-        return updated;
-      }
-      const updated = [...prev, category];
-      fetchJobAds(query, updated);
-      return updated;
+      return prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category];
     });
+
+    setCurrentPage(1);
   };
 
   const removeCategory = category => {
-    const updated = selectedCategories.filter(c => c !== category);
-    setSelectedCategories(updated);
-    fetchJobAds(query, updated);
+    setSelectedCategories(prev => prev.filter(c => c !== category));
+    setCurrentPage(1);
   };
 
-  /* -------------------------------------- */
-  /* CLICK OUTSIDE DROPDOWN                  */
-  /* -------------------------------------- */
+  /** CLICK OUTSIDE DROPDOWN */
   useEffect(() => {
     const handleClick = e => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -154,9 +139,7 @@ function Collaboration() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  /* -------------------------------------- */
-  /* TOOLTIP DISMISS                         */
-  /* -------------------------------------- */
+  /** TOOLTIP DISMISS */
   const dismissCategoryTooltip = () => {
     setShowTooltip(false);
     localStorage.setItem('tooltipDismissed', 'true');
@@ -166,9 +149,7 @@ function Collaboration() {
     setTooltipPosition('category');
   };
 
-  /* -------------------------------------- */
-  /* SUMMARIES FETCH                         */
-  /* -------------------------------------- */
+  /** SUMMARIES FETCH */
   const handleShowSummaries = async () => {
     const categoryParam = selectedCategories.join(',');
 
@@ -186,13 +167,10 @@ function Collaboration() {
   const toggleReorderModal = () => setIsReorderModalOpen(prev => !prev);
 
   const handleJobsReordered = () => {
-    fetchJobAds(query, selectedCategories);
+    fetchJobAds(query, selectedCategories, currentPage);
   };
 
-  /* -------------------------------------- */
-  /* RENDER HELPERS TO REMOVE DUPLICATION    */
-  /* -------------------------------------- */
-
+  /** RENDER HELPERS */
   const renderFilters = () => (
     <CollaborationJobFilters
       query={query}
@@ -226,9 +204,7 @@ function Collaboration() {
     </div>
   );
 
-  /* -------------------------------------- */
-  /* SUMMARY VIEW                            */
-  /* -------------------------------------- */
+  /** SUMMARY VIEW */
   if (summaries) {
     return (
       <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
@@ -246,7 +222,6 @@ function Collaboration() {
           {renderFilters()}
           {renderCategoryChips()}
 
-          {/* SUMMARY LIST */}
           <div className={styles.jobsSummariesList}>
             {summaries.jobs?.length > 0 ? (
               summaries.jobs.map(summary => (
@@ -269,9 +244,7 @@ function Collaboration() {
     );
   }
 
-  /* -------------------------------------- */
-  /* MAIN VIEW                              */
-  /* -------------------------------------- */
+  /** MAIN VIEW */
   return (
     <div className={`${styles.jobLanding} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.jobHeader}>
@@ -288,7 +261,6 @@ function Collaboration() {
         {renderFilters()}
         {renderCategoryChips()}
 
-        {/* RESULTS */}
         {showSearchResults ? (
           <div className={styles.jobDetails}>
             <div className={styles.jobQueries}>
@@ -319,7 +291,6 @@ function Collaboration() {
               )}
             </div>
 
-            {/* JOB ADS */}
             {jobAds.length ? (
               <div className={styles.jobList}>
                 {jobAds.map(ad => (
@@ -334,8 +305,11 @@ function Collaboration() {
                       alt={ad.title}
                       loading="lazy"
                     />
+
                     <a
-                      href={`https://www.onecommunityglobal.org/collaboration/seeking-${ad.category.toLowerCase()}`}
+                      href={`https://www.onecommunityglobal.org/seeking-${ad.title
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]+/g, '-')}/`}
                     >
                       <h3>
                         {ad.title} - {ad.category}
@@ -350,11 +324,9 @@ function Collaboration() {
               </div>
             )}
 
-            {/* PAGINATION */}
             <div className={styles.jobPagination}>
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
-                  type="button"
                   key={i}
                   onClick={() => setCurrentPage(i + 1)}
                   disabled={currentPage === i + 1}
