@@ -9,6 +9,7 @@ function CommunityCalendar() {
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventModal, setShowEventModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   const mockEvents = [
     {
@@ -117,6 +118,8 @@ function CommunityCalendar() {
   const handleEventClick = useCallback(event => {
     setSelectedEvent(event);
     setShowEventModal(true);
+    // Also select the date of the event so the sidebar shows events for that date
+    setSelectedDate(event.date);
   }, []);
 
   // Handle event key press
@@ -188,6 +191,17 @@ function CommunityCalendar() {
     },
     [eventCountByDate],
   );
+
+  // Handle calendar date selection
+  const handleDateChange = useCallback(date => {
+    setSelectedDate(date);
+  }, []);
+
+  // Get events for the selected date
+  const eventsForSelectedDate = useMemo(() => {
+    if (!selectedDate) return [];
+    return getEventsForDate(selectedDate);
+  }, [selectedDate, getEventsForDate]);
 
   // Memoized filter change handlers to prevent unnecessary re-renders
   const handleTypeFilterChange = useCallback(e => {
@@ -266,13 +280,19 @@ function CommunityCalendar() {
       <main className={calendarClasses.main}>
         <div className={calendarClasses.calendarContainer}>
           <div className={calendarClasses.activitySection}>
-            <CalendarActivitySection />
+            <CalendarActivitySection
+              selectedDate={selectedDate}
+              events={eventsForSelectedDate}
+              onEventClick={handleEventClick}
+            />
           </div>
           <div className={calendarClasses.calendarSection}>
             <ReactCalendar
               className={calendarClasses.reactCalendar}
               tileContent={tileContent}
               tileClassName={tileClassName}
+              onChange={handleDateChange}
+              value={selectedDate}
             />
           </div>
         </div>
