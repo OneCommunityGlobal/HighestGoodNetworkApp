@@ -367,6 +367,7 @@ function ReportDetails({
                   userId={summary._id}
                   bioPosted={summary.bioPosted}
                   summary={summary}
+                  getWeeklySummariesReport={getWeeklySummariesReport}
                 />
               </div>
             </ListGroupItem>
@@ -679,16 +680,42 @@ function Bio({ bioCanEdit, ...props }) {
   return bioCanEdit ? <BioSwitch {...props} /> : <BioLabel {...props} />;
 }
 
-function BioSwitch({ userId, bioPosted, summary }) {
+function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
+
+  // Sync local state with props when bioPosted changes from Redux store
+  useEffect(() => {
+    setBioStatus(bioPosted);
+  }, [bioPosted]);
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
     const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
+
+      // Force refresh the weekly summaries data to get updated bio status
+      try {
+        const currentTab = sessionStorage.getItem('tabSelection') || 'Last Week';
+        const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
+        const weekIndex = navItems.indexOf(currentTab);
+
+        // Force refresh with the current week index using direct API call with forceRefresh
+        if (weekIndex >= 0) {
+          const { ENDPOINTS } = await import('~/utils/URL');
+          const url = `${ENDPOINTS.WEEKLY_SUMMARIES_REPORT()}?week=${weekIndex}&forceRefresh=true`;
+
+          const response = await axios.get(url);
+          if (response.status === 200 && getWeeklySummariesReport) {
+            // Use the existing function to process and update the data
+            await getWeeklySummariesReport(weekIndex);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to refresh weekly summaries after bio update:', error);
+      }
     }
   };
 

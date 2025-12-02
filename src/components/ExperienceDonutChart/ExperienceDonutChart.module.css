@@ -219,11 +219,13 @@
   width: 100%;
   max-width: none;                   /* fill grid column, don't cap */
   padding: 0.6rem 0.75rem;
-  text-align: left;
+  /* text-align: left; */
 
   /* prevent overflow on long role names / unbroken strings */
   overflow-wrap: anywhere;
   word-break: break-word;
+  text-align: center; 
+  justify-content: center;
 }
 
 .detail-item:hover,
@@ -244,15 +246,15 @@
 .detail-sub { display: none; }        /* optional: hide to keep cards compact; show if you prefer */
 .detail-pct { grid-column: 4; margin-left: 0; font-weight: 800; color: #2563eb; }
 
-.detail-item:hover,
+/* .detail-item:hover,
 .detail-item.active {
   background: #111827;
   border-color: #0b1220;
   box-shadow: 0 8px 18px rgba(2,6,23,.12);
   transform: translateY(-1px);
-}
-.detail-item:hover span,
-.detail-item.active span { color: #ffffff !important; }
+} */
+/* .detail-item:hover span,
+.detail-item.active span { color: #ffffff !important; } */
 .detail-item:hover .detail-pct,
 .detail-item.active .detail-pct { color: #93c5fd !important; } /* keep contrast on hover */
 
@@ -312,7 +314,7 @@
 .pie-cell { transition: opacity .15s ease, filter .15s ease, transform .15s ease; cursor: pointer; }
 .pie-cell:hover { opacity: .9; filter: brightness(1.05); }
 
-.detail-item { text-align: center; justify-content: center; }
+/* .detail-item { text-align: center; justify-content: center; } */
 
 
 /* ===================== Responsive tweaks ===================== */
@@ -357,6 +359,7 @@
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(2,6,23,0.06);
   background-clip: padding-box;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
 }
 
 /* Keep dark hover/active but ensure contrast is clear */
@@ -393,9 +396,9 @@
 }
 
 /* Optional: smooth the state change */
-.chart-details .detail-item {
+/* .chart-details .detail-item {
   transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
-}
+} */
 /* ===================== DARK MODE (scoped to wrapper) ===================== */
 
 /* Ensure every surface flips dark */

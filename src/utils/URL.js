@@ -110,6 +110,10 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
+  WEEKLY_SUMMARIES_FILTERS:`${APIEndpoint}/weeklySummariesFilters`,
+  WEEKLY_SUMMARIES_FILTER_BY_ID: filterId => `${APIEndpoint}/weeklySummariesFilters/${filterId}`,
+  WEEKLY_SUMMARIES_FILTER_REPLACE_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceTeamcodes`,
+  WEEKLY_SUMMARIES_FILTER_REPLACE_INDIVIDUAL_CODES: `${APIEndpoint}/weeklySummariesFilters/replaceIndividualTeamcodes`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
   GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
@@ -151,18 +155,18 @@ export const ENDPOINTS = {
     `${ENDPOINTS.APIEndpoint()}/task/${taskId}/tasknotification`,
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
-  
-POPULARITY: (range, roles, start, end) => {
-  let url = `${APIEndpoint}/popularity?`;
-  if (range) url += `range=${range}&`;
-  if (roles && roles.length > 0) {
-    url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
-  }
-  if (start) url += `start=${encodeURIComponent(start)}&`;
-  if (end) url += `end=${encodeURIComponent(end)}&`;
-  return url.slice(0, -1); 
-},
-POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
+
+  POPULARITY: (range, roles, start, end) => {
+    let url = `${APIEndpoint}/popularity?`;
+    if (range) url += `range=${range}&`;
+    if (roles && roles.length > 0) {
+      url += `roles=${encodeURIComponent(JSON.stringify(roles))}&`;
+    }
+    if (start) url += `start=${encodeURIComponent(start)}&`;
+    if (end) url += `end=${encodeURIComponent(end)}&`;
+    return url.slice(0, -1);
+  },
+  POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
 
 
   // titles endpoints
@@ -183,6 +187,11 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   // Student Tasks (Education Portal)
   STUDENT_TASKS: () => `${APIEndpoint}/student/tasks`,
   STUDENT_TASK_MARK_DONE: taskId => `${APIEndpoint}/student/tasks/${taskId}/mark-done`,
+
+  // Intermediate Tasks (Education Portal)
+  INTERMEDIATE_TASKS: () => `${APIEndpoint}/educator/intermediate-tasks`,
+  INTERMEDIATE_TASK_BY_ID: id => `${APIEndpoint}/educator/intermediate-tasks/${id}`,
+  INTERMEDIATE_TASKS_BY_PARENT: taskId => `${APIEndpoint}/educator/tasks/${taskId}/intermediate`,
 
   TIMER_SERVICE: new URL('/timer-service', APIEndpoint.replace('http', 'ws')).toString(),
   TIMEZONE_LOCATION: location => `${APIEndpoint}/timezone/${location}`,
@@ -281,7 +290,7 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   BM_PROJECTS_WITH_LOCATION: `${APIEndpoint}/bm/projects/location`,
   BM_PROJECT_EXPENSE_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}/expenses`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/bm/project/${projectId}`,
-  BM_PROJECTS_LIST_FOR_MATERIALS_COST: `${APIEndpoint}/totalProjects `,
+
   BM_PROJECT_MATERIALS_COST: `${APIEndpoint}/material-costs`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
@@ -363,6 +372,8 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
   HGN_FORM_UPDATE_USER_SKILLS_FOLLOWUP_SUBMIT: `${APIEndpoint}/skills/profile/updateFollowUp/`,
 
+  HGN_FORM_GET_TEAM_MEMBERS_BY_SKILL: skill => `${APIEndpoint}/userProfile/skills/${skill}`,
+
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
@@ -388,6 +399,11 @@ POPULARITY_ROLES: `${APIEndpoint}/popularity/roles`,
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+  // Phase 2 summary dashboard
+  SUPPLIER_PERFORMANCE: (projectId, startDate, endDate) =>
+    `${APIEndpoint}/suppliers/performance?projectId=${projectId}&startDate=${startDate}&endDate=${endDate}`,
+  SUPPLIER_PROJECTS: `${APIEndpoint}/suppliers/projects`,
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
