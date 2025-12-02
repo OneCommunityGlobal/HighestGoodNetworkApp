@@ -219,11 +219,7 @@ export function CPDashboard() {
                     id="ending-after"
                     className={styles['date-filter']}
                   />
-                  {dateError && (
-                    <p className="date-error-message" style={{ color: 'red', marginTop: '5px' }}>
-                      {dateError}
-                    </p>
-                  )}
+                  {dateError && <p className={styles['date-error-message']}>{dateError}</p>}
                 </div>
               </div>
 

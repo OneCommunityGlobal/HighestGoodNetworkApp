@@ -274,6 +274,12 @@
   justify-content: center;
   align-items: center;
 }
+
+.date-error-message {
+  color: red;
+  margin-top: 5px;
+}
+
 /* Hide browser's built-in clear icon for search inputs */
 .dashboard-search-input::-webkit-search-cancel-button,
 .dashboard-search-input::-webkit-search-decoration,
