@@ -157,10 +157,14 @@ function PermissionWatcher() {
           setIsInitialLogin(false);
           dispatch(getUserProfile(_id));
         })
-        .catch(() => {
+        .catch(error => {
+          // eslint-disable-next-line no-console
+          // console.error('Error updating user profile:', error);
           setIsAckLoading(false);
         });
-    } catch {
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      // console.error('Error acknowledging permission changes:', error);
       setIsAckLoading(false);
     }
   };
