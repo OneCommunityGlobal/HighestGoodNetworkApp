@@ -211,14 +211,13 @@ export function CPDashboard() {
                     <Input type="radio" name="dates" /> This Weekend
                   </div>
                 </div>
-                <div style={{ width: '100%' }}>
+                <div className={styles['date-filter-container']}>
                   <DatePicker
                     selected={selectedDate}
                     onChange={date => handleDateChange(date)}
                     placeholderText="Ending After"
                     id="ending-after"
                     className={styles['date-filter']}
-                    style={{ width: '100%' }}
                   />
                   {dateError && (
                     <p className="date-error-message" style={{ color: 'red', marginTop: '5px' }}>
