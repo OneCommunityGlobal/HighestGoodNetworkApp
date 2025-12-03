@@ -1,4 +1,14 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef, Suspense, lazy } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useRef,
+  Suspense,
+  lazy,
+  useReducer,
+} from 'react';
+// import WeeklyUpdateComposer from './WeeklyUpdateComposer';
 import { connect, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -46,6 +56,12 @@ import {
   previewEmailTemplate,
 } from '../../../actions/emailTemplateActions';
 import './IntegratedEmailSender.css';
+import '../EmailManagementShared.css';
+import {
+  EMAIL_MODES,
+  EMAIL_DISTRIBUTION,
+  YOUTUBE_THUMBNAIL_QUALITIES,
+} from './constants/emailConstants';
 
 // Lazy load heavy components
 const LazyEditor = lazy(() =>
@@ -65,10 +81,7 @@ const VariableRow = React.memo(
   }) => {
     const [imgError, setImgError] = React.useState(false);
     const [qualityIndex, setQualityIndex] = React.useState(0);
-    const qualities = React.useMemo(
-      () => ['maxresdefault', 'hqdefault', 'mqdefault', 'default'],
-      [],
-    );
+    const qualities = React.useMemo(() => YOUTUBE_THUMBNAIL_QUALITIES, []);
 
     React.useEffect(() => {
       setImgError(false);
@@ -150,7 +163,7 @@ const VariableRow = React.memo(
                         src={computedSrc}
                         alt="Preview"
                         style={{
-                          maxWidth: '400px',
+                          maxWidth: '100%',
                           width: '100%',
                           height: 'auto',
                           objectFit: 'contain',
@@ -163,7 +176,8 @@ const VariableRow = React.memo(
                     ) : (
                       <div
                         style={{
-                          width: '400px',
+                          width: '100%',
+                          maxWidth: '400px',
                           height: 'auto',
                           minHeight: '200px',
                           backgroundColor: '#f8f9fa',
@@ -218,7 +232,148 @@ const VariableRow = React.memo(
 );
 
 VariableRow.displayName = 'VariableRow';
+// Initial state for email sender
+const initialEmailState = {
+  selectedTemplate: null,
+  customContent: '',
+  customSubject: '',
+  recipients: '',
+  variableValues: {},
+  emailDistribution: EMAIL_DISTRIBUTION.SPECIFIC,
+  showPreviewModal: false,
+  validationErrors: {},
+  recipientList: [],
+  isSending: false,
+  apiError: null,
+  retryCount: 0,
+  isRetrying: false,
+  loadingProgress: 0,
+  isEditorLoaded: false,
+  editorError: null,
+  showRetryOptions: false,
+  lastSuccessfulLoad: null,
+  fullTemplateContent: null,
+  previewLoading: false,
+  previewError: null,
+  backendPreviewData: null,
+  componentError: null,
+};
 
+// Reducer function
+const emailReducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_SELECTED_TEMPLATE':
+      return { ...state, selectedTemplate: action.payload };
+
+    case 'SET_CUSTOM_CONTENT':
+      return { ...state, customContent: action.payload };
+
+    case 'SET_CUSTOM_SUBJECT':
+      return { ...state, customSubject: action.payload };
+
+    case 'SET_RECIPIENTS':
+      return { ...state, recipients: action.payload };
+
+    case 'SET_VARIABLE_VALUES':
+      return { ...state, variableValues: action.payload };
+
+    case 'UPDATE_VARIABLE_VALUE':
+      return {
+        ...state,
+        variableValues: {
+          ...state.variableValues,
+          [action.payload.name]: action.payload.value,
+        },
+      };
+
+    case 'SET_EMAIL_DISTRIBUTION':
+      return { ...state, emailDistribution: action.payload };
+
+    case 'SET_SHOW_PREVIEW_MODAL':
+      return { ...state, showPreviewModal: action.payload };
+
+    case 'SET_VALIDATION_ERRORS':
+      return { ...state, validationErrors: action.payload };
+
+    case 'UPDATE_VALIDATION_ERROR':
+      return {
+        ...state,
+        validationErrors: {
+          ...state.validationErrors,
+          [action.payload.field]: action.payload.error,
+        },
+      };
+
+    case 'SET_RECIPIENT_LIST':
+      return { ...state, recipientList: action.payload };
+
+    case 'SET_IS_SENDING':
+      return { ...state, isSending: action.payload };
+
+    case 'SET_API_ERROR':
+      return { ...state, apiError: action.payload };
+
+    case 'SET_RETRY_COUNT':
+      return { ...state, retryCount: action.payload };
+
+    case 'INCREMENT_RETRY_COUNT':
+      return { ...state, retryCount: state.retryCount + 1 };
+
+    case 'SET_IS_RETRYING':
+      return { ...state, isRetrying: action.payload };
+
+    case 'SET_LOADING_PROGRESS':
+      return { ...state, loadingProgress: action.payload };
+
+    case 'SET_EDITOR_LOADED':
+      return { ...state, isEditorLoaded: action.payload };
+
+    case 'SET_EDITOR_ERROR':
+      return { ...state, editorError: action.payload };
+
+    case 'SET_SHOW_RETRY_OPTIONS':
+      return { ...state, showRetryOptions: action.payload };
+
+    case 'SET_LAST_SUCCESSFUL_LOAD':
+      return { ...state, lastSuccessfulLoad: action.payload };
+
+    case 'SET_FULL_TEMPLATE_CONTENT':
+      return { ...state, fullTemplateContent: action.payload };
+
+    case 'SET_PREVIEW_LOADING':
+      return { ...state, previewLoading: action.payload };
+
+    case 'SET_PREVIEW_ERROR':
+      return { ...state, previewError: action.payload };
+
+    case 'SET_BACKEND_PREVIEW_DATA':
+      return { ...state, backendPreviewData: action.payload };
+
+    case 'SET_COMPONENT_ERROR':
+      return { ...state, componentError: action.payload };
+
+    case 'RESET_FORM':
+      return {
+        ...initialEmailState,
+        // Keep some state that shouldn't reset
+        apiError: state.apiError,
+        lastSuccessfulLoad: state.lastSuccessfulLoad,
+      };
+
+    case 'RESET_ERRORS':
+      return {
+        ...state,
+        apiError: null,
+        validationErrors: {},
+        editorError: null,
+        previewError: null,
+        componentError: null,
+      };
+
+    default:
+      return state;
+  }
+};
 const IntegratedEmailSender = ({
   templates,
   loading,
@@ -241,44 +396,54 @@ const IntegratedEmailSender = ({
   const getCurrentModeFromURL = useCallback(() => {
     const urlParams = new URLSearchParams(location.search);
     const mode = urlParams.get('mode');
-    return mode === 'custom' ? false : true; // Default to template mode
+    if (mode === EMAIL_MODES.CUSTOM) return EMAIL_MODES.CUSTOM;
+    if (mode === EMAIL_MODES.WEEKLY_UPDATE) return EMAIL_MODES.WEEKLY_UPDATE;
+    return EMAIL_MODES.TEMPLATES; // Default to template mode
   }, [location.search]);
 
-  const [useTemplate, setUseTemplate] = useState(() => {
+  const [emailMode, setEmailMode] = useState(() => {
     const urlParams = new URLSearchParams(location.search);
     const mode = urlParams.get('mode');
-    return mode === 'custom' ? false : true; // Default to template mode
+    if (mode === EMAIL_MODES.CUSTOM) return EMAIL_MODES.CUSTOM;
+    if (mode === EMAIL_MODES.WEEKLY_UPDATE) return EMAIL_MODES.WEEKLY_UPDATE;
+    return EMAIL_MODES.TEMPLATES; // Default to template mode
   });
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [customContent, setCustomContent] = useState(initialContent);
-  const [customSubject, setCustomSubject] = useState(initialSubject);
-  const [recipients, setRecipients] = useState(initialRecipients);
-  const [variableValues, setVariableValues] = useState({});
-  const [emailDistribution, setEmailDistribution] = useState('specific'); // 'specific' or 'broadcast'
-  const [showPreviewModal, setShowPreviewModal] = useState(false);
-  const [validationErrors, setValidationErrors] = useState({});
-  const [recipientList, setRecipientList] = useState([]);
-  const [isSending, setIsSending] = useState(false);
-  const [apiError, setApiError] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const [isRetrying, setIsRetrying] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [isEditorLoaded, setIsEditorLoaded] = useState(false);
-  const [editorError, setEditorError] = useState(null);
-  const [showRetryOptions, setShowRetryOptions] = useState(false);
-  const [lastSuccessfulLoad, setLastSuccessfulLoad] = useState(null);
-  const [fullTemplateContent, setFullTemplateContent] = useState(null);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewError, setPreviewError] = useState(null);
-  const [backendPreviewData, setBackendPreviewData] = useState(null);
+
+  // Use reducer for email sender state
+  const [state, dispatch] = useReducer(emailReducer, initialEmailState);
+
+  // Destructure state
+  const {
+    selectedTemplate,
+    customContent,
+    customSubject,
+    recipients,
+    variableValues,
+    emailDistribution,
+    showPreviewModal,
+    validationErrors,
+    recipientList,
+    isSending,
+    apiError,
+    retryCount,
+    isRetrying,
+    loadingProgress,
+    isEditorLoaded,
+    editorError,
+    showRetryOptions,
+    lastSuccessfulLoad,
+    fullTemplateContent,
+    previewLoading,
+    previewError,
+    backendPreviewData,
+    componentError,
+  } = state;
 
   // Refs for performance optimization
   const abortControllerRef = useRef(null);
   const timeoutRefs = useRef([]);
   const progressIntervalRef = useRef(null);
   const editorLoadTimeoutRef = useRef(null);
-
-  // Removed shimmer skeleton loader; using spinners/progress instead
 
   // Enhanced loading component with progress bar
   const EnhancedLoader = useMemo(() => {
@@ -315,12 +480,12 @@ const IntegratedEmailSender = ({
             <small className="text-muted d-block mb-3">Retry attempt {retryCount}</small>
           )}
           <div className="d-flex gap-2 justify-content-center">
-            <Button color="primary" onClick={onRetry}>
+            <Button color="primary" size="sm" onClick={onRetry}>
               <FaRedo className="me-1" />
               Try Again
             </Button>
             {showRetryOptions && (
-              <Button color="outline-secondary" onClick={onDismiss}>
+              <Button color="outline-secondary" size="sm" onClick={onDismiss}>
                 <FaTimes className="me-1" />
                 Dismiss
               </Button>
@@ -333,7 +498,7 @@ const IntegratedEmailSender = ({
     return FallbackComponentInner;
   }, []);
 
-  // Simple template loading indicator (no shimmer)
+  // Simple template loading indicator
   const TemplateSelectLoader = useMemo(() => {
     const TemplateLoaderComponent = () => (
       <div className="template-loading-simple d-flex align-items-center" style={{ gap: '8px' }}>
@@ -345,22 +510,19 @@ const IntegratedEmailSender = ({
     return TemplateLoaderComponent;
   }, []);
 
-  // Removed unused VariablesLoader
-  // VariablesLoader is currently unused; kept minimal UI in place if needed later
-
   // Memoized URL update function
   const updateModeURL = useCallback(
-    isTemplateMode => {
+    mode => {
       const urlParams = new URLSearchParams(location.search);
 
       // Clear template management parameters when switching email sender modes
       urlParams.delete('view');
       urlParams.delete('templateId');
 
-      if (isTemplateMode) {
+      if (mode === EMAIL_MODES.TEMPLATES) {
         urlParams.delete('mode'); // Remove mode param for template (default)
       } else {
-        urlParams.set('mode', 'custom'); // Set mode param for custom
+        urlParams.set('mode', mode); // Set mode param ('custom' or 'weekly')
       }
 
       const newSearch = urlParams.toString();
@@ -372,7 +534,7 @@ const IntegratedEmailSender = ({
 
   // Handle mode change with cleanup
   const handleModeChange = useCallback(
-    isTemplateMode => {
+    mode => {
       // Cancel any pending requests
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
@@ -383,9 +545,22 @@ const IntegratedEmailSender = ({
       timeoutRefs.current = [];
 
       // Reset all states when changing modes
-      resetAllStates();
-      setUseTemplate(isTemplateMode);
-      updateModeURL(isTemplateMode);
+      dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
+      dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
+      dispatch({ type: 'SET_CUSTOM_CONTENT', payload: '' });
+      dispatch({ type: 'SET_CUSTOM_SUBJECT', payload: '' });
+      dispatch({ type: 'SET_RECIPIENTS', payload: '' });
+      dispatch({ type: 'SET_VARIABLE_VALUES', payload: {} });
+      dispatch({ type: 'SET_EMAIL_DISTRIBUTION', payload: EMAIL_DISTRIBUTION.SPECIFIC });
+      dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+      dispatch({ type: 'SET_VALIDATION_ERRORS', payload: {} });
+      dispatch({ type: 'SET_RECIPIENT_LIST', payload: [] });
+      dispatch({ type: 'SET_API_ERROR', payload: null });
+      dispatch({ type: 'SET_RETRY_COUNT', payload: 0 });
+      dispatch({ type: 'SET_IS_RETRYING', payload: false });
+
+      setEmailMode(mode);
+      updateModeURL(mode);
     },
     [updateModeURL],
   );
@@ -401,30 +576,30 @@ const IntegratedEmailSender = ({
     timeoutRefs.current.forEach(timeout => clearTimeout(timeout));
     timeoutRefs.current = [];
 
-    setSelectedTemplate(null);
-    setFullTemplateContent(null);
-    setCustomContent('');
-    setCustomSubject('');
-    setRecipients('');
-    setVariableValues({});
-    setEmailDistribution('specific');
-    setShowPreviewModal(false);
-    setValidationErrors({});
-    setRecipientList([]);
-    setApiError(null);
-    setRetryCount(0);
-    setIsRetrying(false);
+    dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
+    dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
+    dispatch({ type: 'SET_CUSTOM_CONTENT', payload: '' });
+    dispatch({ type: 'SET_CUSTOM_SUBJECT', payload: '' });
+    dispatch({ type: 'SET_RECIPIENTS', payload: '' });
+    dispatch({ type: 'SET_VARIABLE_VALUES', payload: {} });
+    dispatch({ type: 'SET_EMAIL_DISTRIBUTION', payload: EMAIL_DISTRIBUTION.SPECIFIC });
+    dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+    dispatch({ type: 'SET_VALIDATION_ERRORS', payload: {} });
+    dispatch({ type: 'SET_RECIPIENT_LIST', payload: [] });
+    dispatch({ type: 'SET_API_ERROR', payload: null });
+    dispatch({ type: 'SET_RETRY_COUNT', payload: 0 });
+    dispatch({ type: 'SET_IS_RETRYING', payload: false });
   }, []);
 
   // Update useTemplate when URL changes (e.g., browser back/forward)
   useEffect(() => {
     const newMode = getCurrentModeFromURL();
-    if (newMode !== useTemplate) {
+    if (newMode !== emailMode) {
       // Always reset all states when switching modes
       resetAllStates();
-      setUseTemplate(newMode);
+      setEmailMode(newMode);
     }
-  }, [location.search, useTemplate, resetAllStates]);
+  }, [location.search, emailMode, resetAllStates, getCurrentModeFromURL]);
 
   // Enhanced template fetching with progress tracking
   useEffect(() => {
@@ -433,15 +608,18 @@ const IntegratedEmailSender = ({
 
     const fetchTemplatesWithProgress = async () => {
       try {
-        setLoadingProgress(0);
-        setApiError(null);
-        setShowRetryOptions(false);
+        dispatch({ type: 'SET_LOADING_PROGRESS', payload: 0 });
+        dispatch({ type: 'SET_API_ERROR', payload: null });
+        dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: false });
 
         // Simulate progress for better UX
         const progressInterval = setInterval(() => {
-          setLoadingProgress(prev => {
-            if (prev >= 90) return prev;
-            return prev + Math.random() * 15;
+          dispatch({
+            type: 'SET_LOADING_PROGRESS',
+            payload: prev => {
+              if (prev >= 90) return prev;
+              return prev + Math.random() * 15;
+            },
           });
         }, 200);
 
@@ -452,20 +630,22 @@ const IntegratedEmailSender = ({
           // no pagination for dropdown; fetch all
           sortBy: 'updated_at',
           sortOrder: 'desc',
-          includeEmailContent: true,
+          includeEmailContent: false,
         });
 
-        setLoadingProgress(100);
-        setLastSuccessfulLoad(new Date());
+        dispatch({ type: 'SET_LOADING_PROGRESS', payload: 100 });
+        dispatch({ type: 'SET_LAST_SUCCESSFUL_LOAD', payload: new Date() });
         clearInterval(progressInterval);
 
         // Reset progress after success
-        setTimeout(() => setLoadingProgress(0), 1000);
+        setTimeout(() => dispatch({ type: 'SET_LOADING_PROGRESS', payload: 0 }), 1000);
       } catch (error) {
         if (error.name !== 'AbortError') {
-          // console.error('Failed to fetch templates:', error);
-          setApiError('Failed to load templates. Please try again.');
-          setShowRetryOptions(true);
+          dispatch({
+            type: 'SET_API_ERROR',
+            payload: 'Failed to load templates. Please try again.',
+          });
+          dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: true });
           clearInterval(progressIntervalRef.current);
         }
       }
@@ -487,8 +667,7 @@ const IntegratedEmailSender = ({
   // Handle preSelectedTemplate
   useEffect(() => {
     if (preSelectedTemplate && templates && templates.length > 0) {
-      setUseTemplate(true);
-      setSelectedTemplate(preSelectedTemplate);
+      dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: preSelectedTemplate });
       // Initialize variable values directly to avoid dependency issues
       const initialValues = {};
       if (
@@ -502,13 +681,9 @@ const IntegratedEmailSender = ({
           }
         });
       }
-      setVariableValues(initialValues);
+      dispatch({ type: 'SET_VARIABLE_VALUES', payload: initialValues });
     }
   }, [preSelectedTemplate, templates]);
-
-  // Removed auto-clear of errors - errors should persist until manually handled
-  // Email sent handling removed - emails are now sent via emailController endpoints
-  // Success/error handling is done in confirmSendEmail callback
 
   // Cleanup effect to reset states when component unmounts
   useEffect(() => {
@@ -531,11 +706,11 @@ const IntegratedEmailSender = ({
   const handleRetry = useCallback(async () => {
     if (isRetrying) return; // Prevent multiple simultaneous retries
 
-    setIsRetrying(true);
-    setRetryCount(prev => prev + 1);
-    setApiError(null);
-    setLoadingProgress(0);
-    setShowRetryOptions(false);
+    dispatch({ type: 'SET_IS_RETRYING', payload: true });
+    dispatch({ type: 'INCREMENT_RETRY_COUNT' });
+    dispatch({ type: 'SET_API_ERROR', payload: null });
+    dispatch({ type: 'SET_LOADING_PROGRESS', payload: 0 });
+    dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: false });
 
     toast.info(`Retrying to load templates... (Attempt ${retryCount + 1})`, {
       autoClose: 3000,
@@ -552,9 +727,12 @@ const IntegratedEmailSender = ({
 
       // Progress tracking for retry
       const progressInterval = setInterval(() => {
-        setLoadingProgress(prev => {
-          if (prev >= 90) return prev;
-          return prev + Math.random() * 10;
+        dispatch({
+          type: 'SET_LOADING_PROGRESS',
+          payload: prev => {
+            if (prev >= 90) return prev;
+            return prev + Math.random() * 10;
+          },
         });
       }, 150);
 
@@ -569,10 +747,10 @@ const IntegratedEmailSender = ({
       });
 
       clearInterval(progressInterval);
-      setLoadingProgress(100);
-      setLastSuccessfulLoad(new Date());
+      dispatch({ type: 'SET_LOADING_PROGRESS', payload: 100 });
+      dispatch({ type: 'SET_LAST_SUCCESSFUL_LOAD', payload: new Date() });
       clearEmailTemplateError();
-      setShowRetryOptions(false);
+      dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: false });
 
       toast.success('Templates loaded successfully!', {
         icon: <FaCheckCircle />,
@@ -580,21 +758,20 @@ const IntegratedEmailSender = ({
       });
 
       // Reset retry count on success
-      setRetryCount(0);
+      dispatch({ type: 'SET_RETRY_COUNT', payload: 0 });
     } catch (err) {
       if (err.name !== 'AbortError') {
-        // console.error('Retry failed:', err);
         const errorMessage = `Retry failed: ${err.message || 'Unknown error'}`;
 
-        setApiError(errorMessage);
-        setShowRetryOptions(true);
+        dispatch({ type: 'SET_API_ERROR', payload: errorMessage });
+        dispatch({ type: 'SET_SHOW_RETRY_OPTIONS', payload: true });
 
         toast.error(errorMessage, {
           autoClose: 5000,
         });
       }
     } finally {
-      setIsRetrying(false);
+      dispatch({ type: 'SET_IS_RETRYING', payload: false });
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
       }
@@ -607,9 +784,9 @@ const IntegratedEmailSender = ({
       abortControllerRef.current.abort();
     }
 
-    setApiError(null);
-    setRetryCount(0);
-    setIsRetrying(false);
+    dispatch({ type: 'SET_API_ERROR', payload: null });
+    dispatch({ type: 'SET_RETRY_COUNT', payload: 0 });
+    dispatch({ type: 'SET_IS_RETRYING', payload: false });
     clearEmailTemplateError();
   }, [clearEmailTemplateError]);
 
@@ -634,24 +811,22 @@ const IntegratedEmailSender = ({
         }
       });
     }
-    setVariableValues(initialValues);
+    dispatch({ type: 'SET_VARIABLE_VALUES', payload: initialValues });
   }, []);
 
   // Function to fetch full template content
-  // Backend returns: { success: true, template: {...} }
   const fetchFullTemplateContent = useCallback(async templateId => {
     try {
       const response = await axios.get(ENDPOINTS.EMAIL_TEMPLATE_BY_ID(templateId));
 
       if (response.data.success && response.data.template) {
-        setFullTemplateContent(response.data.template);
+        dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: response.data.template });
         return response.data.template;
       } else {
         throw new Error(response.data.message || 'Template not found');
       }
     } catch (error) {
-      // console.error('Failed to fetch full template content:', error);
-      setFullTemplateContent(null);
+      dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
       throw error;
     }
   }, []);
@@ -659,18 +834,17 @@ const IntegratedEmailSender = ({
   const handleTemplateSelect = useCallback(
     async template => {
       // Clear all previous state first
-      setVariableValues({});
-      setValidationErrors({});
-      setShowPreviewModal(false);
-      setFullTemplateContent(null);
+      dispatch({ type: 'SET_VARIABLE_VALUES', payload: {} });
+      dispatch({ type: 'SET_VALIDATION_ERRORS', payload: {} });
+      dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+      dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: null });
 
       if (!template) {
-        setSelectedTemplate(null);
+        dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: null });
         return;
       }
 
-      // Check if template has full data (variables, html_content, subject)
-      // This is set when includeEmailContent=true is passed to fetchEmailTemplates
+      // Check if template has full data
       const hasFullData =
         Array.isArray(template.variables) && (template.html_content || template.subject);
 
@@ -679,21 +853,20 @@ const IntegratedEmailSender = ({
         try {
           const fullTemplate = await fetchFullTemplateContent(template._id);
           if (fullTemplate) {
-            setSelectedTemplate(fullTemplate);
+            dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: fullTemplate });
             initializeVariableValues(fullTemplate);
-            setFullTemplateContent(fullTemplate);
+            dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: fullTemplate });
           }
         } catch (error) {
-          console.error('Failed to fetch full template data:', error);
           // Continue with the template we have
-          setSelectedTemplate(template);
+          dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: template });
           initializeVariableValues(template);
         }
       } else {
-        // Template already has full data, no additional API call needed
-        setSelectedTemplate(template);
+        // Template already has full data
+        dispatch({ type: 'SET_SELECTED_TEMPLATE', payload: template });
         initializeVariableValues(template);
-        setFullTemplateContent(template);
+        dispatch({ type: 'SET_FULL_TEMPLATE_CONTENT', payload: template });
       }
     },
     [initializeVariableValues, fetchFullTemplateContent],
@@ -701,27 +874,27 @@ const IntegratedEmailSender = ({
 
   const handleVariableChange = useCallback(
     (variableName, value) => {
-      setVariableValues(prevValues => {
-        const nextValues = { ...prevValues, [variableName]: value };
+      const nextValues = { ...variableValues, [variableName]: value };
+      dispatch({ type: 'SET_VARIABLE_VALUES', payload: nextValues });
 
-        // Live validate only the changed variable when a template is selected
-        if (selectedTemplate) {
-          const variableMeta = selectedTemplate.variables?.find(v => v?.name === variableName);
-          if (variableMeta) {
-            const errorMsg = validateVariable(variableMeta, nextValues);
-            setValidationErrors(prevErrs => ({ ...prevErrs, [variableName]: errorMsg }));
-          }
+      // Live validate only the changed variable when a template is selected
+      if (selectedTemplate) {
+        const variableMeta = selectedTemplate.variables?.find(v => v?.name === variableName);
+        if (variableMeta) {
+          const errorMsg = validateVariable(variableMeta, nextValues);
+          dispatch({
+            type: 'UPDATE_VALIDATION_ERROR',
+            payload: { field: variableName, error: errorMsg },
+          });
         }
-
-        return nextValues;
-      });
+      }
     },
-    [selectedTemplate],
+    [selectedTemplate, variableValues],
   );
 
   const parseRecipients = useCallback(recipientText => parseRecipientsUtil(recipientText), []);
 
-  // Memoized function to extract image from various sources with proper sizing
+  // Memoized function to extract image from various sources
   const extractImageFromSource = useCallback(Validators.extractImageFromSource, []);
 
   // Memoized handle image source change with automatic extraction
@@ -729,30 +902,30 @@ const IntegratedEmailSender = ({
     (variableName, source) => {
       const extractedImage = extractImageFromSource(source);
 
-      setVariableValues(prevValues => {
-        const nextValues = {
-          ...prevValues,
-          [variableName]: source,
-          [`${variableName}_extracted`]: extractedImage || '',
-        };
+      const nextValues = {
+        ...variableValues,
+        [variableName]: source,
+        [`${variableName}_extracted`]: extractedImage || '',
+      };
+      dispatch({ type: 'SET_VARIABLE_VALUES', payload: nextValues });
 
-        if (selectedTemplate) {
-          const variableMeta = selectedTemplate.variables?.find(v => v?.name === variableName);
-          if (variableMeta) {
-            const errorMsg = validateVariable(variableMeta, nextValues);
-            setValidationErrors(prevErrs => ({ ...prevErrs, [variableName]: errorMsg }));
-          }
+      if (selectedTemplate) {
+        const variableMeta = selectedTemplate.variables?.find(v => v?.name === variableName);
+        if (variableMeta) {
+          const errorMsg = validateVariable(variableMeta, nextValues);
+          dispatch({
+            type: 'UPDATE_VALIDATION_ERROR',
+            payload: { field: variableName, error: errorMsg },
+          });
         }
-
-        return nextValues;
-      });
+      }
     },
-    [extractImageFromSource, selectedTemplate],
+    [extractImageFromSource, selectedTemplate, variableValues],
   );
 
-  // Removed unused YouTube thumbnail fallback helper
-
   const validateEmail = useCallback(email => validateEmailUtil(email), []);
+
+  const useTemplate = emailMode === EMAIL_MODES.TEMPLATES;
 
   const validateForm = useCallback(() => {
     const errors = {};
@@ -769,7 +942,7 @@ const IntegratedEmailSender = ({
       errors.customSubject = 'Please enter email subject';
     }
 
-    if (emailDistribution === 'specific') {
+    if (emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC) {
       if (!recipients.trim()) {
         errors.recipients = 'Please enter at least one recipient';
       } else {
@@ -781,20 +954,20 @@ const IntegratedEmailSender = ({
           if (invalidEmails.length > 0) {
             errors.recipients = `Invalid email addresses: ${invalidEmails.join(', ')}`;
           }
-          setRecipientList(recipientEmails);
+          dispatch({ type: 'SET_RECIPIENT_LIST', payload: recipientEmails });
         }
       }
     } else {
-      setRecipientList([]);
+      dispatch({ type: 'SET_RECIPIENT_LIST', payload: [] });
     }
 
-    // Validate template variables (type-aware, honors required flag)
+    // Validate template variables
     if (useTemplate && selectedTemplate) {
       const varErrors = validateTemplateVariables(selectedTemplate, variableValues);
       Object.assign(errors, varErrors);
     }
 
-    setValidationErrors(errors);
+    dispatch({ type: 'SET_VALIDATION_ERRORS', payload: errors });
     return Object.keys(errors).length === 0;
   }, [
     useTemplate,
@@ -830,12 +1003,11 @@ const IntegratedEmailSender = ({
       Object.assign(errors, varErrors);
     }
 
-    // Don't validate recipients for preview
-    setValidationErrors(errors);
+    dispatch({ type: 'SET_VALIDATION_ERRORS', payload: errors });
     return Object.keys(errors).length === 0;
   }, [useTemplate, selectedTemplate, customContent, customSubject, variableValues]);
 
-  // Get preview content - use backend API if template is selected, otherwise client-side
+  // Get preview content
   const getPreviewContent = useCallback(() => {
     // For custom emails, use client-side content
     if (!useTemplate || !selectedTemplate) {
@@ -850,7 +1022,7 @@ const IntegratedEmailSender = ({
       };
     }
 
-    // Fallback to client-side rendering if backend preview is not available
+    // Fallback to client-side rendering
     const templateData = fullTemplateContent || selectedTemplate;
     return buildRenderedEmailFromTemplate(templateData, variableValues);
   }, [
@@ -874,55 +1046,53 @@ const IntegratedEmailSender = ({
 
     // For custom emails, just show preview modal
     if (!useTemplate || !selectedTemplate) {
-      setShowPreviewModal(true);
+      dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: true });
       return;
     }
 
-    // For templates, try to use backend API if template has an ID
+    // For templates, try to use backend API
     if (selectedTemplate._id) {
-      setPreviewLoading(true);
-      setPreviewError(null);
-      setBackendPreviewData(null);
+      dispatch({ type: 'SET_PREVIEW_LOADING', payload: true });
+      dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
+      dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
 
       try {
         const preview = await previewEmailTemplate(selectedTemplate._id, variableValues);
-        setBackendPreviewData(preview);
-        setShowPreviewModal(true);
+        dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: preview });
+        dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: true });
       } catch (error) {
-        // If backend preview fails, fallback to client-side preview
-        setPreviewError(error.message || 'Failed to preview template');
+        dispatch({
+          type: 'SET_PREVIEW_ERROR',
+          payload: error.message || 'Failed to preview template',
+        });
         toast.warning('Preview failed, using basic preview', {
           position: 'top-right',
           autoClose: 3000,
         });
-        // Clear backend preview data to use client-side fallback
-        setBackendPreviewData(null);
-        setShowPreviewModal(true);
+        dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+        dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: true });
       } finally {
-        setPreviewLoading(false);
+        dispatch({ type: 'SET_PREVIEW_LOADING', payload: false });
       }
     } else {
-      // Template doesn't have an ID, use client-side preview
-      setShowPreviewModal(true);
+      dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: true });
     }
   }, [useTemplate, selectedTemplate, variableValues, validateForPreview, previewEmailTemplate]);
 
-  // Handle send email - opens preview modal which also allows sending
+  // Handle send email - opens preview modal
   const handleSendEmail = useCallback(() => {
     if (!validateForm()) {
       return;
     }
-    // Open preview modal - user can review and send from there
     handlePreview();
   }, [validateForm, handlePreview]);
 
   // Send email from preview modal
   const handleSendFromPreview = useCallback(async () => {
-    setIsSending(true);
+    dispatch({ type: 'SET_IS_SENDING', payload: true });
 
     try {
       if (useTemplate && selectedTemplate) {
-        // Use full template content if available for sending
         const templateData = fullTemplateContent || selectedTemplate;
 
         // Replace image variables with extracted images if available
@@ -939,10 +1109,9 @@ const IntegratedEmailSender = ({
           });
         }
 
-        // Render template locally and send via emailController endpoints
         const rendered = getPreviewContent();
         const payload =
-          emailDistribution === 'broadcast'
+          emailDistribution === EMAIL_DISTRIBUTION.BROADCAST
             ? {
                 subject: rendered.subject,
                 html: rendered.content,
@@ -953,7 +1122,6 @@ const IntegratedEmailSender = ({
                 html: rendered.content,
               };
 
-        // Get current user for requestor (required by backend)
         if (!currentUser || !currentUser.userid) {
           throw new Error('User authentication required to send emails');
         }
@@ -964,30 +1132,29 @@ const IntegratedEmailSender = ({
           role: currentUser.role,
         };
 
-        // Add requestor to payload
         const payloadWithRequestor = {
           ...payload,
           requestor,
         };
 
-        if (emailDistribution === 'broadcast') {
+        if (emailDistribution === EMAIL_DISTRIBUTION.BROADCAST) {
           await axios.post(ENDPOINTS.BROADCAST_EMAILS, payloadWithRequestor);
         } else {
           await axios.post(ENDPOINTS.POST_EMAILS, payloadWithRequestor);
         }
+
         const recipientCount =
-          emailDistribution === 'broadcast'
+          emailDistribution === EMAIL_DISTRIBUTION.BROADCAST
             ? 'all subscribers'
             : `${recipientList.length} recipient(s)`;
-        toast.success(`Email created successfully for ${recipientCount}. Processing started.`);
-        // Close preview modal after successful send
-        setShowPreviewModal(false);
-        setBackendPreviewData(null);
-        setPreviewError(null);
+        toast.info(`Email created successfully for ${recipientCount}. Processing started.`);
+
+        dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+        dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+        dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
         resetAllStates();
       } else {
         // Send custom email
-        // Get current user for requestor (required by backend)
         if (!currentUser || !currentUser.userid) {
           throw new Error('User authentication required to send emails');
         }
@@ -998,15 +1165,13 @@ const IntegratedEmailSender = ({
           role: currentUser.role,
         };
 
-        if (emailDistribution === 'broadcast') {
-          // Use existing broadcast functionality for custom emails
+        if (emailDistribution === EMAIL_DISTRIBUTION.BROADCAST) {
           await axios.post(ENDPOINTS.BROADCAST_EMAILS, {
             subject: customSubject,
             html: customContent,
             requestor,
           });
         } else {
-          // Use existing send email functionality for specific recipients
           await axios.post(ENDPOINTS.POST_EMAILS, {
             to: recipientList,
             subject: customSubject,
@@ -1015,25 +1180,26 @@ const IntegratedEmailSender = ({
           });
         }
 
-        // Show success message
         const recipientCount =
-          emailDistribution === 'broadcast'
+          emailDistribution === EMAIL_DISTRIBUTION.BROADCAST
             ? 'all subscribers'
             : `${recipientList.length} recipient(s)`;
-        toast.success(`Email created successfully for ${recipientCount}. Processing started.`);
-        // Close preview modal after successful send
-        setShowPreviewModal(false);
-        setBackendPreviewData(null);
-        setPreviewError(null);
+        toast.info(`Email created successfully for ${recipientCount}. Processing started.`);
+
+        dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+        dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+        dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
         resetAllStates();
       }
     } catch (error) {
-      // console.error('Email sending failed:', error);
       const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
       toast.error(`Failed to send email: ${errorMessage}`);
-      setValidationErrors({ general: errorMessage });
+      dispatch({
+        type: 'UPDATE_VALIDATION_ERROR',
+        payload: { field: 'general', error: errorMessage },
+      });
     } finally {
-      setIsSending(false);
+      dispatch({ type: 'SET_IS_SENDING', payload: false });
     }
   }, [
     useTemplate,
@@ -1049,26 +1215,22 @@ const IntegratedEmailSender = ({
     currentUser,
   ]);
 
-  // Memoized TinyMCE configuration for performance
+  // Memoized TinyMCE configuration
   const TINY_MCE_INIT_OPTIONS = useMemo(() => getEmailSenderConfig(darkMode), [darkMode]);
 
-  // Clear backend preview data when variables or template change (to force fresh preview)
+  // Clear backend preview data when variables or template change
   useEffect(() => {
-    setBackendPreviewData(null);
-    setPreviewError(null);
+    dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+    dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
   }, [variableValues, selectedTemplate?._id]);
 
-  // Memoized preview content to prevent unnecessary re-renders
+  // Memoized preview content
   const previewContent = useMemo(() => getPreviewContent(), [getPreviewContent]);
-
-  // Enhanced error boundary for component errors
-  const [componentError, setComponentError] = useState(null);
 
   // Error boundary effect
   useEffect(() => {
     const handleError = error => {
-      // console.error('Component error:', error);
-      setComponentError(error.message);
+      dispatch({ type: 'SET_COMPONENT_ERROR', payload: error.message });
     };
 
     window.addEventListener('error', handleError);
@@ -1078,9 +1240,9 @@ const IntegratedEmailSender = ({
   // Reset component error when switching modes
   useEffect(() => {
     if (componentError) {
-      setComponentError(null);
+      dispatch({ type: 'SET_COMPONENT_ERROR', payload: null });
     }
-  }, [useTemplate]);
+  }, [useTemplate, componentError]);
 
   // Show error boundary if component error occurs
   if (componentError) {
@@ -1100,7 +1262,7 @@ const IntegratedEmailSender = ({
                 color="outline-primary"
                 size="sm"
                 onClick={() => {
-                  setComponentError(null);
+                  dispatch({ type: 'SET_COMPONENT_ERROR', payload: null });
                   window.location.reload();
                 }}
               >
@@ -1126,28 +1288,39 @@ const IntegratedEmailSender = ({
           {/* Email Mode Selector */}
           <div className="mode-buttons" role="group" aria-label="Email composition mode">
             <Button
-              color={useTemplate ? 'primary' : 'outline-primary'}
-              onClick={() => handleModeChange(true)}
-              aria-pressed={useTemplate}
+              color={emailMode === EMAIL_MODES.TEMPLATES ? 'primary' : 'outline-primary'}
+              size="sm"
+              onClick={() => handleModeChange(EMAIL_MODES.TEMPLATES)}
+              aria-pressed={emailMode === EMAIL_MODES.TEMPLATES}
               aria-label="Use email templates"
               title="Create email using pre-made templates"
             >
               📧 Templates
             </Button>
             <Button
-              color={!useTemplate ? 'success' : 'outline-success'}
-              onClick={() => handleModeChange(false)}
-              aria-pressed={!useTemplate}
+              color={emailMode === EMAIL_MODES.CUSTOM ? 'success' : 'outline-success'}
+              size="sm"
+              onClick={() => handleModeChange(EMAIL_MODES.CUSTOM)}
+              aria-pressed={emailMode === EMAIL_MODES.CUSTOM}
               aria-label="Create custom email"
               title="Create email with custom content"
             >
               ✏️ Custom
             </Button>
+            {/* <Button
+              color={emailMode === EMAIL_MODES.WEEKLY_UPDATE ? 'info' : 'outline-info'}
+              onClick={() => handleModeChange(EMAIL_MODES.WEEKLY_UPDATE)}
+              aria-pressed={emailMode === EMAIL_MODES.WEEKLY_UPDATE}
+              aria-label="Send weekly progress update"
+              title="Send weekly progress update (simplified form)"
+            >
+              📰 Weekly Update
+            </Button> */}
           </div>
-
           <div className="action-buttons">
             <Button
               color="primary"
+              size="sm"
               onClick={handleSendEmail}
               disabled={
                 previewLoading ||
@@ -1179,7 +1352,7 @@ const IntegratedEmailSender = ({
               )}
             </Button>
             {onClose && (
-              <Button color="secondary" onClick={onClose}>
+              <Button color="secondary" size="sm" onClick={onClose}>
                 <FaTimes className="me-1" />
                 Close
               </Button>
@@ -1192,7 +1365,12 @@ const IntegratedEmailSender = ({
       {validationErrors.general && (
         <Alert
           color="danger"
-          toggle={() => setValidationErrors(prev => ({ ...prev, general: null }))}
+          toggle={() =>
+            dispatch({
+              type: 'UPDATE_VALIDATION_ERROR',
+              payload: { field: 'general', error: null },
+            })
+          }
           className="d-flex align-items-center"
         >
           <FaExclamationTriangle className="me-2" />
@@ -1204,379 +1382,409 @@ const IntegratedEmailSender = ({
         </Alert>
       )}
 
-      <Form>
-        {/* Template Selection (if using template) */}
-        {useTemplate && (
-          <FormGroup>
-            <Label>Select Template *</Label>
-            {loading ? (
-              <TemplateSelectLoader />
-            ) : error || apiError || (templates && templates.length === 0) ? (
-              <div className="template-selection-container">
-                <Input type="select" value="" disabled className="template-select-disabled">
-                  <option>Please select a template</option>
-                </Input>
-
-                {/* Simple Error Message */}
-                <div className="template-error-message">
-                  <FaExclamationTriangle className="error-icon" />
-                  <span className="error-text">
-                    {error || apiError
-                      ? 'Error loading templates. Please try again.'
-                      : 'No templates available. Please create a template first.'}
-                  </span>
-                </div>
-
-                {/* Simple Retry Option - Only show for actual errors */}
-                {(error || apiError) && (
-                  <div className="template-retry-simple">
-                    <Button
-                      color="outline-primary"
-                      size="sm"
-                      onClick={handleRetry}
-                      disabled={isRetrying}
-                      className="retry-btn-simple"
-                    >
-                      {isRetrying ? (
-                        <>
-                          <Spinner size="sm" className="me-1" />
-                          Retrying...
-                        </>
-                      ) : (
-                        <>
-                          <FaRedo className="me-1" />
-                          Try Again
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="template-selection-container">
-                <Input
-                  type="select"
-                  value={selectedTemplate?._id || ''}
-                  onChange={e => {
-                    const template = templates.find(t => t._id === e.target.value);
-                    handleTemplateSelect(template);
-                  }}
-                  invalid={!!validationErrors.template}
-                  className="template-select"
-                >
-                  <option value="">Choose a template...</option>
-                  {templates && templates.length > 0 ? (
-                    templates.map(template => (
-                      <option
-                        key={template._id}
-                        value={template._id}
-                        title={`${template.name} (created by ${
-                          template.created_by
-                            ? `${template.created_by.firstName} ${template.created_by.lastName}`
-                            : 'Unknown'
-                        })`}
-                        style={{ padding: '8px', whiteSpace: 'normal' }}
-                      >
-                        {template.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option disabled>No templates available</option>
-                  )}
-                </Input>
-
-                {templates && templates.length > 0 && (
-                  <div className="template-info mt-2 ml-1">
-                    <small className="text-muted">
-                      {templates.length} template{templates.length !== 1 ? 's' : ''} available
-                      {lastSuccessfulLoad && (
-                        <span className="ms-2 text-success">
-                          • Last updated: {lastSuccessfulLoad.toLocaleTimeString()}
-                        </span>
-                      )}
-                      {isRetrying && <span className="ms-2 text-warning">• Retrying...</span>}
-                    </small>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {validationErrors.template && (
-              <div className="invalid-feedback d-block">{validationErrors.template}</div>
-            )}
-          </FormGroup>
-        )}
-
-        {/* Custom Email Fields (if not using template) */}
-        {!useTemplate && (
-          <>
+      {/* Show Form only for Template and Custom modes */}
+      {emailMode !== EMAIL_MODES.WEEKLY_UPDATE && (
+        <Form>
+          {/* Template Selection (if using template) */}
+          {useTemplate && (
             <FormGroup>
-              <Label>Subject *</Label>
-              <Input
-                type="text"
-                value={customSubject}
-                onChange={e => setCustomSubject(e.target.value)}
-                invalid={!!validationErrors.customSubject}
-                placeholder="Enter email subject"
-              />
-              {validationErrors.customSubject && (
-                <div className="invalid-feedback d-block">{validationErrors.customSubject}</div>
+              <Label>Select Template *</Label>
+              {loading ? (
+                <TemplateSelectLoader />
+              ) : error || apiError || (templates && templates.length === 0) ? (
+                <div className="template-selection-container">
+                  <Input type="select" value="" disabled className="template-select-disabled">
+                    <option>Please select a template</option>
+                  </Input>
+
+                  {/* Simple Error Message */}
+                  <div className="template-error-message">
+                    <FaExclamationTriangle className="error-icon" />
+                    <span className="error-text">
+                      {error || apiError
+                        ? 'Error loading templates. Please try again.'
+                        : 'No templates available. Please create a template first.'}
+                    </span>
+                  </div>
+
+                  {/* Simple Retry Option */}
+                  {(error || apiError) && (
+                    <div className="template-retry-simple">
+                      <Button
+                        color="outline-primary"
+                        size="sm"
+                        onClick={handleRetry}
+                        disabled={isRetrying}
+                        className="retry-btn-simple"
+                      >
+                        {isRetrying ? (
+                          <>
+                            <Spinner size="sm" className="me-1" />
+                            Retrying...
+                          </>
+                        ) : (
+                          <>
+                            <FaRedo className="me-1" />
+                            Try Again
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="template-selection-container">
+                  <Input
+                    type="select"
+                    value={selectedTemplate?._id || ''}
+                    onChange={e => {
+                      const template = templates.find(t => t._id === e.target.value);
+                      handleTemplateSelect(template);
+                    }}
+                    invalid={!!validationErrors.template}
+                    className="template-select"
+                  >
+                    <option value="">Choose a template...</option>
+                    {templates && templates.length > 0 ? (
+                      templates.map(template => (
+                        <option
+                          key={template._id}
+                          value={template._id}
+                          title={`${template.name} (created by ${
+                            template.created_by
+                              ? `${template.created_by.firstName} ${template.created_by.lastName}`
+                              : 'Unknown'
+                          })`}
+                          style={{ padding: '8px', whiteSpace: 'normal' }}
+                        >
+                          {template.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option disabled>No templates available</option>
+                    )}
+                  </Input>
+
+                  {templates && templates.length > 0 && (
+                    <div className="template-info mt-2 ml-1">
+                      <small className="text-muted">
+                        {templates.length} template{templates.length !== 1 ? 's' : ''} available
+                        {lastSuccessfulLoad && (
+                          <span className="ms-2 text-success">
+                            • Last updated: {lastSuccessfulLoad.toLocaleTimeString()}
+                          </span>
+                        )}
+                        {isRetrying && <span className="ms-2 text-warning">• Retrying...</span>}
+                      </small>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {validationErrors.template && (
+                <div className="invalid-feedback d-block">{validationErrors.template}</div>
               )}
             </FormGroup>
+          )}
 
-            <FormGroup>
-              <Label>Content *</Label>
-              <div className="editor-container">
-                {!isEditorLoaded && !editorError && (
-                  <div
-                    className="editor-loading d-flex align-items-center justify-content-center py-3"
-                    style={{ gap: '8px' }}
-                  >
-                    <Spinner size="sm" />
-                    <span>Loading editor...</span>
-                  </div>
+          {/* Custom Email Fields */}
+          {!useTemplate && (
+            <>
+              <FormGroup>
+                <Label>Subject *</Label>
+                <Input
+                  type="text"
+                  value={customSubject}
+                  onChange={e => dispatch({ type: 'SET_CUSTOM_SUBJECT', payload: e.target.value })}
+                  invalid={!!validationErrors.customSubject}
+                  placeholder="Enter email subject"
+                />
+                {validationErrors.customSubject && (
+                  <div className="invalid-feedback d-block">{validationErrors.customSubject}</div>
                 )}
+              </FormGroup>
 
-                {editorError && (
-                  <FallbackComponent
-                    title="Editor Failed to Load"
-                    message="The rich text editor couldn't load. You can still use the basic text area below."
-                    onRetry={() => {
-                      setEditorError(null);
-                      setIsEditorLoaded(false);
-                      setLoadingProgress(0);
-                    }}
-                    onDismiss={() => setEditorError(null)}
-                    retryCount={retryCount}
-                    showRetryOptions={true}
-                  />
-                )}
-
-                <Suspense
-                  fallback={
+              <FormGroup>
+                <Label>Content *</Label>
+                <div className="editor-container">
+                  {!isEditorLoaded && !editorError && (
                     <div
-                      className="editor-suspense d-flex align-items-center justify-content-center py-3"
+                      className="editor-loading d-flex align-items-center justify-content-center py-3"
                       style={{ gap: '8px' }}
                     >
                       <Spinner size="sm" />
                       <span>Loading editor...</span>
                     </div>
-                  }
-                >
-                  {!editorError && (
-                    <LazyEditor
-                      key={`custom-editor-${darkMode ? 'dark' : 'light'}`}
-                      tinymceScriptSrc="/tinymce/tinymce.min.js"
-                      value={customContent}
-                      onEditorChange={setCustomContent}
-                      init={{
-                        ...TINY_MCE_INIT_OPTIONS,
-                        setup: editor => {
-                          // Track editor loading
-                          editor.on('init', () => {
-                            setIsEditorLoaded(true);
-                            setLoadingProgress(100);
-                          });
+                  )}
 
-                          // Handle editor errors
-                          editor.on('error', e => {
-                            // console.error('Editor error:', e);
-                            setEditorError('Editor encountered an error');
-                            setIsEditorLoaded(false);
-                          });
-
-                          // Set timeout for editor loading
-                          editorLoadTimeoutRef.current = setTimeout(() => {
-                            if (!isEditorLoaded) {
-                              setEditorError('Editor is taking too long to load');
-                              setIsEditorLoaded(false);
-                            }
-                          }, 10000); // 10 second timeout
-                        },
+                  {editorError && (
+                    <FallbackComponent
+                      title="Editor Failed to Load"
+                      message="The rich text editor couldn't load. You can still use the basic text area below."
+                      onRetry={() => {
+                        dispatch({ type: 'SET_EDITOR_ERROR', payload: null });
+                        dispatch({ type: 'SET_EDITOR_LOADED', payload: false });
+                        dispatch({ type: 'SET_LOADING_PROGRESS', payload: 0 });
                       }}
-                      onLoadContent={() => {
-                        clearTimeout(editorLoadTimeoutRef.current);
-                        setIsEditorLoaded(true);
-                      }}
+                      onDismiss={() => dispatch({ type: 'SET_EDITOR_ERROR', payload: null })}
+                      retryCount={retryCount}
+                      showRetryOptions={true}
                     />
                   )}
-                </Suspense>
 
-                {/* Fallback textarea if editor fails */}
-                {editorError && (
-                  <div className="editor-fallback mt-3">
-                    <Label className="text-warning">
-                      <FaInfoCircle className="me-1" />
-                      Using basic text editor (rich editor unavailable)
-                    </Label>
-                    <Input
-                      type="textarea"
-                      rows={10}
-                      value={customContent}
-                      onChange={e => setCustomContent(e.target.value)}
-                      placeholder="Enter your email content here..."
-                      className="mt-2"
-                    />
-                  </div>
+                  <Suspense
+                    fallback={
+                      <div
+                        className="editor-suspense d-flex align-items-center justify-content-center py-3"
+                        style={{ gap: '8px' }}
+                      >
+                        <Spinner size="sm" />
+                        <span>Loading editor...</span>
+                      </div>
+                    }
+                  >
+                    {!editorError && (
+                      <LazyEditor
+                        key={`custom-editor-${darkMode ? 'dark' : 'light'}`}
+                        tinymceScriptSrc="/tinymce/tinymce.min.js"
+                        value={customContent}
+                        onEditorChange={content =>
+                          dispatch({ type: 'SET_CUSTOM_CONTENT', payload: content })
+                        }
+                        init={{
+                          ...TINY_MCE_INIT_OPTIONS,
+                          setup: editor => {
+                            editor.on('init', () => {
+                              dispatch({ type: 'SET_EDITOR_LOADED', payload: true });
+                              dispatch({ type: 'SET_LOADING_PROGRESS', payload: 100 });
+                            });
+
+                            editor.on('error', e => {
+                              dispatch({
+                                type: 'SET_EDITOR_ERROR',
+                                payload: 'Editor encountered an error',
+                              });
+                              dispatch({ type: 'SET_EDITOR_LOADED', payload: false });
+                            });
+
+                            editorLoadTimeoutRef.current = setTimeout(() => {
+                              if (!isEditorLoaded) {
+                                dispatch({
+                                  type: 'SET_EDITOR_ERROR',
+                                  payload: 'Editor is taking too long to load',
+                                });
+                                dispatch({ type: 'SET_EDITOR_LOADED', payload: false });
+                              }
+                            }, 10000);
+                          },
+                        }}
+                        onLoadContent={() => {
+                          clearTimeout(editorLoadTimeoutRef.current);
+                          dispatch({ type: 'SET_EDITOR_LOADED', payload: true });
+                        }}
+                      />
+                    )}
+                  </Suspense>
+
+                  {/* Fallback textarea if editor fails */}
+                  {editorError && (
+                    <div className="editor-fallback mt-3">
+                      <Label className="text-warning">
+                        <FaInfoCircle className="me-1" />
+                        Using basic text editor (rich editor unavailable)
+                      </Label>
+                      <Input
+                        type="textarea"
+                        rows={10}
+                        value={customContent}
+                        onChange={e =>
+                          dispatch({ type: 'SET_CUSTOM_CONTENT', payload: e.target.value })
+                        }
+                        placeholder="Enter your email content here..."
+                        className="mt-2"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {validationErrors.customContent && (
+                  <div className="text-danger mt-1">{validationErrors.customContent}</div>
                 )}
+              </FormGroup>
+            </>
+          )}
+
+          {/* Variable Values */}
+          {useTemplate && selectedTemplate && (
+            <div className="template-variables">
+              <div className="variables-header">
+                <h6 className="mb-1">
+                  Template Variables
+                  <Badge color="info" className="ml-2 ms-2">
+                    {selectedTemplate.variables ? selectedTemplate.variables.length : 0} variable
+                    {selectedTemplate.variables && selectedTemplate.variables.length !== 1
+                      ? 's'
+                      : ''}
+                  </Badge>
+                </h6>
               </div>
 
-              {validationErrors.customContent && (
-                <div className="text-danger mt-1">{validationErrors.customContent}</div>
+              {selectedTemplate.variables && selectedTemplate.variables.length > 0 ? (
+                <div className="table-responsive">
+                  <Table responsive striped hover>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '25%' }}>Variable</th>
+                        <th style={{ width: '10%' }}>Type</th>
+                        <th style={{ width: '65%' }}>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedTemplate.variables.map(variable => (
+                        <VariableRow
+                          key={variable.name}
+                          variable={variable}
+                          value={variableValues[variable.name] || ''}
+                          extractedValue={variableValues[`${variable.name}_extracted`] || ''}
+                          error={validationErrors[variable.name]}
+                          onVariableChange={handleVariableChange}
+                          onImageSourceChange={handleImageSourceChange}
+                          onImageLoadStatusChange={(name, ok) => {
+                            dispatch({
+                              type: 'UPDATE_VALIDATION_ERROR',
+                              payload: {
+                                field: name,
+                                error: ok
+                                  ? null
+                                  : `${name} is required (valid image URL or YouTube link)`,
+                              },
+                            });
+                          }}
+                        />
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="empty-variables-state text-center py-4">
+                  <div className="text-muted">
+                    <i className="fas fa-info-circle me-2"></i>
+                    No variables defined for this template.
+                  </div>
+                  <small className="text-muted d-block mt-2">
+                    This template doesn&apos;t require any variable inputs.
+                  </small>
+                </div>
               )}
-            </FormGroup>
-          </>
-        )}
+            </div>
+          )}
 
-        {/* Variable Values (if using template with variables) */}
-        {useTemplate && selectedTemplate && (
-          <div className="template-variables">
-            <div className="variables-header">
-              <h6 className="mb-1">
-                Template Variables
-                <Badge color="info" className="ml-2 ms-2">
-                  {selectedTemplate.variables ? selectedTemplate.variables.length : 0} variable
-                  {selectedTemplate.variables && selectedTemplate.variables.length !== 1 ? 's' : ''}
-                </Badge>
-              </h6>
+          {/* Email Distribution Selection */}
+          <FormGroup className="mt-3">
+            <Label className="form-label">Email Distribution *</Label>
+            <div className="distribution-options">
+              <label
+                className={`distribution-option ${
+                  emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC ? 'selected' : ''
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="emailDistribution"
+                  value="specific"
+                  checked={emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC}
+                  onChange={() =>
+                    dispatch({
+                      type: 'SET_EMAIL_DISTRIBUTION',
+                      payload: EMAIL_DISTRIBUTION.SPECIFIC,
+                    })
+                  }
+                />
+                <span className="option-icon mx-2">✏️</span>
+                Specific Recipients
+              </label>
+              <label
+                className={`distribution-option ${
+                  emailDistribution === EMAIL_DISTRIBUTION.BROADCAST ? 'selected' : ''
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="emailDistribution"
+                  value="broadcast"
+                  checked={emailDistribution === EMAIL_DISTRIBUTION.BROADCAST}
+                  onChange={() => {
+                    dispatch({
+                      type: 'SET_EMAIL_DISTRIBUTION',
+                      payload: EMAIL_DISTRIBUTION.BROADCAST,
+                    });
+                    dispatch({
+                      type: 'UPDATE_VALIDATION_ERROR',
+                      payload: { field: 'recipients', error: null },
+                    });
+                    dispatch({ type: 'SET_RECIPIENT_LIST', payload: [] });
+                  }}
+                />
+                <span className="option-icon mx-2">🚀</span>
+                Broadcast to All Subscribers
+              </label>
             </div>
 
-            {selectedTemplate.variables && selectedTemplate.variables.length > 0 ? (
-              <Table responsive striped hover>
-                <thead>
-                  <tr>
-                    <th style={{ width: '25%' }}>Variable</th>
-                    <th style={{ width: '10%' }}>Type</th>
-                    <th style={{ width: '65%' }}>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedTemplate.variables.map(variable => (
-                    <VariableRow
-                      key={variable.name}
-                      variable={variable}
-                      value={variableValues[variable.name] || ''}
-                      extractedValue={variableValues[`${variable.name}_extracted`] || ''}
-                      error={validationErrors[variable.name]}
-                      onVariableChange={handleVariableChange}
-                      onImageSourceChange={handleImageSourceChange}
-                      onImageLoadStatusChange={(name, ok) => {
-                        setValidationErrors(prev => ({
-                          ...prev,
-                          [name]: ok
-                            ? null
-                            : `${name} is required (valid image URL or YouTube link)`,
-                        }));
-                      }}
-                    />
-                  ))}
-                </tbody>
-              </Table>
-            ) : (
-              <div className="empty-variables-state text-center py-4">
-                <div className="text-muted">
-                  <i className="fas fa-info-circle me-2"></i>
-                  No variables defined for this template.
-                </div>
-                <small className="text-muted d-block mt-2">
-                  This template doesn&apos;t require any variable inputs.
-                </small>
-              </div>
-            )}
-          </div>
-        )}
+            {/* Expanded content for specific recipients */}
+            {emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC && (
+              <FormGroup className="mt-3">
+                <Label>Recipients *</Label>
+                <Input
+                  type="textarea"
+                  rows={4}
+                  value={recipients}
+                  onChange={e => {
+                    const val = e.target.value;
+                    dispatch({ type: 'SET_RECIPIENTS', payload: val });
 
-        {/* Email Distribution Selection */}
-        <FormGroup className="mt-3">
-          <Label className="form-label">
-            {/* <FaPaperPlane className="me-2" /> */}
-            Email Distribution *
-          </Label>
-          <div className="distribution-options">
-            <label
-              className={`distribution-option ${
-                emailDistribution === 'specific' ? 'selected' : ''
-              }`}
-            >
-              <input
-                type="radio"
-                name="emailDistribution"
-                value="specific"
-                checked={emailDistribution === 'specific'}
-                onChange={() => setEmailDistribution('specific')}
-              />
-              <span className="option-icon mx-2">✏️</span>
-              Specific Recipients
-            </label>
-            <label
-              className={`distribution-option ${
-                emailDistribution === 'broadcast' ? 'selected' : ''
-              }`}
-            >
-              <input
-                type="radio"
-                name="emailDistribution"
-                value="broadcast"
-                checked={emailDistribution === 'broadcast'}
-                onChange={() => {
-                  setEmailDistribution('broadcast');
-                  setValidationErrors(prev => ({ ...prev, recipients: null }));
-                  setRecipientList([]);
-                }}
-              />
-              <span className="option-icon mx-2">🚀</span>
-              Broadcast to All Subscribers
-            </label>
-          </div>
-
-          {/* Expanded content for specific recipients */}
-          {emailDistribution === 'specific' && (
-            <FormGroup className="mt-3">
-              <Label>Recipients *</Label>
-              <Input
-                type="textarea"
-                rows={4}
-                value={recipients}
-                onChange={e => {
-                  const val = e.target.value;
-                  setRecipients(val);
-                  // Live validate recipients when specific distribution selected
-                  if (emailDistribution === 'specific') {
-                    const emails = parseRecipients(val);
-                    let errorMsg = null;
-                    if (!val.trim()) {
-                      errorMsg = 'Please enter at least one recipient';
-                    } else if (emails.length === 0) {
-                      errorMsg = 'Please enter at least one valid email address';
-                    } else {
-                      const invalid = emails.filter(email => !validateEmail(email));
-                      if (invalid.length > 0) {
-                        errorMsg = `Invalid email addresses: ${invalid.join(', ')}`;
+                    if (emailDistribution === EMAIL_DISTRIBUTION.SPECIFIC) {
+                      const emails = parseRecipients(val);
+                      let errorMsg = null;
+                      if (!val.trim()) {
+                        errorMsg = 'Please enter at least one recipient';
+                      } else if (emails.length === 0) {
+                        errorMsg = 'Please enter at least one valid email address';
+                      } else {
+                        const invalid = emails.filter(email => !validateEmail(email));
+                        if (invalid.length > 0) {
+                          errorMsg = `Invalid email addresses: ${invalid.join(', ')}`;
+                        }
                       }
+                      dispatch({
+                        type: 'UPDATE_VALIDATION_ERROR',
+                        payload: { field: 'recipients', error: errorMsg },
+                      });
+                      dispatch({ type: 'SET_RECIPIENT_LIST', payload: errorMsg ? [] : emails });
                     }
-                    setValidationErrors(prev => ({ ...prev, recipients: errorMsg }));
-                    setRecipientList(errorMsg ? [] : emails);
-                  }
-                }}
-                invalid={!!validationErrors.recipients}
-                placeholder="Enter email addresses separated by commas&#10;Example: john@example.com, jane@example.com, team@company.com"
-              />
-              {validationErrors.recipients && (
-                <div className="invalid-feedback d-block">{validationErrors.recipients}</div>
-              )}
-            </FormGroup>
-          )}
-        </FormGroup>
-      </Form>
+                  }}
+                  invalid={!!validationErrors.recipients}
+                  placeholder="Enter email addresses separated by commas&#10;Example: john@example.com, jane@example.com, team@company.com"
+                />
+                {validationErrors.recipients && (
+                  <div className="invalid-feedback d-block">{validationErrors.recipients}</div>
+                )}
+              </FormGroup>
+            )}
+          </FormGroup>
+        </Form>
+      )}
 
-      {/* Preview & Send Modal - Light Mode Only */}
+      {/* Weekly Update Mode */}
+      {/* {emailMode === EMAIL_MODES.WEEKLY_UPDATE && <WeeklyUpdateComposer onClose={onClose} />} */}
+
+      {/* Preview & Send Modal */}
       <Modal
         isOpen={showPreviewModal}
         toggle={() => {
           if (!isSending) {
-            setShowPreviewModal(false);
-            setBackendPreviewData(null);
-            setPreviewError(null);
+            dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+            dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+            dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
           }
         }}
         size="lg"
@@ -1587,9 +1795,9 @@ const IntegratedEmailSender = ({
         <ModalHeader
           toggle={() => {
             if (!isSending) {
-              setShowPreviewModal(false);
-              setBackendPreviewData(null);
-              setPreviewError(null);
+              dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+              dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+              dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
             }
           }}
         >
@@ -1632,7 +1840,7 @@ const IntegratedEmailSender = ({
 
               <div className="mb-3">
                 <strong>Distribution:</strong>{' '}
-                {emailDistribution === 'broadcast' ? (
+                {emailDistribution === EMAIL_DISTRIBUTION.BROADCAST ? (
                   <>
                     <Badge color="primary" className="me-2">
                       Broadcast
@@ -1703,10 +1911,11 @@ const IntegratedEmailSender = ({
         <ModalFooter>
           <Button
             color="secondary"
+            size="sm"
             onClick={() => {
-              setShowPreviewModal(false);
-              setBackendPreviewData(null);
-              setPreviewError(null);
+              dispatch({ type: 'SET_SHOW_PREVIEW_MODAL', payload: false });
+              dispatch({ type: 'SET_BACKEND_PREVIEW_DATA', payload: null });
+              dispatch({ type: 'SET_PREVIEW_ERROR', payload: null });
             }}
             disabled={isSending || previewLoading}
           >
@@ -1714,6 +1923,7 @@ const IntegratedEmailSender = ({
           </Button>
           <Button
             color="primary"
+            size="sm"
             onClick={handleSendFromPreview}
             disabled={isSending || previewLoading || !previewContent.content}
           >
@@ -1735,9 +1945,8 @@ const IntegratedEmailSender = ({
   );
 };
 
-// PropTypes for better type checking and documentation
+// PropTypes
 IntegratedEmailSender.propTypes = {
-  // Redux props
   templates: PropTypes.arrayOf(
     PropTypes.shape({
       _id: PropTypes.string.isRequired,
@@ -1757,13 +1966,9 @@ IntegratedEmailSender.propTypes = {
   ),
   loading: PropTypes.bool,
   error: PropTypes.string,
-  // sendingEmail and emailSent removed - emails are now sent via emailController endpoints
-  // Redux actions
   fetchEmailTemplates: PropTypes.func.isRequired,
-  // removed sendEmailWithTemplate; template emails are rendered client-side and sent via emailController
   clearEmailTemplateError: PropTypes.func.isRequired,
   previewEmailTemplate: PropTypes.func,
-  // Component props
   onClose: PropTypes.func,
   initialContent: PropTypes.string,
   initialSubject: PropTypes.string,
@@ -1771,7 +1976,6 @@ IntegratedEmailSender.propTypes = {
   initialRecipients: PropTypes.string,
 };
 
-// Default props
 IntegratedEmailSender.defaultProps = {
   templates: [],
   loading: false,
@@ -1787,7 +1991,6 @@ const mapStateToProps = state => ({
   templates: state.emailTemplates.templates,
   loading: state.emailTemplates.loading,
   error: state.emailTemplates.error,
-  // sendingEmail and emailSent removed - emails are now sent via emailController endpoints
 });
 
 const mapDispatchToProps = {

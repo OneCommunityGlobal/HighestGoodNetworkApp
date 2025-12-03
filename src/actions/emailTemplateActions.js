@@ -56,8 +56,7 @@ export const fetchEmailTemplates = ({
     const params = new URLSearchParams();
     if (search) params.append('search', search);
     if (sortBy) params.append('sortBy', sortBy);
-    if (includeEmailContent) params.append('includeEmailContent', 'true');
-
+    params.append('includeEmailContent', includeEmailContent ? 'true' : 'false');
     const response = await axios.get(`${ENDPOINTS.EMAIL_TEMPLATES}?${params.toString()}`);
 
     if (response.data.success) {

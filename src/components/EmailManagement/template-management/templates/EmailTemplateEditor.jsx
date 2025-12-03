@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { connect, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
+import DOMPurify from 'dompurify';
 import {
   Form,
   FormGroup,
@@ -28,6 +29,13 @@ import {
   FaExclamationTriangle,
   FaPencilAlt,
   FaSpinner,
+  FaFileAlt,
+  FaImage,
+  FaHashtag,
+  FaEnvelope,
+  FaLink,
+  FaCalendar,
+  FaAlignLeft,
 } from 'react-icons/fa';
 import { Editor } from '@tinymce/tinymce-react';
 import { getTemplateEditorConfig } from '../../shared';
@@ -41,6 +49,7 @@ import {
   validateEmailTemplate,
 } from '../../../../actions/emailTemplateActions';
 import './EmailTemplateEditor.css';
+import '../../EmailManagementShared.css';
 
 const EmailTemplateEditor = ({
   template,
@@ -84,6 +93,19 @@ const EmailTemplateEditor = ({
   const [previewData, setPreviewData] = useState(null);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState(null);
+  // Helper function to get icon for variable type
+  const getVariableTypeIcon = useCallback(type => {
+    const iconMap = {
+      text: <FaFileAlt className="me-1" size={12} />,
+      textarea: <FaAlignLeft className="me-1" size={12} />,
+      image: <FaImage className="me-1" size={12} />,
+      number: <FaHashtag className="me-1" size={12} />,
+      email: <FaEnvelope className="me-1" size={12} />,
+      url: <FaLink className="me-1" size={12} />,
+      date: <FaCalendar className="me-1" size={12} />,
+    };
+    return iconMap[type] || <FaFileAlt className="me-1" size={12} />;
+  }, []);
 
   // Effect to load template data when in edit mode
   useEffect(() => {
@@ -210,8 +232,7 @@ const EmailTemplateEditor = ({
       const extractedVars = extractVariables();
 
       if (!extractedVars || extractedVars.length === 0) {
-        // eslint-disable-next-line no-alert
-        alert(
+        toast.alert(
           'No variables found in the content or subject. Make sure to use {{variableName}} format.',
         );
         return;
@@ -222,8 +243,7 @@ const EmailTemplateEditor = ({
       const newVariables = extractedVars.filter(v => !existingVariableNames.includes(v.name));
 
       if (newVariables.length === 0) {
-        // eslint-disable-next-line no-alert
-        alert('All variables from the content and subject are already defined.');
+        toast.alert('All variables from the content and subject are already defined.');
         return;
       }
 
@@ -260,8 +280,7 @@ const EmailTemplateEditor = ({
     setShowTypeSelectionModal(false);
     setExtractedVariables([]);
 
-    // eslint-disable-next-line no-alert
-    alert(
+    toast.alert(
       `Added ${extractedVariables.length} new variable(s): ${extractedVariables
         .map(v => v.name)
         .join(', ')}`,
@@ -358,6 +377,7 @@ const EmailTemplateEditor = ({
         }
       } catch (error) {
         // Validation error is not blocking, but log it
+        // eslint-disable-next-line no-console
         console.warn('Template validation error:', error);
       }
     }
@@ -604,7 +624,6 @@ const EmailTemplateEditor = ({
   const tinyMCEConfig = useMemo(() => getTemplateEditorConfig(darkMode, formData), [
     darkMode,
     formData,
-    'v2', // Force re-creation when height changes
   ]);
 
   if (initialLoading && templateId) {
@@ -692,49 +711,68 @@ const EmailTemplateEditor = ({
             )}
 
             {/* Action buttons */}
-            <div className="action-buttons">
-              <Button
-                color="outline-secondary"
-                onClick={handlePreview}
-                disabled={!formData.html_content || previewLoading}
-              >
-                {previewLoading ? (
-                  <>
-                    <FaSpinner className="fa-spin me-1" />
-                    Loading...
-                  </>
-                ) : (
-                  <>
-                    <FaEye className="me-1" />
-                    Preview
-                  </>
-                )}
-              </Button>
-              <Button color="primary" onClick={handleSave} disabled={saving}>
-                {saving ? <FaSpinner className="fa-spin me-1" /> : <FaSave className="me-1" />}
-                {saving ? 'Saving...' : 'Save & Continue'}
-              </Button>
-              <Button
-                color="secondary"
-                onClick={() => {
-                  if (hasUnsavedChanges) {
-                    // eslint-disable-next-line no-alert
-                    const confirmed = window.confirm(
-                      'You have unsaved changes. Are you sure you want to cancel? Your changes will be lost.',
-                    );
-                    if (!confirmed) return;
-                  }
-                  // Clear everything when exiting template editor
-                  resetAllStates();
-                  clearReduxState();
-                  if (onClose) {
-                    onClose();
-                  }
-                }}
-              >
-                <FaTimes className="me-1" />
-                Cancel
-              </Button>
+            <div className="d-flex flex-wrap gap-2">
+              <div className="action-buttons">
+                <Button
+                  size="sm"
+                  color="outline-secondary"
+                  onClick={handlePreview}
+                  disabled={!formData.html_content || previewLoading}
+                  title="Preview template"
+                >
+                  {previewLoading ? (
+                    <>
+                      <FaSpinner className="fa-spin me -0 me-sm-1" />
+                      <span className="d none d-sm-inline">Loading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <FaEye className="me-0 me-sm-1" />
+                      <span className="d-none d-sm-inline">Preview</span>
+                    </>
+                  )}
+                </Button>
+                <Button
+                  size="sm"
+                  color="primary"
+                  onClick={handleSave}
+                  disabled={saving}
+                  title="Save template"
+                >
+                  {saving ? (
+                    <FaSpinner className="fa-spin me-0 me-sm-1" />
+                  ) : (
+                    <FaSave className="me-0 me-sm-1" />
+                  )}
+                  <span className="d-none d-sm-inline">
+                    {saving ? 'Saving...' : 'Save & Continue'}
+                  </span>
+                  <span className="d-inline d-sm-none">{saving ? 'Saving...' : 'Save'}</span>
+                </Button>
+                <Button
+                  size="sm"
+                  color="secondary"
+                  onClick={() => {
+                    if (hasUnsavedChanges) {
+                      // eslint-disable-next-line no-alert
+                      const confirmed = window.confirm(
+                        'You have unsaved changes. Are you sure you want to cancel? Your changes will be lost.',
+                      );
+                      if (!confirmed) return;
+                    }
+                    // Clear everything when exiting template editor
+                    resetAllStates();
+                    clearReduxState();
+                    if (onClose) {
+                      onClose();
+                    }
+                  }}
+                  title="Cancel and close"
+                >
+                  <FaTimes className="me-0 me-sm-1" />
+                  <span className="d-none d-sm-inline">Cancel</span>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -855,7 +893,8 @@ const EmailTemplateEditor = ({
               {formData.variables.map((variable, index) => (
                 <div key={index} className="variable-chip">
                   <code className="variable-code">{`{{${variable.name}}}`}</code>
-                  <Badge color="secondary" className="variable-type-badge">
+                  <Badge color="secondary" className="variable-type-badge" size="sm">
+                    {getVariableTypeIcon(variable.type)}
                     {variable.type}
                   </Badge>
                   <Button
@@ -896,12 +935,11 @@ const EmailTemplateEditor = ({
             {validationErrors.html_content && (
               <div className="text-danger mt-1">{validationErrors.html_content}</div>
             )}
-            {/* Unused variables warning now shown at the top */}
           </FormGroup>
         </div>
       </div>
 
-      {/* Preview Modal */}
+      {/* Preview Modal - FIXED XSS VULNERABILITY */}
       <Modal isOpen={showPreviewModal} toggle={() => setShowPreviewModal(false)} size="lg" centered>
         <ModalHeader toggle={() => setShowPreviewModal(false)}>Email Preview</ModalHeader>
         <ModalBody>
@@ -936,8 +974,9 @@ const EmailTemplateEditor = ({
                   className="mt-2 p-3 border rounded"
                   style={{ maxHeight: '400px', overflow: 'auto' }}
                   dangerouslySetInnerHTML={{
-                    __html:
+                    __html: DOMPurify.sanitize(
                       previewData.htmlContent || previewData.html_content || getClientSidePreview,
+                    ),
                   }}
                 />
               </div>
@@ -950,7 +989,7 @@ const EmailTemplateEditor = ({
           )}
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={() => setShowPreviewModal(false)}>
+          <Button size="sm" color="secondary" onClick={() => setShowPreviewModal(false)}>
             Close
           </Button>
         </ModalFooter>
@@ -1009,6 +1048,7 @@ const EmailTemplateEditor = ({
         </ModalBody>
         <ModalFooter>
           <Button
+            size="sm"
             color="secondary"
             onClick={() => {
               setShowVariableModal(false);
@@ -1019,7 +1059,7 @@ const EmailTemplateEditor = ({
           >
             Cancel
           </Button>
-          <Button color="primary" onClick={handleAddVariable}>
+          <Button color="primary" size="sm" onClick={handleAddVariable}>
             {editingVariableIndex !== null ? 'Update Variable' : 'Add Variable'}
           </Button>
         </ModalFooter>
@@ -1030,36 +1070,47 @@ const EmailTemplateEditor = ({
         <ModalHeader toggle={handleCancelTypeSelection}>Select Variable Types</ModalHeader>
         <ModalBody>
           <p>Please select a type for each new variable:</p>
-          <ListGroup>
-            {extractedVariables.map((variable, index) => (
-              <ListGroupItem
-                key={index}
-                className="d-flex justify-content-between align-items-center"
-              >
-                <span>{variable.name}</span>
-                <Input
-                  type="select"
-                  value={variable.type}
-                  onChange={e => handleTypeSelection(index, e.target.value)}
-                  style={{ width: '150px' }}
+          <div
+            style={{
+              maxHeight: '400px',
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <ListGroup>
+              {extractedVariables.map((variable, index) => (
+                <ListGroupItem
+                  key={index}
+                  className="d-flex justify-content-between align-items-center"
                 >
-                  <option value="text">Text</option>
-                  <option value="textarea">Textarea</option>
-                  <option value="number">Number</option>
-                  <option value="date">Date</option>
-                  <option value="email">Email</option>
-                  <option value="url">URL</option>
-                  <option value="image">Image</option>
-                </Input>
-              </ListGroupItem>
-            ))}
-          </ListGroup>
+                  <span>{variable.name}</span>
+                  <Input
+                    type="select"
+                    value={variable.type}
+                    onChange={e => handleTypeSelection(index, e.target.value)}
+                    style={{ width: '150px' }}
+                  >
+                    <option value="text">Text</option>
+                    <option value="textarea">Textarea</option>
+                    <option value="number">Number</option>
+                    <option value="date">Date</option>
+                    <option value="email">Email</option>
+                    <option value="url">URL</option>
+                    <option value="image">Image</option>
+                  </Input>
+                </ListGroupItem>
+              ))}
+            </ListGroup>
+          </div>
         </ModalBody>
         <ModalFooter>
-          <Button color="secondary" onClick={handleCancelTypeSelection}>
+          <Button size="sm" color="secondary" onClick={handleCancelTypeSelection}>
             Cancel
           </Button>
-          <Button color="primary" onClick={handleConfirmTypeSelection}>
+          <Button size="sm" color="primary" onClick={handleConfirmTypeSelection}>
             Add Selected Variables
           </Button>
         </ModalFooter>
@@ -1094,6 +1145,8 @@ EmailTemplateEditor.propTypes = {
   fetchEmailTemplate: PropTypes.func.isRequired,
   clearEmailTemplateError: PropTypes.func.isRequired,
   clearCurrentTemplate: PropTypes.func.isRequired,
+  previewEmailTemplate: PropTypes.func,
+  validateEmailTemplate: PropTypes.func,
   onClose: PropTypes.func,
   onSave: PropTypes.func,
   templateId: PropTypes.string,

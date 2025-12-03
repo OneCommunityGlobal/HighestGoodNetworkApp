@@ -144,10 +144,40 @@ export const getTemplateEditorConfig = (darkMode, formData) => ({
   },
 
   // Additional configurations for better performance
-  paste_data_images: false,
-  automatic_uploads: false,
-  images_upload_handler: function(blobInfo, success, failure) {
-    failure('Please use the URL option to insert images.');
+  // paste_data_images: true,
+  // automatic_uploads: true,
+
+  // images_upload_handler: function(blobInfo, success, failure) {
+  //   failure('Please use the URL option to insert images.');
+  // },
+  paste_data_images: true,
+  automatic_uploads: true,
+  file_picker_types: 'image',
+  paste_block_drop: false,
+  images_upload_handler: function(blobInfo, success, failure, progress) {
+    // Return a Promise for proper async handling
+    return new Promise((resolve, reject) => {
+      try {
+        const reader = new FileReader();
+
+        reader.onloadend = function() {
+          resolve(reader.result);
+          success(reader.result);
+        };
+
+        reader.onerror = function() {
+          const error = 'Failed to read image file';
+          reject(error);
+          failure(error);
+        };
+
+        reader.readAsDataURL(blobInfo.blob());
+      } catch (error) {
+        const errorMsg = 'Image processing failed: ' + error.message;
+        reject(errorMsg);
+        failure(errorMsg);
+      }
+    });
   },
 
   // Content style for email compatibility
@@ -173,14 +203,14 @@ export const getEmailSenderConfig = darkMode => ({
   placeholder: '',
   skin: darkMode ? 'oxide-dark' : 'oxide',
   branding: false,
-  plugins: ['lists', 'link', 'autolink', 'paste', 'fontsize', 'lineheight', 'textcolor'],
+  plugins: ['lists', 'link', 'autolink', 'paste', 'fontsize', 'lineheight', 'textcolor', 'image'],
   toolbar: [
     'undo redo | blocks fontfamily fontsize | lineheight | ' +
       'forecolor backcolor | ' +
       'bold italic underline strikethrough | ' +
       'alignleft aligncenter alignright alignjustify | ' +
       'bullist numlist outdent indent | blockquote | ' +
-      'removeformat | link',
+      'removeformat | link | image ',
   ],
   statusbar: false,
   resize: false,
@@ -193,13 +223,97 @@ export const getEmailSenderConfig = darkMode => ({
     padding: 4px;
     margin: 0;
   }`,
+  paste_data_images: true,
+  automatic_uploads: true,
+  file_picker_types: 'image',
+  paste_block_drop: false,
+  paste_webkit_styles: 'all',
+  paste_merge_formats: true,
+  paste_remove_styles_if_webkit: false,
+  extended_valid_elements: 'img[*]',
+  verify_html: false,
+
+  images_upload_handler: function(blobInfo, success, failure, progress) {
+    // Handle both pasted images and URL images
+    return new Promise((resolve, reject) => {
+      try {
+        const reader = new FileReader();
+
+        reader.onloadend = function() {
+          resolve(reader.result);
+          success(reader.result);
+        };
+
+        reader.onerror = function() {
+          const error = 'Failed to read image file';
+          reject(error);
+          failure(error);
+        };
+
+        reader.readAsDataURL(blobInfo.blob());
+      } catch (error) {
+        const errorMsg = 'Image processing failed: ' + error.message;
+        reject(errorMsg);
+        failure(errorMsg);
+      }
+    });
+  },
 
   setup: function(editor) {
     editor.on('init', function() {
-      editor.getBody().style.fontFamily = 'Arial, Helvetica, sans-serif';
-      editor.getBody().style.fontSize = '14px';
-      editor.getBody().style.lineHeight = '1.5';
-      editor.getBody().style.padding = '10px';
+      const body = editor.getBody();
+      const doc = body.ownerDocument;
+
+      body.style.fontFamily = 'Arial, Helvetica, sans-serif';
+      body.style.fontSize = '14px';
+      body.style.lineHeight = '1.5';
+      body.style.padding = '10px';
+
+      // Force enable drop on the editor body
+      body.setAttribute('contenteditable', 'true');
+
+      // Prevent default drag/drop behavior
+      const preventDefaults = e => {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+
+      ['drag', 'dragstart', 'dragend', 'dragover', 'dragenter', 'dragleave', 'drop'].forEach(
+        eventName => {
+          body.addEventListener(eventName, preventDefaults, false);
+        },
+      );
+
+      // Handle drop
+      body.addEventListener(
+        'drop',
+        function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+
+          const files = e.dataTransfer?.files;
+
+          if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+              const file = files[i];
+
+              if (file.type.match('image.*')) {
+                const reader = new FileReader();
+
+                reader.onload = function(readerEvent) {
+                  const img = `<p><img src="${readerEvent.target.result}" alt="${file.name}" style="max-width: 600px; height: auto;" /></p>`;
+                  editor.insertContent(img);
+                };
+
+                reader.readAsDataURL(file);
+              }
+            }
+          }
+
+          return false;
+        },
+        false,
+      );
     });
   },
 });

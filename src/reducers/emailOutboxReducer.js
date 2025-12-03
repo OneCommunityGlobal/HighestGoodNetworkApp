@@ -2,12 +2,8 @@ import { EMAIL_OUTBOX_ACTIONS } from '../actions/emailOutboxActions';
 
 const initialState = {
   emails: [], // Parent Email records
-  loading: {
-    emails: false,
-  },
-  error: {
-    emails: null,
-  },
+  loading: false, // ✅ Changed from object to boolean
+  error: null, // ✅ Changed from object to null
 };
 
 const emailOutboxReducer = (state = initialState, action) => {
@@ -16,23 +12,23 @@ const emailOutboxReducer = (state = initialState, action) => {
     case EMAIL_OUTBOX_ACTIONS.FETCH_EMAILS_START:
       return {
         ...state,
-        loading: { ...state.loading, emails: true },
-        error: { ...state.error, emails: null },
+        loading: true, // ✅ Set to true directly
+        error: null,
       };
 
     case EMAIL_OUTBOX_ACTIONS.FETCH_EMAILS_SUCCESS:
       return {
         ...state,
-        loading: { ...state.loading, emails: false },
+        loading: false, // ✅ Set to false directly
         emails: action.payload || [],
-        error: { ...state.error, emails: null },
+        error: null,
       };
 
     case EMAIL_OUTBOX_ACTIONS.FETCH_EMAILS_ERROR:
       return {
         ...state,
-        loading: { ...state.loading, emails: false },
-        error: { ...state.error, emails: action.payload },
+        loading: false, // ✅ Set to false directly
+        error: action.payload,
       };
 
     default:

@@ -525,3 +525,34 @@ body.dark .card-header .text-muted {
         transform: rotate(360deg);
     }
 }
+/* Settings Dropdown Styles */
+.settings-btn {
+    min-width: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.settings-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #007bff;
+}
+
+.settings-btn:active {
+    background-color: #e9ecef;
+}
+
+.dropdown-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover:not(:disabled) {
+    background-color: #f8f9fa;
+}
+
+.dropdown-item:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}

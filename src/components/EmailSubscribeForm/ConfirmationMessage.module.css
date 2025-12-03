@@ -101,3 +101,15 @@
   background-size: cover;
 }
 /* Rest of the styles for text and layout */
+.successHeading {
+  margin-top: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  text-align: center;
+}
+
+/* For dark mode support */
+[data-theme='dark'] .successHeading {
+  color: var(--text-primary, #fff);
+}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
+import DOMPurify from 'dompurify';
 import { fetchEmails, resendEmail } from '../../../actions/emailOutboxActions';
 import httpService from '../../../services/httpService';
 import {
@@ -22,6 +23,10 @@ import {
   FormGroup,
   Label,
   Tooltip,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from 'reactstrap';
 import {
   FaRedo,
@@ -36,9 +41,12 @@ import {
   FaCheckCircle,
   FaExclamationTriangle,
   FaPaperPlane,
+  FaEllipsisV,
+  FaCog,
 } from 'react-icons/fa';
 import './EmailOutbox.css';
 import './ButtonStyles.css';
+import '../EmailManagementShared.css';
 import ResendEmailModal from './ResendEmailModal';
 
 const EmailOutbox = () => {
@@ -57,6 +65,9 @@ const EmailOutbox = () => {
   const [previewBatch, setPreviewBatch] = useState(null);
   const [showResendModal, setShowResendModal] = useState(false);
   const [emailToResend, setEmailToResend] = useState(null);
+  const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
+  const [processingPending, setProcessingPending] = useState(false);
+  const [statusFilter, setStatusFilter] = useState(null); // null means show all
 
   // Dynamic refresh state
   const [refreshState, setRefreshState] = useState({
@@ -96,6 +107,7 @@ const EmailOutbox = () => {
 
         // Handle partial failures gracefully
         if (emailsResult.status === 'rejected') {
+          // eslint-disable-next-line no-console
           console.warn('Failed to fetch emails:', emailsResult.reason);
           if (!isBackground) {
             toast.error('Failed to fetch emails');
@@ -111,6 +123,7 @@ const EmailOutbox = () => {
           syncError: null,
         }));
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching data:', err);
         isRefreshingRef.current = false;
         setRefreshState(prev => ({
@@ -139,6 +152,68 @@ const EmailOutbox = () => {
     await fetchData(false);
   }, [fetchData]);
 
+  // Process pending and stuck emails - IMPROVED VERSION
+  const handleProcessPendingEmails = useCallback(async () => {
+    if (processingPending) {
+      toast.info('Processing already in progress');
+      return;
+    }
+
+    // Only count PENDING emails (stuck ones), NOT failed
+    const pendingCount = emails?.filter(e => e.status === 'PENDING').length || 0;
+
+    // If no pending emails, show info message and return
+    if (pendingCount === 0) {
+      toast.info('There are no pending or stuck emails to process.');
+      return;
+    }
+
+    try {
+      setProcessingPending(true);
+      toast.info(
+        `Processing ${pendingCount} pending/stuck email${pendingCount > 1 ? 's' : ''}...`,
+        {
+          autoClose: 2000,
+        },
+      );
+
+      const response = await httpService.post('/api/process-pending-and-stuck-emails', {
+        requestor: {
+          requestorId: currentUser?.userid,
+          role: currentUser?.role,
+        },
+      });
+
+      if (response.data.success) {
+        // Check if any emails were actually processed
+        const processedCount = response.data.processedCount || pendingCount;
+
+        if (processedCount > 0) {
+          toast.success(
+            `Successfully triggered processing of ${processedCount} pending/stuck email${
+              processedCount > 1 ? 's' : ''
+            }!`,
+          );
+        } else {
+          toast.info('No emails needed processing.');
+        }
+
+        // Refresh the email list after processing
+        await fetchData(false);
+      } else {
+        toast.error(response.data.message || 'Failed to process emails');
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error processing pending emails:', error);
+      toast.error(
+        error.response?.data?.message || 'Failed to trigger email processing. Please try again.',
+      );
+    } finally {
+      setProcessingPending(false);
+    }
+  }, [processingPending, currentUser, fetchData, emails]);
+
   // Background sync for auto-refresh
   const startBackgroundSync = useCallback(() => {
     if (refreshIntervalRef.current) {
@@ -157,6 +232,16 @@ const EmailOutbox = () => {
     fetchData(false);
   }, [fetchData]);
 
+  // HOTFIX: Force loading to complete if we have emails
+  // This is a temporary fix until the Redux reducer is fixed
+  const [localLoading, setLocalLoading] = React.useState(true);
+
+  useEffect(() => {
+    if (emails && emails.length >= 0) {
+      setLocalLoading(false);
+    }
+  }, [emails]);
+
   // Auto-refresh setup
   useEffect(() => {
     if (refreshState.autoRefresh) {
@@ -165,29 +250,35 @@ const EmailOutbox = () => {
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
       }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
     }
 
     return () => {
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
+      }
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
       }
     };
   }, [refreshState.autoRefresh, startBackgroundSync]);
 
-  // Countdown timer for auto-refresh
+  // Countdown timer for next refresh
   useEffect(() => {
-    if (refreshState.autoRefresh) {
-      // Start countdown timer
+    if (refreshState.autoRefresh && refreshState.lastRefresh) {
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+
       countdownIntervalRef.current = setInterval(() => {
-        setRefreshState(prev => ({
-          ...prev,
-          countdown: prev.countdown > 0 ? prev.countdown - 1 : 60,
-        }));
+        setRefreshState(prev => {
+          const timeElapsed = Math.floor((new Date() - prev.lastRefresh) / 1000);
+          const countdown = Math.max(0, Math.floor(prev.refreshInterval / 1000) - timeElapsed);
+          return { ...prev, countdown };
+        });
       }, 1000);
-    } else {
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
     }
 
     return () => {
@@ -195,135 +286,147 @@ const EmailOutbox = () => {
         clearInterval(countdownIntervalRef.current);
       }
     };
-  }, [refreshState.autoRefresh]);
+  }, [refreshState.autoRefresh, refreshState.lastRefresh, refreshState.refreshInterval]);
 
-  // Reset countdown when refresh happens
-  useEffect(() => {
-    if (refreshState.lastRefresh) {
-      setRefreshState(prev => ({
-        ...prev,
-        countdown: 60,
-      }));
-    }
-  }, [refreshState.lastRefresh]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (refreshIntervalRef.current) {
-        clearInterval(refreshIntervalRef.current);
-      }
-      if (backgroundSyncRef.current) {
-        clearTimeout(backgroundSyncRef.current);
-      }
-      if (countdownIntervalRef.current) {
-        clearInterval(countdownIntervalRef.current);
-      }
-    };
+  const toggleAutoRefresh = useCallback(() => {
+    setRefreshState(prev => ({
+      ...prev,
+      autoRefresh: !prev.autoRefresh,
+      countdown: !prev.autoRefresh ? Math.floor(prev.refreshInterval / 1000) : prev.countdown,
+    }));
   }, []);
 
-  // Handle email details
+  // Filter emails based on selected status
+  const filteredEmails = statusFilter
+    ? emails?.filter(email => email.status === statusFilter)
+    : emails;
+
+  // Handle stat card click to filter emails
+  const handleFilterClick = status => {
+    // If clicking the same filter, clear it (show all)
+    setStatusFilter(prevFilter => (prevFilter === status ? null : status));
+  };
+
+  const formatDate = date => {
+    if (!date) return 'N/A';
+    try {
+      return new Date(date).toLocaleString();
+    } catch {
+      return 'Invalid date';
+    }
+  };
+
+  const getUserDisplayName = email => {
+    // Schema uses 'createdBy' (camelCase), try that first, then created_by as fallback
+    const createdBy = email?.createdBy || email?.created_by;
+
+    if (!createdBy) {
+      return 'Unknown';
+    }
+
+    // If it's an object with user details, extract the name
+    if (typeof createdBy === 'object' && createdBy !== null && !createdBy._bsontype) {
+      const firstName = createdBy.firstName || '';
+      const lastName = createdBy.lastName || '';
+      const fullName = `${firstName} ${lastName}`.trim();
+
+      if (fullName) {
+        return fullName;
+      }
+
+      // Fallback to email if name is not available
+      if (createdBy.email) {
+        return createdBy.email;
+      }
+    }
+
+    // If it's a string (ObjectId), it means populate didn't work
+    // Return 'Unknown' instead of showing the ID
+    if (typeof createdBy === 'string') {
+      return 'Unknown';
+    }
+
+    return 'Unknown';
+  };
+
+  const getStatusBadge = status => {
+    const statusMap = {
+      SENT: 'success',
+      PENDING: 'warning',
+      FAILED: 'danger',
+      PROCESSING: 'info',
+    };
+    return statusMap[status] || 'secondary';
+  };
+
+  const getStatusIcon = status => {
+    const iconMap = {
+      SENT: <FaCheckCircle className="text-success" />,
+      PENDING: <FaClock className="text-warning" />,
+      FAILED: <FaExclamationTriangle className="text-danger" />,
+      PROCESSING: <FaSync className="fa-spin text-info" />,
+    };
+    return iconMap[status] || <FaClock className="text-muted" />;
+  };
+
   const handleViewDetails = async email => {
     setSelectedEmail(email);
     setShowEmailDetails(true);
     setLoadingItems(true);
 
     try {
-      const response = await httpService.get(`/api/email-outbox/${email._id}`);
-
-      if (response.data.success && response.data.data) {
-        // Backend returns: { success: true, data: { email, batches } }
-        const emailData = response.data.data.email || email;
-        const batches = response.data.data.batches || [];
-
-        // Calculate statistics from batches for better UX
-        const totalRecipients = batches.reduce(
-          (sum, batch) => sum + (batch.recipients?.length || 0),
-          0,
-        );
-        const sentBatches = batches.filter(b => b.status === 'SENT');
-        const failedBatches = batches.filter(b => b.status === 'FAILED');
-        const sentRecipients = sentBatches.reduce(
-          (sum, batch) => sum + (batch.recipients?.length || 0),
-          0,
-        );
-        const failedRecipients = failedBatches.reduce(
-          (sum, batch) => sum + (batch.recipients?.length || 0),
-          0,
-        );
-        const progress =
-          totalRecipients > 0 ? Math.round((sentRecipients / totalRecipients) * 100) : 0;
-
-        // Add calculated statistics to email data
-        const emailWithStats = {
-          ...emailData,
-          totalEmails: totalRecipients,
-          sentEmails: sentRecipients,
-          failedEmails: failedRecipients,
-          progress,
-        };
-
-        setSelectedEmail(emailWithStats);
-        setEmailBatches(batches); // Child EmailBatch items
+      // Fetch child EmailBatch items
+      const response = await httpService.get(`/api/emails/${email._id}/batches`);
+      if (response.data.success) {
+        setEmailBatches(response.data.emailBatches || []);
       } else {
-        throw new Error(response.data.message || 'Failed to fetch email details');
+        toast.error('Failed to fetch email batches');
+        setEmailBatches([]);
       }
     } catch (error) {
-      console.error('Error fetching email details:', error);
-      const errorMessage =
-        error.response?.data?.message || error.message || 'Failed to fetch email details';
-      toast.error(errorMessage);
+      // eslint-disable-next-line no-console
+      console.error('Error fetching email batches:', error);
+      toast.error('Failed to fetch email batches');
+      setEmailBatches([]);
     } finally {
       setLoadingItems(false);
     }
   };
 
-  // Handle retry Email - resets all failed EmailBatch items to PENDING and processes immediately
-  const handleRetryEmail = async emailId => {
-    try {
-      // Get current user for requestor (required by backend)
-      if (!currentUser || !currentUser.userid) {
-        toast.error('User authentication required to retry emails');
-        return;
-      }
-
-      const requestor = {
-        requestorId: currentUser.userid,
-        email: currentUser.email,
-        role: currentUser.role,
-      };
-
-      const response = await httpService.post(`/api/email-outbox/${emailId}/retry`, { requestor });
-      if (response.data.success) {
-        const failedItemsRetried = response.data.data?.failedItemsRetried || 0;
-        const message =
-          failedItemsRetried > 0
-            ? `Reset ${failedItemsRetried} failed batch items for retry. Processing started.`
-            : response.data.message || 'No failed items to retry';
-        toast.success(message);
-
-        // Refresh the email details
-        if (selectedEmail) {
-          handleViewDetails(selectedEmail);
-        }
-
-        // Also refresh the main emails list to update status
-        await dispatch(fetchEmails());
-      } else {
-        throw new Error(response.data.message || 'Failed to retry email');
-      }
-    } catch (error) {
-      console.error('Error retrying Email:', error);
-      const errorMessage =
-        error.response?.data?.message || error.message || 'Failed to retry Email';
-      toast.error(errorMessage);
+  const handleViewRecipients = recipients => {
+    if (!recipients || recipients.length === 0) {
+      toast.info('No recipients found');
+      return;
     }
+
+    const recipientList = recipients.join('\n');
+    // eslint-disable-next-line no-alert
+    alert(`Recipients:\n\n${recipientList}`);
   };
 
-  // Handle resend email modal
-  const handleOpenResendModal = email => {
+  const handlePreviewEmail = batch => {
+    setPreviewBatch(batch);
+    setShowEmailPreview(true);
+  };
+
+  const handleResendClick = email => {
     setEmailToResend(email);
     setShowResendModal(true);
+  };
+
+  const handleResendEmail = async resendData => {
+    try {
+      await dispatch(resendEmail(emailToResend._id, resendData));
+      toast.success('Email resend initiated successfully!');
+      setShowResendModal(false);
+      setEmailToResend(null);
+      // Refresh the list
+      await fetchData(false);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error resending email:', error);
+      toast.error(error.response?.data?.message || 'Failed to resend email. Please try again.');
+    }
   };
 
   const handleCloseResendModal = () => {
@@ -331,271 +434,551 @@ const EmailOutbox = () => {
     setEmailToResend(null);
   };
 
-  const handleResendEmail = async (emailId, recipientOption, specificRecipients) => {
-    try {
-      await dispatch(resendEmail(emailId, recipientOption, specificRecipients));
-      handleCloseResendModal();
-    } catch (error) {
-      console.error('Error resending email:', error);
-      // Error toast is already shown by the action
-    }
-  };
-
-  // Handle view recipients
-  const handleViewRecipients = recipients => {
-    // Show recipients in a modal or alert
-    const recipientList = recipients.map(r => r.email).join(', ');
-    alert(`Recipients (${recipients.length}):\n${recipientList}`);
-  };
-
-  // Handle preview email
-  const handlePreviewEmail = email => {
-    setPreviewBatch(email);
-    setShowEmailPreview(true);
-  };
-
-  // Get status badge color
-  const getStatusBadge = status => {
-    const colors = {
-      PENDING: 'warning',
-      SENDING: 'info',
-      SENT: 'success',
-      PROCESSED: 'info', // Mixed results - processing finished
-      FAILED: 'danger',
-    };
-    return colors[status] || 'secondary';
-  };
-
-  // Format date
-  const formatDate = dateString => {
-    return new Date(dateString).toLocaleString();
-  };
-
-  // Get status icon
-  const getStatusIcon = status => {
-    const icons = {
-      PENDING: <FaClock className="text-warning" />,
-      SENDING: <FaClock className="text-info fa-spin" />,
-      SENT: <FaCheck className="text-success" />,
-      PROCESSED: <FaCheck className="text-info" />, // Mixed results - processing finished
-      FAILED: <FaTimes className="text-danger" />,
-    };
-    return icons[status] || <FaEnvelope className="text-muted" />;
-  };
-
-  // Show initial loading only on first load
-  if (loading.emails && !refreshState.lastRefresh) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '400px' }}>
-        <Spinner color="primary" />
-        <span className="ms-2">Loading dashboard...</span>
-      </div>
-    );
-  }
-
   return (
     <>
-      {/* Header */}
-      <div className="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4">
-        <div className="flex-grow-1 mb-3 mb-lg-0">
-          <h2 className="page-title mb-2">Email Outbox</h2>
-          <div className="d-flex flex-column gap-1">
-            {refreshState.lastRefresh && (
-              <small className="text-muted d-flex align-items-center">
-                <FaClock className="mr-1" size={12} />
-                Last updated: {refreshState.lastRefresh.toLocaleTimeString()}
+      <div className="email-outbox-header d-flex justify-content-between align-items-center mb-3">
+        <h3 className="mb-0">Email Outbox</h3>
+        <div className="d-flex align-items-center" style={{ gap: '12px' }}>
+          {/* Auto-refresh indicator */}
+          {refreshState.autoRefresh && (
+            <div className="auto-refresh-indicator d-flex align-items-center px-2 py-1 bg-light rounded">
+              <FaSync
+                className={refreshState.backgroundSync ? 'fa-spin text-info' : 'text-muted'}
+                size={14}
+              />
+              <small className="ms-2 text-muted" style={{ whiteSpace: 'nowrap' }}>
+                Next refresh in {refreshState.countdown}s
               </small>
-            )}
-            {refreshState.backgroundSync && (
-              <small className="text-info d-flex align-items-center">
-                <FaSync className="fa-spin mr-1" size={12} />
-                Syncing...
-              </small>
-            )}
-            {refreshState.autoRefresh && !refreshState.backgroundSync && (
-              <small className="text-muted d-flex align-items-center">
-                <FaCheckCircle className="mr-1" size={12} />
-                Auto-refreshes in {Math.floor(refreshState.countdown / 60)}:
-                {(refreshState.countdown % 60).toString().padStart(2, '0')}
-              </small>
-            )}
-            {refreshState.syncError && (
-              <small className="text-danger d-flex align-items-center">
-                <FaExclamationTriangle className="mr-1" size={12} />
-                Sync error
-              </small>
-            )}
-          </div>
-        </div>
-        <div className="action-buttons">
+            </div>
+          )}
+
+          {/* Manual Refresh Button */}
           <Button
-            color="outline-primary"
+            color="primary"
             size="sm"
             onClick={handleManualRefresh}
             disabled={refreshState.isRefreshing}
-            className="action-btn refresh-btn"
-            id="refresh-tooltip"
+            title="Refresh email list"
+            className="d-flex align-items-center"
           >
-            {refreshState.isRefreshing ? (
-              <FaSync className="fa-spin me-1" />
-            ) : (
-              <FaRedo className="me-1" />
-            )}
-            <span className="d-none d-sm-inline">
+            <FaRedo className={refreshState.isRefreshing ? 'fa-spin' : ''} size={14} />
+            <span className="ms-2 d-none d-md-inline">
               {refreshState.isRefreshing ? 'Refreshing...' : 'Refresh'}
             </span>
           </Button>
+
+          {/* Settings Dropdown */}
+          <Dropdown
+            isOpen={settingsDropdownOpen}
+            toggle={() => setSettingsDropdownOpen(!settingsDropdownOpen)}
+          >
+            <DropdownToggle color="secondary" size="sm" caret className="d-flex align-items-center">
+              <FaCog size={14} />
+              <span className="ms-2 d-none d-md-inline">Settings</span>
+            </DropdownToggle>
+            <DropdownMenu end>
+              <DropdownItem header>Refresh Settings</DropdownItem>
+              <DropdownItem onClick={toggleAutoRefresh}>
+                <div className="d-flex justify-content-between align-items-center">
+                  <span>Auto-Refresh</span>
+                  <Badge color={refreshState.autoRefresh ? 'success' : 'secondary'}>
+                    {refreshState.autoRefresh ? 'ON' : 'OFF'}
+                  </Badge>
+                </div>
+              </DropdownItem>
+              <DropdownItem divider />
+              <DropdownItem header>Actions</DropdownItem>
+              <DropdownItem onClick={handleProcessPendingEmails} disabled={processingPending}>
+                <FaPaperPlane className="me-2" />
+                {processingPending ? 'Processing...' : 'Process Pending & Stuck'}
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </div>
 
-      {/* Tooltips */}
-      <Tooltip target="refresh-tooltip" placement="bottom">
-        {refreshState.isRefreshing ? 'Refreshing data...' : 'Manually refresh data'}
-      </Tooltip>
-
-      {/* Error Message */}
-      {error.emails && (
-        <Alert color="danger" className="mb-3">
-          {error.emails}
+      {/* Sync Error Alert */}
+      {refreshState.syncError && (
+        <Alert color="warning" className="mb-3">
+          <FaExclamationTriangle className="me-2" />
+          Background sync failed: {refreshState.syncError}
         </Alert>
       )}
 
-      {/* Emails Table */}
-      <Card className="shadow-sm mb-4">
-        <CardBody className="p-0">
-          {emails && emails.length > 0 ? (
-            <div className="table-responsive">
-              <Table striped hover className="mb-0">
-                <thead className="table-dark">
-                  <tr>
-                    <th className="border-0 py-2 px-3">Email</th>
-                    <th className="border-0 py-2 px-3">Status</th>
-                    <th className="border-0 py-2 px-3 d-none d-md-table-cell">Timing</th>
-                    <th className="border-0 py-2 px-3 d-none d-lg-table-cell">Created By</th>
-                    <th className="border-0 py-2 px-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {emails.map(email => (
-                    <tr key={email._id} className="align-middle">
-                      <td className="py-2 px-3">
-                        <div className="d-flex flex-column gap-1">
-                          <strong className="text-primary">{email.subject || 'Email'}</strong>
-                          <Button
-                            size="sm"
-                            color="outline-info"
-                            onClick={() => handlePreviewEmail(email)}
-                            className="d-flex align-items-center p-1 align-self-start"
-                            title="Preview Email"
-                          >
-                            <FaEye size={12} />
-                          </Button>
-                          <div className="d-md-none mt-1">
-                            <small className="text-muted">
-                              <FaCalendar className="me-1" size={12} />
-                              Created: {formatDate(email.createdAt)}
-                            </small>
-                          </div>
-                          <div className="d-lg-none mt-1">
-                            <small className="text-muted">
-                              <FaUser className="me-1" size={12} />
-                              {email.createdBy?.firstName && email.createdBy?.lastName
-                                ? `${email.createdBy.firstName} ${email.createdBy.lastName}`
-                                : email.createdBy?.firstName || 'System'}
-                            </small>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="py-2 px-3">
-                        <div className="d-flex align-items-center mb-2">
-                          <Badge color={getStatusBadge(email.status)}>{email.status}</Badge>
-                        </div>
-                      </td>
-                      <td className="py-2 px-3 d-none d-md-table-cell">
-                        <div>
-                          <small className="text-muted d-block">
-                            <FaCalendar className="me-1" size={12} />
-                            Created: {formatDate(email.createdAt)}
-                          </small>
-                          {email.startedAt && (
-                            <small className="text-info d-block">
-                              Started: {formatDate(email.startedAt)}
-                            </small>
-                          )}
-                          {email.completedAt && (
-                            <small className="text-success d-block">
-                              Completed: {formatDate(email.completedAt)}
-                            </small>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-2 px-3 d-none d-lg-table-cell">
-                        <div>
-                          <small className="d-block">
-                            {email.createdBy?.firstName && email.createdBy?.lastName
-                              ? `${email.createdBy.firstName} ${email.createdBy.lastName}`
-                              : email.createdBy?.firstName || 'System'}
-                          </small>
-                        </div>
-                      </td>
-                      <td className="py-2 px-3">
-                        <div className="d-flex gap-2">
-                          <Button
-                            size="sm"
-                            color="outline-primary"
-                            onClick={() => handleViewDetails(email)}
-                            className="d-flex align-items-center"
-                          >
-                            <FaEye className="me-1" size={12} />
-                            <span className="d-none d-sm-inline">View Details</span>
-                          </Button>
-                          {(email.status === 'FAILED' || email.status === 'PROCESSED') && (
-                            <Button
-                              size="sm"
-                              color="warning"
-                              onClick={() => handleRetryEmail(email._id)}
-                              className="d-flex align-items-center"
-                              title="Reset failed batches to PENDING and process immediately"
-                            >
-                              <FaRedo className="me-1" size={12} />
-                              <span className="d-none d-sm-inline">Retry</span>
-                            </Button>
-                          )}
-                          {(email.status === 'SENT' || email.status === 'PROCESSED') && (
-                            <Button
-                              size="sm"
-                              color="info"
-                              onClick={() => handleOpenResendModal(email)}
-                              className="d-flex align-items-center"
-                              title="Resend email to new or same recipients"
-                            >
-                              <FaPaperPlane className="me-1" size={12} />
-                              <span className="d-none d-sm-inline">Resend</span>
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          ) : (
-            <div className="text-center py-5">
-              <FaEnvelope size={48} className="text-muted mb-3" />
-              <h5 className="text-muted">No Emails Found</h5>
-              <p className="text-muted">Send your first email to get started.</p>
-            </div>
-          )}
-        </CardBody>
-      </Card>
+      {/* Error Alert */}
+      {error && (
+        <Alert color="danger" className="mb-3">
+          <FaExclamationTriangle className="me-2" />
+          {typeof error === 'string' ? error : error.message || 'An error occurred'}
+        </Alert>
+      )}
+
+      {/* Loading State */}
+      {localLoading && !refreshState.backgroundSync ? (
+        <div className="text-center py-5">
+          <Spinner color="primary" />
+          <p className="mt-3">Loading emails...</p>
+        </div>
+      ) : (
+        <>
+          {/* Email Stats - FIXED ALIGNMENT */}
+          <Row className="mb-3">
+            <Col md={3}>
+              <Card
+                className="stat-card"
+                style={{
+                  cursor: 'pointer',
+                  border: statusFilter === null ? '2px solid #007bff' : '1px solid #e9ecef',
+                  backgroundColor: statusFilter === null ? '#f8f9fa' : 'white',
+                }}
+                onClick={() => handleFilterClick(null)}
+              >
+                <CardBody style={{ padding: '1.25rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      minHeight: '48px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        flexShrink: 0,
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <FaEnvelope size={32} className="text-primary" style={{ display: 'block' }} />
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        flex: 1,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '1.75rem',
+                          fontWeight: '700',
+                          lineHeight: '1.2',
+                          marginBottom: '2px',
+                          marginTop: 0,
+                        }}
+                      >
+                        {emails?.length || 0}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          fontWeight: '500',
+                          lineHeight: '1.2',
+                          color: '#6c757d',
+                          marginTop: 0,
+                          marginBottom: 0,
+                        }}
+                      >
+                        Total Emails
+                      </div>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col md={3}>
+              <Card
+                className="stat-card"
+                style={{
+                  cursor: 'pointer',
+                  border: statusFilter === 'SENT' ? '2px solid #28a745' : '1px solid #e9ecef',
+                  backgroundColor: statusFilter === 'SENT' ? '#f8f9fa' : 'white',
+                }}
+                onClick={() => handleFilterClick('SENT')}
+              >
+                <CardBody style={{ padding: '1.25rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      minHeight: '48px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        flexShrink: 0,
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <FaCheckCircle
+                        size={32}
+                        className="text-success"
+                        style={{ display: 'block' }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        flex: 1,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '1.75rem',
+                          fontWeight: '700',
+                          lineHeight: '1.2',
+                          marginBottom: '2px',
+                          marginTop: 0,
+                        }}
+                      >
+                        {emails?.filter(e => e.status === 'SENT').length || 0}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          fontWeight: '500',
+                          lineHeight: '1.2',
+                          color: '#6c757d',
+                          marginTop: 0,
+                          marginBottom: 0,
+                        }}
+                      >
+                        Sent
+                      </div>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col md={3}>
+              <Card
+                className="stat-card"
+                style={{
+                  cursor: 'pointer',
+                  border: statusFilter === 'PENDING' ? '2px solid #ffc107' : '1px solid #e9ecef',
+                  backgroundColor: statusFilter === 'PENDING' ? '#f8f9fa' : 'white',
+                }}
+                onClick={() => handleFilterClick('PENDING')}
+              >
+                <CardBody style={{ padding: '1.25rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      minHeight: '48px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        flexShrink: 0,
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <FaClock size={32} className="text-warning" style={{ display: 'block' }} />
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        flex: 1,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '1.75rem',
+                          fontWeight: '700',
+                          lineHeight: '1.2',
+                          marginBottom: '2px',
+                          marginTop: 0,
+                        }}
+                      >
+                        {emails?.filter(e => e.status === 'PENDING').length || 0}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          fontWeight: '500',
+                          lineHeight: '1.2',
+                          color: '#6c757d',
+                          marginTop: 0,
+                          marginBottom: 0,
+                        }}
+                      >
+                        Pending
+                      </div>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+            <Col md={3}>
+              <Card
+                className="stat-card"
+                style={{
+                  cursor: 'pointer',
+                  border: statusFilter === 'FAILED' ? '2px solid #dc3545' : '1px solid #e9ecef',
+                  backgroundColor: statusFilter === 'FAILED' ? '#f8f9fa' : 'white',
+                }}
+                onClick={() => handleFilterClick('FAILED')}
+              >
+                <CardBody style={{ padding: '1.25rem' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      minHeight: '48px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        flexShrink: 0,
+                        width: '32px',
+                        height: '32px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      <FaExclamationTriangle
+                        size={32}
+                        className="text-danger"
+                        style={{ display: 'block' }}
+                      />
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        flex: 1,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontSize: '1.75rem',
+                          fontWeight: '700',
+                          lineHeight: '1.2',
+                          marginBottom: '2px',
+                          marginTop: 0,
+                        }}
+                      >
+                        {emails?.filter(e => e.status === 'FAILED').length || 0}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: '0.875rem',
+                          fontWeight: '500',
+                          lineHeight: '1.2',
+                          color: '#6c757d',
+                          marginTop: 0,
+                          marginBottom: 0,
+                        }}
+                      >
+                        Failed
+                      </div>
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+
+          {/* Emails Table */}
+          <Card>
+            <CardHeader className="bg-light">
+              <div className="d-flex justify-content-between align-items-center">
+                <h5 className="mb-0 d-flex align-items-center" style={{ gap: '8px' }}>
+                  <span>Email List</span>
+                  {statusFilter && (
+                    <Badge
+                      color="info"
+                      style={{
+                        fontSize: '0.75rem',
+                        padding: '4px 8px',
+                        fontWeight: '500',
+                      }}
+                    >
+                      Filtered by: {statusFilter}
+                    </Badge>
+                  )}
+                </h5>
+                {statusFilter && (
+                  <Button
+                    size="sm"
+                    color="link"
+                    onClick={() => setStatusFilter(null)}
+                    style={{
+                      textDecoration: 'none',
+                      fontSize: '0.875rem',
+                    }}
+                  >
+                    Clear Filter
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+            <CardBody className="p-0">
+              {filteredEmails && filteredEmails.length > 0 ? (
+                <div className="table-responsive">
+                  <Table striped hover className="mb-0">
+                    <thead className="table-dark">
+                      <tr>
+                        <th className="border-0 py-3 px-3">Email Info</th>
+                        <th className="border-0 py-3 px-3">Status</th>
+                        <th className="border-0 py-3 px-3 d-none d-md-table-cell">Recipients</th>
+                        <th className="border-0 py-3 px-3 d-none d-lg-table-cell">Timing</th>
+                        <th className="border-0 py-3 px-3">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredEmails.map((email, index) => (
+                        <tr key={email._id || index}>
+                          <td className="py-3 px-3">
+                            <div>
+                              <strong className="text-primary d-block">{email.subject}</strong>
+                              <small className="text-muted d-block">
+                                <FaUser size={12} className="me-1" />
+                                {getUserDisplayName(email)}
+                              </small>
+                              <div className="d-md-none mt-1">
+                                <small className="text-muted">
+                                  Recipients: {email.totalEmails || 0} ({email.sentEmails || 0}{' '}
+                                  sent, {email.failedEmails || 0} failed)
+                                </small>
+                              </div>
+                              <div className="d-lg-none mt-1">
+                                <small className="text-muted">
+                                  <FaCalendar size={10} className="me-1" />
+                                  {formatDate(email.createdAt)}
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3">
+                            <div className="d-flex align-items-center">
+                              {getStatusIcon(email.status)}
+                              <Badge color={getStatusBadge(email.status)} className="ms-2">
+                                {email.status}
+                              </Badge>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3 d-none d-md-table-cell">
+                            <div className="d-flex flex-column gap-1">
+                              <span className="badge bg-primary">
+                                {email.totalEmails || 0} total
+                              </span>
+                              <small className="text-success">
+                                <FaCheck size={10} className="me-1" />
+                                {email.sentEmails || 0} sent
+                              </small>
+                              <small className="text-danger">
+                                <FaTimes size={10} className="me-1" />
+                                {email.failedEmails || 0} failed
+                              </small>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3 d-none d-lg-table-cell">
+                            <div className="d-flex flex-column gap-1">
+                              <small className="text-muted">
+                                <FaCalendar size={10} className="me-1" />
+                                Created: {formatDate(email.createdAt)}
+                              </small>
+                              <small className="text-muted">
+                                Updated: {formatDate(email.updatedAt)}
+                              </small>
+                            </div>
+                          </td>
+                          <td className="py-3 px-3">
+                            <div className="d-flex flex-column gap-2">
+                              <div className="d-flex gap-1 flex-wrap">
+                                <Button
+                                  size="sm"
+                                  color="outline-primary"
+                                  onClick={() => handleViewDetails(email)}
+                                  className="d-flex align-items-center"
+                                  title="View email details and batches"
+                                >
+                                  <FaEye size={12} className="me-1" />
+                                  <span className="d-none d-sm-inline">Details</span>
+                                </Button>
+                                {email.status === 'FAILED' && (
+                                  <Button
+                                    size="sm"
+                                    color="outline-warning"
+                                    onClick={() => handleResendClick(email)}
+                                    className="d-flex align-items-center"
+                                    title="Resend failed email"
+                                  >
+                                    <FaRedo size={12} className="me-1" />
+                                    <span className="d-none d-sm-inline">Resend</span>
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-center py-5">
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '16px',
+                    }}
+                  >
+                    <FaEnvelope size={48} className="text-muted" style={{ opacity: 0.5 }} />
+                    <p className="text-muted mb-0" style={{ fontSize: '1rem' }}>
+                      {statusFilter
+                        ? `No ${statusFilter.toLowerCase()} emails found.`
+                        : 'No emails found in the outbox.'}
+                    </p>
+                    {statusFilter && (
+                      <Button
+                        size="sm"
+                        color="primary"
+                        onClick={() => setStatusFilter(null)}
+                        style={{ marginTop: '8px' }}
+                      >
+                        Clear Filter
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </>
+      )}
 
       {/* Email Details Modal */}
       {showEmailDetails && selectedEmail && (
         <Modal
           isOpen={showEmailDetails}
           toggle={() => setShowEmailDetails(false)}
-          size="lg"
+          size="xl"
           centered
           className="modal-responsive"
         >
@@ -607,20 +990,12 @@ const EmailOutbox = () => {
               <CardHeader className="bg-light">
                 <h6 className="mb-0">Email Information</h6>
               </CardHeader>
-              <CardBody className="p-3">
+              <CardBody>
                 <div className="row g-3">
-                  <div className="col-md-6">
-                    <div>
-                      <strong>Email ID:</strong>
-                      <div className="text-primary font-monospace small mt-1">
-                        {selectedEmail._id}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6">
+                  <div className="col-md-12">
                     <div>
                       <strong>Subject:</strong>
-                      <div className="text-muted mt-1">{selectedEmail.subject || 'No subject'}</div>
+                      <div className="text-muted mt-1">{selectedEmail.subject}</div>
                     </div>
                   </div>
                   <div className="col-md-6">
@@ -633,59 +1008,27 @@ const EmailOutbox = () => {
                       </div>
                     </div>
                   </div>
-                  {selectedEmail.templateId && (
-                    <div className="col-md-6">
-                      <div>
-                        <strong>Template ID:</strong>
-                        <div className="text-primary font-monospace small mt-1">
-                          {selectedEmail.templateId}
-                        </div>
-                      </div>
-                    </div>
-                  )}
                   <div className="col-md-6">
                     <div>
                       <strong>Created By:</strong>
-                      <div className="text-muted mt-1">
-                        {selectedEmail.createdBy?.firstName && selectedEmail.createdBy?.lastName
-                          ? `${selectedEmail.createdBy.firstName} ${selectedEmail.createdBy.lastName}`
-                          : selectedEmail.createdBy?.firstName || 'System'}
-                      </div>
+                      <div className="text-muted mt-1">{getUserDisplayName(selectedEmail)}</div>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div>
-                      <strong>Created:</strong>
+                      <strong>Created At:</strong>
                       <div className="text-muted mt-1">{formatDate(selectedEmail.createdAt)}</div>
                     </div>
                   </div>
-                  {selectedEmail.startedAt && (
-                    <div className="col-md-6">
-                      <div>
-                        <strong>Started:</strong>
-                        <div className="text-info mt-1">{formatDate(selectedEmail.startedAt)}</div>
-                      </div>
-                    </div>
-                  )}
-                  {selectedEmail.completedAt && (
-                    <div className="col-md-6">
-                      <div>
-                        <strong>Completed:</strong>
-                        <div className="text-success mt-1">
-                          {formatDate(selectedEmail.completedAt)}
-                        </div>
-                      </div>
-                    </div>
-                  )}
                   <div className="col-md-6">
                     <div>
-                      <strong>Last Updated:</strong>
+                      <strong>Updated At:</strong>
                       <div className="text-muted mt-1">{formatDate(selectedEmail.updatedAt)}</div>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div>
-                      <strong>Total Batches:</strong>
+                      <strong>Batches:</strong>
                       <div className="text-primary fw-bold mt-1">{emailBatches.length}</div>
                     </div>
                   </div>
@@ -850,7 +1193,7 @@ const EmailOutbox = () => {
         </Modal>
       )}
 
-      {/* Email Preview Modal */}
+      {/* Email Preview Modal - FIXED XSS VULNERABILITY */}
       {showEmailPreview && previewBatch && (
         <Modal
           isOpen={showEmailPreview}
@@ -872,7 +1215,9 @@ const EmailOutbox = () => {
               <div
                 className="border rounded p-3 bg-light mt-2"
                 style={{ maxHeight: '400px', overflow: 'auto' }}
-                dangerouslySetInnerHTML={{ __html: previewBatch.htmlContent || 'No content' }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(previewBatch.htmlContent || 'No content'),
+                }}
               />
             </div>
           </ModalBody>

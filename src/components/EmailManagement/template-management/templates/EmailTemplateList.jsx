@@ -54,10 +54,12 @@ const EmailTemplateList = ({
 
   // Removed shimmer/skeleton in favor of simple spinners
   // Debounce search term
+  // Debounce search term - increased to 500ms to reduce API calls while typing
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
-    }, 300);
+      setCurrentPage(1); // Reset to first page when search changes
+    }, 500);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
@@ -245,16 +247,49 @@ const EmailTemplateList = ({
   }, []);
 
   // Templates are already sorted and filtered by the API
+  // Templates are sorted by API, but add client-side sorting as backup
   const sortedAndFilteredTemplates = useMemo(() => {
     if (!templates || !Array.isArray(templates)) {
       return [];
     }
-    return templates.filter(template => {
+
+    // Filter out invalid templates
+    let filtered = templates.filter(template => {
       return (
         template && template._id && typeof template._id === 'string' && template._id.length > 0
       );
     });
-  }, [templates]);
+
+    // Apply client-side sorting as backup (API should handle this, but adding for reliability)
+    filtered = [...filtered].sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortBy) {
+        case 'name':
+          aValue = (a.name || '').toLowerCase();
+          bValue = (b.name || '').toLowerCase();
+          break;
+        case 'created_at':
+          aValue = new Date(a.created_at || 0).getTime();
+          bValue = new Date(b.created_at || 0).getTime();
+          break;
+        case 'updated_at':
+          aValue = new Date(a.updated_at || 0).getTime();
+          bValue = new Date(b.updated_at || 0).getTime();
+          break;
+        default:
+          return 0;
+      }
+
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      } else {
+        return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+      }
+    });
+
+    return filtered;
+  }, [templates, sortBy, sortOrder]);
 
   return (
     <div className="email-template-list">

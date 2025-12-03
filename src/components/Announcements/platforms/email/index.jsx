@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { Button } from 'reactstrap';
-import { useHistory, useLocation } from 'react-router-dom';
-import { FaPaperPlane, FaCog, FaChartLine } from 'react-icons/fa';
+import { Button, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { FaPaperPlane, FaCog, FaInbox } from 'react-icons/fa';
 import {
   EmailTemplateManager,
   IntegratedEmailSender,
@@ -13,73 +12,22 @@ import './EmailPanel.css';
 
 export default function EmailPanel({ title, initialEmail }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const history = useHistory();
-  const location = useLocation();
 
-  // Error state for handling navigation errors
-  const [navigationError, setNavigationError] = useState(null);
-
-  // Get current view from URL path, default to 'dashboard'
-  const getCurrentViewFromURL = useCallback(() => {
-    const path = location.pathname;
-    if (path.includes('/templates')) return 'templates';
-    if (path.includes('/sender')) return 'sender';
-    if (path.includes('/emails')) return 'emails';
-    return 'dashboard';
-  }, [location.pathname]);
-
-  const [currentView, setCurrentView] = useState(() => getCurrentViewFromURL());
-
-  // Update URL when currentView changes
-  const updateURL = useCallback(
-    view => {
-      try {
-        if (view === 'templates') {
-          history.push('/announcements/email/templates');
-        } else if (view === 'sender') {
-          history.push('/announcements/email/sender');
-        } else if (view === 'emails') {
-          history.push('/announcements/email/emails');
-        } else {
-          history.push('/announcements/email');
-        }
-
-        // Clear any previous navigation errors
-        if (navigationError) {
-          setNavigationError(null);
-        }
-      } catch (error) {
-        setNavigationError('Failed to update navigation. Please try again.');
-      }
-    },
-    [history, navigationError],
-  );
+  // State management - simpler without URL routing
+  const [currentView, setCurrentView] = useState('dashboard');
+  const [activeEmailTab, setActiveEmailTab] = useState('send');
 
   // Handle view change
-  const handleViewChange = useCallback(
-    view => {
-      if (view !== currentView) {
-        setCurrentView(view);
-        updateURL(view);
-      }
-    },
-    [currentView, updateURL],
-  );
-
-  // Update currentView when URL changes (e.g., browser back/forward)
-  useEffect(() => {
-    const newView = getCurrentViewFromURL();
-    if (newView !== currentView) {
-      setCurrentView(newView);
+  const handleViewChange = useCallback((view, tab = null) => {
+    setCurrentView(view);
+    if (view === 'email' && tab) {
+      setActiveEmailTab(tab);
     }
-  }, [getCurrentViewFromURL, currentView]);
+  }, []);
 
-  // Cleanup effect to reset states when component unmounts
-  useEffect(() => {
-    return () => {
-      // Clear everything when exiting email platform
-      setCurrentView('sender'); // Reset to default view
-    };
+  // Handle email tab change
+  const handleEmailTabChange = useCallback(tab => {
+    setActiveEmailTab(tab);
   }, []);
 
   const renderViewSelector = useMemo(() => {
@@ -96,7 +44,7 @@ export default function EmailPanel({ title, initialEmail }) {
               marginBottom: '2rem',
             }}
           >
-            {/* Email Sender Card */}
+            {/* Email Card (Combined Send & Outbox) */}
             <button
               className="platform-card"
               type="button"
@@ -108,22 +56,23 @@ export default function EmailPanel({ title, initialEmail }) {
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
               }}
-              onClick={() => handleViewChange('sender')}
+              onClick={() => handleViewChange('email', 'send')}
               onMouseEnter={e => {
-                e.target.style.borderColor = '#007bff';
-                e.target.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.borderColor = '#007bff';
+                e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={e => {
-                e.target.style.borderColor = darkMode ? '#2b3b50' : '#ddd';
-                e.target.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = darkMode ? '#2b3b50' : '#ddd';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <FaPaperPlane style={{ fontSize: '3rem', color: '#007bff', marginBottom: '1rem' }} />
-              <h3 style={{ color: darkMode ? '#fff' : '#000', marginBottom: '1rem' }}>
-                Send Email
-              </h3>
-              <p style={{ color: darkMode ? '#ccc' : '#666' }}>
-                Compose and send emails using templates or custom content
+              <h3 style={{ color: darkMode ? '#fff' : '#000', marginBottom: '1rem' }}>Email</h3>
+              <p style={{ color: darkMode ? '#ccc' : '#666', marginBottom: '0.5rem' }}>
+                Send, Outbox
+              </p>
+              <p style={{ color: darkMode ? '#aaa' : '#888', fontSize: '0.9rem' }}>
+                Compose and send emails, monitor outbox
               </p>
             </button>
 
@@ -141,12 +90,12 @@ export default function EmailPanel({ title, initialEmail }) {
               }}
               onClick={() => handleViewChange('templates')}
               onMouseEnter={e => {
-                e.target.style.borderColor = '#28a745';
-                e.target.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.borderColor = '#28a745';
+                e.currentTarget.style.transform = 'translateY(-2px)';
               }}
               onMouseLeave={e => {
-                e.target.style.borderColor = darkMode ? '#2b3b50' : '#ddd';
-                e.target.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = darkMode ? '#2b3b50' : '#ddd';
+                e.currentTarget.style.transform = 'translateY(0)';
               }}
             >
               <FaCog style={{ fontSize: '3rem', color: '#28a745', marginBottom: '1rem' }} />
@@ -157,64 +106,19 @@ export default function EmailPanel({ title, initialEmail }) {
                 Create, edit, and manage email templates for your communications
               </p>
             </button>
-
-            {/* Email Outbox Card */}
-            <button
-              className="platform-card"
-              type="button"
-              style={{
-                border: `2px solid ${darkMode ? '#2b3b50' : '#ddd'}`,
-                borderRadius: '8px',
-                padding: '2rem',
-                backgroundColor: darkMode ? '#1a2332' : '#f8f9fa',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-              onClick={() => handleViewChange('emails')}
-              onMouseEnter={e => {
-                e.target.style.borderColor = '#6f42c1';
-                e.target.style.transform = 'translateY(-2px)';
-              }}
-              onMouseLeave={e => {
-                e.target.style.borderColor = darkMode ? '#2b3b50' : '#ddd';
-                e.target.style.transform = 'translateY(0)';
-              }}
-            >
-              <FaChartLine style={{ fontSize: '3rem', color: '#6f42c1', marginBottom: '1rem' }} />
-              <h3 style={{ color: darkMode ? '#fff' : '#000', marginBottom: '1rem' }}>
-                Email Outbox
-              </h3>
-              <p style={{ color: darkMode ? '#ccc' : '#666' }}>
-                Monitor and manage emails with real-time tracking and analytics
-              </p>
-            </button>
           </div>
         </div>
       );
     }
 
-    // Show nothing for other views (sender/templates handle their own navigation)
+    // Show nothing for other views
     return null;
   }, [currentView, handleViewChange, darkMode]);
-
-  // Error display component
-  const ErrorDisplay = ({ error }) => (
-    <div className="alert alert-danger" role="alert" aria-live="assertive">
-      <strong>Navigation Error:</strong> {error}
-      <button
-        type="button"
-        className="btn-close"
-        aria-label="Close error message"
-        onClick={() => setNavigationError(null)}
-      />
-    </div>
-  );
 
   // Dashboard view - show platform selection cards
   if (currentView === 'dashboard') {
     return (
       <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-        {navigationError && <ErrorDisplay error={navigationError} />}
         {renderViewSelector}
       </div>
     );
@@ -223,7 +127,22 @@ export default function EmailPanel({ title, initialEmail }) {
   if (currentView === 'templates') {
     return (
       <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-        {navigationError && <ErrorDisplay error={navigationError} />}
+        <div className="mb-3">
+          <button
+            onClick={() => setCurrentView('dashboard')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: darkMode ? '#60a5fa' : '#007bff',
+              cursor: 'pointer',
+              padding: '0.5rem 0',
+              fontSize: '1rem',
+              textDecoration: 'none',
+            }}
+          >
+            ← Back to Dashboard
+          </button>
+        </div>
         <div
           className="email-content-area"
           role="tabpanel"
@@ -239,28 +158,118 @@ export default function EmailPanel({ title, initialEmail }) {
     );
   }
 
-  if (currentView === 'emails') {
+  // Email view with tabs (Send and Outbox)
+  if (currentView === 'email') {
     return (
       <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-        {navigationError && <ErrorDisplay error={navigationError} />}
-        <div
-          className="email-content-area"
-          role="tabpanel"
-          aria-labelledby="email-emails-tab"
-          id="email-emails-panel"
-          aria-live="polite"
-        >
-          <ErrorBoundary>
-            <EmailOutbox key="emails" />
-          </ErrorBoundary>
+        <div className="mb-3">
+          <button
+            onClick={() => setCurrentView('dashboard')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: darkMode ? '#60a5fa' : '#007bff',
+              cursor: 'pointer',
+              padding: '0.5rem 0',
+              fontSize: '1rem',
+              textDecoration: 'none',
+            }}
+          >
+            ← Back to Dashboard
+          </button>
+        </div>
+
+        <div className="email-tabs-container">
+          {/* Tab Navigation */}
+          <Nav tabs className="mb-3">
+            <NavItem>
+              <NavLink
+                className={activeEmailTab === 'send' ? 'active' : ''}
+                onClick={() => handleEmailTabChange('send')}
+                style={{
+                  cursor: 'pointer',
+                  backgroundColor:
+                    activeEmailTab === 'send' ? (darkMode ? '#2b3b50' : '#007bff') : 'transparent',
+                  color: activeEmailTab === 'send' ? '#fff' : darkMode ? '#ccc' : '#495057',
+                  border: `1px solid ${darkMode ? '#2b3b50' : '#dee2e6'}`,
+                  borderBottom:
+                    activeEmailTab === 'send'
+                      ? 'none'
+                      : `1px solid ${darkMode ? '#2b3b50' : '#dee2e6'}`,
+                }}
+              >
+                <FaPaperPlane className="me-2" />
+                Send
+              </NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={activeEmailTab === 'outbox' ? 'active' : ''}
+                onClick={() => handleEmailTabChange('outbox')}
+                style={{
+                  cursor: 'pointer',
+                  backgroundColor:
+                    activeEmailTab === 'outbox'
+                      ? darkMode
+                        ? '#2b3b50'
+                        : '#007bff'
+                      : 'transparent',
+                  color: activeEmailTab === 'outbox' ? '#fff' : darkMode ? '#ccc' : '#495057',
+                  border: `1px solid ${darkMode ? '#2b3b50' : '#dee2e6'}`,
+                  borderBottom:
+                    activeEmailTab === 'outbox'
+                      ? 'none'
+                      : `1px solid ${darkMode ? '#2b3b50' : '#dee2e6'}`,
+                }}
+              >
+                <FaInbox className="me-2" />
+                Outbox
+              </NavLink>
+            </NavItem>
+          </Nav>
+
+          {/* Tab Content */}
+          <TabContent activeTab={activeEmailTab}>
+            <TabPane tabId="send">
+              <div
+                className="email-content-area"
+                role="tabpanel"
+                aria-labelledby="email-sender-tab"
+                id="email-sender-panel"
+                aria-live="polite"
+              >
+                <ErrorBoundary>
+                  <IntegratedEmailSender
+                    key="sender"
+                    initialContent={initialEmail || ''}
+                    initialSubject={title || ''}
+                  />
+                </ErrorBoundary>
+              </div>
+            </TabPane>
+
+            <TabPane tabId="outbox">
+              <div
+                className="email-content-area"
+                role="tabpanel"
+                aria-labelledby="email-outbox-tab"
+                id="email-outbox-panel"
+                aria-live="polite"
+              >
+                <ErrorBoundary>
+                  <EmailOutbox key="outbox" />
+                </ErrorBoundary>
+              </div>
+            </TabPane>
+          </TabContent>
         </div>
       </div>
     );
   }
 
+  // Default fallback - should never reach here
   return (
     <div className={`email-update-container ${darkMode ? 'dark-mode' : 'light-mode'}`}>
-      {navigationError && <ErrorDisplay error={navigationError} />}
       <div
         className="email-content-area"
         role="tabpanel"

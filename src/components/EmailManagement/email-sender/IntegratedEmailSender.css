@@ -1,8 +1,30 @@
 /* Enhanced Email Sender Styles */
 
+/* Main Email Sender Container - Add padding */
+.email-sender {
+  padding: 0 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Page Title - Better styling */
+.email-sender .page-title-container {
+  margin-bottom: 1.5rem;
+  padding-left: 0.5rem;
+}
+
+.email-sender .page-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #343a40;
+  margin: 0;
+}
+
 /* Email Controls Container */
 .email-controls-container {
   width: 100%;
+  margin-bottom: 2rem;
+  padding: 0 0.5rem;
 }
 
 .email-controls-row {
@@ -281,11 +303,57 @@
 
 /* Template Variables */
 .template-variables {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
 }
 
 .variables-header {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.variables-header h6 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #343a40;
+  margin: 0;
+}
+
+/* Table Improvements */
+.template-variables .table {
+  margin-bottom: 0;
+  background: white;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.template-variables .table thead th {
+  background: #e9ecef;
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.85rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.template-variables .table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.template-variables .table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.template-variables .table tbody td {
+  padding: 1rem 0.85rem;
+  vertical-align: middle;
+  border-color: #e9ecef;
 }
 
 /* Empty Variables State */
@@ -297,29 +365,39 @@
 }
 
 .variable-label {
-  font-weight: 500;
-  color: #495057;
-  margin-bottom: 0.5rem;
-  display: block;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.95rem;
 }
 
 .variable-input {
   width: 100%;
   border-radius: 6px;
-  border: 1px solid #ced4da;
-  padding: 0.5rem 0.75rem;
+  border: 1.5px solid #ced4da;
+  padding: 0.65rem 0.85rem;
   font-size: 0.9rem;
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: all 0.2s ease;
+  background: white;
 }
 
 .variable-input:focus {
   border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+  outline: none;
+}
+
+.variable-input:hover:not(:focus) {
+  border-color: #adb5bd;
 }
 
 .variable-textarea {
   min-height: 100px;
   resize: vertical;
+  font-family: inherit;
 }
 
 /* Editor Container */
@@ -448,6 +526,10 @@
 
 /* Responsive Design */
 @media (max-width: 992px) and (min-width: 769px) {
+  .email-sender {
+    padding: 0 1.5rem;
+  }
+
   .email-controls-row {
     gap: 0.75rem;
   }
@@ -461,6 +543,10 @@
 }
 
 @media (max-width: 768px) {
+  .email-sender {
+    padding: 0 1rem;
+  }
+
   .email-controls-row {
     flex-direction: column;
     align-items: stretch;
@@ -475,6 +561,7 @@
   .distribution-options {
     flex-direction: column;
     gap: 0.75rem;
+    padding-left: 0;
   }
 
   .distribution-option {
@@ -517,6 +604,20 @@
 /* Dark Mode Support */
 .dark-mode .email-controls-container {
   color: #e2e8f0;
+}
+
+.dark-mode .email-sender .page-title {
+  color: #e2e8f0;
+}
+
+/* Variable Type Badges */
+.template-variables .badge {
+  padding: 0.35rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .dark-mode .mode-buttons .btn-outline-primary {
@@ -569,16 +670,52 @@
   box-shadow: 0 0 0 0.2rem rgba(99, 179, 237, 0.25);
 }
 
+.dark-mode .template-variables {
+  background: #1a202c;
+  border-color: #2d3748;
+}
+
+.dark-mode .variables-header {
+  border-bottom-color: #4a5568;
+}
+
+.dark-mode .variables-header h6 {
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .table {
+  background: #2d3748;
+}
+
 .dark-mode .template-variables .table thead th {
   background: #4a5568;
   color: #e2e8f0;
   border-color: #718096;
 }
 
+.dark-mode .template-variables .table tbody tr:hover {
+  background-color: #374151;
+}
+
 .dark-mode .template-variables .table tbody td {
   background: #2d3748;
   color: #e2e8f0;
   border-color: #4a5568;
+}
+
+.dark-mode .template-variables .variable-input {
+  background: #374151;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.dark-mode .template-variables .variable-input:focus {
+  border-color: #63b3ed;
+  box-shadow: 0 0 0 0.2rem rgba(99, 179, 237, 0.15);
+}
+
+.dark-mode .template-variables .variable-input:hover:not(:focus) {
+  border-color: #718096;
 }
 
 .dark-mode .template-variables .form-control {
@@ -766,4 +903,181 @@
   background: #2c5aa0 !important;
   border-color: #2c5aa0 !important;
   color: white !important;
+}
+
+/* ========================================
+   IMPROVED FORM STYLING
+   ======================================== */
+
+/* Main Form Container - Add consistent padding */
+.email-sender form {
+  padding: 0 0.5rem;
+}
+
+/* Form Groups - Better spacing */
+.email-sender .form-group {
+  margin-bottom: 2rem;
+  padding: 0;
+}
+
+/* Form Labels - Better typography and spacing */
+.email-sender .form-label,
+.email-sender label {
+  font-weight: 600;
+  color: #343a40;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  display: block;
+  padding-left: 0.25rem;
+}
+
+/* Select Template Dropdown - Enhanced */
+.email-sender .template-select {
+  font-size: 0.95rem;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  border: 1.5px solid #ced4da;
+  transition: all 0.2s ease;
+  color: #495057;
+  font-weight: 500;
+  width: 100%;
+  height: auto;
+  min-height: 45px;
+  line-height: 1.5;
+  appearance: none;
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 12px;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: ellipsis;
+}
+
+.email-sender .template-select option {
+  color: #212529;
+  font-weight: 400;
+  padding: 0.5rem;
+}
+
+.email-sender .template-select:hover:not(:disabled) {
+  border-color: #adb5bd;
+}
+
+/* Template Selection Container - Add padding */
+.email-sender .template-selection-container {
+  padding: 0;
+}
+
+/* Email Distribution Section - Enhanced with padding */
+.email-sender .distribution-options {
+  padding-left: 0.25rem;
+}
+
+.email-sender .distribution-option {
+  padding: 0.85rem 1.5rem;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.email-sender .distribution-option:hover {
+  border-color: #007bff;
+  background: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.email-sender .distribution-option.selected {
+  border-color: #007bff;
+  background: #e7f3ff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+}
+
+/* Recipients Textarea - Enhanced with more padding */
+.email-sender textarea.form-control {
+  border: 1.5px solid #ced4da;
+  border-radius: 6px;
+  padding: 0.75rem;
+  padding-bottom: 3rem;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  line-height: 1.6;
+  min-height: 120px;
+}
+
+.email-sender textarea.form-control:hover:not(:focus) {
+  border-color: #adb5bd;
+}
+
+.email-sender textarea.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+}
+
+.email-sender textarea.form-control::placeholder {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+/* Form Section Titles - Better styling */
+.email-sender h6,
+.email-sender .section-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #343a40;
+  margin-bottom: 0.75rem;
+}
+
+/* Info Text - Better styling */
+.email-sender .template-info,
+.email-sender small.text-muted {
+  font-size: 0.8rem;
+  color: #6c757d;
+  display: block;
+  margin-top: 0.5rem;
+}
+
+/* Dark Mode for Form Improvements */
+.email-sender.dark-mode .form-label,
+.email-sender.dark-mode label {
+  color: #e2e8f0;
+}
+
+.email-sender.dark-mode .template-select {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-sender.dark-mode .template-select option {
+  background: #2d3748;
+  color: #e2e8f0;
+}
+
+.email-sender.dark-mode .template-select:hover:not(:disabled) {
+  border-color: #718096;
+}
+
+.email-sender.dark-mode textarea.form-control {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #e2e8f0;
+}
+
+.email-sender.dark-mode textarea.form-control:hover:not(:focus) {
+  border-color: #718096;
+}
+
+.email-sender.dark-mode textarea.form-control::placeholder {
+  color: #a0aec0;
+}
+
+.email-sender.dark-mode .distribution-option {
+  border-color: #4a5568;
+}
+
+.email-sender.dark-mode .distribution-option.selected {
+  background: #2b6cb0;
+  border-color: #63b3ed;
 }
