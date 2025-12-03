@@ -13,19 +13,21 @@ const MOCK_ANALYTICS_DATA = {
   completionChange: 3.1,
   totalStudents: 245,
   studentGrowth: 12,
+  activeStudents: 198,
+  activeChange: 8,
   topStudents: [
-    { id: 1, name: 'Alex Johnson', score: 95.8 },
-    { id: 2, name: 'Maria Garcia', score: 94.2 },
-    { id: 3, name: 'James Wilson', score: 92.5 },
-    { id: 4, name: 'Sarah Ahmed', score: 91.0 },
-    { id: 5, name: 'Michael Chen', score: 89.7 },
+    { id: 1, name: 'Alex Johnson', score: 95.8, avatar: 'AJ', trend: 2.5 },
+    { id: 2, name: 'Maria Garcia', score: 94.2, avatar: 'MG', trend: 1.8 },
+    { id: 3, name: 'James Wilson', score: 92.5, avatar: 'JW', trend: -0.5 },
+    { id: 4, name: 'Sarah Ahmed', score: 91.0, avatar: 'SA', trend: 3.2 },
+    { id: 5, name: 'Michael Chen', score: 89.7, avatar: 'MC', trend: 1.1 },
   ],
   topSubjects: [
-    { id: 'math', name: 'Mathematics', averageScore: 88 },
-    { id: 'english', name: 'English Literature', averageScore: 82 },
-    { id: 'science', name: 'Science', averageScore: 85 },
-    { id: 'history', name: 'History', averageScore: 79 },
-    { id: 'cs', name: 'Computer Science', averageScore: 91 },
+    { id: 'cs', name: 'Computer Science', averageScore: 91, color: '#3b82f6', students: 45 },
+    { id: 'math', name: 'Mathematics', averageScore: 88, color: '#8b5cf6', students: 52 },
+    { id: 'science', name: 'Science', averageScore: 85, color: '#06b6d4', students: 48 },
+    { id: 'english', name: 'English Literature', averageScore: 82, color: '#10b981', students: 50 },
+    { id: 'history', name: 'History', averageScore: 79, color: '#f59e0b', students: 42 },
   ],
 };
 
@@ -45,6 +47,7 @@ const InsightsWidget = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [animateIn, setAnimateIn] = useState(false);
   const MAX_RETRIES = 3;
 
   const fetchAnalyticsOverview = useCallback(async () => {
@@ -66,6 +69,7 @@ const InsightsWidget = () => {
 
       setMetrics(mockData);
       setRetryCount(0);
+      setTimeout(() => setAnimateIn(true), 100);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
       setError(errorMessage);
@@ -94,14 +98,18 @@ const InsightsWidget = () => {
 
   if (loading) {
     return (
-      <div className={`${styles.loading} ${darkMode ? styles.dark : ''}`}>Loading insights...</div>
+      <div className={`${styles.loading} ${darkMode ? styles.dark : ''}`}>
+        <div className={styles.spinner}></div>
+        <p>Loading insights...</p>
+      </div>
     );
   }
 
   if (error) {
     return (
       <div className={`${styles.error} ${darkMode ? styles.darkError : ''}`}>
-        <p>Error: {error}</p>
+        <div className={styles.errorIcon}>⚠️</div>
+        <p className={styles.errorMessage}>Error: {error}</p>
         {retryCount < MAX_RETRIES && (
           <p className={styles.retryInfo}>
             Retry attempt {retryCount} of {MAX_RETRIES}
@@ -115,6 +123,7 @@ const InsightsWidget = () => {
           }}
           aria-label="Retry loading analytics"
         >
+          <span className={styles.retryIcon}>↻</span>
           Retry
         </button>
       </div>
@@ -124,8 +133,35 @@ const InsightsWidget = () => {
   if (!sortedMetrics) return null;
 
   return (
-    <div className={`${styles.insightsContainer} ${darkMode ? styles.dark : ''}`}>
-      <h2 className={styles.title}>Key Insights</h2>
+    <div
+      className={`${styles.insightsContainer} ${darkMode ? styles.dark : ''} ${
+        animateIn ? styles.fadeIn : ''
+      }`}
+    >
+      <div className={styles.header}>
+        <div>
+          <h2 className={styles.title}>
+            <span className={styles.titleIcon}>📊</span>
+            Key Insights
+          </h2>
+          <p className={styles.subtitle}>Real-time analytics and performance metrics</p>
+        </div>
+        <button
+          className={styles.refreshButton}
+          onClick={fetchAnalyticsOverview}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fetchAnalyticsOverview();
+            }
+          }}
+          title="Refresh data"
+          aria-label="Refresh analytics data"
+          type="button"
+        >
+          <span className={styles.refreshIcon}>↻</span>
+        </button>
+      </div>
 
       <div className={styles.metricsGrid}>
         <MetricCard
@@ -133,6 +169,8 @@ const InsightsWidget = () => {
           value={sortedMetrics.averageScore}
           trend={sortedMetrics.scoreChange}
           unit="%"
+          icon="📈"
+          color="#3b82f6"
           darkMode={darkMode}
         />
         <MetricCard
@@ -140,29 +178,53 @@ const InsightsWidget = () => {
           value={sortedMetrics.completionRate}
           trend={sortedMetrics.completionChange}
           unit="%"
+          icon="✓"
+          color="#10b981"
           darkMode={darkMode}
         />
         <MetricCard
           label="Total Students"
           value={sortedMetrics.totalStudents}
           trend={sortedMetrics.studentGrowth}
+          icon="👥"
+          color="#8b5cf6"
+          isCount
+          darkMode={darkMode}
+        />
+        <MetricCard
+          label="Active Students"
+          value={sortedMetrics.activeStudents}
+          trend={sortedMetrics.activeChange}
+          icon="🎯"
+          color="#f59e0b"
           isCount
           darkMode={darkMode}
         />
       </div>
 
-      {sortedMetrics.topStudents && sortedMetrics.topStudents.length > 0 && (
-        <TopPerformersSection students={sortedMetrics.topStudents} darkMode={darkMode} />
-      )}
+      <div className={styles.sectionsGrid}>
+        {sortedMetrics.topStudents && sortedMetrics.topStudents.length > 0 && (
+          <TopPerformersSection students={sortedMetrics.topStudents} darkMode={darkMode} />
+        )}
 
-      {sortedMetrics.topSubjects && sortedMetrics.topSubjects.length > 0 && (
-        <TopSubjectsSection subjects={sortedMetrics.topSubjects} darkMode={darkMode} />
-      )}
+        {sortedMetrics.topSubjects && sortedMetrics.topSubjects.length > 0 && (
+          <TopSubjectsSection subjects={sortedMetrics.topSubjects} darkMode={darkMode} />
+        )}
+      </div>
     </div>
   );
 };
 
-const MetricCard = ({ label, value, trend, unit = '', isCount = false, darkMode = false }) => {
+const MetricCard = ({
+  label,
+  value,
+  trend,
+  unit = '',
+  icon,
+  color,
+  isCount = false,
+  darkMode = false,
+}) => {
   if (!label || value === null || value === undefined) {
     return null;
   }
@@ -175,10 +237,16 @@ const MetricCard = ({ label, value, trend, unit = '', isCount = false, darkMode 
       className={`${styles.metricCard} ${darkMode ? styles.darkMetricCard : ''}`}
       role="region"
       aria-label={label}
+      style={{ '--accent-color': color }}
     >
-      <div className={styles.metricLabel}>{label}</div>
+      <div className={styles.metricHeader}>
+        <div className={styles.iconWrapper} style={{ background: `${color}15` }}>
+          <span className={styles.metricIcon}>{icon}</span>
+        </div>
+        <div className={styles.metricLabel}>{label}</div>
+      </div>
       <div className={styles.metricValue}>
-        {isCount ? value : value.toFixed(2)}
+        {isCount ? value.toLocaleString() : value.toFixed(1)}
         {unit && <span className={styles.unit}>{unit}</span>}
       </div>
       <div className={`${styles.metricTrend} ${trendClass}`}>
@@ -186,8 +254,8 @@ const MetricCard = ({ label, value, trend, unit = '', isCount = false, darkMode 
           {isTrendPositive ? '↑' : '↓'}
         </span>
         <span className={styles.trendValue}>
-          {Math.abs(trend).toFixed(2)}
-          {unit}
+          {Math.abs(trend).toFixed(1)}
+          {isCount ? '' : unit}
         </span>
         <span className={styles.trendLabel}>vs last month</span>
       </div>
@@ -201,15 +269,33 @@ const TopPerformersSection = ({ students, darkMode = false }) => (
     role="region"
     aria-label="Top performing students"
   >
-    <h3 className={styles.sectionTitle}>Top Performing Students</h3>
+    <h3 className={styles.sectionTitle}>
+      <span className={styles.sectionIcon}>🏆</span>
+      Top Performing Students
+    </h3>
     <ul className={styles.performersList}>
-      {students.map(student => (
+      {students.map((student, index) => (
         <li
           key={student.id}
           className={`${styles.performerItem} ${darkMode ? styles.darkPerformerItem : ''}`}
+          style={{ '--index': index }}
         >
-          <span className={styles.name}>{student.name}</span>
-          <span className={styles.score}>{student.score.toFixed(2)}</span>
+          <div className={styles.performerRank}>
+            <span className={`${styles.rankBadge} ${styles[`rank${index + 1}`]}`}>{index + 1}</span>
+          </div>
+          <div className={styles.performerAvatar}>{student.avatar}</div>
+          <div className={styles.performerInfo}>
+            <span className={styles.performerName}>{student.name}</span>
+            <div className={styles.performerTrend}>
+              <span className={student.trend > 0 ? styles.trendUp : styles.trendDown}>
+                {student.trend > 0 ? '↑' : '↓'} {Math.abs(student.trend).toFixed(1)}%
+              </span>
+            </div>
+          </div>
+          <div className={styles.performerScore}>
+            <span className={styles.scoreValue}>{student.score.toFixed(1)}</span>
+            <span className={styles.scoreLabel}>Score</span>
+          </div>
         </li>
       ))}
     </ul>
@@ -222,28 +308,39 @@ const TopSubjectsSection = ({ subjects, darkMode = false }) => (
     role="region"
     aria-label="Top performing subjects"
   >
-    <h3 className={styles.sectionTitle}>Top Subjects</h3>
+    <h3 className={styles.sectionTitle}>
+      <span className={styles.sectionIcon}>📚</span>
+      Top Subjects by Performance
+    </h3>
     <ul className={styles.subjectsList}>
-      {subjects.map(subject => (
+      {subjects.map((subject, index) => (
         <li
           key={subject.id}
           className={`${styles.subjectItem} ${darkMode ? styles.darkSubjectItem : ''}`}
+          style={{ '--index': index, '--subject-color': subject.color }}
         >
-          <span className={styles.subjectName}>{subject.name}</span>
-          <div
-            className={styles.progressBar}
-            role="progressbar"
-            aria-valuenow={subject.averageScore}
-            aria-valuemin="0"
-            aria-valuemax="100"
-            style={{ background: darkMode ? '#404040' : '#e9ecef' }}
-          >
-            <div
-              className={styles.progressFill}
-              style={{ width: `${Math.min(subject.averageScore, 100)}%` }}
-            />
+          <div className={styles.subjectHeader}>
+            <span className={styles.subjectName}>{subject.name}</span>
+            <span className={styles.subjectStudents}>{subject.students} students</span>
           </div>
-          <span className={styles.percentage}>{subject.averageScore.toFixed(1)}%</span>
+          <div className={styles.progressBarContainer}>
+            <div
+              className={styles.progressBar}
+              role="progressbar"
+              aria-valuenow={subject.averageScore}
+              aria-valuemin="0"
+              aria-valuemax="100"
+            >
+              <div
+                className={styles.progressFill}
+                style={{
+                  width: `${Math.min(subject.averageScore, 100)}%`,
+                  background: subject.color,
+                }}
+              />
+            </div>
+            <span className={styles.percentage}>{subject.averageScore.toFixed(1)}%</span>
+          </div>
         </li>
       ))}
     </ul>
