@@ -465,6 +465,18 @@ export const ENDPOINTS = {
   PROMOTION_ELIGIBILITY: `${APIEndpoint}/promotion-eligibility`,
   PROMOTE_MEMBERS: `${APIEndpoint}/promote-members`,
 
+  // Collaboration - Job Ads endpoints
+  JOBS: `${APIEndpoint}/jobs`,
+  JOB_CATEGORIES: `${APIEndpoint}/jobs/categories`,
+  JOB_POSITIONS: `${APIEndpoint}/jobs/positions`,
+
+  // Collaboration - Jobforms endpoints
+  JOBFORMS_RESPONSES: `${APIEndpoint}/jobforms/responses`,
+  
+  // Collaboration - Jobforms Upload endpoints
+  JOBFORMS_RESPONSES_UPLOAD: `${APIEndpoint}/jobforms/responses/upload`,
+  
+
 
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
