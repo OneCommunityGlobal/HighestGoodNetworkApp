@@ -1,7 +1,18 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
-import { Form, FormGroup, Input, Label, Button, FormFeedback } from 'reactstrap';
+// import { Form, FormGroup, Input, Label, Button, FormFeedback } from 'reactstrap';
+
+import {
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Button,
+  FormFeedback,
+  InputGroup,
+  InputGroupText,
+} from 'reactstrap';
 import Joi from 'joi-browser';
 import { loginBMUser } from '~/actions/authActions';
 import styles from './Login.module.css';
@@ -13,6 +24,8 @@ function LBLogin(props) {
   const location = useLocation();
   const [enteredEmail, setEnteredEmail] = useState('');
   const [enterPassword, setEnteredPassword] = useState('');
+
+  const [showPassword, setShowPassword] = useState(false);
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
 
@@ -101,7 +114,7 @@ function LBLogin(props) {
                   <FormFeedback>{validationError.message}</FormFeedback>
                 )}
               </FormGroup>
-              <FormGroup>
+              {/* <FormGroup>
                 <Label for="password">Password</Label>
                 <Input
                   id="password"
@@ -114,7 +127,41 @@ function LBLogin(props) {
                 {validationError && validationError.label === 'password' && (
                   <FormFeedback>{validationError.message}</FormFeedback>
                 )}
+              </FormGroup> */}
+
+              <FormGroup>
+                <Label for="password">Password</Label>
+                <InputGroup>
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    invalid={validationError && validationError.label === 'password'}
+                    onChange={handleChange}
+                    value={enterPassword}
+                    autoComplete="current-password"
+                    aria-describedby="password-visibility-help"
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => setShowPassword(p => !p)}
+                    outline
+                    color="secondary"
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    aria-pressed={showPassword}
+                  >
+                    {showPassword ? 'Hide' : 'Show'}
+                  </Button>
+                </InputGroup>
+                <small id="password-visibility-help" className="text-muted">
+                  Use the button to {showPassword ? 'hide' : 'show'} your password.
+                </small>
+                {validationError && validationError.label === 'password' && (
+                  <FormFeedback className="d-block">{validationError.message}</FormFeedback>
+                )}
               </FormGroup>
+
               <Button disabled={!enteredEmail || !enterPassword}>Login</Button>
             </Form>
           </div>
