@@ -672,7 +672,7 @@ function LeaderBoard({
               </div>
             </Alert>
           )}
-          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y mb-5">
             <div className="search-container mx-1">
               <input
                 className={`form-control col-12 mb-2 ${
@@ -689,6 +689,7 @@ function LeaderBoard({
               className={`leaderboard table-fixed ${
                 darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
               } ${isAbbreviatedView ? 'abbreviated-mode' : ''}`}
+              style={{ minWidth: '500px' }}
             >
               <thead className="responsive-font-size">
                 <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
