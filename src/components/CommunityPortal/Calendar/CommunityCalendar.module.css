@@ -125,6 +125,8 @@
   overflow: auto;
   height: -webkit-fill-available;
   border: 1px solid #000000;
+  border: 1px solid #555454;
+  box-sizing: border-box;
 }
 
 .reactCalendar :global(.react-calendar__navigation) {
@@ -137,23 +139,16 @@
   display: grid;
   height: 100px;
   background: 1px solid #ddd;
-  transition: background 0.3s, border-color 0.3s;
   overflow: hidden;
+  border: 1px solid #dee2e6 !important;
+  box-sizing: border-box;
+  transition: background 0.3s, border-color 0.3s ease;
 }
+
+
 .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
   color: #FFFFFF;
-}
-
-.reactCalendar :global(.react-calendar__tile) {
-  border: 1px solid #dee2e6 !important;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease;
-}
-
-.reactCalendar :global(.react-calendar__month-view__days__day) {
-  border: 1px solid #555454;
-  box-sizing: border-box;
 }
 
 .reactCalendar :global(.react-calendar__tile):hover {
@@ -161,13 +156,21 @@
   border-color: #999;
 }
 
-
+.reactCalendarDarkMode :global(.react-calendar__tile):hover {
+  background-color: #3A506B;
+  color: #FFFFFF;
+  border-color: #666;
+}
 
 .reactCalendar :global(.react-calendar__tile) .tileEvents {
   font-size: 0.9rem;
   color: #555;
   margin-top: 8px;
   line-height: 1.2;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile) .tileEvents {
+  color: #ffffff;
 }
 
 .reactCalendar :global(.react-calendar__tile) .eventItem {
@@ -178,6 +181,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem {
+  background-color: #266497;
 }
 
 .eventDetails {
@@ -573,18 +580,9 @@
   transform: translateY(-1px);
 }
 
-/* Enhanced dark mode modal styling */
-.eventModalDark {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-}
-
 .eventModalDark .modalHeader,
 .eventModalDark .modalActions {
   background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-}
-
-.eventModalDark .modalContent {
-  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
 }
 
 /* Better dark mode contrast for all text elements */
@@ -663,10 +661,6 @@
   color: #fff;
 }
 
-.reactCalendarDarkMode :global(.react-calendar__tile) {
-  background: transparent;
-  color: #FFFFFF;
-}
 .reactCalendarDarkMode :global(.react-calendar__tile--active) {
   background: #444;
   color: #fff;
