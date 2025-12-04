@@ -142,21 +142,19 @@ function LBLogin(props) {
                     autoComplete="current-password"
                     aria-describedby="password-visibility-help"
                   />
-                  <Button
-                    type="button"
-                    onClick={() => setShowPassword(p => !p)}
-                    outline
-                    color="secondary"
+                  <InputGroupText
+                    onClick={() => setShowPassword(prev => !prev)}
+                    style={{
+                      cursor: 'pointer',
+                      background: 'transparent',
+                      borderLeft: 'none',
+                    }}
                     title={showPassword ? 'Hide password' : 'Show password'}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    aria-pressed={showPassword}
                   >
-                    {showPassword ? 'Hide' : 'Show'}
-                  </Button>
+                    <i className={showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'} />
+                  </InputGroupText>
                 </InputGroup>
-                <small id="password-visibility-help" className="text-muted">
-                  Use the button to {showPassword ? 'hide' : 'show'} your password.
-                </small>
+
                 {validationError && validationError.label === 'password' && (
                   <FormFeedback className="d-block">{validationError.message}</FormFeedback>
                 )}
