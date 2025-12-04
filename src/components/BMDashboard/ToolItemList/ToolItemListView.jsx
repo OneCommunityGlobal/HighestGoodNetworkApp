@@ -5,6 +5,7 @@ import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
 import ToolItemsTable from './ToolItemsTable';
 import styles from './ToolItemListView.module.css';
+import { set } from 'lodash';
 
 export function ToolItemListView({
   itemType,
@@ -16,6 +17,8 @@ export function ToolItemListView({
   const [filteredItems, setFilteredItems] = useState(items);
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
+  const [selectedToolStatus, setSelectedToolStatus] = useState('all');
+  const [selectedCondition, setSelectedCondition] = useState('all');
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
@@ -23,23 +26,36 @@ export function ToolItemListView({
   }, [items]);
 
   useEffect(() => {
-    let filterItems;
     if (!items) return;
-    if (selectedProject === 'all' && selectedItem === 'all') {
-      setFilteredItems([...items]);
-    } else if (selectedProject !== 'all' && selectedItem === 'all') {
-      filterItems = items.filter(item => item.project?.name === selectedProject);
-      setFilteredItems([...filterItems]);
-    } else if (selectedProject === 'all' && selectedItem !== 'all') {
-      filterItems = items.filter(item => item.itemType?.name === selectedItem);
-      setFilteredItems([...filterItems]);
-    } else {
-      filterItems = items.filter(
-        item => item.project?.name === selectedProject && item.itemType?.name === selectedItem,
-      );
-      setFilteredItems([...filterItems]);
+
+    let filterItems = [...items];
+
+    if (selectedProject !== 'all') {
+      filterItems = filterItems.filter(item => item.project?.name === selectedProject);
     }
-  }, [selectedProject, selectedItem, items]);
+
+    if (selectedItem !== 'all') {
+      filterItems = filterItems.filter(item => item.itemType?.name === selectedItem);
+    }
+
+    if (selectedToolStatus !== 'all') {
+      filterItems = filterItems.filter(item => {
+        if (selectedToolStatus === 'Using') return item.using === true;
+        if (selectedToolStatus === 'Available') return item.available === true;
+        if (selectedToolStatus === 'Under Maintenance') {
+          // UPDATE LOGIC TO MATCH THE CONDITIONS
+          return !item.using && !item.available;
+        }
+        return true;
+      });
+    }
+
+    if (selectedCondition !== 'all') {
+      filterItems = filterItems.filter(item => item.condition === selectedCondition);
+    }
+
+    setFilteredItems(filterItems);
+  }, [items, selectedProject, selectedItem, selectedToolStatus, selectedCondition]);
 
   useEffect(() => {
     setIsError(Object.entries(errors).length > 0);
@@ -64,13 +80,41 @@ export function ToolItemListView({
                 items={items}
                 setSelectedProject={setSelectedProject}
                 setSelectedItem={setSelectedItem}
+                setSelectedCondition={setSelectedCondition}
+                setSelectedToolStatus={setSelectedToolStatus}
               />
               <SelectItem
                 items={items}
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                selectedToolStatus={selectedToolStatus}
+                setSelectedToolStatus={setSelectedToolStatus}
+                selectedCondition={selectedCondition}
+                setSelectedCondition={setSelectedCondition}
                 label="Tool"
+              />
+              <SelectItem
+                items={items}
+                selectedProject={selectedProject}
+                selectedItem={selectedItem}
+                setSelectedItem={setSelectedItem}
+                selectedToolStatus={selectedToolStatus}
+                setSelectedToolStatus={setSelectedToolStatus}
+                selectedCondition={selectedCondition}
+                setSelectedCondition={setSelectedCondition}
+                label="Tool Status"
+              />
+              <SelectItem
+                items={items}
+                selectedProject={selectedProject}
+                selectedItem={selectedItem}
+                setSelectedItem={setSelectedItem}
+                selectedToolStatus={selectedToolStatus}
+                setSelectedToolStatus={setSelectedToolStatus}
+                selectedCondition={selectedCondition}
+                setSelectedCondition={setSelectedCondition}
+                label="Condition"
               />
             </>
           )}
@@ -79,6 +123,8 @@ export function ToolItemListView({
           <ToolItemsTable
             selectedProject={selectedProject}
             selectedItem={selectedItem}
+            selectedToolStatus={selectedToolStatus}
+            selectedCondition={selectedCondition}
             filteredItems={filteredItems}
             UpdateItemModal={UpdateItemModal}
             dynamicColumns={dynamicColumns}

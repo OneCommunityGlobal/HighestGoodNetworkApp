@@ -9,6 +9,8 @@ import styles from './ToolItemListView.module.css';
 export default function ToolItemsTable({
   selectedProject,
   selectedItem,
+  selectedToolStatus,
+  selectedCondition,
   filteredItems,
   UpdateItemModal,
   dynamicColumns,
@@ -93,7 +95,7 @@ export default function ToolItemsTable({
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       <div className={`${styles.itemsTableContainer}`}>
-        <Table>
+        <Table className={`${styles.itemsTable}`}>
           <thead>
             <tr>
               {selectedProject === 'all' ? (

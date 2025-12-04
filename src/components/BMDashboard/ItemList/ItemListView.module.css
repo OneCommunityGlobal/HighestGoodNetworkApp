@@ -24,6 +24,10 @@
   height: 2rem;
 }
 
+.itemsCell td{
+  vertical-align: middle;
+}
+
 .itemsCell button {
   cursor: pointer;
 }
@@ -52,8 +56,7 @@
 
 .selectInput label {
   font-weight: bold;
-  text-align: right;
-  min-width: 100px;
+  text-align: center;
   white-space: nowrap;
   margin-bottom: 8px;
 }
@@ -62,7 +65,7 @@
 .selectInput select {
   height: 38px;
   width: 100%;
-  min-width: 220px;
+  min-width: 180px;
   max-width: 240px;
   padding: 5px;
   border: 1px solid #ccc;
