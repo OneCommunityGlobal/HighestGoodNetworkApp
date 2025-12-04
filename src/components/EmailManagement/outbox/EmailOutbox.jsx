@@ -69,8 +69,6 @@ const EmailOutbox = ({ isActive = true }) => {
   const [statusFilter, setStatusFilter] = useState(null); // null means show all
 
   // Dynamic refresh state
-
-  // Dynamic refresh state
   const [refreshState, setRefreshState] = useState({
     isRefreshing: false,
     lastRefresh: null,
@@ -190,8 +188,6 @@ const EmailOutbox = ({ isActive = true }) => {
   }, [processingPending, currentUser, fetchData]);
 
   // Background sync for auto-refresh
-
-  // Background sync for auto-refresh
   const startBackgroundSync = useCallback(() => {
     if (refreshIntervalRef.current) {
       clearInterval(refreshIntervalRef.current);
@@ -205,9 +201,6 @@ const EmailOutbox = ({ isActive = true }) => {
   }, [fetchData, refreshState.autoRefresh, refreshState.refreshInterval]);
 
   // Initial load
-  // DISABLED:   useEffect(() => {
-  // DISABLED:     fetchData(false);
-  // DISABLED:   }, [fetchData]);
   // Fetch data when component becomes active (tab switched)
   useEffect(() => {
     if (isActive) {
@@ -215,8 +208,6 @@ const EmailOutbox = ({ isActive = true }) => {
     }
   }, [isActive, fetchData]);
 
-  // HOTFIX: Force loading to complete if we have emails
-  // This is a temporary fix until the Redux reducer is fixed
   const [localLoading, setLocalLoading] = React.useState(true);
 
   useEffect(() => {
