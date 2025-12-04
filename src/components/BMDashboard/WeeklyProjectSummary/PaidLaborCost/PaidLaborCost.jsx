@@ -9,7 +9,6 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { v4 as uuidv4 } from 'uuid';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -18,6 +17,8 @@ import styles from './PaidLaborCost.module.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import logger from '../../../../services/logService';
+import config from '../../../../config.json';
+import { ENDPOINTS } from '../../../../utils/URL';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -50,47 +51,20 @@ const isValidISODate = dateString => {
   return moment(dateString).isValid();
 };
 
-// Sample data (cost in dollars) - Used as fallback when API is unavailable
-const mockData = [
-  { project: 'Project A', task: 'Task 1', date: '2025-04-01', cost: 5000 },
-  { project: 'Project A', task: 'Task 2', date: '2025-04-02', cost: 3000 },
-  { project: 'Project A', task: 'Task 3', date: '2025-04-03', cost: 12000 },
-  { project: 'Project A', task: 'Task 4', date: '2025-04-04', cost: 48000 },
-  { project: 'Project A', task: 'Task 5', date: '2025-04-04', cost: 18000 },
-  { project: 'Project A', task: 'Task 6', date: '2025-04-04', cost: 82000 },
-  { project: 'Project A', task: 'Task 7', date: '2025-04-04', cost: 48000 },
-  { project: 'Project A', task: 'Task 8', date: '2025-04-04', cost: 28000 },
-  { project: 'Project A', task: 'Task 9', date: '2025-04-04', cost: 87000 },
-  { project: 'Project A', task: 'Task 10', date: '2025-04-04', cost: 88000 },
-  { project: 'Project A', task: 'Task 11', date: '2025-04-04', cost: 180900 },
-  { project: 'Project A', task: 'Task 12', date: '2025-04-04', cost: 280000 },
-  { project: 'Project A', task: 'Task 13', date: '2025-04-04', cost: 480050 },
-  { project: 'Project A', task: 'Task 14', date: '2025-04-04', cost: 68000 },
-  { project: 'Project A', task: 'Task 15', date: '2025-04-04', cost: 80500 },
-  { project: 'Project A', task: 'Task 16', date: '2025-04-04', cost: 80400 },
-  { project: 'Project A', task: 'Task 17', date: '2025-04-04', cost: 680360 },
-  { project: 'Project A', task: 'Task 18', date: '2025-04-04', cost: 80600 },
-  { project: 'Project A', task: 'Task 19', date: '2025-04-04', cost: 800230 },
-  { project: 'Project B', task: 'Task 20', date: '2025-04-02', cost: 100200 },
-  { project: 'Project B', task: 'Task 21', date: '2025-04-03', cost: 70200 },
-  { project: 'Project B', task: 'Task 22', date: '2025-04-04', cost: 215000 },
-  { project: 'Project B', task: 'Task 23', date: '2025-04-05', cost: 92000 },
-
-  { project: 'Project C', task: 'Task 1', date: '2025-04-03', cost: 25000 },
-  { project: 'Project C', task: 'Task 2', date: '2025-04-04', cost: 20000 },
-  { project: 'Project C', task: 'Task 3', date: '2025-04-05', cost: 18000 },
-  { project: 'Project C', task: 'Task 4', date: '2025-04-06', cost: 22000 },
-
-  { project: 'Project D', task: 'Task 1', date: '2025-04-04', cost: 4000 },
-  { project: 'Project D', task: 'Task 2', date: '2025-04-05', cost: 6000 },
-  { project: 'Project D', task: 'Task 3', date: '2025-04-06', cost: 14000 },
-  { project: 'Project D', task: 'Task 4', date: '2025-04-07', cost: 10000 },
-
-  { project: 'Project E', task: 'Task 1', date: '2025-04-05', cost: 8000 },
-  { project: 'Project E', task: 'Task 2', date: '2025-04-06', cost: 11000 },
-  { project: 'Project E', task: 'Task 3', date: '2025-04-07', cost: 9000 },
-  { project: 'Project E', task: 'Task 4', date: '2025-04-08', cost: 13000 },
-];
+/**
+ * Checks if the current environment is development
+ * @returns {boolean} True if running in development environment
+ */
+const isDevelopmentEnvironment = () => {
+  const hostname = window.location.hostname;
+  // Check if hostname contains 'dev' or 'localhost' or '127.0.0.1'
+  return (
+    hostname.includes('dev') ||
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    process.env.NODE_ENV === 'development'
+  );
+};
 
 /**
  * aggregateData:
@@ -214,8 +188,30 @@ export default function PaidLaborCost() {
     endDate: null,
   });
 
+  // State to store all available tasks (unfiltered by task filter)
+  // This is separate from data which contains filtered results for charting
+  const [allAvailableTasks, setAllAvailableTasks] = useState([]);
+
+  // State to store all available projects (unfiltered by project filter)
+  // This prevents circular dependency where options disappear after selection
+  const [allAvailableProjects, setAllAvailableProjects] = useState([]);
+
   // Ref to track if an API call is in progress to prevent race conditions
   const isFetchingRef = useRef(false);
+
+  // Apply global dark mode class for react-datepicker portal elements
+  // react-datepicker renders calendar in a portal, so it needs a global class
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('paid-labor-cost-dark-mode');
+    } else {
+      document.body.classList.remove('paid-labor-cost-dark-mode');
+    }
+
+    return () => {
+      document.body.classList.remove('paid-labor-cost-dark-mode');
+    };
+  }, [darkMode]);
 
   // API data fetching with fallback to mock data
   useEffect(() => {
@@ -255,19 +251,91 @@ export default function PaidLaborCost() {
           );
         }
 
-        // Build the URL with query string
+        // Build the URL with query string using the full API endpoint
         const queryString = params.toString();
-        const url = queryString ? `/api/labor-cost?${queryString}` : '/api/labor-cost';
+        const apiBaseUrl = ENDPOINTS.APIEndpoint();
+        const endpointPath = queryString
+          ? `${apiBaseUrl}/labor-cost?${queryString}`
+          : `${apiBaseUrl}/labor-cost`;
 
-        const response = await fetch(url, {
+        // Get JWT token from localStorage for authorization
+        const token = localStorage.getItem(config.tokenKey);
+
+        // Prepare headers with authorization and cache control
+        const headers = {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        };
+
+        if (token) {
+          headers.Authorization = token;
+        }
+
+        // Log request details for debugging
+        logger.logInfo(`Fetching labor cost data from: ${endpointPath}`);
+        logger.logInfo(
+          `Headers: ${JSON.stringify({ ...headers, Authorization: token ? '***' : 'none' })}`,
+        );
+
+        // Disable caching to prevent 304 responses
+        const fetchOptions = {
           method: 'GET',
-        });
+          headers,
+          cache: 'no-store', // Prevent browser from caching responses
+        };
+
+        let response = await fetch(endpointPath, fetchOptions);
+
+        // Log response status for debugging
+        logger.logInfo(`Response status: ${response.status} ${response.statusText}`);
+        logger.logInfo(`Response Content-Type: ${response.headers.get('Content-Type')}`);
+
+        // Handle 304 Not Modified - retry with cache-busting timestamp
+        if (response.status === 304) {
+          // 304 means cached, but fetch doesn't return body for 304
+          // Retry with cache-busting query parameter
+          const cacheBuster = `_t=${Date.now()}`;
+          const retryUrl = endpointPath.includes('?')
+            ? `${endpointPath}&${cacheBuster}`
+            : `${endpointPath}?${cacheBuster}`;
+          logger.logInfo(`Retrying with cache-busting URL: ${retryUrl}`);
+          response = await fetch(retryUrl, fetchOptions);
+        }
 
         if (!response.ok) {
+          const errorText = await response.text();
+          logger.logError(
+            new Error(
+              `API request failed with status ${response.status}. Response: ${errorText.substring(
+                0,
+                200,
+              )}`,
+            ),
+          );
           throw new Error(`API request failed with status ${response.status}`);
         }
 
+        // Check if response is actually JSON before parsing
+        const contentType = response.headers.get('Content-Type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const responseText = await response.text();
+          logger.logError(
+            new Error(
+              `Expected JSON response but got ${contentType}. Response preview: ${responseText.substring(
+                0,
+                200,
+              )}`,
+            ),
+          );
+          throw new Error(
+            `Invalid response type: expected JSON but got ${contentType ||
+              'unknown'}. This usually means the request was caught by the frontend router.`,
+          );
+        }
+
         const apiData = await response.json();
+        logger.logInfo(`Successfully fetched data: ${apiData.data?.length || 0} items`);
 
         // Validate response structure
         if (!apiData || typeof apiData !== 'object') {
@@ -302,14 +370,16 @@ export default function PaidLaborCost() {
         // Extract and set totalCost (handle 0 or undefined)
         const cost = typeof apiData.totalCost === 'number' ? apiData.totalCost : 0;
         setTotalCost(cost);
+
+        // Show toast in dev environment to indicate dev database has mock data
+        if (isDevelopmentEnvironment()) {
+          toast.info('Using mock data');
+        }
       } catch (error) {
-        toast.info('Error fetching data:', error);
-        // Fall back to mock data if API is unavailable
-        toast.info('Using mock data as fallback');
-        setData(mockData);
-        // Calculate total cost from mock data as fallback
-        const mockTotalCost = mockData.reduce((sum, item) => sum + item.cost, 0);
-        setTotalCost(mockTotalCost);
+        logger.logError(error);
+        toast.error('Error fetching data. Please try again later.');
+        setData([]);
+        setTotalCost(0);
       } finally {
         setLoading(false);
         isFetchingRef.current = false;
@@ -319,14 +389,164 @@ export default function PaidLaborCost() {
     fetchData();
   }, [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate]);
 
-  // Use mock data initially until API data is loaded
-  const currentData = data.length > 0 ? data : mockData;
+  // Fetch all available tasks (without task filter) to populate dropdown options
+  // This runs independently from the main data fetch and doesn't include task filter
+  useEffect(() => {
+    const fetchAllTasks = async () => {
+      try {
+        const params = new URLSearchParams();
+
+        // Only apply project and date filters, NOT task filter
+        // We want ALL tasks available for the dropdown options
+        if (projectFilter !== 'All Projects') {
+          params.append('projects', JSON.stringify([projectFilter]));
+        }
+
+        if (dateRange.startDate || dateRange.endDate) {
+          params.append(
+            'date_range',
+            JSON.stringify({
+              start_date: dateToISOString(dateRange.startDate),
+              end_date: dateToISOString(dateRange.endDate),
+            }),
+          );
+        }
+
+        // Don't add task filter - we want ALL tasks
+        const queryString = params.toString();
+        const apiBaseUrl = ENDPOINTS.APIEndpoint();
+        const endpointPath = queryString
+          ? `${apiBaseUrl}/labor-cost?${queryString}`
+          : `${apiBaseUrl}/labor-cost`;
+
+        const token = localStorage.getItem(config.tokenKey);
+        const headers = {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        };
+
+        if (token) {
+          headers.Authorization = token;
+        }
+
+        const response = await fetch(endpointPath, {
+          method: 'GET',
+          headers,
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch all tasks: ${response.status}`);
+        }
+
+        const apiData = await response.json();
+
+        if (Array.isArray(apiData.data)) {
+          // Validate and extract unique tasks from ALL data (unfiltered by task)
+          const validatedData = apiData.data.filter(item => {
+            if (!item || typeof item !== 'object') return false;
+            if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
+            return true;
+          });
+          const uniqueTasks = [...new Set(validatedData.map(item => item.task))];
+          setAllAvailableTasks(uniqueTasks);
+        }
+      } catch (error) {
+        logger.logError(error);
+        // Don't show error toast - this is a background operation
+        // Options will just be empty if this fails, but component still functional
+      }
+    };
+
+    fetchAllTasks();
+  }, [projectFilter, dateRange.startDate, dateRange.endDate]);
+  // Note: taskFilter is NOT in dependencies - we want all tasks regardless of current selection
+
+  // Fetch all available projects (without project filter) to populate dropdown options
+  // This runs independently and doesn't include project filter to avoid circular dependency
+  useEffect(() => {
+    const fetchAllProjects = async () => {
+      try {
+        const params = new URLSearchParams();
+
+        // Only apply task and date filters, NOT project filter
+        // We want ALL projects available for the dropdown options
+        if (Array.isArray(taskFilter) && taskFilter.length > 0) {
+          params.append('tasks', JSON.stringify(taskFilter));
+        }
+
+        if (dateRange.startDate || dateRange.endDate) {
+          params.append(
+            'date_range',
+            JSON.stringify({
+              start_date: dateToISOString(dateRange.startDate),
+              end_date: dateToISOString(dateRange.endDate),
+            }),
+          );
+        }
+
+        // Don't add project filter - we want ALL projects
+        const queryString = params.toString();
+        const apiBaseUrl = ENDPOINTS.APIEndpoint();
+        const endpointPath = queryString
+          ? `${apiBaseUrl}/labor-cost?${queryString}`
+          : `${apiBaseUrl}/labor-cost`;
+
+        const token = localStorage.getItem(config.tokenKey);
+        const headers = {
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        };
+
+        if (token) {
+          headers.Authorization = token;
+        }
+
+        const response = await fetch(endpointPath, {
+          method: 'GET',
+          headers,
+          cache: 'no-store',
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch all projects: ${response.status}`);
+        }
+
+        const apiData = await response.json();
+
+        if (Array.isArray(apiData.data)) {
+          // Validate and extract unique projects from ALL data (unfiltered by project)
+          const validatedData = apiData.data.filter(item => {
+            if (!item || typeof item !== 'object') return false;
+            if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
+            return true;
+          });
+          const uniqueProjects = [...new Set(validatedData.map(item => item.project))];
+          setAllAvailableProjects(uniqueProjects);
+        }
+      } catch (error) {
+        logger.logError(error);
+        // Don't show error toast - this is a background operation
+        // Options will just be empty if this fails, but component still functional
+      }
+    };
+
+    fetchAllProjects();
+  }, [taskFilter, dateRange.startDate, dateRange.endDate]);
+  // Note: projectFilter is NOT in dependencies - we want all projects regardless of current selection
+
+  // Use API data only
+  const currentData = data;
 
   // Derive unique filter values from current data
   const distinctProjects = useMemo(() => [...new Set(currentData.map(d => d.project))], [
     currentData,
   ]);
 
+  // distinctTasks is still used in aggregateData function for filtering logic
+  // Keep it for aggregation, but use allAvailableTasks for dropdown options
   const distinctTasks = useMemo(() => [...new Set(currentData.map(d => d.task))], [currentData]);
 
   // Aggregate data based on filters (backend handles date filtering)
@@ -338,22 +558,28 @@ export default function PaidLaborCost() {
 
   // Build stable option lists for selects
   // react-select requires { label, value } format
+  // Use allAvailableTasks instead of distinctTasks to avoid circular dependency
+  // allAvailableTasks contains ALL tasks (unfiltered), so multi-select works correctly
   const taskOptions = useMemo(
     () =>
-      distinctTasks.map(task => ({
+      allAvailableTasks.map(task => ({
         label: task,
         value: task,
       })),
-    [distinctTasks],
+    [allAvailableTasks],
   );
 
+  // Use allAvailableProjects instead of distinctProjects to avoid circular dependency
+  // allAvailableProjects contains ALL projects (unfiltered), so dropdown always shows all options
   const projectOptions = useMemo(
-    () =>
-      distinctProjects.map(proj => ({
-        id: uuidv4(),
+    () => [
+      { label: 'ALL', value: 'All Projects' },
+      ...allAvailableProjects.map(proj => ({
+        label: proj,
         value: proj,
       })),
-    [distinctProjects],
+    ],
+    [allAvailableProjects],
   );
 
   // Handle individual date changes - triggers immediate API call
@@ -441,6 +667,138 @@ export default function PaidLaborCost() {
     },
   };
 
+  // Inline styles for react-select with hardcoded colors to override default styles
+  // Using hardcoded values that match CSS variables from WeeklyProjectSummary
+  const selectStyles = useMemo(
+    () => ({
+      control: base => ({
+        ...base,
+        minHeight: '38px',
+        minWidth: '150px',
+        width: '100%',
+        fontSize: '14px',
+        backgroundColor: darkMode ? '#253342' : '#fff',
+        borderColor: darkMode ? '#2d4059' : '#ccc',
+        color: darkMode ? '#ffffff' : '#000',
+        boxShadow: 'none',
+        borderRadius: '6px',
+        '&:hover': {
+          borderColor: darkMode ? '#2d4059' : '#999',
+        },
+      }),
+      valueContainer: base => ({
+        ...base,
+        padding: '2px 8px',
+        color: darkMode ? '#ffffff' : '#000',
+      }),
+      input: base => ({
+        ...base,
+        margin: '0px',
+        padding: '0px',
+        color: darkMode ? '#ffffff' : '#000',
+      }),
+      indicatorsContainer: base => ({
+        ...base,
+        padding: '0 4px',
+      }),
+      multiValue: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#2d4059' : '#e0e0e0',
+        borderRadius: '4px',
+        fontSize: '13px',
+        margin: '2px',
+      }),
+      multiValueLabel: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#333',
+        padding: '3px 8px',
+        fontSize: '13px',
+      }),
+      multiValueRemove: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#333',
+        padding: '0 4px',
+        cursor: 'pointer',
+        ':hover': {
+          backgroundColor: darkMode ? '#3a506b' : '#d0d0d0',
+          color: darkMode ? '#ffffff' : '#333',
+        },
+      }),
+      placeholder: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#999',
+        opacity: darkMode ? 0.6 : 1,
+        fontSize: '14px',
+      }),
+      singleValue: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#000',
+        fontSize: '14px',
+      }),
+      menu: base => ({
+        ...base,
+        width: '100%',
+        minWidth: '150px',
+        backgroundColor: darkMode ? '#253342' : '#fff',
+        borderColor: darkMode ? '#2d4059' : '#ccc',
+        border: `1px solid ${darkMode ? '#2d4059' : '#ccc'}`,
+        borderRadius: '6px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+        fontSize: '14px',
+        zIndex: 9999,
+        marginTop: '4px',
+      }),
+      menuList: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#253342' : '#fff',
+        padding: '4px 0',
+        borderRadius: '6px',
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected
+          ? darkMode
+            ? '#e8a71c'
+            : '#0d55b3'
+          : state.isFocused
+          ? darkMode
+            ? '#3a506b'
+            : '#f0f0f0'
+          : darkMode
+          ? '#253342'
+          : '#fff',
+        color: state.isSelected ? (darkMode ? '#000' : '#fff') : darkMode ? '#ffffff' : '#000',
+        cursor: 'pointer',
+        padding: '10px 12px',
+        fontSize: '14px',
+        ':active': {
+          backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
+        },
+      }),
+      indicatorSeparator: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#2d4059' : '#ccc',
+      }),
+      dropdownIndicator: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#999',
+        padding: '4px',
+        ':hover': {
+          color: darkMode ? '#ffffff' : '#666',
+        },
+      }),
+      clearIndicator: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#999',
+        padding: '4px',
+        ':hover': {
+          color: darkMode ? '#ffffff' : '#666',
+        },
+      }),
+    }),
+    [darkMode],
+  );
+
   return (
     <div className={styles.paidLaborCostContainer}>
       <h4 className={styles.paidLaborCostTitle}>Paid Labor Cost</h4>
@@ -467,104 +825,8 @@ export default function PaidLaborCost() {
                 }}
                 isClearable
                 placeholder="Select tasks (leave empty for all)"
-                className={styles.paidLaborCostFilterSelect}
                 classNamePrefix="select"
-                styles={{
-                  control: base => ({
-                    ...base,
-                    minHeight: '28px',
-                    height: '28px',
-                    fontSize: '14px',
-                    backgroundColor: darkMode ? 'var(--section-bg)' : base.backgroundColor,
-                    borderColor: darkMode ? 'var(--section-title-bg)' : base.borderColor,
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                  }),
-                  valueContainer: base => ({
-                    ...base,
-                    height: '28px',
-                    padding: '0 8px',
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                  }),
-                  input: base => ({
-                    ...base,
-                    margin: '0px',
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                  }),
-                  indicatorsContainer: base => ({
-                    ...base,
-                    height: '28px',
-                  }),
-                  multiValue: base => ({
-                    ...base,
-                    backgroundColor: darkMode ? 'var(--section-title-bg)' : base.backgroundColor,
-                  }),
-                  multiValueLabel: base => ({
-                    ...base,
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                  }),
-                  multiValueRemove: base => ({
-                    ...base,
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                    ':hover': {
-                      backgroundColor: darkMode
-                        ? 'var(--section-title-hover)'
-                        : base[':hover']?.backgroundColor,
-                      color: darkMode ? 'var(--text-color)' : base[':hover']?.color,
-                    },
-                  }),
-                  placeholder: base => ({
-                    ...base,
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                    opacity: darkMode ? 0.6 : base.opacity,
-                  }),
-                  singleValue: base => ({
-                    ...base,
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                  }),
-                  menu: base => ({
-                    ...base,
-                    backgroundColor: darkMode ? 'var(--section-bg)' : base.backgroundColor,
-                    borderColor: darkMode ? 'var(--section-title-bg)' : base.borderColor,
-                    zIndex: 9999,
-                  }),
-                  option: (base, state) => ({
-                    ...base,
-                    backgroundColor: state.isSelected
-                      ? darkMode
-                        ? 'var(--button-bg)'
-                        : base.backgroundColor
-                      : state.isFocused
-                      ? darkMode
-                        ? 'var(--section-title-hover)'
-                        : base.backgroundColor
-                      : darkMode
-                      ? 'var(--section-bg)'
-                      : base.backgroundColor,
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                    ':hover': {
-                      backgroundColor: darkMode
-                        ? 'var(--section-title-hover)'
-                        : base[':hover']?.backgroundColor,
-                      color: darkMode ? 'var(--text-color)' : base[':hover']?.color,
-                    },
-                  }),
-                  indicatorSeparator: base => ({
-                    ...base,
-                    backgroundColor: darkMode ? 'var(--section-title-bg)' : base.backgroundColor,
-                  }),
-                  dropdownIndicator: base => ({
-                    ...base,
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                  }),
-                  clearIndicator: base => ({
-                    ...base,
-                    color: darkMode ? 'var(--text-color)' : base.color,
-                    ':hover': {
-                      color: darkMode ? 'var(--text-color)' : base[':hover']?.color,
-                      opacity: 0.8,
-                    },
-                  }),
-                }}
+                styles={selectStyles}
               />
             </div>
 
@@ -573,19 +835,18 @@ export default function PaidLaborCost() {
               <label className={styles.paidLaborCostFilterLabel} htmlFor="project-filter">
                 Project
               </label>
-              <select
+              <Select
                 id="project-filter"
-                value={projectFilter}
-                onChange={e => setProjectFilter(e.target.value)}
-                className={styles.paidLaborCostFilterSelect}
-              >
-                <option value="All Projects">ALL</option>
-                {projectOptions.map(option => (
-                  <option key={option.id} value={option.value}>
-                    {option.value}
-                  </option>
-                ))}
-              </select>
+                options={projectOptions}
+                value={projectOptions.find(option => option.value === projectFilter)}
+                onChange={selected => {
+                  setProjectFilter(selected ? selected.value : 'All Projects');
+                }}
+                isClearable={false}
+                placeholder="Select project"
+                classNamePrefix="select"
+                styles={selectStyles}
+              />
             </div>
 
             {/* Date Range Filter */}
