@@ -11,6 +11,10 @@ import WarningTrackerModal from './modals/WarningTrackerModal';
 import WarningIcons from './WarningIcons';
 import styles from './Warnings.module.css';
 import WarningModal from './modals/WarningModal';
+import moment from 'moment';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from '~/utils/URL';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
 // Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
@@ -27,15 +31,14 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   const [selectedWarning, setSelectedWarning] = useState(null);
   const [error, setError] = useState(null);
   const rolesAllowedToTracking = ['Administrator', 'Owner'];
-  const isAllowedToTracking =
-    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('viewTrackingOverview'));
   const canViewTrackerButton =
+    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('viewTrackingOverview'));
+  const canEditWarning =
     rolesAllowedToTracking.includes(userRole) ||
     dispatch(hasPermission('addWarningTracker')) ||
     dispatch(hasPermission('deactivateWarningTracker')) ||
+    dispatch(hasPermission('reactivateWarningTracker')) ||
     dispatch(hasPermission('deleteWarningTracker'));
-
-  const canEditWarning = dispatch(hasPermission('setTrackingManagement'));
 
   const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
@@ -94,16 +97,59 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       description: warningText,
       monitorData,
     };
-
-    dispatch(postWarningByUserId(warningData)).then(res => {
-      if (res.error) {
-        setError(res);
-        setUsersWarnings([]);
-        return;
-      }
-
-      setUsersWarnings(res);
-    });
+    // console.log('warningData for dashboard warnings: ', warningData);
+    let toastMessage = '';
+    dispatch(postWarningByUserId(warningData))
+      .then(res => {
+        // console.log('res of adding warning to user: ', res);
+        if (res.error) {
+          setError(res);
+          setUsersWarnings([]);
+          return;
+        }
+        if (warningData.color === 'blue') {
+          // console.log('enter blue warning');
+          toastMessage = 'Successfully logged and tracked';
+        } else if (warningData.color === 'yellow') {
+          toastMessage = 'Warning successfully logged';
+        } else {
+          // seems the date part is wrong format, either use moment, or modify the given date with moment
+          const newBlueSquare = {
+            // date: warningData.date,
+            date: moment(warningData.date).format('YYYY-MM-DD'),
+            // description: warningData.description,
+            description: `Issued a blue square for ${warningData.description} for the ${
+              selectedWarning.numberOfWarnings + 1 === 3
+                ? `${selectedWarning.numberOfWarnings + 1}rd`
+                : `${selectedWarning.numberOfWarnings + 1}th`
+            } time.`,
+            // createdDate: moment
+            //   .tz('America/Los_Angeles')
+            //   .toISOString()
+            //   .split('T')[0],
+            createdDate: moment().format('YYYY-MM-DD'),
+          };
+          // setModalTitle('Blue Square');
+          axios
+            .post(ENDPOINTS.ADD_BLUE_SQUARE(warningData.userId), {
+              blueSquare: newBlueSquare,
+            })
+            .then(res => {
+              toast.success('Successfully logged and Blue Square issued');
+            })
+            .catch(error => {
+              // eslint-disable-next-line no-console
+              console.log('error in adding bluesquare', error);
+              toast.error('Failed to add Blue Square!');
+            });
+        }
+        setUsersWarnings(res);
+        toastMessage ? toast.success(toastMessage) : '';
+        // });
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   const warnings = !toggle
@@ -124,60 +170,58 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       ));
 
   return (
-    isAllowedToTracking && (
-      <div className={`${styles['warnings-container']}`}>
-        <div className={styles.button__container}>
-          {canViewTrackerButton && (
-            <Button
-              className={`btn btn-warning warning-btn ${styles.tracking__btn}`}
-              size="sm"
-              onClick={handleToggle}
-            >
-              {toggle ? 'Hide' : 'Tracking'}
-            </Button>
-          )}
-
-          {canEditWarning && (
-            <Button
-              className="btn"
-              size="sm"
-              onClick={() => setToggleWarningTrackerModal(prev => !prev)}
-            >
-              +/-
-            </Button>
-          )}
-        </div>
-
-        {toggleWarningModal && (
-          <WarningModal
-            selectedWarning={selectedWarning}
-            visible={toggleWarningModal}
-            warning={selectedWarning}
-            numberOfWarnings={selectedWarning.numberOfWarnings}
-            setToggleModal={setToggleWarningModal}
-            handleDeleteWarning={handleDeleteWarning}
-            handleIssueWarning={handlePostWarningDetails}
-          />
-        )}
-        {toggleWarningTrackerModal && (
-          <WarningTrackerModal
-            toggleWarningTrackerModal={toggleWarningTrackerModal}
-            personId={personId}
-            setToggleWarningTrackerModal={setToggleWarningTrackerModal}
-            getUsersWarnings={fetchUsersWarningsById}
-            userRole={userRole}
-          />
+    <div className={`${styles['warnings-container']}`}>
+      <div className={styles.button__container}>
+        {canViewTrackerButton && (
+          <Button
+            className={`btn btn-warning warning-btn ${styles.tracking__btn}`}
+            size="sm"
+            onClick={handleToggle}
+          >
+            {toggle ? 'Hide' : 'Tracking'}
+          </Button>
         )}
 
-        <div className={`${styles['warning-wrapper']}`}> {warnings}</div>
-        <div className={`${styles['error-container']}`}>
-          {error && (
-            <Alert key="warning" variant="warning">
-              {error.error}
-            </Alert>
-          )}
-        </div>
+        {canEditWarning && (
+          <Button
+            className="btn"
+            size="sm"
+            onClick={() => setToggleWarningTrackerModal(prev => !prev)}
+          >
+            +/-
+          </Button>
+        )}
       </div>
-    )
+
+      {toggleWarningModal && (
+        <WarningModal
+          selectedWarning={selectedWarning}
+          visible={toggleWarningModal}
+          warning={selectedWarning}
+          numberOfWarnings={selectedWarning.numberOfWarnings}
+          setToggleModal={setToggleWarningModal}
+          handleDeleteWarning={handleDeleteWarning}
+          handleIssueWarning={handlePostWarningDetails}
+        />
+      )}
+      {toggleWarningTrackerModal && (
+        <WarningTrackerModal
+          toggleWarningTrackerModal={toggleWarningTrackerModal}
+          personId={personId}
+          setToggleWarningTrackerModal={setToggleWarningTrackerModal}
+          getUsersWarnings={fetchUsersWarningsById}
+          userRole={userRole}
+        />
+      )}
+
+      <div className={`${styles['warning-wrapper']}`}> {warnings}</div>
+      <div className={`${styles['error-container']}`}>
+        {error && (
+          <Alert key="warning" variant="warning">
+            {error.error}
+          </Alert>
+        )}
+      </div>
+    </div>
   );
 }

@@ -40,9 +40,15 @@ function PermissionListItem(props) {
   const isRestrictedPermission = permission === 'resendBlueSquareAndSummaryEmails';
   const userHasRestrictedPermission = currentUserPermissions.includes(
     'resendBlueSquareAndSummaryEmails',
+  ); // possibly remove or edit this for owner users to assign or have by default
+  const userHasRoleWithRestrictedPermission = immutablePermissions.includes(
+    'resendBlueSquareAndSummaryEmails',
   );
   const shouldDisableForRestriction =
-    editable && isRestrictedPermission && !userHasRestrictedPermission;
+    editable &&
+    isRestrictedPermission &&
+    !userHasRestrictedPermission &&
+    !userHasRoleWithRestrictedPermission;
 
   const { updateModalStatus } = useContext(ModalContext);
 

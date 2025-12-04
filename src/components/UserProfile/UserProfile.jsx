@@ -856,6 +856,59 @@ setUpdatedTasks(prev => {
     }
   };
 
+  const getWarningMessage = (warningData, noSummary, inCompleteHours) => {
+    // console.log("passed in warningData: ", warningData);
+    const bothWarnings = warningData?.warningsArray;
+    let allBlSq = {};
+    let noneBlSq = {};
+    let inCompleteHoursMixedBlSq = false;
+    if(warningData?.issueBlueSquare) {
+      allBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === true);
+      noneBlSq = Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === false);
+      inCompleteHoursMixedBlSq = warningData?.issueBlueSquare['Blu Sq Rmvd - Hrs Close Enoug'] === true;
+    }
+    const inCompleteHoursBlSq = warningData.description === 'Blu Sq Rmvd - Hrs Close Enoug';
+
+    let message = ''
+    // bothWarnings ?
+    //   allBlSq ? 
+    //     // case where both warnings are issued a blue square for
+    //     message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all and ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+    //     : noneBlSq ?
+    //       // case where both warnings are issued only a warning for
+    //       message = `Issued a warning for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all and ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+    //       : warningData?.issueBlueSquare['Blu Sq Rmvd - For No Summary'] === true ?
+    //         // case where issued a blue square for only no summary
+    //         message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary and received a warning for removing past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all.`
+    //         // case where issued a blue square for only incomplete hours
+    //         : message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all and received a warning for removing past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+    //   : inCompleteHoursBlSq ? 
+    //     // case where issued a warning for only incomplete hours
+    //     message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all.`
+    //     // case where issued a warning for only no summary
+    //     : message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+    if(bothWarnings) {
+      if(allBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all and ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+      } else if(noneBlSq) {
+        // possibly don't do message to not add blue square in case of issuing only a warning, no blue square
+        // message = `Issued a warning for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all and ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+      } else if(inCompleteHoursMixedBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all and received a warning for removing past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+      } else {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary and received a warning for removing past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all.`
+      }
+    } else {
+      if(inCompleteHoursBlSq) {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all.`
+      } else {
+        message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+      }
+    }
+    // console.log(message);
+    return message
+  }
+
   const handleLogWarning = async newWarningData => {
     let warningData = {};
     let warningsArray = null;
@@ -890,7 +943,7 @@ setUpdatedTasks(prev => {
         userId: props.auth.user.userid,
       },
     };
-
+    // console.log("user profile warningData: ", warningData);
     let toastMessage = '';
     dispatch(postWarningByUserId(warningData))
       .then(response => {
@@ -898,6 +951,9 @@ setUpdatedTasks(prev => {
           toast.error('Warning failed to log try again');
           return;
         } else {
+          // console.log("response from posting warning function: ", response);
+          const noSummary = response.find(warning => warning.title === 'Blu Sq Rmvd - For No Summary')
+          const inCompleteHours = response.find(warning => warning.title === 'Blu Sq Rmvd - Hrs Close Enoug')
           setShowModal(false);
           fetchSpecialWarnings();
 
@@ -906,7 +962,29 @@ setUpdatedTasks(prev => {
           } else if (warningData.color === 'yellow') {
             toastMessage = 'Warning successfully logged';
           } else {
-            toastMessage = 'Successfully logged and Blue Square issued';
+            // maybe make check case where if 
+            const blSqMessage = getWarningMessage(warningData, noSummary, inCompleteHours) // should ask Jae if he'd like for me to prevent it going above 8 warnings/blue squares, even if unlikely
+            // modifyBlueSquares('', 
+            //   moment(warningData.date).format("YYYY-MM-DD"),
+            //   warningData?.warningsArray ?
+            //   Object.values(warningData?.issueBlueSquare).every(blueSquare => blueSquare === true) ? 
+            //     `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all and ${noSummary.warnings.length - 1} times for not submitting a weekly summary.` : 
+            //       warningData?.issueBlueSquare['Blu Sq Rmvd - For No Summary'] === true ?
+            //       `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary and received a warning for removing past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all.` : 
+            //       `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all and received a warning for removing past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`
+            //   : warningData.description === 'Blu Sq Rmvd - Hrs Close Enoug' ? 
+            //   `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for completing most of your hours but not all.` : 
+            //   `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for not submitting a weekly summary.`, 
+            //   'add')
+            if(blSqMessage) {
+              modifyBlueSquares('', 
+                moment(warningData.date).format("YYYY-MM-DD"),
+                blSqMessage, 
+                'add')
+                toastMessage = 'Successfully logged and Blue Square issued';
+            } else {
+              toastMessage = 'Warning successfully logged';
+            }
           }
         }
         toast.success(toastMessage);

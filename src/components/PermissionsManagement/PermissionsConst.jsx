@@ -203,11 +203,6 @@ export const permissionLabels = [
         description: 'Gives the user permission to use the set the final working day.',
       },
       {
-        label: 'Tracking Management',
-        key: 'setTrackingManagement',
-        description: 'Gives the user permission to interact with the edit warnings list modal.',
-      },
-      {
         label: 'HGN People +/- Setup',
         key: 'manageHGNAccessSetup',
         description:
@@ -258,12 +253,6 @@ export const permissionLabels = [
         label: 'Delete a Warning Tracker',
         key: 'deleteWarningTracker',
         description: 'Gives user permission to delete a warning tracker from the system.',
-      },
-      {
-        label: 'Blue Square Email Management',
-        key: 'resendBlueSquareAndSummaryEmails',
-        description:
-          'Gives the user permission to access Blue Square Email Management and resend infringement emails and weekly summary emails.',
       },
     ],
   },
@@ -628,6 +617,12 @@ export const permissionLabels = [
         key: 'accessHgnSkillsDashboard',
         description:
           'Lets the user access the HGN skills dashboard, which provides insights into user skills and competencies.',
+      },
+      {
+        label: 'Blue Square Email Management',
+        key: 'resendBlueSquareAndSummaryEmails',
+        description:
+          'Gives the user permission to access Blue Square Email Management and resend infringement emails and weekly summary emails.',
       },
     ],
   },
