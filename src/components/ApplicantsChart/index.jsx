@@ -24,7 +24,7 @@ function ApplicantsDashboard() {
       return { valid: false, error: null };
     }
     if (start > end) {
-      return { valid: false, error: '🚨 Start date cannot be after end date.' };
+      return { valid: false, error: 'Start date cannot be after end date.' };
     }
     return { valid: true, error: null };
   };
