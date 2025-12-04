@@ -12,7 +12,7 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
-//import PhoneInput from 'react-phone-number-input/input';
+import { parsePhoneNumberFromString } from 'libphonenumber-js/max';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import Joi from 'joi-browser';
@@ -48,6 +48,7 @@ export default function AddMaterialForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneValid, setPhoneValid] = useState(true);
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
   const [errors, setErrors] = useState({});
   const history = useHistory();
@@ -172,16 +173,73 @@ export default function AddMaterialForm() {
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
   const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
 
-  const phoneChange = (name, phone) => {
+  const phoneChange = (name, phone, countryData) => {
+    const dialCode = countryData.dialCode;
+    const countryCode = countryData.countryCode.toUpperCase();
+
+    // Get the national number (remove dial code from beginning)
+    let nationalNumber = '';
+    if (phone && phone.startsWith(dialCode)) {
+      nationalNumber = phone.slice(dialCode.length);
+    } else if (phone) {
+      nationalNumber = phone;
+    }
+
+    // Check if country changed (dial code in formData is different from current)
+    const previousDialCode = formData.areaCode ? formData.areaCode.replace('+', '') : '1';
+    const countryChanged = previousDialCode !== dialCode;
+
+    // If country changed, reset to just the dial code
+    if (countryChanged && formData.phoneNumber) {
+      setFormData(prevData => ({
+        ...prevData,
+        [name]: dialCode,
+        areaCode: `+${dialCode}`,
+      }));
+      setPhoneValid(true);
+      return;
+    }
+
     setFormData(prevData => ({
       ...prevData,
       [name]: phone,
+      areaCode: `+${dialCode}`,
     }));
+
+    // If no national number entered, consider it valid (optional field)
+    if (!nationalNumber) {
+      setPhoneValid(true);
+      return;
+    }
+
+    // Validate phone number
+    try {
+      const fullNumber = `+${dialCode}${nationalNumber}`;
+      const phoneNumberObj = parsePhoneNumberFromString(fullNumber, countryCode);
+
+      if (phoneNumberObj) {
+        const isValidFormat = phoneNumberObj.isValid();
+        const numberType = phoneNumberObj.getType();
+
+        // Number must be valid AND must have a recognized type (MOBILE, FIXED_LINE, etc.)
+        const hasValidType = numberType !== undefined;
+        setPhoneValid(isValidFormat && hasValidType);
+      } else {
+        setPhoneValid(false);
+      }
+    } catch (error) {
+      setPhoneValid(false);
+    }
   };
 
   const handleSubmit = async event => {
     event.preventDefault();
     const validationErrors = validate(formData);
+    if (!phoneValid) {
+      toast.error('Invalid phone number for the selected country');
+      return;
+    }
+
     setErrors(validationErrors || {});
 
     if (validationErrors) {
@@ -465,14 +523,17 @@ export default function AddMaterialForm() {
             <Label for="Phone Number">Phone Number</Label>
             <div>
               <PhoneInput
-                //country="US"
-                //regions={['america', 'europe', 'asia', 'oceania', 'africa']}
-                //limitMaxLength="true"
+                country="us"
                 value={formData.phoneNumber}
-                onChange={phone => phoneChange('phoneNumber', phone)}
-                defaultCountry="US"
+                onChange={(phone, countryData) => phoneChange('phoneNumber', phone, countryData)}
+                enableLongNumbers={false}
                 inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
               />
+              {!phoneValid && formData.phoneNumber && (
+                <Label className={`${styles.materialFormError}`}>
+                  Invalid phone number for the selected country
+                </Label>
+              )}
             </div>
           </FormGroup>
           <FormGroup>
