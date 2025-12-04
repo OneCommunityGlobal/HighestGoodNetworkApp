@@ -132,6 +132,12 @@
   width: 100%;
   max-width: 100px;
   height: auto;
+  border: 3px solid transparent;
+}
+
+.sum_img:hover .sum_img {
+  background-color: white;
+  border-radius: 50%;
 }
 
 .image_frame {
@@ -177,7 +183,7 @@
 
 @media (min-width: 992px) {
   .name-segment {
-    max-width: 21ch; 
+    max-width: 21ch;
   }
 
   .name-segment:first-child {
@@ -186,7 +192,7 @@
 
   .name-segment:nth-child(2) {
     display: block;
-    max-width: 14ch; 
+    max-width: 14ch;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -256,7 +262,7 @@
   }
 }
 
-.text-center{
+.text-center {
   display: flex;
   justify-content: center;
 }
@@ -289,9 +295,9 @@
   word-break: break-word;
   white-space: normal;
 }
-  
+
 .sortable-draggable-dragging {
-  opacity: .5;
+  opacity: 0.5;
   cursor: grabbing;
 }
 
