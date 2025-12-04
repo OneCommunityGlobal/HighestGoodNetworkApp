@@ -5,9 +5,10 @@ import logService from './logService';
 // Set base URL for API requests
 axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'http://localhost:4500';
 
-if (axios.defaults && axios.defaults.headers && axios.defaults.headers.post) {
-  axios.defaults.headers.post['Content-Type'] = 'application/json';
-}
+// if (axios.defaults && axios.defaults.headers && axios.defaults.headers.post) {
+//   axios.defaults.headers.post['Content-Type'] = 'application/json';
+// }
+axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 if (axios.interceptors && axios.interceptors.response && axios.interceptors.response.use) {
   axios.interceptors.response.use(null, error => {

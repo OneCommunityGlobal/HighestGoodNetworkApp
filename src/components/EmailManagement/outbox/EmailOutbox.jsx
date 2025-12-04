@@ -46,10 +46,9 @@ import {
 } from 'react-icons/fa';
 import './EmailOutbox.css';
 import './ButtonStyles.css';
-import '../EmailManagementShared.css';
 import ResendEmailModal from './ResendEmailModal';
 
-const EmailOutbox = () => {
+const EmailOutbox = ({ isActive = true }) => {
   const dispatch = useDispatch();
 
   // Redux state - updated to use emailOutbox
@@ -68,6 +67,8 @@ const EmailOutbox = () => {
   const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
   const [processingPending, setProcessingPending] = useState(false);
   const [statusFilter, setStatusFilter] = useState(null); // null means show all
+
+  // Dynamic refresh state
 
   // Dynamic refresh state
   const [refreshState, setRefreshState] = useState({
@@ -152,30 +153,16 @@ const EmailOutbox = () => {
     await fetchData(false);
   }, [fetchData]);
 
-  // Process pending and stuck emails - IMPROVED VERSION
+  // Process pending and stuck emails
   const handleProcessPendingEmails = useCallback(async () => {
     if (processingPending) {
       toast.info('Processing already in progress');
       return;
     }
 
-    // Only count PENDING emails (stuck ones), NOT failed
-    const pendingCount = emails?.filter(e => e.status === 'PENDING').length || 0;
-
-    // If no pending emails, show info message and return
-    if (pendingCount === 0) {
-      toast.info('There are no pending or stuck emails to process.');
-      return;
-    }
-
     try {
       setProcessingPending(true);
-      toast.info(
-        `Processing ${pendingCount} pending/stuck email${pendingCount > 1 ? 's' : ''}...`,
-        {
-          autoClose: 2000,
-        },
-      );
+      toast.info('Processing pending and stuck emails...', { autoClose: 2000 });
 
       const response = await httpService.post('/api/process-pending-and-stuck-emails', {
         requestor: {
@@ -184,20 +171,8 @@ const EmailOutbox = () => {
         },
       });
 
-      if (response.data.success) {
-        // Check if any emails were actually processed
-        const processedCount = response.data.processedCount || pendingCount;
-
-        if (processedCount > 0) {
-          toast.success(
-            `Successfully triggered processing of ${processedCount} pending/stuck email${
-              processedCount > 1 ? 's' : ''
-            }!`,
-          );
-        } else {
-          toast.info('No emails needed processing.');
-        }
-
+      if (response.data.success && response.data.data) {
+        toast.success('Successfully triggered processing of pending and stuck emails!');
         // Refresh the email list after processing
         await fetchData(false);
       } else {
@@ -212,7 +187,9 @@ const EmailOutbox = () => {
     } finally {
       setProcessingPending(false);
     }
-  }, [processingPending, currentUser, fetchData, emails]);
+  }, [processingPending, currentUser, fetchData]);
+
+  // Background sync for auto-refresh
 
   // Background sync for auto-refresh
   const startBackgroundSync = useCallback(() => {
@@ -228,9 +205,15 @@ const EmailOutbox = () => {
   }, [fetchData, refreshState.autoRefresh, refreshState.refreshInterval]);
 
   // Initial load
+  // DISABLED:   useEffect(() => {
+  // DISABLED:     fetchData(false);
+  // DISABLED:   }, [fetchData]);
+  // Fetch data when component becomes active (tab switched)
   useEffect(() => {
-    fetchData(false);
-  }, [fetchData]);
+    if (isActive) {
+      fetchData(false);
+    }
+  }, [isActive, fetchData]);
 
   // HOTFIX: Force loading to complete if we have emails
   // This is a temporary fix until the Redux reducer is fixed
@@ -351,20 +334,22 @@ const EmailOutbox = () => {
 
   const getStatusBadge = status => {
     const statusMap = {
-      SENT: 'success',
       PENDING: 'warning',
+      SENDING: 'info',
+      SENT: 'success',
+      PROCESSED: 'warning',
       FAILED: 'danger',
-      PROCESSING: 'info',
     };
     return statusMap[status] || 'secondary';
   };
 
   const getStatusIcon = status => {
     const iconMap = {
-      SENT: <FaCheckCircle className="text-success" />,
       PENDING: <FaClock className="text-warning" />,
+      SENDING: <FaSync className="fa-spin text-info" />,
+      SENT: <FaCheckCircle className="text-success" />,
+      PROCESSED: <FaExclamationTriangle className="text-warning" />,
       FAILED: <FaExclamationTriangle className="text-danger" />,
-      PROCESSING: <FaSync className="fa-spin text-info" />,
     };
     return iconMap[status] || <FaClock className="text-muted" />;
   };
@@ -376,17 +361,19 @@ const EmailOutbox = () => {
 
     try {
       // Fetch child EmailBatch items
-      const response = await httpService.get(`/api/emails/${email._id}/batches`);
-      if (response.data.success) {
-        setEmailBatches(response.data.emailBatches || []);
+      const response = await httpService.get(`/api/email-outbox/${email._id}`);
+      if (response.data.success && response.data.data) {
+        setEmailBatches(response.data.data.batches || []);
       } else {
-        toast.error('Failed to fetch email batches');
+        // eslint-disable-next-line no-console
+        console.log('Failed to fetch email batches');
         setEmailBatches([]);
       }
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error fetching email batches:', error);
-      toast.error('Failed to fetch email batches');
+      // eslint-disable-next-line no-console
+      console.log('Failed to fetch email batches');
       setEmailBatches([]);
     } finally {
       setLoadingItems(false);
@@ -426,6 +413,41 @@ const EmailOutbox = () => {
       // eslint-disable-next-line no-console
       console.error('Error resending email:', error);
       toast.error(error.response?.data?.message || 'Failed to resend email. Please try again.');
+    }
+  };
+
+  const handleRetryEmail = async emailId => {
+    if (!emailId) {
+      toast.error('Invalid email ID');
+      return;
+    }
+
+    try {
+      toast.info('Retrying failed batches...');
+
+      const response = await httpService.post(`/api/emails/${emailId}/retry`, {
+        requestor: {
+          requestorId: currentUser?.userid,
+          role: currentUser?.role,
+        },
+      });
+
+      if (response.data.success) {
+        const count = response.data.data?.failedItemsRetried || 0;
+        if (count > 0) {
+          toast.success(`Successfully retried ${count} failed batch${count > 1 ? 'es' : ''}!`);
+        } else {
+          toast.info('No failed batches to retry');
+        }
+        // Refresh the list
+        await fetchData(false);
+      } else {
+        toast.error(response.data.message || 'Failed to retry email');
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Error retrying email:', error);
+      toast.error(error.response?.data?.message || 'Failed to retry email. Please try again.');
     }
   };
 
@@ -911,26 +933,38 @@ const EmailOutbox = () => {
                               <div className="d-flex gap-1 flex-wrap">
                                 <Button
                                   size="sm"
-                                  color="outline-primary"
+                                  color="primary"
                                   onClick={() => handleViewDetails(email)}
                                   className="d-flex align-items-center"
                                   title="View email details and batches"
                                 >
-                                  <FaEye size={12} className="me-1" />
+                                  <FaEye size={12} className="me-1 text-white" />
                                   <span className="d-none d-sm-inline">Details</span>
                                 </Button>
-                                {email.status === 'FAILED' && (
+                                {/* Show Retry button for FAILED or PROCESSED emails */}
+                                {(email.status === 'FAILED' || email.status === 'PROCESSED') && (
                                   <Button
                                     size="sm"
-                                    color="outline-warning"
-                                    onClick={() => handleResendClick(email)}
+                                    color="danger"
+                                    onClick={() => handleRetryEmail(email._id)}
                                     className="d-flex align-items-center"
-                                    title="Resend failed email"
+                                    title="Retry failed batches"
                                   >
-                                    <FaRedo size={12} className="me-1" />
-                                    <span className="d-none d-sm-inline">Resend</span>
+                                    <FaRedo size={12} className="me-1 text-white" />
+                                    <span className="d-none d-sm-inline">Retry</span>
                                   </Button>
                                 )}
+                                {/* Show Resend button for any email to resend to different recipients */}
+                                <Button
+                                  size="sm"
+                                  color="warning"
+                                  onClick={() => handleResendClick(email)}
+                                  className="d-flex align-items-center"
+                                  title="Resend email to different recipients"
+                                >
+                                  <FaPaperPlane size={12} className="me-1 text-dark" />
+                                  <span className="d-none d-sm-inline">Resend</span>
+                                </Button>
                               </div>
                             </div>
                           </td>
@@ -979,8 +1013,7 @@ const EmailOutbox = () => {
           isOpen={showEmailDetails}
           toggle={() => setShowEmailDetails(false)}
           size="xl"
-          centered
-          className="modal-responsive"
+          style={{ maxWidth: '95%', margin: '1.75rem auto' }}
         >
           <ModalHeader toggle={() => setShowEmailDetails(false)}>
             Email Details: {selectedEmail.subject}
@@ -992,12 +1025,26 @@ const EmailOutbox = () => {
               </CardHeader>
               <CardBody>
                 <div className="row g-3">
-                  <div className="col-md-12">
+                  {/* Row 1: Email ID and Subject */}
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Email ID:</strong>
+                      <div
+                        className="text-primary mt-1"
+                        style={{ fontSize: '0.875rem', wordBreak: 'break-all' }}
+                      >
+                        {selectedEmail._id}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
                     <div>
                       <strong>Subject:</strong>
                       <div className="text-muted mt-1">{selectedEmail.subject}</div>
                     </div>
                   </div>
+
+                  {/* Row 2: Status and Created By */}
                   <div className="col-md-6">
                     <div>
                       <strong>Status:</strong>
@@ -1014,21 +1061,43 @@ const EmailOutbox = () => {
                       <div className="text-muted mt-1">{getUserDisplayName(selectedEmail)}</div>
                     </div>
                   </div>
+
+                  {/* Row 3: Created and Started */}
                   <div className="col-md-6">
                     <div>
-                      <strong>Created At:</strong>
+                      <strong>Created:</strong>
                       <div className="text-muted mt-1">{formatDate(selectedEmail.createdAt)}</div>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div>
-                      <strong>Updated At:</strong>
-                      <div className="text-muted mt-1">{formatDate(selectedEmail.updatedAt)}</div>
+                      <strong>Started:</strong>
+                      <div className="text-success mt-1">
+                        {selectedEmail.startedAt ? formatDate(selectedEmail.startedAt) : 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 4: Completed and Last Updated */}
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Completed:</strong>
+                      <div className="text-success mt-1">
+                        {selectedEmail.completedAt ? formatDate(selectedEmail.completedAt) : 'N/A'}
+                      </div>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div>
-                      <strong>Batches:</strong>
+                      <strong>Last Updated:</strong>
+                      <div className="text-muted mt-1">{formatDate(selectedEmail.updatedAt)}</div>
+                    </div>
+                  </div>
+
+                  {/* Row 5: Total Batches and Total Recipients */}
+                  <div className="col-md-6">
+                    <div>
+                      <strong>Total Batches:</strong>
                       <div className="text-primary fw-bold mt-1">{emailBatches.length}</div>
                     </div>
                   </div>
@@ -1040,6 +1109,8 @@ const EmailOutbox = () => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Row 6: Sent Recipients and Failed Recipients */}
                   <div className="col-md-6">
                     <div>
                       <strong>Sent Recipients:</strong>
