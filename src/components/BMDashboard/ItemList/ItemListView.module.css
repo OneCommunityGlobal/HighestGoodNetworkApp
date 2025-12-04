@@ -91,3 +91,31 @@
 .btnPrimary:hover {
   background-color: #3b82f6;
 }
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  max-width: 400px;
+  width: 100%;
+}
+
+.formRow {
+  margin-bottom: 0.75rem;
+}
+
+.actionsRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}

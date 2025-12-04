@@ -1,3 +1,4 @@
+// src/components/BMDashboard/ItemList/ItemListView.jsx
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-datepicker';
@@ -6,6 +7,7 @@ import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
 import ItemsTable from './ItemsTable';
+import UpdateNameMeasurementModal from './UpdateItemModal';
 import styles from './ItemListView.module.css';
 
 export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamicColumns }) {
@@ -14,6 +16,8 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
   const [selectedTime, setSelectedTime] = useState(new Date());
+
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -44,7 +48,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 
   if (isError) {
     return (
-      <main className={`${styles.itemsListContainer}`}>
+      <main className={styles.itemsListContainer}>
         <h2>
           {itemType}
           {' List'}
@@ -54,13 +58,21 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     );
   }
 
+  const handleOpenUpdateModal = () => setIsUpdateModalOpen(true);
+  const handleCloseUpdateModal = () => setIsUpdateModalOpen(false);
+
+  const handleSubmitUpdate = ({ id, field, value }) => {
+    console.log('Update item request', { id, field, value });
+    setIsUpdateModalOpen(false);
+  };
+
   return (
-    <main className={`${styles.itemsListContainer}`}>
+    <main className={styles.itemsListContainer}>
       <h3>{itemType}</h3>
       <section>
         <span>
           {items && (
-            <div className={`${styles.selectInput}`}>
+            <div className={styles.selectInput}>
               <label htmlFor="itemListTime">Time:</label>
               <DatePicker
                 selected={selectedTime}
@@ -70,7 +82,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 timeIntervals={15}
                 dateFormat="yyyy-MM-dd HH:mm:ss"
                 placeholderText="Select date and time"
-                inputId="itemListTime" // This is the key line
+                inputId="itemListTime"
               />
               <SelectForm
                 items={items}
@@ -85,18 +97,19 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
               />
             </div>
           )}
-          <div className={`${styles.buttonsRow}`}>
-            <button type="button" className={`${styles.btnPrimary}`}>
+          <div className={styles.buttonsRow}>
+            <button type="button" className={styles.btnPrimary}>
               Add Material
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button type="button" className={styles.btnPrimary} onClick={handleOpenUpdateModal}>
               Edit Name/Measurement
             </button>
-            <button type="button" className={`${styles.btnPrimary}`}>
+            <button type="button" className={styles.btnPrimary}>
               View Update History
             </button>
           </div>
         </span>
+
         {filteredItems && (
           <ItemsTable
             selectedProject={selectedProject}
@@ -106,44 +119,13 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
             dynamicColumns={dynamicColumns}
           />
         )}
+
+        <UpdateNameMeasurementModal
+          isOpen={isUpdateModalOpen}
+          onClose={handleCloseUpdateModal}
+          onSubmit={handleSubmitUpdate}
+        />
       </section>
     </main>
   );
 }
-
-ItemListView.propTypes = {
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      itemType: PropTypes.shape({
-        name: PropTypes.string,
-        unit: PropTypes.string,
-      }),
-      project: PropTypes.shape({
-        _id: PropTypes.string,
-        name: PropTypes.string,
-      }),
-      stockAvailable: PropTypes.number,
-      stockBought: PropTypes.number,
-      stockUsed: PropTypes.number,
-      stockWasted: PropTypes.number,
-    }),
-  ).isRequired,
-  errors: PropTypes.shape({
-    message: PropTypes.string,
-  }),
-  itemType: PropTypes.string.isRequired,
-  UpdateItemModal: PropTypes.elementType.isRequired,
-  dynamicColumns: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      key: PropTypes.string.isRequired,
-    }),
-  ).isRequired,
-};
-
-ItemListView.defaultProps = {
-  errors: {},
-};
-
-export default ItemListView;
