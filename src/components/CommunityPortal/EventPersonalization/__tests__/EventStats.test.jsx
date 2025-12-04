@@ -94,9 +94,11 @@ describe('PopularEvents Component', () => {
   test('dark mode applies proper class', () => {
     renderWithStore(true);
 
-    const heading = screen.getByText('Most Popular Event');
+    // specifically select ONLY the main header, not the summary box
+    const heading = screen.getByRole('heading', {
+      name: 'Most Popular Event',
+    });
 
-    // text-light is applied when dark mode is true
     expect(heading.className.includes('text-light')).toBe(true);
   });
 
@@ -110,9 +112,9 @@ describe('PopularEvents Component', () => {
     fireEvent.change(timeSelect, { target: { value: 'NonExistent' } });
 
     // Header stays
-    expect(screen.getByText('Most Popular Event')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Most Popular Event' })).toBeInTheDocument();
 
-    // These MUST disappear because filteredData is empty
+    // These disappear because filteredData is empty
     expect(screen.queryByTestId('summary-most')).not.toBeInTheDocument();
     expect(screen.queryByTestId('summary-least')).not.toBeInTheDocument();
   });
@@ -123,9 +125,9 @@ describe('PopularEvents Component', () => {
   test('bars have inline width style', () => {
     renderWithStore();
 
-    const innerBars = screen.getAllByTestId('stat-bar-inner');
+    const bars = screen.getAllByTestId('stat-bar-inner');
 
-    innerBars.forEach(inner => {
+    bars.forEach(inner => {
       expect(inner.style.width).toMatch(/%/);
     });
   });
