@@ -107,7 +107,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate ||
-      ''}&comparisonEndDate=${comparisonEndDate || ''}`,
+    ''}&comparisonEndDate=${comparisonEndDate || ''}`,
   VOLUNTEER_TRENDS: (timeFrame, offset, customStartDate, customEndDate) =>
     `${APIEndpoint}/reports/volunteertrends?timeFrame=${timeFrame}&offset=${offset}${customStartDate ? `&customStartDate=${customStartDate}` : ''
     }${customEndDate ? `&customEndDate=${customEndDate}` : ''}`,
@@ -216,6 +216,7 @@ export const ENDPOINTS = {
   FAQ_HISTORY: faqId => `${APIEndpoint}/faqs/${faqId}/history`,
   UNANSWERED_FAQS: `${APIEndpoint}/faqs/unanswered`,
   DELETE_UNANSWERED_FAQ: faqId => `${APIEndpoint}/faqs/unanswered/${faqId}`,
+  ANSWER_UNANSWERED_FAQ: faqId => `${APIEndpoint}/faqs/unanswered/${faqId}/answer`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
@@ -254,7 +255,7 @@ export const ENDPOINTS = {
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
   BM_TOOL_AVAILABILITY: (toolId = '', projectId = '') =>
-  `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
+    `${APIEndpoint}/tools/availability?toolId=${toolId}&projectId=${projectId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,

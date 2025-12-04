@@ -21,3 +21,6 @@ export const getFAQHistory = async id => axios.get(ENDPOINTS.FAQ_HISTORY(id));
 export const getUnansweredFAQs = async () => axios.get(ENDPOINTS.UNANSWERED_FAQS);
 
 export const deleteUnansweredFAQ = async id => axios.delete(ENDPOINTS.DELETE_UNANSWERED_FAQ(id));
+
+export const answerUnansweredFAQ = async (id, answer) =>
+  axios.post(ENDPOINTS.ANSWER_UNANSWERED_FAQ(id), { answer });
