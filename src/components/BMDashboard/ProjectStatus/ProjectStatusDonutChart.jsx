@@ -31,6 +31,15 @@ export default function ProjectStatusDonutChart() {
         headers: { Authorization: token },
       });
 
+      // TEMPORARY MOCK DATA - for testing purposes
+      /*setStatusData({
+        totalProjects: 50,
+        activeProjects: 20,
+        completedProjects: 20,
+        delayedProjects: 10,
+      });
+      return;*/
+
       setStatusData(res.data);
     } catch (err) {
       // console.error(err);
