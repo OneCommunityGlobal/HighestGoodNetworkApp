@@ -193,8 +193,10 @@ const WeeklySummariesReport = props => {
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
 
+  const mismatchedInCurrentFilter = state.filteredSummaries.filter(s => s.teamCodeWarning);
+
   const displayedSummaries = state.showOnlyMismatched
-    ? state.teamCodeWarningUsers
+    ? mismatchedInCurrentFilter
     : state.filteredSummaries;
 
   // Create filters including toggle and extra members
@@ -230,7 +232,7 @@ const WeeklySummariesReport = props => {
   const alphabetize = summaries => {
     const temp = [...summaries];
     return temp.sort((a, b) =>
-      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastname}`),
+      `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`),
     );
   };
 
@@ -1914,7 +1916,7 @@ const WeeklySummariesReport = props => {
                   </ReactTooltip>
                 </>
               )}*/}
-              {state.teamCodeWarningUsers.length > 0 && (
+              {mismatchedInCurrentFilter.length > 0 && (
                 <>
                   <i
                     className={`fa fa-info-circle text-danger ${
@@ -1941,7 +1943,7 @@ const WeeklySummariesReport = props => {
                     }}
                   />
                   <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
-                    {`${state.teamCodeWarningUsers.length} users have mismatched team codes! Smash this "i" button to see who they are 👊`}
+                    {`${mismatchedInCurrentFilter.length} users have mismatched team codes! Smash this "i" button to see who they are 👊`}
                   </ReactTooltip>
                 </>
               )}
