@@ -12,12 +12,14 @@ import '../../Header/DarkMode.css'
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from '~/actions/userProfile';
 import { postTimeEntry } from '~/actions/timeEntries';
+import { toast } from 'react-toastify';
 
 function AddLostTime(props) {
 
   const darkMode = useSelector((state) => state.theme.darkMode);
   const fontColor = getFontColor(darkMode);
   const boxStyling = getBoxStyling(darkMode);
+  const MAX_HOURS_PER_ENTRY = 40;
 
   const initialForm = {
     projectId: undefined,
@@ -234,51 +236,89 @@ function AddLostTime(props) {
     props.toggle();
   };
 
-  const validateInputs = () => {
-    const result = {};
-
-    const date = moment(inputs.dateOfWork);
+  const validateDate = (dateOfWork) => {
+    const errors = {};
+    const date = moment(dateOfWork);
     const today = moment(
       moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
     );
+
     if (!date.isValid()) {
-      result.dateOfWork = 'Invalid date';
-    } else if (
-        today.diff(date, 'days') < 0
-    ) {
-      result.dateOfWork = 'Cannot add lost time for future dates.';
+      errors.dateOfWork = 'Invalid date';
+    } else if (today.diff(date, 'days') < 0) {
+      errors.dateOfWork = 'Cannot add lost time for future dates.';
     }
 
-    if (inputs.hours === 0 && inputs.minutes === 0) {
-      result.time = 'Time is required';
-    } else {
-      const hours = inputs.hours * 1;
-      const minutes = inputs.minutes * 1;
-      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers';
-      }
-      if (hours < 0 || minutes < 0) {
-        result.time = 'Time should be greater than 0';
-      }
+    return errors;
+  };
+
+  const getTimeError = (hoursInput, minutesInput) => {
+    const hours = Number(hoursInput);
+    const minutes = Number(minutesInput);
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes) || (hours === 0 && minutes === 0)) {
+      return 'Time is required';
     }
+
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+      return 'Hours and minutes should be integers';
+    }
+
+    if (hours < 0 || minutes < 0) {
+      return 'Time should be greater than 0';
+    }
+
+    const totalMinutes = hours * 60 + minutes;
+    const maxMinutes = MAX_HOURS_PER_ENTRY * 60;
+
+    if (totalMinutes > maxMinutes) {
+      toast.error(
+        "Hold up, workhorse! You’ve hit the 40-hour limit for a single entry. You can pop in a new time log for any additional hours.",
+        { autoClose: 5000 }
+      );
+      return `You can’t log more than ${MAX_HOURS_PER_ENTRY} hours in a single entry.`;
+    }
+
+    return null;
+  };
+
+  const validateEntryType = (entryType, inputs) => {
+    const errors = {};
+
     if (entryType === '') {
-      result.events = 'Type is required';
+      errors.events = 'Type is required';
+      return errors;
     }
+
     if (entryType === 'project' && inputs.projectId === undefined) {
-      result.projectId = 'Project is required';
+      errors.projectId = 'Project is required';
+    } else if (entryType === 'person' && inputs.personId === undefined) {
+      errors.personId = 'Person is required';
+    } else if (entryType === 'team' && inputs.teamId === undefined) {
+      errors.teamId = 'Team is required';
     }
-    if (entryType === 'person' && inputs.personId === undefined) {
-      result.personId = 'Person is required';
+
+    return errors;
+  };
+
+  const validateInputs = () => {
+    const result = {};
+
+    Object.assign(result, validateDate(inputs.dateOfWork));
+
+    const timeError = getTimeError(inputs.hours, inputs.minutes);
+    if (timeError) {
+      result.time = timeError;
     }
-    if (entryType === 'team' && inputs.teamId === undefined) {
-      result.teamId = 'Team is required';
-    }
+
+    Object.assign(result, validateEntryType(entryType, inputs));
 
     setErrors(result);
     return isEmpty(result);
   };
+  
 
   const handleSubmit = async event => {
     if (event) event.preventDefault();
