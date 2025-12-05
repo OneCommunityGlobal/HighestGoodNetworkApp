@@ -214,6 +214,60 @@ export default function PaidLaborCost() {
   }, [darkMode]);
 
   /**
+   * Common fetch helper to reduce code duplication
+   */
+  const fetchLaborCostData = useCallback(
+    async (includeProjectFilter = true, includeTaskFilter = true) => {
+      const params = new URLSearchParams();
+
+      if (includeProjectFilter && projectFilter !== 'All Projects') {
+        params.append('projects', JSON.stringify([projectFilter]));
+      }
+
+      if (includeTaskFilter && Array.isArray(taskFilter) && taskFilter.length > 0) {
+        params.append('tasks', JSON.stringify(taskFilter));
+      }
+
+      if (dateRange.startDate || dateRange.endDate) {
+        params.append(
+          'date_range',
+          JSON.stringify({
+            start_date: dateToISOString(dateRange.startDate),
+            end_date: dateToISOString(dateRange.endDate),
+          }),
+        );
+      }
+
+      const queryString = params.toString();
+      const apiBaseUrl = ENDPOINTS.APIEndpoint();
+      const endpointPath = queryString
+        ? `${apiBaseUrl}/labor-cost?${queryString}`
+        : `${apiBaseUrl}/labor-cost`;
+
+      const token = localStorage.getItem(config.tokenKey);
+      const headers = {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache',
+        Pragma: 'no-cache',
+        ...(token && { Authorization: token }),
+      };
+
+      const response = await fetch(endpointPath, {
+        method: 'GET',
+        headers,
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
+      }
+
+      return response.json();
+    },
+    [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate],
+  );
+
+  /**
    * Build query parameters for API request
    */
   const buildQueryParams = useCallback(() => {
@@ -402,56 +456,9 @@ export default function PaidLaborCost() {
   useEffect(() => {
     const fetchAllTasks = async () => {
       try {
-        const params = new URLSearchParams();
-
-        // Only apply project and date filters, NOT task filter
-        // We want ALL tasks available for the dropdown options
-        if (projectFilter !== 'All Projects') {
-          params.append('projects', JSON.stringify([projectFilter]));
-        }
-
-        if (dateRange.startDate || dateRange.endDate) {
-          params.append(
-            'date_range',
-            JSON.stringify({
-              start_date: dateToISOString(dateRange.startDate),
-              end_date: dateToISOString(dateRange.endDate),
-            }),
-          );
-        }
-
-        // Don't add task filter - we want ALL tasks
-        const queryString = params.toString();
-        const apiBaseUrl = ENDPOINTS.APIEndpoint();
-        const endpointPath = queryString
-          ? `${apiBaseUrl}/labor-cost?${queryString}`
-          : `${apiBaseUrl}/labor-cost`;
-
-        const token = localStorage.getItem(config.tokenKey);
-        const headers = {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          Pragma: 'no-cache',
-        };
-
-        if (token) {
-          headers.Authorization = token;
-        }
-
-        const response = await fetch(endpointPath, {
-          method: 'GET',
-          headers,
-          cache: 'no-store',
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch all tasks: ${response.status}`);
-        }
-
-        const apiData = await response.json();
+        const apiData = await fetchLaborCostData(true, false);
 
         if (Array.isArray(apiData.data)) {
-          // Validate and extract unique tasks from ALL data (unfiltered by task)
           const validatedData = apiData.data.filter(item => {
             if (!item || typeof item !== 'object') return false;
             if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
@@ -463,69 +470,20 @@ export default function PaidLaborCost() {
       } catch (error) {
         logger.logError(error);
         // Don't show error toast - this is a background operation
-        // Options will just be empty if this fails, but component still functional
       }
     };
 
     fetchAllTasks();
-  }, [projectFilter, dateRange.startDate, dateRange.endDate]);
-  // Note: taskFilter is NOT in dependencies - we want all tasks regardless of current selection
+  }, [fetchLaborCostData]);
 
   // Fetch all available projects (without project filter) to populate dropdown options
   // This runs independently and doesn't include project filter to avoid circular dependency
   useEffect(() => {
     const fetchAllProjects = async () => {
       try {
-        const params = new URLSearchParams();
-
-        // Only apply task and date filters, NOT project filter
-        // We want ALL projects available for the dropdown options
-        if (Array.isArray(taskFilter) && taskFilter.length > 0) {
-          params.append('tasks', JSON.stringify(taskFilter));
-        }
-
-        if (dateRange.startDate || dateRange.endDate) {
-          params.append(
-            'date_range',
-            JSON.stringify({
-              start_date: dateToISOString(dateRange.startDate),
-              end_date: dateToISOString(dateRange.endDate),
-            }),
-          );
-        }
-
-        // Don't add project filter - we want ALL projects
-        const queryString = params.toString();
-        const apiBaseUrl = ENDPOINTS.APIEndpoint();
-        const endpointPath = queryString
-          ? `${apiBaseUrl}/labor-cost?${queryString}`
-          : `${apiBaseUrl}/labor-cost`;
-
-        const token = localStorage.getItem(config.tokenKey);
-        const headers = {
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache',
-          Pragma: 'no-cache',
-        };
-
-        if (token) {
-          headers.Authorization = token;
-        }
-
-        const response = await fetch(endpointPath, {
-          method: 'GET',
-          headers,
-          cache: 'no-store',
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch all projects: ${response.status}`);
-        }
-
-        const apiData = await response.json();
+        const apiData = await fetchLaborCostData(false, true);
 
         if (Array.isArray(apiData.data)) {
-          // Validate and extract unique projects from ALL data (unfiltered by project)
           const validatedData = apiData.data.filter(item => {
             if (!item || typeof item !== 'object') return false;
             if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
@@ -537,13 +495,11 @@ export default function PaidLaborCost() {
       } catch (error) {
         logger.logError(error);
         // Don't show error toast - this is a background operation
-        // Options will just be empty if this fails, but component still functional
       }
     };
 
     fetchAllProjects();
-  }, [taskFilter, dateRange.startDate, dateRange.endDate]);
-  // Note: projectFilter is NOT in dependencies - we want all projects regardless of current selection
+  }, [fetchLaborCostData]);
 
   // Use API data only
   const currentData = data;
@@ -562,6 +518,35 @@ export default function PaidLaborCost() {
     currentData,
     taskFilter,
     projectFilter,
+  );
+
+  /**
+   * Get background color for select option based on state
+   */
+  const getOptionBackgroundColor = useCallback(
+    (isSelected, isFocused) => {
+      if (isSelected) {
+        return darkMode ? '#e8a71c' : '#0d55b3';
+      }
+      if (isFocused) {
+        return darkMode ? '#3a506b' : '#f0f0f0';
+      }
+      return darkMode ? '#253342' : '#fff';
+    },
+    [darkMode],
+  );
+
+  /**
+   * Get text color for select option based on state
+   */
+  const getOptionColor = useCallback(
+    isSelected => {
+      if (isSelected) {
+        return darkMode ? '#000' : '#fff';
+      }
+      return darkMode ? '#ffffff' : '#000';
+    },
+    [darkMode],
   );
 
   // Build stable option lists for selects
@@ -764,18 +749,8 @@ export default function PaidLaborCost() {
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected
-          ? darkMode
-            ? '#e8a71c'
-            : '#0d55b3'
-          : state.isFocused
-          ? darkMode
-            ? '#3a506b'
-            : '#f0f0f0'
-          : darkMode
-          ? '#253342'
-          : '#fff',
-        color: state.isSelected ? (darkMode ? '#000' : '#fff') : darkMode ? '#ffffff' : '#000',
+        backgroundColor: getOptionBackgroundColor(state.isSelected, state.isFocused),
+        color: getOptionColor(state.isSelected),
         cursor: 'pointer',
         padding: '10px 12px',
         fontSize: '14px',
@@ -804,7 +779,7 @@ export default function PaidLaborCost() {
         },
       }),
     }),
-    [darkMode],
+    [darkMode, getOptionBackgroundColor, getOptionColor],
   );
 
   return (
