@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -213,6 +213,132 @@ export default function PaidLaborCost() {
     };
   }, [darkMode]);
 
+  /**
+   * Build query parameters for API request
+   */
+  const buildQueryParams = useCallback(() => {
+    const params = new URLSearchParams();
+
+    if (projectFilter !== 'All Projects') {
+      params.append('projects', JSON.stringify([projectFilter]));
+    }
+
+    if (Array.isArray(taskFilter) && taskFilter.length > 0) {
+      params.append('tasks', JSON.stringify(taskFilter));
+    }
+
+    if (dateRange.startDate || dateRange.endDate) {
+      params.append(
+        'date_range',
+        JSON.stringify({
+          start_date: dateToISOString(dateRange.startDate),
+          end_date: dateToISOString(dateRange.endDate),
+        }),
+      );
+    }
+
+    return params;
+  }, [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate]);
+
+  /**
+   * Validate a single data item from API response
+   */
+  const isValidDataItem = useCallback(item => {
+    if (!item || typeof item !== 'object') return false;
+    if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
+    if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
+    if (!item.date || !isValidISODate(item.date)) return false;
+    return true;
+  }, []);
+
+  /**
+   * Validate and process API response data
+   */
+  const processApiResponse = useCallback(
+    apiData => {
+      if (!apiData || typeof apiData !== 'object') {
+        throw new Error('Invalid response structure: expected an object');
+      }
+
+      if (!Array.isArray(apiData.data)) {
+        throw new Error('Invalid response structure: data property is not an array');
+      }
+
+      const validatedData = apiData.data.filter(isValidDataItem);
+
+      if (validatedData.length !== apiData.data.length) {
+        logger.logInfo(
+          `Data validation: Filtered out ${apiData.data.length -
+            validatedData.length} invalid items`,
+        );
+      }
+
+      setData(validatedData);
+      setTotalCost(typeof apiData.totalCost === 'number' ? apiData.totalCost : 0);
+
+      if (isDevelopmentEnvironment()) {
+        toast.info('Using mock data');
+      }
+    },
+    [isValidDataItem],
+  );
+
+  /**
+   * Handle fetch errors with retry logic for 304 responses
+   */
+  const fetchWithRetry = useCallback(async (endpointPath, fetchOptions) => {
+    let response = await fetch(endpointPath, fetchOptions);
+
+    logger.logInfo(`Response status: ${response.status} ${response.statusText}`);
+    logger.logInfo(`Response Content-Type: ${response.headers.get('Content-Type')}`);
+
+    if (response.status === 304) {
+      const cacheBuster = `_t=${Date.now()}`;
+      const retryUrl = endpointPath.includes('?')
+        ? `${endpointPath}&${cacheBuster}`
+        : `${endpointPath}?${cacheBuster}`;
+      logger.logInfo(`Retrying with cache-busting URL: ${retryUrl}`);
+      response = await fetch(retryUrl, fetchOptions);
+    }
+
+    return response;
+  }, []);
+
+  /**
+   * Validate response content type and status
+   */
+  const validateResponse = useCallback(async response => {
+    if (!response.ok) {
+      const errorText = await response.text();
+      logger.logError(
+        new Error(
+          `API request failed with status ${response.status}. Response: ${errorText.substring(
+            0,
+            200,
+          )}`,
+        ),
+      );
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const contentType = response.headers.get('Content-Type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const responseText = await response.text();
+      logger.logError(
+        new Error(
+          `Expected JSON response but got ${contentType}. Response preview: ${responseText.substring(
+            0,
+            200,
+          )}`,
+        ),
+      );
+      throw new Error(
+        `Invalid response type: expected JSON but got ${contentType ||
+          'unknown'}. This usually means the request was caught by the frontend router.`,
+      );
+    }
+  }, []);
+
   // API data fetching with fallback to mock data
   useEffect(() => {
     // Prevent multiple simultaneous API calls
@@ -224,157 +350,39 @@ export default function PaidLaborCost() {
       isFetchingRef.current = true;
       setLoading(true);
       try {
-        // Build query parameters
-        const params = new URLSearchParams();
-
-        // Add projects parameter if a specific project is selected
-        if (projectFilter !== 'All Projects') {
-          params.append('projects', JSON.stringify([projectFilter]));
-        }
-
-        // Add tasks parameter if tasks are selected
-        // Empty array means all tasks (no filter), so only send if tasks are selected
-        if (Array.isArray(taskFilter) && taskFilter.length > 0) {
-          params.append('tasks', JSON.stringify(taskFilter));
-        }
-
-        // Add date_range parameter when at least one date is selected
-        // No dates selected means all data (no filter)
-        // Convert Date objects to ISO 8601 strings for API
-        if (dateRange.startDate || dateRange.endDate) {
-          params.append(
-            'date_range',
-            JSON.stringify({
-              start_date: dateToISOString(dateRange.startDate),
-              end_date: dateToISOString(dateRange.endDate),
-            }),
-          );
-        }
-
-        // Build the URL with query string using the full API endpoint
+        const params = buildQueryParams();
         const queryString = params.toString();
         const apiBaseUrl = ENDPOINTS.APIEndpoint();
         const endpointPath = queryString
           ? `${apiBaseUrl}/labor-cost?${queryString}`
           : `${apiBaseUrl}/labor-cost`;
 
-        // Get JWT token from localStorage for authorization
         const token = localStorage.getItem(config.tokenKey);
-
-        // Prepare headers with authorization and cache control
         const headers = {
           'Content-Type': 'application/json',
           'Cache-Control': 'no-cache',
           Pragma: 'no-cache',
+          ...(token && { Authorization: token }),
         };
 
-        if (token) {
-          headers.Authorization = token;
-        }
-
-        // Log request details for debugging
         logger.logInfo(`Fetching labor cost data from: ${endpointPath}`);
         logger.logInfo(
           `Headers: ${JSON.stringify({ ...headers, Authorization: token ? '***' : 'none' })}`,
         );
 
-        // Disable caching to prevent 304 responses
         const fetchOptions = {
           method: 'GET',
           headers,
-          cache: 'no-store', // Prevent browser from caching responses
+          cache: 'no-store',
         };
 
-        let response = await fetch(endpointPath, fetchOptions);
-
-        // Log response status for debugging
-        logger.logInfo(`Response status: ${response.status} ${response.statusText}`);
-        logger.logInfo(`Response Content-Type: ${response.headers.get('Content-Type')}`);
-
-        // Handle 304 Not Modified - retry with cache-busting timestamp
-        if (response.status === 304) {
-          // 304 means cached, but fetch doesn't return body for 304
-          // Retry with cache-busting query parameter
-          const cacheBuster = `_t=${Date.now()}`;
-          const retryUrl = endpointPath.includes('?')
-            ? `${endpointPath}&${cacheBuster}`
-            : `${endpointPath}?${cacheBuster}`;
-          logger.logInfo(`Retrying with cache-busting URL: ${retryUrl}`);
-          response = await fetch(retryUrl, fetchOptions);
-        }
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          logger.logError(
-            new Error(
-              `API request failed with status ${response.status}. Response: ${errorText.substring(
-                0,
-                200,
-              )}`,
-            ),
-          );
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-
-        // Check if response is actually JSON before parsing
-        const contentType = response.headers.get('Content-Type');
-        if (!contentType || !contentType.includes('application/json')) {
-          const responseText = await response.text();
-          logger.logError(
-            new Error(
-              `Expected JSON response but got ${contentType}. Response preview: ${responseText.substring(
-                0,
-                200,
-              )}`,
-            ),
-          );
-          throw new Error(
-            `Invalid response type: expected JSON but got ${contentType ||
-              'unknown'}. This usually means the request was caught by the frontend router.`,
-          );
-        }
+        const response = await fetchWithRetry(endpointPath, fetchOptions);
+        await validateResponse(response);
 
         const apiData = await response.json();
         logger.logInfo(`Successfully fetched data: ${apiData.data?.length || 0} items`);
 
-        // Validate response structure
-        if (!apiData || typeof apiData !== 'object') {
-          throw new Error('Invalid response structure: expected an object');
-        }
-
-        // Extract data array and totalCost from response
-        if (Array.isArray(apiData.data)) {
-          // Validate data structure and format
-          const validatedData = apiData.data.filter(item => {
-            if (!item || typeof item !== 'object') return false;
-            if (typeof item.project !== 'string' || typeof item.task !== 'string') return false;
-            if (typeof item.cost !== 'number' || isNaN(item.cost)) return false;
-            if (!item.date) return false;
-            // Validate date format (should be ISO 8601 from backend)
-            if (!isValidISODate(item.date)) return false;
-            return true;
-          });
-
-          if (validatedData.length !== apiData.data.length) {
-            logger.logInfo(
-              `Data validation: Filtered out ${apiData.data.length -
-                validatedData.length} invalid items`,
-            );
-          }
-
-          setData(validatedData);
-        } else {
-          throw new Error('Invalid response structure: data property is not an array');
-        }
-
-        // Extract and set totalCost (handle 0 or undefined)
-        const cost = typeof apiData.totalCost === 'number' ? apiData.totalCost : 0;
-        setTotalCost(cost);
-
-        // Show toast in dev environment to indicate dev database has mock data
-        if (isDevelopmentEnvironment()) {
-          toast.info('Using mock data');
-        }
+        processApiResponse(apiData);
       } catch (error) {
         logger.logError(error);
         toast.error('Error fetching data. Please try again later.');
@@ -387,7 +395,7 @@ export default function PaidLaborCost() {
     };
 
     fetchData();
-  }, [projectFilter, taskFilter, dateRange.startDate, dateRange.endDate]);
+  }, [buildQueryParams, fetchWithRetry, validateResponse, processApiResponse]);
 
   // Fetch all available tasks (without task filter) to populate dropdown options
   // This runs independently from the main data fetch and doesn't include task filter
