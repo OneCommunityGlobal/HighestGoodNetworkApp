@@ -161,6 +161,9 @@ import CommunityCalendar from './components/CommunityPortal/Calendar/CommunityCa
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+import ResourceRequestForm from './components/ResourceRequest/ResourceRequestForm/ResourceRequestForm';
+import ResourceRequestList from './components/ResourceRequest/ResourceRequestList/ResourceRequestList';
+import ResourceManagementDashboard from './components/ResourceRequest/ResourceManagementDashboard/ResourceManagementDashboard';
 
 import PRReviewTeamAnalytics from './components/HGNPRDashboard/PRReviewTeamAnalytics';
 import PRDashboardOverview from './components/HGNPRDashboard/PRDashboardOverview';
@@ -777,6 +780,13 @@ export default (
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
         <Route path="/educationportal/login" component={EPLogin} />
         <EPProtectedRoute path="/educationportal/tasks/upload" exact component={WriteTaskUpload} />
+        <EPProtectedRoute path="/educator/requests" exact component={ResourceRequestList} />
+        <EPProtectedRoute path="/educator/requests/new" exact component={ResourceRequestForm} />
+        <EPProtectedRoute
+          path="/pm/dashboard/resources"
+          exact
+          component={ResourceManagementDashboard}
+        />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
           exact
