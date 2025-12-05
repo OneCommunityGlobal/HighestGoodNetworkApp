@@ -6,8 +6,11 @@ import {
 } from "./api";
 import { Button } from "reactstrap";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
 
 function AdminUnansweredFAQ() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [list, setList] = useState([]);
   const [answerText, setAnswerText] = useState("");
 
@@ -53,11 +56,18 @@ function AdminUnansweredFAQ() {
   };
 
   return (
-    <div>
-      <h2>Unanswered Questions (Admin)</h2>
+    <div className={darkMode ? "bg-dark text-light p-3" : "p-3"}>
+      <h2 className={darkMode ? "text-light" : ""}>Unanswered Questions (Admin)</h2>
 
       {list.map((item) => (
-        <div key={item._id} style={{ marginBottom: 20, borderBottom: "1px solid #ccc" }}>
+        <div
+          key={item._id}
+          className={`p-3 mb-3 ${darkMode
+              ? "bg-darkmode-liblack text-light border-secondary"
+              : "border-bottom"
+            }`}
+          style={{ borderBottom: darkMode ? "1px solid #555" : "1px solid #ccc" }}
+        >
           <p><strong>Q:</strong> {item.question}</p>
 
           <textarea
@@ -65,14 +75,23 @@ function AdminUnansweredFAQ() {
             placeholder="Write answer here..."
             value={answerText}
             onChange={(e) => setAnswerText(e.target.value)}
-            style={{ width: "100%", marginBottom: 10 }}
+            className={`w-100 mb-2 p-2 ${darkMode ? "bg-dark text-light border-0" : ""
+              }`}
           />
 
-          <Button color="success" onClick={() => handleAnswer(item._id)}>
+          <Button
+            color="success"
+            className={darkMode ? "bg-success text-light border-0" : ""}
+            onClick={() => handleAnswer(item._id)}
+          >
             Submit Answer
           </Button>{" "}
 
-          <Button color="danger" onClick={() => handleDelete(item._id)}>
+          <Button
+            color="danger"
+            className={darkMode ? "bg-danger text-light border-0" : ""}
+            onClick={() => handleDelete(item._id)}
+          >
             Delete
           </Button>
         </div>

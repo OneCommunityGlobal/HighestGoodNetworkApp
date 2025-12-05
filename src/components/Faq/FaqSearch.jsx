@@ -3,12 +3,15 @@ import { debounce } from 'lodash';
 import { Button } from 'reactstrap';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 import { getAllFAQs, searchFAQs, logUnansweredQuestion } from './api';
 import styles from './FaqSearch.module.css';
 
 toast.configure();
 
 function FaqSearch() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [allFAQs, setAllFAQs] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
@@ -17,23 +20,18 @@ function FaqSearch() {
   const [expandedFAQ, setExpandedFAQ] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
-
-    const fetchFAQs = async () => {
-      try {
-        const response = await getAllFAQs();
-        if (isMounted) {
-          setAllFAQs(response.data);
-          setSuggestions(response.data);
-        }
-      } catch (error) {
-        console.error('Error fetching FAQs:', error);
-      }
-    };
-
-    fetchFAQs();
-    return () => { isMounted = false; };
+    loadAllFAQs();
   }, []);
+
+  const loadAllFAQs = async () => {
+    try {
+      const response = await getAllFAQs();
+      setAllFAQs(response.data);
+      setSuggestions(response.data);
+    } catch (error) {
+      console.error('Error fetching FAQs:', error);
+    }
+  };
 
   const debouncedSearch = useMemo(
     () =>
@@ -54,7 +52,8 @@ function FaqSearch() {
     setSearchQuery(query);
 
     if (query.trim().length === 0) {
-      setSuggestions(allFAQs);
+      debouncedSearch.cancel();
+      loadAllFAQs();
       setNotFound(false);
       return;
     }
@@ -92,15 +91,21 @@ function FaqSearch() {
   };
 
   return (
-    <div className={styles.container}>
-      <h2 className={styles.heading}>Frequently Asked Questions</h2>
+    <div
+      className={`${styles.container} ${darkMode ? styles.darkContainer : ''
+        }`}
+    >
+      <h2 className={`${styles.heading} ${darkMode ? styles.darkText : ''}`}>
+        Frequently Asked Questions
+      </h2>
 
       <input
         type="text"
         value={searchQuery}
         onChange={handleSearchChange}
         placeholder="Search FAQs"
-        className={styles.searchInput}
+        className={`${styles.searchInput} ${darkMode ? styles.darkInput : ''
+          }`}
       />
 
       {suggestions.length > 0 && (
@@ -110,26 +115,19 @@ function FaqSearch() {
               <button
                 type="button"
                 onClick={() => toggleFAQ(faq._id)}
-                className={`${styles.faqButton} ${
-                  expandedFAQ === faq._id ? styles.faqButtonExpanded : ''
-                }`}
+                className={`${styles.faqButton} ${expandedFAQ === faq._id ? styles.faqButtonExpanded : ''
+                  } ${darkMode ? styles.darkFAQButton : ''}`}
               >
                 <strong>{faq.question}</strong>
                 {expandedFAQ === faq._id ? <FaChevronUp /> : <FaChevronDown />}
               </button>
 
               {expandedFAQ === faq._id && (
-                <div className={styles.answerBox}>
+                <div
+                  className={`${styles.answerBox} ${darkMode ? styles.darkAnswerBox : ''
+                    }`}
+                >
                   <p>{faq.answer}</p>
-                  <p>
-                    <a
-                      href="https://onecommunityglobal.org/collaboration/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Visit here to learn more
-                    </a>
-                  </p>
                 </div>
               )}
             </li>
@@ -138,9 +136,13 @@ function FaqSearch() {
       )}
 
       {notFound && (
-        <div className={styles.noResults}>
+        <div className={`${styles.noResults} ${darkMode ? styles.darkText : ''}`}>
           <p>No results found.</p>
-          <Button color="primary" onClick={handleLogUnanswered} disabled={logging}>
+          <Button
+            color="primary"
+            onClick={handleLogUnanswered}
+            disabled={logging}
+          >
             {logging ? 'Logging...' : 'Log this question and notify Owner'}
           </Button>
         </div>
