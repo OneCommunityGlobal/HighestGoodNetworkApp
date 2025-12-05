@@ -193,6 +193,10 @@ const WeeklySummariesReport = props => {
   const [state, setState] = useState(initialState);
   const [permissionState, setPermissionState] = useState(intialPermissionState);
 
+  const displayedSummaries = state.showOnlyMismatched
+    ? state.teamCodeWarningUsers
+    : state.filteredSummaries;
+
   // Create filters including toggle and extra members
   const [createFilterModalOpen, setCreateFilterModalOpen] = useState(false);
   const [updateFilterModalOpen, setUpdateFilterModalOpen] = useState(false);
@@ -1889,7 +1893,7 @@ const WeeklySummariesReport = props => {
           <div>
             {/* MultiSelect with Save/Delete Buttons */}
             <div style={{ position: 'relative' }}>
-              {state.teamCodeWarningUsers.length > 0 && (
+              {/*  {state.teamCodeWarningUsers.length > 0 && (
                 <>
                   <i
                     className="fa fa-info-circle text-danger"
@@ -1909,7 +1913,39 @@ const WeeklySummariesReport = props => {
                     {state.teamCodeWarningUsers.length} users have mismatched team codes!
                   </ReactTooltip>
                 </>
+              )}*/}
+              {state.teamCodeWarningUsers.length > 0 && (
+                <>
+                  <i
+                    className={`fa fa-info-circle text-danger ${
+                      state.showOnlyMismatched ? styles.activeWarningIcon : ''
+                    }`}
+                    data-tip
+                    data-placement="top"
+                    data-for="teamCodeWarningTooltip"
+                    style={{
+                      position: 'absolute',
+                      left: '-25px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      fontSize: '20px',
+                      cursor: 'pointer',
+                    }}
+                    onClick={handleToggleMismatchedFilter}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={e => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        handleToggleMismatchedFilter();
+                      }
+                    }}
+                  />
+                  <ReactTooltip id="teamCodeWarningTooltip" place="top" effect="solid">
+                    {`${state.teamCodeWarningUsers.length} users have mismatched team codes! Smash this "i" button to see who they are 👊`}
+                  </ReactTooltip>
+                </>
               )}
+
               <Select
                 isMulti
                 isSearchable
@@ -2240,17 +2276,20 @@ const WeeklySummariesReport = props => {
                         </Button>
                       </Col>
                     </Row>
-                    {state.filteredSummaries && state.filteredSummaries.length > 0 ? (
+                    {/*{state.filteredSummaries && state.filteredSummaries.length > 0 ? (*/}
+                    {displayedSummaries && displayedSummaries.length > 0 ? (
                       <>
                         <Row>
                           <Col>
-                            <b>Total Team Members:</b> {state.filteredSummaries.length}
+                            {/*  <b>Total Team Members:</b> {state.filteredSummaries.length}*/}
+                            <b>Total Team Members:</b> {displayedSummaries.length}
                           </Col>
                         </Row>
                         <Row>
                           <Col>
                             <FormattedReport
-                              summaries={state.filteredSummaries}
+                              //summaries={state.filteredSummaries}
+                              summaries={displayedSummaries}
                               weekIndex={index}
                               bioCanEdit={permissionState.bioEditPermission}
                               canEditSummaryCount={permissionState.canEditSummaryCount}
