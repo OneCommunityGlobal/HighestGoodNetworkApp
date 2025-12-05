@@ -132,6 +132,11 @@ align-items: center;
 gap: 6px;
 cursor: pointer;
 font-size: 0.9rem;
+transition: color 0.3s;
+}
+
+.dark-theme .ept-toggle {
+  color: #e2e8f0;
 }
 
 .ept-toggle input {

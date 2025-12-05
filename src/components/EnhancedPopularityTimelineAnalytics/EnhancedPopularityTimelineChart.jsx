@@ -379,6 +379,68 @@ const EnhancedPopularityTimelineChart = () => {
     return roleOptions.filter(option => selectedRoles.includes(option.value));
   }, [roleOptions, selectedRoles]);
 
+  const customSelectStyles = {
+    control: (provided, state) => ({
+      ...provided,
+      backgroundColor: darkMode ? '#2d3748' : '#ffffff',
+      borderColor: darkMode ? '#4a5568' : '#dcdfe6',
+      color: darkMode ? '#e2e8f0' : '#2c3e50',
+      boxShadow: state.isFocused ? '0 0 0 2px rgba(52, 152, 219, 0.2)' : null,
+      '&:hover': {
+        borderColor: darkMode ? '#63b3ed' : '#3498db',
+      },
+    }),
+    menu: provided => ({
+      ...provided,
+      backgroundColor: darkMode ? '#2d3748' : '#ffffff',
+      border: darkMode ? '1px solid #4a5568' : '1px solid #dcdfe6',
+      zIndex: 9999,
+    }),
+    option: (provided, state) => ({
+      ...provided,
+      backgroundColor: state.isFocused
+        ? darkMode
+          ? '#4a5568'
+          : '#deebff' // Hover state
+        : darkMode
+        ? '#2d3748'
+        : '#ffffff', // Default state
+      color: darkMode ? '#e2e8f0' : '#2c3e50',
+      cursor: 'pointer',
+      ':active': {
+        backgroundColor: darkMode ? '#2c5282' : '#b2d4ff',
+      },
+    }),
+    singleValue: provided => ({
+      ...provided,
+      color: darkMode ? '#e2e8f0' : '#2c3e50',
+    }),
+    multiValue: provided => ({
+      ...provided,
+      backgroundColor: darkMode ? '#4a5568' : '#e6e6e6',
+    }),
+    multiValueLabel: provided => ({
+      ...provided,
+      color: darkMode ? '#e2e8f0' : '#333333',
+    }),
+    multiValueRemove: provided => ({
+      ...provided,
+      color: darkMode ? '#e2e8f0' : '#333333',
+      ':hover': {
+        backgroundColor: darkMode ? '#e53e3e' : '#ffbdad',
+        color: 'white',
+      },
+    }),
+    input: provided => ({
+      ...provided,
+      color: darkMode ? '#e2e8f0' : '#2c3e50',
+    }),
+    placeholder: provided => ({
+      ...provided,
+      color: darkMode ? '#a0aec0' : '#808080',
+    }),
+  };
+
   // --- Loading and Error States ---
   if (rolesLoading || dataLoading) {
     return (
@@ -454,6 +516,7 @@ const EnhancedPopularityTimelineChart = () => {
               classNamePrefix="ept-select"
               closeMenuOnSelect={false}
               hideSelectedOptions={false}
+              styles={customSelectStyles}
             />
           </div>
 
