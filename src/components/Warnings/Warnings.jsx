@@ -97,45 +97,40 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       description: warningText,
       monitorData,
     };
-    // console.log('warningData for dashboard warnings: ', warningData);
     let toastMessage = '';
     dispatch(postWarningByUserId(warningData))
       .then(res => {
-        // console.log('res of adding warning to user: ', res);
         if (res.error) {
           setError(res);
           setUsersWarnings([]);
           return;
         }
         if (warningData.color === 'blue') {
-          // console.log('enter blue warning');
           toastMessage = 'Successfully logged and tracked';
         } else if (warningData.color === 'yellow') {
-          toastMessage = 'Warning successfully logged';
+          toastMessage = 'Warning successfully logged and sent by email.';
         } else {
-          // seems the date part is wrong format, either use moment, or modify the given date with moment
+          let description = warningData.description;
+          if (warningData.description === 'Blu Sq Rmvd - For No Summary') {
+            description = `not submitting a weekly summary (${warningData.description})`;
+          } else if (warningData.description === 'Blu Sq Rmvd - Hrs Close Enoug') {
+            description = `completing most of your hours but not all (${warningData.description})`;
+          }
           const newBlueSquare = {
-            // date: warningData.date,
             date: moment(warningData.date).format('YYYY-MM-DD'),
-            // description: warningData.description,
-            description: `Issued a blue square for ${warningData.description} for the ${
+            description: `Issued a blue square for being reminded/warned for the ${
               selectedWarning.numberOfWarnings + 1 === 3
                 ? `${selectedWarning.numberOfWarnings + 1}rd`
                 : `${selectedWarning.numberOfWarnings + 1}th`
-            } time.`,
-            // createdDate: moment
-            //   .tz('America/Los_Angeles')
-            //   .toISOString()
-            //   .split('T')[0],
+            } time for "${description}".`,
             createdDate: moment().format('YYYY-MM-DD'),
           };
-          // setModalTitle('Blue Square');
           axios
             .post(ENDPOINTS.ADD_BLUE_SQUARE(warningData.userId), {
               blueSquare: newBlueSquare,
             })
             .then(res => {
-              toast.success('Successfully logged and Blue Square issued');
+              toast.success('Successfully logged and Blue Square issued on profile and by email.');
             })
             .catch(error => {
               // eslint-disable-next-line no-console
