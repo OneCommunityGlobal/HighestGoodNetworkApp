@@ -18,7 +18,7 @@ import './Badge.css';
 import { boxStyle, boxStyleDark } from '~/styles';
 import { updateBadge, closeAlert } from '../../actions/badgeManagement';
 import badgeTypes from './BadgeTypes';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 
 function EditBadgePopup(props) {
   // eslint-disable-next-line
