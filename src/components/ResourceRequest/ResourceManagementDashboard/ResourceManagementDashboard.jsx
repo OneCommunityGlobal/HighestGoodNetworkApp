@@ -3,6 +3,12 @@ import { Container, Button, Alert, Modal, ModalHeader, ModalBody, ModalFooter } 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faXmark, faSync, faFilter, faEye } from '@fortawesome/free-solid-svg-icons';
 import useResourceFetch from '../hooks/useResourceFetch';
+import {
+  getStatusColor,
+  getPriorityColor,
+  filterByStatus,
+  getRequestStats,
+} from '../utils/resourceRequestUtils';
 import styles from './ResourceManagementDashboard.module.css';
 
 const ResourceManagementDashboard = () => {
@@ -66,27 +72,8 @@ const ResourceManagementDashboard = () => {
     setShowModal(true);
   };
 
-  const getStatusColor = status => {
-    const colors = {
-      pending: '#ffc107',
-      approved: '#28a745',
-      denied: '#dc3545',
-    };
-    return colors[status] || '#6c757d';
-  };
-
-  const getPriorityColor = priority => {
-    const colors = {
-      low: '#17a2b8',
-      medium: '#007bff',
-      high: '#fd7e14',
-      urgent: '#dc3545',
-    };
-    return colors[priority] || '#6c757d';
-  };
-
-  const filteredRequests =
-    filterStatus === 'all' ? requests : requests.filter(req => req.status === filterStatus);
+  const filteredRequests = filterByStatus(requests, filterStatus);
+  const stats = getRequestStats(requests);
 
   if (loading) {
     return (
@@ -115,24 +102,24 @@ const ResourceManagementDashboard = () => {
       {filteredRequests.length > 0 && (
         <div className={styles.summaryStatsTop}>
           <div className={styles.statCard}>
-            <div className={styles.statValue}>{requests.length}</div>
+            <div className={styles.statValue}>{stats.total}</div>
             <div className={styles.statLabel}>Total Requests</div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statValue} style={{ color: '#ffc107' }}>
-              {requests.filter(r => r.status === 'pending').length}
+            <div className={styles.statValue} style={{ color: getStatusColor('pending') }}>
+              {stats.pending}
             </div>
             <div className={styles.statLabel}>Pending</div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statValue} style={{ color: '#28a745' }}>
-              {requests.filter(r => r.status === 'approved').length}
+            <div className={styles.statValue} style={{ color: getStatusColor('approved') }}>
+              {stats.approved}
             </div>
             <div className={styles.statLabel}>Approved</div>
           </div>
           <div className={styles.statCard}>
-            <div className={styles.statValue} style={{ color: '#dc3545' }}>
-              {requests.filter(r => r.status === 'denied').length}
+            <div className={styles.statValue} style={{ color: getStatusColor('denied') }}>
+              {stats.denied}
             </div>
             <div className={styles.statLabel}>Denied</div>
           </div>

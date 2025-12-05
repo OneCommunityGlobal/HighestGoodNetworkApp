@@ -4,6 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSync, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { useHistory } from 'react-router-dom';
 import useResourceFetch from '../hooks/useResourceFetch';
+import {
+  getStatusBadgeConfig,
+  getPriorityBadgeConfig,
+  filterByStatus,
+  getRequestStats,
+} from '../utils/resourceRequestUtils';
 import styles from './ResourceRequestList.module.css';
 
 const ResourceRequestList = ({ auth }) => {
@@ -24,27 +30,16 @@ const ResourceRequestList = ({ auth }) => {
   };
 
   const getStatusBadge = status => {
-    const statusConfig = {
-      pending: { color: 'warning', icon: '⏳' },
-      approved: { color: 'success', icon: '✓' },
-      denied: { color: 'danger', icon: '✕' },
-    };
-    const config = statusConfig[status] || statusConfig.pending;
+    const config = getStatusBadgeConfig(status);
     return (
       <Badge color={config.color} className={styles.statusBadge}>
-        {config.icon} {status?.charAt(0).toUpperCase() + status?.slice(1)}
+        {config.icon} {config.label}
       </Badge>
     );
   };
 
   const getPriorityBadge = priority => {
-    const priorityConfig = {
-      low: { color: 'info', bgColor: '#d1ecf1' },
-      medium: { color: 'primary', bgColor: '#cfe2ff' },
-      high: { color: 'warning', bgColor: '#fff3cd' },
-      urgent: { color: 'danger', bgColor: '#f8d7da' },
-    };
-    const config = priorityConfig[priority] || priorityConfig.medium;
+    const config = getPriorityBadgeConfig(priority);
     return (
       <span className={styles.priorityBadge} style={{ backgroundColor: config.bgColor }}>
         {priority?.toUpperCase()}
@@ -52,8 +47,8 @@ const ResourceRequestList = ({ auth }) => {
     );
   };
 
-  const filteredRequests =
-    filterStatus === 'all' ? requests : requests.filter(req => req.status === filterStatus);
+  const filteredRequests = filterByStatus(requests, filterStatus);
+  const stats = getRequestStats(requests);
 
   const handleNewRequest = () => {
     history.push('/educator/requests/new');
@@ -200,25 +195,19 @@ const ResourceRequestList = ({ auth }) => {
       {filteredRequests.length > 0 && (
         <div className={styles.summaryStats}>
           <div className={styles.statItem}>
-            <div className={styles.statNumber}>{requests.length}</div>
+            <div className={styles.statNumber}>{stats.total}</div>
             <div className={styles.statLabel}>Total Requests</div>
           </div>
           <div className={styles.statItem}>
-            <div className={styles.statNumber}>
-              {requests.filter(r => r.status === 'pending').length}
-            </div>
+            <div className={styles.statNumber}>{stats.pending}</div>
             <div className={styles.statLabel}>Pending</div>
           </div>
           <div className={styles.statItem}>
-            <div className={styles.statNumber}>
-              {requests.filter(r => r.status === 'approved').length}
-            </div>
+            <div className={styles.statNumber}>{stats.approved}</div>
             <div className={styles.statLabel}>Approved</div>
           </div>
           <div className={styles.statItem}>
-            <div className={styles.statNumber}>
-              {requests.filter(r => r.status === 'denied').length}
-            </div>
+            <div className={styles.statNumber}>{stats.denied}</div>
             <div className={styles.statLabel}>Denied</div>
           </div>
         </div>
