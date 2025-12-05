@@ -124,6 +124,7 @@ const initialState = {
   memberDict: {},
   // Saved filters functionality
   saveFilterModalOpen: false,
+  showOnlyMismatched: false,
 };
 
 const intialPermissionState = {
@@ -1114,6 +1115,13 @@ const WeeklySummariesReport = props => {
     setState(prevState => ({
       ...prevState,
       chartShow: !prevState.chartShow,
+    }));
+  };
+
+  const handleToggleMismatchedFilter = () => {
+    setState(prevState => ({
+      ...prevState,
+      showOnlyMismatched: !prevState.showOnlyMismatched,
     }));
   };
 
