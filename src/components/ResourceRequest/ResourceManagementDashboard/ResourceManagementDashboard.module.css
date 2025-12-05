@@ -254,7 +254,6 @@
 
 .viewBtn {
   background-color: #17a2b8;
-  border-color: #17a2b8;
   color: white;
   padding: 0.5rem 0.85rem;
   font-size: 0.85rem;
@@ -270,7 +269,6 @@
 
 .viewBtn:hover {
   background-color: #138496;
-  border-color: #117a8b;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(23, 162, 184, 0.2);
 }
