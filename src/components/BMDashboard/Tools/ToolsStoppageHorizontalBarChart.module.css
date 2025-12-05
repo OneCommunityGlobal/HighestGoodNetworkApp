@@ -103,6 +103,21 @@
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  background-color: #ffffff !important; /* White background to show through transparent canvas */
+}
+
+/* Dark mode for chart container */
+:global(.tools-availability-page.dark-mode .tools-horizontal-chart-container) {
+  background-color: #2c3344 !important;
+}
+
+/* Ensure Chart.js canvas wrapper has background */
+:global(.tools-horizontal-chart-container > div) {
+  background-color: #ffffff !important;
+}
+
+:global(.tools-availability-page.dark-mode .tools-horizontal-chart-container > div) {
+  background-color: #2c3344 !important;
 }
 
 /* Override min-height for tools-availability-page when used in card context */
@@ -113,6 +128,12 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  background-color: #ffffff !important; /* White background in light mode to prevent grey parent card background from showing through - !important to override any conflicting styles */
+}
+
+/* Dark mode background for tools-availability-page */
+:global(.tools-availability-page.dark-mode) {
+  background-color: #2c3344 !important; /* Dark background in dark mode */
 }
 
 /* Filter controls layout for small screens */

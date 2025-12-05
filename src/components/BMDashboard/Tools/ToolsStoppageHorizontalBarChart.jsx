@@ -322,8 +322,12 @@ export default function ToolsStoppageHorizontalBarChart() {
       x: {
         stacked: true,
         grid: { color: darkMode ? '#364156' : '#e0e0e0' },
+        border: {
+          color: darkMode ? '#ffffff' : '#000000', // Make axis border visible in dark mode
+          width: 1,
+        },
         ticks: {
-          color: darkMode ? '#e0e0e0' : '#000',
+          color: darkMode ? '#ffffff' : '#000', // Brighter color in dark mode for better visibility
           font: { size: getFontSize() },
           maxRotation: 0,
         },
@@ -337,8 +341,12 @@ export default function ToolsStoppageHorizontalBarChart() {
         },
         stacked: true,
         grid: { display: false },
+        border: {
+          color: darkMode ? '#ffffff' : '#000000', // Make axis border visible in dark mode
+          width: 1,
+        },
         ticks: {
-          color: darkMode ? '#e0e0e0' : '#000',
+          color: darkMode ? '#ffffff' : '#000', // Brighter color in dark mode for better visibility
           font: { size: getFontSize() },
         },
         categoryPercentage: getCategoryPercentage(),
@@ -403,7 +411,16 @@ export default function ToolsStoppageHorizontalBarChart() {
         {loading && <div className="tools-chart-loading">Loading tool availability data...</div>}
 
         {!loading && selectedProject && data.length > 0 && (
-          <div style={{ width: '100%', maxWidth: '100%', position: 'relative' }}>
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '100%',
+              position: 'relative',
+              backgroundColor: darkMode ? '#2c3344' : '#ffffff',
+              borderRadius: '4px',
+              padding: '8px',
+            }}
+          >
             <Bar data={chartData} options={chartOptions} height={getChartHeight()} />
           </div>
         )}
