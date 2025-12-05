@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef} from 'react';
 import { Dropdown } from 'react-bootstrap';
 import {
   BarChart,
@@ -82,34 +82,38 @@ const insightDefinitions = {
   'Highest cost venues/hr': 'Venue with the highest hourly cost during the selected period.',
 };
 
+function filterDataByDate(data, timePeriod) {
+  return data;
+}
+
 function CustomTooltip({ active, payload, darkMode }) {
   if (!active || !payload || !payload.length) return null;
 
-  const data = payload[0].payload;
+const data = payload[0].payload;
 
-  return (
-    <div
-      className={styles.chartTooltip}
-      style={{
-        backgroundColor: darkMode ? '#1e293b' : '#ffffff',
-        color: darkMode ? '#f8fafc' : '#111827',
-      }}
-    >
-      <div className={styles.tooltipTitle}>{data.name}</div>
+return (
+  <div
+    className={styles.chartTooltip}
+    style={{
+      backgroundColor: darkMode ? '#1e293b' : '#ffffff',
+      color: darkMode ? '#f8fafc' : '#111827',
+    }}
+  >
+    <div className={styles.tooltipTitle}>{data.name}</div>
 
-      <div className={styles.tooltipRow}>
-        <span className={styles.tooltipDot} style={{ background: '#22c55e' }} />
-        <span>Returned</span>
-        <span className={styles.tooltipValue}>{data.returned}</span>
-      </div>
-
-      <div className={styles.tooltipRow}>
-        <span className={styles.tooltipDot} style={{ background: '#fca5a5' }} />
-        <span>Loaned</span>
-        <span className={styles.tooltipValue}>{data.loaned}</span>
-      </div>
+    <div className={styles.tooltipRow}>
+      <span className={styles.tooltipDot} style={{ background: '#22c55e' }} />
+      <span>Returned</span>
+      <span className={styles.tooltipValue}>{data.returned}</span>
     </div>
-  );
+
+    <div className={styles.tooltipRow}>
+      <span className={styles.tooltipDot} style={{ background: '#fca5a5' }} />
+      <span>Loaned</span>
+      <span className={styles.tooltipValue}>{data.loaned}</span>
+    </div>
+  </div>
+);
 }
 
 export default function ResourceUsage() {
@@ -120,10 +124,21 @@ export default function ResourceUsage() {
   const [insights, setInsights] = useState(allInsights['Last Week']);
 
   const darkMode = useSelector(state => state.theme.darkMode);
+  const badgeRefs = useRef([]);
 
   useEffect(() => {
-    setData(allData[resourceType.toLowerCase()]);
-  }, [resourceType]);
+    badgeRefs.current.forEach(badge => {
+      if (badge) {
+        badge.style.setProperty('color', '#000', 'important');
+      }
+    });
+  }, [insights]);
+
+  useEffect(() => {
+    const resourceTypeKey = resourceType.toLowerCase();
+    const filteredData = filterDataByDate(allData[resourceTypeKey], timePeriod);
+    setData(filteredData);
+  }, [resourceType, timePeriod, allData]);
 
   useEffect(() => {
     setInsights(allInsights[insightsTimePeriod]);
@@ -172,85 +187,98 @@ export default function ResourceUsage() {
             Amount
           </div>
 
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke={darkMode ? '#3A506B' : '#eee'}
-                vertical={false}
-              />
+          {data && data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={darkMode ? '#3A506B' : '#eee'}
+                  vertical={false}
+                />
 
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{
-                  fill: darkMode ? '#ffffff' : '#666',
-                  fontWeight: 700,
-                  fontSize: 12,
-                }}
-              />
+                <XAxis
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: darkMode ? '#ffffff' : '#666',
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}
+                />
 
-              <YAxis
-                axisLine={false}
-                tickLine={false}
-                tick={{
-                  fill: darkMode ? '#ffffff' : '#666',
-                  fontWeight: 700,
-                  fontSize: 12,
-                }}
-              />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{
+                    fill: darkMode ? '#ffffff' : '#666',
+                    fontWeight: 700,
+                    fontSize: 12,
+                  }}
+                />
 
-              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+                <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
 
-              <Legend
-                align="right"
-                verticalAlign="top"
-                iconType="circle"
-                iconSize={8}
-                wrapperStyle={{
-                  color: darkMode ? '#ffffff' : '#666',
-                }}
-              />
+                <Legend
+                  align="right"
+                  verticalAlign="top"
+                  iconType="circle"
+                  iconSize={8}
+                  wrapperStyle={{
+                    color: darkMode ? '#ffffff' : '#666',
+                  }}
+                />
 
-              <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+                <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: '100%',
+              }}
+            >
+              <p>No data available for the selected time period and resource type.</p>
+            </div>
+          )}
+          </div>
+          </div>
 
-      {/* RIGHT SECTION */}
-      <div className={`${styles.insightsSection} ${darkMode ? styles.darkInsightsSection : ''}`}>
-        <div className={styles.insightsHeader}>
-          <h2>Insights</h2>
-
-          <Dropdown>
-            <Dropdown.Toggle className={styles.customDropdown}>
-              {insightsTimePeriod}
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
-                This Week
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
-                Last Week
-              </Dropdown.Item>
-              <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
-                This Month
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-
+          {/* RIGHT SECTION */}
+          <div className={`${styles.insightsSection} ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+            <div className={styles.insightsHeader}>
+              <h2>Insights</h2>
+                    <Dropdown>
+                      <Dropdown.Toggle className={styles.customDropdown}>
+                        {insightsTimePeriod}
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        <Dropdown.Item onClick={() => setInsightsTimePeriod('This Week')}>
+                          This Week
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => setInsightsTimePeriod('Last Week')}>
+                          Last Week
+                        </Dropdown.Item>
+                        <Dropdown.Item onClick={() => setInsightsTimePeriod('This Month')}>
+                          This Month
+                        </Dropdown.Item>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
         <div className={styles.insightsGrid}>
           {insights.map((insight, idx) => (
             <div
               key={idx}
               className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
             >
-              {/* 🔹 ADD THIS LINE RIGHT HERE */}
-              <div className={styles.insightTooltip}>{insightDefinitions[insight.title]}</div>
+              {/* Tooltip description */}
+              <div className={styles.insightTooltip}>
+                {insightDefinitions[insight.title]}
+              </div>
 
               <div
                 className={styles.insightTitle}
@@ -261,17 +289,20 @@ export default function ResourceUsage() {
               </div>
 
               <div
+                ref={el => (badgeRefs.current[idx] = el)}
                 className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
                 style={{ backgroundColor: insight.color }}
               >
                 {insight.value}
               </div>
 
-              <div className={styles.insightMeta}>Based on returned vs loaned comparison</div>
+              <div className={styles.insightMeta}>
+                Based on returned vs loaned comparison
+              </div>
             </div>
           ))}
         </div>
+              </div>
       </div>
-    </div>
   );
 }
