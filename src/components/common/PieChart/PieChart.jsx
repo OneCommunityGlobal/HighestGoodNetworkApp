@@ -13,8 +13,45 @@ export function PieChart({
   projectsData = [],
 }) {
   const [totalHours, setTotalHours] = useState(0);
-  const colors = useMemo(() => generateArrayOfUniqColors(tasksData?.length), [tasksData]);
-  const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
+
+  // Custom vibrant color palette from Muzammil's PR #2992
+  const customColors = [
+    '#FF6B6B',
+    '#4ECDC4',
+    '#45B7D1',
+    '#96CEB4',
+    '#FFBE0B',
+    '#FF006E',
+    '#8338EC',
+    '#3A86FF',
+    '#FB5607',
+    '#38B000',
+    '#7209B7',
+    '#F72585',
+    '#4CC9F0',
+    '#80ED99',
+    '#F15BB5',
+  ];
+
+  // Generate additional colors if needed
+  const colors = useMemo(() => {
+    if (tasksData?.length > customColors.length) {
+      return [
+        ...customColors,
+        ...generateArrayOfUniqColors(tasksData.length - customColors.length),
+      ];
+    }
+    return customColors;
+  }, [tasksData]);
+
+  // Add domain fix to ensure consistent color mapping
+  const color = useMemo(() => {
+    const domain = tasksData?.map(project => project.projectId) || [];
+    return d3
+      .scaleOrdinal()
+      .domain(domain)
+      .range(colors);
+  }, [colors, tasksData]);
 
   const [togglePercentage, setTogglePercentage] = useState(false);
   const [selectedProjects, setSelectedProjects] = useState(
