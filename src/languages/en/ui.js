@@ -32,6 +32,7 @@ export const INVENTORY = 'Inventory';
 export const REPORTS = 'Reports';
 export const WEEKLY_SUMMARIES_REPORT = 'Weekly Summaries Report';
 export const TOTAL_ORG_SUMMARY = 'Total Org Summary';
+export const ACTUAL_COST_BREAKDOWN = 'Actual Cost Breakdown';
 export const TEAM_LOCATIONS = 'Team Locations';
 export const TOTAL_CONSTRUCTION_SUMMARY = 'Total Construction Summary';
 export const TEAMS = 'Teams';
