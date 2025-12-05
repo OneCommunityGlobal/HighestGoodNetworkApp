@@ -386,7 +386,7 @@ function WeeklyProjectSummary() {
         }),
       },
     ],
-    [quantityOfMaterialsUsedData, darkMode],
+    [quantityOfMaterialsUsedData],
   );
 
   const handleSaveAsPDF = async () => {
