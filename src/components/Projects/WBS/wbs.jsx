@@ -46,32 +46,18 @@ const WBS = props => {
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className={`container pt-2 border rounded ${darkMode ? 'text-light' : ''}`}style={darkMode ? { backgroundColor: '#1B2A41', alignItems: 'normal' } : { alignItems: 'normal' }}>
-          <nav aria-label="breadcrumb">
-            <div className={`d-flex align-items-center breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} 
-              style={{ 
-                ...darkMode ? boxStyleDark : boxStyle,
-                backgroundColor: darkMode ? '' : '#E9ECEF',
-                margin: '0 0 16px',
-                padding: '12px 16px',
-                position: 'relative'
-              }}>
-              <div style={{ position: 'absolute', left: '1rem' }}>
-                <NavItem tag={Link} to={`/projects/`}>
-                  <button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
-                    <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-                  </button>
-                  <span style={{ marginLeft: '8px' }}>Return to Project List</span>
-                </NavItem>
-              </div>
-              <div style={{ 
-                width: '100%',
-                textAlign: 'center',
-                fontWeight: 'bold',
-                fontSize: '1.0rem'  
-              }}>Proj Name: {projectName}</div>
-            </div>
+        <div className={`container mb-5 pt-2 border rounded ${darkMode ? 'text-light bg-space-cadet' : ''}`}>
+          <nav aria-label="breadcrumb" className='align-items-start w-100'>
+            <NavItem tag={Link} to={`/projects/`}>
+              <button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
+                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                <span style={{ marginLeft: '8px' }}>Return to Project List</span>
+              </button>
+            </NavItem>
           </nav>
+          <div className="w-100 text-center font-weight-bold my-3" style={{fontSize: "1.5rem"}}>
+            Proj Name: {projectName}
+          </div>
 
           <AddWBS 
             projectId={projectId} 
@@ -86,10 +72,10 @@ const WBS = props => {
               </div>
             </div>
           ) : (
-            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : '' }`}>
+            <table className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : '' }`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                  <th scope="col" style={{ width: '150px', textAlign: 'center'}}>#</th>
+                  <th scope="col" style={{ maxWidth: '150px', textAlign: 'center' }}>#</th>
                   <th scope="col" style={{ textAlign: 'left' }}>
                     Name
                     <span style={{ marginLeft: '8px', cursor: 'pointer' }}>

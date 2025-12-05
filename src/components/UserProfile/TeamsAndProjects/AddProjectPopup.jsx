@@ -113,7 +113,6 @@ const AddProjectPopup = React.memo(props => {
     await dispatch(assignProject(selectedProject._id, props.userId, 'Assign'));
     // ✅ Make sure we're passing the complete project object
     props.onSelectAssignProject?.(selectedProject);
-    toast.success(`Assigned to "${selectedProject.projectName}".`);
     props.onClose?.();
   } catch (e) {
     // eslint-disable-next-line no-console
