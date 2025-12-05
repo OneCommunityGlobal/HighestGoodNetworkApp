@@ -295,13 +295,13 @@ function WeeklyProjectSummary() {
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
             <div
-              className="weekly-project-summary-card normal-card"
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
               <SupplierPerformanceGraph />
             </div>
             <div
-              className="weekly-project-summary-card normal-card"
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
               <ToolsStoppageHorizontalBarChart />
