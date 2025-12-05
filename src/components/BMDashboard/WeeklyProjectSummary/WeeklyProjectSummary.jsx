@@ -18,6 +18,7 @@ import ExpenseBarChart from './Financials/ExpenseBarChart';
 import ActualVsPlannedCost from './ActualVsPlannedCost/ActualVsPlannedCost';
 import TotalMaterialCostPerProject from './TotalMaterialCostPerProject/TotalMaterialCostPerProject';
 import EmbedInteractiveMap from '../InteractiveMap/EmbedInteractiveMap';
+import InteractiveMap from '../InteractiveMap/InteractiveMap';
 import styles from './WeeklyProjectSummary.module.css';
 import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
@@ -248,7 +249,7 @@ function WeeklyProjectSummary() {
       {
         title: 'Material Consumption',
         key: 'Material Consumption',
-        className: 'large',
+        className: 'full',
         content: [1, 2, 3].map((_, index) => {
           let content;
           if (index === 1) {
@@ -344,7 +345,7 @@ function WeeklyProjectSummary() {
             className={`${styles.weeklyProjectSummaryCard} ${styles.mapCard}`}
             style={{ height: '500px', padding: '0' }}
           >
-            <EmbedInteractiveMap />
+            <InteractiveMap />
           </div>
         ),
       },
