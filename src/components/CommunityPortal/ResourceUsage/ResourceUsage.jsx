@@ -13,32 +13,33 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import styles from './ResourceUsage.module.css';
+import { useSelector } from 'react-redux';
 
 const allData = {
   material: [
-    { name: 'Material A', returned: 5, loaned: 3, date: '2024-12-05' },
-    { name: 'Material B', returned: 8, loaned: 4, date: '2024-12-06' },
-    { name: 'Material C', returned: 12, loaned: 6, date: '2024-12-07' },
-    { name: 'Material D', returned: 25, loaned: 8, date: '2024-12-08' },
-    { name: 'Material E', returned: 15, loaned: 3, date: '2024-12-09' },
-    { name: 'Material F', returned: 4, loaned: 6, date: '2024-12-10' },
-    { name: 'Material G', returned: 2, loaned: 1, date: '2024-12-11' },
+    { name: 'Material A', returned: 5, loaned: 3 },
+    { name: 'Material B', returned: 8, loaned: 4 },
+    { name: 'Material C', returned: 12, loaned: 6 },
+    { name: 'Material D', returned: 25, loaned: 8 },
+    { name: 'Material E', returned: 15, loaned: 3 },
+    { name: 'Material F', returned: 4, loaned: 6 },
+    { name: 'Material G', returned: 2, loaned: 1 },
   ],
   equipment: [
-    { name: 'Laptops', returned: 15, loaned: 5, date: '2024-12-05' },
-    { name: 'Projectors', returned: 10, loaned: 3, date: '2024-12-06' },
-    { name: 'Chairs', returned: 30, loaned: 10, date: '2024-12-07' },
-    { name: 'Tables', returned: 20, loaned: 5, date: '2024-12-08' },
-    { name: 'Microphones', returned: 8, loaned: 2, date: '2024-12-09' },
+    { name: 'Laptops', returned: 15, loaned: 5 },
+    { name: 'Projectors', returned: 10, loaned: 3 },
+    { name: 'Chairs', returned: 30, loaned: 10 },
+    { name: 'Tables', returned: 20, loaned: 5 },
+    { name: 'Microphones', returned: 8, loaned: 2 },
   ],
   venue: [
-    { name: 'Venue A', returned: 5, loaned: 3, date: '2024-12-05' },
-    { name: 'Venue B', returned: 8, loaned: 4, date: '2024-12-06' },
-    { name: 'Venue C', returned: 12, loaned: 6, date: '2024-12-07' },
-    { name: 'Venue D', returned: 25, loaned: 8, date: '2024-12-08' },
-    { name: 'Venue E', returned: 15, loaned: 3, date: '2024-12-09' },
-    { name: 'Venue F', returned: 4, loaned: 6, date: '2024-12-10' },
-    { name: 'Venue G', returned: 2, loaned: 1, date: '2024-12-11' },
+    { name: 'Venue A', returned: 5, loaned: 3 },
+    { name: 'Venue B', returned: 8, loaned: 4 },
+    { name: 'Venue C', returned: 12, loaned: 6 },
+    { name: 'Venue D', returned: 25, loaned: 8 },
+    { name: 'Venue E', returned: 15, loaned: 3 },
+    { name: 'Venue F', returned: 4, loaned: 6 },
+    { name: 'Venue G', returned: 2, loaned: 1 },
   ],
 };
 
@@ -69,61 +70,50 @@ const allInsights = {
   ],
 };
 
-function CustomTooltip({ active, payload }) {
-  if (active && payload && payload.length) {
-    return (
-      <div className={styles.customTooltip}>
-        <p className="mb-1">{`${payload[0].payload.name}`}</p>
-        <p className="mb-1" style={{ color: '#22c55e' }}>{`Returned: ${payload[0].value}`}</p>
-        <p className="mb-0" style={{ color: '#fca5a5' }}>{`Loaned: ${payload[1].value}`}</p>
-      </div>
-    );
-  }
-  return null;
+function CustomTooltip({ active, payload, darkMode }) {
+  if (!active || !payload || !payload.length) return null;
+
+  const bg = darkMode ? '#1C2541' : '#ffffff';
+  const txt = darkMode ? '#ffffff' : '#000000';
+
+  return (
+    <div className={styles.customTooltip} style={{ background: bg, color: txt }}>
+      <p>{payload[0].payload.name}</p>
+      <p style={{ color: '#22c55e' }}>Returned: {payload[0].value}</p>
+      <p style={{ color: '#fca5a5' }}>Loaned: {payload[1].value}</p>
+    </div>
+  );
 }
 
 export default function ResourceUsage() {
   const [resourceType, setResourceType] = useState('Material');
   const [timePeriod, setTimePeriod] = useState('This Week');
   const [insightsTimePeriod, setInsightsTimePeriod] = useState('Last Week');
-  const [data, setData] = useState(allData.venue);
+  const [data, setData] = useState(allData.material);
   const [insights, setInsights] = useState(allInsights['Last Week']);
 
-  const filterDataByDate = (datas, period) => {
-    // Create different datasets for different time periods to demonstrate filtering
-    const baseData = [...datas];
-
-    switch (period) {
-      case 'This Week':
-        // Show first 3 items for this week
-        return baseData.slice(0, 3);
-      case 'Last Week':
-        // Show middle 3 items for last week
-        return baseData.slice(2, 5);
-      case 'This Month':
-        // Show all items for this month
-        return baseData;
-      default:
-        return baseData;
-    }
-  };
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
-    const resourceTypeKey = resourceType.toLowerCase();
-    const filteredData = filterDataByDate(allData[resourceTypeKey], timePeriod);
-    setData(filteredData);
-  }, [resourceType, timePeriod, allData]);
+    setData(allData[resourceType.toLowerCase()]);
+  }, [resourceType]);
 
   useEffect(() => {
-    setInsights(allInsights[insightsTimePeriod] || allInsights['Last Week']);
+    setInsights(allInsights[insightsTimePeriod]);
   }, [insightsTimePeriod]);
 
   return (
-    <div className={styles.resourceUsageContainer}>
-      {/* Left Section - Chart */}
-      <div className={styles.chartSection}>
+    <div
+      data-testid="resource-usage-container"
+      className={`${styles.resourceUsageContainer} ${
+        darkMode ? 'dark-mode bg-oxford-blue text-light' : ''
+      }`}
+    >
+      {/* LEFT SECTION */}
+      <div className={`${styles.chartSection} ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className={styles.headerSection}>
           <h1>Resources usage</h1>
+
           <div className={styles.filters}>
             <Dropdown>
               <Dropdown.Toggle className={styles.customDropdown}>{resourceType}</Dropdown.Toggle>
@@ -135,6 +125,7 @@ export default function ResourceUsage() {
                 <Dropdown.Item onClick={() => setResourceType('Venue')}>Venue</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
+
             <Dropdown>
               <Dropdown.Toggle className={styles.customDropdown}>{timePeriod}</Dropdown.Toggle>
               <Dropdown.Menu>
@@ -148,61 +139,65 @@ export default function ResourceUsage() {
           </div>
         </div>
 
+        {/* CHART */}
         <div className={styles.chartContainer}>
-          {data && data.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#eee" vertical={false} />
-                <XAxis
-                  dataKey="name"
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fill: '#666', fontSize: 12 }}
-                />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#666', fontSize: 12 }} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend
-                  align="right"
-                  verticalAlign="top"
-                  iconType="circle"
-                  iconSize={8}
-                  wrapperStyle={{ paddingBottom: '20px' }}
-                />
-                <Bar
-                  dataKey="returned"
-                  stackId="a"
-                  fill="#22c55e"
-                  name="Returned"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="loaned"
-                  stackId="a"
-                  fill="#fca5a5"
-                  name="Loaned"
-                  radius={[4, 4, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100%',
-              }}
-            >
-              <p>No data available for the selected time period and resource type.</p>
-            </div>
-          )}
+          <div className={styles.yAxisLabel} style={{ color: darkMode ? '#ffffff' : '#666' }}>
+            Amount
+          </div>
+
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data} margin={{ top: 20, right: 30, left: 30, bottom: 80 }}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={darkMode ? '#3A506B' : '#eee'}
+                vertical={false}
+              />
+
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: darkMode ? '#ffffff' : '#666',
+                  fontWeight: 700,
+                  fontSize: 12,
+                }}
+              />
+
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tick={{
+                  fill: darkMode ? '#ffffff' : '#666',
+                  fontWeight: 700,
+                  fontSize: 12,
+                }}
+              />
+
+              <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
+
+              <Legend
+                align="right"
+                verticalAlign="top"
+                iconType="circle"
+                iconSize={8}
+                wrapperStyle={{
+                  color: darkMode ? '#ffffff' : '#666',
+                }}
+              />
+
+              <Bar dataKey="returned" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="loaned" stackId="a" fill="#fca5a5" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Right Section - Insights */}
-      <div className={styles.insightsSection}>
+      {/* RIGHT SECTION */}
+      <div className={`${styles.insightsSection} ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
         <div className={styles.insightsHeader}>
           <h2>Insights</h2>
+
           <Dropdown>
             <Dropdown.Toggle className={styles.customDropdown}>
               {insightsTimePeriod}
@@ -220,11 +215,18 @@ export default function ResourceUsage() {
             </Dropdown.Menu>
           </Dropdown>
         </div>
+
         <div className={styles.insightsGrid}>
-          {insights.map((insight, index) => (
-            <div key={index} className={styles.insightCard}>
+          {insights.map((insight, idx) => (
+            <div
+              key={idx}
+              className={`${styles.insightCard} ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+            >
               <div className={styles.insightTitle}>{insight.title}</div>
-              <div className={styles.insightBadge} style={{ backgroundColor: insight.color }}>
+              <div
+                className={`${styles.insightBadge} ${darkMode ? 'text-dark' : ''}`}
+                style={{ backgroundColor: insight.color }}
+              >
                 {insight.value}
               </div>
             </div>
