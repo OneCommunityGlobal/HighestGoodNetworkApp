@@ -1,15 +1,29 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
-import './ActivityList.css';
+import { useSelector } from 'react-redux';
+import styles from './ActivityList.module.css';
 // import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [activities, setActivities] = useState([]);
   const [filter, setFilter] = useState({
     type: '',
     date: '',
     location: '',
   });
+
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('activity-list-dark-body');
+    } else {
+      document.body.classList.remove('activity-list-dark-body');
+    }
+
+    return () => {
+      document.body.classList.remove('activity-list-dark-body');
+    };
+  }, [darkMode]);
 
   useEffect(() => {
     // Fetch activities (mock or replace with API call)
@@ -47,11 +61,11 @@ function ActivityList() {
   });
 
   return (
-    <div>
-      <h1>Activity List</h1>
+    <div className={`${styles.activityListContainer} ${darkMode ? 'bg-oxford-blue' : ''}`}>
+      <h1 className={`${styles.heading} ${darkMode ? 'text-light' : ''}`}>Activity List</h1>
 
-      <div className="filters">
-        <label>
+      <div className={`${styles.filters} ${darkMode ? styles.darkModeFilters : ''}`}>
+        <label className={darkMode ? 'text-light' : ''}>
           Type:
           <input
             type="text"
@@ -59,15 +73,22 @@ function ActivityList() {
             value={filter.type}
             onChange={handleFilterChange}
             placeholder="Enter type"
+            className={darkMode ? styles.darkModeInput : ''}
           />
         </label>
 
-        <label>
+        <label className={darkMode ? 'text-light' : ''}>
           Date:
-          <input type="date" name="date" value={filter.date} onChange={handleFilterChange} />
+          <input
+            type="date"
+            name="date"
+            value={filter.date}
+            onChange={handleFilterChange}
+            className={darkMode ? styles.darkModeInput : ''}
+          />
         </label>
 
-        <label>
+        <label className={darkMode ? 'text-light' : ''}>
           Location:
           <input
             type="text"
@@ -75,21 +96,22 @@ function ActivityList() {
             value={filter.location}
             onChange={handleFilterChange}
             placeholder="Enter location"
+            className={darkMode ? styles.darkModeInput : ''}
           />
         </label>
       </div>
-      <div className="activity-list">
+      <div className={`${styles.activityList} ${darkMode ? styles.darkModeList : ''}`}>
         {filteredActivities.length > 0 ? (
           <ul>
             {filteredActivities.map(activity => (
-              <li key={activity.id}>
+              <li key={activity.id} className={darkMode ? styles.darkModeItem : ''}>
                 <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
                 {activity.location}
               </li>
             ))}
           </ul>
         ) : (
-          <p>No activities found</p>
+          <p className={darkMode ? 'text-light' : ''}>No activities found</p>
         )}
       </div>
     </div>
