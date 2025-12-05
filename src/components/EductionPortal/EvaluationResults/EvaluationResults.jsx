@@ -139,7 +139,45 @@ const EvaluationResults = ({ auth }) => {
     return styles.poor;
   };
 
-  // Feedback modal functions
+  // Generate dynamic performance insights based on actual data
+  const getPerformanceInsights = () => {
+    const strongAreas = categories.filter(cat => cat.percentage >= 80);
+    const improvementAreas = categories.filter(cat => cat.percentage < 70);
+
+    const strongText =
+      strongAreas.length > 0
+        ? strongAreas
+            .slice(0, 3)
+            .map(cat => `${cat.name} (${Math.round(cat.percentage)}%)`)
+            .join(', ')
+        : 'various areas';
+
+    const improvementText =
+      improvementAreas.length > 0 && improvementAreas[0]
+        ? `${improvementAreas[0].name} (${Math.round(improvementAreas[0].percentage)}%)`
+        : 'certain areas';
+
+    return { strongText, improvementText, hasImprovementAreas: improvementAreas.length > 0 };
+  };
+
+  const { strongText, improvementText, hasImprovementAreas } = getPerformanceInsights();
+
+  // Calculate summary statistics dynamically
+  const calculateSummaryStats = () => {
+    const totalAssignments = tasks.length;
+    const onTimeCount = tasks.filter(
+      task => task.status === 'On time' || task.status === 'completed',
+    ).length;
+    const lateCount = tasks.filter(task => task.status?.toLowerCase().includes('late')).length;
+    const averageScore = Math.round(
+      tasks.reduce((sum, task) => sum + task.percentage, 0) / tasks.length,
+    );
+
+    return { totalAssignments, onTimeCount, lateCount, averageScore };
+  };
+
+  const { totalAssignments, onTimeCount, lateCount, averageScore } = calculateSummaryStats();
+
   const openFeedbackModal = task => {
     setFeedbackModal({ isOpen: true, task });
   };
@@ -243,13 +281,17 @@ const EvaluationResults = ({ auth }) => {
             <div className={styles.insightsBox}>
               <h4>Performance Insights</h4>
               <p>
-                You performed strongly in <strong>Assignments (80%)</strong>,{' '}
-                <strong>Exams (80%)</strong>, and <strong>Participation (80%)</strong>. You may
-                improve your performance in <strong>Quizzes (60%)</strong> - consider reviewing quiz
-                preparation strategies.
+                You performed strongly in <strong>{strongText}</strong>.
+                {hasImprovementAreas && (
+                  <>
+                    {' '}
+                    You may improve your performance in <strong>{improvementText}</strong> -
+                    consider reviewing preparation strategies.
+                  </>
+                )}
               </p>
               <div className={styles.actionButtons}>
-                <button className={styles.actionButton}>Review Quiz Messages</button>
+                <button className={styles.actionButton}>Review Assignment Messages</button>
                 <button className={styles.actionButton}>Study Schedule Tips</button>
               </div>
             </div>
@@ -416,19 +458,19 @@ const EvaluationResults = ({ auth }) => {
           {/* Summary Cards */}
           <div className={styles.summaryCards}>
             <div className={styles.summaryCard}>
-              <div className={`${styles.cardNumber} ${styles.total}`}>6</div>
+              <div className={`${styles.cardNumber} ${styles.total}`}>{totalAssignments}</div>
               <div className={styles.cardLabel}>Total Assignments</div>
             </div>
             <div className={styles.summaryCard}>
-              <div className={`${styles.cardNumber} ${styles.onTime}`}>5</div>
+              <div className={`${styles.cardNumber} ${styles.onTime}`}>{onTimeCount}</div>
               <div className={styles.cardLabel}>On Time</div>
             </div>
             <div className={styles.summaryCard}>
-              <div className={`${styles.cardNumber} ${styles.late}`}>1</div>
+              <div className={`${styles.cardNumber} ${styles.late}`}>{lateCount}</div>
               <div className={styles.cardLabel}>Late Submissions</div>
             </div>
             <div className={styles.summaryCard}>
-              <div className={`${styles.cardNumber} ${styles.average}`}>72%</div>
+              <div className={`${styles.cardNumber} ${styles.average}`}>{averageScore}%</div>
               <div className={styles.cardLabel}>Avg Score</div>
             </div>
           </div>
