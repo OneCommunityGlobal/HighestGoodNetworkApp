@@ -43,7 +43,6 @@
 
 .communityCalendar {
   font-family: Arial, sans-serif;
-  /* max-width: 90%; */
   margin: 0 auto;
   padding: 20px;
   background-color: #fff;
@@ -121,7 +120,6 @@
 
 
 .reactCalendar :global(.react-calendar__month-view__days__day) {
-  height: 80px;
   overflow: auto;
   height: -webkit-fill-available;
   border: 1px solid #000000;
@@ -209,7 +207,7 @@
 .eventDetails button {
   margin-top: 10px;
   padding: 10px 15px;
-  background-color: #2196f3;
+  background-color: #1976d2;
   border: none;
   color: white;
   border-radius: 5px;
@@ -419,7 +417,7 @@
 
 .statusFillingFast {
   background-color: #fef5e7;
-  color: #c05621;
+  color: #8c3b0f;
   border: 1px solid #fbd38d;
 }
 
@@ -443,13 +441,13 @@
 }
 
 .eventModalDark .statusFillingFast {
-  background-color: #ea580c;
+  background-color: #c2410c;
   color: #ffffff;
   border-color: #f97316;
 }
 
 .eventModalDark .statusFull {
-  background-color: #16a34a;
+  background-color: #15803d;
   color: #ffffff;
   border-color: #22c55e;
 }
