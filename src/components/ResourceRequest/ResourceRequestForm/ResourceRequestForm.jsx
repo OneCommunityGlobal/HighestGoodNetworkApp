@@ -3,6 +3,7 @@ import { Container, Button, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useHistory } from 'react-router-dom';
+import useResourceFetch from '../hooks/useResourceFetch';
 import styles from './ResourceRequestForm.module.css';
 
 const ResourceRequestForm = () => {
@@ -12,8 +13,8 @@ const ResourceRequestForm = () => {
     details: '',
     priority: 'medium',
   });
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const { loading, fetchWithErrorHandling } = useResourceFetch();
 
   const handleInputChange = e => {
     const { name, value } = e.target;
@@ -25,39 +26,14 @@ const ResourceRequestForm = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setLoading(true);
     setMessage({ type: '', text: '' });
 
-    try {
-      // Call the backend API
-      const response = await fetch('/educator/resource-requests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    const result = await fetchWithErrorHandling('/educator/resource-requests', {
+      method: 'POST',
+      body: formData,
+    });
 
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('text/html')) {
-          throw new Error(
-            'Backend endpoint not found. Please ensure the API server is running and the endpoint is configured.',
-          );
-        }
-        throw new Error(`Server error: ${response.status} ${response.statusText}`);
-      }
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        const contentType = response.headers.get('content-type') || 'unknown format';
-        throw new Error(
-          `Invalid response format from server. Expected JSON but received: ${contentType}`,
-        );
-      }
-
+    if (result.success) {
       setMessage({
         type: 'success',
         text: 'Your resource request has been submitted successfully!',
@@ -74,13 +50,11 @@ const ResourceRequestForm = () => {
       setTimeout(() => {
         history.push('/educator/requests');
       }, 2000);
-    } catch (error) {
+    } else {
       setMessage({
         type: 'error',
-        text: error.message || 'An error occurred while submitting your request.',
+        text: result.error || 'An error occurred while submitting your request.',
       });
-    } finally {
-      setLoading(false);
     }
   };
 

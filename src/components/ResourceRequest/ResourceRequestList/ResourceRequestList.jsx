@@ -3,55 +3,23 @@ import { Container, Button, Alert, Badge } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSync, faFilter } from '@fortawesome/free-solid-svg-icons';
 import { useHistory } from 'react-router-dom';
+import useResourceFetch from '../hooks/useResourceFetch';
 import styles from './ResourceRequestList.module.css';
 
 const ResourceRequestList = ({ auth }) => {
   const history = useHistory();
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const { loading, error, setError, fetchWithErrorHandling } = useResourceFetch();
 
   useEffect(() => {
     fetchRequests();
   }, []);
 
   const fetchRequests = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch('/educator/resource-requests', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('text/html')) {
-          throw new Error(
-            'Backend endpoint not found. Please ensure the API server is running and the endpoint is configured.',
-          );
-        }
-        throw new Error(`Server error: ${response.status} ${response.statusText}`);
-      }
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        const contentType = response.headers.get('content-type') || 'unknown format';
-        throw new Error(
-          `Invalid response format from server. Expected JSON but received: ${contentType}`,
-        );
-      }
-      setRequests(data || []);
-    } catch (err) {
-      setError(err.message || 'An error occurred while fetching requests.');
-    } finally {
-      setLoading(false);
+    const result = await fetchWithErrorHandling('/educator/resource-requests');
+    if (result.success) {
+      setRequests(result.data || []);
     }
   };
 

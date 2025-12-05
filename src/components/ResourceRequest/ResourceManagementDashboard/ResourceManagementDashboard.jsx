@@ -2,115 +2,63 @@ import React, { useState, useEffect } from 'react';
 import { Container, Button, Alert, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faXmark, faSync, faFilter, faEye } from '@fortawesome/free-solid-svg-icons';
+import useResourceFetch from '../hooks/useResourceFetch';
 import styles from './ResourceManagementDashboard.module.css';
 
 const ResourceManagementDashboard = () => {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const { loading, error, setError, fetchWithErrorHandling } = useResourceFetch();
 
   useEffect(() => {
     fetchRequests();
   }, [filterStatus]);
 
   const fetchRequests = async () => {
-    setLoading(true);
-    setError('');
+    const url =
+      filterStatus === 'all'
+        ? '/pm/resource-requests'
+        : `/pm/resource-requests?status=${filterStatus}`;
 
-    try {
-      const url =
-        filterStatus === 'all'
-          ? '/pm/resource-requests'
-          : `/pm/resource-requests?status=${filterStatus}`;
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('text/html')) {
-          throw new Error(
-            'Backend endpoint not found. Please ensure the API server is running and the endpoint is configured.',
-          );
-        }
-        throw new Error(`Server error: ${response.status} ${response.statusText}`);
-      }
-
-      let data;
-      try {
-        data = await response.json();
-      } catch (parseError) {
-        const contentType = response.headers.get('content-type') || 'unknown format';
-        throw new Error(
-          `Invalid response format from server. Expected JSON but received: ${contentType}`,
-        );
-      }
-      setRequests(data || []);
-    } catch (err) {
-      setError(err.message || 'An error occurred while fetching requests.');
-    } finally {
-      setLoading(false);
+    const result = await fetchWithErrorHandling(url);
+    if (result.success) {
+      setRequests(result.data || []);
     }
   };
 
   const handleApprove = async requestId => {
     setActionLoading(true);
-    try {
-      const response = await fetch(`/pm/resource-requests/${requestId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'approved' }),
-      });
+    const result = await fetchWithErrorHandling(`/pm/resource-requests/${requestId}`, {
+      method: 'PUT',
+      body: { status: 'approved' },
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to approve request');
-      }
-
+    if (result.success) {
       setError('');
       fetchRequests();
       setShowModal(false);
       setSelectedRequest(null);
-    } catch (err) {
-      setError(err.message || 'An error occurred while approving the request.');
-    } finally {
-      setActionLoading(false);
     }
+    setActionLoading(false);
   };
 
   const handleDeny = async requestId => {
     setActionLoading(true);
-    try {
-      const response = await fetch(`/pm/resource-requests/${requestId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'denied' }),
-      });
+    const result = await fetchWithErrorHandling(`/pm/resource-requests/${requestId}`, {
+      method: 'PUT',
+      body: { status: 'denied' },
+    });
 
-      if (!response.ok) {
-        throw new Error('Failed to deny request');
-      }
-
+    if (result.success) {
       setError('');
       fetchRequests();
       setShowModal(false);
       setSelectedRequest(null);
-    } catch (err) {
-      setError(err.message || 'An error occurred while denying the request.');
-    } finally {
-      setActionLoading(false);
     }
+    setActionLoading(false);
   };
 
   const openRequestDetail = request => {
