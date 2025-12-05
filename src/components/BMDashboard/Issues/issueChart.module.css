@@ -243,13 +243,15 @@
 }
 
 /* Labels */
-.dateLabel {
+.dateLabelLight {
   font-size: 14px;
   font-weight: 500;
   color: #333;
 }
 
-.dark .dateLabel {
+.dateLabelDark {
+  font-size: 14px;
+  font-weight: 500;
   color: #cfd7e3;
 }
 
@@ -276,6 +278,12 @@
 /* React select */
 .selectReact {
   width: 100%;
+}
+
+:global(.react-datepicker__close-icon::after) {
+  background: none;
+  color: #b9b9b9;
+  font-size: 18px;
 }
 
 /* DARK MODE CONTROL */
@@ -359,6 +367,13 @@
   padding: 20px 0;
   font-size: 16px;
 }
+
+.rowLabel {
+  margin: 8px 0 8px;
+  font-weight: 600;
+  font-size: 16px;
+}
+
 
 /* Responsive */
 @media (max-width: 650px) {
