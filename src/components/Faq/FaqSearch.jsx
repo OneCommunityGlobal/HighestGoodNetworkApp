@@ -91,7 +91,8 @@ function FaqSearch() {
   };
 
   return (
-    <div
+    <div className={darkMode ? styles.fullDarkBackground : ''}>
+      <div
       className={`${styles.container} ${darkMode ? styles.darkContainer : ''
         }`}
     >
@@ -111,7 +112,7 @@ function FaqSearch() {
       {suggestions.length > 0 && (
         <ul className={styles.faqList}>
           {suggestions.map((faq) => (
-            <li key={faq._id} className={styles.faqItem}>
+            <li key={faq._id} className={`${styles.faqItem} ${darkMode ? styles.darkFaqItem : ''}`}>
               <button
                 type="button"
                 onClick={() => toggleFAQ(faq._id)}
@@ -148,6 +149,8 @@ function FaqSearch() {
         </div>
       )}
     </div>
+    </div>
+    
   );
 }
 
