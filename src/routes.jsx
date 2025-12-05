@@ -2,7 +2,6 @@ import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ApplicantsChart from './components/ApplicantsChart';
 import AutoUpdate from './components/AutoUpdate';
 import TaskEditSuggestions from './components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from './utils/routePermissions';
@@ -22,8 +21,8 @@ import UserProfileEdit from './components/UserProfile/UserProfileEdit';
 import EditableInfoModal from './components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from './components/UserProfile/EditableModal/RoleInfoModal';
 import PRDashboard from './components/PRDashboard';
-import ApplicantsAgeChart from './components/ApplicantsChart';
 import ApplicationTimeChartPage from './components/ApplicationTimeChart';
+import ApplicantsChart from './components/ApplicantsChart';
 import ApplicationAnalyticsContainer from './components/ApplicationAnalytics';
 import UserSkillsProfile from './components/HGNSkillsDashboard/SkillsProfilePage/components/UserSkillsProfile';
 
@@ -137,19 +136,20 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
-import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
-import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
-import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 
 import RentalChart from './components/BMDashboard/RentalChart/RentalChart';
 import ReturnedLateChart from './components/BMDashboard/RentalChart/ReturnedLateChart';
 import CreateNewTeam from './components/BMDashboard/Team/CreateNewTeam/CreateNewTeam';
+import MostSusceptibleTools from './components/MostSusceptible/toolBreakdownChart';
+import HoursPledgedChart from './components/JobAnalytics/HoursPledgedChart/HoursPledgedChart';
+import InjurySeverityDashboard from './components/BMDashboard/Injuries/InjurySeverityChart';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
 import CPLogin from './components/CommunityPortal/Login';
 import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+import ActivityComments from './components/CommunityPortal/Activities/activityId/ActivityComments';
 import Feedbackform from './components/CommunityPortal/Activities/Feedbackform';
 import FollowUpEmailTemplate from './components/CommunityPortal/Activities/FollowUpEmailTemplate';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
@@ -378,13 +378,6 @@ export default (
           routePermissions={RoutePermissions.prDashboard}
         />
         <ProtectedRoute
-          path="/pr-dashboard"
-          exact
-          component={PRDashboard}
-          fallback
-          routePermissions={RoutePermissions.prDashboard}
-        />
-        <ProtectedRoute
           path="/reports"
           exact
           component={Reports}
@@ -399,13 +392,6 @@ export default (
           component={Projects}
           fallback
           allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
-          routePermissions={RoutePermissions.projects}
-        />
-        <ProtectedRoute
-          path="/projects"
-          exact
-          component={Projects}
-          fallback
           routePermissions={RoutePermissions.projects}
         />
         <ProtectedRoute
@@ -579,7 +565,7 @@ export default (
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
         />
         <ProtectedRoute
-          path="/communityportal/activity/\:activityid/feedback"
+          path="/communityportal/activity/:activityId/feedback"
           exact
           component={FeedbackRatingEntry}
           fallback
@@ -666,13 +652,7 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialListView} />
         <BMProtectedRoute path="/bmdashboard/consumables/add" fallback component={AddConsumable} />
         <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
-        <BMProtectedRoute
-          path="/bmdashboard/equipment/:equipmentId"
-          fallback
-          exact
-          component={EquipmentDetail}
-        />
-        <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
+        {/* Note: equipment detail route defined above; duplicates removed */}
         <BMProtectedRoute
           path="/bmdashboard/tools/:equipmentId/update"
           component={UpdateEquipment}
@@ -804,6 +784,11 @@ export default (
         />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
         <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
+        <CPProtectedRoute
+          path="/communityportal/activity/:activityId/engagement/Comments"
+          exact
+          component={ActivityComments}
+        />
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
@@ -815,7 +800,6 @@ export default (
         <Route path="/suggestedjobslist" component={SuggestedJobsList} />
         <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
-        <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />

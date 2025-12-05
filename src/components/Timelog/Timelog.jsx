@@ -32,7 +32,7 @@ import {
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
-import './Timelog.css';
+import timeLog from './Timelog.module.css';
 import styles from './followup-modal.module.css';
 import classnames from 'classnames';
 import { connect, useSelector } from 'react-redux';
@@ -68,6 +68,7 @@ import WeeklySummaries from './WeeklySummaries';
 import TimestampsTab from './TimestampsTab';
 import Badge from '../Badge';
 import { ENDPOINTS } from '~/utils/URL';
+// should be clear now too in fixing styling differences
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
 // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
@@ -571,7 +572,7 @@ const generateAllTimeEntryItems = () => {
     }
     if (timeLogState.activeTab === 4) {
       return (
-        <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+        <p className={`ml-1 ${timeLog['responsive-font-size']} ${timeLog['text-dark']} text-dark`} style={{ textAlign: 'left' }}>
   Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
   <b>{formatDate(timeLogState.toDate)}</b>
 </p>
@@ -579,7 +580,7 @@ const generateAllTimeEntryItems = () => {
       );
     }
     return (
-      <p className="ml-1 responsive-font-size text-dark" style={{ textAlign: 'left' }}>
+      <p className={`ml-1 ${timeLog['responsive-font-size']} ${timeLog['text-dark']} text-dark`} style={{ textAlign: 'left' }}>
   Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
   <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
 </p>
@@ -601,7 +602,7 @@ const generateAllTimeEntryItems = () => {
   const buildOptions = () => {
     const projectsObject = {};
     const options = [
-      <option className="responsive-font-size" value="all" key="TimeLogDefaultProjectOrTask">
+      <option className={timeLog['responsive-font-size']} value="all" key="TimeLogDefaultProjectOrTask">
         Select Project/Task (all)
       </option>,
     ];
@@ -643,7 +644,7 @@ const generateAllTimeEntryItems = () => {
 
       // Add project option
       options.push(
-        <option className="responsive-font-size" value={projectId} key={`TimeLog_${projectId}`}>
+        <option className={timeLog['responsive-font-size']} value={projectId} key={`TimeLog_${projectId}`}>
           {projectName}
         </option>,
       );
@@ -657,7 +658,7 @@ const generateAllTimeEntryItems = () => {
             value={wbsId}
             key={`TimeLog_${wbsId}`}
             disabled
-            className={`${darkMode ? 'text-white-50' : ''} responsive-font-size`}
+            className={`${darkMode ? 'text-white-50' : ''} ${timeLog['responsive-font-size']}`}
           >
             {`\u2003WBS: ${wbsName}`}
           </option>,
@@ -668,7 +669,7 @@ const generateAllTimeEntryItems = () => {
 
           // Add task option
           options.push(
-            <option className="responsive-font-size" value={taskId} key={`TimeLog_${taskId}`}>
+            <option className={timeLog['responsive-font-size']} value={taskId} key={`TimeLog_${taskId}`}>
               {`\u2003\u2003 ↳ ${taskName}`}
             </option>,
           );
@@ -764,7 +765,7 @@ const generateAllTimeEntryItems = () => {
 
 return (
   <div
-    className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
+    className={`${timeLog['container-timelog-wrapper']} ${darkMode ? `bg-oxford-blue ${timeLog['bg-oxford-blue']}` : ''}`}
     style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}
   >
 
@@ -796,7 +797,7 @@ return (
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <div className={`${!props.isDashboard ? 'timelogPageContainer' : 'ml-3 min-width-100'}`}>
+        <div className={`${!props.isDashboard ? `${timeLog['timelogPageContainer']}`: `ml-3 ${timeLog['min-width-100']}`}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -808,21 +809,21 @@ return (
               </div>
             </div>
           ) : null}
-          <Row style={{ minWidth: '100%' }}>
+          <Row className='row' style={{ minWidth: '100%' }}>
             <Col md={12} className="px-0 mx-0">
               <Card className={darkMode ? 'border-0' : ''}>
                 <CardHeader
                   className={
                     darkMode
-                      ? 'card-header-shadow-dark bg-space-cadet text-light'
-                      : 'card-header-shadow'
+                      ? `${timeLog['card-header-shadow-dark']} bg-space-cadet text-light ${timeLog['text-light']}`
+                      : `${timeLog['card-header-shadow']}`
                   }
                 >
                   <Row style={{ minWidth: '100%' }} className="px-0 mx-0">
                     <Col style={{ minWidth: '100%' }} className="px-0 mx-0">
                       <CardTitle tag="h4">
                         <div className="d-flex align-items-center">
-                          <span className="taskboard-header-title mb-1 mr-2">
+                          <span className={`${timeLog['taskboard-header-title']} mb-1 mr-2`}>
                             Tasks and Timelogs
                           </span>
                           <EditableInfoModal
@@ -858,16 +859,16 @@ return (
                       </CardTitle>
                       <CardSubtitle
                         tag="h6"
-                        className={`${darkMode ? 'text-azure' : 'text-muted'} responsive-font-size`}
+                        className={`${darkMode ? 'text-azure' : `text-muted ${timeLog['text-muted']} text-muted`} ${timeLog['responsive-font-size']}`}
                       >
                         Viewing time entries logged in the last 3 weeks
                       </CardSubtitle>
                     </Col>
                     <Col className="px-0">
                       {isAuthUser ? (
-                        <div className="tasks-and-timelog-header-add-time-div mt-2">
+                        <div className={`${timeLog['tasks-and-timelog-header-add-time-div']} mt-2`}>
                           <div>
-                            <div className="followup-tooltip-container">
+                            <div className={`${timeLog['followup-tooltip-container']}`}>
                               
                               <Button
                                 className="btn btn-success"
@@ -878,7 +879,7 @@ return (
                                 <TooltipPortal
                                 darkMode={darkMode}
                                   maxWidth={720}
-                                  trigger={<i className="fa fa-info-circle ml-2" aria-label="More info" />}
+                                  trigger={<i className={`fa fa-info-circle ${timeLog['fa-info-circle']} ml-2`} aria-label="More info" />}
                                 >
                                   {/* your same tooltip HTML goes here; keep the stopPropagation on links if you like */}
                                   <div
@@ -942,7 +943,7 @@ return (
                           authUser.role !== 'Owner'
                         ) &&
                         canPutUserProfileImportantInfo && (
-                          <div className="tasks-and-timelog-header-add-time-div">
+                          <div className={`${timeLog['tasks-and-timelog-header-add-time-div']}`}>
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
                                 Add Time Entry {!isAuthUser && `for ${fullName}`}
@@ -954,7 +955,7 @@ return (
                       <Modal
                         isOpen={timeLogState.infoModal}
                         toggle={openInfo}
-                        className={darkMode ? 'text-light' : ''}
+                        className={darkMode ? `text-light ${timeLog['text-light']}` : ''}
                       >
                         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
                         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -992,10 +993,10 @@ return (
                 </CardHeader>
                 <CardBody
                   className={
-                    darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'
+                    darkMode ? `${timeLog['card-header-shadow-dark']} bg-space-cadet` : `${timeLog['card-header-shadow']}`
                   }
                 >
-                  <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
+                  <Nav tabs className={`${timeLog['task-and-timelog-card-nav']} mb-1 ${timeLog['responsive-font-size']}`}>
                     <NavItem>
                       <NavLink
                         className={`${classnames({ active: timeLogState.activeTab === 0 })} ${
@@ -1119,17 +1120,21 @@ return (
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">
-                        <FormGroup className="mr-2 date-selector-form">
+                        <FormGroup className={`mr-2 ${timeLog['date-selector-form']}`}>
                           <Label
                             for="fromDate"
-                            className={`responsive-font-size mr-2 ml-1 ${
-                              darkMode ? 'text-light' : ''
+                            className={`${timeLog['responsive-font-size']} mr-2 ml-1 ${
+                              darkMode ? `${timeLog['text-light']}` : ''
                             }`}
                           >
                             From
                           </Label>
                           <Input
-                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+                            className={`${timeLog['responsive-font-size']} ${
+                              darkMode
+                                ? `bg-darkmode-liblack text-light ${timeLog['text-light']} border-0 calendar-icon-dark`
+                                : ''
+                            }`}
                             type="date"
                             name="fromDate"
                             id="fromDate"
@@ -1140,12 +1145,16 @@ return (
                         <FormGroup>
                           <Label
                             for="toDate"
-                            className={`responsive-font-size mr-2 ${darkMode ? 'text-light' : ''}`}
+                            className={`${timeLog['responsive-font-size']} mr-2 ${darkMode ? `text-light ${timeLog['text-light']}` : ''}`}
                           >
                             To
                           </Label>
                           <Input
-                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
+                            className={`${timeLog['responsive-font-size']} ${
+                              darkMode
+                                ? `bg-darkmode-liblack text-light ${timeLog['text-light']} border-0 calendar-icon-dark`
+                                : ''
+                            }`}
                             type="date"
                             name="toDate"
                             id="toDate"
@@ -1156,7 +1165,7 @@ return (
                         <Button
                           color="primary"
                           onClick={handleSearch}
-                          className="search-time-entries-btn"
+                          className={`${timeLog['search-time-entries-btn']}`}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search
@@ -1177,11 +1186,11 @@ return (
                     timeLogState.activeTab === 5 ||
                     timeLogState.activeTab === 6 ||
                     timeLogState.activeTab === 7 ? null : (
-                      <Form className="mb-2 responsive-font-size">
+                      <Form className={`mb-2 ${timeLog['responsive-font-size']}`}>
                         <FormGroup>
                           <Label
                             htmlFor="projectSelected"
-                            className={`mr-1 ml-1 mb-1 align-top ${darkMode ? 'text-light' : ''}`}
+                            className={`mr-1 ml-1 mb-1 align-top ${darkMode ? `text-light ${timeLog['text-light']}` : ''}`}
                           >
                             Filter Entries by Project and Task:
                           </Label>
@@ -1201,7 +1210,7 @@ return (
                               });
                             }}
                             multiple
-                            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+                            className={darkMode ? `bg-yinmn-blue text-light ${timeLog['text-light']}` : ''}
                           >
                             {projectOrTaskOptions}
                           </Input>
@@ -1252,9 +1261,7 @@ Timelog.prototype = {
   userId: PropTypes.string,
 };
 
-Timelog.defaultProps = {
-  userId: null,
-};
+// ...existing code...
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
