@@ -8,7 +8,19 @@ import styles from './Myspace.module.css';
 
 const HEADLINE_MIN = 12;
 const HEADLINE_MAX = 95;
-const SUMMARY_MIN = 80;
+const BODY_MIN = 80;
+const MYSPACE_CATEGORY_SUGGESTIONS = [
+  'Announcements',
+  'Art & Design',
+  'Causes & Awareness',
+  'Education',
+  'Health & Wellness',
+  'Lifestyle',
+  'Music',
+  'Science & Tech',
+  'Sustainability',
+  'Volunteering',
+];
 const STOP_WORDS = new Set([
   'about',
   'after',
@@ -59,13 +71,12 @@ const sanitizeTags = text =>
     )
     .filter(Boolean);
 
-const slugify = text =>
+const toTitleCase = text =>
   text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .trim();
+    .split(/[\s-]+/)
+    .filter(Boolean)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
 const extractTagCandidates = (headline, summary, existing) => {
   if (Array.isArray(existing) && existing.length) return existing.slice(0, 6);
@@ -82,11 +93,11 @@ const extractTagCandidates = (headline, summary, existing) => {
   return candidates;
 };
 
-const buildPreview = ({ headline, sourceUrl, dept, tags, intro }) =>
-  `Headline\n${headline?.trim() || '—'}\n\nSource URL\n${sourceUrl?.trim() ||
-    '—'}\n\nDept\n${dept?.trim() || '—'}\n\nTags\n${
+const buildPreview = ({ headline, category, sourceUrl, tags, body, mood, listeningTo }) =>
+  `Subject / Title\n${headline?.trim() || '—'}\n\nCategory\n${category?.trim() || '—'}\n\nTags\n${
     tags.length ? tags.join(', ') : '—'
-  }\n\nIntro / Summary\n${intro?.trim() || '—'}\n`;
+  }\n\nMood\n${mood?.trim() || '—'}\n\nListening To\n${listeningTo?.trim() ||
+    '—'}\n\nExternal Link\n${sourceUrl?.trim() || '—'}\n\nBlog Entry\n${body?.trim() || '—'}\n`;
 
 const padTimeUnit = value => String(value).padStart(2, '0');
 
@@ -175,9 +186,11 @@ function MyspaceAutoPoster({ platform }) {
 
   const [headline, setHeadline] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
-  const [dept, setDept] = useState('');
+  const [category, setCategory] = useState(MYSPACE_CATEGORY_SUGGESTIONS[0]);
   const [tagsText, setTagsText] = useState('');
-  const [intro, setIntro] = useState('');
+  const [body, setBody] = useState('');
+  const [mood, setMood] = useState('');
+  const [listeningTo, setListeningTo] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('make');
   const [scheduledDraft, setScheduledDraft] = useState('');
   const [scheduledDate, setScheduledDate] = useState(() => formatLocalDate(new Date()));
@@ -198,31 +211,47 @@ function MyspaceAutoPoster({ platform }) {
 
   const trimmedHeadline = headline.trim();
   const trimmedUrl = sourceUrl.trim();
-  const trimmedDept = dept.trim();
-  const trimmedIntro = intro.trim();
+  const trimmedCategory = category.trim();
+  const trimmedBody = body.trim();
+  const trimmedMood = mood.trim();
+  const trimmedListeningTo = listeningTo.trim();
 
   const headlineInRange =
     trimmedHeadline.length >= HEADLINE_MIN && trimmedHeadline.length <= HEADLINE_MAX;
   const urlValid = /^https?:\/\//i.test(trimmedUrl);
-  const deptValid = trimmedDept.length >= 3;
-  const summaryValid = trimmedIntro.length >= SUMMARY_MIN;
+  const categoryValid = trimmedCategory.length >= 3;
+  const bodyValid = trimmedBody.length >= BODY_MIN;
   const tagsValid = tags.length > 0;
 
-  const readyToCopy = headlineInRange && urlValid && deptValid && summaryValid && tagsValid;
+  const readyToCopy = headlineInRange && categoryValid && bodyValid && tagsValid;
 
   const highlightHeadline = trimmedHeadline.length > 0 && !headlineInRange;
   const highlightUrl = trimmedUrl.length > 0 && !urlValid;
-  const highlightDept = trimmedDept.length > 0 && !deptValid;
-  const highlightSummary = trimmedIntro.length > 0 && !summaryValid;
+  const highlightCategory = trimmedCategory.length > 0 && !categoryValid;
+  const highlightBody = trimmedBody.length > 0 && !bodyValid;
 
   const hasAnyInput = Boolean(
-    trimmedHeadline || trimmedUrl || trimmedDept || trimmedIntro || tagsText.trim(),
+    trimmedHeadline ||
+      trimmedUrl ||
+      trimmedCategory ||
+      trimmedBody ||
+      tagsText.trim() ||
+      trimmedMood ||
+      trimmedListeningTo,
   );
 
   const preview = useMemo(() => {
     if (!hasAnyInput) return '';
-    return buildPreview({ headline, sourceUrl, dept, tags, intro });
-  }, [dept, headline, hasAnyInput, intro, sourceUrl, tags]);
+    return buildPreview({
+      headline,
+      sourceUrl,
+      category,
+      tags,
+      body,
+      mood,
+      listeningTo,
+    });
+  }, [body, category, headline, hasAnyInput, listeningTo, mood, sourceUrl, tags]);
   const scheduleHasDraft = scheduledDraft.trim().length > 0;
   const editingSchedule = useMemo(
     () => savedSchedules.find(schedule => schedule.id === editingScheduleId) || null,
@@ -246,14 +275,16 @@ function MyspaceAutoPoster({ platform }) {
   const handleReset = () => {
     setHeadline('');
     setSourceUrl('');
-    setDept('');
+    setCategory(MYSPACE_CATEGORY_SUGGESTIONS[0]);
     setTagsText('');
-    setIntro('');
+    setBody('');
+    setMood('');
+    setListeningTo('');
   };
 
   const openMyspaceSubmit = () => {
     if (typeof window !== 'undefined') {
-      window.open('https://myspace.com/home', '_blank', 'noopener,noreferrer');
+      window.open('https://myspace.com/pages/blog', '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -263,11 +294,10 @@ function MyspaceAutoPoster({ platform }) {
       return;
     }
     const missingFields = [];
-    if (!trimmedHeadline) missingFields.push('Headline');
-    if (!trimmedUrl) missingFields.push('Source URL');
-    if (!trimmedDept) missingFields.push('Dept');
+    if (!trimmedHeadline) missingFields.push('Blog title / Subject');
+    if (!trimmedCategory) missingFields.push('Category');
     if (tags.length === 0) missingFields.push('Tags');
-    if (!trimmedIntro) missingFields.push('Intro / Summary');
+    if (!trimmedBody) missingFields.push('Blog entry');
     if (missingFields.length > 0) {
       toast.error(`Add ${missingFields.join(', ')} before scheduling.`);
       return;
@@ -284,6 +314,22 @@ function MyspaceAutoPoster({ platform }) {
   const removeTag = tagToRemove => {
     const remaining = tags.filter(tag => tag !== tagToRemove);
     setTagsText(remaining.join(', '));
+  };
+
+  const handleCategorySuggestion = () => {
+    if (tags.length > 0) {
+      setCategory(toTitleCase(tags[0].replace(/-/g, ' ')));
+      return;
+    }
+    if (headline.trim()) {
+      const derived = headline.split(/[:–-]/)[0] || headline;
+      const trimmedDerived = derived.trim();
+      if (trimmedDerived) {
+        setCategory(toTitleCase(trimmedDerived));
+        return;
+      }
+    }
+    setCategory(MYSPACE_CATEGORY_SUGGESTIONS[0]);
   };
   const now = new Date();
   const today = formatLocalDate(now);
@@ -338,10 +384,12 @@ function MyspaceAutoPoster({ platform }) {
       id: recordId,
       headline,
       sourceUrl,
-      dept,
+      category,
       tagsText,
       tags: [...tags],
-      intro,
+      body,
+      mood,
+      listeningTo,
       scheduledDraft: scheduledDraft.trim(),
       scheduledDate,
       scheduledTime,
@@ -380,9 +428,11 @@ function MyspaceAutoPoster({ platform }) {
     }
     setHeadline(target.headline || '');
     setSourceUrl(target.sourceUrl || '');
-    setDept(target.dept || '');
+    setCategory(target.category || MYSPACE_CATEGORY_SUGGESTIONS[0]);
     setTagsText(target.tagsText || '');
-    setIntro(target.intro || '');
+    setBody(target.body || '');
+    setMood(target.mood || '');
+    setListeningTo(target.listeningTo || '');
     setScheduledDraft(target.scheduledDraft || '');
     setScheduledDate(nextDate);
     setScheduledTime(nextTime);
@@ -414,10 +464,9 @@ function MyspaceAutoPoster({ platform }) {
           <section className={styles['myspace-card']}>
             <h3>Myspace Auto-Poster</h3>
             <p>
-              Myspace submissions require five pieces: a strong headline, the source URL, a short
-              department slug, relevant tags, and an 80+ character summary. Use the tools below to
-              build a ready-to-submit draft, then copy it (or open myspace.com/home) to finish the
-              manual submission.
+              Myspace’s blog composer asks for the same blocks shown here: a subject line, category,
+              post body, optional mood/listening info, and tags. Fill them out once, copy each one,
+              and then paste directly into the Myspace blog form.
             </p>
             <div style={topCardActions()}>
               <button type="button" style={buttonStyle('outline', darkMode)} onClick={handleReset}>
@@ -433,7 +482,7 @@ function MyspaceAutoPoster({ platform }) {
               })}
             >
               <div className={styles['myspace-field__header']}>
-                <label htmlFor="myspace-headline">Headline *</label>
+                <label htmlFor="myspace-headline">Blog title / Subject *</label>
                 <span
                   className={classNames(styles['myspace-field__meta'], {
                     [styles.invalid]: highlightHeadline || (!trimmedHeadline && readyToCopy),
@@ -452,30 +501,30 @@ function MyspaceAutoPoster({ platform }) {
               />
               {!trimmedHeadline && (
                 <p className={styles['myspace-field__hint']}>
-                  Add a headline with at least {HEADLINE_MIN} characters and keep it below{' '}
-                  {HEADLINE_MAX}.
+                  Match the “Subject” field from Myspace. Keep it between {HEADLINE_MIN} and{' '}
+                  {HEADLINE_MAX} characters.
                 </p>
               )}
               {highlightHeadline && (
                 <p className={styles['myspace-field__error']}>
-                  Aim for {HEADLINE_MIN}-{HEADLINE_MAX} characters so the headline fits Myspace’s
-                  front page.
+                  Aim for {HEADLINE_MIN}-{HEADLINE_MAX} characters so the title fits the Myspace
+                  subject input.
                 </p>
               )}
               <div style={fieldActionRow}>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(headline, 'Headline')}
+                  onClick={() => copyText(headline, 'Blog title / Subject')}
                 >
-                  Copy headline
+                  Copy title
                 </button>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
                   onClick={() => setHeadline('')}
                 >
-                  Clear headline
+                  Clear title
                 </button>
               </div>
             </div>
@@ -486,7 +535,7 @@ function MyspaceAutoPoster({ platform }) {
               })}
             >
               <div className={styles['myspace-field__header']}>
-                <label htmlFor="myspace-url">Source URL *</label>
+                <label htmlFor="myspace-url">External link (optional)</label>
               </div>
               <input
                 id="myspace-url"
@@ -498,66 +547,73 @@ function MyspaceAutoPoster({ platform }) {
               />
               {!trimmedUrl && (
                 <p className={styles['myspace-field__hint']}>
-                  Paste the canonical article or project URL.
+                  Paste the canonical article or project URL if you plan to link to it inside your
+                  Myspace blog entry.
                 </p>
               )}
               {highlightUrl && (
                 <p className={styles['myspace-field__error']}>
-                  Myspace only accepts fully qualified HTTP(S) links.
+                  Use a fully qualified HTTP(S) link.
                 </p>
               )}
               <div style={fieldActionRow}>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(sourceUrl, 'Source URL')}
+                  onClick={() => copyText(sourceUrl, 'External link')}
                 >
-                  Copy URL
+                  Copy link
                 </button>
               </div>
             </div>
 
             <div
               className={classNames(styles['myspace-card'], {
-                [styles.invalid]: highlightDept,
+                [styles.invalid]: highlightCategory,
               })}
             >
               <div className={styles['myspace-field__header']}>
-                <label htmlFor="myspace-dept">Dept *</label>
-                <span className={styles['myspace-field__meta']}>short slug</span>
+                <label htmlFor="myspace-category">Category *</label>
+                <span className={styles['myspace-field__meta']}>Myspace category drop-down</span>
               </div>
               <input
-                id="myspace-dept"
+                id="myspace-category"
                 type="text"
-                value={dept}
-                onChange={e => setDept(e.target.value.toLowerCase())}
+                value={category}
+                onChange={e => setCategory(e.target.value)}
                 className={styles['myspace-field__input']}
-                placeholder="e.g. volunteer-tech"
+                placeholder="e.g. Sustainability"
+                list="myspace-category-options"
               />
-              {!trimmedDept && (
+              <datalist id="myspace-category-options">
+                {MYSPACE_CATEGORY_SUGGESTIONS.map(option => (
+                  <option key={option} value={option} />
+                ))}
+              </datalist>
+              {!trimmedCategory && (
                 <p className={styles['myspace-field__hint']}>
-                  Set the playful department label Myspace shows under the headline.
+                  Choose the same category you will select on Myspace.
                 </p>
               )}
-              {highlightDept && (
+              {highlightCategory && (
                 <p className={styles['myspace-field__error']}>
-                  Use a short slug-style phrase with lowercase letters and dashes.
+                  Pick a descriptive category with at least three characters.
                 </p>
               )}
               <div style={fieldActionRow}>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => setDept(slugify(dept || headline || platform || 'one-community'))}
+                  onClick={handleCategorySuggestion}
                 >
-                  Suggest dept
+                  Suggest category
                 </button>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(dept, 'Dept')}
+                  onClick={() => copyText(category, 'Category')}
                 >
-                  Copy dept
+                  Copy category
                 </button>
               </div>
             </div>
@@ -568,8 +624,10 @@ function MyspaceAutoPoster({ platform }) {
               })}
             >
               <div className={styles['myspace-field__header']}>
-                <label htmlFor="myspace-tags">Tags *</label>
-                <span className={styles['myspace-field__meta']}>comma separated</span>
+                <label htmlFor="myspace-tags">Post tags / keywords *</label>
+                <span className={styles['myspace-field__meta']}>
+                  Mirrors the “Keywords” field on Myspace
+                </span>
               </div>
               <textarea
                 id="myspace-tags"
@@ -599,21 +657,22 @@ function MyspaceAutoPoster({ platform }) {
               </div>
               {!tagsValid && (
                 <p className={styles['myspace-field__hint']}>
-                  Provide at least one descriptive tag separated by commas.
+                  Provide at least one descriptive tag separated by commas — exactly how Myspace
+                  expects keywords.
                 </p>
               )}
               <div style={fieldActionRow}>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => setTagsText(extractTagCandidates(headline, intro).join(', '))}
+                  onClick={() => setTagsText(extractTagCandidates(headline, body).join(', '))}
                 >
                   Suggest tags
                 </button>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(tags.join(', '), 'Tags')}
+                  onClick={() => copyText(tags.join(', '), 'Tags / Keywords')}
                 >
                   Copy tags
                 </button>
@@ -622,58 +681,131 @@ function MyspaceAutoPoster({ platform }) {
 
             <div
               className={classNames(styles['myspace-card'], {
-                [styles.invalid]: highlightSummary,
+                [styles.invalid]: highlightBody,
               })}
             >
               <div className={styles['myspace-field__header']}>
-                <label htmlFor="myspace-summary">Intro / Summary *</label>
+                <label htmlFor="myspace-summary">Blog entry *</label>
                 <span
                   className={classNames(styles['myspace-field__meta'], {
-                    [styles.invalid]: highlightSummary || (!trimmedIntro && readyToCopy),
+                    [styles.invalid]: highlightBody || (!trimmedBody && readyToCopy),
                   })}
                 >
-                  {intro.trim().length} characters
+                  {body.trim().length} characters
                 </span>
               </div>
               <textarea
                 id="myspace-summary"
-                value={intro}
-                onChange={e => setIntro(e.target.value)}
+                value={body}
+                onChange={e => setBody(e.target.value)}
                 className={classNames(
                   styles['myspace-field__input'],
                   styles['myspace-field__textarea'],
                 )}
                 rows={5}
-                placeholder="Craft a 3-4 sentence summary that highlights why the story matters to Myspace readers."
+                placeholder="Draft the full text of your Myspace blog post."
               />
-              {!trimmedIntro && (
+              {!trimmedBody && (
                 <p className={styles['myspace-field__hint']}>
-                  Write a 2–3 sentence overview tailored for Myspace readers.
+                  Paste this directly into the blog editor’s “Blog Entry” box.
                 </p>
               )}
-              {highlightSummary && (
+              {highlightBody && (
                 <p className={styles['myspace-field__error']}>
-                  Myspace requires at least {SUMMARY_MIN} characters of summary text.
+                  Aim for at least {BODY_MIN} characters so Myspace accepts the entry.
                 </p>
               )}
               <div style={fieldActionRow}>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(intro, 'Intro / Summary')}
+                  onClick={() => copyText(body, 'Blog entry')}
                 >
-                  Copy summary
+                  Copy blog entry
                 </button>
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => setIntro('')}
+                  onClick={() => setBody('')}
                 >
-                  Clear summary
+                  Clear blog entry
                 </button>
               </div>
             </div>
           </div>
+
+          <section className={styles['myspace-card']}>
+            <div className={styles['myspace-field__header']}>
+              <label htmlFor="myspace-mood">Mood & Listening To (optional)</label>
+              <span className={styles['myspace-field__meta']}>
+                Matches the optional vibe fields shown under the Myspace blog form.
+              </span>
+            </div>
+            <div className={styles['myspace-meta__grid']}>
+              <div className={styles['myspace-meta__column']}>
+                <label htmlFor="myspace-mood" className={styles['myspace-field__sublabel']}>
+                  Mood
+                </label>
+                <input
+                  id="myspace-mood"
+                  type="text"
+                  value={mood}
+                  onChange={e => setMood(e.target.value)}
+                  className={styles['myspace-field__input']}
+                  placeholder="Inspired, grateful, optimistic"
+                />
+                <div style={fieldActionRow}>
+                  <button
+                    type="button"
+                    style={buttonStyle('ghost', darkMode)}
+                    onClick={() => copyText(mood, 'Mood')}
+                  >
+                    Copy mood
+                  </button>
+                  <button
+                    type="button"
+                    style={buttonStyle('ghost', darkMode)}
+                    onClick={() => setMood('')}
+                  >
+                    Clear mood
+                  </button>
+                </div>
+              </div>
+              <div className={styles['myspace-meta__column']}>
+                <label htmlFor="myspace-listening" className={styles['myspace-field__sublabel']}>
+                  Listening To
+                </label>
+                <input
+                  id="myspace-listening"
+                  type="text"
+                  value={listeningTo}
+                  onChange={e => setListeningTo(e.target.value)}
+                  className={styles['myspace-field__input']}
+                  placeholder="Artist – Song Title / Podcast"
+                />
+                <div style={fieldActionRow}>
+                  <button
+                    type="button"
+                    style={buttonStyle('ghost', darkMode)}
+                    onClick={() => copyText(listeningTo, 'Listening To')}
+                  >
+                    Copy listening to
+                  </button>
+                  <button
+                    type="button"
+                    style={buttonStyle('ghost', darkMode)}
+                    onClick={() => setListeningTo('')}
+                  >
+                    Clear listening to
+                  </button>
+                </div>
+              </div>
+            </div>
+            <p className={styles['myspace-field__hint']}>
+              Add any vibe or soundtrack details you plan to paste into the optional “Mood” and
+              “Listening To” boxes on Myspace.
+            </p>
+          </section>
 
           <section className={styles['myspace-card']}>
             <div className={styles['myspace-preview__header']}>
@@ -691,12 +823,12 @@ function MyspaceAutoPoster({ platform }) {
                   style={buttonStyle('outline', darkMode)}
                   onClick={openMyspaceSubmit}
                 >
-                  Open myspace.com/home
+                  Open Myspace blog
                 </button>
                 <button
                   type="button"
                   style={{ ...buttonStyle('primary', darkMode), opacity: readyToCopy ? 1 : 0.5 }}
-                  onClick={() => copyText(preview, 'Myspace draft')}
+                  onClick={() => copyText(preview, 'Myspace blog draft')}
                   disabled={!readyToCopy}
                 >
                   Copy full draft
@@ -706,8 +838,8 @@ function MyspaceAutoPoster({ platform }) {
             <pre className={styles['myspace-preview__body']}>{preview}</pre>
             {!readyToCopy && (
               <p className={styles['myspace-preview__hint']}>
-                Fill every required field to enable copying the complete draft. Myspace’s form
-                mirrors this layout.
+                Fill every required field to enable copying the complete draft. These fields map
+                directly to the Myspace blog composer.
               </p>
             )}
           </section>

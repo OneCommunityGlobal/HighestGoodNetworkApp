@@ -282,6 +282,29 @@
   color: #9aa9c6;
 }
 
+.myspace-meta__grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.myspace-meta__column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.myspace-field__sublabel {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #1b1f29;
+}
+
+.myspace-autoposter.dark .myspace-field__sublabel {
+  color: #dbe6ff;
+}
+
 .myspace-card--scheduler {
   max-width: 720px;
 }
