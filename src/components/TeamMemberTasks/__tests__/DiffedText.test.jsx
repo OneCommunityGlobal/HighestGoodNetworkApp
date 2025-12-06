@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { themeMock } from '../../../__tests__/mockStates';
 import DiffedText from '../components/DiffedText';
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 
 describe('DiffedText Component', () => {
   it('renders without crashing', () => {

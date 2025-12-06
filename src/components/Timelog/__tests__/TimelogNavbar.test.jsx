@@ -4,12 +4,12 @@ import { Provider } from 'react-redux';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 /* eslint-disable import/no-named-as-default */
-import configureStore from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import TimelogNavbar from '../TimelogNavbar';
 import { renderWithRouterMatch } from '../../../__tests__/utils';
 // eslint-disable-next-line no-unused-vars
 import { authMock, userProfileMock, timeEntryMock, userProjectMock } from '../../../__tests__/mockStates';
-const mockStore = configureStore();
+const mockStore = configureMockStore();
 
 describe('TimelogNavbar', () => {
   let store;

@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, act, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import QuickSetupModal from '../QuickSetupModal';
 import { getAllTitle } from '../../../../actions/title';
 import {
@@ -30,7 +30,7 @@ vi.mock('../../../../utils/permissions', () => ({
   default: vi.fn(permission => mockUserPermissions[permission]),
 }));
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 
 describe('QuickSetupModal Component', () => {
   let store;

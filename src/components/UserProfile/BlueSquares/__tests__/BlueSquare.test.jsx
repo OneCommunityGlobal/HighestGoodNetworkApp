@@ -4,14 +4,14 @@ import '@testing-library/jest-dom/extend-expect';
 import BlueSquare from '../BlueSquare';
 import thunk from 'redux-thunk';
 import mockAdminState from '__tests__/mockAdminState';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import hasPermission from '~/utils/permissions';
 import styles from '../BlueSquare.module.css';
 
 const handleBlueSquare = vi.fn();
 
-const mockStore = configureStore([thunk]);
+const mockStore = configureMockStore([thunk]);
 const initialState = {
   auth: {
     user: {

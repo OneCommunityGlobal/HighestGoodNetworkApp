@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import { configureStore } from 'redux-mock-store';
+import configureMockStore from 'redux-mock-store';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import PasswordInputModal from '../PasswordInputModal';
@@ -15,7 +15,7 @@ vi.mock('react-toastify', () => ({
   },
 }));
 
-const mockStore = configureStore([]);
+const mockStore = configureMockStore([]);
 const mockOnClose = vi.fn();
 const mockCheckForValidPwd = vi.fn();
 const mockSetSummaryRecepientsPopup = vi.fn();
