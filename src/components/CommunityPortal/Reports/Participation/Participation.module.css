@@ -1,15 +1,37 @@
 .participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
+  padding: 24px;
 }
 
+.participationLandingPageDark {
+  min-width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #1b2a41;
+  color: #fff;
+}
+
+/* The landing page is only 90% wide and centered, so in dark mode the page
+   body shows through the side/top gutters as white. Paint the body dark
+   whenever the dark landing page is present (reverts automatically when
+   navigating away). */
+:global(body):has(.participationLandingPageDark) {
+  background-color: #1b2a41;
+}
+
+/* ---------- Page Header ---------- */
 .landingPageHeaderContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 12px 0;
+  padding: 16px 0;
   border-bottom: 2px solid #e0e0e0;
+}
+
+.participationLandingPageDark .landingPageHeaderContainer {
+  border-bottom-color: #475569;
 }
 
 .landingPageHeader {
@@ -71,6 +93,10 @@
 .myCasesHeader h2 {
   font-size: 20px;
   color: #333;
+}
+
+.participationLandingPageDark .myCasesHeader h2 {
+  color: #fff;
 }
 
 .myCasesHeader button {
@@ -150,6 +176,12 @@
   gap: 12px;
 }
 
+.trackingFilters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px; /* spacing between dropdowns */
+}
+
 .trackingFilters select {
   flex: 1;
   min-width: 0;
@@ -160,6 +192,19 @@
   border-radius: 5px;
   cursor: pointer;
   transition: border-color 0.2s;
+  background-color: #fff;
+  color: #333;
+}
+
+.participationLandingPageDark .trackingFilters select {
+  background-color: #1c2541;
+  color: #fff;
+  border-color: #555;
+}
+
+.participationLandingPageDark .trackingFilters select option {
+  background-color: #1c2541;
+  color: #fff;
 }
 
 .trackingSummary {
@@ -255,6 +300,19 @@
   border-radius: 5px;
   cursor: pointer;
   transition: border-color 0.2s;
+  background-color: #fff;
+  color: #333;
+}
+
+.insightsDark .insightsFilters select {
+  background-color: #1c2541;
+  color: #fff;
+  border-color: #555;
+}
+
+.insightsDark .insightsFilters select option {
+  background-color: #1c2541;
+  color: #fff;
 }
 
 .insightsTabs {
@@ -314,6 +372,46 @@
   background-color: #e0e0e0;
 }
 
+/* Dark mode hover states */
+.navigationCardDark:hover {
+  background: #465d7b;
+}
+
+.case-list-item-dark:hover {
+  background-color: #2b3f59;
+}
+
+.eventsTableDark .tableContainer tr:hover,
+.monthlyTrendsDark .trendsTable tr:hover,
+.eventTypeValuesDark .valueTable tr:hover,
+.eventTypeTrendsDark .trendsTable tr:hover {
+  background: #304663;
+}
+
+/* Dark mode tab styles */
+.insightsDark .insightsTabs {
+  border-color: #555;
+}
+
+.insightsDark .insightsTab {
+  color: #fff;
+  background-color: #3a506b;
+}
+
+.insightsDark .insightsTab:not(:last-child) {
+  border-right-color: #555;
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.insightsDark .insightsTab:hover {
+  background-color: #4a5f7a;
+}
+
 .insightsContent {
   display: flex;
   flex-direction: column;
@@ -343,6 +441,10 @@
   position: relative;
   margin-right: 10px;
   margin-left: 10px;
+}
+
+.insightsDark .insightBar {
+  background: #2c3e50;
 }
 
 .insightFill {

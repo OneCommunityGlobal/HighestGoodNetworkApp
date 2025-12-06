@@ -1,15 +1,80 @@
 .myCasesPage {
-  padding: 20px;
+  padding: 24px;
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
+.myCasesPageDark {
+  padding: 24px;
+  background-color: #1c2541;
+  border: 1px solid #555;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  color: #fff;
+}
+
+/* ---------- Header ---------- */
+.myCasesPage .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Fixed no-descending-specificity: .headerActions moved before .myCasesPageDark .headerActions */
 .headerActions {
   display: flex;
   align-items: center;
   gap: 15px;
+}
+
+.myCasesPageDark .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1c2541;
+  color: #fff;
+}
+
+.myCasesPageDark .headerActions {
+  gap: 15px;
+}
+
+.sectionTitle {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.sectionTitleDark {
+  font-size: 24px;
+  font-weight: bold;
+  background-color: #1c2541;
+  color: #fff !important;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+@media (width <= 1024px) {
+  .headerActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .myCasesPage .header {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
 }
 
 .viewSwitcher {
@@ -37,10 +102,51 @@
   transition: background-color 0.2s;
 }
 
+/* Dark mode */
+
+.viewSwitcherDarkMode {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.viewSwitcherDarkMode button,
+.createNewDarkMode {
+  background-color: #1e293b;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f1f5f9;
+  border: 1px solid #555;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.viewSwitcher button:hover {
+  background-color: #f5f5f5;
+}
+
 .viewSwitcher button.active {
   background-color: #0056b3;
   color: #fff;
   border-color: #0056b3;
+}
+
+.myCasesPageDark .viewSwitcher button {
+  background-color: #3a506b;
+  color: #fff;
+  border-color: #555;
+}
+
+.myCasesPageDark .viewSwitcher button:hover {
+  background-color: #4a5f7a;
+}
+
+.myCasesPageDark .viewSwitcher button.active {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
 }
 
 .filterWrapper {
@@ -49,14 +155,116 @@
 
 .filterDropdown {
   border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 130px;
+  box-sizing: border-box;
+  background-color: #fff;
+  color: #333;
+}
+
+.myCasesPageDark .viewSwitcher button,
+.myCasesPageDark .filterDropdown,
+.myCasesPageDark .createNew {
+  color: #fff !important;
+  border: 1px solid #555 !important;
+}
+
+.myCasesPageDark .filterDropdown {
+  background-color: #3a506b;
+  color: #fff;
+  border: 1px solid #555;
+}
+
+.filterDropdown:hover,
+.filterDropdown:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Dark mode dropdown (component-level) */
+.filterDropdownDarkMode {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: #1e293b;
+  color: #fff;
+  min-width: 130px;
+  box-sizing: border-box;
+
+  /* Custom arrow */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.7em center;
+  background-size: 0.65em auto;
+  appearance: none;
+  padding-right: 30px;
+}
+
+/* Hover and focus */
+.filterDropdownDarkMode:hover,
+.filterDropdownDarkMode:focus {
+  border-color: #3b82f6;
+  outline: none;
+}
+
+/* Dropdown options */
+.filterDropdownDarkMode option {
+  background-color: #1e293b;
+  color: #fff;
+}
+
+.myCasesPageDark .filterDropdown option {
+  background-color: #3a506b;
+  color: #fff;
+}
+
+/* Insight bar dark mode */
+.myCasesPageDark .insight-bar-container {
+  background-color: rgb(255 255 255 / 10%);
   border-radius: 4px;
 }
 
 .createNew {
   font-weight: bold;
-  border: 1px solid #0056b3;
-  border-radius: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.createNew:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Dark mode */
+.createNewDarkMode {
+  font-weight: bold;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background-color: #1e293b;
+  color: #f1f5f9;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.createNewDarkMode:hover {
   background-color: #0056b3;
+  color: #fff;
+  border-color: #0056b3;
+}
+
+.myCasesPageDark .createNew {
+  background-color: #3a506b;
   color: #fff;
 }
 
@@ -74,7 +282,7 @@
   background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
+  padding: 16px;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
@@ -82,6 +290,37 @@
   transition:
     box-shadow 0.2s,
     transform 0.2s;
+  min-height: 180px;
+}
+
+.caseCard:hover {
+  box-shadow: 0 4px 8px rgb(0 0 0 / 15%);
+}
+
+.caseCardDark {
+  background-color: #3a506b;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 180px;
+}
+
+/* Set text colors explicitly for dark mode card children */
+.caseCardDark > * {
+  color: #fff;
+}
+
+.caseCardDark .eventBadge {
+  /* Event badges have their own colors, don't inherit white */
+  color: inherit;
+}
+
+.caseCardDark:hover {
+  box-shadow: 0 4px 8px rgb(255 255 255 / 15%);
 }
 
 .eventBadge {
@@ -97,22 +336,49 @@
 
 .eventBadge[data-type='Yoga Class'] {
   background-color: #e9f7ef;
-  color: #28a745;
+  color: #28a745 !important;
 }
 
 .eventBadge[data-type='Cooking Workshop'] {
   background-color: #fdecea;
-  color: #e74c3c;
+  color: #e74c3c !important;
 }
 
 .eventBadge[data-type='Dance Class'] {
   background-color: #fff5e6;
-  color: #f39c12;
+  color: #f39c12 !important;
 }
 
 .eventBadge[data-type='Fitness Bootcamp'] {
   background-color: #f5e6ff;
-  color: #9b59b6;
+  color: #9b59b6 !important;
+}
+
+/* Ensure event badges maintain their colors in dark mode */
+.caseCardDark .eventBadge,
+.caseListItemDark .eventBadge,
+.selectedEventCardDark .eventBadge {
+  /* Colors are already set above with !important, but ensure background is visible */
+}
+
+.caseCardDark .eventBadge[data-type='Yoga Class'] {
+  background-color: #e9f7ef;
+  color: #28a745 !important;
+}
+
+.caseCardDark .eventBadge[data-type='Cooking Workshop'] {
+  background-color: #fdecea;
+  color: #e74c3c !important;
+}
+
+.caseCardDark .eventBadge[data-type='Dance Class'] {
+  background-color: #fff5e6;
+  color: #f39c12 !important;
+}
+
+.caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: #f5e6ff;
+  color: #9b59b6 !important;
 }
 
 .eventTime {
@@ -142,6 +408,19 @@
   border: 2px solid #fff;
 }
 
+.attendeesInfoDark .avatars img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: -8px;
+  border: 2px solid #fff;
+}
+
+/* Combined duplicated selector blocks */
+.caseCardDark .avatars img {
+  border-color: #3a506b;
+}
+
 .attendeesCount {
   font-size: 14px;
   color: #555;
@@ -163,7 +442,7 @@
   display: grid;
   grid-template-columns: 2fr 3fr 1fr 1fr;
   align-items: center;
-  padding: 15px;
+  padding: 16px;
   background-color: #fff;
   box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
   transition: background-color 0.2s;
@@ -178,17 +457,6 @@
 .eventType {
   font-weight: bold;
   font-size: 14px;
-}
-
-.calendarView {
-  padding: 20px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 16px;
-  color: #555;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
 }
 
 .moreBtn {
@@ -326,13 +594,23 @@
   color: #fff !important;
 }
 
+.caseListItem:hover {
+  background-color: #d2cfcf;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+
 .caseListItemDark {
   display: grid;
   grid-template-columns: 2fr 3fr 1fr 1fr;
   align-items: center;
-  padding: 15px;
+  padding: 16px;
   background-color: #3a506b;
   box-shadow: 0 2px 10px rgb(0 0 0 / 10%);
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border: 1px solid #555;
 }
 
 .caseListItemDark span {
@@ -341,15 +619,306 @@
   color: #fff;
 }
 
+.caseListItemDark .eventType {
+  color: #fff;
+}
+
+.caseListItemDark .eventTime {
+  color: #ccc;
+}
+
+.caseListItemDark .eventName {
+  color: #fff;
+}
+
+.caseListItemDark .attendeesCount {
+  color: #fff;
+}
+
+.eventType {
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+.eventTypeDark {
+  font-weight: bold;
+  font-size: 14px;
+  color: #fff;
+}
+
+/* ---------- Event Image Styles ---------- */
+.eventImageContainer {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  background: #f2f2f2;
+}
+
+.caseCardDark .eventImageContainer {
+  background: #2c3e50;
+}
+
+.eventImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ---------- Calendar View Styles ---------- */
+.calendarView {
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+  color: #555;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
 .calendarViewDark {
   padding: 20px;
   background-color: #3a506b;
   border: 1px solid #ddd;
   border-radius: 8px;
-  text-align: center;
-  font-size: 16px;
-  color: #fff;
   box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.calendarContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.calendar {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-family: inherit;
+}
+
+.calendarDark {
+  border: 1px solid #555;
+  border-radius: 8px;
+  font-family: inherit;
+  background-color: #2c3e50;
+  color: #fff;
+}
+
+.calendarDark .react-calendar__tile {
+  color: #fff;
+}
+
+.calendarDark .react-calendar__tile:enabled:hover,
+.calendarDark .react-calendar__tile:enabled:focus {
+  background-color: #34495e;
+  color: #fff;
+}
+
+.calendarDark .react-calendar__tile--active {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.calendarDark .react-calendar__tile--now {
+  background-color: #1e3a5f;
+  color: #fff;
+}
+
+.calendarDark .react-calendar__tile--neighboringMonth {
+  color: #6c757d;
+}
+
+.calendarDark .react-calendar__navigation button {
+  color: #fff;
+  background-color: transparent;
+}
+
+.calendarDark .react-calendar__navigation button:enabled:hover,
+.calendarDark .react-calendar__navigation button:enabled:focus {
+  background-color: #34495e;
+  color: #fff;
+}
+
+.calendarDark .react-calendar__navigation button:disabled {
+  color: #6c757d;
+}
+
+.calendarDark .react-calendar__month-view__weekdays {
+  color: #94a3b8;
+}
+
+.calendarDark .react-calendar__month-view__weekdays__weekday {
+  color: #94a3b8;
+}
+
+.calendarDark .react-calendar__month-view__weekdays__weekday abbr {
+  color: #94a3b8;
+}
+
+.calendarEventIndicator {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2px;
+}
+
+.calendarEventDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #007bff;
+}
+
+.eventType0 {
+  background-color: #28a745;
+}
+
+.eventType1 {
+  background-color: #ffc107;
+}
+
+.eventType2 {
+  background-color: #dc3545;
+}
+
+.eventCountBadge {
+  font-size: 10px;
+  font-weight: bold;
+  color: #007bff;
+  background-color: #e7f3ff;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.calendarDark .eventCountBadge {
+  color: #60a5fa;
+  background-color: #1e3a5f;
+}
+
+.hasEvents {
+  background-color: #f0f8ff;
+}
+
+.calendarDark .hasEvents {
+  background-color: #1e3a5f;
+}
+
+.selectedDate {
+  background-color: #007bff !important;
+  color: #fff !important;
+}
+
+.calendarDark .selectedDate {
+  background-color: #0056b3 !important;
+  color: #fff !important;
+}
+
+.selectedDateEvents {
+  margin-top: 20px;
+}
+
+.selectedDateTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.selectedDateTitleDark {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.selectedEventsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.selectedEventCard {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+}
+
+.selectedEventCardDark {
+  background-color: #2c3e50;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 10%);
+  color: #fff;
+}
+
+.selectedEventName {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 10px 0 5px;
+}
+
+.selectedEventNameDark {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  margin: 10px 0 5px;
+}
+
+.selectedEventTime {
+  font-size: 14px;
+  color: #555;
+  margin: 5px 0;
+}
+
+.selectedEventTimeDark {
+  font-size: 14px;
+  color: #ccc;
+  margin: 5px 0;
+}
+
+.selectedEventAttendees {
+  font-size: 14px;
+  color: #555;
+  margin: 5px 0 0;
+}
+
+.selectedEventAttendeesDark {
+  font-size: 14px;
+  color: #ccc;
+  margin: 5px 0 0;
+}
+
+.noEventsMessage {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 16px;
+}
+
+.noEventsMessage p {
+  color: inherit;
+  margin: 0;
+}
+
+.calendarViewDark .noEventsMessage {
+  color: #ccc;
+}
+
+.calendarViewDark .noEventsMessage p {
+  color: #ccc;
 }
 
 .viewSwitcher button:hover {
@@ -366,6 +935,19 @@
   background-color: #004085;
 }
 
+/* ---------- More button ---------- */
+.moreBtn {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
 .moreBtn:hover {
   background-color: #004085;
 }
@@ -373,6 +955,15 @@
 .caseCard:hover {
   box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
   transform: translateY(-2px);
+}
+
+.myCasesPageDark .moreBtn {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.myCasesPageDark .moreBtn:hover {
+  background-color: #0056b3;
 }
 
 .caseListItem:hover {
@@ -559,23 +1150,23 @@
   }
 
   .eventBadge[data-type='Yoga Class'] {
-    background-color: #052e16 !important;
-    color: #4ade80 !important;
+    background-color: #e9f7ef !important;
+    color: #28a745 !important;
   }
 
   .eventBadge[data-type='Cooking Workshop'] {
-    background-color: #450a0a !important;
-    color: #f87171 !important;
+    background-color: #fdecea !important;
+    color: #e74c3c !important;
   }
 
   .eventBadge[data-type='Dance Class'] {
-    background-color: #451a03 !important;
-    color: #fbbf24 !important;
+    background-color: #fff5e6 !important;
+    color: #f39c12 !important;
   }
 
   .eventBadge[data-type='Fitness Bootcamp'] {
-    background-color: #2e1065 !important;
-    color: #c084fc !important;
+    background-color: #f5e6ff !important;
+    color: #9b59b6 !important;
   }
 
   .myCasesPage.darkMode {
@@ -607,4 +1198,74 @@
 
 .myCasesPage.darkMode .caseListItem:hover {
   background-color: #4a607b;
+}
+
+/* ---------- Attendees Hover (Light Mode) ---------- */
+.attendeesCount:hover {
+  background-color: #e8f1ff;
+  color: #0b5ed7;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+/* ---------- Dark Mode Hover ---------- */
+.attendeesCountDark:hover {
+  background-color: #1e40af;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+/* Light tooltip */
+.attendeesCount::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #111827;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 9999;
+}
+
+/* Dark mode tooltip */
+.attendeesCountDark::after {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid rgb(255 255 255 /20%);
+}
+
+/* Show tooltip */
+.attendeesCount:hover::after {
+  opacity: 1;
+}
+
+.caseListItem .attendeesCount:hover {
+  background-color: rgb(0 123 255 /12%);
+  color: inherit; 
+  border-radius: 4px;
+}
+
+.caseListItemDark .attendeesCount:hover {
+  background-color: rgb(255 255 255 /12%);
+  color: inherit; 
+  border-radius: 4px;
+}
+
+.myCasesPageDark .moreBtn {
+  background-color: #3A506B;
+  border: 1px solid #5A6B7D;
+  color: #fff;
+}
+
+.myCasesPageDark .moreBtn:hover {
+  background-color: #5A6B7D;
+  color: #fff;
 }
