@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import './JobApplicationForm.css';
 
 export default function JobApplicationForm({
   jobTitle = 'Job',
   jobDescription = '',
+  requirements = [],
+  referralToken = '',
   darkMode = false,
 }) {
   const [form, setForm] = useState({
@@ -34,12 +36,26 @@ export default function JobApplicationForm({
     termsAccepted: false,
   });
   const [errors, setErrors] = useState({});
+  const [requirementStatus, setRequirementStatus] = useState({});
 
   const degreeOptions = useMemo(
     () => ['High School / GED', 'Associate', "Bachelor's", "Master's", 'Ph.D.', 'Other'],
     [],
   );
   const resumeAcceptMimes = useMemo(() => ['application/pdf', 'image/jpeg', 'image/jpg'], []);
+
+  // Check requirement satisfaction (placeholder - can be enhanced with actual user data)
+  useEffect(() => {
+    if (requirements && requirements.length > 0) {
+      const status = {};
+      requirements.forEach(req => {
+        // TODO: Replace with actual logic to check if user satisfies requirement
+        // For now, all are unchecked (user view - requirements not satisfied)
+        status[req] = false;
+      });
+      setRequirementStatus(status);
+    }
+  }, [requirements]);
 
   const update = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
@@ -86,6 +102,57 @@ export default function JobApplicationForm({
         onSubmit={submit}
         noValidate
       >
+        {/* Requirements Section */}
+        {requirements && requirements.length > 0 && (
+          <div className="ja-requirements-section">
+            <h3
+              className="ja-requirements-title"
+              style={{ color: darkMode ? '#ffffff' : undefined }}
+            >
+              Requirements:
+            </h3>
+            <div className="ja-requirements-list">
+              {requirements.map((requirement, index) => (
+                <div key={index} className="ja-requirement-item">
+                  <label className="ja-requirement-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={requirementStatus[requirement] || false}
+                      disabled
+                      readOnly
+                      className="ja-requirement-checkbox-input"
+                    />
+                    <span
+                      className={`ja-requirement-checkbox-custom ${
+                        requirementStatus[requirement] ? 'checked' : ''
+                      }`}
+                    >
+                      {requirementStatus[requirement] && (
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M10 3L4.5 8.5L2 6"
+                            stroke="white"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </span>
+                    <span style={{ color: darkMode ? '#ffffff' : undefined }}>{requirement}</span>
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="ja-row-2">
           <Field
             id="firstName"
