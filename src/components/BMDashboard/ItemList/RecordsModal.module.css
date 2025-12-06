@@ -31,3 +31,163 @@
   border-radius: 4px;
   margin-right: 8px;
 }
+
+/* ==================== DARK MODE STYLES ==================== */
+
+/* Modal container */
+:global(body.dark-mode) .modal-content,
+:global(body.bm-dashboard-dark) .modal-content {
+  background-color: #2b3e59 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+/* Modal header */
+:global(body.dark-mode) .modal-header,
+:global(body.bm-dashboard-dark) .modal-header {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-bottom: 1px solid #3A506B !important;
+}
+
+:global(body.dark-mode) .modal-header .modal-title,
+:global(body.bm-dashboard-dark) .modal-header .modal-title {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .modal-header .close,
+:global(body.bm-dashboard-dark) .modal-header .close {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+:global(body.dark-mode) .modal-header .close:hover,
+:global(body.bm-dashboard-dark) .modal-header .close:hover {
+  color: #1C8BCC !important;
+  opacity: 1;
+}
+
+/* Modal body */
+:global(body.dark-mode) .modal-body,
+:global(body.bm-dashboard-dark) .modal-body {
+  background-color: #2b3e59 !important;
+  color: #ffffff !important;
+}
+
+/* Modal footer */
+:global(body.dark-mode) .modal-footer,
+:global(body.bm-dashboard-dark) .modal-footer {
+  background-color: #2b3e59 !important;
+  color: #ffffff !important;
+  border-top: 1px solid #3A506B !important;
+}
+
+/* Table inside modal */
+:global(body.dark-mode) .recordsModalTableContainer table,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer table {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .recordsModalTableContainer thead,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer thead {
+  background-color: #1C2541 !important;
+}
+
+:global(body.dark-mode) .recordsModalTableContainer th,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer th {
+  color: #ffffff !important;
+  background-color: #1C2541 !important;
+  border-color: #3A506B !important;
+}
+
+:global(body.dark-mode) .recordsModalTableContainer tbody,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer tbody {
+  background-color: #2b3e59 !important;
+}
+
+:global(body.dark-mode) .recordsModalTableContainer td,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer td {
+  color: #ffffff !important;
+  background-color: #2b3e59 !important;
+  border-color: #3A506B !important;
+}
+
+:global(body.dark-mode) .recordsModalTableContainer tbody tr:hover,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer tbody tr:hover {
+  background-color: #2f4157 !important;
+}
+
+:global(body.dark-mode) .recordsModalTableContainer tbody tr:hover td,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer tbody tr:hover td {
+  background-color: #2f4157 !important;
+  color: #ffffff !important;
+}
+
+/* Links in table */
+:global(body.dark-mode) .recordsModalTableContainer a,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer a {
+  color: #1C8BCC !important;
+  text-decoration: none;
+}
+
+:global(body.dark-mode) .recordsModalTableContainer a:hover,
+:global(body.bm-dashboard-dark) .recordsModalTableContainer a:hover {
+  color: #4da3d9 !important;
+  text-decoration: underline;
+}
+
+/* Buttons in modal footer */
+:global(body.dark-mode) .modal-footer .btn,
+:global(body.bm-dashboard-dark) .modal-footer .btn {
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+  background-color: transparent !important;
+}
+
+:global(body.dark-mode) .modal-footer .btn:hover,
+:global(body.bm-dashboard-dark) .modal-footer .btn:hover {
+  background-color: #3A506B !important;
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+/* Approve and Reject buttons */
+:global(body.dark-mode) .approveButton,
+:global(body.bm-dashboard-dark) .approveButton {
+  background-color: #28a745 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+:global(body.dark-mode) .approveButton:hover,
+:global(body.bm-dashboard-dark) .approveButton:hover {
+  background-color: #218838 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .approveButton:disabled,
+:global(body.bm-dashboard-dark) .approveButton:disabled {
+  background-color: #3A506B !important;
+  color: #a0a0a0 !important;
+  opacity: 0.6;
+}
+
+:global(body.dark-mode) .rejectButton,
+:global(body.bm-dashboard-dark) .rejectButton {
+  background-color: #dc3545 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+:global(body.dark-mode) .rejectButton:hover,
+:global(body.bm-dashboard-dark) .rejectButton:hover {
+  background-color: #c82333 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .rejectButton:disabled,
+:global(body.bm-dashboard-dark) .rejectButton:disabled {
+  background-color: #3A506B !important;
+  color: #a0a0a0 !important;
+  opacity: 0.6;
+}

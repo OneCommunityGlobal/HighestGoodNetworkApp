@@ -125,3 +125,181 @@ font-size: .8em;
   margin-bottom: 15px;
   font-size: 0.9rem;
 }
+
+/* ==================== DARK MODE STYLES ==================== */
+
+/* Container */
+:global(body.dark-mode) .addMaterialContainer,
+:global(body.bm-dashboard-dark) .addMaterialContainer {
+  background-color: #2b3e59 !important;
+  border-color: #3A506B !important;
+  color: #ffffff;
+}
+
+:global(body.dark-mode) .addMaterialHeader h2,
+:global(body.bm-dashboard-dark) .addMaterialHeader h2 {
+  color: #ffffff;
+}
+
+/* Labels - make brighter */
+:global(body.dark-mode) .addMaterialForm label,
+:global(body.bm-dashboard-dark) .addMaterialForm label {
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+/* Input fields - make brighter */
+:global(body.dark-mode) .addMaterialForm input[type="text"],
+:global(body.bm-dashboard-dark) .addMaterialForm input[type="text"],
+:global(body.dark-mode) .addMaterialForm input[type="number"],
+:global(body.bm-dashboard-dark) .addMaterialForm input[type="number"],
+:global(body.dark-mode) .addMaterialForm input[type="date"],
+:global(body.bm-dashboard-dark) .addMaterialForm input[type="date"],
+:global(body.dark-mode) .addMaterialForm select,
+:global(body.bm-dashboard-dark) .addMaterialForm select,
+:global(body.dark-mode) .addMaterialForm textarea,
+:global(body.bm-dashboard-dark) .addMaterialForm textarea {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+:global(body.dark-mode) .addMaterialForm input[type="text"]:focus,
+:global(body.bm-dashboard-dark) .addMaterialForm input[type="text"]:focus,
+:global(body.dark-mode) .addMaterialForm input[type="number"]:focus,
+:global(body.bm-dashboard-dark) .addMaterialForm input[type="number"]:focus,
+:global(body.dark-mode) .addMaterialForm input[type="date"]:focus,
+:global(body.bm-dashboard-dark) .addMaterialForm input[type="date"]:focus,
+:global(body.dark-mode) .addMaterialForm select:focus,
+:global(body.bm-dashboard-dark) .addMaterialForm select:focus,
+:global(body.dark-mode) .addMaterialForm textarea:focus,
+:global(body.bm-dashboard-dark) .addMaterialForm textarea:focus {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(28, 139, 204, 0.25);
+}
+
+:global(body.dark-mode) .addMaterialForm input::placeholder,
+:global(body.bm-dashboard-dark) .addMaterialForm input::placeholder,
+:global(body.dark-mode) .addMaterialForm textarea::placeholder,
+:global(body.bm-dashboard-dark) .addMaterialForm textarea::placeholder {
+  color: #a0a0a0 !important;
+  opacity: 1;
+}
+
+:global(body.dark-mode) .addMaterialForm select option,
+:global(body.bm-dashboard-dark) .addMaterialForm select option {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+/* Total Price section - make brighter */
+:global(body.dark-mode) .addMaterialTotalPrice,
+:global(body.bm-dashboard-dark) .addMaterialTotalPrice {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .addMaterialTotalPrice div,
+:global(body.bm-dashboard-dark) .addMaterialTotalPrice div {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .totalPriceCalculated,
+:global(body.bm-dashboard-dark) .totalPriceCalculated {
+  color: #ffffff !important;
+  font-weight: bold;
+}
+
+/* Created By section - make brighter */
+:global(body.dark-mode) .addMaterialCreatedby,
+:global(body.bm-dashboard-dark) .addMaterialCreatedby {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .addMaterialCreatedby div,
+:global(body.bm-dashboard-dark) .addMaterialCreatedby div {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .createdby,
+:global(body.bm-dashboard-dark) .createdby {
+  color: #ffffff !important;
+  font-weight: bold;
+}
+
+/* Buttons */
+:global(body.dark-mode) .addMaterialButtons button,
+:global(body.bm-dashboard-dark) .addMaterialButtons button {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .addMaterialButtons .btn-outline-primary,
+:global(body.bm-dashboard-dark) .addMaterialButtons .btn-outline-primary {
+  border-color: #3A506B !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .addMaterialButtons .btn-outline-primary:hover,
+:global(body.bm-dashboard-dark) .addMaterialButtons .btn-outline-primary:hover {
+  background-color: #3A506B !important;
+  border-color: #3A506B !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .addMaterialButtons .btn-primary,
+:global(body.bm-dashboard-dark) .addMaterialButtons .btn-primary {
+  background-color: #1C8BCC !important;
+  border-color: #1C8BCC !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .addMaterialButtons .btn-primary:hover,
+:global(body.bm-dashboard-dark) .addMaterialButtons .btn-primary:hover {
+  background-color: #1a7bb8 !important;
+  border-color: #1a7bb8 !important;
+  color: #ffffff !important;
+}
+
+/* Error messages */
+:global(body.dark-mode) .materialFormError,
+:global(body.bm-dashboard-dark) .materialFormError {
+  color: #ff6b6b !important;
+}
+
+:global(body.dark-mode) .fieldRequired,
+:global(body.bm-dashboard-dark) .fieldRequired {
+  color: #ff6b6b !important;
+}
+
+/* File preview container */
+:global(body.dark-mode) .filePreviewContainer,
+:global(body.bm-dashboard-dark) .filePreviewContainer {
+  color: #ffffff;
+}
+
+/* Navigation options modal */
+:global(body.dark-mode) .navigationOptions .optionContainer,
+:global(body.bm-dashboard-dark) .navigationOptions .optionContainer {
+  background-color: #2b3e59 !important;
+  border-color: #3A506B !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .navigationOptions .optionContainer:hover,
+:global(body.bm-dashboard-dark) .navigationOptions .optionContainer:hover {
+  background-color: #2f4157 !important;
+}
+
+:global(body.dark-mode) .navigationOptions h5,
+:global(body.bm-dashboard-dark) .navigationOptions h5 {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .navigationOptions p,
+:global(body.bm-dashboard-dark) .navigationOptions p {
+  color: #ffffff !important;
+}

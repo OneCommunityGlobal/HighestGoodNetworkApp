@@ -73,3 +73,258 @@
   border-radius: 5px;
   margin-right: 5px;
 }
+
+/* ==================== DARK MODE STYLES ==================== */
+
+/* Container and headings */
+:global(body.dark-mode) .typesListContainer,
+:global(body.bm-dashboard-dark) .typesListContainer {
+  color: #ffffff;
+}
+
+:global(body.dark-mode) .typesListContainer h1,
+:global(body.bm-dashboard-dark) .typesListContainer h1,
+:global(body.dark-mode) .typesListContainer h3,
+:global(body.bm-dashboard-dark) .typesListContainer h3 {
+  color: #ffffff;
+}
+
+/* Timestamp container */
+:global(body.dark-mode) .timestampContainer,
+:global(body.bm-dashboard-dark) .timestampContainer {
+  color: #ffffff;
+}
+
+:global(body.dark-mode) .timestampContainer span,
+:global(body.bm-dashboard-dark) .timestampContainer span {
+  color: #ffffff;
+}
+
+/* DatePicker input */
+:global(body.dark-mode) #timestamp,
+:global(body.bm-dashboard-dark) #timestamp {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+:global(body.dark-mode) #timestamp:focus,
+:global(body.bm-dashboard-dark) #timestamp:focus {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(28, 139, 204, 0.25);
+}
+
+:global(body.dark-mode) #timestamp::placeholder,
+:global(body.bm-dashboard-dark) #timestamp::placeholder {
+  color: #a0a0a0 !important;
+  opacity: 1;
+}
+
+/* Card/Accordion headers */
+:global(body.dark-mode) .cardHeader,
+:global(body.bm-dashboard-dark) .cardHeader {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .cardHeader:hover,
+:global(body.bm-dashboard-dark) .cardHeader:hover {
+  background-color: #2f4157 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .arrowIcon,
+:global(body.bm-dashboard-dark) .arrowIcon {
+  color: #ffffff !important;
+}
+
+/* Accordion collapse body */
+:global(body.dark-mode) .accordionCollapse,
+:global(body.bm-dashboard-dark) .accordionCollapse {
+  background-color: #2b3e59 !important;
+  color: #ffffff !important;
+}
+
+/* React Bootstrap Card styling */
+:global(body.dark-mode) .card,
+:global(body.bm-dashboard-dark) .card {
+  background-color: #2b3e59 !important;
+  border-color: #3A506B !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .card-body,
+:global(body.bm-dashboard-dark) .card-body {
+  background-color: #2b3e59 !important;
+  color: #ffffff !important;
+}
+
+/* Table styling */
+:global(body.dark-mode) .tableHeader,
+:global(body.bm-dashboard-dark) .tableHeader {
+  background-color: #1C2541 !important;
+  border-bottom: 1px solid #3A506B !important;
+}
+
+:global(body.dark-mode) .tableHeader th,
+:global(body.bm-dashboard-dark) .tableHeader th {
+  color: #ffffff !important;
+  background-color: #1C2541 !important;
+}
+
+:global(body.dark-mode) table,
+:global(body.bm-dashboard-dark) table {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) table thead th,
+:global(body.bm-dashboard-dark) table thead th {
+  color: #ffffff !important;
+  background-color: #1C2541 !important;
+  border-color: #3A506B !important;
+}
+
+:global(body.dark-mode) table tbody td,
+:global(body.bm-dashboard-dark) table tbody td {
+  color: #ffffff !important;
+  background-color: #2b3e59 !important;
+  border-color: #3A506B !important;
+}
+
+:global(body.dark-mode) table tbody tr:hover,
+:global(body.bm-dashboard-dark) table tbody tr:hover {
+  background-color: #2f4157 !important;
+}
+
+:global(body.dark-mode) table tbody tr:hover td,
+:global(body.bm-dashboard-dark) table tbody tr:hover td {
+  background-color: #2f4157 !important;
+  color: #ffffff !important;
+}
+
+/* Buttons */
+:global(body.dark-mode) .btnTypes,
+:global(body.bm-dashboard-dark) .btnTypes {
+  background-color: #1C8BCC !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+:global(body.dark-mode) .btnTypes:hover,
+:global(body.bm-dashboard-dark) .btnTypes:hover {
+  background-color: #1a7bb8 !important;
+  color: #ffffff !important;
+}
+
+/* React Bootstrap Button overrides */
+:global(body.dark-mode) .btn,
+:global(body.bm-dashboard-dark) .btn {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .btn-primary,
+:global(body.bm-dashboard-dark) .btn-primary {
+  background-color: #1C8BCC !important;
+  border-color: #1C8BCC !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .btn-primary:hover,
+:global(body.bm-dashboard-dark) .btn-primary:hover {
+  background-color: #1a7bb8 !important;
+  border-color: #1a7bb8 !important;
+  color: #ffffff !important;
+}
+
+/* Button container link */
+:global(body.dark-mode) .buttonContainer a,
+:global(body.bm-dashboard-dark) .buttonContainer a {
+  background-color: #1C8BCC !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .buttonContainer a:hover,
+:global(body.bm-dashboard-dark) .buttonContainer a:hover {
+  background-color: #1a7bb8 !important;
+  color: #ffffff !important;
+}
+
+/* Input measurement field */
+:global(body.dark-mode) #input-measurement,
+:global(body.bm-dashboard-dark) #input-measurement {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+:global(body.dark-mode) #input-measurement:focus,
+:global(body.bm-dashboard-dark) #input-measurement:focus {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(28, 139, 204, 0.25);
+}
+
+:global(body.dark-mode) #input-measurement::placeholder,
+:global(body.bm-dashboard-dark) #input-measurement::placeholder {
+  color: #a0a0a0 !important;
+  opacity: 1;
+}
+
+/* Links in table */
+:global(body.dark-mode) table a,
+:global(body.bm-dashboard-dark) table a {
+  color: #1C8BCC !important;
+  text-decoration: none;
+}
+
+:global(body.dark-mode) table a:hover,
+:global(body.bm-dashboard-dark) table a:hover {
+  color: #4da3d9 !important;
+  text-decoration: underline;
+}
+
+/* Checkboxes */
+:global(body.dark-mode) input[type="checkbox"],
+:global(body.bm-dashboard-dark) input[type="checkbox"] {
+  accent-color: #1C8BCC;
+}
+
+/* React DatePicker dark mode (already handled globally, but ensuring it works here) */
+:global(body.dark-mode) .react-datepicker,
+:global(body.bm-dashboard-dark) .react-datepicker {
+  background-color: #3A506B !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .react-datepicker__header,
+:global(body.bm-dashboard-dark) .react-datepicker__header {
+  background-color: #1C2541 !important;
+  border-bottom: 1px solid #555555 !important;
+}
+
+:global(body.dark-mode) .react-datepicker__current-month,
+:global(body.bm-dashboard-dark) .react-datepicker__current-month {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .react-datepicker__day,
+:global(body.bm-dashboard-dark) .react-datepicker__day {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .react-datepicker__day:hover,
+:global(body.bm-dashboard-dark) .react-datepicker__day:hover {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .react-datepicker__day--selected,
+:global(body.bm-dashboard-dark) .react-datepicker__day--selected {
+  background-color: #1C8BCC !important;
+  color: #ffffff !important;
+}

@@ -60,8 +60,95 @@
 }
 
 
-.logMaterialTable {
+/* Base color - only apply in light mode */
+:global(body:not(.dark-mode):not(.bm-dashboard-dark)) .logMaterialTable {
   color: #a2a5aa !important;
+}
+
+/* Dark mode color - white text */
+:global(body.dark-mode) .logMaterialTable,
+:global(body.bm-dashboard-dark) .logMaterialTable {
+  color: #ffffff !important;
+}
+
+/* Also target the scoped class directly (CSS modules) */
+:global(body.dark-mode) :global(.logMaterialTable),
+:global(body.bm-dashboard-dark) :global(.logMaterialTable) {
+  color: #ffffff !important;
+}
+
+/* Target using the actual scoped class name pattern */
+:global(body.dark-mode) [class*="logMaterialTable"],
+:global(body.bm-dashboard-dark) [class*="logMaterialTable"] {
+  color: #ffffff !important;
+}
+
+/* Force all children of the scoped class */
+:global(body.dark-mode) [class*="logMaterialTable"] *,
+:global(body.bm-dashboard-dark) [class*="logMaterialTable"] * {
+  color: #ffffff !important;
+}
+
+/* Specifically target table cells */
+:global(body.dark-mode) [class*="logMaterialTable"] tbody td,
+:global(body.bm-dashboard-dark) [class*="logMaterialTable"] tbody td {
+  color: #ffffff !important;
+}
+
+/* Also override for all table elements and children - comprehensive coverage */
+:global(body.dark-mode) .logMaterialTable,
+:global(body.bm-dashboard-dark) .logMaterialTable,
+:global(body.dark-mode) .logMaterialTable tbody,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody,
+:global(body.dark-mode) .logMaterialTable tbody tr,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr,
+:global(body.dark-mode) .logMaterialTable tbody tr td,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td,
+:global(body.dark-mode) table.logMaterialTable,
+:global(body.bm-dashboard-dark) table.logMaterialTable,
+:global(body.dark-mode) table.logMaterialTable tbody,
+:global(body.bm-dashboard-dark) table.logMaterialTable tbody,
+:global(body.dark-mode) table.logMaterialTable tbody tr,
+:global(body.bm-dashboard-dark) table.logMaterialTable tbody tr,
+:global(body.dark-mode) table.logMaterialTable tbody tr td,
+:global(body.bm-dashboard-dark) table.logMaterialTable tbody tr td {
+  color: #ffffff !important;
+}
+
+/* Force all text nodes to be white - use universal selector */
+:global(body.dark-mode) .logMaterialTable *,
+:global(body.bm-dashboard-dark) .logMaterialTable * {
+  color: #ffffff !important;
+}
+
+/* ULTIMATE FIX: Target the actual table element with maximum specificity */
+:global(body.dark-mode) table[class*="logMaterialTable"],
+:global(body.bm-dashboard-dark) table[class*="logMaterialTable"],
+:global(body.dark-mode) table[class*="logMaterialTable"] tbody,
+:global(body.bm-dashboard-dark) table[class*="logMaterialTable"] tbody,
+:global(body.dark-mode) table[class*="logMaterialTable"] tbody tr,
+:global(body.bm-dashboard-dark) table[class*="logMaterialTable"] tbody tr,
+:global(body.dark-mode) table[class*="logMaterialTable"] tbody tr td,
+:global(body.bm-dashboard-dark) table[class*="logMaterialTable"] tbody tr td {
+  color: #ffffff !important;
+}
+
+
+/* Also target div wrapper if responsive */
+:global(body.dark-mode) div[class*="logMaterialTable"],
+:global(body.bm-dashboard-dark) div[class*="logMaterialTable"] {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) div[class*="logMaterialTable"] table,
+:global(body.bm-dashboard-dark) div[class*="logMaterialTable"] table,
+:global(body.dark-mode) div[class*="logMaterialTable"] table tbody,
+:global(body.bm-dashboard-dark) div[class*="logMaterialTable"] table tbody,
+:global(body.dark-mode) div[class*="logMaterialTable"] table tbody tr,
+:global(body.bm-dashboard-dark) div[class*="logMaterialTable"] table tbody tr,
+:global(body.dark-mode) div[class*="logMaterialTable"] table tbody tr td,
+:global(body.bm-dashboard-dark) div[class*="logMaterialTable"] table tbody tr td {
+  color: #ffffff !important;
 }
 
 .logMTableHead {
@@ -112,4 +199,606 @@
   color: red;
   font-size: 11px;
   font-style: italic;
+}
+
+/* ==================== DARK MODE STYLES ==================== */
+
+/* Page background - darker for better contrast */
+:global(body.dark-mode) .logMaterialPage,
+:global(body.bm-dashboard-dark) .logMaterialPage {
+  background-color: #0f172a;
+}
+
+/* Container background - darker for better contrast */
+:global(body.dark-mode) .logMaterial,
+:global(body.bm-dashboard-dark) .logMaterial {
+  background-color: #1e293b;
+}
+
+/* Title text - brighter */
+:global(body.dark-mode) .logMaterialTitle,
+:global(body.bm-dashboard-dark) .logMaterialTitle {
+  color: #ffffff !important;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Table styling - darker background, brighter text - MUST override base color #a2a5aa */
+:global(body.dark-mode) .logMaterialTable,
+:global(body.bm-dashboard-dark) .logMaterialTable,
+:global(body.dark-mode) table.logMaterialTable,
+:global(body.bm-dashboard-dark) table.logMaterialTable,
+:global(body.dark-mode) .table.logMaterialTable,
+:global(body.bm-dashboard-dark) .table.logMaterialTable {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+  border-color: #475569 !important;
+}
+
+/* Table body - match header dark background */
+:global(body.dark-mode) .logMaterialTable tbody,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable th,
+:global(body.bm-dashboard-dark) .logMaterialTable th {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+:global(body.dark-mode) .logMaterialTable td,
+:global(body.bm-dashboard-dark) .logMaterialTable td {
+  color: #ffffff !important;
+  font-weight: 400;
+}
+
+:global(body.dark-mode) .logMaterialTable th *,
+:global(body.bm-dashboard-dark) .logMaterialTable th * {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+:global(body.dark-mode) .logMaterialTable td *,
+:global(body.bm-dashboard-dark) .logMaterialTable td * {
+  color: #ffffff !important;
+  font-weight: 400;
+}
+
+/* Table headers - brighter and darker background */
+:global(body.dark-mode) .logMTableHead,
+:global(body.bm-dashboard-dark) .logMTableHead {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+:global(body.dark-mode) .logMTableHeaderLine,
+:global(body.bm-dashboard-dark) .logMTableHeaderLine {
+  background-color: #0f172a !important;
+  border-bottom: 2px solid #475569 !important;
+  border-top: 1px solid #475569 !important;
+  color: #ffffff !important;
+}
+
+/* Make table body rows match the header styling - dark background with white text */
+:global(body.dark-mode) .logMaterialTable tbody tr,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable tbody tr td,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 400;
+}
+
+:global(body.dark-mode) .logMTableHeaderLine th,
+:global(body.bm-dashboard-dark) .logMTableHeaderLine th {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Ensure text nodes and direct children are white */
+:global(body.dark-mode) .logMaterialTable tbody tr td *,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td * {
+  color: #ffffff !important;
+}
+
+/* Override any inherited text colors */
+:global(body.dark-mode) .logMaterialTable tbody tr td:not(:hover),
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td:not(:hover) {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable tbody tr:hover,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr:hover {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable tbody tr:hover td,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr:hover td {
+  color: #ffffff !important;
+  font-weight: 400;
+}
+
+/* Override table-light class in dark mode - darker background */
+:global(body.dark-mode) .logMaterialTable thead tr.table-light,
+:global(body.bm-dashboard-dark) .logMaterialTable thead tr.table-light {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable thead tr.table-light th,
+:global(body.bm-dashboard-dark) .logMaterialTable thead tr.table-light th {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Input fields - darker background, brighter text */
+:global(body.dark-mode) .logMaterialTable input[type="number"],
+:global(body.bm-dashboard-dark) .logMaterialTable input[type="number"],
+:global(body.dark-mode) .logMaterialTable input[type="text"],
+:global(body.bm-dashboard-dark) .logMaterialTable input[type="text"],
+:global(body.dark-mode) .logMaterialTable input[type="date"],
+:global(body.bm-dashboard-dark) .logMaterialTable input[type="date"],
+:global(body.dark-mode) .logMaterialTable select,
+:global(body.bm-dashboard-dark) .logMaterialTable select {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid #475569 !important;
+  font-weight: 400;
+}
+
+:global(body.dark-mode) .logMaterialTable input[type="number"]:focus,
+:global(body.bm-dashboard-dark) .logMaterialTable input[type="number"]:focus,
+:global(body.dark-mode) .logMaterialTable input[type="text"]:focus,
+:global(body.bm-dashboard-dark) .logMaterialTable input[type="text"]:focus,
+:global(body.dark-mode) .logMaterialTable input[type="date"]:focus,
+:global(body.bm-dashboard-dark) .logMaterialTable input[type="date"]:focus,
+:global(body.dark-mode) .logMaterialTable select:focus,
+:global(body.bm-dashboard-dark) .logMaterialTable select:focus {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(28, 139, 204, 0.25);
+}
+
+/* Placeholder text - brighter */
+:global(body.dark-mode) .logMaterialTable input::placeholder,
+:global(body.bm-dashboard-dark) .logMaterialTable input::placeholder {
+  color: #cbd5e1 !important;
+  opacity: 1;
+}
+
+/* Labels - brighter */
+:global(body.dark-mode) .logMaterialInputRow label,
+:global(body.bm-dashboard-dark) .logMaterialInputRow label {
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+/* Buttons */
+:global(body.dark-mode) .logMButtonOutline,
+:global(body.bm-dashboard-dark) .logMButtonOutline,
+:global(body.dark-mode) .logMButtons,
+:global(body.bm-dashboard-dark) .logMButtons {
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+  background-color: transparent !important;
+}
+
+:global(body.dark-mode) .logMButtonOutline:hover,
+:global(body.bm-dashboard-dark) .logMButtonOutline:hover,
+:global(body.dark-mode) .logMButtons:hover,
+:global(body.bm-dashboard-dark) .logMButtons:hover {
+  background-color: #3A506B !important;
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+:global(body.dark-mode) .logMButtonBg,
+:global(body.bm-dashboard-dark) .logMButtonBg {
+  background-color: #1C8BCC !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+}
+
+:global(body.dark-mode) .logMButtonBg:hover,
+:global(body.bm-dashboard-dark) .logMButtonBg:hover {
+  background-color: #1a7bb8 !important;
+  color: #ffffff !important;
+  border-color: #1a7bb8 !important;
+}
+
+:global(body.dark-mode) .logMButtonBg:disabled,
+:global(body.bm-dashboard-dark) .logMButtonBg:disabled {
+  background-color: #3A506B !important;
+  color: #a0a0a0 !important;
+  border-color: #3A506B !important;
+  opacity: 0.6;
+}
+
+/* Clear all link */
+:global(body.dark-mode) .logMaterialClearAll,
+:global(body.bm-dashboard-dark) .logMaterialClearAll {
+  color: #1C8BCC;
+}
+
+:global(body.dark-mode) .logMaterialClearAll:hover,
+:global(body.bm-dashboard-dark) .logMaterialClearAll:hover {
+  color: #4da3d9;
+}
+
+/* Error messages */
+:global(body.dark-mode) .err,
+:global(body.bm-dashboard-dark) .err {
+  color: #ff6b6b;
+}
+
+:global(body.dark-mode) .materialFormTableError,
+:global(body.bm-dashboard-dark) .materialFormTableError {
+  color: #ff6b6b !important;
+}
+
+:global(body.dark-mode) .materialFormErrorClr,
+:global(body.bm-dashboard-dark) .materialFormErrorClr {
+  color: #ff6b6b !important;
+}
+
+/* Date input specific styling */
+:global(body.dark-mode) input[type="date"],
+:global(body.bm-dashboard-dark) input[type="date"],
+:global(body.dark-mode) .logMaterialInputRow input[type="date"],
+:global(body.bm-dashboard-dark) .logMaterialInputRow input[type="date"] {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border: 1px solid #475569 !important;
+  font-weight: 400;
+}
+
+:global(body.dark-mode) input[type="date"]:focus,
+:global(body.bm-dashboard-dark) input[type="date"]:focus,
+:global(body.dark-mode) .logMaterialInputRow input[type="date"]:focus,
+:global(body.bm-dashboard-dark) .logMaterialInputRow input[type="date"]:focus {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(28, 139, 204, 0.25);
+}
+
+:global(body.dark-mode) input[type="date"]::-webkit-calendar-picker-indicator,
+:global(body.bm-dashboard-dark) input[type="date"]::-webkit-calendar-picker-indicator,
+:global(body.dark-mode) .logMaterialInputRow input[type="date"]::-webkit-calendar-picker-indicator,
+:global(body.bm-dashboard-dark) .logMaterialInputRow input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* Select dropdown styling */
+:global(body.dark-mode) .logMaterialTable select,
+:global(body.bm-dashboard-dark) .logMaterialTable select {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+:global(body.dark-mode) .logMaterialTable select option,
+:global(body.bm-dashboard-dark) .logMaterialTable select option {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable select:focus,
+:global(body.bm-dashboard-dark) .logMaterialTable select:focus {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+}
+
+/* React-Select dark mode styles - darker background, brighter text */
+:global(body.dark-mode) .logMaterialInputRow .react-select__control,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__control {
+  background-color: #0f172a !important;
+  border-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__control:hover,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__control:hover {
+  border-color: #475569 !important;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__control--is-focused,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__control--is-focused {
+  border-color: #1C8BCC !important;
+  box-shadow: 0 0 0 0.2rem rgba(28, 139, 204, 0.25);
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__single-value,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__single-value {
+  color: #ffffff !important;
+  font-weight: 400;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__input-container,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__input-container {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__input-container input,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__input-container input {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__placeholder,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__placeholder {
+  color: #cbd5e1 !important;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__menu,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__menu {
+  background-color: #0f172a !important;
+  border: 1px solid #475569 !important;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__option,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 400;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__option--is-focused,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__option--is-focused {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+  font-weight: 400;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__option--is-selected,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__option--is-selected {
+  background-color: #1C8BCC !important;
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+/* Ensure all React-Select options have proper styling */
+:global(body.dark-mode) .logMaterialInputRow .react-select__option:hover,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__option:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+/* Make sure the menu portal (when rendered outside) also gets dark styling */
+:global(body.dark-mode) .react-select__menu,
+:global(body.bm-dashboard-dark) .react-select__menu {
+  background-color: #0f172a !important;
+  border: 1px solid #475569 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+}
+
+:global(body.dark-mode) .react-select__menu-list,
+:global(body.bm-dashboard-dark) .react-select__menu-list {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .react-select__option,
+:global(body.bm-dashboard-dark) .react-select__option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+  font-weight: 400;
+}
+
+:global(body.dark-mode) .react-select__option:hover,
+:global(body.bm-dashboard-dark) .react-select__option:hover {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .react-select__option--is-focused,
+:global(body.bm-dashboard-dark) .react-select__option--is-focused {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .react-select__option--is-selected,
+:global(body.bm-dashboard-dark) .react-select__option--is-selected {
+  background-color: #1C8BCC !important;
+  color: #ffffff !important;
+  font-weight: 500;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__indicator-separator,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__indicator-separator {
+  background-color: #3A506B !important;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__dropdown-indicator,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__dropdown-indicator {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialInputRow .react-select__dropdown-indicator:hover,
+:global(body.bm-dashboard-dark) .logMaterialInputRow .react-select__dropdown-indicator:hover {
+  color: #1C8BCC !important;
+}
+
+/* Table cell borders in dark mode */
+:global(body.dark-mode) .logMaterialTable td,
+:global(body.bm-dashboard-dark) .logMaterialTable td,
+:global(body.dark-mode) .logMaterialTable th,
+:global(body.bm-dashboard-dark) .logMaterialTable th {
+  border-color: #475569 !important;
+  background-color: transparent !important;
+}
+
+/* Override Bootstrap table default white background */
+:global(body.dark-mode) .logMaterialTable.table,
+:global(body.bm-dashboard-dark) .logMaterialTable.table {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable.table thead,
+:global(body.bm-dashboard-dark) .logMaterialTable.table thead {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable.table tbody,
+:global(body.bm-dashboard-dark) .logMaterialTable.table tbody {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* Ensure all text elements in table are visible - match header background */
+:global(body.dark-mode) .logMaterialTable tbody td,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody td {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable tbody td *,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody td * {
+  color: #ffffff !important;
+}
+
+/* Override any white backgrounds from Bootstrap or other styles */
+:global(body.dark-mode) .logMaterialTable.table-bordered,
+:global(body.bm-dashboard-dark) .logMaterialTable.table-bordered,
+:global(body.dark-mode) .logMaterialTable.table-borderless,
+:global(body.bm-dashboard-dark) .logMaterialTable.table-borderless {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* Ensure table responsive wrapper is also dark */
+:global(body.dark-mode) .table-responsive .logMaterialTable,
+:global(body.bm-dashboard-dark) .table-responsive .logMaterialTable {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* Make sure all spans, divs, and other elements in table cells are visible */
+:global(body.dark-mode) .logMaterialTable tbody td span,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody td span,
+:global(body.dark-mode) .logMaterialTable tbody td div,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody td div,
+:global(body.dark-mode) .logMaterialTable tbody td p,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody td p {
+  color: #ffffff !important;
+  background-color: transparent !important;
+}
+
+/* CRITICAL: Force all direct text content in table cells to be white by default - consolidated rule */
+:global(body.dark-mode) .logMaterialTable tbody tr td,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td,
+:global(body.dark-mode) .logMaterialTable.table tbody tr td,
+:global(body.bm-dashboard-dark) .logMaterialTable.table tbody tr td,
+:global(body.dark-mode) table.logMaterialTable tbody tr td,
+:global(body.bm-dashboard-dark) table.logMaterialTable tbody tr td,
+:global(body.dark-mode) .table.logMaterialTable tbody tr td,
+:global(body.bm-dashboard-dark) .table.logMaterialTable tbody tr td,
+:global(body.dark-mode) .logMaterialTable tbody td,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody td,
+:global(body.dark-mode) table.logMaterialTable tbody td,
+:global(body.bm-dashboard-dark) table.logMaterialTable tbody td {
+  color: #ffffff !important;
+}
+
+/* Override any :not(:hover) rules that might be setting dark color */
+:global(body.dark-mode) .logMaterialTable tbody tr:not(:hover) td,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr:not(:hover) td {
+  color: #ffffff !important;
+}
+
+/* Target the actual text content directly */
+:global(body.dark-mode) .logMaterialTable tbody tr td:first-child,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td:first-child,
+:global(body.dark-mode) .logMaterialTable tbody tr td:nth-child(2),
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td:nth-child(2),
+:global(body.dark-mode) .logMaterialTable tbody tr td:nth-child(3),
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td:nth-child(3) {
+  color: #ffffff !important;
+}
+
+/* Empty state text - brighter */
+:global(body.dark-mode) .logMaterialTable tbody tr td i,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td i {
+  color: #cbd5e1 !important;
+  font-style: italic;
+}
+
+/* Empty state row - dark background */
+:global(body.dark-mode) .logMaterialTable tbody tr[align="center"],
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr[align="center"] {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) .logMaterialTable tbody tr[align="center"] td,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr[align="center"] td {
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
+}
+
+/* New Available dynamic values */
+:global(body.dark-mode) .logMaterialTable tbody tr td span,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td span {
+  color: #ffffff;
+}
+
+:global(body.dark-mode) .logMaterialTable tbody tr td span.materialFormErrorClr,
+:global(body.bm-dashboard-dark) .logMaterialTable tbody tr td span.materialFormErrorClr {
+  color: #ff6b6b !important;
+}
+
+/* FINAL OVERRIDE - Place at end of file with maximum specificity to ensure it wins */
+:global(body.dark-mode) [class*="logMaterialTable"] tbody tr td,
+:global(body.bm-dashboard-dark) [class*="logMaterialTable"] tbody tr td {
+  color: #ffffff !important;
+}
+
+:global(body.dark-mode) [class*="logMaterialTable"] tbody tr td *,
+:global(body.bm-dashboard-dark) [class*="logMaterialTable"] tbody tr td * {
+  color: #ffffff !important;
+}
+
+/* === DARK MODE TABLE HEADER FIX FOR CSS MODULES === */
+
+/* Fix headers that use Bootstrap .table-light */
+:global(body.dark-mode) :global(.logMaterialTable) :global(thead tr.table-light th),
+:global(body.bm-dashboard-dark) :global(.logMaterialTable) :global(thead tr.table-light th) {
+  background-color: #2a3550 !important;   /* dark bluish background */
+  color: #ffffff !important;               /* bright white text */
+  font-weight: 600 !important;
+  border-top: 1px solid #475569 !important;
+  border-bottom: 2px solid #475569 !important;
+}
+
+/* Fix all header rows (regardless of whether table-light exists) */
+:global(body.dark-mode) :global(.logMaterialTable) :global(thead th),
+:global(body.bm-dashboard-dark) :global(.logMaterialTable) :global(thead th),
+:global(body.dark-mode) [class*="logMTableHeaderLine_"] th,
+:global(body.bm-dashboard-dark) [class*="logMTableHeaderLine_"] th {
+  background-color: #2a3550 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-top: 1px solid #475569 !important;
+  border-bottom: 2px solid #475569 !important;
+}
+
+/* Optional: Slight hover feedback for clarity */
+:global(body.dark-mode) :global(.logMaterialTable) :global(thead th:hover),
+:global(body.bm-dashboard-dark) :global(.logMaterialTable) :global(thead th:hover) {
+  background-color: #3c4b70 !important;
+  color: #ffffff !important;
 }
