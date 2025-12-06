@@ -771,3 +771,34 @@
 :global(body.bm-dashboard-dark) [class*="logMaterialTable"] tbody tr td * {
   color: #ffffff !important;
 }
+
+/* === DARK MODE TABLE HEADER FIX FOR CSS MODULES === */
+
+/* Fix headers that use Bootstrap .table-light */
+:global(body.dark-mode) :global(.logMaterialTable) :global(thead tr.table-light th),
+:global(body.bm-dashboard-dark) :global(.logMaterialTable) :global(thead tr.table-light th) {
+  background-color: #2a3550 !important;   /* dark bluish background */
+  color: #ffffff !important;               /* bright white text */
+  font-weight: 600 !important;
+  border-top: 1px solid #475569 !important;
+  border-bottom: 2px solid #475569 !important;
+}
+
+/* Fix all header rows (regardless of whether table-light exists) */
+:global(body.dark-mode) :global(.logMaterialTable) :global(thead th),
+:global(body.bm-dashboard-dark) :global(.logMaterialTable) :global(thead th),
+:global(body.dark-mode) [class*="logMTableHeaderLine_"] th,
+:global(body.bm-dashboard-dark) [class*="logMTableHeaderLine_"] th {
+  background-color: #2a3550 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-top: 1px solid #475569 !important;
+  border-bottom: 2px solid #475569 !important;
+}
+
+/* Optional: Slight hover feedback for clarity */
+:global(body.dark-mode) :global(.logMaterialTable) :global(thead th:hover),
+:global(body.bm-dashboard-dark) :global(.logMaterialTable) :global(thead th:hover) {
+  background-color: #3c4b70 !important;
+  color: #ffffff !important;
+}
