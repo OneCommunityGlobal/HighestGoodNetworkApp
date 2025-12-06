@@ -27,7 +27,7 @@ import hasPermission from '~/utils/permissions';
 // actions
 import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import styles from './TotalOrgSummary.module.css';
 import { clsx } from 'clsx';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
