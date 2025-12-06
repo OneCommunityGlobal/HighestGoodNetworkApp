@@ -3,6 +3,7 @@ import styles from './LessonPlan.module.css';
 import Template from './Template';
 import Topics from './Topics';
 import ActivitiesDraft from './ActivitiesDraft';
+import ReviewAndSubmit from './ReviewAndSubmit';
 
 const steps = [
   { id: 1, label: 'Choose Template' },
@@ -69,7 +70,7 @@ const LessonPlan = () => {
             {currentStep === 1 && <Template />}
             {currentStep === 2 && <Topics />}
             {currentStep === 3 && <ActivitiesDraft />}
-            {currentStep === 4 && <h2>Review & Submit</h2>}
+            {currentStep === 4 && <ReviewAndSubmit />}
           </div>
         </div>
       </div>

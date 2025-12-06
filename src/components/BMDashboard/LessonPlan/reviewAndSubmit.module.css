@@ -1,0 +1,132 @@
+.wrapper {
+  padding: 28px;
+  font-family: Inter, sans-serif;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.pageSubtitle {
+  color: #6a6a6a;
+  margin-top: 4px;
+}
+
+.mainGrid {
+  display: flex;
+  gap: 28px;
+  margin-top: 22px;
+}
+
+.leftSection {
+  flex: 2.5;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.sectionHeading {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.block {
+  margin-bottom: 22px;
+}
+
+.blockTitle {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.blockText {
+  color: #555;
+}
+
+.pillRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.pill {
+  background: #f2f2f2;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.activityBox {
+  border: 1px solid #ddd;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fafafa;
+}
+
+.activityTitle {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.activityDesc {
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.rightSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.checklistBox,
+.submitBox {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #ddd;
+  padding: 20px;
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin-top: 12px;
+  color: #333;
+}
+
+.checklist li {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.submitText {
+  margin: 8px 0 14px;
+  color: #555;
+  font-size: 14px;
+}
+
+.primaryBtn {
+  width: 100%;
+  background: black;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  padding: 11px;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.secondaryBtn {
+  width: 100%;
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 11px;
+  cursor: pointer;
+}
