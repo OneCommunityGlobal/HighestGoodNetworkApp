@@ -122,3 +122,78 @@
   margin-top: 40px;
   text-align: center;
 }
+
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.leftSection {
+  width: 72%;
+}
+
+.sidebar {
+  width: 26%;
+  background: #ffffff;
+  padding: 20px;
+  border-left: 1px solid #ddd;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.statusBox {
+  background: #e8f6e8;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #b8e8b7;
+}
+
+.commentThread {
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.commentItem {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.commentItem small {
+  color: #666;
+  font-size: 11px;
+}
+
+.commentItem p {
+  font-size: 13px;
+  margin: 2px 0 0;
+}
+
+.chatInput {
+  width: 100%;
+  height: 80px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  padding: 8px;
+  resize: none;
+  margin-top: 8px;
+}
+
+.sendButton {
+  margin-top: 8px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background-color: #4285f4;
+  color: white;
+  font-weight: 500;
+}
