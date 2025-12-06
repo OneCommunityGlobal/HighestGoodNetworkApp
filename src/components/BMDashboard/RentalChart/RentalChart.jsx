@@ -4,8 +4,9 @@ import axios from 'axios';
 import { ENDPOINTS } from '~/utils/URL';
 import { Line } from 'react-chartjs-2';
 import DatePicker from 'react-datepicker';
-import './RentalChart.css';
+import styles from './RentalChart.module.css';
 import { toast } from 'react-toastify';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,7 +18,16 @@ import {
   Legend,
 } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartDataLabels,
+);
 
 // these colors can be randomly generated once more projects are shared here. Colors generated from ChatGPT
 const PROJECT_COLORS = [
@@ -45,6 +55,7 @@ const MONTHS = [
 ];
 
 export default function RentalChart() {
+  const containerRef = useRef(null);
   const chartRef = useRef(null);
   const [chartData, setChartData] = useState({
     labels: [],
@@ -66,6 +77,7 @@ export default function RentalChart() {
   const [availableProjects, setAvailableProjects] = useState([]);
   const [availableTools, setAvailableTools] = useState([]);
   const [rawData, setRawData] = useState([]);
+  const [hiddenSeries, setHiddenSeries] = useState({});
 
   // Function to process data for the chart
   const processChartData = data => {
@@ -247,17 +259,67 @@ export default function RentalChart() {
     }
   }, [chartType, selectedProject, selectedTool, dateRange, groupBy, rawData]);
 
+  useEffect(() => {
+    setHiddenSeries({});
+  }, [chartData.datasets]);
+
+  const readThemeVars = node => {
+    const styles =
+      typeof window !== 'undefined'
+        ? getComputedStyle(node ?? document.documentElement)
+        : {
+            getPropertyValue: () => '',
+          };
+    const getVar = (name, fallback) => {
+      const value = styles.getPropertyValue(name);
+      return value ? value.trim() : fallback;
+    };
+
+    return {
+      background: getVar('--chart-bg', darkMode ? '#1b2a41' : '#ffffff'),
+      legendColor: getVar('--chart-legend-color', darkMode ? '#e0e0e0' : '#1b2a41'),
+      axisColor: getVar('--chart-axis-color', darkMode ? '#e0e0e0' : '#333333'),
+      gridColor: getVar('--chart-grid-color', darkMode ? 'rgba(255,255,255,0.16)' : '#d9d9d9'),
+      tooltipBg: getVar('--chart-tooltip-bg', darkMode ? '#1b2a41' : 'rgba(255,255,255,0.92)'),
+      tooltipTitle: getVar('--chart-tooltip-title', darkMode ? '#ffffff' : '#1b2a41'),
+      tooltipText: getVar('--chart-tooltip-text', darkMode ? '#e0e0e0' : '#333333'),
+      legendBg: getVar(
+        '--chart-legend-bg',
+        darkMode ? 'rgba(27,42,65,0.7)' : 'rgba(255,255,255,0.75)',
+      ),
+      pointLabel: getVar('--chart-point-label', darkMode ? '#e0e0e0' : '#1b2a41'),
+      pointLabelBg: getVar(
+        '--chart-point-label-bg',
+        darkMode ? 'rgba(15,23,42,0.75)' : 'rgba(255,255,255,0.8)',
+      ),
+    };
+  };
+
+  const [themeVars, setThemeVars] = useState(() => readThemeVars(document.documentElement));
+
+  useEffect(() => {
+    const node = containerRef.current || document.documentElement;
+    // wait until class toggles have applied
+    const id = requestAnimationFrame(() => setThemeVars(readThemeVars(node)));
+    return () => cancelAnimationFrame(id);
+  }, [darkMode]);
+
   const options = useMemo(() => {
     return {
       responsive: true,
       maintainAspectRatio: false,
-      backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
+      backgroundColor: themeVars.background,
+      layout: {
+        padding: {
+          left: 16,
+          right: 28,
+          top: 32,
+          bottom: 16,
+        },
+      },
       plugins: {
         legend: {
-          position: 'top',
-          labels: {
-            color: darkMode ? '#1b2a41' : '#333333',
-          },
+          display: false,
         },
         title: {
           display: true,
@@ -265,7 +327,7 @@ export default function RentalChart() {
           font: {
             size: 18,
           },
-          color: darkMode ? '#ffffff' : '#1b2a41',
+          color: themeVars.legendColor,
         },
         tooltip: {
           callbacks: {
@@ -283,11 +345,27 @@ export default function RentalChart() {
               return label;
             },
           },
-          backgroundColor: darkMode ? '#1b2a41' : 'rgba(255,255,255,0.8)',
-          titleColor: darkMode ? '#ffffff' : '#1b2a41',
-          bodyColor: darkMode ? '#ffffff' : '#333333',
-          borderColor: darkMode ? 'rgba(255,255,255, 0.2)' : '#1b2a41',
+          backgroundColor: themeVars.tooltipBg,
+          titleColor: themeVars.tooltipTitle,
+          bodyColor: themeVars.tooltipText,
+          borderColor: themeVars.gridColor,
           borderWidth: 1,
+        },
+        datalabels: {
+          color: themeVars.pointLabel,
+          backgroundColor: themeVars.pointLabelBg,
+          borderRadius: 4,
+          padding: { top: 4, bottom: 4, left: 6, right: 6 },
+          align: 'top',
+          anchor: 'end',
+          offset: 6,
+          clip: false,
+          clamp: true,
+          display: ctx => ctx.dataset.data[ctx.dataIndex] !== undefined,
+          formatter: value => {
+            if (value === undefined || value === null || Number.isNaN(value)) return '';
+            return chartType === 'percentage' ? `${value}%` : `$${Math.round(value)}`;
+          },
         },
       },
       scales: {
@@ -295,13 +373,13 @@ export default function RentalChart() {
           title: {
             display: true,
             text: 'Month/Year',
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: themeVars.axisColor,
           },
           ticks: {
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: themeVars.axisColor,
           },
           grid: {
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: themeVars.gridColor,
           },
         },
         y: {
@@ -312,21 +390,21 @@ export default function RentalChart() {
               chartType === 'percentage'
                 ? 'Percentage of Total Materials Cost (%)'
                 : 'Total Rental Cost ($)',
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: themeVars.axisColor,
           },
           ticks: {
             callback(value) {
               return chartType === 'percentage' ? `${value}%` : `$${value}`;
             },
-            color: darkMode ? '#e0e0e0' : '#333333',
+            color: themeVars.axisColor,
           },
           grid: {
-            color: darkMode ? 'rgba(255,255,255,0.1)' : '#1b2a41',
+            color: themeVars.gridColor,
           },
         },
       },
     };
-  }, [darkMode, chartType, generateChartTitle]);
+  }, [chartType, generateChartTitle, themeVars]);
 
   const handleTypeChange = e => {
     setChartType(e.target.value);
@@ -357,17 +435,19 @@ export default function RentalChart() {
   const renderChartContent = () => {
     if (loading) {
       return (
-        <div className={`loading ${darkMode ? 'text-light' : ''}`}>Loading Chart Data....</div>
+        <div className={`${styles.loading} ${darkMode ? styles.textLight : ''}`}>
+          Loading Chart Data....
+        </div>
       );
     }
 
     if (error) {
-      return <div className={`error ${darkMode ? 'text-light' : ''}`}>{error}</div>;
+      return <div className={`${styles.error} ${darkMode ? styles.textLight : ''}`}>{error}</div>;
     }
 
     if (chartData.datasets.length === 0) {
       return (
-        <div className={`no-data ${darkMode ? 'text-light' : ''}`}>
+        <div className={`${styles.noData} ${darkMode ? styles.textLight : ''}`}>
           No data available for the selected filters
         </div>
       );
@@ -376,47 +456,81 @@ export default function RentalChart() {
     return <Line ref={chartRef} data={chartData} options={options} />;
   };
 
+  const handleLegendToggle = index => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    const isVisible = chart.isDatasetVisible(index);
+    chart.setDatasetVisibility(index, !isVisible);
+    chart.update();
+    setHiddenSeries(prev => ({
+      ...prev,
+      [index]: isVisible,
+    }));
+  };
+
+  const legendItems = chartData.datasets.map((dataset, index) => {
+    const isHiddenFromChart = chartRef.current?.isDatasetVisible
+      ? !chartRef.current.isDatasetVisible(index)
+      : hiddenSeries[index];
+    return {
+      label: dataset.label || `Series ${index + 1}`,
+      color: dataset.borderColor,
+      hidden: !!isHiddenFromChart,
+      index,
+    };
+  });
+
   return (
     <div
-      className={`rental-container ${darkMode ? 'dark-mode' : ''}`}
+      ref={containerRef}
+      className={`${styles.rentalContainer} ${darkMode ? styles.darkMode : ''}`}
       style={{
-        backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
+        backgroundColor: themeVars.background,
         padding: '20px',
         borderRadius: '8px',
         minHeight: '100vh',
         marginTop: '-20px',
+        overflow: 'auto',
       }}
     >
-      <h1 className={darkMode ? 'text-light' : ''}>Rental Cost Over Time</h1>
-      <div className="chart-filters" style={{ marginBottom: '20px' }}>
+      <h1 className={darkMode ? styles.textLight : ''}>Rental Cost Over Time</h1>
+      <div className={styles.chartControls} style={{ marginBottom: '20px' }}>
         <div
-          className="filter-row top-filters"
+          className={`${styles.filterRow} ${styles.topFilters}`}
           style={{ display: 'flex', marginBottom: '10px', gap: '20px' }}
         >
-          <div className="filter-group">
-            <label htmlFor="chart-type" className={darkMode ? 'text-light' : ''}>
+          <div className={styles.filterGroup}>
+            <label htmlFor="chart-type" className={darkMode ? styles.textLight : ''}>
               Display:{' '}
             </label>
             <select
               id="chart-type"
               value={chartType}
               onChange={handleTypeChange}
-              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
+              className={
+                darkMode
+                  ? `${styles.rentalChartSelect} ${styles.darkSelect}`
+                  : styles.rentalChartSelect
+              }
             >
               <option value="cost">Total Rental Cost</option>
               <option value="percentage">% of Materials Cost</option>
             </select>
           </div>
 
-          <div className="filter-group">
-            <label htmlFor="project-filter" className={darkMode ? 'text-light' : ''}>
+          <div className={styles.filterGroup}>
+            <label htmlFor="project-filter" className={darkMode ? styles.textLight : ''}>
               Project:{' '}
             </label>
             <select
               id="project-filter"
               value={selectedProject}
               onChange={handleProjectChange}
-              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
+              className={
+                darkMode
+                  ? `${styles.rentalChartSelect} ${styles.darkSelect}`
+                  : styles.rentalChartSelect
+              }
             >
               <option value="All">All Projects</option>
               {availableProjects.map(projectId => (
@@ -427,8 +541,8 @@ export default function RentalChart() {
             </select>
           </div>
 
-          <div className="filter-group">
-            <label htmlFor="tool-filter" className={darkMode ? 'text-light' : ''}>
+          <div className={styles.filterGroup}>
+            <label htmlFor="tool-filter" className={darkMode ? styles.textLight : ''}>
               Tool:{' '}
             </label>
             <select
@@ -436,7 +550,11 @@ export default function RentalChart() {
               value={selectedTool}
               onChange={handleToolChange}
               disabled={groupBy === 'project' && selectedProject !== 'All'}
-              className={darkMode ? 'rental-chart-select dark-select' : 'rental-chart-select'}
+              className={
+                darkMode
+                  ? `${styles.rentalChartSelect} ${styles.darkSelect}`
+                  : styles.rentalChartSelect
+              }
             >
               <option value="All">All Tools</option>
               {availableTools.map(tool => (
@@ -448,9 +566,12 @@ export default function RentalChart() {
           </div>
         </div>
 
-        <div className="filter-row date-filters" style={{ display: 'flex', gap: '20px' }}>
-          <div className="filter-group">
-            <label style={{ marginRight: '8px' }} className={darkMode ? 'text-light' : ''}>
+        <div
+          className={`${styles.filterRow} ${styles.dateFilters}`}
+          style={{ display: 'flex', gap: '20px' }}
+        >
+          <div className={styles.filterGroup}>
+            <label style={{ marginRight: '8px' }} className={darkMode ? styles.textLight : ''}>
               From:{' '}
             </label>
             <DatePicker
@@ -463,12 +584,18 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              className={`date-picker ${darkMode ? 'dark-date-picker' : ''}`}
+              className={
+                darkMode ? `${styles.datePicker} ${styles.darkDatePicker}` : styles.datePicker
+              }
             />
           </div>
 
-          <div className="filter-group" style={{ marginRight: '150px' }}>
-            <label label style={{ marginRight: '10px' }} className={darkMode ? 'text-light' : ''}>
+          <div className={styles.filterGroup} style={{ marginRight: '150px' }}>
+            <label
+              label
+              style={{ marginRight: '10px' }}
+              className={darkMode ? styles.textLight : ''}
+            >
               To:{' '}
             </label>
             <DatePicker
@@ -482,22 +609,54 @@ export default function RentalChart() {
               showYearDropdown
               showMonthDropdown
               dropdownMode="select"
-              className={`date-picker ${darkMode ? 'dark-date-picker' : ''}`}
+              className={
+                darkMode ? `${styles.datePicker} ${styles.darkDatePicker}` : styles.datePicker
+              }
             />
           </div>
         </div>
       </div>
 
       <div
-        className={`chart-wrapper ${darkMode ? 'dark-chart' : ''}`}
+        className={`${styles.chartWrapper} ${darkMode ? styles.darkChart : ''}`}
         style={{
-          backgroundColor: darkMode ? '#1b2a41' : '#ffffff',
+          backgroundColor: themeVars.background,
           padding: '20px',
           borderRadius: '8px',
           border: darkMode ? '1px solid #333' : '1px solid #ddd',
           minHeight: '600px',
         }}
       >
+        {legendItems.length > 0 && (
+          <div
+            className={styles.chartLegend}
+            role="list"
+            aria-label="Toggle data series visibility"
+          >
+            {legendItems.map(item => (
+              <div
+                key={`${item.label}-${item.index}`}
+                role="listitem"
+                className={styles.chartLegendItemWrapper}
+              >
+                <button
+                  type="button"
+                  className={styles.chartLegendItem}
+                  onClick={() => handleLegendToggle(item.index)}
+                  aria-label={`Toggle ${item.label}`}
+                  aria-pressed={!item.hidden}
+                >
+                  <span
+                    className={styles.chartLegendSwatch}
+                    style={{ backgroundColor: item.color }}
+                    aria-hidden="true"
+                  />
+                  <span className={styles.chartLegendText}>{item.label}</span>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
         {renderChartContent()}
       </div>
     </div>
