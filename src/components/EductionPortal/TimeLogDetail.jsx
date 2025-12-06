@@ -1,14 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLocation, useParams, Link } from "react-router-dom"; 
+import { useLocation, useParams, Link } from "react-router-dom";
 import styles from "./DailyLogPage.module.css";
-import { FaRegCalendarAlt } from "react-icons/fa"; 
-
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 async function fetchTimeLogExtras(logId) {
   await new Promise((r) => setTimeout(r, 300));
   return {
-    noteToTeacher:
-      "",
+    noteToTeacher: "",
     teacherFeedback:
       "Good progress on quadratic equations. Focus on translating word problems into equations and check fraction operations carefully.",
   };
@@ -27,11 +25,17 @@ const formatDate = (iso) =>
   });
 
 export default function TimeLogDetail() {
-  const { id } = useParams();            
+  const { id } = useParams();
   const location = useLocation();
-  const passedLog = location.state?.log;  
+  const passedLog = location.state?.log;
 
-  const [log, setLog] = useState(passedLog || null);
+  const [log, setLog] = useState(
+    passedLog || {
+      log_id: `lg-${id}`,
+      created_at: new Date().toISOString(),
+      metadata: { course: "Course", duration: "—", badge: "", notes: "" },
+    }
+  );
 
   const [noteValue, setNoteValue] = useState("");
   const [serverNote, setServerNote] = useState("");
@@ -48,29 +52,27 @@ export default function TimeLogDetail() {
       setError("");
 
       try {
-        if (!passedLog && !log) {
-          setLog({
-            log_id: `lg-${id}`,
-            created_at: new Date().toISOString(),
-            metadata: { course: "Course", duration: "—", badge: "", notes: "" },
-          });
-        }
-
         const { noteToTeacher, teacherFeedback } = await fetchTimeLogExtras(id);
+
         if (!cancelled) {
           setServerNote(noteToTeacher || "");
           setNoteValue(noteToTeacher || "");
           setTeacherFeedback(teacherFeedback || "");
         }
       } catch (e) {
-        if (!cancelled) setError("Failed to load notes/feedback.");
+        if (!cancelled) {
+          console.error("Failed to load extras:", e);
+          setError("Failed to load notes or feedback.");
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
     }
 
     init();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   const md = useMemo(() => log?.metadata || {}, [log]);
@@ -79,9 +81,15 @@ export default function TimeLogDetail() {
     try {
       setSaving(true);
       setError("");
-      await saveNoteToTeacher(id, noteValue);
+
+      const res = await saveNoteToTeacher(id, noteValue);
+      if (!res.ok) {
+        throw new Error("Save failed");
+      }
+
       setServerNote(noteValue);
     } catch (e) {
+      console.error("Error saving note:", e);
       setError("Saving failed. Please try again.");
     } finally {
       setSaving(false);
@@ -98,7 +106,9 @@ export default function TimeLogDetail() {
           <p className={styles.detailNote}>
             No data found for this entry. Please return to the Daily Log and open the item again.
           </p>
-          <Link to="/educationportal/dailylog" className={styles.viewBtn}>Back to Daily Log</Link>
+          <Link to="/educationportal/dailylog" className={styles.viewBtn}>
+            Back to Daily Log
+          </Link>
         </div>
       </div>
     );
@@ -121,9 +131,12 @@ export default function TimeLogDetail() {
               </div>
             </div>
           </div>
+
           <div className={styles.entryHeaderRight}>
             {md.duration && <span className={styles.pill}>{md.duration}</span>}
-            {md.badge && <span className={`${styles.pill} ${styles.grade}`}>{md.badge}</span>}
+            {md.badge && (
+              <span className={`${styles.pill} ${styles.grade}`}>{md.badge}</span>
+            )}
           </div>
         </div>
 
@@ -137,6 +150,7 @@ export default function TimeLogDetail() {
 
       <div className={styles.blockCard}>
         <div className={styles.blockTitle}>Notes to Teacher</div>
+
         {loading ? (
           <div className={styles.detailNote}>Loading…</div>
         ) : (
@@ -148,21 +162,39 @@ export default function TimeLogDetail() {
               onChange={(e) => setNoteValue(e.target.value)}
               placeholder="Write a note to your teacher…"
             />
+
             <div className={styles.formActions}>
-              <button type="button" className={styles.btnGhost} onClick={handleCancel} disabled={saving}>
+              <button
+                type="button"
+                className={styles.btnGhost}
+                onClick={handleCancel}
+                disabled={saving}
+              >
                 Cancel
               </button>
-              <button type="button" className={styles.btnPrimary} onClick={handleSave} disabled={saving}>
+
+              <button
+                type="button"
+                className={styles.btnPrimary}
+                onClick={handleSave}
+                disabled={saving}
+              >
                 {saving ? "Saving…" : "Save"}
               </button>
             </div>
-            {error && <div className={styles.detailNote} style={{ color: "#b91c1c" }}>{error}</div>}
+
+            {error && (
+              <div className={styles.detailNote} style={{ color: "#b91c1c" }}>
+                {error}
+              </div>
+            )}
           </>
         )}
       </div>
 
       <div className={`${styles.blockCard} ${styles.feedbackCard}`}>
         <div className={styles.blockTitle}>Teacher Feedback</div>
+
         {loading ? (
           <div className={styles.detailNote}>Loading…</div>
         ) : (
@@ -172,13 +204,17 @@ export default function TimeLogDetail() {
                 <span className={`${styles.pill} ${styles.grade}`}>{md.badge}</span>
               </div>
             )}
-            <p className={styles.feedbackText}>{teacherFeedback || "No feedback yet."}</p>
+            <p className={styles.feedbackText}>
+              {teacherFeedback || "No feedback yet."}
+            </p>
           </div>
         )}
       </div>
 
       <div className={styles.detailActions}>
-        <Link to="/educationportal/dailylog" className={styles.viewBtn}>Back to Daily Log</Link>
+        <Link to="/educationportal/dailylog" className={styles.viewBtn}>
+          Back to Daily Log
+        </Link>
       </div>
     </div>
   );

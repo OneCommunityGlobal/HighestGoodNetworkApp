@@ -1,13 +1,12 @@
 import { useMemo, useState } from "react";
 import styles from "./DailyLogPage.module.css";
 import LogItemCard from "./LogItemCard";
-import { Link } from "react-router-dom";
 
 const parseDurationToMin = (str) => {
   if (!str) return 0;
   const h = /(\d+)\s*h/i.exec(str)?.[1];
   const m = /(\d+)\s*m/i.exec(str)?.[1];
-  return (Number(h || 0) * 60) + Number(m || 0);
+  return Number(h || 0) * 60 + Number(m || 0);
 };
 
 const formatMin = (min) => {
@@ -123,7 +122,7 @@ export default function DailyLogPage() {
         duration: newLog.duration,
         badge: newLog.badge,
         notes: newLog.notes,
-        link: `/time-logs/${id}`,  
+        link: `/time-logs/${id}`,
       },
       created_at: nowIso,
     };
@@ -174,43 +173,58 @@ export default function DailyLogPage() {
         {showForm && (
           <form className={styles.form} onSubmit={handleSave}>
             <div className={styles.formRow}>
-              <label>Course</label>
+              <label htmlFor="courseSelect">Course</label>
               <select
+                id="courseSelect"
                 className={styles.input}
                 value={newLog.course}
-                onChange={(e) => setNewLog({ ...newLog, course: e.target.value })}
+                onChange={(e) =>
+                  setNewLog({ ...newLog, course: e.target.value })
+                }
               >
                 {courseOptions.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className={styles.formRow}>
-              <label>Duration</label>
+              <label htmlFor="durationInput">Duration</label>
               <input
+                id="durationInput"
                 type="text"
                 className={styles.input}
                 placeholder="e.g. 1h 20m"
                 value={newLog.duration}
-                onChange={(e) => setNewLog({ ...newLog, duration: e.target.value })}
+                onChange={(e) =>
+                  setNewLog({ ...newLog, duration: e.target.value })
+                }
                 required
               />
             </div>
 
             <div className={styles.formRow}>
-              <label>Notes</label>
+              <label htmlFor="notesTextarea">Notes</label>
               <textarea
+                id="notesTextarea"
                 className={`${styles.input} ${styles.textarea}`}
                 rows={4}
                 placeholder="Describe what you worked on in this time"
                 value={newLog.notes}
-                onChange={(e) => setNewLog({ ...newLog, notes: e.target.value })}
+                onChange={(e) =>
+                  setNewLog({ ...newLog, notes: e.target.value })
+                }
               />
             </div>
 
             <div className={styles.formActions}>
-              <button type="button" className={styles.btnGhost} onClick={() => setShowForm(false)}>
+              <button
+                type="button"
+                className={styles.btnGhost}
+                onClick={() => setShowForm(false)}
+              >
                 Cancel
               </button>
               <button type="submit" className={styles.btnPrimary}>

@@ -125,7 +125,7 @@
   border: 1px solid #e5e7eb;
   padding: 2px 8px;
   border-radius: 999px;
-  color: #6b7280;
+  color: #374151; 
 }
 
 .metaLine {
@@ -357,16 +357,6 @@
   gap: 8px;
 }
 
-.pill {
-  display: inline-block;
-  border: 1px solid #e5e7eb;
-  background: #f3f4f6;
-  border-radius: 999px;
-  font-size: 12px;
-  padding: 2px 8px;
-  color: #111827;
-}
-
 .grade {
   background: #111827;
   color: #fff;
@@ -494,7 +484,7 @@
   margin-top: 10px;
 }
 
-.viewBtn {
+.viewBtnInline {
   display: flex;
   align-items: center;
   gap: 6px;
