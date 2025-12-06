@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Select from 'react-select';
+import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
 import styles from './ToolStatusDonutChart.module.css';
@@ -166,27 +167,30 @@ export default function ToolStatusDonutChart() {
   const chartData = availabilityData?.data || [];
   const total = availabilityData?.total || 0;
 
-  // Use unfiltered toolslist for options to prevent options disappearing after selection
-  // availabilityData is only used for chart data, not for building dropdown options
+  // Extract unique projects from fetched projects list
   const uniqueProjects = useMemo(
     () =>
       Array.from(
         new Map(
-          toolslist
-            .filter(t => t?.projectId)
-            .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
+          projects
+            .filter(p => p?.projectId)
+            .map(p => [
+              p.projectId,
+              { id: p.projectId, name: p.projectName || p.projectId || 'Unnamed Project' },
+            ]),
         ).values(),
       ),
-    [toolslist],
+    [projects],
   );
 
+  // Extract unique tools from toolslist using correct data structure (tool.itemType._id and tool.itemType.name)
   const uniqueTools = useMemo(
     () =>
       Array.from(
         new Map(
           toolslist
-            .filter(t => t?.toolId)
-            .map(t => [t.toolId, { id: t.toolId, name: t.name || 'Unnamed Tool' }]),
+            .filter(t => t?.itemType?._id && t?.itemType?.name)
+            .map(t => [t.itemType._id, { id: t.itemType._id, name: t.itemType.name }]),
         ).values(),
       ),
     [toolslist],
