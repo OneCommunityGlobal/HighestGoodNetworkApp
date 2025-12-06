@@ -120,7 +120,116 @@
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
-@media (max-width: 768px) {
+/* Gradient responsive scaling for donut chart */
+@media (max-width: 375px) {
+  .tool-donut-wrapper {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .tool-donut-title {
+    font-size: 0.85rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .tool-donut-filters {
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .filter-item {
+    font-size: 11px;
+  }
+
+  .filter-label {
+    font-size: 11px;
+  }
+
+  .tool-donut-legend {
+    margin-top: 0.6rem;
+    gap: 0.3rem;
+  }
+
+  .tool-donut-legend-item {
+    font-size: 11px;
+    padding: 4px 10px;
+    min-width: 100px;
+  }
+}
+
+@media (min-width: 376px) and (max-width: 428px) {
+  .tool-donut-wrapper {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .tool-donut-title {
+    font-size: 0.9rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .tool-donut-filters {
+    gap: 1.2rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .filter-item {
+    font-size: 11.5px;
+  }
+
+  .filter-label {
+    font-size: 11.5px;
+  }
+
+  .tool-donut-legend {
+    margin-top: 0.7rem;
+    gap: 0.35rem;
+  }
+
+  .tool-donut-legend-item {
+    font-size: 11.5px;
+    padding: 4px 11px;
+    min-width: 110px;
+  }
+}
+
+@media (min-width: 429px) and (max-width: 480px) {
+  .tool-donut-wrapper {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .tool-donut-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .tool-donut-filters {
+    gap: 1.3rem;
+    margin-bottom: 0.95rem;
+  }
+
+  .filter-item {
+    font-size: 11.5px;
+  }
+
+  .filter-label {
+    font-size: 11.5px;
+  }
+
+  .tool-donut-legend {
+    margin-top: 0.75rem;
+    gap: 0.35rem;
+  }
+
+  .tool-donut-legend-item {
+    font-size: 11.5px;
+    padding: 5px 11px;
+    min-width: 115px;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
   .tools-tracking-layout {
     flex-direction: column;
     align-items: center;
@@ -132,7 +241,6 @@
     max-width: 100%;
   }
 
-  /* Mobile adjustments for donut chart */
   .tool-donut-wrapper {
     max-width: 100%;
     padding: 0;
