@@ -21,11 +21,20 @@ export default function ToolItemsTable({
   const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
+
   const [projectNameCol, setProjectNameCol] = useState({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
   const [inventoryItemTypeCol, setInventoryItemTypeCol] = useState({
+    iconsToDisplay: faSort,
+    sortOrder: 'default',
+  });
+  const [conditionCol, setConditionCol] = useState({
+    iconsToDisplay: faSort,
+    sortOrder: 'default',
+  });
+  const [toolStatusCol, setToolStatusCol] = useState({
     iconsToDisplay: faSort,
     sortOrder: 'default',
   });
@@ -37,7 +46,9 @@ export default function ToolItemsTable({
   useEffect(() => {
     setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
-  }, [selectedProject, selectedItem]);
+    setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+  }, [selectedProject, selectedItem, selectedCondition, selectedToolStatus]);
 
   const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
@@ -63,6 +74,8 @@ export default function ToolItemsTable({
         setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'InventoryItemType') {
       if (
         inventoryItemTypeCol.sortOrder === 'default' ||
@@ -79,6 +92,34 @@ export default function ToolItemsTable({
         setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
       }
       setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    } else if (columnName === 'ToolStatusColumn') {
+      // Add logic for sorting by Status if needed
+      const usingRows = newSortedData.filter(item => item.itemType?.using?.includes(item._id));
+      const notUsingRows = newSortedData.filter(item => !item.itemType?.using?.includes(item._id));
+      if (toolStatusCol.sortOrder === 'default' || toolStatusCol.sortOrder === 'desc') {
+        newSortedData.splice(0, newSortedData.length, ...notUsingRows, ...usingRows);
+        setToolStatusCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else if (toolStatusCol.sortOrder === 'asc') {
+        setToolStatusCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+        newSortedData.splice(0, newSortedData.length, ...usingRows, ...notUsingRows);
+      }
+      setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setConditionCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    } else if (columnName === 'ConditionColumn') {
+      // Add logic for sorting by Condition if needed
+      if (conditionCol.sortOrder === 'default' || conditionCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.condition || '').localeCompare(b.condition || ''));
+        setConditionCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else if (conditionCol.sortOrder === 'asc') {
+        newSortedData.sort((a, b) => (b.condition || '').localeCompare(a.condition || ''));
+        setConditionCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+      setToolStatusCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
 
     setData(newSortedData);
@@ -112,9 +153,19 @@ export default function ToolItemsTable({
               ) : (
                 <th>Name</th>
               )}
-              {dynamicColumns.map(({ label }) => (
-                <th key={label}>{label}</th>
-              ))}
+              {dynamicColumns.map(
+                ({ label }) =>
+                  (label == 'Condition' && (
+                    <th onClick={() => sortData('ConditionColumn')} key={label}>
+                      {label} <FontAwesomeIcon icon={conditionCol.iconsToDisplay} size="lg" />
+                    </th>
+                  )) ||
+                  (label == 'Using' && (
+                    <th onClick={() => sortData('ToolStatusColumn')} key={label}>
+                      {label} <FontAwesomeIcon icon={toolStatusCol.iconsToDisplay} size="lg" />
+                    </th>
+                  )) || <th key={label}>{label}</th>,
+              )}
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
