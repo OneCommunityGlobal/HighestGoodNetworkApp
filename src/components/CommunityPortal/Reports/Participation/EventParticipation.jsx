@@ -4,6 +4,8 @@ import { useRef, useState, useCallback } from 'react';
 import MyCases from './MyCases';
 import DropOffTracking from './DropOffTracking';
 import NoShowInsights from './NoShowInsights';
+import EventPopularityBreakdown from './EventPopularityBreakdown';
+import EngagementVisuals from './EngagementVisuals';
 import styles from './Participation.module.css';
 
 function EventParticipation() {
@@ -73,6 +75,10 @@ function EventParticipation() {
       </header>
 
       <MyCases />
+
+      <EventPopularityBreakdown />
+
+      <EngagementVisuals />
 
       <div className={styles.analyticsSection}>
         <DropOffTracking />

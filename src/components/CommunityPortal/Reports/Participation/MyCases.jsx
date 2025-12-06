@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import ReactCalendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 import styles from './MyCases.module.css';
 import mockEvents from './mockData';
 
@@ -7,6 +10,8 @@ function MyCases() {
   const [view, setView] = useState('card');
   const [filter, setFilter] = useState('all');
   const [expanded, setExpanded] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const history = useHistory();
 
   const isExporting =
     typeof document !== 'undefined' && document.documentElement?.dataset?.exporting === 'true'; // Sonar: prefer .dataset
@@ -62,7 +67,46 @@ function MyCases() {
     visibleEvents = expanded ? filteredEvents.slice(0, 40) : filteredEvents.slice(0, 10);
   }
 
-  const placeholderAvatar = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+  const FALLBACK_IMG =
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
+
+  // Memoized event cache by date for calendar
+  const eventCacheByDate = useMemo(() => {
+    const cache = new Map();
+    filteredEvents.forEach(event => {
+      const eventDate = new Date(event.eventDate);
+      const dateKey = eventDate.toDateString();
+      if (!cache.has(dateKey)) {
+        cache.set(dateKey, []);
+      }
+      cache.get(dateKey).push(event);
+    });
+    return cache;
+  }, [filteredEvents]);
+
+  // Get events for selected date
+  const selectedDateEvents = useMemo(() => {
+    const dateKey = selectedDate.toDateString();
+    return eventCacheByDate.get(dateKey) || [];
+  }, [selectedDate, eventCacheByDate]);
+
+  // Handle date selection in calendar
+  const handleDateSelect = useCallback(date => {
+    setSelectedDate(date);
+  }, []);
+
+  // Handle Create New button
+  const handleCreateNew = useCallback(() => {
+    // Navigate to activities page or show a modal
+    // For now, navigate to the community portal dashboard where events can be created
+    history.push('/communityportal');
+  }, [history]);
+
+  // Get event image or fallback
+  const getEventImage = useCallback(event => {
+    // Check if event has image property, otherwise use fallback
+    return event.image || event.imageUrl || FALLBACK_IMG;
+  }, []);
 
   const renderCardView = () => (
     <div
@@ -84,15 +128,32 @@ function MyCases() {
           <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
             {event.eventName}
           </span>
+          {event.image || event.imageUrl ? (
+            <div className={styles.eventImageContainer}>
+              <img
+                src={getEventImage(event)}
+                alt={event.eventName}
+                className={styles.eventImage}
+                onError={e => {
+                  if (e.currentTarget.src !== FALLBACK_IMG) {
+                    e.currentTarget.src = FALLBACK_IMG;
+                  }
+                }}
+              />
+            </div>
+          ) : null}
           <div className={`${styles.attendeesInfo} ${darkMode ? styles.attendeesInfoDark : ''}`}>
             <div className={styles.avatars}>
               <img
                 alt="profile img"
-                src={placeholderAvatar}
+                src="/pfp-default-header.png"
                 width="24"
                 height="24"
                 crossOrigin="anonymous"
                 loading="lazy"
+                onError={e => {
+                  e.currentTarget.src = FALLBACK_IMG;
+                }}
               />
             </div>
             <span
@@ -117,18 +178,140 @@ function MyCases() {
           }`}
           key={event.id}
         >
-          <span className={styles.eventType}>{event.eventType}</span>
-          <span className={styles.eventTime}>{event.eventTime}</span>
-          <span className={styles.eventName}>{event.eventName}</span>
-          <span className={styles.attendeesCount}>{`+${event.attendees}`}</span>
+          <span className={`${styles.eventType} ${darkMode ? styles.eventTypeDark : ''}`}>
+            {event.eventType}
+          </span>
+          <span className={`${styles.eventTime} ${darkMode ? styles.eventTimeDark : ''}`}>
+            {event.eventTime}
+          </span>
+          <span className={`${styles.eventName} ${darkMode ? styles.eventNameDark : ''}`}>
+            {event.eventName}
+          </span>
+          <span className={`${styles.attendeesCount} ${darkMode ? styles.attendeesCountDark : ''}`}>
+            {`+${event.attendees}`}
+          </span>
         </li>
       ))}
     </ul>
   );
 
+  // Memoized tile content for calendar
+  const tileContent = useCallback(
+    ({ date, view }) => {
+      if (view === 'month') {
+        const dateKey = date.toDateString();
+        const eventsForDate = eventCacheByDate.get(dateKey) || [];
+        if (eventsForDate.length > 0) {
+          return (
+            <div className={styles.calendarEventIndicator}>
+              {eventsForDate.length > 3 ? (
+                <span className={styles.eventCountBadge}>+{eventsForDate.length}</span>
+              ) : (
+                eventsForDate
+                  .slice(0, 3)
+                  .map((event, idx) => (
+                    <div
+                      key={event.id}
+                      className={`${styles.calendarEventDot} ${styles[`eventType${idx}`]}`}
+                      title={event.eventName}
+                    />
+                  ))
+              )}
+            </div>
+          );
+        }
+      }
+      return null;
+    },
+    [eventCacheByDate],
+  );
+
+  // Memoized tile class name
+  const tileClassName = useCallback(
+    ({ date, view }) => {
+      if (view === 'month') {
+        const dateKey = date.toDateString();
+        const classes = [];
+        if (eventCacheByDate.has(dateKey)) {
+          classes.push(styles.hasEvents);
+        }
+        if (date.toDateString() === selectedDate.toDateString()) {
+          classes.push(styles.selectedDate);
+        }
+        return classes.join(' ');
+      }
+      return null;
+    },
+    [eventCacheByDate, selectedDate],
+  );
+
   const renderCalendarView = () => (
     <div className={`${styles.calendarView} ${darkMode ? styles.calendarViewDark : ''}`}>
-      <p>Calendar View is under construction...</p>
+      <div className={styles.calendarContainer}>
+        <ReactCalendar
+          onChange={handleDateSelect}
+          value={selectedDate}
+          tileContent={tileContent}
+          tileClassName={tileClassName}
+          className={darkMode ? styles.calendarDark : styles.calendar}
+        />
+      </div>
+      {selectedDateEvents.length > 0 && (
+        <div className={styles.selectedDateEvents}>
+          <h3
+            className={`${styles.selectedDateTitle} ${
+              darkMode ? styles.selectedDateTitleDark : ''
+            }`}
+          >
+            Events on{' '}
+            {selectedDate.toLocaleDateString('en-US', {
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric',
+            })}
+          </h3>
+          <div className={styles.selectedEventsList}>
+            {selectedDateEvents.map(event => (
+              <div
+                key={event.id}
+                className={`${styles.selectedEventCard} ${
+                  darkMode ? styles.selectedEventCardDark : ''
+                }`}
+              >
+                <span className={styles.eventBadge} data-type={event.eventType}>
+                  {event.eventType}
+                </span>
+                <h4
+                  className={`${styles.selectedEventName} ${
+                    darkMode ? styles.selectedEventNameDark : ''
+                  }`}
+                >
+                  {event.eventName}
+                </h4>
+                <p
+                  className={`${styles.selectedEventTime} ${
+                    darkMode ? styles.selectedEventTimeDark : ''
+                  }`}
+                >
+                  {event.eventTime}
+                </p>
+                <p
+                  className={`${styles.selectedEventAttendees} ${
+                    darkMode ? styles.selectedEventAttendeesDark : ''
+                  }`}
+                >
+                  {event.attendees} attendees
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {selectedDateEvents.length === 0 && (
+        <div className={styles.noEventsMessage}>
+          <p>No events scheduled for this date.</p>
+        </div>
+      )}
     </div>
   );
 
@@ -176,7 +359,13 @@ function MyCases() {
               <option value="thisMonth">This Month</option>
             </select>
           </div>
-          <button type="button" className={`create-new-global ${styles.createNew}`}>
+          <button
+            type="button"
+            className={`create-new-global ${styles.createNew} ${
+              darkMode ? styles.createNewDark : ''
+            }`}
+            onClick={handleCreateNew}
+          >
             + Create New
           </button>
           {filteredEvents.length > 10 && !isExporting && (
