@@ -10,6 +10,18 @@ import KeyboardArrowDownRoundedIcon from "@mui/icons-material/KeyboardArrowDownR
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import AccessAlarmRoundedIcon from "@mui/icons-material/AccessAlarmRounded";
 
+const pad2 = (n) => String(n).padStart(2, "0");
+
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+const msToHMS = (ms) => {
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  return { h, m, s };
+};
+
 const BASE_URL =
   (import.meta.env.VITE_API_BASE_URL &&
     import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")) ||
@@ -34,8 +46,6 @@ export default function TaskTimer({ userid }) {
 
   const userId = userid;
 
-  const pad2 = (n) => String(n).padStart(2, "0");
-  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
   const incH = () => setHours((h) => (h + 1) % 24);
   const decH = () => setHours((h) => (h + 23) % 24);
@@ -52,13 +62,6 @@ export default function TaskTimer({ userid }) {
     setMinutes(clamp(Number(v || 0), 0, 59));
   };
 
-  const msToHMS = (ms) => {
-    const totalSec = Math.floor(ms / 1000);
-    const h = Math.floor(totalSec / 3600);
-    const m = Math.floor((totalSec % 3600) / 60);
-    const s = totalSec % 60;
-    return { h, m, s };
-  };
 
   const callTimerApi = async (path, method = "GET", body = null) => {
     setLoading(true);
@@ -76,9 +79,7 @@ export default function TaskTimer({ userid }) {
         },
       };
 
-      if (body) {
-        options.body = JSON.stringify(body);
-      }
+      if (body) options.body = JSON.stringify(body);
 
       const response = await fetch(url, options);
 
@@ -133,12 +134,13 @@ export default function TaskTimer({ userid }) {
     try {
       const res = await callTimerApi("/api/student/timer/stop", "POST");
       const { h, m, s } = msToHMS(res.data.elapsedMs || 0);
+
       alert(`Timer stopped.\nTime logged: ${pad2(h)}:${pad2(m)}:${pad2(s)}`);
+
       setTimerInfo(null);
       setHours(2);
       setMinutes(0);
       setDisplayRemaining(null);
-
     } catch (_) { }
   };
 
@@ -167,10 +169,13 @@ export default function TaskTimer({ userid }) {
       adjustTimer(deltaMinutes);
       return;
     }
+
     let total = hours * 60 + minutes + deltaMinutes;
     if (total < 1) total = 1;
+
     const newH = Math.floor(total / 60);
     const newM = total % 60;
+
     setHours(newH % 24);
     setMinutes(newM);
   };
@@ -195,9 +200,7 @@ export default function TaskTimer({ userid }) {
   }, [timerInfo]);
 
   useEffect(() => {
-    if (!timerInfo || timerInfo.status !== "running" || displayRemaining == null) {
-      return;
-    }
+    if (!timerInfo || timerInfo.status !== "running" || displayRemaining == null) return;
 
     const id = setInterval(() => {
       setDisplayRemaining((prev) => {
@@ -256,9 +259,7 @@ export default function TaskTimer({ userid }) {
   const strokeDashoffset =
     circumference - (circumference * progressPct) / 100;
 
-  let dispH;
-  let dispM;
-  let dispS;
+  let dispH, dispM, dispS;
 
   if (isRunning && displayRemaining != null) {
     const { h, m, s } = msToHMS(displayRemaining);
@@ -424,7 +425,6 @@ export default function TaskTimer({ userid }) {
               <button
                 className={styles.quickBtn}
                 onClick={() => handleMiniAdjust(-15)}
-              // disabled={!isActive}
               >
                 −15 m
               </button>
@@ -432,7 +432,6 @@ export default function TaskTimer({ userid }) {
               <button
                 className={styles.quickBtn}
                 onClick={() => handleMiniAdjust(15)}
-              // disabled={!isActive}
               >
                 +15 m
               </button>
@@ -440,7 +439,6 @@ export default function TaskTimer({ userid }) {
               <button
                 className={styles.quickBtn}
                 onClick={() => handleMiniAdjust(30)}
-              // disabled={!isActive}
               >
                 +30 m
               </button>
@@ -448,7 +446,6 @@ export default function TaskTimer({ userid }) {
               <button
                 className={styles.quickBtn}
                 onClick={() => handleMiniAdjust(60)}
-              // disabled={!isActive}
               >
                 +1 h
               </button>
