@@ -50,64 +50,107 @@ export default function ToolsStoppageHorizontalBarChart() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calculate responsive chart height: 240px mobile, 280px tablet, 300px desktop
+  // Gradient responsive chart height scaling based on screen width
+  // Scales smoothly from smallest phones (180px) to desktop (300px)
   const getChartHeight = () => {
-    if (windowWidth <= 768) {
-      return 240; // Mobile
+    if (windowWidth <= 375) {
+      // Small phones (iPhone SE, iPhone 12 mini): 180px
+      return 180;
+    } else if (windowWidth <= 428) {
+      // Medium phones (iPhone 12/13/14): 200px
+      return 200;
+    } else if (windowWidth <= 480) {
+      // Large phones: 220px
+      return 220;
+    } else if (windowWidth <= 768) {
+      // Tablets in portrait: 240px
+      return 240;
     } else if (windowWidth <= 1024) {
-      return 280; // Tablet
+      // Tablets in landscape: 280px
+      return 280;
     }
-    return 300; // Desktop
+    // Desktop: 300px
+    return 300;
   };
 
-  // Calculate responsive maxBarThickness: mobile 20, tablet 22, desktop 25
+  // Gradient responsive maxBarThickness scaling
   const getMaxBarThickness = () => {
-    if (windowWidth <= 768) {
-      return 20; // Mobile
+    if (windowWidth <= 375) {
+      return 15;
+    } else if (windowWidth <= 428) {
+      return 16;
+    } else if (windowWidth <= 480) {
+      return 18;
+    } else if (windowWidth <= 768) {
+      return 20;
     } else if (windowWidth <= 1024) {
-      return 22; // Tablet
+      return 22;
     }
-    return 25; // Desktop
+    return 25;
   };
 
-  // Calculate responsive categoryPercentage: mobile 0.5, tablet 0.55, desktop 0.6
+  // Gradient responsive categoryPercentage scaling
   const getCategoryPercentage = () => {
-    if (windowWidth <= 768) {
-      return 0.5; // Mobile
+    if (windowWidth <= 375) {
+      return 0.45;
+    } else if (windowWidth <= 428) {
+      return 0.47;
+    } else if (windowWidth <= 480) {
+      return 0.48;
+    } else if (windowWidth <= 768) {
+      return 0.5;
     } else if (windowWidth <= 1024) {
-      return 0.55; // Tablet
+      return 0.55;
     }
-    return 0.6; // Desktop
+    return 0.6;
   };
 
-  // Calculate responsive barPercentage: mobile 0.85, tablet 0.87, desktop 0.9
+  // Gradient responsive barPercentage scaling
   const getBarPercentage = () => {
-    if (windowWidth <= 768) {
-      return 0.85; // Mobile
+    if (windowWidth <= 375) {
+      return 0.8;
+    } else if (windowWidth <= 428) {
+      return 0.82;
+    } else if (windowWidth <= 480) {
+      return 0.84;
+    } else if (windowWidth <= 768) {
+      return 0.85;
     } else if (windowWidth <= 1024) {
-      return 0.87; // Tablet
+      return 0.87;
     }
-    return 0.9; // Desktop
+    return 0.9;
   };
 
-  // Calculate responsive font size: mobile 10, tablet 11, desktop 12
+  // Gradient responsive font size scaling
   const getFontSize = () => {
-    if (windowWidth <= 768) {
-      return 10; // Mobile
+    if (windowWidth <= 375) {
+      return 8;
+    } else if (windowWidth <= 428) {
+      return 9;
+    } else if (windowWidth <= 480) {
+      return 9.5;
+    } else if (windowWidth <= 768) {
+      return 10;
     } else if (windowWidth <= 1024) {
-      return 11; // Tablet
+      return 11;
     }
-    return 12; // Desktop
+    return 12;
   };
 
-  // Calculate responsive title font size: mobile 11, tablet 12, desktop 14
+  // Gradient responsive title font size scaling
   const getTitleFontSize = () => {
-    if (windowWidth <= 768) {
-      return 11; // Mobile
+    if (windowWidth <= 375) {
+      return 9;
+    } else if (windowWidth <= 428) {
+      return 10;
+    } else if (windowWidth <= 480) {
+      return 10.5;
+    } else if (windowWidth <= 768) {
+      return 11;
     } else if (windowWidth <= 1024) {
-      return 12; // Tablet
+      return 12;
     }
-    return 14; // Desktop
+    return 14;
   };
 
   useEffect(() => {
@@ -483,7 +526,7 @@ export default function ToolsStoppageHorizontalBarChart() {
               minHeight: 0,
             }}
           >
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
               <Bar data={chartData} options={chartOptions} height={getChartHeight()} />
             </div>
           </div>

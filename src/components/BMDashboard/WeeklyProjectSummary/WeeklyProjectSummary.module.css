@@ -381,6 +381,67 @@
   }
 }
 
+/* Extra Small Screens - Small phones */
+@media (max-width: 375px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
+  }
+
+  /* Ensure charts are fully visible on small mobile - prevent clipping */
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Medium phones */
+@media (min-width: 376px) and (max-width: 428px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 7px;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
+/* Small Screens - Large phones and tablets */
+@media (min-width: 429px) and (max-width: 768px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 8px;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+}
+
 /* Small Screens - Make Dropdowns Vertical */
 @media (max-width: 768px) {
   .weeklySummaryHeaderContainer {

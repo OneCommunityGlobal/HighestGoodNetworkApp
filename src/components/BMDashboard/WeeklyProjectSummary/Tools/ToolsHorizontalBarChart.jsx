@@ -51,45 +51,69 @@ function ToolsHorizontalBarChart({ darkMode }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calculate responsive chart height: 240px mobile, 280px tablet, 300px desktop
-  // Standardized to match tallest chart (ToolsStoppageHorizontalBarChart)
+  // Gradient responsive chart height scaling - matches ToolsStoppageHorizontalBarChart
+  // Scales smoothly from smallest phones (180px) to desktop (300px)
   const getChartHeight = () => {
-    if (windowWidth <= 768) {
-      return 240; // Mobile
+    if (windowWidth <= 375) {
+      return 180;
+    } else if (windowWidth <= 428) {
+      return 200;
+    } else if (windowWidth <= 480) {
+      return 220;
+    } else if (windowWidth <= 768) {
+      return 240;
     } else if (windowWidth <= 1024) {
-      return 280; // Tablet
+      return 280;
     }
-    return 300; // Desktop
+    return 300;
   };
 
-  // Calculate responsive margins: mobile {5,5,15,5}, tablet {8,15,25,8}, desktop {10,30,40,10}
+  // Gradient responsive margins scaling
   const getChartMargins = () => {
-    if (windowWidth <= 768) {
-      return { top: 5, right: 5, left: 15, bottom: 5 }; // Mobile
+    if (windowWidth <= 375) {
+      return { top: 3, right: 3, left: 12, bottom: 3 };
+    } else if (windowWidth <= 428) {
+      return { top: 4, right: 4, left: 13, bottom: 4 };
+    } else if (windowWidth <= 480) {
+      return { top: 4, right: 4, left: 14, bottom: 4 };
+    } else if (windowWidth <= 768) {
+      return { top: 5, right: 5, left: 15, bottom: 5 };
     } else if (windowWidth <= 1024) {
-      return { top: 8, right: 15, left: 25, bottom: 8 }; // Tablet
+      return { top: 8, right: 15, left: 25, bottom: 8 };
     }
-    return { top: 10, right: 30, left: 40, bottom: 10 }; // Desktop
+    return { top: 10, right: 30, left: 40, bottom: 10 };
   };
 
-  // Calculate responsive Y-axis width: mobile 20, tablet 28, desktop 35
+  // Gradient responsive Y-axis width scaling
   const getYAxisWidth = () => {
-    if (windowWidth <= 768) {
-      return 20; // Mobile
+    if (windowWidth <= 375) {
+      return 18;
+    } else if (windowWidth <= 428) {
+      return 19;
+    } else if (windowWidth <= 480) {
+      return 19.5;
+    } else if (windowWidth <= 768) {
+      return 20;
     } else if (windowWidth <= 1024) {
-      return 28; // Tablet
+      return 28;
     }
-    return 35; // Desktop
+    return 35;
   };
 
-  // Calculate responsive font size: mobile 10, tablet 11, desktop 12
+  // Gradient responsive Y-axis font size scaling
   const getYAxisFontSize = () => {
-    if (windowWidth <= 768) {
-      return 10; // Mobile
+    if (windowWidth <= 375) {
+      return 8;
+    } else if (windowWidth <= 428) {
+      return 9;
+    } else if (windowWidth <= 480) {
+      return 9.5;
+    } else if (windowWidth <= 768) {
+      return 10;
     } else if (windowWidth <= 1024) {
-      return 11; // Tablet
+      return 11;
     }
-    return 12; // Desktop
+    return 12;
   };
 
   // Date range logging removed for production

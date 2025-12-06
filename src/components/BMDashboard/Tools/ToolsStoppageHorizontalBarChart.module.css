@@ -115,6 +115,7 @@
   box-sizing: border-box;
   background-color: #ffffff !important; /* White background to show through transparent canvas */
   min-height: 0; /* Allow flex shrinking */
+  overflow: hidden; /* Prevent overflow on small screens */
 }
 
 /* Dark mode for chart container */
@@ -158,10 +159,65 @@
   flex-shrink: 0;
 }
 
-/* Filter controls layout for small screens */
-@media (max-width: 768px) {
+/* Filter controls layout for small screens - gradient scaling */
+@media (max-width: 480px) {
   :global(.tools-availability-page) {
-    padding: 6px; /* Further reduce padding on mobile */
+    padding: 4px;
+  }
+
+  :global(.tools-chart-title) {
+    font-size: 0.85rem;
+    margin-bottom: 0.6rem;
+  }
+
+  /* Bootstrap Row/Col fixes for mobile */
+  :global(.tools-availability-page .row) {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  :global(.tools-availability-page .col),
+  :global(.tools-availability-page [class*='col-']) {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 8px;
+  }
+
+  :global(.datepickerWrapper) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  :global(.datepickerWrapper .btn) {
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  :global(.customSelect__control) {
+    font-size: 10px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  :global(.customSelect__multi-value) {
+    font-size: 10px;
+  }
+
+  :global(.tools-horizontal-chart-container) {
+    padding: 0;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  :global(.tools-availability-page) {
+    padding: 6px;
   }
 
   :global(.tools-chart-title) {
