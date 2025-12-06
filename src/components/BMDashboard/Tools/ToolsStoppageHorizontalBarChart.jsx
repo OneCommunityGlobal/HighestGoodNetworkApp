@@ -18,6 +18,7 @@ import { Bar } from 'react-chartjs-2';
 import httpService from '../../../services/httpService';
 import logService from '../../../services/logService';
 import { ENDPOINTS } from '../../../utils/URL';
+import { getStandardSelectStyles } from '../../../utils/reactSelectUtils';
 import styles from './ToolsStoppageHorizontalBarChart.module.css';
 
 // Register Chart.js components
@@ -289,85 +290,8 @@ export default function ToolsStoppageHorizontalBarChart() {
   const dateRangeLabel =
     startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : '';
 
-  // Consistent react-select styles matching paid-labor-cost pattern
-  const selectStyles = {
-    control: base => ({
-      ...base,
-      minHeight: '38px',
-      fontSize: '12px',
-      backgroundColor: darkMode ? '#253342' : '#fff',
-      borderColor: darkMode ? '#2d4059' : '#ccc',
-      color: darkMode ? '#ffffff' : '#000',
-      boxShadow: 'none',
-      borderRadius: '6px',
-      '&:hover': {
-        borderColor: darkMode ? '#2d4059' : '#999',
-      },
-    }),
-    valueContainer: base => ({
-      ...base,
-      padding: '2px 8px',
-      color: darkMode ? '#ffffff' : '#000',
-    }),
-    input: base => ({
-      ...base,
-      margin: '0px',
-      padding: '0px',
-      color: darkMode ? '#ffffff' : '#000',
-    }),
-    indicatorsContainer: base => ({
-      ...base,
-      padding: '0 4px',
-    }),
-    menu: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#253342' : '#fff',
-      fontSize: '12px',
-    }),
-    option: (base, state) => ({
-      ...base,
-      backgroundColor: state.isSelected
-        ? darkMode
-          ? '#e8a71c'
-          : '#0d55b3'
-        : state.isFocused
-        ? darkMode
-          ? '#3a506b'
-          : '#f0f0f0'
-        : darkMode
-        ? '#253342'
-        : '#fff',
-      color: state.isSelected ? (darkMode ? '#000' : '#fff') : darkMode ? '#ffffff' : '#000',
-      cursor: 'pointer',
-      padding: '8px 12px',
-      fontSize: '12px',
-      ':active': {
-        backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
-      },
-    }),
-    singleValue: base => ({
-      ...base,
-      color: darkMode ? '#ffffff' : '#000',
-      fontSize: '12px',
-    }),
-    placeholder: base => ({
-      ...base,
-      color: darkMode ? '#aaaaaa' : '#666',
-      fontSize: '12px',
-    }),
-    indicatorSeparator: base => ({
-      ...base,
-      backgroundColor: darkMode ? '#2d4059' : '#ccc',
-    }),
-    dropdownIndicator: base => ({
-      ...base,
-      color: darkMode ? '#ffffff' : '#999',
-      padding: '4px',
-      ':hover': {
-        color: darkMode ? '#ffffff' : '#666',
-      },
-    }),
-  };
+  // Use shared react-select styles to reduce duplication
+  const selectStyles = getStandardSelectStyles(darkMode);
 
   // Prepare Chart.js data with responsive bar thickness
   const chartData = {
