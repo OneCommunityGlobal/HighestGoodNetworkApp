@@ -24,6 +24,7 @@ import IssueCharts from '../Issues/openIssueCharts';
 import SupplierPerformanceGraph from './SupplierPerformanceGraph.jsx';
 import MostFrequentKeywords from './MostFrequentKeywords/MostFrequentKeywords';
 import DistributionLaborHours from './DistributionLaborHours/DistributionLaborHours';
+import ToolsStoppageHorizontalBarChart from './Tools/ToolsStoppageHorizontalBarChart/ToolsStoppageHorizontalBarChart';
 
 const projectStatusButtons = [
   {
@@ -285,20 +286,27 @@ function WeeklyProjectSummary() {
         key: 'Tools and Equipment Tracking',
         className: 'full',
         content: (
-          <div className="weekly-project-summary-card normal-card tools-tracking-layout">
-            <div className="tools-donut-wrap">
+          <>
+            {/* <div className="weekly-project-summary-card normal-card tools-tracking-layout"> */}
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolStatusDonutChart />
             </div>
-            <div className="weekly-project-summary-card normal-card" style={{ minHeight: '300px' }}>
+            <div className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}>
               <ToolsHorizontalBarChart darkMode={darkMode} />
             </div>
             <div
-              className="weekly-project-summary-card normal-card"
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
               style={{ minHeight: '300px', gridColumn: 'span 2' }}
             >
               <SupplierPerformanceGraph />
             </div>
-          </div>
+            <div
+              className={`${styles.weeklyProjectSummaryCard} ${styles.normalCard}`}
+              style={{ minHeight: '300px', gridColumn: 'span 2' }}
+            >
+              <ToolsStoppageHorizontalBarChart />
+            </div>
+          </>
         ),
       },
       {
