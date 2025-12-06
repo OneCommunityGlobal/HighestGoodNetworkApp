@@ -126,10 +126,12 @@
 }
 
 .reactCalendar :global(.react-calendar__month-view__days__day) {
+  overflow: auto;
   height: 80px;
-  border: 1px solid #000000;
-  vertical-align: top;
+  border: 1px solid #555454;
+  box-sizing: border-box;
   padding: 2px;
+  vertical-align: top;
 }
 
 .reactCalendar :global(.react-calendar__navigation) {
@@ -139,8 +141,8 @@
 }
 
 .reactCalendar :global(.react-calendar__tile) {
-  display: block;
-  height: 90px;
+  display: grid;
+  height: 100px;
   background: #fff;
   border: 1px solid #dee2e6 !important;
   box-sizing: border-box;
@@ -148,6 +150,7 @@
   overflow: hidden;
   padding: 4px;
 }
+
 .reactCalendarDarkMode :global(.react-calendar__tile) {
   background: transparent;
   color: #FFFFFF;
@@ -156,6 +159,12 @@
 .reactCalendar :global(.react-calendar__tile):hover {
   background-color: #f5f5f5;
   border-color: #999;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile):hover {
+  background-color: #3A506B;
+  color: #FFFFFF;
+  border-color: #666;
 }
 
 .reactCalendar :global(.react-calendar__tile) .tileEvents {
@@ -169,20 +178,49 @@
   line-height: 1.1;
 }
 
-.reactCalendar .eventItem {
-  display: block;
-  position: relative;
-  font-size: 0.75rem;
-  font-weight: 500;
-  line-height: 1.2;
-  padding: 2px 4px;
-  margin-bottom: 2px;
-  border-radius: 3px;
+.reactCalendarDarkMode :global(.react-calendar__tile) .tileEvents {
+  color: #ffffff;
+}
+
+.reactCalendar :global(.react-calendar__tile) .eventItem {
+  background-color: #e0f7fa;
+  padding: 5px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  color: #000;
-  text-align: left;
+}
+
+.reactCalendarDarkMode :global(.react-calendar__tile) .eventItem {
+  background-color: #266497;
+}
+
+.eventDetails {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.eventDetails h2 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.eventDetails p {
+  font-size: 1rem;
+  margin: 5px 0;
+}
+
+.eventDetails button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #1976d2;
+  color: white;
+  border-radius: 5px;
   cursor: pointer;
   border: none;
   box-shadow: none;
@@ -335,6 +373,55 @@
   letter-spacing: 0.5px;
 }
 
+.statusNew {
+  background-color: #e6fffa;
+  color: #065666;
+  border: 1px solid #81e6d9;
+}
+
+.statusNeedsAttendees {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #feb2b2;
+}
+
+.statusFillingFast {
+  background-color: #fef5e7;
+  color: #8c3b0f;
+  border: 1px solid #fbd38d;
+}
+
+.statusFull {
+  background-color: #f0fff4;
+  color: #22543d;
+  border: 1px solid #9ae6b4;
+}
+
+/* Dark mode status badges with better contrast */
+.eventModalDark .statusNew {
+  background-color: #0f766e;
+  color: #ffffff;
+  border-color: #14b8a6;
+}
+
+.eventModalDark .statusNeedsAttendees {
+  background-color: #dc2626;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.eventModalDark .statusFillingFast {
+  background-color: #c2410c;
+  color: #ffffff;
+  border-color: #f97316;
+}
+
+.eventModalDark .statusFull {
+  background-color: #15803d;
+  color: #ffffff;
+  border-color: #22c55e;
+}
+
 .eventDetailsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -454,6 +541,17 @@
   transform: translateY(-1px);
 }
 
+.eventModalDark .modalHeader,
+.eventModalDark .modalActions {
+  background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+}
+
+/* Better dark mode contrast for all text elements */
+.eventModalDark * {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
   .eventModal {
     width: 95%;
@@ -524,19 +622,16 @@
   color: #fff;
 }
 
-.overflowPopup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  z-index: 1500;
-  width: 400px;
-  max-height: 70vh;
-  overflow-y: auto;
-  animation: fadeIn 0.2s ease-out;
+.reactCalendarDarkMode :global(.react-calendar__tile--active) {
+  background: #444;
+  color: #fff;
+}
+.reactCalendarDarkMode :global(.react-calendar__tile--now) {
+  background: #666;
+  color: #fff;
+}
+.reactCalendarDarkMode :global(.react-calendar__navigation__label) {
+  color: #fff;
 }
 
 .overflowPopupInner {
