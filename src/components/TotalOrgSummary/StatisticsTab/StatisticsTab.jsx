@@ -1,4 +1,4 @@
-import './StatisticsTab.css';
+import styles from './StatisticsTab.module.css';
 
 function StatisticsTab(props) {
   const {

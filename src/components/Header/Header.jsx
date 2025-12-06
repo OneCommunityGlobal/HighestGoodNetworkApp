@@ -414,7 +414,7 @@ export function Header(props) {
                 {canUpdateTask && (
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
-                      <div className="redBackGroupHeader">
+                      <div className={styles['redBackGroupHeader']}>
                         <span>{props.taskEditSuggestionCount}</span>
                       </div>
                     </NavLink>
@@ -704,7 +704,7 @@ export function Header(props) {
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
         <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
-          <Card color="primary" className="headerCard">
+          <Card color="primary" className={styles['headerCard']}>
             <div className="close-button">
               <Button close onClick={closeModal} />
             </div>
@@ -716,7 +716,7 @@ export function Header(props) {
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
-      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
+      <div className={darkMode ? styles['header-margin'] : styles['header-margin-light']} />
     </div>
   );
 }

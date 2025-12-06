@@ -133,7 +133,10 @@ import BiddingHomepage from './components/LBDashboard/BiddingHomepage/BiddingHom
 import WishList from './components/LBDashboard/WishList/WishList';
 import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
-import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts.jsx';
+import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
+
+//job analytics
+
 import LessonsLearntChart from './components/BMDashboard/LessonsLearnt/LessonsLearntChart';
 import UtilizationChart from './components/BMDashboard/UtilizationChart/UtilizationChart';
 
@@ -171,6 +174,11 @@ import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTo
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+
+// import IssueDashboard from './components/BMDashboard/Issues/IssueDashboard';
+
+//project status
+const ProjectStatus = lazy(() => import('./components/ProjectStatus/ProjectStatus'));
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
@@ -344,6 +352,7 @@ export default (
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
         <ProtectedRoute path="/taskeditsuggestions" component={TaskEditSuggestions} />
+        <ProtectedRoute path="/projectstatus" exact component={ProjectStatus} fallback />
         <ProtectedRoute
           path="/inventory/:projectId"
           component={Inventory}
