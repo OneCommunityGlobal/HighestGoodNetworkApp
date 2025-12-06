@@ -3,6 +3,7 @@ import Select from 'react-select';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../../utils/URL';
+import { getOptionBackgroundColor, getOptionColor } from '../../../../utils/reactSelectUtils';
 import './ToolsHorizontalBarChart.css';
 
 // No mock data - use real backend data only
@@ -305,24 +306,8 @@ function ToolsHorizontalBarChart({ darkMode }) {
               }),
               option: (baseStyles, state) => ({
                 ...baseStyles,
-                backgroundColor: state.isSelected
-                  ? darkMode
-                    ? '#e8a71c'
-                    : '#0d55b3'
-                  : state.isFocused
-                  ? darkMode
-                    ? '#3a506b'
-                    : '#f0f0f0'
-                  : darkMode
-                  ? '#253342'
-                  : '#fff',
-                color: state.isSelected
-                  ? darkMode
-                    ? '#000'
-                    : '#fff'
-                  : darkMode
-                  ? '#ffffff'
-                  : '#000',
+                backgroundColor: getOptionBackgroundColor(state, darkMode),
+                color: getOptionColor(state, darkMode),
                 cursor: 'pointer',
                 padding: '8px 12px',
                 fontSize: '12px',

@@ -5,6 +5,7 @@ import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
 import { ENDPOINTS } from '../../../../utils/URL';
+import { getOptionBackgroundColor, getOptionColor } from '../../../../utils/reactSelectUtils';
 import './ToolStatusDonutChart.css';
 
 const COLORS = {
@@ -169,18 +170,8 @@ export default function ToolStatusDonutChart() {
       }),
       option: (base, state) => ({
         ...base,
-        backgroundColor: state.isSelected
-          ? darkMode
-            ? '#e8a71c'
-            : '#0d55b3'
-          : state.isFocused
-          ? darkMode
-            ? '#3a506b'
-            : '#f0f0f0'
-          : darkMode
-          ? '#253342'
-          : '#fff',
-        color: state.isSelected ? (darkMode ? '#000' : '#fff') : darkMode ? '#ffffff' : '#000',
+        backgroundColor: getOptionBackgroundColor(state, darkMode),
+        color: getOptionColor(state, darkMode),
         cursor: 'pointer',
         padding: '8px 12px',
         fontSize: '12px',
