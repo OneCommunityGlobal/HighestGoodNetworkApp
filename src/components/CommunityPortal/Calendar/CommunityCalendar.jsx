@@ -287,15 +287,6 @@ function CommunityCalendar() {
     setFilter(prev => ({ ...prev, location: e.target.value }));
   }, []);
 
-  const uniqueFilterValues = useMemo(
-    () => ({
-      types: [...new Set(mockEvents.map(e => e.type))],
-      locations: [...new Set(mockEvents.map(e => e.location))],
-      statuses: [...new Set(mockEvents.map(e => e.status))],
-    }),
-    [mockEvents],
-  );
-
   // Memoized dark mode selector
   const darkMode = useSelector(state => state.theme.darkMode);
 
