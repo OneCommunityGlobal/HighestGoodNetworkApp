@@ -219,11 +219,13 @@
   width: 100%;
   max-width: none;                   /* fill grid column, don't cap */
   padding: 0.6rem 0.75rem;
-  text-align: left;
+  /* text-align: left; */
 
   /* prevent overflow on long role names / unbroken strings */
   overflow-wrap: anywhere;
   word-break: break-word;
+  text-align: center; 
+  justify-content: center;
 }
 
 /* Merged duplicate hover/active selectors */
@@ -303,7 +305,6 @@
 .pie-cell { transition: opacity .15s ease, filter .15s ease, transform .15s ease; cursor: pointer; }
 .pie-cell:hover { opacity: .9; filter: brightness(1.05); }
 
-
 /* ===================== Responsive tweaks ===================== */
 @media (max-width: 640px) {
   .filter-group,
@@ -382,6 +383,11 @@
 .chart-details .detail-item.active span {
   color: #ffffff !important;               /* keep text readable */
 }
+
+/* Optional: smooth the state change */
+/* .chart-details .detail-item {
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .2s ease, transform .15s ease;
+} */
 /* ===================== DARK MODE (scoped to wrapper) ===================== */
 
 /* Ensure every surface flips dark */
