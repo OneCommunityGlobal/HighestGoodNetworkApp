@@ -1,0 +1,425 @@
+.container {
+  margin: 30px 0;
+  padding: 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.containerDark {
+  background: #1e293b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.headerSection {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.sectionTitleDark {
+  color: #ffffff;
+}
+
+.formatFilter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filterLabel {
+  font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.containerDark .filterLabel {
+  color: #94a3b8;
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.filterSelectDark {
+  background: #0f172a;
+  border-color: #334155;
+  color: #ffffff;
+}
+
+.filterSelectDark option {
+  background: #0f172a;
+  color: #ffffff;
+}
+
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.summaryCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.summaryCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.summaryCardDark {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.summaryCardDark:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.summaryIcon {
+  font-size: 2rem;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.containerDark .summaryIcon {
+  color: #60a5fa;
+}
+
+.summaryContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.summaryValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 4px;
+}
+
+.containerDark .summaryValue {
+  color: #ffffff;
+}
+
+.summaryLabel {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.containerDark .summaryLabel {
+  color: #94a3b8;
+}
+
+.comparisonSection {
+  margin-bottom: 30px;
+}
+
+.comparisonTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 20px;
+}
+
+.comparisonTitleDark {
+  color: #ffffff;
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.comparisonCard {
+  padding: 24px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+}
+
+.comparisonCardDark {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.comparisonHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.comparisonCardDark .comparisonHeader {
+  border-bottom-color: #334155;
+}
+
+.formatIcon {
+  font-size: 1.8rem;
+  color: #3b82f6;
+}
+
+.containerDark .formatIcon {
+  color: #60a5fa;
+}
+
+.formatTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+
+.comparisonCardDark .formatTitle {
+  color: #ffffff;
+}
+
+.comparisonStats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comparisonStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comparisonLabel {
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.comparisonCardDark .comparisonLabel {
+  color: #94a3b8;
+}
+
+.comparisonValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.comparisonCardDark .comparisonValue {
+  color: #ffffff;
+}
+
+.eventsList {
+  margin-top: 30px;
+}
+
+.eventsTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 20px;
+}
+
+.eventsTitleDark {
+  color: #ffffff;
+}
+
+.eventsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.eventCard {
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.eventCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.eventCardDark {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.eventCardDark:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.eventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.eventCardDark .eventHeader {
+  border-bottom-color: #334155;
+}
+
+.eventName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+  flex: 1;
+}
+
+.eventCardDark .eventName {
+  color: #ffffff;
+}
+
+.eventType {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  background: #3b82f6;
+  color: #ffffff;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.eventMetrics {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.eventMetric {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.eventCardDark .eventMetric {
+  color: #94a3b8;
+}
+
+.metricIcon {
+  font-size: 1rem;
+  color: #3b82f6;
+}
+
+.containerDark .metricIcon {
+  color: #60a5fa;
+}
+
+.eventLocation {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #64748b;
+  padding-top: 12px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.eventCardDark .eventLocation {
+  color: #94a3b8;
+  border-top-color: #334155;
+}
+
+.locationIcon {
+  font-size: 1rem;
+  color: #3b82f6;
+}
+
+.containerDark .locationIcon {
+  color: #60a5fa;
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: #64748b;
+}
+
+.loadingContainer p,
+.errorContainer p {
+  color: inherit;
+  margin: 0;
+}
+
+.containerDark .loadingContainer,
+.containerDark .errorContainer {
+  color: #94a3b8;
+}
+
+.containerDark .loadingContainer p,
+.containerDark .errorContainer p {
+  color: #94a3b8;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px;
+  color: #64748b;
+}
+
+.emptyState p {
+  color: inherit;
+  margin: 0;
+}
+
+.containerDark .emptyState {
+  color: #94a3b8;
+}
+
+.containerDark .emptyState p {
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .headerSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .summaryCards {
+    grid-template-columns: 1fr;
+  }
+
+  .comparisonGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .eventsGrid {
+    grid-template-columns: 1fr;
+  }
+}
