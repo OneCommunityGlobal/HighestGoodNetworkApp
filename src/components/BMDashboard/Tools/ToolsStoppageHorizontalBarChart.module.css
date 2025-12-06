@@ -1,45 +1,99 @@
-/* Light mode for multi select*/
-:global(.customSelect__control) {
-  background-color: #fff !important;
-  color: #000 !important;
-  border-color: #ccc;
-  font-size: 10px;
-}
+/* React-select styles are handled EXCLUSIVELY via inline styles in the component */
+/* No global CSS overrides - inline styles have higher specificity and are the proper way */
+/* Removing any global overrides that might conflict */
 
-:global(.customSelect__single-value) {
-  font-size: 10px;
-  color: #000 !important;
-}
-
+/* Date picker input - light mode */
 :global(.datePickerInput) {
   font-size: 10px !important;
   padding: 6px 8px;
   border-radius: 4px;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #ccc !important;
 }
 
-:global(.darkTheme .form-control .datePickerInput) {
+/* Date picker input - dark mode (when darkTheme class is applied) */
+/* react-datepicker applies className to the input wrapper, need to target input directly */
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper .datePickerInput),
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input),
+:global(.darkTheme.datePickerInput),
+:global(.datePickerInput.darkTheme),
+:global(input.darkTheme.datePickerInput),
+:global(input.datePickerInput.darkTheme),
+:global(.form-control.darkTheme.datePickerInput),
+:global(.darkTheme.form-control.datePickerInput) {
   background-color: #2b3e59 !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border: 1px solid #666 !important;
   font-size: 10px !important;
 }
 
-:global(.customCalendar .react-datepicker__day--keyboard-selected) {
-  background-color: #7d7e7f !important;
+/* Also target the wrapper's input when darkTheme is on parent */
+:global(.tools-availability-page.dark-mode .react-datepicker-wrapper input.datePickerInput),
+:global(.tools-availability-page.dark-mode .datePickerInput),
+:global(.tools-availability-page.dark-mode .react-datepicker-wrapper input) {
+  background-color: #2b3e59 !important;
+  color: #ffffff !important;
+  border: 1px solid #666 !important;
 }
 
-/* Hover day styling in dark theme */
+/* Ensure dark mode wrapper targets the input properly */
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"]),
+:global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"].datePickerInput) {
+  background-color: #2b3e59 !important;
+  color: #ffffff !important;
+  border: 1px solid #666 !important;
+}
+
+/* Light mode calendar styles */
+:global(.customCalendar) {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border: 1px solid #ccc !important;
+}
+
+:global(.customCalendar .react-datepicker__header) {
+  background-color: #f0f0f0 !important;
+  color: #000000 !important;
+  border-bottom: 1px solid #ccc !important;
+}
+
+:global(.customCalendar .react-datepicker__day) {
+  color: #000000 !important;
+}
+
+:global(.customCalendar .react-datepicker__day--keyboard-selected) {
+  background-color: #7d7e7f !important;
+  color: #ffffff !important;
+}
+
 :global(.customCalendar .react-datepicker__day:hover) {
-  background-color: #3b5a81 !important;
-  color: #fff !important;
+  background-color: #e0e0e0 !important;
+  color: #000000 !important;
   border-radius: 50%;
+}
+
+:global(.customCalendar .react-datepicker__day--selected) {
+  background-color: #007bff !important;
+  color: #ffffff !important;
+  border-radius: 50%;
+}
+
+:global(.customCalendar .react-datepicker__current-month),
+:global(.customCalendar .react-datepicker__day-name) {
+  color: #000000 !important;
 }
 
 /* Dark theme calendar container */
 :global(.darkThemeCalendar) { 
   background-color: #2b3e59 !important;
-  color: #fff !important;
+  color: #ffffff !important;
   border: 1px solid #6b6767 !important;
+}
+
+:global(.darkThemeCalendar .react-datepicker__current-month),
+:global(.darkThemeCalendar .react-datepicker__day-name) {
+  color: #ffffff !important;
 }
 
 /* Dark theme header */
@@ -68,42 +122,8 @@
   border-radius: 50%;
 }
 
-/* Dark mode for react-select - consistent with paid-labor-cost pattern */
-:global(.darkTheme .customSelect__control) {
-  background-color: #253342 !important;
-  border-color: #2d4059 !important;
-  color: #ffffff !important;
-  font-size: 10px !important;
-}
-
-:global(.darkTheme .customSelect__menu) {
-  background-color: #253342 !important;
-  border-color: #2d4059 !important;
-  color: #ffffff !important;
-}
-
-:global(.darkTheme .customSelect__option) {
-  background-color: #253342 !important;
-  color: #ffffff !important;
-}
-
-:global(.darkTheme .customSelect__option--is-focused) {
-  background-color: #3a506b !important;
-  color: #ffffff !important;
-}
-
-:global(.darkTheme .customSelect__option--is-selected) {
-  background-color: #e8a71c !important;
-  color: #000000 !important;
-}
-
-:global(.darkTheme .customSelect__single-value) {
-  color: #ffffff !important;
-}
-
-:global(.darkTheme .customSelect__placeholder) {
-  color: #aaaaaa !important;
-}
+/* React-select styling is handled ONLY via inline styles in JSX */
+/* No CSS overrides needed or wanted - inline styles are the proper method */
 
 /* Chart container - expand to fill available space */
 :global(.tools-horizontal-chart-container) {
@@ -150,13 +170,101 @@
   background-color: #2c3344 !important; /* Dark background in dark mode */
 }
 
-/* Ensure title and filters don't shrink, allowing chart to expand */
+/* Chart title styling */
 :global(.tools-availability-page .tools-chart-title) {
   flex-shrink: 0;
+  color: #000000;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+/* Dark mode for chart title */
+:global(.tools-availability-page.dark-mode .tools-chart-title) {
+  color: #ffffff !important;
 }
 
 :global(.tools-availability-page .row) {
   flex-shrink: 0;
+}
+
+/* Filters row - ensure consistent spacing */
+.filtersRow {
+  gap: 12px;
+  align-items: flex-end; /* Align filter inputs at the bottom */
+}
+
+.resetWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.resetButton {
+  width: 100%;
+  height: 38px; /* Match other input heights */
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Filter wrapper - symmetric and modular layout */
+.filterWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  min-width: 0; /* Allow shrinking */
+}
+
+.datepickerWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0; /* Allow shrinking */
+}
+
+/* Date picker input group - includes input and clear button */
+.datePickerInputGroup {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.datePickerInputGroup :global(.react-datepicker-wrapper) {
+  flex: 1;
+  min-width: 0;
+}
+
+.datePickerInputGroup :global(button) {
+  flex-shrink: 0;
+  min-width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Filter label styles - consistent across all filters */
+.filterLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #000000;
+  margin: 0;
+  line-height: 1.4;
+  display: block;
+  min-height: 19px; /* Ensure consistent height for alignment */
+}
+
+/* Dark mode for filter labels - white text */
+:global(.tools-availability-page.dark-mode) .filterLabel,
+:global(.tools-availability-page.dark-mode .filterLabel) {
+  color: #ffffff !important;
 }
 
 /* Filter controls layout for small screens - gradient scaling */
@@ -187,27 +295,26 @@
     margin-bottom: 8px;
   }
 
-  :global(.datepickerWrapper) {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    max-width: 100%;
+  .datepickerWrapper {
+    gap: 5px;
   }
 
-  :global(.datepickerWrapper .btn) {
-    margin-top: 8px;
-    width: 100%;
+  .filterWrapper {
+    gap: 5px;
   }
 
-  :global(.customSelect__control) {
-    font-size: 10px;
-    width: 100%;
-    max-width: 100%;
+  .resetWrapper {
+    gap: 5px;
   }
 
-  :global(.customSelect__multi-value) {
-    font-size: 10px;
+  .filterLabel {
+    font-size: 11px;
+    min-height: 16px;
+  }
+
+  .resetButton {
+    height: 36px;
+    font-size: 11px;
   }
 
   :global(.tools-horizontal-chart-container) {
@@ -242,27 +349,18 @@
     margin-bottom: 8px;
   }
 
-  :global(.datepickerWrapper) {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    width: 100%;
-    max-width: 100%;
+  .filterLabel {
+    font-size: 11.5px;
+    min-height: 17px;
   }
 
-  :global(.datepickerWrapper .btn) {
-    margin-top: 8px;
-    width: 100%;
+  .resetWrapper {
+    gap: 5px;
   }
 
-  :global(.customSelect__control) {
-    font-size: 10px;
-    width: 100%;
-    max-width: 100%;
-  }
-
-  :global(.customSelect__multi-value) {
-    font-size: 10px;
+  .resetButton {
+    height: 36px;
+    font-size: 11.5px;
   }
 
   :global(.tools-horizontal-chart-container) {
