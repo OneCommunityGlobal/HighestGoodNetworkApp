@@ -25,7 +25,7 @@ import { useHistory } from 'react-router-dom';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import Image from 'react-bootstrap/Image';
 import { toast } from 'react-toastify';
 import tokenKey from '../../config.json';
