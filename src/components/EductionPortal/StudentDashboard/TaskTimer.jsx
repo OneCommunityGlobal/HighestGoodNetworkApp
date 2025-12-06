@@ -127,7 +127,6 @@ export default function TaskTimer({ userid }) {
       const res = await callTimerApi("/api/student/timer/stop", "POST");
       const { h, m, s } = msToHMS(res.data.elapsedMs || 0);
       alert(`Timer stopped.\nTime logged: ${pad2(h)}:${pad2(m)}:${pad2(s)}`);
-
       setTimerInfo(null);
       setHours(2);
       setMinutes(0);
@@ -270,7 +269,6 @@ export default function TaskTimer({ userid }) {
 
   return (
     <>
-      {/* MINI-TIMER */}
       <div className={styles.compactWrapper}>
         <button className={styles.compactIconBtn} onClick={() => setOpen(true)}>
           <AccessAlarmRoundedIcon fontSize="small" />
