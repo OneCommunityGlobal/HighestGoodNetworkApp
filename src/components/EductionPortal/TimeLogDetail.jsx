@@ -29,7 +29,8 @@ export default function TimeLogDetail() {
   const location = useLocation();
   const passedLog = location.state?.log;
 
-  const [log, setLog] = useState(
+  // FIXED: remove setLog, log is read-only
+  const [log] = useState(
     passedLog || {
       log_id: `lg-${id}`,
       created_at: new Date().toISOString(),
@@ -83,9 +84,7 @@ export default function TimeLogDetail() {
       setError("");
 
       const res = await saveNoteToTeacher(id, noteValue);
-      if (!res.ok) {
-        throw new Error("Save failed");
-      }
+      if (!res.ok) throw new Error("Save failed");
 
       setServerNote(noteValue);
     } catch (e) {
