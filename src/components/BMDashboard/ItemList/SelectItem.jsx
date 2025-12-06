@@ -53,20 +53,20 @@ export default function SelectItem({
           name="select-item"
           type="select"
           value={
-            label === 'Tool'
-              ? selectedItem
+            label === 'Condition'
+              ? selectedCondition
               : label === 'Tool Status'
               ? selectedToolStatus
-              : selectedCondition
+              : selectedItem
           }
           onChange={e => {
             const val = e.target.value;
-            if (label === 'Tool') {
-              setSelectedItem(val);
-            } else if (label === 'Tool Status') {
+            if (label === 'Tool Status') {
               setSelectedToolStatus(val);
             } else if (label === 'Condition') {
               setSelectedCondition(val);
+            } else {
+              setSelectedItem(val);
             }
           }}
           disabled={!itemSet.length}

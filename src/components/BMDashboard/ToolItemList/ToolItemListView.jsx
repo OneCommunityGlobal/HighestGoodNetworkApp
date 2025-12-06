@@ -40,13 +40,20 @@ export function ToolItemListView({
 
     if (selectedToolStatus !== 'all') {
       filterItems = filterItems.filter(item => {
-        if (selectedToolStatus === 'Using') return item.using === true;
-        if (selectedToolStatus === 'Available') return item.available === true;
-        if (selectedToolStatus === 'Under Maintenance') {
-          // UPDATE LOGIC TO MATCH THE CONDITIONS
-          return !item.using && !item.available;
+        if (selectedToolStatus === 'Using') {
+          return item.itemType?.using?.includes(item._id);
+        } else if (selectedToolStatus === 'Available') {
+          return (
+            item.itemType?.available?.includes(item._id) &&
+            item.condition !== 'Lost' &&
+            item.condition !== 'Needs Replacing'
+          );
         }
         return true;
+        // if (selectedToolStatus === 'Under Maintenance') {
+        //   // UPDATE LOGIC TO MATCH THE CONDITIONS
+        //   return !item.using && !item.available;
+        // }
       });
     }
 
