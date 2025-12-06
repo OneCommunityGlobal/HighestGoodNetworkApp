@@ -477,11 +477,6 @@ export default function ToolsStoppageHorizontalBarChart() {
                 className={styles.datePickerInput}
                 calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
                 wrapperClassName={darkMode ? 'darkThemeDatePickerWrapper' : ''}
-                style={{
-                  backgroundColor: darkMode ? '#2b3e59' : '#ffffff',
-                  color: darkMode ? '#ffffff' : '#000000',
-                  border: `1px solid ${darkMode ? '#666' : '#ccc'}`,
-                }}
               />
               <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
                 ✕

@@ -2,47 +2,38 @@
 /* No global CSS overrides - inline styles have higher specificity and are the proper way */
 /* Removing any global overrides that might conflict */
 
-/* Date picker input - light mode */
-:global(.datePickerInput) {
-  font-size: 10px !important;
-  padding: 6px 8px;
-  border-radius: 4px;
+/* Date picker input - consistent sizing in all modes */
+/* Base styles define size - dark mode only changes colors */
+:global(.datePickerInput),
+:global(.react-datepicker-wrapper input),
+:global(.react-datepicker-wrapper .datePickerInput) {
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  height: 38px !important;
+  line-height: 1.5 !important;
+  border-radius: 6px !important;
+  border-width: 1px !important;
+  border-style: solid !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
   background-color: #ffffff !important;
   color: #000000 !important;
-  border: 1px solid #ccc !important;
+  border-color: #ccc !important;
 }
 
-/* Date picker input - dark mode (when darkTheme class is applied) */
-/* react-datepicker applies className to the input wrapper, need to target input directly */
+/* Date picker input - dark mode (ONLY colors change, sizes stay the same) */
 :global(.react-datepicker-wrapper.darkThemeDatePickerWrapper .datePickerInput),
 :global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input),
-:global(.darkTheme.datePickerInput),
-:global(.datePickerInput.darkTheme),
-:global(input.darkTheme.datePickerInput),
-:global(input.datePickerInput.darkTheme),
-:global(.form-control.darkTheme.datePickerInput),
-:global(.darkTheme.form-control.datePickerInput) {
-  background-color: #2b3e59 !important;
-  color: #ffffff !important;
-  border: 1px solid #666 !important;
-  font-size: 10px !important;
-}
-
-/* Also target the wrapper's input when darkTheme is on parent */
 :global(.tools-availability-page.dark-mode .react-datepicker-wrapper input.datePickerInput),
 :global(.tools-availability-page.dark-mode .datePickerInput),
-:global(.tools-availability-page.dark-mode .react-datepicker-wrapper input) {
-  background-color: #2b3e59 !important;
-  color: #ffffff !important;
-  border: 1px solid #666 !important;
-}
-
-/* Ensure dark mode wrapper targets the input properly */
+:global(.tools-availability-page.dark-mode .react-datepicker-wrapper input),
 :global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"]),
 :global(.react-datepicker-wrapper.darkThemeDatePickerWrapper input[type="text"].datePickerInput) {
+  /* Only override colors - sizes inherit from base */
   background-color: #2b3e59 !important;
   color: #ffffff !important;
-  border: 1px solid #666 !important;
+  border-color: #666 !important;
 }
 
 /* Light mode calendar styles */
@@ -239,6 +230,12 @@
 .datePickerInputGroup :global(.react-datepicker-wrapper) {
   flex: 1;
   min-width: 0;
+  display: flex;
+}
+
+.datePickerInputGroup :global(.react-datepicker-wrapper input) {
+  flex: 1;
+  min-width: 0;
 }
 
 .datePickerInputGroup :global(button) {
@@ -248,6 +245,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
 }
 
 /* Filter label styles - consistent across all filters */
