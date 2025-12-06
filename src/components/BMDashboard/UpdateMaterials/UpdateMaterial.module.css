@@ -96,3 +96,136 @@
   overflow-y: scroll;
   height: 75vh;
 }
+
+/* ==================== DARK MODE STYLES ==================== */
+
+/* Page background */
+:global(.dark-mode) .updateMaterialPage {
+  background-color: #1b2a41;
+}
+
+/* Container background */
+:global(.dark-mode) .updateMaterial {
+  background-color: #2b3e59;
+}
+
+/* Form labels */
+:global(.dark-mode) .materialFormLabel {
+  color: #ffffff;
+}
+
+/* Form values */
+:global(.dark-mode) .materialFormValue {
+  color: #ffffff;
+}
+
+/* Input fields */
+:global(.dark-mode) .updateMaterial input[type="number"],
+:global(.dark-mode) .updateMaterial input[type="text"],
+:global(.dark-mode) .updateMaterial input[type="date"],
+:global(.dark-mode) .updateMaterial select {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+:global(.dark-mode) .updateMaterial input[type="number"]:focus,
+:global(.dark-mode) .updateMaterial input[type="text"]:focus,
+:global(.dark-mode) .updateMaterial input[type="date"]:focus,
+:global(.dark-mode) .updateMaterial select:focus {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+  outline: none;
+  box-shadow: 0 0 0 0.2rem rgba(28, 139, 204, 0.25);
+}
+
+/* Placeholder text */
+:global(.dark-mode) .updateMaterial input::placeholder {
+  color: #a0a0a0 !important;
+  opacity: 1;
+}
+
+/* Date input specific styling */
+:global(.dark-mode) .updateMaterial input[type="date"] {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+:global(.dark-mode) .updateMaterial input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+}
+
+/* Select dropdown styling */
+:global(.dark-mode) .updateMaterial select {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border: 1px solid #3A506B !important;
+}
+
+:global(.dark-mode) .updateMaterial select option {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+}
+
+:global(.dark-mode) .updateMaterial select:focus {
+  background-color: #1C2541 !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+}
+
+/* Error messages */
+:global(.dark-mode) .materialFormError {
+  color: #ff6b6b !important;
+}
+
+:global(.dark-mode) .materialFormTableError {
+  color: #ff6b6b !important;
+}
+
+:global(.dark-mode) .materialFormErrorClr {
+  color: #ff6b6b !important;
+}
+
+/* Buttons */
+:global(.dark-mode) .materialButtonOutline {
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+  background-color: transparent !important;
+}
+
+:global(.dark-mode) .materialButtonOutline:hover {
+  background-color: #3A506B !important;
+  color: #ffffff !important;
+  border-color: #3A506B !important;
+}
+
+:global(.dark-mode) .materialButtonBg {
+  background-color: #1C8BCC !important;
+  color: #ffffff !important;
+  border-color: #1C8BCC !important;
+}
+
+:global(.dark-mode) .materialButtonBg:hover {
+  background-color: #1a7bb8 !important;
+  color: #ffffff !important;
+  border-color: #1a7bb8 !important;
+}
+
+:global(.dark-mode) .materialButtonBg:disabled {
+  background-color: #3A506B !important;
+  color: #a0a0a0 !important;
+  border-color: #3A506B !important;
+  opacity: 0.6;
+}
+
+/* New Available dynamic values */
+:global(.dark-mode) .updateMaterial .materialFormValue span {
+  color: #ffffff;
+}
+
+:global(.dark-mode) .updateMaterial .materialFormValue span.materialFormErrorClr {
+  color: #ff6b6b !important;
+}

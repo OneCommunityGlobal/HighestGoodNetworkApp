@@ -1,10 +1,12 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styles from './RecordsModal.module.css';
 import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   if (record) {
     const toggle = () => {
       setModal(false);
@@ -12,16 +14,16 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
     };
 
     return (
-      <Modal isOpen={modal} size="xl">
-        <ModalHeader>{recordType} Record</ModalHeader>
-        <ModalBody>
+      <Modal isOpen={modal} size="xl" className={darkMode ? 'text-light' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>{recordType} Record</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className={`${styles.recordsModalTableContainer}`}>
             <Table>
               <Record record={record} recordType={recordType} setRecord={setRecord} />
             </Table>
           </div>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button onClick={toggle}>Close</Button>
         </ModalFooter>
       </Modal>
