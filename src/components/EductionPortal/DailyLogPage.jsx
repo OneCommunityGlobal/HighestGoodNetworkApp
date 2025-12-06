@@ -4,8 +4,11 @@ import LogItemCard from "./LogItemCard";
 
 const parseDurationToMin = (str) => {
   if (!str) return 0;
-  const h = /(\d+)\s*h/i.exec(str)?.[1];
-  const m = /(\d+)\s*m/i.exec(str)?.[1];
+  const hMatch = str.match(/^\s*(\d+)\s*h\b/i);
+  const mMatch = str.match(/^\s*(\d+)\s*m\b/i);
+
+  const h = hMatch ? hMatch[1] : 0;
+  const m = mMatch ? mMatch[1] : 0;
   return Number(h || 0) * 60 + Number(m || 0);
 };
 
@@ -109,7 +112,10 @@ export default function DailyLogPage() {
 
   const handleSave = (e) => {
     e.preventDefault();
-    const id = Math.random().toString(36).slice(2, 8);
+    const id = crypto.getRandomValues(new Uint8Array(6))
+      .reduce((s, b) => s + b.toString(36), "")
+      .slice(0, 8);
+
     const nowIso = new Date().toISOString();
 
     const log = {
