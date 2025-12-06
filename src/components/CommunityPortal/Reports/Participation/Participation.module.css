@@ -15,11 +15,13 @@
 .participationLandingPage {
   max-width: 90%;
   margin: 0 auto;
+  padding: 24px;
 }
 
 .participationLandingPageDark {
   min-width: 100%;
   margin: 0 auto;
+  padding: 24px;
   background-color: #1b2a41;
   color: #fff;
 }
@@ -38,7 +40,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 12px 0;
+  padding: 16px 0;
   border-bottom: 2px solid #e0e0e0;
 }
 
@@ -75,6 +77,10 @@
 .myCasesHeader h2 {
   font-size: 20px;
   color: #333;
+}
+
+.participationLandingPageDark .myCasesHeader h2 {
+  color: #fff;
 }
 
 .myCasesHeader button {
@@ -179,12 +185,20 @@
   white-space: nowrap;
 }
 
+.trackingFilters {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 12px; /* spacing between dropdowns */
+}
+
 .trackingFilters select {
   margin-left: 10px;
   padding: 8px;
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  cursor: pointer;
+  transition: border-color 0.2s;
   background-color: #ffffff;
   color: #333;
 }
@@ -435,6 +449,20 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  transition: border-color 0.2s;
+  background-color: #fff;
+  color: #333;
+}
+
+.insightsDark .insightsFilters select {
+  background-color: #1c2541;
+  color: #fff;
+  border-color: #555;
+}
+
+.insightsDark .insightsFilters select option {
+  background-color: #1c2541;
+  color: #fff;
 }
 
 .insightsTabs {
@@ -508,6 +536,26 @@
   background: #304663;
 }
 
+/* Dark mode tab styles */
+.insightsDark .insightsTabs {
+  border-color: #555;
+}
+
+.insightsDark .insightsTab {
+  color: #fff;
+  background-color: #3a506b;
+}
+
+.insightsDark .insightsTab:not(:last-child) {
+  border-right-color: #555;
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
 .insightsContent {
   display: flex;
   flex-direction: column;
@@ -544,6 +592,10 @@
   position: relative;
   margin-right: 10px;
   margin-left: 10px;
+}
+
+.insightsDark .insightBar {
+  background: #2c3e50;
 }
 
 .insightFill {

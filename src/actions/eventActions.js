@@ -1,4 +1,5 @@
 import axios from 'axios';
+import httpService from '~/services/httpService';
 import { ENDPOINTS } from '~/utils/URL';
 
 /**
@@ -93,4 +94,80 @@ export async function leaveWaitlist(eventId, userId, token) {
       Authorization: token,
     },
   });
+}
+
+export async function getPopularityMetrics(startDate, endDate) {
+  try {
+    const url = ENDPOINTS.EVENT_POPULARITY(startDate, endDate);
+    const response = await httpService.get(url);
+    return Promise.resolve(response);
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to fetch popularity metrics';
+    return {
+      message: errorMessage,
+      errorCode: error.response?.status,
+      status: error.response?.status || 500,
+    };
+  }
+}
+
+export async function getEngagementMetrics(startDate, endDate, format) {
+  try {
+    const url = ENDPOINTS.EVENT_ENGAGEMENT(startDate, endDate, format);
+    const response = await httpService.get(url);
+    return Promise.resolve(response);
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to fetch engagement metrics';
+    return {
+      message: errorMessage,
+      errorCode: error.response?.status,
+      status: error.response?.status || 500,
+    };
+  }
+}
+
+export async function getEventValue(startDate, endDate) {
+  try {
+    const url = ENDPOINTS.EVENT_VALUE(startDate, endDate);
+    const response = await httpService.get(url);
+    return Promise.resolve(response);
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to fetch event value';
+    return {
+      message: errorMessage,
+      errorCode: error.response?.status,
+      status: error.response?.status || 500,
+    };
+  }
+}
+
+export async function getFormatComparison(startDate, endDate) {
+  try {
+    const url = ENDPOINTS.EVENT_FORMAT_COMPARISON(startDate, endDate);
+    const response = await httpService.get(url);
+    return Promise.resolve(response);
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.error ||
+      error.response?.data?.message ||
+      error.message ||
+      'Failed to fetch format comparison';
+    return {
+      message: errorMessage,
+      errorCode: error.response?.status,
+      status: error.response?.status || 500,
+    };
+  }
 }
