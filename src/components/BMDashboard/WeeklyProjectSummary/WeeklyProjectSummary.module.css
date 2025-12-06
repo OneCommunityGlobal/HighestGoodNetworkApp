@@ -136,6 +136,9 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -221,10 +224,16 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  align-items: start; /* Prevent cards from stretching to match tallest card */
+  align-items: stretch; /* Make all cards in a row the same height */
   border-top: 1px solid var(--card-shadow);
   animation: fadeIn 0.3s ease-in-out;
   background: var(--section-bg);
+}
+
+/* Donut chart card should determine its own natural height */
+/* Grid align-items: stretch will make other cards match it */
+.weeklyProjectSummaryCard:has(.tool-donut-wrapper-constrain) {
+  height: auto;
 }
 
 /* ---------------- DARK MODE VARIABLES ---------------- */
@@ -322,6 +331,25 @@
 }
 /* ---------------- RESPONSIVE DESIGN ---------------- */
 
+/* Large screens - Tools section layout optimization */
+@media (max-width: 1366px) {
+  /* Tools and Equipment Tracking - Switch to 2 column layout earlier for better chart visibility */
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 12px;
+  }
+
+  /* Wide card spans 2 columns, normal cards span 1 column each */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard {
+    grid-column: span 2;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 1;
+  }
+}
+
 /* Medium Screens - Wrap Items */
 @media (max-width: 1024px) {
   .weeklySummaryHeaderContainer {
@@ -418,6 +446,27 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+  }
+
+  /* Ensure charts are fully visible on mobile - prevent clipping */
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 576px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
   }
 }
 

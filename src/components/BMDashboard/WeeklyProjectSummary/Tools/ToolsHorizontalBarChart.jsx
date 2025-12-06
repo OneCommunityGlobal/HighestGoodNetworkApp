@@ -51,14 +51,15 @@ function ToolsHorizontalBarChart({ darkMode }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calculate responsive chart height: 240px mobile, 260px tablet, 280px desktop
+  // Calculate responsive chart height: 240px mobile, 280px tablet, 300px desktop
+  // Standardized to match tallest chart (ToolsStoppageHorizontalBarChart)
   const getChartHeight = () => {
     if (windowWidth <= 768) {
       return 240; // Mobile
     } else if (windowWidth <= 1024) {
-      return 260; // Tablet
+      return 280; // Tablet
     }
-    return 280; // Desktop
+    return 300; // Desktop
   };
 
   // Calculate responsive margins: mobile {5,5,15,5}, tablet {8,15,25,8}, desktop {10,30,40,10}
@@ -244,62 +245,90 @@ function ToolsHorizontalBarChart({ darkMode }) {
             placeholder="Select a project"
             isClearable={false}
             isDisabled={allProjects.length === 0}
-            styles={
-              darkMode
-                ? {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      borderColor: '#364156',
-                      minHeight: '32px',
-                      fontSize: '12px',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      backgroundColor: '#2c3344',
-                      fontSize: '12px',
-                    }),
-                    option: (baseStyles, state) => ({
-                      ...baseStyles,
-                      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-                      color: '#e0e0e0',
-                      fontSize: '12px',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      color: '#e0e0e0',
-                      fontSize: '12px',
-                    }),
-                    placeholder: baseStyles => ({
-                      ...baseStyles,
-                      color: '#aaaaaa',
-                      fontSize: '12px',
-                    }),
-                  }
-                : {
-                    control: baseStyles => ({
-                      ...baseStyles,
-                      minHeight: '32px',
-                      fontSize: '12px',
-                    }),
-                    menu: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    option: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    singleValue: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                    placeholder: baseStyles => ({
-                      ...baseStyles,
-                      fontSize: '12px',
-                    }),
-                  }
-            }
+            styles={{
+              control: baseStyles => ({
+                ...baseStyles,
+                minHeight: '38px',
+                fontSize: '12px',
+                backgroundColor: darkMode ? '#253342' : '#fff',
+                borderColor: darkMode ? '#2d4059' : '#ccc',
+                color: darkMode ? '#ffffff' : '#000',
+                boxShadow: 'none',
+                borderRadius: '6px',
+                '&:hover': {
+                  borderColor: darkMode ? '#2d4059' : '#999',
+                },
+              }),
+              valueContainer: baseStyles => ({
+                ...baseStyles,
+                padding: '2px 8px',
+                color: darkMode ? '#ffffff' : '#000',
+              }),
+              input: baseStyles => ({
+                ...baseStyles,
+                margin: '0px',
+                padding: '0px',
+                color: darkMode ? '#ffffff' : '#000',
+              }),
+              indicatorsContainer: baseStyles => ({
+                ...baseStyles,
+                padding: '0 4px',
+              }),
+              menu: baseStyles => ({
+                ...baseStyles,
+                backgroundColor: darkMode ? '#253342' : '#fff',
+                fontSize: '12px',
+              }),
+              option: (baseStyles, state) => ({
+                ...baseStyles,
+                backgroundColor: state.isSelected
+                  ? darkMode
+                    ? '#e8a71c'
+                    : '#0d55b3'
+                  : state.isFocused
+                  ? darkMode
+                    ? '#3a506b'
+                    : '#f0f0f0'
+                  : darkMode
+                  ? '#253342'
+                  : '#fff',
+                color: state.isSelected
+                  ? darkMode
+                    ? '#000'
+                    : '#fff'
+                  : darkMode
+                  ? '#ffffff'
+                  : '#000',
+                cursor: 'pointer',
+                padding: '8px 12px',
+                fontSize: '12px',
+                ':active': {
+                  backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
+                },
+              }),
+              singleValue: baseStyles => ({
+                ...baseStyles,
+                color: darkMode ? '#ffffff' : '#000',
+                fontSize: '12px',
+              }),
+              placeholder: baseStyles => ({
+                ...baseStyles,
+                color: darkMode ? '#aaaaaa' : '#666',
+                fontSize: '12px',
+              }),
+              indicatorSeparator: baseStyles => ({
+                ...baseStyles,
+                backgroundColor: darkMode ? '#2d4059' : '#ccc',
+              }),
+              dropdownIndicator: baseStyles => ({
+                ...baseStyles,
+                color: darkMode ? '#ffffff' : '#999',
+                padding: '4px',
+                ':hover': {
+                  color: darkMode ? '#ffffff' : '#666',
+                },
+              }),
+            }}
           />
         </div>
 
@@ -340,7 +369,7 @@ function ToolsHorizontalBarChart({ darkMode }) {
 
       {data.length > 0 ? (
         <div className="tools-horizontal-bar-chart-content">
-          <ResponsiveContainer width="100%" height={getChartHeight()}>
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart layout="vertical" data={data} margin={getChartMargins()}>
               <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
               <XAxis type="number" hide />

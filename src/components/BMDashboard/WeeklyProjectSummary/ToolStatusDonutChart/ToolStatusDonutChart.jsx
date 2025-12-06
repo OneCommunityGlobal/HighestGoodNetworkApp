@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import Select from 'react-select';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { fetchToolAvailability, fetchTools } from '../../../../actions/bmdashboard/toolActions';
 import './ToolStatusDonutChart.css';
@@ -60,29 +61,139 @@ export default function ToolStatusDonutChart() {
   const chartData = availabilityData?.data || [];
   const total = availabilityData?.total || 0;
 
-  const toolsFromAvailability = availabilityData?.tools;
-  const allTools =
-    Array.isArray(toolsFromAvailability) && toolsFromAvailability.length
-      ? toolsFromAvailability
-      : toolslist;
-
-  const uniqueProjects = Array.from(
-    new Map(
-      allTools
-        .filter(t => t?.projectId)
-        .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
-    ).values(),
+  // Use unfiltered toolslist for options to prevent options disappearing after selection
+  // availabilityData is only used for chart data, not for building dropdown options
+  const uniqueProjects = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          toolslist
+            .filter(t => t?.projectId)
+            .map(t => [t.projectId, { id: t.projectId, name: t.projectName || 'Unnamed Project' }]),
+        ).values(),
+      ),
+    [toolslist],
   );
 
-  const uniqueTools = Array.from(
-    new Map(
-      allTools
-        .filter(t => t?.toolId)
-        .map(t => [t.toolId, { id: t.toolId, name: t.name || 'Unnamed Tool' }]),
-    ).values(),
+  const uniqueTools = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          toolslist
+            .filter(t => t?.toolId)
+            .map(t => [t.toolId, { id: t.toolId, name: t.name || 'Unnamed Tool' }]),
+        ).values(),
+      ),
+    [toolslist],
   );
 
-  // Responsive sizing aligned with other charts: 240px mobile, 260px tablet, 280px desktop
+  // Build react-select option lists
+  const projectOptions = useMemo(
+    () => [
+      { label: 'All', value: '' },
+      ...uniqueProjects.map(project => ({
+        label: project.name,
+        value: project.id,
+      })),
+    ],
+    [uniqueProjects],
+  );
+
+  const toolOptions = useMemo(
+    () => [
+      { label: 'All', value: '' },
+      ...uniqueTools.map(tool => ({
+        label: tool.name,
+        value: tool.id,
+      })),
+    ],
+    [uniqueTools],
+  );
+
+  // Consistent react-select styles matching paid-labor-cost pattern
+  const selectStyles = useMemo(
+    () => ({
+      control: base => ({
+        ...base,
+        minHeight: '38px',
+        fontSize: '12px',
+        backgroundColor: darkMode ? '#253342' : '#fff',
+        borderColor: darkMode ? '#2d4059' : '#ccc',
+        color: darkMode ? '#ffffff' : '#000',
+        boxShadow: 'none',
+        borderRadius: '6px',
+        '&:hover': {
+          borderColor: darkMode ? '#2d4059' : '#999',
+        },
+      }),
+      valueContainer: base => ({
+        ...base,
+        padding: '2px 8px',
+        color: darkMode ? '#ffffff' : '#000',
+      }),
+      input: base => ({
+        ...base,
+        margin: '0px',
+        padding: '0px',
+        color: darkMode ? '#ffffff' : '#000',
+      }),
+      indicatorsContainer: base => ({
+        ...base,
+        padding: '0 4px',
+      }),
+      menu: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#253342' : '#fff',
+        fontSize: '12px',
+      }),
+      option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isSelected
+          ? darkMode
+            ? '#e8a71c'
+            : '#0d55b3'
+          : state.isFocused
+          ? darkMode
+            ? '#3a506b'
+            : '#f0f0f0'
+          : darkMode
+          ? '#253342'
+          : '#fff',
+        color: state.isSelected ? (darkMode ? '#000' : '#fff') : darkMode ? '#ffffff' : '#000',
+        cursor: 'pointer',
+        padding: '8px 12px',
+        fontSize: '12px',
+        ':active': {
+          backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
+        },
+      }),
+      singleValue: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#000',
+        fontSize: '12px',
+      }),
+      placeholder: base => ({
+        ...base,
+        color: darkMode ? '#aaaaaa' : '#666',
+        fontSize: '12px',
+      }),
+      indicatorSeparator: base => ({
+        ...base,
+        backgroundColor: darkMode ? '#2d4059' : '#ccc',
+      }),
+      dropdownIndicator: base => ({
+        ...base,
+        color: darkMode ? '#ffffff' : '#999',
+        padding: '4px',
+        ':hover': {
+          color: darkMode ? '#ffffff' : '#666',
+        },
+      }),
+    }),
+    [darkMode],
+  );
+
+  // Responsive sizing standardized to match tallest chart: 240px mobile, 280px tablet, 300px desktop
   let innerRadius;
   let outerRadius;
   let chartHeight;
@@ -96,12 +207,12 @@ export default function ToolStatusDonutChart() {
     // Tablet
     innerRadius = 50;
     outerRadius = 80;
-    chartHeight = 260;
+    chartHeight = 280;
   } else {
     // Desktop
     innerRadius = 70;
     outerRadius = 100;
-    chartHeight = 280;
+    chartHeight = 300;
   }
 
   // Calculate responsive margins: mobile {20,20,20,20}, tablet {25,25,30,30}, desktop {30,30,40,40}
@@ -125,7 +236,9 @@ export default function ToolStatusDonutChart() {
   };
 
   return (
-    <div className={`tool-donut-wrapper ${darkMode ? 'dark-mode' : ''}`}>
+    <div
+      className={`tool-donut-wrapper tool-donut-wrapper-constrain ${darkMode ? 'dark-mode' : ''}`}
+    >
       <h3 className="tool-donut-title">Proportion of Tools/Equipment</h3>
 
       <div className="tool-donut-filters">
@@ -133,71 +246,75 @@ export default function ToolStatusDonutChart() {
           <label htmlFor="tool-select" className="filter-label">
             Tool/Equipment Name
           </label>
-          <select id="tool-select" value={toolId} onChange={e => setToolId(e.target.value)}>
-            <option value="">All</option>
-            {uniqueTools.map(tool => (
-              <option key={`tool-${tool.id}`} value={tool.id}>
-                {tool.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            inputId="tool-select"
+            className="tool-donut-select"
+            classNamePrefix="select"
+            options={toolOptions}
+            value={toolOptions.find(option => option.value === toolId) || toolOptions[0]}
+            onChange={selected => setToolId(selected ? selected.value : '')}
+            isClearable={false}
+            placeholder="All"
+            styles={selectStyles}
+          />
         </div>
 
         <div className="filter-item">
           <label htmlFor="project-select" className="filter-label">
             Project
           </label>
-          <select
-            id="project-select"
-            value={projectId}
-            onChange={e => setProjectId(e.target.value)}
-          >
-            <option value="">All</option>
-            {uniqueProjects.map(project => (
-              <option key={`project-${project.id}`} value={project.id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
+          <Select
+            inputId="project-select"
+            className="tool-donut-select"
+            classNamePrefix="select"
+            options={projectOptions}
+            value={projectOptions.find(option => option.value === projectId) || projectOptions[0]}
+            onChange={selected => setProjectId(selected ? selected.value : '')}
+            isClearable={false}
+            placeholder="All"
+            styles={selectStyles}
+          />
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={chartHeight}>
-        <PieChart margin={getChartMargins()}>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            innerRadius={innerRadius}
-            outerRadius={outerRadius}
-            labelLine={false}
-            label={props => renderCustomizedLabel({ ...props, width: windowWidth })}
-            dataKey="count"
-            isAnimationActive={false}
-          >
-            {chartData.map(entry => (
-              <Cell key={entry.status} fill={COLORS[entry.status.toUpperCase()]} />
-            ))}
-          </Pie>
+      <div className="tool-donut-chart-container">
+        <ResponsiveContainer width="100%" height={chartHeight}>
+          <PieChart margin={getChartMargins()}>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              innerRadius={innerRadius}
+              outerRadius={outerRadius}
+              labelLine={false}
+              label={props => renderCustomizedLabel({ ...props, width: windowWidth })}
+              dataKey="count"
+              isAnimationActive={false}
+            >
+              {chartData.map(entry => (
+                <Cell key={entry.status} fill={COLORS[entry.status.toUpperCase()]} />
+              ))}
+            </Pie>
 
-          <text
-            x="50%"
-            y="50%"
-            textAnchor="middle"
-            dominantBaseline="middle"
-            fill="var(--donut-text-color)"
-            fontSize={getCenterTextFontSize()}
-            fontWeight="bold"
-          >
-            TOTAL: {total}
-          </text>
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dominantBaseline="middle"
+              fill="var(--donut-text-color)"
+              fontSize={getCenterTextFontSize()}
+              fontWeight="bold"
+            >
+              TOTAL: {total}
+            </text>
 
-          <Tooltip
-            formatter={value => `${((value / total) * 100).toFixed(1)}%`}
-            contentStyle={{ fontSize: '14px' }}
-          />
-        </PieChart>
-      </ResponsiveContainer>
+            <Tooltip
+              formatter={value => `${((value / total) * 100).toFixed(1)}%`}
+              contentStyle={{ fontSize: '14px' }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
 
       <div className="tool-donut-legend">
         {chartData.map(entry => (

@@ -68,42 +68,53 @@
   border-radius: 50%;
 }
 
-/* Dark mode for multi select*/
+/* Dark mode for react-select - consistent with paid-labor-cost pattern */
 :global(.darkTheme .customSelect__control) {
-  background-color: #fff!important;
-  color: #000!important;
-  border-color: #ccc!important;
-  font-size: 10px!important;
+  background-color: #253342 !important;
+  border-color: #2d4059 !important;
+  color: #ffffff !important;
+  font-size: 10px !important;
 }
 
 :global(.darkTheme .customSelect__menu) {
-  background-color: #2b3e59!important;
-  border-color: #666!important;
-  color: #fff!important;
+  background-color: #253342 !important;
+  border-color: #2d4059 !important;
+  color: #ffffff !important;
 }
 
 :global(.darkTheme .customSelect__option) {
-  background-color: #2b3e59!important;
-  color: #fff!important;
+  background-color: #253342 !important;
+  color: #ffffff !important;
 }
 
 :global(.darkTheme .customSelect__option--is-focused) {
-  background-color: #6c757d!important;
+  background-color: #3a506b !important;
+  color: #ffffff !important;
 }
 
 :global(.darkTheme .customSelect__option--is-selected) {
-  background-color: #007bff!important;
+  background-color: #e8a71c !important;
+  color: #000000 !important;
 }
 
-/* Chart container - prevent extra vertical space */
+:global(.darkTheme .customSelect__single-value) {
+  color: #ffffff !important;
+}
+
+:global(.darkTheme .customSelect__placeholder) {
+  color: #aaaaaa !important;
+}
+
+/* Chart container - expand to fill available space */
 :global(.tools-horizontal-chart-container) {
   width: 100%;
   max-width: 100%;
-  height: auto; /* Ensure container doesn't force height */
+  flex: 1; /* Expand to fill available space in flex container */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
   background-color: #ffffff !important; /* White background to show through transparent canvas */
+  min-height: 0; /* Allow flex shrinking */
 }
 
 /* Dark mode for chart container */
@@ -123,17 +134,28 @@
 /* Override min-height for tools-availability-page when used in card context */
 :global(.tools-availability-page) {
   min-height: auto !important; /* Override 100vh from ToolsAvailabilityPage.css */
-  height: auto; /* Let content determine height */
+  height: 100%; /* Fill parent card height */
   padding: 8px; /* Remove excessive padding (24px) since card already has padding */
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
   background-color: #ffffff !important; /* White background in light mode to prevent grey parent card background from showing through - !important to override any conflicting styles */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Dark mode background for tools-availability-page */
 :global(.tools-availability-page.dark-mode) {
   background-color: #2c3344 !important; /* Dark background in dark mode */
+}
+
+/* Ensure title and filters don't shrink, allowing chart to expand */
+:global(.tools-availability-page .tools-chart-title) {
+  flex-shrink: 0;
+}
+
+:global(.tools-availability-page .row) {
+  flex-shrink: 0;
 }
 
 /* Filter controls layout for small screens */
