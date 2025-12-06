@@ -1,0 +1,60 @@
+.reddit-form-container {
+
+  margin : 50px;
+}
+
+.reddit-btn {
+  background: #ff4500;
+  color:#fff;
+  border: none;
+  border-radius: 4px;
+  padding:10px 18px;
+  margin-top: 10px;
+}
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+
+/* Input Fields */
+.form-group .form-select{
+  width: 180px;
+  min-width: 150px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 12px;
+  padding-right: 30px;
+}
+
+
+.form-group .form-input,
+.form-group .form-textarea {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  background: white;
+}
+.form-textarea {
+  resize: vertical;
+  min-height: 200px;
+}
+
+/* Dark Mode */
+.reddit-form-container.dark-mode {
+  background: #2d2d2d;
+  color: #e0e0e0;
+}
+
+.reddit-form-container.dark-mode .form-select,
+.reddit-form-container.dark-mode .form-input,
+.reddit-form-container.dark-mode .form-textarea {
+  background: #3a3a3a;
+  border-color: #555;
+  color: #e0e0e0;
+}

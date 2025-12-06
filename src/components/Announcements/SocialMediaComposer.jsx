@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import RedditPanel from './platforms/reddit/RedditPanel.jsx';
+import Scheduled from './platforms/reddit/Scheduled.jsx';
+import SubmittedPosts from './platforms/reddit/SubmittedPosts.jsx';
 
 export default function SocialMediaComposer({ platform }) {
   const [postContent, setPostContent] = useState('');
@@ -27,6 +30,26 @@ export default function SocialMediaComposer({ platform }) {
     };
   };
 
+  const renderPlatformComponent = () => {
+    const platformMap = {
+      reddit: {
+        composer: <RedditPanel />,
+        scheduled: <Scheduled />,
+        history: <SubmittedPosts />,
+      },
+      // add other platforms here:
+      // facebook: { composer: <FacebookComposer />, scheduled: <FacebookScheduled />, ... }
+    };
+
+    return (
+      platformMap[platform]?.[activeSubTab] ?? (
+        <div>
+          No component available for {platform} / {activeSubTab}
+        </div>
+      )
+    );
+  };
+
   return (
     <div style={{ padding: '1rem' }}>
       <h3>{platform} </h3>
@@ -48,7 +71,7 @@ export default function SocialMediaComposer({ platform }) {
         ))}
       </div>
 
-      {activeSubTab === 'composer' && (
+      {activeSubTab === 'composer' && platform !== 'reddit' && (
         <div>
           <textarea
             value={postContent}
@@ -122,7 +145,7 @@ export default function SocialMediaComposer({ platform }) {
           </div>
         </div>
       )}
-      {activeSubTab === 'scheduled' && (
+      {activeSubTab === 'scheduled' && platform !== 'reddit' && (
         <div>
           <p>
             <strong>Scheduled Posts for {platform}</strong>
@@ -134,7 +157,7 @@ export default function SocialMediaComposer({ platform }) {
         </div>
       )}
 
-      {activeSubTab === 'history' && (
+      {activeSubTab === 'history' && platform !== 'reddit' && (
         <div>
           <p>
             <strong>Post History for {platform}</strong>
@@ -146,7 +169,7 @@ export default function SocialMediaComposer({ platform }) {
         </div>
       )}
 
-      {activeSubTab === 'details' && (
+      {activeSubTab === 'details' && platform !== 'reddit' && (
         <div>
           <p>
             <strong>{platform}-Specific Details</strong>
@@ -159,6 +182,8 @@ export default function SocialMediaComposer({ platform }) {
           </ul>
         </div>
       )}
+
+      {renderPlatformComponent()}
     </div>
   );
 }

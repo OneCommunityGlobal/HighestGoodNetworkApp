@@ -470,6 +470,14 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+
+  // autoposter
+  AP_REDDIT_SUBMIT: `${APIEndpoint}/autoposter/reddit/submit`,
+  AP_REDDIT_AUTH_LOGIN: `${APIEndpoint}/autoposter/reddit/auth/login`,
+  AP_REDDIT_AUTH_TOKEN: `${APIEndpoint}/autoposter/reddit/auth/token`,
+  AP_REDDIT_SUBMIT_POST:`${APIEndpoint}/autoposter/reddit/submit-post`,
+  AP_REDDIT_POST:`${APIEndpoint}/autoposter/reddit/post`,
+  
 };
 
 export const ApiEndpoint = APIEndpoint;
