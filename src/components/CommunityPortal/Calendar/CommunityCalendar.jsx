@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -68,6 +68,11 @@ const mockEvents = [
     capacity: 50,
   },
 ];
+
+const STATUSES = ['New', 'Needs Attendees', 'Filling Fast', 'Full Event'];
+const EVENT_TYPES = ['Workshop', 'Webinar', 'Meeting', 'Social Gathering'];
+const LOCATIONS = ['Virtual', 'In person'];
+const TIMES = ['10:00 AM', '1:00 PM', '3:00 PM', '5:00 PM'];
 
 function CommunityCalendar() {
   const [filter, setFilter] = useState({ type: 'all', location: 'all', status: 'all' });
@@ -152,25 +157,22 @@ function CommunityCalendar() {
 
   // Enhanced event caching by date - memoized for performance
   const eventCache = useMemo(() => {
-    const cache = new Map();
-    filteredEvents.forEach(event => {
-      const dateKey = event.date.toDateString();
-      if (!cache.has(dateKey)) {
-        cache.set(dateKey, []);
-      }
-      cache.get(dateKey).push(event);
+    const map = new Map();
+    filteredEvents.forEach(e => {
+      const key = e.date.toDateString();
+      if (!map.has(key)) map.set(key, []);
+      map.get(key).push(e);
     });
-    return cache;
+    return map;
   }, [filteredEvents]);
 
-  // Memoized event count by date for quick lookups
   const eventCountByDate = useMemo(() => {
-    const countMap = new Map();
-    filteredEvents.forEach(event => {
-      const dateKey = event.date.toDateString();
-      countMap.set(dateKey, (countMap.get(dateKey) || 0) + 1);
+    const map = new Map();
+    filteredEvents.forEach(e => {
+      const key = e.date.toDateString();
+      map.set(key, (map.get(key) || 0) + 1);
     });
-    return countMap;
+    return map;
   }, [filteredEvents]);
 
   // Memoized unique filter values for dropdowns
@@ -193,44 +195,45 @@ function CommunityCalendar() {
     [eventCache],
   );
 
-  // Handle event click
   const handleEventClick = useCallback(event => {
     setSelectedEvent(event);
     setShowEventModal(true);
   }, []);
 
-  // Handle event key press
-  const handleEventKeyPress = useCallback(
-    (event, calendarEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        handleEventClick(calendarEvent);
-      }
-    },
-    [handleEventClick],
-  );
-
-  // Close modal
   const closeEventModal = useCallback(() => {
     setShowEventModal(false);
     setSelectedEvent(null);
   }, []);
 
-  // Handle escape key globally when modal is open
+  // Close on ESC
   useEffect(() => {
-    const handleEscape = e => {
-      if (e.key === 'Escape' && showEventModal) {
+    const esc = e => {
+      if (e.key === 'Escape') {
         closeEventModal();
+        setOverflowDate(null);
       }
     };
+    document.addEventListener('keydown', esc);
+    return () => document.removeEventListener('keydown', esc);
+  }, [closeEventModal]);
 
-    if (showEventModal) {
-      document.addEventListener('keydown', handleEscape);
-      return () => {
-        document.removeEventListener('keydown', handleEscape);
-      };
-    }
-  }, [showEventModal, closeEventModal]);
+  // Close overflow popup on outside click
+  useEffect(() => {
+    const handleClickOutside = e => {
+      if (popupRef.current && !popupRef.current.contains(e.target)) {
+        setOverflowDate(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const statusMap = {
+    New: 'statusNew',
+    'Needs Attendees': 'statusNeedsAttendees',
+    'Filling Fast': 'statusFillingFast',
+    'Full Event': 'statusFull',
+  };
 
   // Memoized tile content function
   const tileContent = useCallback(
@@ -270,12 +273,8 @@ function CommunityCalendar() {
 
   // Memoized tile class name function
   const tileClassName = useCallback(
-    ({ date, view }) => {
-      if (view === 'month' && eventCountByDate.has(date.toDateString())) {
-        return styles.hasEvents;
-      }
-      return null;
-    },
+    ({ date, view }) =>
+      view === 'month' && eventCountByDate.has(date.toDateString()) ? styles.hasEvents : null,
     [eventCountByDate],
   );
 
@@ -288,9 +287,14 @@ function CommunityCalendar() {
     setFilter(prev => ({ ...prev, location: e.target.value }));
   }, []);
 
-  const handleStatusFilterChange = useCallback(e => {
-    setFilter(prev => ({ ...prev, status: e.target.value }));
-  }, []);
+  const uniqueFilterValues = useMemo(
+    () => ({
+      types: [...new Set(mockEvents.map(e => e.type))],
+      locations: [...new Set(mockEvents.map(e => e.location))],
+      statuses: [...new Set(mockEvents.map(e => e.status))],
+    }),
+    [mockEvents],
+  );
 
   // Memoized dark mode selector
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -321,38 +325,29 @@ function CommunityCalendar() {
       <header className={calendarClasses.header}>
         <h1>Community Calendar</h1>
         <div className={calendarClasses.filters}>
-          <select id="type-filter" value={filter.type} onChange={handleTypeFilterChange}>
+          <select value={filter.type} onChange={handleFilterChange('type')}>
             <option value="all">All Types</option>
-            {uniqueFilterValues.types.map(type => (
-              <option key={type} value={type}>
-                {type}
-              </option>
+            {uniqueFilterValues.types.map(t => (
+              <option key={t}>{t}</option>
             ))}
           </select>
 
-          <select
-            id="location-filter"
-            value={filter.location}
-            onChange={handleLocationFilterChange}
-          >
+          <select value={filter.location} onChange={handleFilterChange('location')}>
             <option value="all">All Locations</option>
-            {uniqueFilterValues.locations.map(location => (
-              <option key={location} value={location}>
-                {location}
-              </option>
+            {uniqueFilterValues.locations.map(l => (
+              <option key={l}>{l}</option>
             ))}
           </select>
 
-          <select id="status-filter" value={filter.status} onChange={handleStatusFilterChange}>
+          <select value={filter.status} onChange={handleFilterChange('status')}>
             <option value="all">All Statuses</option>
-            {uniqueFilterValues.statuses.map(status => (
-              <option key={status} value={status}>
-                {status}
-              </option>
+            {uniqueFilterValues.statuses.map(s => (
+              <option key={s}>{s}</option>
             ))}
           </select>
         </div>
       </header>
+
       <main className={calendarClasses.main}>
         <div className={calendarClasses.calendarContainer}>
           <div className={calendarClasses.activitySection}>
@@ -368,41 +363,58 @@ function CommunityCalendar() {
         </div>
       </main>
 
-      {/* Event Details Modal */}
+      {/* Overflow popup */}
+      {overflowDate && (
+        <div ref={popupRef} className={styles.overflowPopup}>
+          <div className={styles.overflowPopupInner}>
+            <h4>{overflowDate.toDateString()}</h4>
+            {getEventsForDate(overflowDate).map(e => (
+              <button
+                key={e.id}
+                type="button"
+                className={`${styles.eventItem} ${styles[statusMap[e.status]]}`}
+                onClick={() => handleEventClick(e)}
+                title={e.title}
+              >
+                {e.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Event modal */}
       {showEventModal && selectedEvent && (
-        <>
+        <div
+          className={styles.eventModalOverlay}
+          role="presentation"
+          onClick={e => e.target === e.currentTarget && closeEventModal()}
+        >
           <div
-            className={styles.eventModalOverlay}
-            role="button"
-            tabIndex={0}
-            aria-label="Close event details (click backdrop or press Enter/Space)"
-            onClick={e => {
-              if (e.target === e.currentTarget) {
-                closeEventModal();
-              }
-            }}
-            onKeyDown={e => {
-              if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
-                e.preventDefault();
-                closeEventModal();
-              }
-            }}
+            className={`${styles.eventModal} ${darkMode ? styles.eventModalDark : ''}`}
+            role="dialog"
+            aria-modal="true"
           >
-            <div
-              className={`${styles.eventModal} ${darkMode ? styles.eventModalDark : ''}`}
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="event-modal-title"
-            >
-              <div className={styles.modalHeader}>
-                <h2 id="event-modal-title">{selectedEvent.title}</h2>
-                <button
-                  className={styles.modalClose}
-                  onClick={closeEventModal}
-                  aria-label="Close event details"
+            <div className={styles.modalHeader}>
+              <h2>{selectedEvent.title}</h2>
+              <button
+                type="button"
+                className={styles.modalClose}
+                onClick={closeEventModal}
+                aria-label="Close modal"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className={styles.modalContent}>
+              <div className={styles.eventStatus}>
+                <span
+                  className={`${styles.statusBadge} ${styles[statusMap[selectedEvent.status]] ||
+                    ''}`}
                 >
-                  ×
-                </button>
+                  {selectedEvent.status}
+                </span>
               </div>
 
               <div className={styles.modalContent}>
@@ -462,8 +474,17 @@ function CommunityCalendar() {
                 <button className={styles.btnSecondary}>Add to Calendar</button>
               </div>
             </div>
+
+            <div className={styles.modalActions}>
+              <button type="button" className={styles.btnPrimary}>
+                Register for Event
+              </button>
+              <button type="button" className={styles.btnSecondary}>
+                Add to Calendar
+              </button>
+            </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
