@@ -1,10 +1,11 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 import styles from './Myspace.module.css';
+import { setPlatformScheduleCount } from '../PlatformScheduleBadge';
 
 const HEADLINE_MIN = 12;
 const HEADLINE_MAX = 95;
@@ -198,6 +199,12 @@ function MyspaceAutoPoster({ platform }) {
   const [savedSchedules, setSavedSchedules] = useState([]);
   const [editingScheduleId, setEditingScheduleId] = useState(null);
   const [scheduleAttemptedSave, setScheduleAttemptedSave] = useState(false);
+
+  useEffect(() => {
+    if (platform !== 'myspace') return undefined;
+    setPlatformScheduleCount(platform, savedSchedules.length);
+    return () => setPlatformScheduleCount(platform, 0);
+  }, [platform, savedSchedules.length]);
 
   const subTabs = useMemo(
     () => [

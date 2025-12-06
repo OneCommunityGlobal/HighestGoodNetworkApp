@@ -17,6 +17,7 @@ import { faFacebook, faLinkedin, faMedium } from '@fortawesome/free-brands-svg-i
 import ReactTooltip from 'react-tooltip';
 import EmailPanel from './platforms/email';
 import MyspaceAutoPoster from './platforms/myspace';
+import PlatformScheduleBadge from './platforms/PlatformScheduleBadge';
 
 function Announcements({ title, email: initialEmail }) {
   const [activeTab, setActiveTab] = useState('email');
@@ -105,14 +106,18 @@ function Announcements({ title, email: initialEmail }) {
               onClick={() => setActiveTab(id)}
               aria-selected={activeTab === id}
             >
-              <div className={styles.tabIcon}>
+              <div className={styles.tabIconWrapper}>
                 {customIconSrc ? (
                   <img src={customIconSrc} alt={`${label} icon`} className={styles.tabIcon} />
                 ) : (
                   <FontAwesomeIcon
                     icon={icon}
+                    className={styles.tabIcon}
                     style={{ width: '100%', height: '100%', color: getIconColor(id) }}
                   />
+                )}
+                {id === 'myspace' && (
+                  <PlatformScheduleBadge platform="myspace" className={styles.scheduleBadge} />
                 )}
               </div>
               <div className={styles.tabLabel}>{label}</div>
