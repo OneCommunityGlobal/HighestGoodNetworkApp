@@ -3,7 +3,6 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import { vi } from 'vitest';
-import { MemoryRouter } from 'react-router';
 
 vi.mock('../LeaderBoard', () => ({ default: () => <div data-testid="leaderboard" /> }));
 vi.mock('../WeeklySummary/WeeklySummary', () => ({
@@ -29,19 +28,17 @@ describe('Dashboard', () => {
   beforeEach(() => {
     // Provide auth.user and theme.darkMode for connect + useSelector
     store = mockStore({
-      auth: { user: { userid: 'user2', role: 'Admin', email: 'admin@example.com' } },
+      auth: { user: { userid: 'user1', role: 'Admin', email: 'admin@example.com' } },
       theme: { darkMode: false },
     });
   });
 
   it('renders all child components with correct props', () => {
     render(
-      <MemoryRouter initialEntries={['/user/user2']}>
-        <Provider store={store}>
-          {/* pass match prop for routing params */}
-          <ConnectedDashboard match={match} />
-        </Provider>
-      </MemoryRouter>,
+      <Provider store={store}>
+        {/* pass match prop for routing params */}
+        <ConnectedDashboard match={match} />
+      </Provider>,
     );
 
     // SummaryBar should receive displayUserId from match.params.userId

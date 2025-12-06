@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-use-before-define */
 import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect , useSelector } from 'react-redux';
 import SearchProjectByPerson from '~/components/SearchProjectByPerson/SearchProjectByPerson';
 import ProjectsList from '~/components/BMDashboard/Projects/ProjectsList';
 import { fetchAllProjects, modifyProject, clearError } from '../../actions/projects';
@@ -18,7 +18,7 @@ import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
-import { useSelector } from 'react-redux'
+
 
 const Projects = function(props) {
   const { role } = props.state.userProfile;
@@ -54,6 +54,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   const [allProjects, setAllProjects] = useState(null);
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [isArchiving, setIsArchiving] = useState(false);
+  const [searchMode, setSearchMode] = useState('person'); 
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -258,23 +259,61 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   // }, [fetched, categorySelectedForSort, showStatus, sortedByName, props.state.theme.darkMode]);
 
   useEffect(() => {
-    const fetchProjects = async () => {
-      if (debouncedSearchName) {
-        const projects = await props.getProjectsByUsersName(debouncedSearchName);
-        if (projects && allReduxProjects) {
-          const newProjectList = allProjects.filter(project => 
-            projects.some(p => p === project._id)
-          );
-          setProjectList(newProjectList);
-        } else {
-          setProjectList(allProjects);
-        }
-      } else {
-        setProjectList(allProjects);
-      }
-    };
-    fetchProjects();
-  }, [debouncedSearchName, allProjects, allReduxProjects]);
+  const fetchProjects = async () => {
+    if (!debouncedSearchName) {
+      setProjectList(allProjects);
+      return;
+    }
+
+    // Mode 1: Search by user
+    if (searchMode === 'person') {
+      const userProjects = await props.getProjectsByUsersName(debouncedSearchName);
+
+      const filteredProjects = allReduxProjects.filter(p =>
+        userProjects.includes(p._id)
+      );
+
+      const mapped = filteredProjects.map((project, index) => (
+        <Project
+          key={`${project._id}-${project.isActive}`}
+          index={index}
+          projectData={project}
+          onUpdateProject={onUpdateProject}
+          onClickArchiveBtn={onClickArchiveBtn}
+          onClickProjectStatusBtn={onClickProjectStatusBtn}
+          darkMode={darkMode}
+        />
+      ));
+
+      setProjectList(mapped);
+      return;
+    }
+
+    // Mode 2: Search by project name
+    if (searchMode === 'project') {
+      const filteredProjects = allReduxProjects.filter(p =>
+        p.projectName?.toLowerCase().includes(debouncedSearchName.toLowerCase())
+      );
+
+      const mapped = filteredProjects.map((project, index) => (
+        <Project
+          key={`${project._id}-${project.isActive}`}
+          index={index}
+          projectData={project}
+          onUpdateProject={onUpdateProject}
+          onClickArchiveBtn={onClickArchiveBtn}
+          onClickProjectStatusBtn={onClickProjectStatusBtn}
+          darkMode={darkMode}
+        />
+      ));
+
+      setProjectList(mapped);
+      return;
+    }
+  };
+
+  fetchProjects();
+}, [debouncedSearchName, searchMode, allProjects, allReduxProjects]);
 
   const handleSearchName = searchNameInput => {
     setSearchName(searchNameInput);
@@ -283,9 +322,9 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
+        <div className="container py-3 mb-5 border border-secondary rounded" style={darkMode ? { backgroundColor: '#1B2A41' } : {}}>
           {fetching || !fetched ? <Loading align="center" /> : null}
-          <div className="d-flex justify-content-center align-items-center">
+          <div className="d-flex align-items-center flex-wrap w-100">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
             <EditableInfoModal
               areaName="projectsInfoModal"
@@ -298,9 +337,28 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
 
           {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
         </div>
-
-        <SearchProjectByPerson onSearch={handleSearchName} />
-
+        <div className="d-flex" style={{ gap: '10px' }}>
+          <SearchProjectByPerson onSearch={handleSearchName} searchMode={searchMode} />
+          <div className="input-group" style={{ maxWidth: '260px', maxHeight: '38px' }}>
+            <div className="input-group-prepend">
+              <span
+              className={`input-group-text ${darkMode ? 'bg-light-grey' : ''}`}
+              >
+                Filter by
+              </span>
+            </div>
+            <select
+              value={searchMode}
+              onChange={e => setSearchMode(e.target.value)}
+              className={`form-control ${darkMode ? 'bg-white' : ''}`}
+              aria-label="Filter by"
+            >
+              <option value="person">User Name</option>
+              <option value="project">Project Name</option>
+            </select>
+          </div>
+        </div>
+        <div style={{ overflowX: 'auto', overflowY: 'auto',  maxHeight: '500px' }}>
         <table className="table table-bordered table-responsive-sm">
           <thead>
             <ProjectTableHeader
@@ -315,6 +373,7 @@ const projectFetchStatus = useSelector(state => state.allProjects.status);
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
         </table>
+        </div>
       </div>
 
       <ModalTemplate

@@ -26,7 +26,7 @@ import {
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 
 function AssignBadge(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -35,6 +35,7 @@ function AssignBadge(props) {
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const selectedBadges = useSelector(state => state.badge.selectedBadges || []);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,15 +47,33 @@ function AssignBadge(props) {
   }, []);
 
   useEffect(() => {
-    if (fullName) {
-      setFilteredUsers(
-        props.allUserProfiles.filter(user => {
+    try {
+      if (typeof fullName !== 'string') {
+        throw new Error('Full name must be a string');
+      }
+
+      const trimmedName = fullName.trim();
+      if (trimmedName) {
+        const filtered = props.allUserProfiles.filter(user => {
           const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-          return userFullName.includes(fullName.toLowerCase());
-        }),
-      );
-    } else {
+          return userFullName.includes(trimmedName.toLowerCase());
+        });
+        setFilteredUsers(filtered);
+      } else {
+        setFilteredUsers([]);
+        // Clear selectedUserId when input is empty
+        setSelectedUserIds(null);
+        props.clearNameAndSelected();
+      }
+      setError(null);
+    } catch (err) {
+      /* eslint-disable no-console */
+      console.error('Error filtering users:', err);
+      setError(err.message);
       setFilteredUsers([]);
+      // Also clear selection on error
+      setSelectedUserIds(null);
+      props.clearNameAndSelected();
     }
   }, [fullName, props.allUserProfiles]);
 
@@ -64,10 +83,12 @@ function AssignBadge(props) {
 
   const handleUserSelect = user => {
     setSelectedUserIds(prevSelected => {
-      if (prevSelected.includes(user._id)) {
-        return prevSelected.filter(id => id !== user._id);
+      const safePrev = Array.isArray(prevSelected) ? prevSelected : [];
+
+      if (safePrev.includes(user._id)) {
+        return safePrev.filter(id => id !== user._id);
       } else {
-        return [...prevSelected, user._id];
+        return [...safePrev, user._id];
       }
     });
   };
@@ -75,7 +96,7 @@ function AssignBadge(props) {
   const toggle = (didSubmit = false) => {
     if (isOpen && didSubmit === true) {
       submit();
-    } else if (selectedUserIds.length > 0) {
+    } else if (selectedUserIds?.length > 0) {
       setOpen(prevIsOpen => !prevIsOpen);
     } else {
       props.validateBadges(props.firstName, props.lastName);
@@ -83,7 +104,7 @@ function AssignBadge(props) {
   };
 
   const submit = async () => {
-    if (selectedUserIds.length > 0 && props.selectedBadges.length > 0) {
+    if (selectedUserIds?.length > 0 && props.selectedBadges?.length > 0) {
       await props.assignBadgesToMultipleUserID(selectedUserIds, props.selectedBadges);
       setOpen(false);
       setSelectedUserIds([]);
@@ -140,6 +161,11 @@ function AssignBadge(props) {
           />
         </div>
       </div>
+      {error && (
+        <Alert color="danger" className="mt-3">
+          {error}
+        </Alert>
+      )}
 
       {filteredUsers.length > 0 && (
         <div className="table-responsive mb-3">
@@ -162,17 +188,17 @@ function AssignBadge(props) {
                   onClick={() => handleUserSelect(user)}
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: selectedUserIds.includes(user._id) ? '#e9ecef' : '',
+                    backgroundColor: selectedUserIds?.includes(user._id) ? '#e9ecef' : '',
                   }}
                   className={
-                    darkMode && selectedUserIds.includes(user._id) ? 'bg-dark text-light' : ''
+                    darkMode && selectedUserIds?.includes(user._id) ? 'bg-dark text-light' : ''
                   }
                 >
                   <td>
                     <input
                       type="checkbox"
                       name="user"
-                      checked={selectedUserIds.includes(user._id)}
+                      checked={selectedUserIds?.includes(user._id)}
                       readOnly
                     />
                   </td>
@@ -189,7 +215,7 @@ function AssignBadge(props) {
           className="btn--dark-sea-green"
           onClick={toggle}
           style={darkMode ? { ...boxStyleDark } : { ...boxStyle }}
-          disabled={selectedUserIds.length === 0}
+          disabled={selectedUserIds?.length === 0}
         >
           Assign Badge
         </Button>
@@ -214,8 +240,8 @@ function AssignBadge(props) {
           Please select badge(s) from the badge list.
         </FormText>
         <Alert color="dark" className="mt-3">
-          {selectedUserIds.length} user(s) selected,
-          {selectedBadges.length} badge(s) selected
+          {selectedUserIds?.length} user(s) selected,
+          {selectedBadges?.length} badge(s) selected
         </Alert>
       </FormGroup>
     </Form>

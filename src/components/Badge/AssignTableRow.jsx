@@ -10,6 +10,9 @@ function AssignTableRow(props) {
   const [isOpen, setOpen] = useState(false);
 
   const dispatch = useDispatch();
+  const selectedBadges = useSelector(state => state.badge.selectedBadges); // array of badge._id
+
+  const toggle = () => setOpen(prev => !prev);
 
   const initialChecked = useMemo(() => {
     const id = `assign-badge-${props.badge?._id}`;
@@ -24,14 +27,28 @@ function AssignTableRow(props) {
     setSelect(prev => (prev !== next ? next : prev));
   }, [effectiveSelected, props.badge?._id]);
 
-  const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
+
+  const badgeId = props.badge?._id;
+  const domId = `assign-badge-${badgeId}`;
+
+  // Initialize selection from props (badges that user already has)
+  useEffect(() => {
+    if (props.propExistBadges?.includes(badgeId)) {
+      dispatch(addSelectBadge(badgeId));
+    }
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const isSelected = selectedBadges.includes(badgeId);
+  console.log(selectedBadges,"sele",badgeId,props)
 
   const handleCheckBoxChange = e => {
     if (e.target.checked) {
-      dispatch(addSelectBadge(e.target.id));
+      dispatch(addSelectBadge(badgeId));
       setSelect(true);
     } else {
-      dispatch(removeSelectBadge(e.target.id));
+      dispatch(removeSelectBadge(badgeId));
       setSelect(false);
     }
   };
@@ -58,9 +75,9 @@ function AssignTableRow(props) {
       <td>
         <CustomInput
           type="checkbox"
-          id={`assign-badge-${props?.badge._id}`}
+          id={domId}
           onChange={handleCheckBoxChange}
-          checked={isSelect}
+          checked={isSelected}
         />
       </td>
     </tr>
