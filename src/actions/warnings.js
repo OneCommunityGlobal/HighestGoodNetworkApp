@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   getWarningByUserId,
+  getSpecialWarnings as getSpecialWarningsAction,
   postWarningsByUserId,
   deleteWarningByUserId,
   getCurrentWarnings as getCurrentWarningsAction,
@@ -22,9 +23,24 @@ export const getWarningsByUserId = userId => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: error.message };
       }
+      return { error: error.message };
+    }
+  };
+};
+export const getSpecialWarnings = userId => {
+  const url = ENDPOINTS.GET_SPECIAL_WARNINGS(userId);
+
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      const response = await dispatch(getSpecialWarningsAction(res.data.warnings));
+      return response.payload;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        return { error: error.response.data.message };
+      }
+      return { error: error.message };
     }
   };
 };
@@ -42,9 +58,8 @@ export const postWarningByUserId = warningData => {
     } catch (error) {
       if (error.response && error.response.status === 200) {
         return { error: error.message };
-      } else {
-        return { error: error };
       }
+      return { error };
     }
   };
 };
@@ -60,9 +75,8 @@ export const deleteWarningsById = (warningId, personId) => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: 'Something else went wrong' };
       }
+      return { error: 'Something else went wrong' };
     }
   };
 };
@@ -80,9 +94,8 @@ export const getWarningDescriptions = () => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
-        return { error: error };
       }
+      return { error };
     }
   };
 };

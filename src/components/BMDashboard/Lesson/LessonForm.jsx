@@ -1,8 +1,8 @@
+/* eslint-disable testing-library/no-node-access */
 import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
-import './LessonForm.css';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -11,6 +11,7 @@ import { getAllRoles } from '../../../actions/role';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 // import { fetchAllProjects } from '../../../actions/projects'; // fetch all projects (not bmprojects)
 import Noimg from './images/Noimg3.jpg';
+import styles from './LessonForm.module.css';
 
 const style = {
   backgroundImage: `url(${Noimg})`,
@@ -253,12 +254,13 @@ function LessonForm() {
     }
   };
   return (
-    <div className="MasterContainer">
-      <div className="FormContainer">
+    <div className={`${styles.masterContainer}`}>
+      <div className={`${styles.formContainer}`}>
         <Form onSubmit={LessonFormSubmit}>
           <div className="WriteLessonAndTagDiv">
             <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="LessonLabel">Lesson Title</Form.Label>
+              <Form.Label className={`${styles.lessonLabel}`}>Lesson Title</Form.Label>
+              <span className="red-asterisk">* </span>
               <Form.Control
                 required
                 className="LessonTitle"
@@ -269,10 +271,11 @@ function LessonForm() {
               />
             </Form.Group>
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
+              <Form.Label className={`${styles.lessonLabel}`}>Write a Lesson</Form.Label>
+              <span className="red-asterisk">* </span>
               <Form.Control
                 required
-                className="LessonPlaceholderText"
+                className={`${styles.lessonPlaceholderText}`}
                 as="textarea"
                 placeholder="Enter the lesson you learn..."
                 rows={10}
@@ -281,7 +284,7 @@ function LessonForm() {
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
               <Form.Label>Add tag (Press enter to add tag)</Form.Label>
-              <div className="input-group">
+              <div className={`${styles.inputGroup}`}>
                 <input
                   type="text"
                   placeholder="Input tag for the lesson"
@@ -292,23 +295,32 @@ function LessonForm() {
                       addTag(e);
                     }
                   }}
-                  className="form-control"
+                  className={`${styles.formControl}`}
                 />
                 {showDropdown && filteredTags.length > 0 && (
-                  <div className="tag-dropdown">
+                  <div className={`${styles.tagDropdown}`}>
                     {filteredTags.map(tag => (
-                      <div key={tag} className="tag-option" onClick={() => handleTagSelection(tag)}>
-                        <span>{tag}</span>
-                      </div>
+                      <button
+                        key={tag}
+                        className={styles.tagOption}
+                        onClick={() => handleTagSelection(tag)}
+                        type="button"
+                      >
+                        {tag}
+                      </button>
                     ))}
                   </div>
                 )}
               </div>
-              <div className="TagsDiv">
+              <div className={`${styles.tagsDiv}`}>
                 {LessonFormtags.map(tag => (
-                  <div className="Tag" key={tag}>
-                    <span className="TagSpan">{tag}</span>
-                    <button className="removeTagBTN" type="button" onClick={() => removeTag(tag)}>
+                  <div className={`${styles.tag}`} key={tag}>
+                    <span className={`${styles.tagSpan}`}>{tag}</span>
+                    <button
+                      className={`${styles.removeTagBTN}`}
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                    >
                       X
                     </button>
                   </div>
@@ -316,8 +328,8 @@ function LessonForm() {
               </div>
             </Form.Group>
           </div>
-          <div className="FormSelectContainer">
-            <div className="SingleFormSelect">
+          <div className={`${styles.formSelectContainer}`}>
+            <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect1">
                 <Form.Label>Belongs to</Form.Label>
                 <FormControl
@@ -336,7 +348,7 @@ function LessonForm() {
                 </FormControl>
               </Form.Group>
             </div>
-            <div className="SingleFormSelect">
+            <div className={`${styles.singleFormSelect}`}>
               <Form.Group controlId="Form.ControlSelect2">
                 <Form.Label>View by</Form.Label>
                 <FormControl
@@ -375,19 +387,23 @@ function LessonForm() {
                 {selectedFile ? (
                   <p>Selected File: {selectedFile.name}</p>
                 ) : (
-                  <div className="TextAndImageDiv">
-                    <div className="ImageDiv" style={style} />
-                    <p className="DragandDropText">Drag and drop a file here</p>
+                  <div className={`${styles.textAndImageDiv}`}>
+                    <div className={`${styles.imageDiv}`} style={style} />
+                    <p className={`${styles.dragandDropText}`}>Drag and drop a file here</p>
                   </div>
                 )}
               </div>
             </Form.Group>
           </div>
-          <div className="ButtonDiv">
-            <Button className="LessonFormButtonCancel" type="cancel" onClick={onHandleCancel}>
+          <div className={`${styles.buttonDiv}`}>
+            <Button
+              className={`${styles.lessonFormButtonCancel}`}
+              type="cancel"
+              onClick={onHandleCancel}
+            >
               Back
             </Button>
-            <Button className="LessonFormButtonSubmit" type="submit">
+            <Button className={`${styles.lessonFormButtonSubmit}`} type="submit">
               Post
             </Button>
           </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -15,12 +15,13 @@ import {
   Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
-import { HashLink as Link } from 'react-router-hash-link';
-import './SummaryBar.css';
-import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
+import styles from './SummaryBar.module.css';
+import { ENDPOINTS, ApiEndpoint } from '~/utils/URL';
 import axios from 'axios';
-import hasPermission from 'utils/permissions';
+import hasPermission from '~/utils/permissions';
 import { toast } from 'react-toastify';
+import { useHistory } from 'react-router-dom';
+import { updateUserProfile } from '../../actions/userProfile';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
 import BlueScoreIcon from './bluesquare_icon.png';
@@ -28,9 +29,11 @@ import ReportIcon from './report_icon.png';
 import SuggestionsIcon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
 
+import { getBadgeCount, resetBadgeCount } from '../../actions/badgeManagement';
+
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
-function SummaryBar(props) {
+const SummaryBar = React.forwardRef((props, ref) => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
@@ -48,8 +51,6 @@ function SummaryBar(props) {
   const weeklyCommittedHours = committedHours + missedHours;
 
   const [userProfile, setUserProfile] = useState(undefined);
-  const [infringements, setInfringements] = useState(0);
-  const [badges, setBadges] = useState(0);
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [tasks, setTasks] = useState(undefined);
@@ -64,6 +65,7 @@ function SummaryBar(props) {
 
   const [categoryDescription, setCategoryDescription] = useState();
   const sortableContainerRef = useRef(null);
+  const history = useHistory();
 
   const editRadioButtonSelected = value => {
     // dynamic way to set description rather than using tenerary operators.
@@ -195,31 +197,6 @@ function SummaryBar(props) {
       // eslint-disable-next-line no-console
       console.log('User Tasks not loaded.');
     }
-  };
-
-  // Get infringement count from userProfile
-  const getInfringements = () => {
-    return displayUserProfile && displayUserProfile.infringements
-      ? displayUserProfile.infringements.length
-      : 0;
-  };
-
-  // Get badges count from userProfile
-  const getBadges = () => {
-    if (!displayUserProfile || !displayUserProfile.badgeCollection) {
-      return 0;
-    }
-    let totalBadges = 0;
-    displayUserProfile.badgeCollection.forEach(badge => {
-      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-        totalBadges += 1;
-      } else {
-        const badgeCount = badge?.count ? Number(badge.count) : 0;
-        totalBadges += Math.round(badgeCount);
-      }
-    });
-
-    return totalBadges;
   };
 
   // refactored for rading form values
@@ -368,6 +345,16 @@ function SummaryBar(props) {
 
   const onBadgeClick = () => {
     window.location.hash = '#badgesearned';
+    props.resetBadgeCount(displayUserId);
+  };
+
+  // const onBlueSquareClick = () => {
+  const onBlueSquareClick = async () => {
+    props.updateUserProfile({
+      ...displayUserProfile,
+      infringementCount: 0,
+    });
+    history.push(`/userprofile/${displayUserProfile._id}#bluesquare`);
   };
 
   const getWeeklySummary = user => {
@@ -398,23 +385,34 @@ function SummaryBar(props) {
 
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
-      setInfringements(getInfringements());
-      setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
       setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
     }
   }, [displayUserProfile, summaryBarData]);
 
+  useEffect(() => {
+    props.getBadgeCount(displayUserId);
+  }, [displayUserId, props]);
+
+  useEffect(() => {
+    // Check if we should open the suggestions modal
+    const shouldOpenSuggestions = localStorage.getItem('openSuggestionsModal');
+    if (shouldOpenSuggestions === 'true') {
+      localStorage.removeItem('openSuggestionsModal'); // Clear the flag
+      openSuggestionModal(); // Open the suggestions modal
+    }
+  }, []); // Run once when component mounts
+
   const getContainerClass = () => {
     if (isAuthUser || canEditData()) {
       return darkMode
         ? 'bg-space-cadet text-light box-shadow-dark'
-        : 'bg--bar text--black box-shadow-light';
+        : `${styles['bg--bar']} ${styles['text--black']} box-shadow-light`;
     }
     return darkMode
-      ? 'bg-space-cadet disabled-bar text-light box-shadow-dark'
-      : 'bg--bar disabled-bar text--black box-shadow-light';
+      ? `bg-space-cadet ${styles['disabled-bar']} text-light box-shadow-dark`
+      : `${styles['bg--bar']} disabled-bar ${styles['text--black']} box-shadow-light`;
   };
 
   const renderSummary = () => {
@@ -422,10 +420,10 @@ function SummaryBar(props) {
       if (weeklySummaryNotReq) {
         return (
           <div
-            className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
-            align="center"
+            className={`${styles['border-black']} col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center`}
+            style={{ textAlign: 'center' }}
           >
-            <font className="text-center text-light" size="3">
+            <font className={`${styles['text-center']} text-light`} size="3">
               SUMMARY
             </font>
           </div>
@@ -442,7 +440,7 @@ function SummaryBar(props) {
             <div className="d-flex justify-content-center">
               <button
                 onClick={props.toggleSubmitForm}
-                className="summary-toggle large_text_summary text-danger"
+                className={`${styles['summary-toggle']} ${styles['large_text_summary']} text-danger`}
                 style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
                 aria-label="Toggle submit form"
                 type="button"
@@ -451,9 +449,13 @@ function SummaryBar(props) {
               </button>
             </div>
           ) : (
-            <p className="text-center summary-toggle large_text_summary text-danger">!</p>
+            <p
+              className={`${styles['text-center']} ${styles['summary-toggle']} ${styles['large_text_summary']} text-danger`}
+            >
+              !
+            </p>
           )}
-          <font className="text-center" size="3">
+          <font className={`${styles['text-center']}`} size="3">
             SUMMARY
           </font>
           <div className="py-2"> </div>
@@ -461,12 +463,12 @@ function SummaryBar(props) {
       );
     }
     return (
-      <div className="border-green col-4 bg--dark-green">
+      <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
         <div className="py-1"> </div>
         <div className="d-flex justify-content-center">
           <button
             onClick={props.toggleSubmitForm}
-            className="text-center large_text_summary summary-toggle"
+            className={`${styles['text-center']} ${styles.large_text_summary} ${styles['summary-toggle']}`}
             style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
             aria-label="Toggle submit form"
             type="button"
@@ -474,7 +476,7 @@ function SummaryBar(props) {
             ✓
           </button>
         </div>
-        <font className="text-center" size="3">
+        <font className={`${styles['text-center']}`} size="3">
           SUMMARY
         </font>
         <div className="py-2"> </div>
@@ -488,13 +490,13 @@ function SummaryBar(props) {
     }
 
     const message = weeklySummaryNotReq
-      ? 'You don’t need to complete a weekly summary, but you still can. Click here to submit it.'
+      ? "You don't need to complete a weekly summary, but you still can. Click here to submit it."
       : 'You still need to complete the weekly summary. Click here to submit it.';
 
     if (isAuthUser) {
       return (
         <button
-          className="summary-toggle"
+          className={`${styles['summary-toggle']}`}
           type="button"
           onClick={props.toggleSubmitForm}
           style={{
@@ -511,7 +513,7 @@ function SummaryBar(props) {
       );
     }
 
-    return <span className="summary-toggle">{message}</span>;
+    return <span className={`${styles['summary-toggle']}`}>{message}</span>;
   };
 
   const getPlaceholderText = () => {
@@ -527,6 +529,11 @@ function SummaryBar(props) {
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
+  // Expose the openSuggestionModal function through the ref
+  React.useImperativeHandle(ref, () => ({
+    openSuggestionModal,
+  }));
+
   return displayUserProfile !== undefined && summaryBarData !== undefined ? (
     <Container fluid className={`px-lg-0 rounded ${getContainerClass()}`} style={{ width: '97%' }}>
       <Row className="no-gutters row-eq-height">
@@ -541,8 +548,27 @@ function SummaryBar(props) {
             </font>
             <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
               <div className="font-weight-bold">
-                {userProfile?.firstName || displayUserProfile.firstName}{' '}
-                {userProfile?.lastName || displayUserProfile.lastName}
+                <span
+                  className={`${styles['name-segment']}`}
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName).split(' ')[0]}
+                </span>
+                <span
+                  className={`${styles['name-segment']}`}
+                  title={userProfile?.firstName || displayUserProfile.firstName}
+                >
+                  {(userProfile?.firstName || displayUserProfile.firstName)
+                    .split(' ')
+                    .slice(1)
+                    .join(' ')}
+                </span>
+                <span
+                  className={`${styles['name-segment']}`}
+                  title={userProfile?.lastName || displayUserProfile.lastName}
+                >
+                  {userProfile?.lastName || displayUserProfile.lastName}
+                </span>
               </div>
             </CardTitle>
           </div>
@@ -554,18 +580,26 @@ function SummaryBar(props) {
                 className={`border border-danger col-4 ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
               >
                 <div className="py-1"> </div>
-                <p className="text-center large_text_summary text-danger">!</p>
-                <font className="text-center" size="3">
+                <p
+                  className={`${styles['text-center']} ${styles['large_text_summary']} text-danger`}
+                >
+                  !
+                </p>
+                <font className={`${styles['text-center']}`} size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
               </div>
             )}
             {totalEffort >= weeklyCommittedHours && (
-              <div className="border-green col-4 bg--dark-green">
+              <div className={`${styles['border-green']} col-4 ${styles['bg--dark-green']}`}>
                 <div className="py-1"> </div>
-                <p className="text-center large_text_summary">✓</p>
-                <font className="text-center" size="3">
+                <p
+                  className={`${styles['text-center']} ${styles.large_text_summary} ${styles['text--black']}`}
+                >
+                  ✓
+                </p>
+                <font className={`${styles['text-center']}`} size="3">
                   HOURS
                 </font>
                 <div className="py-2"> </div>
@@ -578,8 +612,12 @@ function SummaryBar(props) {
               }`}
               style={{ border: '1px solid black' }}
             >
-              <div className="align-items-center" id="timelogweeklychart">
-                <div className="align-items-center med_text_summary">
+              <div
+                className="align-items-center"
+                id="timelogweeklychart"
+                style={{ whiteSpace: 'nowrap', padding: '0px 10px' }}
+              >
+                <div className={`align-items-center ${styles.med_text_summary}`}>
                   Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
                   <Progress
                     value={getProgressValue(totalEffort, weeklyCommittedHours)}
@@ -601,105 +639,159 @@ function SummaryBar(props) {
               }`}
               style={{ border: '1px solid black' }}
             >
-              <div className="m-auto p-2 text-center">
-                <font
+              <div className={`m-auto p-2 ${styles['text-center']}`}>
+                <span
+                  role="button"
+                  tabIndex={0}
                   onClick={props.toggleSubmitForm}
-                  className="med_text_summary align-middle summary-toggle"
-                  size="3"
+                  onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && props.toggleSubmitForm()}
+                  className={`${styles['summary-toggle']}`}
+                  style={{ cursor: 'pointer', fontSize: '1.1rem' }}
                 >
                   {renderSummaryMessage()}
-                </font>
+                </span>
               </div>
             </div>
           </Row>
         </Col>
 
         <Col
-          className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? 'bg-space-cadet' : ''}`}
+          className={`m-auto mt-2 col-lg-4 col-12 ${styles['badge-list']} ${
+            darkMode ? 'bg-space-cadet' : ''
+          }`}
         >
           <div className="d-flex justify-content-around no-gutters">
             &nbsp;&nbsp;
-            <div className="image_frame">
-              <div className="redBackgroup">
+            <div className={`${styles.image_frame}`}>
+              {tasks > 0 && (
+                <div className={`${styles.redBackgroup}`}>
+                  <span>{tasks}</span>
+                </div>
+              )}
+              {/* <div className="redBackgroup">
                 <span>{tasks}</span>
-              </div>
+              </div> */}
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onTaskClick}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className={`${styles.sum_img}`}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Task"
                   type="button"
                 >
-                  <img className="sum_img" src={TaskIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={TaskIcon} alt="" />
                 </button>
               ) : (
-                <img className="sum_img" src={TaskIcon} alt="" />
+                <img className={`${styles.sum_img}`} src={TaskIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
-            <div className="image_frame">
-              <div className="redBackgroup">
+            <div className={`${styles.image_frame}`}>
+              {props.badgeCount > 0 && (
+                <div className={`${styles.redBackgroup}`}>
+                  <span>{props.badgeCount}</span>
+                </div>
+              )}
+              {/* <div className="redBackgroup">
                 <span>{badges}</span>
-              </div>
+                <span>{props.badgeCount}</span>
+              </div> */}
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onBadgeClick}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className={`${styles.sum_img}`}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Badge"
                   type="button"
                 >
-                  <img className="sum_img" src={BadgesIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={BadgesIcon} alt="" />
                 </button>
               ) : (
-                <img className="sum_img" src={BadgesIcon} alt="" />
+                <img className={`${styles.sum_img}`} src={BadgesIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
-            <div className="image_frame">
+            <div className={`${styles.image_frame}`}>
+              {/* Changed from infringement.length in displayUserProfile to using new value of infringementCount for new ones */}
+              {displayUserProfile.infringementCount > 0 && (
+                <div className={`${styles.redBackgroup}`}>
+                  <span>{displayUserProfile.infringementCount}</span>
+                </div>
+              )}
               {isAuthUser || canEditData() ? (
-                <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
-                  <img className="sum_img" src={BlueScoreIcon} alt="" />
-                  <div className="redBackgroup">
-                    <span>{infringements}</span>
-                  </div>
-                </Link>
+                <button
+                  onClick={onBlueSquareClick}
+                  className={`${styles.sum_img}`}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
+                  aria-label="Blue Square"
+                  type="button"
+                >
+                  <img className={`${styles.sum_img}`} src={BlueScoreIcon} alt="" />
+                </button>
               ) : (
                 <div>
-                  <img className="sum_img" src={BlueScoreIcon} alt="" />
-                  <div className="redBackgroup">
-                    <span>{infringements}</span>
+                  <img className={`${styles.sum_img}`} src={BlueScoreIcon} alt="" />
+                  <div className={`${styles.redBackgroup}`}>
+                    <span>{displayUserProfile.infringementCount}</span>
                   </div>
                 </div>
               )}
             </div>
             &nbsp;&nbsp;
-            <div className="image_frame">
+            <div className={`${styles.image_frame}`}>
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openReport}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className={`${styles.sum_img}`}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Open Report"
                   type="button"
                 >
-                  <img className="sum_img" src={ReportIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={ReportIcon} alt="" />
                 </button>
               ) : (
-                <img className="sum_img" src={ReportIcon} alt="" />
+                <img className={`${styles.sum_img}`} src={ReportIcon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
-            <div className="image_frame">
+            <div className={`${styles.image_frame}`}>
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={openSuggestionModal}
-                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                  className={`${styles.sum_img}`}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: 0,
+                    cursor: 'pointer',
+                  }}
                   aria-label="Open Suggestions"
                   type="button"
                 >
-                  <img className="sum_img" src={SuggestionsIcon} alt="" />
+                  <img className={`${styles.sum_img}`} src={SuggestionsIcon} alt="" />
                 </button>
               ) : (
-                <img className="sum_img" src={SuggestionsIcon} alt="" />
+                <img className={`${styles.sum_img}`} src={SuggestionsIcon} alt="" />
               )}
             </div>
           </div>
@@ -800,13 +892,13 @@ function SummaryBar(props) {
                     )}
                     {editType === 'edit' && (
                       <div
-                        className="sortable-container"
+                        className={`${styles['sortable-container']}`}
                         ref={sortableContainerRef}
                         onDragOver={e => onSortableDragOver(e)}
                       >
                         {suggestionCategory.map(item => (
                           <div
-                            className={`sortable-content ${bodyBg} sortable-draggable`}
+                            className={`${styles['sortable-content']} ${bodyBg} ${styles['sortable-draggable']}`}
                             key={item.id}
                             draggable="true"
                             onDragStart={event => onDragToggleDraggingClass(event)}
@@ -815,7 +907,7 @@ function SummaryBar(props) {
                             <p>{item.value}</p>
                             <button
                               type="button"
-                              className="edit-icon fa fa-edit"
+                              className={`${styles['edit-icon']} fa fa-edit`}
                               onClick={event => handleEditClick(event)}
                               aria-label="Edit item"
                             />
@@ -857,14 +949,16 @@ function SummaryBar(props) {
                   required
                 >
                   <option disabled value="" hidden>
-                    {' '}
-                    -- select an option --{' '}
+                    -- select an option --
                   </option>
-                  {suggestionCategory.map(item => {
-                    return <option key={item.id} value={item}>{`${item.id + 1}. ${item}`}</option>;
-                  })}
+                  {suggestionCategory.map((item, index) => (
+                    <option key={item} value={item}>
+                      {`${index + 1}. ${item}`}
+                    </option>
+                  ))}
                 </Input>
               </FormGroup>
+
               {takeInput && (
                 <FormGroup>
                   <Label for="suggestion" className={fontColor}>
@@ -1029,13 +1123,21 @@ function SummaryBar(props) {
   ) : (
     <div>Loading</div>
   );
-}
+});
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
   darkMode: state.theme.darkMode,
+  badgeCount: state.badge.badgeCount,
 });
 
-export default connect(mapStateToProps, { hasPermission })(SummaryBar);
+SummaryBar.displayName = 'SummaryBar';
+
+export default connect(mapStateToProps, {
+  hasPermission,
+  getBadgeCount,
+  resetBadgeCount,
+  updateUserProfile,
+})(React.memo(SummaryBar));

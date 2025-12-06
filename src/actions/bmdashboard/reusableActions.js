@@ -1,57 +1,113 @@
-import axios from "axios";
+import axios from 'axios';
 import {
-  SET_REUSABLES, POST_UPDATE_REUSABLE_START, POST_UPDATE_REUSABLE_END, RESET_UPDATE_REUSABLE,
-  POST_UPDATE_REUSABLE_ERROR, POST_UPDATE_REUSABLE_START_BULK, POST_UPDATE_REUSABLE_END_BULK,
-  RESET_UPDATE_REUSABLE_BULK, POST_UPDATE_REUSABLE_ERROR_BULK
-} from "constants/bmdashboard/reusableConstants"
-import { GET_ERRORS } from "constants/errors";
-import { ENDPOINTS } from "utils/URL";
+  SET_REUSABLES,
+  POST_UPDATE_REUSABLE_START,
+  POST_UPDATE_REUSABLE_END,
+  RESET_UPDATE_REUSABLE,
+  POST_UPDATE_REUSABLE_ERROR,
+  POST_UPDATE_REUSABLE_START_BULK,
+  POST_UPDATE_REUSABLE_END_BULK,
+  RESET_UPDATE_REUSABLE_BULK,
+  POST_UPDATE_REUSABLE_ERROR_BULK,
+} from '../../constants/bmdashboard/reusableConstants';
+import { GET_ERRORS } from '../../constants/errors';
+import { ENDPOINTS } from '~/utils/URL';
+
+export const reusableUpdateStart = () => {
+  return {
+    type: POST_UPDATE_REUSABLE_START,
+  };
+};
+
+export const reusableUpdateEnd = payload => {
+  return {
+    type: POST_UPDATE_REUSABLE_END,
+    payload,
+  };
+};
+
+export const reusableUpdateError = payload => {
+  return {
+    type: POST_UPDATE_REUSABLE_ERROR,
+    payload,
+  };
+};
+
+export const resetReusableUpdate = () => {
+  return { type: RESET_UPDATE_REUSABLE };
+};
+
+export const reusableUpdateStartBulk = () => {
+  return {
+    type: POST_UPDATE_REUSABLE_START_BULK,
+  };
+};
+
+export const reusableUpdateEndBulk = payload => {
+  return {
+    type: POST_UPDATE_REUSABLE_END_BULK,
+    payload,
+  };
+};
+
+export const reusableUpdateErrorBulk = payload => {
+  return {
+    type: POST_UPDATE_REUSABLE_ERROR_BULK,
+    payload,
+  };
+};
+
+export const resetReusableUpdateBulk = () => {
+  return { type: RESET_UPDATE_REUSABLE_BULK };
+};
 
 export const setReusables = payload => {
   return {
     type: SET_REUSABLES,
-    payload
-  }
-}
+    payload,
+  };
+};
 
 export const setErrors = payload => {
   return {
     type: GET_ERRORS,
-    payload
-  }
-}
+    payload,
+  };
+};
 
 export const fetchAllReusables = () => {
   return async dispatch => {
-    axios.get(ENDPOINTS.BM_REUSABLES)
+    axios
+      .get(ENDPOINTS.BM_REUSABLES)
       .then(res => {
-        dispatch(setReusables(res.data))
+        dispatch(setReusables(res.data));
       })
       .catch(err => {
-        dispatch(setErrors(err))
-      })
-  }
-}
+        dispatch(setErrors(err));
+      });
+  };
+};
 
-export const purchaseReusable = async (body) => {
-  return axios.post(ENDPOINTS.BM_PURCHASE_REUSABLES, body)
+export const purchaseReusable = async body => {
+  return axios
+    .post(ENDPOINTS.BM_PURCHASE_REUSABLES, body)
     .then(res => res)
-    .catch((err) => {
-      if (err.response) return err.response
-      if (err.request) return err.request
-      return err.message
-    })
-}
+    .catch(err => {
+      if (err.response) return err.response;
+      if (err.request) return err.request;
+      return err.message;
+    });
+};
 
-
-export const postReusableUpdate = (payload) => {
+export const postReusableUpdate = payload => {
   return async dispatch => {
-    dispatch(reusableUpdateStart())
-    axios.post(ENDPOINTS.BM_UPDATE_REUSABLE, payload)
+    dispatch(reusableUpdateStart());
+    axios
+      .post(ENDPOINTS.BM_UPDATE_REUSABLE, payload)
       .then(res => {
-        dispatch(reusableUpdateEnd(res.data))
+        dispatch(reusableUpdateEnd(res.data));
       })
-      .catch((error) => {
+      .catch(error => {
         if (error.response) {
           dispatch(reusableUpdateError(error.response.data));
         } else if (error.request) {
@@ -59,18 +115,19 @@ export const postReusableUpdate = (payload) => {
         } else {
           dispatch(reusableUpdateError(error));
         }
-      })
-  }
-}
+      });
+  };
+};
 
-export const postReusableUpdateBulk = (payload) => {
+export const postReusableUpdateBulk = payload => {
   return async dispatch => {
-    dispatch(reusableUpdateStartBulk())
-    axios.post(ENDPOINTS.BM_UPDATE_REUSABLE_BULK, payload)
+    dispatch(reusableUpdateStartBulk());
+    axios
+      .post(ENDPOINTS.BM_UPDATE_REUSABLE_BULK, payload)
       .then(res => {
-        dispatch(reusableUpdateEndBulk(res.data.result))
+        dispatch(reusableUpdateEndBulk(res.data.result));
       })
-      .catch((error) => {
+      .catch(error => {
         if (error.response) {
           dispatch(reusableUpdateErrorBulk(error.response.data));
         } else if (error.request) {
@@ -78,54 +135,6 @@ export const postReusableUpdateBulk = (payload) => {
         } else {
           dispatch(reusableUpdateErrorBulk(error));
         }
-      })
-  }
-}
-
-export const reusableUpdateStart = () => {
-  return {
-    type: POST_UPDATE_REUSABLE_START
-  }
-}
-
-export const reusableUpdateEnd = payload => {
-  return {
-    type: POST_UPDATE_REUSABLE_END,
-    payload
-  }
-}
-
-export const reusableUpdateError = payload => {
-  return {
-    type: POST_UPDATE_REUSABLE_ERROR,
-    payload
-  }
-}
-
-export const resetReusableUpdate = () => {
-  return { type: RESET_UPDATE_REUSABLE }
-}
-
-export const reusableUpdateStartBulk = () => {
-  return {
-    type: POST_UPDATE_REUSABLE_START_BULK
-  }
-}
-
-export const reusableUpdateEndBulk = payload => {
-  return {
-    type: POST_UPDATE_REUSABLE_END_BULK,
-    payload
-  }
-}
-
-export const reusableUpdateErrorBulk = payload => {
-  return {
-    type: POST_UPDATE_REUSABLE_ERROR_BULK,
-    payload
-  }
-}
-
-export const resetReusableUpdateBulk = () => {
-  return { type: RESET_UPDATE_REUSABLE_BULK }
-}
+      });
+  };
+};

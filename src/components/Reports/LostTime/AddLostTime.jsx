@@ -1,39 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, connect, useSelector } from 'react-redux';
-import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
-import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
-import AddTeamsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
+import MemberAutoComplete from '~/components/Teams/MembersAutoComplete';
+import AddProjectsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
+import AddTeamsAutoComplete from '~/components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
 import "../reportsPage.css";
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { getFontColor, getBoxStyling } from 'styles';
-import '../../Header/DarkMode.css'
+import { getFontColor, getBoxStyling } from '~/styles';
+import '../../Header/index.css'
 import { isEmpty, isEqual } from 'lodash';
-import { getUserProfile } from 'actions/userProfile';
-import { postTimeEntry } from 'actions/timeEntries';
-
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: '',
-  plugins:
-    'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar: `bold italic underline link removeformat | bullist numlist outdent indent |
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |
-                    subscript superscript charmap  | help`,
-  branding: false,
-  min_height: 180,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { cursor: text !important; }',
-};
+import { getUserProfile } from '~/actions/userProfile';
+import { postTimeEntry } from '~/actions/timeEntries';
+import { toast } from 'react-toastify';
 
 function AddLostTime(props) {
 
   const darkMode = useSelector((state) => state.theme.darkMode);
   const fontColor = getFontColor(darkMode);
   const boxStyling = getBoxStyling(darkMode);
+  const MAX_HOURS_PER_ENTRY = 40;
 
   const initialForm = {
     projectId: undefined,
@@ -48,6 +34,37 @@ function AddLostTime(props) {
     isTangible: true,
   };
 
+  const formatText = result =>{
+     try {
+        return result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+     } catch (error) {
+      console.log(error);
+      return "null";
+     }
+  }
+    
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: '',
+    plugins:
+      'advlist autolink autoresize lists link charmap table help wordcount',
+    toolbar: `bold italic underline link removeformat | bullist numlist outdent indent |
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |
+                      subscript superscript charmap  | help`,
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+
   const dispatch = useDispatch();
 
   const [entryType, setEntryType] = useState('');
@@ -58,6 +75,8 @@ function AddLostTime(props) {
   const [selectedProject, setSelectProject] = useState(undefined);
   const [searchText, setSearchText] = useState('');
   const [searchTeamText, setSearchTeamText] = useState('');
+  const [isUserIsNotSelectedAutoComplete, isSetUserIsNotSelectedAutoComplete] = useState(false);
+  const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
 
   const [errors, setErrors] = useState({});
@@ -77,16 +96,16 @@ function AddLostTime(props) {
   }
 
   useEffect(() => {
-    if (inputs.personId && props.userProfile._id !== inputs.personId) {
-      props.getUserProfile(inputs.personId);
-    }
-  });
+   if (inputs.personId && props.userProfile._id !== inputs.personId) {
+    props.getUserProfile(inputs.personId);
+   }
+ }, [inputs.personId, props.userProfile._id]);
 
   useEffect(() => {
     if (!props.isOpen && entryType !== '') {
       resetForm();
     }
-  });
+  },[]);
 
   const selectProject = project => {
     setInputs(prevInputs => ({
@@ -124,10 +143,16 @@ function AddLostTime(props) {
       return (
         <FormGroup>
           <Label className={fontColor}>Project Name</Label>
+          <span className="red-asterisk">* </span>
           <AddProjectsAutoComplete
             projectsData={props.projects}
             onDropDownSelect={selectProject}
             selectedProject={selectedProject}
+            setIsOpenDropdown = {setIsOpenDropdown}
+            searchText={searchText}
+            onInputChange={setSearchText}
+            isSetUserIsNotSelectedAutoComplete={isSetUserIsNotSelectedAutoComplete}
+            formatText={formatText}
           />
           {'projectId' in errors && (
             <div className="text-danger">
@@ -140,6 +165,7 @@ function AddLostTime(props) {
       return (
         <FormGroup>
             <Label className={fontColor}>Name</Label>
+            <span className="red-asterisk">* </span>
             <MemberAutoComplete
               userProfileData={{userProfiles: props.users}}
               onAddUser={selectUser}
@@ -157,6 +183,7 @@ function AddLostTime(props) {
       return (
         <FormGroup>
           <Label className={fontColor}>Team Name</Label> 
+          <span className="red-asterisk">* </span>
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
@@ -209,49 +236,89 @@ function AddLostTime(props) {
     props.toggle();
   };
 
-  const validateInputs = () => {
-    const result = {};
-
-    const date = moment(inputs.dateOfWork);
+  const validateDate = (dateOfWork) => {
+    const errors = {};
+    const date = moment(dateOfWork);
     const today = moment(
       moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
     );
+
     if (!date.isValid()) {
-      result.dateOfWork = 'Invalid date';
-    } else if (
-        today.diff(date, 'days') < 0
-    ) {
-      result.dateOfWork = 'Cannot add lost time for future dates.';
+      errors.dateOfWork = 'Invalid date';
+    } else if (today.diff(date, 'days') < 0) {
+      errors.dateOfWork = 'Cannot add lost time for future dates.';
     }
 
-    if (inputs.hours === 0 && inputs.minutes === 0) {
-      result.time = 'Time is required';
-    } else {
-      const hours = inputs.hours * 1;
-      const minutes = inputs.minutes * 1;
-      if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
-        result.time = 'Hours and minutes should be integers';
-      }
-      if (hours < 0 || minutes < 0) {
-        result.time = 'Time should be greater than 0';
-      }
+    return errors;
+  };
+
+  const getTimeError = (hoursInput, minutesInput) => {
+    const hours = Number(hoursInput);
+    const minutes = Number(minutesInput);
+
+    if (Number.isNaN(hours) || Number.isNaN(minutes) || (hours === 0 && minutes === 0)) {
+      return 'Time is required';
+    }
+
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes)) {
+      return 'Hours and minutes should be integers';
+    }
+
+    if (hours < 0 || minutes < 0) {
+      return 'Time should be greater than 0';
+    }
+
+    const totalMinutes = hours * 60 + minutes;
+    const maxMinutes = MAX_HOURS_PER_ENTRY * 60;
+
+    if (totalMinutes > maxMinutes) {
+      toast.error(
+        "Hold up, workhorse! You’ve hit the 40-hour limit for a single entry. You can pop in a new time log for any additional hours.",
+        { autoClose: 5000 }
+      );
+      return `You can’t log more than ${MAX_HOURS_PER_ENTRY} hours in a single entry.`;
+    }
+
+    return null;
+  };
+
+  const validateEntryType = (entryType, inputs) => {
+    const errors = {};
+
+    if (entryType === '') {
+      errors.events = 'Type is required';
+      return errors;
     }
 
     if (entryType === 'project' && inputs.projectId === undefined) {
-      result.projectId = 'Project is required';
+      errors.projectId = 'Project is required';
+    } else if (entryType === 'person' && inputs.personId === undefined) {
+      errors.personId = 'Person is required';
+    } else if (entryType === 'team' && inputs.teamId === undefined) {
+      errors.teamId = 'Team is required';
     }
-    if (entryType === 'person' && inputs.personId === undefined) {
-      result.personId = 'Person is required';
+
+    return errors;
+  };
+
+  const validateInputs = () => {
+    const result = {};
+
+    Object.assign(result, validateDate(inputs.dateOfWork));
+
+    const timeError = getTimeError(inputs.hours, inputs.minutes);
+    if (timeError) {
+      result.time = timeError;
     }
-    if (entryType === 'team' && inputs.teamId === undefined) {
-      result.teamId = 'Team is required';
-    }
+
+    Object.assign(result, validateEntryType(entryType, inputs));
 
     setErrors(result);
     return isEmpty(result);
   };
+  
 
   const handleSubmit = async event => {
     if (event) event.preventDefault();
@@ -296,7 +363,9 @@ function AddLostTime(props) {
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <FormGroup>
-            <Label for="entryType" className={fontColor} >Type</Label><br/>
+            <Label for="entryType" className={fontColor} >Type</Label>
+            <span className="red-asterisk">* </span>
+            <br/>
             <div className={`type-container ${fontColor}`}>
               <div className='type-item' style={{paddingLeft: '20px'}} >
                 <Input
@@ -327,8 +396,13 @@ function AddLostTime(props) {
                   onChange={handleTypeChange}
                 />
                 <Label htmlFor="team" className={fontColor}>Team</Label>
-              </div>
+              </div>              
             </div>
+            {'events' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.events}</small>
+                  </div>
+                )}
           </FormGroup>
           {entryType !== '' && (
             <>
@@ -341,6 +415,7 @@ function AddLostTime(props) {
                   id="dateOfWork"
                   value={inputs.dateOfWork}
                   onChange={handleInputChange}
+                  className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
                 />
                 {'dateOfWork' in errors && (
                   <div className="text-danger">
@@ -350,6 +425,7 @@ function AddLostTime(props) {
               </FormGroup>
               <FormGroup>
               <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
+              <span className="red-asterisk">* </span>
               <Row form>
                 <Col>
                   <Input
@@ -361,6 +437,7 @@ function AddLostTime(props) {
                     placeholder="Hours"
                     value={inputs.hours}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
                 <Col>
@@ -373,6 +450,7 @@ function AddLostTime(props) {
                     placeholder="Minutes"
                     value={inputs.minutes}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
               </Row>

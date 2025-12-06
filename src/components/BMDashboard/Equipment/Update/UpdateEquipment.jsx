@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
+import { fetchEquipmentById } from '~/actions/bmdashboard/equipmentActions';
 import { Button, Form, FormGroup, Label, Container, Row, Col, Input } from 'reactstrap';
-import './UpdateEquipment.css';
-import '../../BMDashboard.css';
-import CheckTypesModal from 'components/BMDashboard/shared/CheckTypesModal';
+import CheckTypesModal from '~/components/BMDashboard/shared/CheckTypesModal';
 import { useHistory, useParams } from 'react-router-dom';
-import Radio from 'components/common/Radio';
-import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
-import Image from 'components/common/Image/Image';
+import Radio from '~/components/common/Radio';
+import DragAndDrop from '~/components/common/DragAndDrop/DragAndDrop';
+import Image from '~/components/common/Image/Image';
+import styles from './UpdateEquipment.module.css';
 
 export default function UpdateEquipment() {
   const history = useHistory();
@@ -68,7 +67,7 @@ export default function UpdateEquipment() {
               name="equipment-image"
               src={equipmentDetails.imageUrl || 'https://via.placeholder.com/150'}
               alt="Equipment image"
-              className="square-image"
+              className={`${styles.squareImage}`}
             />
           </Col>
         </Row>
@@ -78,15 +77,17 @@ export default function UpdateEquipment() {
           <Row form>
             <Col md={4}>
               <Label for="itemName">Name</Label>
-              <div className="read-only-div">{equipmentDetails?.itemType?.name || 'Unknown'}</div>
+              <div className={`${styles.readOnlyDiv}`}>
+                {equipmentDetails?.itemType?.name || 'Unknown'}
+              </div>
             </Col>
             <Col md={4}>
               <Label for="itemNumber">Number</Label>
-              <div className="read-only-div">{equipmentDetails?._id || 'Unknown'}</div>
+              <div className={`${styles.readOnlyDiv}`}>{equipmentDetails?._id || 'Unknown'}</div>
             </Col>
             <Col md={4}>
               <Label for="itemClass">Class</Label>
-              <div className="read-only-div">
+              <div className={`${styles.readOnlyDiv}`}>
                 {equipmentDetails?.itemType?.category || 'Unknown'}
               </div>
             </Col>
@@ -94,11 +95,13 @@ export default function UpdateEquipment() {
           <Row form>
             <Col md={4}>
               <Label for="itemProject">Project</Label>
-              <div className="read-only-div">{equipmentDetails?.project?.name || 'Unknown'}</div>
+              <div className={`${styles.readOnlyDiv}`}>
+                {equipmentDetails?.project?.name || 'Unknown'}
+              </div>
             </Col>
             <Col md={4}>
               <Label for="itemStatus">Current Status</Label>
-              <div className="read-only-div">
+              <div className={`${styles.readOnlyDiv}`}>
                 {equipmentDetails?.updateRecord?.length > 0
                   ? equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1]
                       .condition
@@ -107,20 +110,22 @@ export default function UpdateEquipment() {
             </Col>
             <Col md={4}>
               <Label for="itemOwnership">Ownership</Label>
-              <div className="read-only-div">{equipmentDetails?.purchaseStatus || 'Unknown'}</div>
+              <div className={`${styles.readOnlyDiv}`}>
+                {equipmentDetails?.purchaseStatus || 'Unknown'}
+              </div>
             </Col>
           </Row>
           {equipmentDetails && equipmentDetails.purchaseStatus === 'Rental' && (
             <Row form>
               <Col md={4}>
                 <Label>Rental End Date</Label>
-                <div className="read-only-div">
+                <div className={`${styles.readOnlyDiv}`}>
                   {equipmentDetails.rentalDueDate?.split('T')[0] || 'Unknown'}
                 </div>
               </Col>
               <Col md={4}>
                 <Label>Days Left</Label>
-                <div className="read-only-div">
+                <div className={`${styles.readOnlyDiv}`}>
                   {calculateDaysLeft(equipmentDetails?.rentalDueDate)}
                 </div>
               </Col>
@@ -129,7 +134,7 @@ export default function UpdateEquipment() {
         </FormGroup>
         <Row form>
           <Col md={12}>
-            <div className="update-confirm-text">
+            <div className={`${styles.updateConfirmText}`}>
               Please confirm you are updating the status of the tool or equipment shown above.
             </div>
           </Col>

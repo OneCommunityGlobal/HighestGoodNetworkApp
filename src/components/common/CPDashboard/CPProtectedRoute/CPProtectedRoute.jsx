@@ -14,7 +14,9 @@ const CPProtectedRoute = ({ component: Component, render, auth, fallback, ...res
         }
         if (auth.user.access && !auth.user.access.canAccessBMPortal) {
           return (
-            <Redirect to={{ pathname: '/communityportal/login', state: { from: props.location } }} />
+            <Redirect
+              to={{ pathname: '/communityportal/login', state: { from: props.location } }}
+            />
           );
         }
         // eslint-disable-next-line no-nested-ternary

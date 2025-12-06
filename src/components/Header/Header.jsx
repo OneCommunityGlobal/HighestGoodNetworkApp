@@ -1,11 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
-// import { getUserProfile } from '../../actions/userProfile'
-import { ENDPOINTS } from 'utils/URL';
+import { useState, useEffect, useMemo, React } from 'react';
+import { ENDPOINTS } from '~/utils/URL';
 import axios from 'axios';
-import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
+import { getWeeklySummaries } from '~/actions/weeklySummaries';
+import { Link, useLocation, useHistory } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
@@ -24,8 +22,8 @@ import {
   Button,
   Card,
 } from 'reactstrap';
-import PopUpBar from 'components/PopUpBar';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import PopUpBar from '~/components/PopUpBar';
+import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
@@ -51,9 +49,13 @@ import {
   TOTAL_ORG_SUMMARY,
   TOTAL_ORG_SUMMARY_EMAIL,
   TOTAL_CONSTRUCTION_SUMMARY,
+  PR_PROMOTIONS,
+  BLUE_SQUARE_EMAIL_MANAGEMENT,
+  JOB_ANALYTICS_REPORT,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
-import './Header.css';
+import '../../App.css';
+import styles from './Header.module.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import {
   getUnreadUserNotifications,
@@ -61,6 +63,11 @@ import {
 } from '../../actions/notificationAction';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
+import BellNotification from './BellNotification';
+import { getUserProfile } from '../../actions/userProfile';
+import PermissionWatcher from '../Auth/PermissionWatcher';
+import DisplayBox from '../PRPromotions/DisplayBox';
+import PropTypes from 'prop-types';
 
 export function Header(props) {
   const location = useLocation();
@@ -73,6 +80,8 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const [isAckLoading, setIsAckLoading] = useState(false);
+  const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
@@ -90,13 +99,15 @@ export function Header(props) {
     !isAuthUser && canInteractWithViewingUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+  const canGetJobAnalytics = props.hasPermission('getJobReports');
 
   // Users
   const canAccessUserManagement =
     props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('setFinalDay', !isAuthUser && canInteractWithViewingUser);
 
   // Badges
   const canAccessBadgeManagement =
@@ -139,6 +150,9 @@ export function Header(props) {
     props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+  
+  // Blue Square Email Management
+  const canAccessBlueSquareEmailManagement = props.hasPermission('resendBlueSquareAndSummaryEmails', !isAuthUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -181,6 +195,44 @@ export function Header(props) {
     };
   }, [user.userid, props.auth.firstName]);
 
+  // Debugging Enhancement: Monitor window resize events for responsive testing
+  useEffect(() => {
+    const handleResize = () => {
+      const currentWidth = window.innerWidth;
+      // eslint-disable-next-line no-console
+      console.log(`[Header Debug] Window resized to: ${currentWidth}px`);
+      
+      // Log breakpoint information for debugging
+      if (currentWidth >= 1728) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Large screen (90%+) - Owner message below timer`);
+      } else if (currentWidth >= 1400) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Desktop - Centered layout`);
+      } else if (currentWidth >= 1200) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Medium desktop - Centered layout`);
+      } else if (currentWidth >= 768) {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Tablet - Stacked layout`);
+      } else {
+        // eslint-disable-next-line no-console
+        console.log(`[Header Debug] Breakpoint: Mobile - Compact vertical layout`);
+      }
+    };
+
+    // Log initial window size
+    handleResize();
+
+    // Add resize event listener
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -196,10 +248,10 @@ export function Header(props) {
       props.getAllRoles();
     }
     // Fetch unread notification
-    if (isAuthenticated && userId) {
-      dispatch(getUnreadUserNotifications(userId));
+    if (isAuthenticated && displayUserId) {
+      dispatch(getUnreadUserNotifications(displayUserId));
     }
-  }, []);
+  }, [isAuthenticated, displayUserId, roles.length]);
 
   useEffect(() => {
     if (props.notification?.error) {
@@ -214,6 +266,30 @@ export function Header(props) {
 
   const openModal = () => {
     setLogoutPopup(true);
+  };
+
+  const handlePermissionChangeAck = async () => {
+    // handle setting the ack true
+    try {
+      setIsAckLoading(true);
+      const { firstName: name, lastName, personalLinks, adminLinks, _id } = props.userProfile;
+      axios
+        .put(ENDPOINTS.USER_PROFILE(_id), {
+          // req fields for updation
+          firstName: name,
+          lastName,
+          personalLinks,
+          adminLinks,
+
+          isAcknowledged: true,
+        })
+        .then(() => {
+          setIsAckLoading(false);
+          dispatch(getUserProfile(_id));
+        });
+    } catch (e) {
+      // console.log('update ack', e);
+    }
   };
 
   const removeViewingUser = () => {
@@ -247,7 +323,7 @@ export function Header(props) {
     if (!userId || hasProfileLoaded) return;
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-      const newUserProfile = response.data;
+      const newUserProfile = response?.data;
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
@@ -281,12 +357,12 @@ export function Header(props) {
           setModalVisible(true);
           // Assistant Manager or Volunteer message
           setModalContent(
-            `If you are seeing this, it’s because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team’s work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
+            `If you are seeing this, it's because you are on a team! As a member of a team, you need to turn in your work 24 hours earlier, i.e. FRIDAY night at midnight Pacific Time. This is so your manager has time to review it and submit and report on your entire team's work by the usual Saturday night deadline. For any work you plan on completing Saturday, please take pictures as best you can and include it in your summary as if it were already done.\n\nBy dismissing this notice, you acknowledge you understand and will do this.`,
           );
         } else if (user.role === 'Manager') {
           setModalVisible(true);
           // Manager message
-          setModalContent(`If you are seeing this, it’s because you are a Manager of a team! Remember to turn in your team’s work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
+          setModalContent(`If you are seeing this, it's because you are a Manager of a team! Remember to turn in your team's work by the Saturday night at midnight (Pacific Time) deadline. Every member of your team gets a notice like this too. Theirs tells them to get you their work 24 hours early so you have time to review it and submit it. If you have to remind them repeatedly (4+ times, track it on their Google Doc), they should receive a blue square.
           `);
         }
       }
@@ -303,28 +379,38 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
+  const viewingUser = JSON.parse(window.sessionStorage.getItem('viewingUser'));
   return (
-    <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="md">
+    <div className={`${styles.headerWrapper}${darkMode ? ` ${styles.darkMode}` : ''}`} data-testid="header">
+      <Navbar className={`py-3 ${styles.navbar}`} color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        <div
-          className="timer-message-section"
-          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
-            <div className="owner-message">
-              <OwnerMessage />
-            </div>
-          )}
-        </div>
-        <NavbarToggler onClick={toggle} />
-        {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ width: '100%' }}
+        {showPromotionsPopup && 
+        (<DisplayBox onClose={() => setShowPromotionsPopup(false)} />)}
+        
+        <div className="d-flex justify-content-between align-items-center w-100 p-3">
+          {/* Left Component - Timer */}
+          <div className={styles.leftSection}>
+            {isAuthenticated && <Timer darkMode={darkMode} />}
+          </div>
+
+          {/* Center Component - Owner Message */}
+          <div className={`${styles.centerSection} text-center flex-grow-1`}>
+            {isAuthenticated && (
+              <div className={styles.ownerMessage}>
+                <OwnerMessage />
+              </div>
+            )}
+          </div>
+
+          {/* Right Component - Navigation */}
+          <div className={styles.rightSection}>
+            <NavbarToggler onClick={toggle} />
+            {isAuthenticated && (
+              <Collapse isOpen={isOpen} navbar>
+                <Nav className={`${styles.navLinks} d-flex`} navbar>
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{ width: '100%' }}
               >
                 {canUpdateTask && (
                   <NavItem className="responsive-spacing">
@@ -341,7 +427,7 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to="/timelog">
+                  <NavLink tag={Link} to="/timelog#currentWeek">
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
@@ -426,6 +512,11 @@ export function Header(props) {
                           {TOTAL_ORG_SUMMARY_EMAIL}
                         </DropdownItem>
                       )}
+                      {canGetJobAnalytics && (
+                        <DropdownItem tag={Link} to="/application/analytics" className={fontColor}>
+                          {JOB_ANALYTICS_REPORT}
+                        </DropdownItem>
+                      )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
@@ -435,6 +526,9 @@ export function Header(props) {
                         className={fontColor}
                       >
                         {TOTAL_CONSTRUCTION_SUMMARY}
+                      </DropdownItem>
+                      <DropdownItem onClick={() => setShowPromotionsPopup(true)} className={fontColor}>
+                        {PR_PROMOTIONS}
                       </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
@@ -446,14 +540,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className="responsive-spacing">
-                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
-                    <i className="fa fa-bell i-large">
-                      <i className="badge badge-pill badge-danger badge-notify">
-                        {/* Pull number of unread messages */}
-                      </i>
-                      <span className="sr-only">unread messages</span>
-                    </i>
-                  </NavLink>
+                  <BellNotification userId={displayUserId} />
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -461,25 +548,22 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
-                  canAccessPermissionsManagement) && (
+                  canAccessPermissionsManagement ||
+                  canAccessBlueSquareEmailManagement) && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
                     <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement ? (
+                      {canAccessUserManagement && (
                         <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                           {USER_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        `null`
                       )}
-                      {canAccessBadgeManagement ? (
+                      {canAccessBadgeManagement && (
                         <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        `null`
                       )}
                       {canAccessProjects && (
                         <DropdownItem tag={Link} to="/projects" className={fontColor}>
@@ -508,15 +592,35 @@ export function Header(props) {
                           </DropdownItem>
                         </>
                       )}
+                      <DropdownItem divider />
+                      <DropdownItem tag={Link} to="/pr-dashboard/overview" className={fontColor}>
+                        PR Team Analytics
+                      </DropdownItem>
+                      {canAccessBlueSquareEmailManagement && (
+                        <DropdownItem
+                          tag={Link}
+                          to="/bluesquare-email-management"
+                          className={fontColor}
+                        >
+                          {BLUE_SQUARE_EMAIL_MANAGEMENT}
+                        </DropdownItem>
+                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
                 <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                    <img
-                      src={`${profilePic || '/pfp-default-header.png'}`}
-                      alt=""
-                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                    <div
+                      style={{
+                        width: '60px',
+                        height: '60px',
+                        minWidth: '60px',
+                        minHeight: '60px',
+                        backgroundImage: `url(${profilePic || '/pfp-default-header.png'})`,
+                        backgroundSize: 'contain',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                      }}
                       className="dashboardimg"
                     />
                   </NavLink>
@@ -543,14 +647,14 @@ export function Header(props) {
                       props.userProfile.email,
                       props.userProfile.email,
                     ) && (
-                      <DropdownItem
-                        tag={Link}
-                        to={`/updatepassword/${displayUserId}`}
-                        className={fontColor}
-                      >
-                        {UPDATE_PASSWORD}
-                      </DropdownItem>
-                    )}
+                        <DropdownItem
+                          tag={Link}
+                          to={`/updatepassword/${displayUserId}`}
+                          className={fontColor}
+                        >
+                          {UPDATE_PASSWORD}
+                        </DropdownItem>
+                      )}
                     <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
@@ -564,11 +668,26 @@ export function Header(props) {
             </Nav>
           </Collapse>
         )}
+          </div>
+        </div>
       </Navbar>
       {!isAuthUser && (
         <PopUpBar
+          firstName={viewingUser.firstName}
+          lastName={viewingUser.lastName}
+          message={`You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`}
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}
+        />
+      )}
+      <PermissionWatcher props={props} />
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged === false && (
+        <PopUpBar
+          firstName={viewingUser?.firstName || firstName}
+          lastName={viewingUser?.lastName}
+          message="Heads Up, there were permission changes made to this account"
+          onClickClose={handlePermissionChangeAck}
+          textColor="black_text"
+          isLoading={isAckLoading}
         />
       )}
       <div>
@@ -590,12 +709,14 @@ export function Header(props) {
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <Card color="primary">
-          <div className="close-button">
-            <Button close onClick={closeModal} />
-          </div>
-          <div className="card-content">{modalContent}</div>
-        </Card>
+        <div className={`${darkMode ? 'bg-oxford-blue' : ''} card-wrapper`}>
+          <Card color="primary" className="headerCard">
+            <div className="close-button">
+              <Button close onClick={closeModal} />
+            </div>
+            <div className="card-content">{modalContent}</div>
+          </Card>
+        </div>
       )}
       {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
@@ -614,10 +735,32 @@ const mapStateToProps = state => ({
   notification: state.notification,
   darkMode: state.theme.darkMode,
 });
-
+Header.propTypes = {
+  hasPermission: PropTypes.func.isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    user: PropTypes.shape({
+      userid: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+      role: PropTypes.string
+    }),
+    firstName: PropTypes.string,
+    profilePic: PropTypes.string
+  }),
+  getHeaderData: PropTypes.func,
+  getAllRoles: PropTypes.func,
+  getWeeklySummaries: PropTypes.func,
+  role: PropTypes.shape({
+    roles: PropTypes.array
+  }),
+  notification: PropTypes.object,
+  userProfile: PropTypes.object,
+  darkMode: PropTypes.bool,
+  taskEditSuggestionCount: PropTypes.number,
+};
 export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
   getWeeklySummaries,
+  getUserProfile,
 })(Header);

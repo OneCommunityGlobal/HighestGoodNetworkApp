@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Form, FormGroup, FormFeedback, Label, Input, Button } from 'reactstrap';
-import Joi from 'joi';
+import Joi from 'joi-browser';
 import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 
-import { addEquipmentType } from 'actions/bmdashboard/equipmentActions';
+import { addEquipmentType } from '~/actions/bmdashboard/equipmentActions';
 
 const FuelTypes = {
   dies: 'Diesel',
@@ -104,7 +104,7 @@ export default function AddTypeForm() {
           invalid={errInput === 'desc'}
           onChange={handleChange}
         />
-        <div class="form-footer" style={{ color: desc.length > 150 ? '#dc3545' : 'black' }}>
+        <div className="form-footer" style={{ color: desc.length > 150 ? '#dc3545' : 'black' }}>
           Character {desc.length}/150
         </div>
         {/* {!errInput && <FormText>Max 150 characters</FormText>} */}

@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
+
+
 import * as actions from '../userProfile';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import {
   GET_USER_PROFILE,
   GET_USER_TASKS,
@@ -13,20 +15,23 @@ import {
   GET_USER_AUTOCOMPLETE,
 } from '../../constants/userProfile';
 
-jest.mock('axios');
-jest.mock('react-toastify', () => ({
+vi.mock('axios');
+vi.mock('react-toastify', () => ({
   toast: {
-    error: jest.fn(),
+    error: vi.fn(),
+    success: vi.fn(),
+    info: vi.fn(),
+    warn: vi.fn(),
   },
 }));
 
-jest.mock('../../utils/URL', () => ({
+vi.mock('~/utils/URL', () => ({
   ENDPOINTS: {
-    USER_PROFILE: jest.fn(id => `/api/users/${id}`),
-    TASKS_BY_USERID: jest.fn(id => `/api/tasks/${id}`),
-    USER_PROFILE_PROPERTY: jest.fn(id => `/api/users/${id}/property`),
-    GET_PROJECT_BY_PERSON: jest.fn(name => `/api/projects/person/${name}`),
-    USER_AUTOCOMPLETE: jest.fn(text => `/api/users/autocomplete/${text}`),
+    USER_PROFILE: vi.fn(id => `/api/users/${id}`),
+    TASKS_BY_USERID: vi.fn(id => `/api/tasks/${id}`),
+    USER_PROFILE_PROPERTY: vi.fn(id => `/api/users/${id}/property`),
+    GET_PROJECT_BY_PERSON: vi.fn(name => `/api/projects/person/${name}`),
+    USER_AUTOCOMPLETE: vi.fn(text => `/api/users/autocomplete/${text}`),
   },
 }));
 
@@ -34,12 +39,13 @@ describe('User Profile Actions', () => {
   let dispatch;
 
   beforeEach(() => {
-    dispatch = jest.fn(action => action);
-    jest.clearAllMocks();
-    jest.spyOn(console, 'log').mockImplementation(() => {});
+    dispatch = vi.fn(action => action);
+    vi.clearAllMocks();
+    vi.spyOn(console, 'log').mockImplementation(() => { });
   });
 
   afterEach(() => {
+    // eslint-disable-next-line no-console
     console.log.mockRestore();
   });
 

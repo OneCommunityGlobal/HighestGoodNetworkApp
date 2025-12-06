@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import EquipmentsTable from './EquipmentsTable';
 import EquipmentsInputs from './EquipmentsInputs';
-import './Equipments.css';
+import styles from './Equipments.module.css';
 
 function EquipmentList() {
   const [equipment, setEquipment] = useState({ label: 'All Equipments', value: '0' });
   const [project, setProject] = useState({ label: 'All Projects', value: '0' });
 
   return (
-    <div className="PageViewContainer">
-      <div className="Page">
-        <div className="Box">
-          <div className="BuildingTitle">EQUIPMENTS</div>
+    <div className={`${styles.PageViewContainer}`}>
+      <div className={`${styles.Page}`}>
+        <div className={`${styles.Box}`}>
+          <div className={`${styles.BuildingTitle}`}>EQUIPMENTS</div>
           <EquipmentsInputs
             equipment={equipment}
             setEquipment={setEquipment}

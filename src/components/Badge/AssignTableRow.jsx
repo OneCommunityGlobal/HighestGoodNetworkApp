@@ -1,33 +1,34 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
-import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
-function AssignTableRow({ badge, index, existBadges }) {
-  const [isOpen, setOpen] = useState(false);
-  const [isSelect, setSelect] = useState(false);
+function AssignTableRow({ badge, index, existBadges: propExistBadges }) {
   const dispatch = useDispatch();
+  const selectedBadges = useSelector(state => state.badge.selectedBadges); // array of badge._id
 
+  const [isOpen, setOpen] = useState(false);
+  const toggle = () => setOpen(prev => !prev);
+
+  const badgeId = badge._id;
+  const domId = `assign-badge-${badgeId}`;
+
+  // Initialize selection from props (badges that user already has)
   useEffect(() => {
-    if (existBadges?.includes(`assign-badge-${badge._id}`)) {
-      setSelect(true);
-      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
-    } else {
-      setSelect(false);
+    if (propExistBadges?.includes(badgeId)) {
+      dispatch(addSelectBadge(badgeId));
     }
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
+  const isSelected = selectedBadges.includes(badgeId);
 
   const handleCheckBoxChange = e => {
-    const isChecked = e.target.checked;
-    setSelect(isChecked);
-    if (isChecked) {
-      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
+    if (e.target.checked) {
+      dispatch(addSelectBadge(badgeId));
     } else {
-      dispatch(removeSelectBadge(`assign-badge-${badge._id}`));
+      dispatch(removeSelectBadge(badgeId));
     }
   };
 
@@ -53,9 +54,9 @@ function AssignTableRow({ badge, index, existBadges }) {
       <td>
         <CustomInput
           type="checkbox"
-          id={`assign-badge-${badge._id}`}
+          id={domId}
           onChange={handleCheckBoxChange}
-          checked={isSelect}
+          checked={isSelected}
         />
       </td>
     </tr>

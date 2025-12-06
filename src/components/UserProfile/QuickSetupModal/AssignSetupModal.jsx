@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import hasPermission from '../../../utils/permissions';
-import { deleteTitleById } from 'actions/title';
+import { deleteTitleById } from '~/actions/title';
 import { useSelector } from 'react-redux';
-import '../../Header/DarkMode.css';
+import '../../Header/index.css';
 import { toast } from "react-toastify";
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile}) {
+function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles, updateUserProfile, handleSubmit}) {
   const darkMode = useSelector(state => state.theme.darkMode)
   const [validation, setValid] = useState({
     volunteerAgree: false,
@@ -37,7 +37,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
 
     if (validation.volunteerAgree && googleDoc.length !== 0) {
       const originalTeamId = userProfile.teams.map(team => team._id);
-      const originalProjectId = userProfile.projects.map(project => project._id);
+      const originalProjectId = userProfile.projects.map(project => project.projectId);
       // If the title has team assigned, add the team to the user profile. Remove duplicate teams
       const teamsAssigned = title.teamAssiged
         ? originalTeamId.includes(title?.teamAssiged._id)
@@ -46,7 +46,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         : userProfile.teams;
       // If the title has project assigned, add the project to the user profile. Remove duplicate projects
       const projectAssigned = title.projectAssigned
-        ? originalProjectId.includes(title?.projectAssigned._id)
+        ? originalProjectId.includes(title?.projectAssigned.projectId)
           ? userProfile.projects
           : [...userProfile.projects, title.projectAssigned]
         : userProfile.projects;
@@ -80,13 +80,14 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       if (hasPermission("manageAdminLinks")) {
         setUserProfile(prev => ({ ...prev, ...data }));
       }
+      const result = await handleSubmit(Object.assign({},userProfile,data));
 
-      setTitleOnSet(false);
+      setTitleOnSet(true); 
       setValid(() => ({ volunteerAgree: false }));
       setIsOpen(false);
 
       const SUCCESS_MESSAGE =
-        "Success! Google Doc, Team Code, Project Assignment," +
+        "Success! Google Doc, Team Code, Project Assignment, " +
         "and Media Folder details are now updated for this individual.";
       toast.success(SUCCESS_MESSAGE, { autoClose: 10000 }); 
     }
@@ -106,6 +107,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         setIsOpen(false);
       })
       .catch(e => {
+        // eslint-disable-next-line no-console
         console.log(e);
       });
   };

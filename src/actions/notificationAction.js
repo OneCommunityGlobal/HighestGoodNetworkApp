@@ -1,7 +1,6 @@
-import httpService from '../services/httpService';
-import { ApiEndpoint } from '../utils/URL';
-import * as actionTypes from '../constants/notification';
 import axios from 'axios';
+import { ApiEndpoint } from '~/utils/URL';
+import * as actionTypes from '../constants/notification';
 
 const APIEndpoint = ApiEndpoint;
 
@@ -27,14 +26,14 @@ const constructErrorPayload = error => {
 
   return {
     status: response.status,
-    message: message,
+    message,
   };
 };
 
 /**
  * Retrieve all notifications for the given userId.
- * @param {*} userId 
- * @returns 
+ * @param {*} userId
+ * @returns
  */
 export function getNotifications(userId) {
   return async dispatch => {
@@ -47,7 +46,6 @@ export function getNotifications(userId) {
         payload: response.data,
       });
     } catch (error) {
-  
       const errorPayload = constructErrorPayload(error);
       await dispatch({
         type: actionTypes.FETCH_USER_NOTIFICATIONS_FAILURE,
@@ -59,8 +57,8 @@ export function getNotifications(userId) {
 
 /**
  * Retrieve a list of unread notifications for the given userId.
- * @param {*} userId 
- * @returns 
+ * @param {*} userId
+ * @returns
  */
 export function getUnreadUserNotifications(userId) {
   return async dispatch => {
@@ -84,14 +82,15 @@ export function getUnreadUserNotifications(userId) {
 
 /**
  * Mark the notification as read and remove the record from redux if success.
- * @param {*} notificationId 
- * @returns 
- *  */ 
+ * @param {*} notificationId
+ * @returns
+ *  */
+
 export function markNotificationAsRead(notificationId) {
   return async dispatch => {
     dispatch({ type: actionTypes.MARK_NOTIFICATION_AS_READ_REQUEST });
     try {
-      const response = await axios.post(`${APIEndpoint}/notification/markRead/${notificationId}`);
+      await axios.post(`${APIEndpoint}/notification/markRead/${notificationId}`);
 
       await dispatch({
         type: actionTypes.MARK_NOTIFICATION_AS_READ_SUCCESS,
@@ -107,15 +106,15 @@ export function markNotificationAsRead(notificationId) {
   };
 }
 
-
 /**
  * Reset error state in redux store for the notification component.
- *  */ 
+ *  */
+
 export function resetNotificationError() {
   return dispatch => {
     dispatch({ type: actionTypes.RESET_ERROR });
   };
-} 
+}
 
 // Comment out unused functions
 // export function getSentNotifications() {
@@ -156,7 +155,3 @@ export function resetNotificationError() {
 //     });
 //   };
 // }
-
-
-
-

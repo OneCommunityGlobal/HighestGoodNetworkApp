@@ -1,3 +1,4 @@
+import axios from 'axios'; // Import axios
 import {
   setTeamDetail,
   getUserTeamMembers,
@@ -7,11 +8,10 @@ import {
 } from '../team'; // Import fetchAllManagingTeams
 import { GET_TEAM_BY_ID } from '../../constants/team';
 import httpService from '../../services/httpService';
-import { ENDPOINTS } from '../../utils/URL';
-import axios from 'axios'; // Import axios
+import { ENDPOINTS } from '~/utils/URL';
 
-jest.mock('../../services/httpService');
-jest.mock('axios'); // Mock axios
+vi.mock('../../services/httpService');
+vi.mock('axios'); // Mock axios
 
 describe('setTeamDetail', () => {
   // Describe the test suite for the setTeamDetail action creator
@@ -35,7 +35,7 @@ describe('getUserTeamMembers', () => {
     const mockResponse = { data: [{ id: 1, name: 'Member A' }] }; // Define the mock response from the HTTP service
     httpService.get.mockResolvedValue(mockResponse); // Mock the HTTP GET request to resolve with the mock response
 
-    const dispatch = jest.fn(); // Create a mock dispatch function
+    const dispatch = vi.fn(); // Create a mock dispatch function
     const url = ENDPOINTS.USER_TEAM(userId); // Define the URL endpoint for fetching team members
 
     await getUserTeamMembers(userId)(dispatch); // Call the getUserTeamMembers action creator with the user ID and dispatch function
@@ -52,7 +52,7 @@ describe('getUserTeamMembers1', () => {
     const mockResponse = { data: [{ id: 1, name: 'Member A' }] }; // Define the mock response from the HTTP service
     httpService.get.mockResolvedValue(mockResponse); // Mock the HTTP GET request to resolve with the mock response
 
-    const dispatch = jest.fn(); // Create a mock dispatch function
+    const dispatch = vi.fn(); // Create a mock dispatch function
     const url = ENDPOINTS.USER_TEAM(userId); // Define the URL endpoint for fetching team members
 
     await getUserTeamMembers1(userId)(dispatch); // Call the getUserTeamMembers1 action creator with the user ID and dispatch function
@@ -74,7 +74,7 @@ describe('getTeamDetail', () => {
     const mockResponse = { data: { id: 1, name: 'Team A' } }; // Define the mock response from the HTTP service
     axios.get.mockResolvedValue(mockResponse); // Mock the HTTP GET request to resolve with the mock response
 
-    const dispatch = jest.fn(); // Create a mock dispatch function
+    const dispatch = vi.fn(); // Create a mock dispatch function
     const url = ENDPOINTS.TEAM_BY_ID(teamId); // Define the URL endpoint for fetching team detail
 
     await getTeamDetail(teamId)(dispatch); // Call the getTeamDetail action creator with the team ID and dispatch function
@@ -89,7 +89,7 @@ describe('getTeamDetail', () => {
     const mockError = { response: { status: 401 } }; // Define the mock error response
     axios.get.mockImplementation(() => Promise.reject(mockError)); // Mock the HTTP GET request to reject with the mock error
 
-    const dispatch = jest.fn(); // Create a mock dispatch function
+    const dispatch = vi.fn(); // Create a mock dispatch function
     const url = ENDPOINTS.TEAM_BY_ID(teamId); // Define the URL endpoint for fetching team detail
 
     await getTeamDetail(teamId)(dispatch); // Call the getTeamDetail action creator with the team ID and dispatch function
@@ -126,12 +126,14 @@ describe('fetchAllManagingTeams', () => {
       .mockResolvedValueOnce(mockTeamMembersResponse) // Mock the HTTP GET request for team members of team1
       .mockResolvedValueOnce(mockTeamMembersResponse) // Mock the HTTP GET request for team members of team2
       .mockResolvedValueOnce(mockTimeEntriesResponse) // Mock the HTTP GET request for time entries of member1
-      .mockResolvedValueOnce(mockTimeEntriesResponse) // Mock the HTTP GET request for time entries of member2
+      .mockResolvedValueOnce(mockTimeEntriesResponse); // Mock the HTTP GET request for time entries of member2
 
-    const dispatch = jest.fn(); // Create a mock dispatch function
+    const dispatch = vi.fn(); // Create a mock dispatch function
 
     await fetchAllManagingTeams(userId, managingTeams)(dispatch); // Call the fetchAllManagingTeams action creator with the user ID, managing teams, and dispatch function
-
-    expect(httpService.get).toHaveBeenCalledTimes(4); // Assert that the HTTP GET request was called 6 times
+    expect(httpService.get).toHaveBeenCalledWith(expect.stringContaining('/team/team1/users'));
+    expect(httpService.get).toHaveBeenCalledWith(expect.stringContaining('/team/team2/users'));
+    expect(httpService.get).toHaveBeenCalledWith(expect.stringContaining('/TimeEntry/user/member1'));
+    expect(httpService.get).toHaveBeenCalledWith(expect.stringContaining('/TimeEntry/user/member2'));
   });
 });

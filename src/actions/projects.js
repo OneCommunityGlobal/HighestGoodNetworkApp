@@ -1,102 +1,6 @@
 import axios from 'axios';
 import * as types from '../constants/projects';
-import { ENDPOINTS } from '../utils/URL';
-
-/** *****************************************
- * ACTION CREATORS
- ****************************************** */
-
-/**
- * Call API to get all projects
- */
-export const fetchAllProjects = () => {
-  return async dispatch => {
-    const url = ENDPOINTS.PROJECTS;
-    let status, error;
-    dispatch(setProjectsStart());
-    try {
-      const res = await axios.get(url);
-      status = res.status;
-      const projects = res.data;
-      dispatch(setProjectsSuccess({ projects, status }));
-    } catch (err) {
-      status = err.response.status;
-      error = err.response.data;
-      dispatch(setProjectsError({ status, error }));
-    }
-  };
-};
-
-/**
- * Post new project to DB
- * @param {projectName}: name of new project
- * @param {projectCategory}: category of new project
- */
-export const postNewProject = (projectName, projectCategory) => {
-  return async dispatch => {
-    const url = ENDPOINTS.PROJECTS;
-    let status, error;
-    dispatch(setProjectsStart());
-    try {
-      const res = await axios.post(url, { projectName, projectCategory });
-      const _id = res.data._id;
-      status = res.status;
-      const newProject = {
-        _id,
-        projectName,
-        category: projectCategory,
-        isActive: true,
-      };
-      dispatch(addNewProject({ newProject, status }));
-      await dispatch(fetchAllProjects());
-      return _id;
-    } catch (err) {
-      const errorInfo = {
-        status: err.response ? err.response.status : 500,
-        error: err.response ? err.response.data : 'Network error'
-      };
-      dispatch(setProjectsError(errorInfo)); 
-      throw error;
-    }
-  };
-};
-
-export const modifyProject = updatedProject => {
-  return async dispatch => {
-    const url = ENDPOINTS.PROJECT + updatedProject._id;
-    let status, error;
-    try {
-      const res = await axios.put(url, updatedProject);
-      status = res.status;
-      dispatch(updateProject({ updatedProject, status }));
-    } catch (err) {
-      status = err.response.status;
-      error = err.response.data;
-      dispatch(updateProject({ status, error }));
-    }
-  };
-};
-
-/**
- * Post new project to DB
- * @param {projectId}: Id of deleted project
- */
-export const deleteProject = projectId => {
-  return async dispatch => {
-    const url = ENDPOINTS.PROJECT + projectId;
-    let status, error;
-    try {
-      const res = await axios.delete(url);
-      status = res.status;
-      dispatch(removeProject({ projectId, status }));
-    } catch (err) {
-      status = err.response.status;
-      error = err.response.data;
-      dispatch(removeProject({ status, error }));
-    }
-  };
-};
-
+import { ENDPOINTS } from '~/utils/URL';
 /** *****************************************
  * PLAIN OBJECT ACTIONS
  ****************************************** */
@@ -149,8 +53,9 @@ const addNewProject = ({ newProject, status, error }) => ({
  * @param error: error message
  */
 // const updateProject = (projectId, projectName, category, isActive, status, error) => {
-const updateProject = ({ updatedProject, status, error }) => ({
+const updateProject = ({ projectId, updatedProject, status, error }) => ({
   type: types.UPDATE_PROJECT,
+  projectId: projectId ?? updatedProject?._id,
   updatedProject,
   status,
   error,
@@ -174,3 +79,107 @@ const removeProject = ({ projectId, status, error }) => ({
 export const clearError = () => ({
   type: types.CLEAR_ERROR,
 });
+
+/** *****************************************
+ * ACTION CREATORS
+ ****************************************** */
+
+/**
+ * Call API to get all projects
+ */
+export const fetchAllProjects = () => {
+  return async dispatch => {
+    const url = ENDPOINTS.PROJECTS;
+    let status;
+    let error;
+    dispatch(setProjectsStart());
+    try {
+      const res = await axios.get(url);
+      status = res.status;
+      const projects = res.data;
+      dispatch(setProjectsSuccess({ projects, status }));
+    } catch (err) {
+      status = err.response.status;
+      error = err.response.data;
+      dispatch(setProjectsError({ status, error }));
+    }
+  };
+};
+
+/**
+ * Post new project to DB
+ * @param {projectName}: name of new project
+ * @param {projectCategory}: category of new project
+ */
+export const postNewProject = (projectName, projectCategory) => {
+  return async dispatch => {
+    const url = ENDPOINTS.PROJECTS;
+    let status;
+    let error;
+    dispatch(setProjectsStart());
+    try {
+      const res = await axios.post(url, { projectName, projectCategory });
+      const { _id } = res.data;
+      status = res.status;
+      const newProject = {
+        _id,
+        projectName,
+        category: projectCategory,
+        isActive: true,
+      };
+      dispatch(addNewProject({ newProject, status }));
+      await dispatch(fetchAllProjects());
+      return _id;
+    } catch (err) {
+      const errorInfo = {
+        status: err.response ? err.response.status : 500,
+        error: err.response ? err.response.data : 'Network error',
+      };
+      dispatch(setProjectsError(errorInfo));
+      throw error;
+    }
+  };
+};
+
+export const modifyProject = updatedProject => {
+  return async (dispatch, getState) => {
+    const url = ENDPOINTS.PROJECT + updatedProject._id;
+    let status;
+    let error;
+    
+    // Get the previous project state to check if category changed
+    const previousProject = getState().allProjects.projects.find(p => p._id === updatedProject._id);
+    const categoryChanged = previousProject && previousProject.category !== updatedProject.category;
+    
+    try {
+      const res = await axios.put(url, updatedProject);
+      status = res.status;
+      dispatch(updateProject({ updatedProject, status }));
+    } catch (err) {
+      status = err.response.status;
+      error = err.response.data;
+      dispatch(updateProject({ status, error }));
+    }
+  };
+};
+
+/**
+ * Post new project to DB
+ * @param {projectId}: Id of deleted project
+ */
+export const deleteProject = projectId => {
+  return async dispatch => {
+    const url = ENDPOINTS.PROJECT + projectId;
+    let status;
+    let error;
+    try {
+      const res = await axios.delete(url);
+      status = res.status;
+      dispatch(removeProject({ projectId, status }));
+    } catch (err) {
+      status = err.response.status;
+      error = err.response.data;
+      dispatch(removeProject({ status, error }));
+    }
+  };
+};

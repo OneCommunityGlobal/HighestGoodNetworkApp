@@ -19,6 +19,7 @@ thead {
   vertical-align: middle;
 }
 
+
 #teams__members {
   width: 15px;
 }
@@ -35,11 +36,9 @@ thead {
   text-align: start;
 }
 
-
 .teams__overview--top {
   background: transparent;
 }
-
 
 .teams__overview--top .card {
   width: 200px;
@@ -53,8 +52,12 @@ thead {
   color: white;
 }
 
-#card_active,
-.card#card_non_active {
+#card_active {
+  background: #fbad4c;
+  color: white;
+}
+
+#card_in_active {
   background: #fbad4c;
   color: white;
 }
@@ -64,7 +67,7 @@ thead {
 }
 
 .teams__active--input i {
-  margin-top: 10px;
+  margin-left: 20px;
   cursor: pointer;
 }
 
@@ -85,12 +88,10 @@ thead {
 
 .isActive i {
   color: lawngreen;
-  margin-top: 0px;
 }
 
 .isNotActive i {
   color: #dee2e6;
-  margin-top: 0px;
 
 }
 
@@ -124,16 +125,4 @@ tr:hover {
 .usermanagement-actions-cell {
   display: table-cell;
   padding-left: 10px;
-}
-
-@media (max-width: 768px) {
-  .overflow-container {
-    overflow-x: auto;
-    overflow-y: auto;
-    height: 60vh;
-  }
-}
-
-.overflow-container table {
-  min-width: 600px; 
 }

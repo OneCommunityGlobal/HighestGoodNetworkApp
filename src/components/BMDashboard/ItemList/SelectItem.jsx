@@ -1,4 +1,5 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
+import styles from './ItemListView.module.css';
 
 export default function SelectItem({
   items,
@@ -8,19 +9,29 @@ export default function SelectItem({
   label,
 }) {
   let itemSet = [];
-  if (items.length) {
-    if (selectedProject === 'all') itemSet = [...new Set(items.map(m => m.itemType?.name))];
-    else
+  if (items?.length) {
+    if (selectedProject === 'all') {
       itemSet = [
         ...new Set(
-          items.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
+          items
+            .filter(m => m.itemType?.name) // Filter out items with null/undefined names
+            .map(m => m.itemType.name),
         ),
       ];
+    } else {
+      itemSet = [
+        ...new Set(
+          items
+            .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
+            .map(m => m.itemType.name),
+        ),
+      ];
+    }
   }
 
   return (
     <Form>
-      <FormGroup className="select_input">
+      <FormGroup className={`${styles.selectInput}`}>
         <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
           {label ? `${label}:` : 'Material:'}
         </Label>
@@ -34,17 +45,17 @@ export default function SelectItem({
         >
           {items.length ? (
             <>
-              <option value="all">All</option>
-              {itemSet.map(name => {
-                return (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                );
-              })}
+              <option value="all" key="all-option">
+                All
+              </option>
+              {itemSet.map(itemName => (
+                <option key={`item-${itemName}`} value={itemName}>
+                  {itemName}
+                </option>
+              ))}
             </>
           ) : (
-            <option>No data</option>
+            <option key="no-data">No data</option>
           )}
         </Input>
       </FormGroup>

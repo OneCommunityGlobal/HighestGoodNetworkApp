@@ -1,11 +1,11 @@
 import axios from 'axios';
 import * as actions from '../constants/allUsersTimeEntries';
-import { ENDPOINTS } from '../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 /**
  * Action to set the 'loading' flag to true.
  */
-export const fetchAllUsersTimeEntriesBegin= () => ({
+export const fetchAllUsersTimeEntriesBegin = () => ({
   type: actions.FETCH_ALL_USERS_TIME_ENTRIES_BEGIN,
 });
 
@@ -33,9 +33,9 @@ export const getAllUsersTimeEntries = (users, fromDate, toDate) => {
   return async dispatch => {
     dispatch(fetchAllUsersTimeEntriesBegin());
     try {
-      const { data: usersTimeEntries } = await axios.post(url, {users, fromDate, toDate});
+      const { data: usersTimeEntries } = await axios.post(url, { users, fromDate, toDate });
       dispatch(fetchAllUsersTimeEntriesSuccess(usersTimeEntries));
-      return {status: usersTimeEntries.status, data: usersTimeEntries.data};
+      return { status: usersTimeEntries.status, data: usersTimeEntries.data };
     } catch (error) {
       dispatch(fetchAllUsersTimeEntriesError(error));
       return error.usersTimeEntries.status;

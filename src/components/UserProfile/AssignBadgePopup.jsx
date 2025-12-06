@@ -4,10 +4,10 @@ import { connect } from 'react-redux';
 import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
 import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
-import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from '~/utils/constants';
 
 function AssignBadgePopup(props) {
   const {darkMode} = props;
@@ -22,7 +22,7 @@ function AssignBadgePopup(props) {
 
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
-    if(props.isRecordBelongsToJaeAndUneditable){
+    if (props.isRecordBelongsToJaeAndUneditable) {
       alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
@@ -35,8 +35,9 @@ function AssignBadgePopup(props) {
         badgeCollection: response.data.badgeCollection,
       });
       toast.success('Badge update successfully');
+      // 🔹 Clear selected badges in Redux after a successful save
+      props.clearNameAndSelected();
     } catch (e) {
-      //TODO: Proper error handling.
       toast.error('Badge update failed');
     }
     setConfirmButtonDisable(false);
@@ -55,25 +56,26 @@ function AssignBadgePopup(props) {
     } catch (error) {}
   };
 
-  const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
-      if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
-        return badge;
-      }
-    });
-    return filteredList;
-  };
+ const filterBadges = (allBadges = []) => {
+   // guard against non-array inputs
+   if (!Array.isArray(allBadges)) return [];
+   return allBadges.filter(({ badgeName }) =>
+     badgeName.toLowerCase().includes(searchedName.toLowerCase())
+   );
+ };
 
   let filteredBadges = filterBadges(badgeList);
 
   const addExistBadges = () => {
     if (props.userProfile && props.userProfile.badgeCollection) {
-      const existBadges = props.userProfile.badgeCollection.map(badge => `assign-badge-${badge.badge._id}`);
+      // store raw badge IDs, not "assign-badge-..."
+      const existBadges = props.userProfile.badgeCollection
+        .filter(b => b.badge !== null)
+        .map(b => b.badge._id);
       return existBadges;
     }
     return [];
   };
-
   let existBadges = addExistBadges();
 
 

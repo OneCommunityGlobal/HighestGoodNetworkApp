@@ -23,8 +23,12 @@ function AssignBadgePopup(props) {
     );
   };
 
+  const { submit: submitCallback } = props;
+
   const handleSubmit = () => {
-    props.submit();
+    if (typeof submitCallback === 'function') {
+      submitCallback();
+    }
     dispatch(clearSelected());
   };
 
@@ -35,18 +39,20 @@ function AssignBadgePopup(props) {
     <div>
       <input
         type="text"
-        className="form-control assign_badge_search_box mb-3"
+        className={`form-control assign_badge_search_box mb-3 ${
+          darkMode ? 'bg-darkmode-liblack text-light border-0' : ''
+        }`}
         placeholder="Search Badge Name"
         onChange={e => onSearch(e.target.value)}
       />
       <div className={`overflow-auto mb-2 max-h-300 ${darkMode ? 'bg-dark text-light' : ''}`}>
         <Table className={darkMode ? 'table-dark' : ''}>
-          <thead>
+          <thead className={darkMode ? 'bg-space-cadet text-light border-0' : ''}>
             <tr>
               <th>Badge</th>
               <th>Name</th>
               <th>
-                <i className="fa fa-info-circle" id="SelectInfo" />
+                <i className="fa fa-info-circle" id="SelectInfo" data-testid="select-info-icon" />
                 <UncontrolledTooltip
                   placement="right"
                   target="SelectInfo"
@@ -54,7 +60,8 @@ function AssignBadgePopup(props) {
                 >
                   <p className="badge_info_icon_text">
                     Check those boxes to select the badges you wish to assign a person. Click the
-                    "Confirm" button at the bottom when you've selected all you wish to add.
+                    &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish
+                    to add.
                   </p>
                   <p className="badge_info_icon_text">
                     Want to assign multiple of the same badge to a person? Repeat the process!

@@ -4,6 +4,7 @@ import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ToolRecordsModal from './ToolRecordsModal';
+import styles from './ToolItemListView.module.css';
 
 export default function ToolItemsTable({
   selectedProject,
@@ -91,7 +92,7 @@ export default function ToolItemsTable({
         recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className="items_table_container">
+      <div className={`${styles.itemsTableContainer}`}>
         <Table>
           <thead>
             <tr>
@@ -142,7 +143,7 @@ export default function ToolItemsTable({
                       )}
                     </td>
                     <td>
-                      <div className="condition_cell">
+                      <div className={`${styles.conditionCell}`}>
                         {el.condition === 'Lost' ||
                         el.condition === 'Needs Replacing' ||
                         el.condition === 'Worn' ||
@@ -155,7 +156,7 @@ export default function ToolItemsTable({
                       </div>
                     </td>
                     <td>{el.code}</td>
-                    <td className="items_cell">
+                    <td className={`${styles.itemsCell}`}>
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}

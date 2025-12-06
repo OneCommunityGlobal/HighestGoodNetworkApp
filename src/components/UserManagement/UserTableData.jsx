@@ -1,30 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { Tooltip } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
-import { useDispatch } from 'react-redux';
+import { Tooltip, UncontrolledTooltip } from 'reactstrap';
+import { connect, useSelector, useDispatch} from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import PropTypes from 'prop-types';
+import { useHistory, Link } from 'react-router-dom';
+import { faUser, faUsers, faShieldAlt, faBriefcase, faUserTie, faCrown, faChalkboardTeacher, faBug, faGlobe, faStar, faCopy } from '@fortawesome/free-solid-svg-icons';
 import { updateUserInfomation } from '../../actions/userManagement';
 import { getAllRoles } from '../../actions/role';
 import ResetPasswordButton from './ResetPasswordButton';
-import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
-import { UserStatus, FinalDay } from '../../utils/enums';
+import { DELETE, PAUSE, RESUME } from '../../languages/en/ui';
+import { UserStatus } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
-import hasPermission from '../../utils/permissions';
+import TimeDifference from './TimeDifference';
 import { boxStyle } from '../../styles';
-import { formatDateLocal } from '../../utils/formatDate';
-import { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
+import { formatDateLocal, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
+import hasPermission, {cantUpdateDevAdminDetails } from '../../utils/permissions';
+import SetUpFinalDayButton from './SetUpFinalDayButton';
+
 /**
  * The body row of the user table
  */
-const UserTableData = React.memo(props => {
+const UserTableDataComponent = (props) => {
   const { darkMode } = props;
   const editUser = useSelector(state => state.userProfileEdit?.editable);
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
   const [tooltipPauseOpen, setTooltipPause] = useState(false);
   const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
+  const {isMobile} = props;
+  const {mobileFontSize} = props;
+  const [tooltipReportsOpen, setTooltipReports] = useState(false);
 
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
@@ -36,17 +41,13 @@ const UserTableData = React.memo(props => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDate(props.user.startDate),
-    endDate: formatDate(props.user.endDate),
+    startDate: formatDateUtcYYYYMMDD(props.user.startDate) || '',
+    endDate: formatDateUtcYYYYMMDD(props.user.endDate) || '',
   });
   const dispatch = useDispatch();
+  const history = useHistory();
   const { roles } = useSelector(state => state.role);
-  const joinTimeStamp = date => {
-    const now = new Date();
-    let formattedTimestamp = now.toISOString();
-    formattedTimestamp = `${date.toString()}T${formattedTimestamp.split('T')[1]}`;
-    return formattedTimestamp;
-  };
+  const joinTimeStamp = (date) => `${String(date).slice(0,10)}T12:00:00.000Z`;
   const addUserInformation = (item, value, id) => {
     dispatch(
       updateUserInfomation({
@@ -57,12 +58,27 @@ const UserTableData = React.memo(props => {
     );
   };
   const canDeleteUsers = props.hasPermission('deleteUserProfile');
-  const resetPasswordStatus = props.hasPermission('resetPassword');
-  const updatePasswordStatus = props.hasPermission('updatePassword');
+  const resetPasswordStatus = props.hasPermission('updatePassword');
+  //const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const canSetFinalDay = props.hasPermission('setFinalDay');
+  const canSeeReports = props.hasPermission('getReports');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
   const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
+  const toggleReportsTooltip = () => setTooltipReports(!tooltipReportsOpen);
+  const roleIcons = {
+    Volunteer: faUser,
+    'Core Team': faUsers,
+    Administrator: faShieldAlt,
+    'Assistant Manager': faUserTie,
+    Owner: faCrown,
+    Mentor: faChalkboardTeacher,
+    Manager: faBriefcase,
+    TestRole: faBug,
+    General: faGlobe,
+    Creator: faStar,
+  };
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -81,8 +97,8 @@ const UserTableData = React.memo(props => {
       jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
-      startDate: formatDateYYYYMMDD(props.user.startDate),
-      endDate: formatDateYYYYMMDD(props.user.endDate),
+      startDate: formatDateUtcYYYYMMDD(props.user.startDate),
+      endDate: formatDateUtcYYYYMMDD(props.user.endDate),
     });
   }, [props.user]);
 
@@ -117,14 +133,112 @@ const UserTableData = React.memo(props => {
     <tr
       className={`usermanagement__tr ${darkMode ? 'dark-usermanagement-data' : 'light-usermanagement-data'}`}
       id={`tr_user_${props.index}`}
+      style={{ fontSize: isMobile ? mobileFontSize : 'initial' }}
     >
-      <td className="usermanagement__active--input">
+      <td className="usermanagement__active--input" style={{ position: 'relative' }}>
         <ActiveCell
           isActive={props.isActive}
           canChange={canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
+        />
+        <span className='infringement-count'>
+          <a
+            href={`/userprofile/${props.user._id}`}
+            id={`blue-squares-${props.user._id}`} // Unique ID for tooltip target
+            title={`This person has ${props.user.infringementCount} blue square${props.user.infringementCount !== 1 ? 's' : ''}`}
+          >
+            {props.user.infringementCount}
+          </a>
+          {/* <UncontrolledTooltip
+            placement="top"
+            target={`blue-squares-${props.user._id}`}
+          >
+            This person has {props.user.infringementCount} blue square{props.user.infringementCount !== 1 ? 's' : ''}
+          </UncontrolledTooltip> */}
+        </span>
+        {!canSeeReports ? (
+          <Tooltip
+            placement="bottom"
+            isOpen={tooltipReportsOpen}
+            target={`report-icon-${props.user._id}`}
+            toggle={toggleReportsTooltip}
+          >
+            You don&apos;t have permission to view user reports
+          </Tooltip>
+        ) : (
+          ''
+        )}
+        <span style={{ position: 'absolute', top: 0, right: 0 }}>
+          <Link
+          to={`/peoplereport/${props.user._id}`}
+          onClick={(event) => {
+            if (!canSeeReports) {
+              event.preventDefault();
+              return;
+            }
+
+            if (
+              event.metaKey || event.ctrlKey ||
+              event.shiftKey || event.altKey ||
+              event.button !== 0
+            ) {
+              return;
+            }
+
+            event.preventDefault(); 
+            history.push(`/peoplereport/${props.user._id}`);
+          }}
+          style={{
+            textDecoration: 'none',
+            opacity: canSeeReports ? 1 : 0.7,
+            cursor: canSeeReports ? 'pointer' : 'not-allowed',
+            display: 'inline-block',               
+            lineHeight: 0,                        
+            padding: 0,                           
+          }}
+          title="Click to view user report"
+        >
+          <img
+            src="/report_icon.png"
+            alt="reportsicon"
+            className="team-member-tasks-user-report-link-image"
+            id={`report-icon-${props.user._id}`}
+            style={{
+              width: 16,   
+              height: 16,
+              verticalAlign: 'middle',
+            }}
+          />
+        </Link>
+
+      </span>
+      <Link
+        to={`/timelog/${props.user._id}#currentWeek`}
+        style={{ position: 'absolute', bottom: 0, right: 0 }}
+        title="Click to see user's timelog"
+        onClick={(e) => {
+          if (!canSeeReports) {
+            e.preventDefault();
+            return;
+          }
+        }}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <i
+          className="fa fa-clock-o"
+          aria-hidden="true"
+          style={{ fontSize: 14, cursor: 'pointer', marginRight: '5px' }}
+        />
+      </Link>
+
+
+        <TimeDifference
+          userProfile={props.user}
+          isUserSelf={props.user.email === props.authEmail}
+          darkMode={darkMode}
         />
       </td>
       <td className="email_cell">
@@ -145,7 +259,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input_firstname"
+            className={`edituser_input_firstname ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.firstName}
             onChange={e => {
               updateFormData({ ...formData, firstName: e.target.value });
@@ -172,7 +286,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input text-center"
+            className={`edituser_input text-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.lastName}
             onChange={e => {
               updateFormData({ ...formData, lastName: e.target.value });
@@ -183,15 +297,22 @@ const UserTableData = React.memo(props => {
       </td>
       <td id="usermanagement_role">
         {editUser?.role && roles !== undefined ? (
-          formData.role
+          <>
+          <FontAwesomeIcon id={`role-icon-${props.index}`} icon={roleIcons[formData.role] || faUser} />
+          <UncontrolledTooltip placement="top" target={`role-icon-${props.index}`}>
+            {formData.role}
+          </UncontrolledTooltip>
+        </>
         ) : (
           <select
             id=""
+            style={{ width: '100px'}}
             value={formData.role}
             onChange={e => {
               updateFormData({ ...formData, role: e.target.value });
               addUserInformation('role', e.target.value, props.user._id);
             }}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           >
             {roles?.map((e, index) => (
               // eslint-disable-next-line react/no-array-index-key
@@ -203,14 +324,10 @@ const UserTableData = React.memo(props => {
         )}
       </td>
 
-
-      <td className="title_cell"
-        title={formData.jobTitle}>
+      <td title={formData.jobTitle}>
         {editUser?.jobTitle ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
-            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {formData.jobTitle}
-            </span>
+            <span className="tooltip-container">{formData.jobTitle}</span>
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
@@ -235,7 +352,6 @@ const UserTableData = React.memo(props => {
 
       </td>
 
-
       <td className="email_cell">
         {editUser?.email ? (
           <div>
@@ -252,7 +368,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.email}
             onChange={e => {
               updateFormData({ ...formData, email: e.target.value });
@@ -267,7 +383,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="number"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.weeklycommittedHours}
             onChange={e => {
               updateFormData({ ...formData, weeklycommittedHours: e.target.value });
@@ -294,6 +410,7 @@ const UserTableData = React.memo(props => {
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={() => {
             if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
+              // eslint-disable-next-line no-alert
               alert(
                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
               );
@@ -305,7 +422,10 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+          style={{
+            ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+            padding: '5px', // Added 2px padding
+          }}
           disabled={!canChangeUserStatus}
           id={`btn-pause-profile-${props.user._id}`}
         >
@@ -316,11 +436,15 @@ const UserTableData = React.memo(props => {
       <td className="centered-td">
         <button
           type="button"
+          aria-label="Log Time Off"
           className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
             }`}
           onClick={() => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+          style={{
+            ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+            padding: '5px', // Added 2px padding
+          }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -349,7 +473,7 @@ const UserTableData = React.memo(props => {
       <td>
         {!isCurrentUser && (
           <>
-            {!canChangeUserStatus ? (
+            {canSetFinalDay ? (
               <Tooltip
                 placement="bottom"
                 isOpen={tooltipFinalDayOpen}
@@ -361,28 +485,16 @@ const UserTableData = React.memo(props => {
             ) : (
               ''
             )}
-            <button
-              type="button"
-              className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
-              onClick={() => {
-                if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
-                  alert(
-                    'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
-                  );
-                  return;
-                }
-
-                props.onFinalDayClick(
-                  props.user,
-                  props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
-                );
+                       <SetUpFinalDayButton
+              userProfile={props.user}
+              darkMode={darkMode}
+              onFinalDaySave={updatedUser => {
+                // Update the user object in the parent state
+                props.onUserUpdate(updatedUser);
               }}
-              style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
               id={`btn-final-day-${props.user._id}`}
-              disabled={!canChangeUserStatus}
-            >
-              {props.user.endDate ? CANCEL : SET_FINAL_DAY}
-            </button>
+              disabled={!canSetFinalDay}
+            />
           </>
         )}
       </td>
@@ -394,13 +506,13 @@ const UserTableData = React.memo(props => {
       <td>
         {editUser?.startDate ? (
           <span>
-            {props.user.startDate ? formatDate(formData.startDate) : 'N/A'}
+            { props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A' }
             {/* {formData.startDate},{props.user.startDate} */}
           </span>
         ) : (
           <input
             type="date"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.startDate}
             onChange={e => {
               updateFormData({ ...formData, startDate: e.target.value });
@@ -412,13 +524,13 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDate(formData.endDate) : 'N/A'}
+            {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(
-                  props.user.endDate ? formatDate(formData.endDate) : 'N/A',
+                  props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A',
                 );
                 toast.success('End Date Copied!');
               }}
@@ -427,7 +539,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="date"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.endDate}
             onChange={e => {
               updateFormData({ ...formData, endDate: e.target.value });
@@ -458,7 +570,10 @@ const UserTableData = React.memo(props => {
               onClick={() => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+              style={{
+                ...darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle,
+                padding: '5px', // Added 2px padding
+              }}
               disabled={props.auth?.user.userid === props.user._id || !canDeleteUsers}
             >
               {DELETE}
@@ -470,18 +585,52 @@ const UserTableData = React.memo(props => {
               user={props.user}
               darkMode={darkMode}
               isSmallButton
-              canResetPassword={resetPasswordStatus || updatePasswordStatus}
+              canUpdatePassword={resetPasswordStatus}
             />
           </span>
         </td>
       )}
     </tr>
   );
-});
+};
+// UserTableData.propTypes = {
+//   hasPermission: PropTypes.func, // or PropTypes.bool depending on what it is
+//   user: PropTypes.object,        // if you access user or user._id
+// };
+
+const UserTableData = React.memo(UserTableDataComponent);
+UserTableData.displayName = 'UserTableData';
 
 const mapStateToProps = state => ({
   auth: state.auth,
   authEmail: state.auth.user.email,
 });
+UserTableDataComponent.propTypes = {
+  hasPermission: PropTypes.func.isRequired, // must be a function
+  user: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    firstName: PropTypes.string,
+    lastName: PropTypes.string,
+    role: PropTypes.string,
+    jobTitle: PropTypes.string,
+    email: PropTypes.string,
+    weeklycommittedHours: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    startDate: PropTypes.string,
+    endDate: PropTypes.string,
+    infringementCount: PropTypes.number,
+    isActive: PropTypes.bool,
+    reactivationDate: PropTypes.string,
+  }).isRequired,
+  index: PropTypes.number,
+  isActive: PropTypes.bool,
+  resetLoading: PropTypes.bool,
+  authEmail: PropTypes.string,
+  auth: PropTypes.object,
+  onPauseResumeClick: PropTypes.func,
+  onDeleteClick: PropTypes.func,
+  onLogTimeOffClick: PropTypes.func,
+  onUserUpdate: PropTypes.func,
+  timeOffRequests: PropTypes.array,
+};
 
 export default connect(mapStateToProps, { hasPermission })(UserTableData);

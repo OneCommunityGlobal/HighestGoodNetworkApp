@@ -3,7 +3,7 @@ import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import hasPermission from '../../utils/permissions';
 import { connect } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '~/styles';
 
 /**
  * Shows the dates and times a user has edited their time entries. Admins are given the ability to delete these edits.
@@ -40,7 +40,7 @@ const TimeEntryEditHistory = props => {
 
   return (
     <>
-      <p className={darkMode ? 'text-light' : ''}>Time Entry Edit History</p>
+      <p className={darkMode ? 'text-light' : ''} style={{textAlign: 'left'}}>Time Entry Edit History</p>
       <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`} width="100%">
         <thead>
           <tr style={tabletView ? {fontSize: "10px"} : {}}>

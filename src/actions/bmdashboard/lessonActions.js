@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '~/utils/URL';
 
 const postNewLesson = lessonData => async dispatch => {
   const response = await axios.post(ENDPOINTS.POST_LESSON, lessonData);

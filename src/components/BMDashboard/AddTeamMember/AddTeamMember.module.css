@@ -1,0 +1,165 @@
+.iconAddPerson {
+    padding: 50px;
+    justify-content: center;
+    text-align: center;
+}
+
+.titleMember {
+    color: #f49441;
+}
+
+.containerAdd {
+    background-color: white;
+    border-radius: 10%;
+    padding-bottom: 50px;
+}
+
+/* Name Section */
+.nameContainer {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin: 20px auto;
+    width: 500px;
+}
+
+.inputName {
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+}
+
+.inputName input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 38px;
+}
+
+.inputName label {
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+/* Role Section */
+.roleContainer {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    width: 500px;
+    margin: 20px auto;
+}
+
+.roleInput {
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+}
+
+.roleInput label {
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.roleInput input,
+.roleInput .cssB62m3tContainer {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Team Section */
+.teamContainer {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    width: 500px;
+    margin: 20px auto;
+}
+
+.teamInput {
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+}
+
+.teamInput label {
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.teamInput input,
+.teamInput .cssB62m3tContainer {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Contact Info Section */
+.contactInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 20px;
+    width: 500px;
+    margin: 0 auto;
+}
+
+.contactInfo label {
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.contactInfo input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    height: 38px;
+}
+
+.phoneInputGroup {
+    display: flex;
+    gap: 10px;
+}
+
+.countryCodeSelect {
+    width: 150px;
+}
+
+/* Button Section */
+.submitCancel {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 60px;
+}
+
+.submitButton,
+.cancelButton {
+    padding: 15px 40px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 0px 50px;
+}
+
+.submitButton {
+    background-color: #26505e;
+    color: white;
+    border: none;
+}
+
+.cancelButton {
+    background-color: white;
+    border: 2px solid #26505e;
+    color: black;
+}
+
+/* Error Styles */
+.error {
+    border-color: red;
+}
+
+.errorMessage {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}

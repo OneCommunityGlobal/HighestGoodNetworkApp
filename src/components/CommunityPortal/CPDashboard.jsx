@@ -1,164 +1,189 @@
 import { useState, useEffect } from 'react';
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  CardBody,
-  Button,
-  Input,
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import { useHistory } from 'react-router-dom'; // For React Router v5
-import './CPDashboard.css';
+import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
+import styles from './CPDashboard.module.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
+import { ENDPOINTS } from '../../utils/URL';
+import axios from 'axios';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState('');
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const history = useHistory(); // Use useHistory for navigation
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 5,
+    total: 0,
+    limit: 6,
+  });
+
+  const FALLBACK_IMG =
+    'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=600&q=60';
+
+  const FixedRatioImage = ({ src, alt, fallback }) => (
+    <div
+      style={{
+        width: '100%',
+        aspectRatio: '4 / 3',
+        overflow: 'hidden',
+        background: '#f2f2f2',
+      }}
+    >
+      <img
+        src={src || fallback}
+        alt={alt}
+        loading="lazy"
+        onError={e => {
+          if (e.currentTarget.src !== fallback) e.currentTarget.src = fallback;
+        }}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          display: 'block',
+        }}
+      />
+    </div>
+  );
 
   useEffect(() => {
-    const mockEvents = [
-      {
-        id: 1,
-        title: 'PGSA Lunch Talks',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'Disque 919',
-        organizer: 'Physics Graduate Student Association',
-        image: 'https://via.placeholder.com/300',
-      },
-      {
-        id: 2,
-        title: 'Hot Chocolate/Bake Sale',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'G.C LeBow - Lobby Tabling Space 2',
-        organizer: 'Kappa Phi Gamma, Sorority Inc.',
-        image: 'https://via.placeholder.com/300',
-      },
-      {
-        id: 3,
-        title: 'Holiday Lunch',
-        date: 'Friday, December 6 at 12:00PM EST',
-        location: 'Hill Conference Room',
-        organizer: 'Chemical and Biological Engineering Graduate Society',
-        image: 'https://via.placeholder.com/300',
-      },
-    ];
-    setEvents(mockEvents);
+    const fetchEvents = async () => {
+      setIsLoading(true);
+
+      try {
+        const response = await axios.get(ENDPOINTS.EVENTS);
+        console.log('Fetched events:', response.data.events);
+        setEvents(response.data.events);
+      } catch (err) {
+        console.error('Here', err);
+        setError('Failed to load events');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEvents();
   }, []);
 
-  const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-
-  const handleNavigation = path => {
-    history.push(path); // Navigate to the selected path
+  const formatDate = dateStr => {
+    if (!dateStr) return 'Date TBD';
+    const date = new Date(dateStr);
+    return date.toLocaleString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
   };
 
+  const filteredEvents = events.filter(event =>
+    event.title?.toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const totalPages = Math.ceil(filteredEvents.length / pagination.limit);
+
+  const displayedEvents = filteredEvents.slice(
+    (pagination.currentPage - 1) * pagination.limit,
+    pagination.currentPage * pagination.limit,
+  );
+
   return (
-    <Container fluid className="dashboard-container">
-      <header className="dashboard-header">
+    <Container className={styles['dashboard-container']}>
+      <header className={styles['dashboard-header']}>
         <h1>All Events</h1>
-        <div className="dashboard-controls">
-          <div className="dashboard-search-container">
+        <div className={styles['dashboard-controls']}>
+          <div className={styles['dashboard-search-container']}>
             <Input
               type="search"
               placeholder="Search events..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="dashboard-search"
+              className={styles['dashboard-search']}
             />
           </div>
-          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
-            <DropdownToggle caret color="secondary">
-              Community Portal
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={() => handleNavigation('/home')}>Home</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/events')}>Events</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
         </div>
       </header>
 
       <Row>
-        <Col md={3} className="dashboard-sidebar">
-          <div className="filter-section">
+        <Col md={3} className={styles['dashboard-sidebar']}>
+          <div className={styles['filter-section']}>
             <h4>Search Filters</h4>
-            <div className="filter-item">
-              <label>Dates</label>
-              <div className="filter-options-horizontal">
-                <div>
-                  <Input type="radio" name="dates" /> Tomorrow
+            <div className={styles['filter-section-divider']}>
+              <div className={styles['filter-item']}>
+                <label htmlFor="date-tomorrow"> Dates</label>
+                <div className={styles['filter-options-horizontal']}>
+                  <div>
+                    <Input type="radio" name="dates" /> Tomorrow
+                  </div>
+                  <div>
+                    <Input type="radio" name="dates" /> This Weekend
+                  </div>
                 </div>
+                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+              </div>
+              <div className={styles['filter-item']}>
+                <label htmlFor="online-only">Online</label>
                 <div>
-                  <Input type="radio" name="dates" /> This Weekend
+                  <Input type="checkbox" /> Online Only
                 </div>
               </div>
-              <Input type="date" placeholder="Ending After" className="date-filter" />
-            </div>
-            <div className="filter-item">
-              <label>Online</label>
-              <div>
-                <Input type="checkbox" /> Online Only
+              <div className={styles['filter-item']}>
+                <label htmlFor="branches">Branches</label>
+                <Input type="select">
+                  <option>Select branches</option>
+                </Input>
               </div>
-            </div>
-            <div className="filter-item">
-              <label>Branches</label>
-              <Input type="select">
-                <option>Select branches</option>
-              </Input>
-            </div>
-            <div className="filter-item">
-              <label>Themes</label>
-              <Input type="select">
-                <option>Select themes</option>
-              </Input>
-            </div>
-            <div className="filter-item">
-              <label>Categories</label>
-              <Input type="select">
-                <option>Select categories</option>
-              </Input>
+              <div className={styles['filter-item']}>
+                <label htmlFor="themes">Themes</label>
+                <Input type="select">
+                  <option>Select themes</option>
+                </Input>
+              </div>
+              <div className={styles['filter-item']}>
+                <label htmlFor="categories">Categories</label>
+                <Input type="select">
+                  <option>Select categories</option>
+                </Input>
+              </div>
             </div>
           </div>
         </Col>
 
-        <Col md={9} className="dashboard-main">
-          <h2 className="section-title">Events</h2>
+        <Col md={9} className={styles['dashboard-main']}>
+          <h2 className={styles['section-title']}>Events</h2>
           <Row>
             {events.length > 0 ? (
               events.map(event => (
-                <Col md={4} key={event.id} className="event-card-col">
-                  <Card className="event-card">
-                    <div className="event-card-img-container">
-                      <img src={event.image} alt={event.title} className="event-card-img" />
+                <Col md={4} key={event.id} className={styles['event-card-col']}>
+                  <Card className={styles['event-card']}>
+                    <div className={styles['event-card-img-container']}>
+                      <img
+                        src={event.image}
+                        alt={event.title}
+                        className={styles['event-card-img']}
+                      />
                     </div>
                     <CardBody>
-                      <h5 className="event-title">{event.title}</h5>
-                      <p className="event-date">
-                        <FaCalendarAlt className="event-icon" /> {event.date}
+                      <h5 className={styles['event-title']}>{event.title}</h5>
+                      <p className={styles['event-date']}>
+                        <FaCalendarAlt className={styles['event-icon']} /> {event.date}
                       </p>
-                      <p className="event-location">
-                        <FaMapMarkerAlt className="event-icon" /> {event.location}
+                      <p className={styles['event-location']}>
+                        <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
                       </p>
-                      <p className="event-organizer">
-                        <FaUserAlt className="event-icon" /> {event.organizer}
+                      <p className={styles['event-organizer']}>
+                        <FaUserAlt className={styles['event-icon']} /> {event.organizer}
                       </p>
                     </CardBody>
                   </Card>
                 </Col>
               ))
             ) : (
-              <div className="no-events">No events available</div>
+              <div className={styles['no-events']}>No events available</div>
             )}
           </Row>
-          <div className="dashboard-actions">
+          <div className={styles['dashboard-actions']}>
             <Button color="primary">Show Past Events</Button>
           </div>
         </Col>
