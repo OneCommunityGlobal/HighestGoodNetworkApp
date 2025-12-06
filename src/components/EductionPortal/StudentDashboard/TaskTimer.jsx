@@ -339,9 +339,17 @@ export default function TaskTimer({ userid }) {
         >
           <div
             className={styles.card}
-            onClick={(e) => e.stopPropagation()}
             role="dialog"
+            tabIndex={-1}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              // Prevent Enter/Space from triggering backdrop click
+              if (e.key === "Enter" || e.key === " ") {
+                e.stopPropagation();
+              }
+            }}
           >
+
             <div className={styles.cardHeader}>
               <span className={styles.headerTitle}>Timer</span>
 
