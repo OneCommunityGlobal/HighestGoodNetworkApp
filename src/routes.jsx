@@ -43,7 +43,6 @@ import JobCCDashboard from './components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from './components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
 import TotalorgSummaryEmail from './components/TotalOrgSummary/weekly-summary-email/TotalorgSummaryEmail';
 
-
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import LessonList from './components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from './components/BMDashboard/Equipment/Add/AddEquipmentType';
@@ -545,22 +544,21 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
-                 <ProtectedRoute
-        path="/TotalorgSummaryEmail"
-        exact
-        component={TotalorgSummaryEmail}
-        fallback
-        allowedRoles={[
-          UserRole.Administrator,
-          UserRole.Manager,
-          UserRole.CoreTeam,
-          UserRole.Owner,
-          UserRole.Mentor,
-        ]}
-        // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
-        routePermissions={RoutePermissions.weeklySummariesReport}
-      />
-
+        <ProtectedRoute
+          path="/TotalorgSummaryEmail"
+          exact
+          component={TotalorgSummaryEmail}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
+          routePermissions={RoutePermissions.weeklySummariesReport}
+        />
         <ProtectedRoute
           path="/job-notification-dashboard"
           exact
