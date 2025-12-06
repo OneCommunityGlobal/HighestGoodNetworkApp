@@ -54,7 +54,7 @@
 }
 
 :global(.customCalendar .react-datepicker__day--keyboard-selected) {
-  background-color: #7d7e7f !important;
+  background-color: #5a5a5a !important;
   color: #ffffff !important;
 }
 
@@ -65,7 +65,7 @@
 }
 
 :global(.customCalendar .react-datepicker__day--selected) {
-  background-color: #007bff !important;
+  background-color: #0066cc !important;
   color: #ffffff !important;
   border-radius: 50%;
 }
