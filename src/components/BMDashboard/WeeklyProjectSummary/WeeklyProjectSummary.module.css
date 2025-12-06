@@ -228,7 +228,10 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  overflow: visible;
+  overflow: hidden visible;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .darkMode .weeklyProjectSummaryCard {
@@ -364,7 +367,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
-  align-items: start; /* Prevent cards from stretching to match tallest card */
+  align-items: stretch; /* Make all cards in a row the same height */
   border-top: 1px solid var(--card-shadow);
   animation: fade-in 0.3s ease-in-out;
   background: var(--section-bg);
@@ -700,7 +703,27 @@
 }
 
 /* Medium Screens */
-@media (width <=1024px) {
+/* Large screens - Tools section layout optimization */
+@media (max-width: 1366px) {
+  /* Tools and Equipment Tracking - Switch to 2 column layout earlier for better chart visibility */
+  .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 12px;
+  }
+
+  /* Wide card spans 2 columns, normal cards span 1 column each */
+  .weeklyProjectSummaryDashboardCategoryContent .wideCard {
+    grid-column: span 2;
+  }
+
+  .weeklyProjectSummaryDashboardCategoryContent .normalCard {
+    grid-column: span 1;
+  }
+}
+
+/* Medium Screens - Wrap Items */
+@media (max-width: 1024px) {
   .weeklySummaryHeaderContainer {
     flex-direction: column;
     align-items: center;
@@ -762,6 +785,129 @@
   .weeklyProjectSummaryDashboardSection.half,
   .weeklyProjectSummaryDashboardSection.small {
     grid-column: span 1;
+  }
+
+  .projectStatusGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .weeklyProjectSummaryDashboardSection.half .weeklyProjectSummaryDashboardCategoryContent {
+    grid-template-columns: 1fr;
+  }
+  
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 240px;
+  }
+  
+  .normalCard {
+    min-height: 280px;
+  }
+
+  .lessonsLearnedGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    min-height: auto;
+  }
+  
+  .lessonsCard {
+    min-height: 500px;
+  }
+  
+  .toolsTrackingLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  .toolsDonutWrap {
+    grid-column: span 1;
+  }
+  
+  .financialsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .financialsGrid .financialBig {
+    grid-column: span 1;
+  }
+  
+  .laborTimeGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .financialsTrackingGrid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Ensure charts are fully visible on mobile - prevent clipping */
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-chart-container,
+  .weeklyProjectSummaryDashboardCategoryContent .tools-horizontal-bar-chart-content,
+  .weeklyProjectSummaryDashboardCategoryContent .tool-donut-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 576px) {
+  .weeklyProjectSummaryDashboardCategoryContent {
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .weeklyProjectSummaryCard {
+    padding: 6px;
+  }
+}
+
+/* Extra Small Screens */
+@media (width <= 480px) {
+  .lessonsCard {
+    min-height: 450px;
+  }
+  
+  .weeklyProjectSummaryCard :global(.chartContainer) {
+    min-height: 220px;
+  }
+  
+  .normalCard {
+    min-height: 260px;
+  }
+  
+  .weeklySummaryHeaderTitle {
+    font-size: large;
+    flex-direction: column;
+    gap: 5px;
+  }
+}
+
+/* Status Grid Responsive */
+@media (width >= 1600px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (width <= 1400px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (width <= 1024px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (width <= 768px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 576px) {
+  .projectStatusGrid {
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 

@@ -87,14 +87,15 @@ function ToolsHorizontalBarChart({ darkMode: darkModeProp }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calculate responsive chart height: 240px mobile, 260px tablet, 280px desktop
+  // Calculate responsive chart height: 240px mobile, 280px tablet, 300px desktop
+  // Standardized to match tallest chart (ToolsStoppageHorizontalBarChart)
   const getChartHeight = () => {
     if (windowWidth <= 768) {
       return 240; // Mobile
     } else if (windowWidth <= 1024) {
-      return 260; // Tablet
+      return 280; // Tablet
     }
-    return 280; // Desktop
+    return 300; // Desktop
   };
 
   // Calculate responsive margins: mobile {5,5,15,5}, tablet {8,15,25,8}, desktop {10,30,40,10}

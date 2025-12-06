@@ -246,28 +246,83 @@ export default function ToolsStoppageHorizontalBarChart() {
   const dateRangeLabel =
     startDate && endDate ? `${formatDate(startDate)} - ${formatDate(endDate)}` : '';
 
-  const selectDarkStyles = {
+  // Consistent react-select styles matching paid-labor-cost pattern
+  const selectStyles = {
     control: base => ({
       ...base,
-      backgroundColor: '#2c3344',
-      borderColor: '#364156',
+      minHeight: '38px',
+      fontSize: '12px',
+      backgroundColor: darkMode ? '#253342' : '#fff',
+      borderColor: darkMode ? '#2d4059' : '#ccc',
+      color: darkMode ? '#ffffff' : '#000',
+      boxShadow: 'none',
+      borderRadius: '6px',
+      '&:hover': {
+        borderColor: darkMode ? '#2d4059' : '#999',
+      },
+    }),
+    valueContainer: base => ({
+      ...base,
+      padding: '2px 8px',
+      color: darkMode ? '#ffffff' : '#000',
+    }),
+    input: base => ({
+      ...base,
+      margin: '0px',
+      padding: '0px',
+      color: darkMode ? '#ffffff' : '#000',
+    }),
+    indicatorsContainer: base => ({
+      ...base,
+      padding: '0 4px',
     }),
     menu: base => ({
       ...base,
-      backgroundColor: '#2c3344',
+      backgroundColor: darkMode ? '#253342' : '#fff',
+      fontSize: '12px',
     }),
     option: (base, state) => ({
       ...base,
-      backgroundColor: state.isFocused ? '#364156' : '#2c3344',
-      color: '#e0e0e0',
+      backgroundColor: state.isSelected
+        ? darkMode
+          ? '#e8a71c'
+          : '#0d55b3'
+        : state.isFocused
+        ? darkMode
+          ? '#3a506b'
+          : '#f0f0f0'
+        : darkMode
+        ? '#253342'
+        : '#fff',
+      color: state.isSelected ? (darkMode ? '#000' : '#fff') : darkMode ? '#ffffff' : '#000',
+      cursor: 'pointer',
+      padding: '8px 12px',
+      fontSize: '12px',
+      ':active': {
+        backgroundColor: darkMode ? '#3a506b' : '#e0e0e0',
+      },
     }),
     singleValue: base => ({
       ...base,
-      color: '#e0e0e0',
+      color: darkMode ? '#ffffff' : '#000',
+      fontSize: '12px',
     }),
     placeholder: base => ({
       ...base,
-      color: '#aaaaaa',
+      color: darkMode ? '#aaaaaa' : '#666',
+      fontSize: '12px',
+    }),
+    indicatorSeparator: base => ({
+      ...base,
+      backgroundColor: darkMode ? '#2d4059' : '#ccc',
+    }),
+    dropdownIndicator: base => ({
+      ...base,
+      color: darkMode ? '#ffffff' : '#999',
+      padding: '4px',
+      ':hover': {
+        color: darkMode ? '#ffffff' : '#666',
+      },
     }),
   };
 
@@ -389,7 +444,7 @@ export default function ToolsStoppageHorizontalBarChart() {
             placeholder="Select a project ID to view data"
             isClearable={false}
             isDisabled={projects.length === 0}
-            styles={darkMode ? selectDarkStyles : {}}
+            styles={selectStyles}
           />
         </Col>
         <Col xs={12} md={2}>
@@ -415,13 +470,22 @@ export default function ToolsStoppageHorizontalBarChart() {
             style={{
               width: '100%',
               maxWidth: '100%',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'stretch',
               position: 'relative',
               backgroundColor: darkMode ? '#2c3344' : '#ffffff',
               borderRadius: '4px',
               padding: '8px',
+              /* Allow container to shrink to match donut chart height */
+              minHeight: 0,
             }}
           >
-            <Bar data={chartData} options={chartOptions} height={getChartHeight()} />
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              <Bar data={chartData} options={chartOptions} height={getChartHeight()} />
+            </div>
           </div>
         )}
 
