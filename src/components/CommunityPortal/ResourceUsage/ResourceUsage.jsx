@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
 import {
   BarChart,
@@ -69,10 +70,10 @@ const allInsights = {
   ],
 };
 
-function CustomTooltip({ active, payload }) {
+function CustomTooltip({ active, payload, darkMode }) {
   if (active && payload && payload.length) {
     return (
-      <div className={styles.customTooltip}>
+      <div className={`${styles.customTooltip} ${darkMode ? styles.darkTooltip : ''}`}>
         <p className="mb-1">{`${payload[0].payload.name}`}</p>
         <p className="mb-1" style={{ color: '#22c55e' }}>{`Returned: ${payload[0].value}`}</p>
         <p className="mb-0" style={{ color: '#fca5a5' }}>{`Loaned: ${payload[1].value}`}</p>
@@ -88,6 +89,7 @@ export default function ResourceUsage() {
   const [insightsTimePeriod, setInsightsTimePeriod] = useState('Last Week');
   const [data, setData] = useState(allData.venue);
   const [insights, setInsights] = useState(allInsights['Last Week']);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const filterDataByDate = (datas, period) => {
     // Create different datasets for different time periods to demonstrate filtering
@@ -119,9 +121,9 @@ export default function ResourceUsage() {
   }, [insightsTimePeriod]);
 
   return (
-    <div className={styles.resourceUsageContainer}>
+    <div className={`${styles.resourceUsageContainer} ${darkMode ? styles.darkContainer : ''}`}>
       {/* Left Section - Chart */}
-      <div className={styles.chartSection}>
+      <div className={`${styles.chartSection} ${darkMode ? styles.darkChartSection : ''}`}>
         <div className={styles.headerSection}>
           <h1>Resources usage</h1>
           <div className={styles.filters}>
@@ -157,10 +159,14 @@ export default function ResourceUsage() {
                   dataKey="name"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: '#666', fontSize: 12 }}
+                  tick={{ fill: darkMode ? '#eee' : '#666', fontSize: 12 }}
                 />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#666', fontSize: 12 }} />
-                <Tooltip content={<CustomTooltip />} />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: darkMode ? '#eee' : '#666', fontSize: 12 }}
+                />
+                <Tooltip content={<CustomTooltip darkMode={darkMode} />} />
                 <Legend
                   align="right"
                   verticalAlign="top"
@@ -200,7 +206,7 @@ export default function ResourceUsage() {
       </div>
 
       {/* Right Section - Insights */}
-      <div className={styles.insightsSection}>
+      <div className={`${styles.insightsSection} ${darkMode ? styles.darkInsightsSection : ''}`}>
         <div className={styles.insightsHeader}>
           <h2>Insights</h2>
           <Dropdown>
@@ -222,7 +228,10 @@ export default function ResourceUsage() {
         </div>
         <div className={styles.insightsGrid}>
           {insights.map((insight, index) => (
-            <div key={index} className={styles.insightCard}>
+            <div
+              key={index}
+              className={`${styles.insightCard} ${darkMode ? styles.darkInsightCard : ''}`}
+            >
               <div className={styles.insightTitle}>{insight.title}</div>
               <div className={styles.insightBadge} style={{ backgroundColor: insight.color }}>
                 {insight.value}
