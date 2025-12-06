@@ -79,6 +79,7 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+  const [isAckLoading, setIsAckLoading] = useState(false);
   const [ showPromotionsPopup, setShowPromotionsPopup ] = useState(false);
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
