@@ -158,6 +158,10 @@
   word-break: break-word;
 }
 
+.myspace-field__file {
+  display: none;
+}
+
 .myspace-field__error {
   color: #d9534f;
   font-size: 0.85rem;
@@ -303,6 +307,29 @@
 
 .myspace-autoposter.dark .myspace-field__sublabel {
   color: #dbe6ff;
+}
+
+.myspace-photo__meta {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 6px;
+}
+
+.myspace-autoposter.dark .myspace-photo__meta {
+  color: #9aa9c6;
+}
+
+.myspace-photo__preview {
+  margin-top: 10px;
+  border-radius: 8px;
+  border: 1px solid #d6dde7;
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+}
+
+.myspace-autoposter.dark .myspace-photo__preview {
+  border-color: #2b3b55;
 }
 
 .myspace-card--scheduler {

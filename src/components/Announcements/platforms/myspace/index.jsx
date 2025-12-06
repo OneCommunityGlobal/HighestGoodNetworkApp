@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useSelector } from 'react-redux';
@@ -10,18 +10,6 @@ import { setPlatformScheduleCount } from '../PlatformScheduleBadge';
 const HEADLINE_MIN = 12;
 const HEADLINE_MAX = 95;
 const BODY_MIN = 80;
-const MYSPACE_CATEGORY_SUGGESTIONS = [
-  'Announcements',
-  'Art & Design',
-  'Causes & Awareness',
-  'Education',
-  'Health & Wellness',
-  'Lifestyle',
-  'Music',
-  'Science & Tech',
-  'Sustainability',
-  'Volunteering',
-];
 const STOP_WORDS = new Set([
   'about',
   'after',
@@ -72,13 +60,6 @@ const sanitizeTags = text =>
     )
     .filter(Boolean);
 
-const toTitleCase = text =>
-  text
-    .split(/[\s-]+/)
-    .filter(Boolean)
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
 const extractTagCandidates = (headline, summary, existing) => {
   if (Array.isArray(existing) && existing.length) return existing.slice(0, 6);
   const corpus = `${headline} ${summary}`.toLowerCase();
@@ -94,11 +75,10 @@ const extractTagCandidates = (headline, summary, existing) => {
   return candidates;
 };
 
-const buildPreview = ({ headline, category, sourceUrl, tags, body, mood, listeningTo }) =>
-  `Subject / Title\n${headline?.trim() || '—'}\n\nCategory\n${category?.trim() || '—'}\n\nTags\n${
+const buildPreview = ({ headline, body, sourceUrl, tags }) =>
+  `${headline?.trim() || '—'}\n\n${body?.trim() || '—'}\n\n${sourceUrl?.trim() || '—'}\n\n${
     tags.length ? tags.join(', ') : '—'
-  }\n\nMood\n${mood?.trim() || '—'}\n\nListening To\n${listeningTo?.trim() ||
-    '—'}\n\nExternal Link\n${sourceUrl?.trim() || '—'}\n\nBlog Entry\n${body?.trim() || '—'}\n`;
+  }\n`;
 
 const padTimeUnit = value => String(value).padStart(2, '0');
 
@@ -187,11 +167,12 @@ function MyspaceAutoPoster({ platform }) {
 
   const [headline, setHeadline] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
-  const [category, setCategory] = useState(MYSPACE_CATEGORY_SUGGESTIONS[0]);
+  const [photoUrl, setPhotoUrl] = useState('');
+  const [photoFileName, setPhotoFileName] = useState('');
+  const [photoPreviewUrl, setPhotoPreviewUrl] = useState('');
   const [tagsText, setTagsText] = useState('');
   const [body, setBody] = useState('');
-  const [mood, setMood] = useState('');
-  const [listeningTo, setListeningTo] = useState('');
+  const [song, setSong] = useState('');
   const [activeSubTab, setActiveSubTab] = useState('make');
   const [scheduledDraft, setScheduledDraft] = useState('');
   const [scheduledDate, setScheduledDate] = useState(() => formatLocalDate(new Date()));
@@ -199,12 +180,20 @@ function MyspaceAutoPoster({ platform }) {
   const [savedSchedules, setSavedSchedules] = useState([]);
   const [editingScheduleId, setEditingScheduleId] = useState(null);
   const [scheduleAttemptedSave, setScheduleAttemptedSave] = useState(false);
+  const photoInputRef = useRef(null);
 
   useEffect(() => {
     if (platform !== 'myspace') return undefined;
     setPlatformScheduleCount(platform, savedSchedules.length);
     return () => setPlatformScheduleCount(platform, 0);
   }, [platform, savedSchedules.length]);
+
+  useEffect(() => {
+    if (!photoPreviewUrl) return undefined;
+    return () => {
+      URL.revokeObjectURL(photoPreviewUrl);
+    };
+  }, [photoPreviewUrl]);
 
   const subTabs = useMemo(
     () => [
@@ -218,47 +207,36 @@ function MyspaceAutoPoster({ platform }) {
 
   const trimmedHeadline = headline.trim();
   const trimmedUrl = sourceUrl.trim();
-  const trimmedCategory = category.trim();
   const trimmedBody = body.trim();
-  const trimmedMood = mood.trim();
-  const trimmedListeningTo = listeningTo.trim();
+  const trimmedPhoto = photoUrl.trim();
+  const trimmedSong = song.trim();
 
   const headlineInRange =
     trimmedHeadline.length >= HEADLINE_MIN && trimmedHeadline.length <= HEADLINE_MAX;
   const urlValid = /^https?:\/\//i.test(trimmedUrl);
-  const categoryValid = trimmedCategory.length >= 3;
   const bodyValid = trimmedBody.length >= BODY_MIN;
   const tagsValid = tags.length > 0;
 
-  const readyToCopy = headlineInRange && categoryValid && bodyValid && tagsValid;
+  const readyToCopy = headlineInRange && bodyValid && tagsValid;
 
   const highlightHeadline = trimmedHeadline.length > 0 && !headlineInRange;
   const highlightUrl = trimmedUrl.length > 0 && !urlValid;
-  const highlightCategory = trimmedCategory.length > 0 && !categoryValid;
   const highlightBody = trimmedBody.length > 0 && !bodyValid;
 
   const hasAnyInput = Boolean(
     trimmedHeadline ||
       trimmedUrl ||
-      trimmedCategory ||
       trimmedBody ||
       tagsText.trim() ||
-      trimmedMood ||
-      trimmedListeningTo,
+      trimmedPhoto ||
+      trimmedSong ||
+      photoFileName,
   );
 
   const preview = useMemo(() => {
     if (!hasAnyInput) return '';
-    return buildPreview({
-      headline,
-      sourceUrl,
-      category,
-      tags,
-      body,
-      mood,
-      listeningTo,
-    });
-  }, [body, category, headline, hasAnyInput, listeningTo, mood, sourceUrl, tags]);
+    return buildPreview({ headline, body, sourceUrl, tags });
+  }, [body, headline, hasAnyInput, sourceUrl, tags]);
   const scheduleHasDraft = scheduledDraft.trim().length > 0;
   const editingSchedule = useMemo(
     () => savedSchedules.find(schedule => schedule.id === editingScheduleId) || null,
@@ -282,11 +260,10 @@ function MyspaceAutoPoster({ platform }) {
   const handleReset = () => {
     setHeadline('');
     setSourceUrl('');
-    setCategory(MYSPACE_CATEGORY_SUGGESTIONS[0]);
+    setPhotoUrl('');
     setTagsText('');
     setBody('');
-    setMood('');
-    setListeningTo('');
+    setSong('');
   };
 
   const openMyspaceSubmit = () => {
@@ -302,8 +279,7 @@ function MyspaceAutoPoster({ platform }) {
     }
     const missingFields = [];
     if (!trimmedHeadline) missingFields.push('Blog title / Subject');
-    if (!trimmedCategory) missingFields.push('Category');
-    if (tags.length === 0) missingFields.push('Tags');
+    if (tags.length === 0) missingFields.push('Post tags / keywords');
     if (!trimmedBody) missingFields.push('Blog entry');
     if (missingFields.length > 0) {
       toast.error(`Add ${missingFields.join(', ')} before scheduling.`);
@@ -323,21 +299,40 @@ function MyspaceAutoPoster({ platform }) {
     setTagsText(remaining.join(', '));
   };
 
-  const handleCategorySuggestion = () => {
-    if (tags.length > 0) {
-      setCategory(toTitleCase(tags[0].replace(/-/g, ' ')));
-      return;
+  const dropPhotoPreviewOnly = () => {
+    if (photoPreviewUrl) {
+      URL.revokeObjectURL(photoPreviewUrl);
+      setPhotoPreviewUrl('');
     }
-    if (headline.trim()) {
-      const derived = headline.split(/[:–-]/)[0] || headline;
-      const trimmedDerived = derived.trim();
-      if (trimmedDerived) {
-        setCategory(toTitleCase(trimmedDerived));
-        return;
-      }
+    if (photoInputRef.current) {
+      photoInputRef.current.value = '';
     }
-    setCategory(MYSPACE_CATEGORY_SUGGESTIONS[0]);
   };
+
+  const handlePhotoFileChange = event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (photoPreviewUrl) {
+      URL.revokeObjectURL(photoPreviewUrl);
+    }
+    const objectUrl = URL.createObjectURL(file);
+    setPhotoPreviewUrl(objectUrl);
+    setPhotoFileName(file.name);
+    if (photoInputRef.current) {
+      photoInputRef.current.value = '';
+    }
+  };
+
+  const handleChoosePhoto = () => {
+    photoInputRef.current?.click();
+  };
+
+  const handleClearPhoto = () => {
+    dropPhotoPreviewOnly();
+    setPhotoFileName('');
+    setPhotoUrl('');
+  };
+
   const now = new Date();
   const today = formatLocalDate(now);
   const currentTime = formatLocalTime(now);
@@ -391,12 +386,12 @@ function MyspaceAutoPoster({ platform }) {
       id: recordId,
       headline,
       sourceUrl,
-      category,
+      photoUrl,
+      photoFileName,
       tagsText,
       tags: [...tags],
       body,
-      mood,
-      listeningTo,
+      song,
       scheduledDraft: scheduledDraft.trim(),
       scheduledDate,
       scheduledTime,
@@ -435,11 +430,12 @@ function MyspaceAutoPoster({ platform }) {
     }
     setHeadline(target.headline || '');
     setSourceUrl(target.sourceUrl || '');
-    setCategory(target.category || MYSPACE_CATEGORY_SUGGESTIONS[0]);
+    dropPhotoPreviewOnly();
+    setPhotoUrl(target.photoUrl || '');
+    setPhotoFileName(target.photoFileName || '');
     setTagsText(target.tagsText || '');
     setBody(target.body || '');
-    setMood(target.mood || '');
-    setListeningTo(target.listeningTo || '');
+    setSong(target.song || '');
     setScheduledDraft(target.scheduledDraft || '');
     setScheduledDate(nextDate);
     setScheduledTime(nextTime);
@@ -471,9 +467,9 @@ function MyspaceAutoPoster({ platform }) {
           <section className={styles['myspace-card']}>
             <h3>Myspace Auto-Poster</h3>
             <p>
-              Myspace’s blog composer asks for the same blocks shown here: a subject line, category,
-              post body, optional mood/listening info, and tags. Fill them out once, copy each one,
-              and then paste directly into the Myspace blog form.
+              Myspace’s blog composer asks for the same blocks shown here: a subject line, blog
+              entry, optional photo and song, external link, and keywords. Fill them out once, copy
+              each one, and then paste directly into the Myspace blog form.
             </p>
             <div style={topCardActions()}>
               <button type="button" style={buttonStyle('outline', darkMode)} onClick={handleReset}>
@@ -576,57 +572,6 @@ function MyspaceAutoPoster({ platform }) {
 
             <div
               className={classNames(styles['myspace-card'], {
-                [styles.invalid]: highlightCategory,
-              })}
-            >
-              <div className={styles['myspace-field__header']}>
-                <label htmlFor="myspace-category">Category *</label>
-                <span className={styles['myspace-field__meta']}>Myspace category drop-down</span>
-              </div>
-              <input
-                id="myspace-category"
-                type="text"
-                value={category}
-                onChange={e => setCategory(e.target.value)}
-                className={styles['myspace-field__input']}
-                placeholder="e.g. Sustainability"
-                list="myspace-category-options"
-              />
-              <datalist id="myspace-category-options">
-                {MYSPACE_CATEGORY_SUGGESTIONS.map(option => (
-                  <option key={option} value={option} />
-                ))}
-              </datalist>
-              {!trimmedCategory && (
-                <p className={styles['myspace-field__hint']}>
-                  Choose the same category you will select on Myspace.
-                </p>
-              )}
-              {highlightCategory && (
-                <p className={styles['myspace-field__error']}>
-                  Pick a descriptive category with at least three characters.
-                </p>
-              )}
-              <div style={fieldActionRow}>
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={handleCategorySuggestion}
-                >
-                  Suggest category
-                </button>
-                <button
-                  type="button"
-                  style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(category, 'Category')}
-                >
-                  Copy category
-                </button>
-              </div>
-            </div>
-
-            <div
-              className={classNames(styles['myspace-card'], {
                 [styles.invalid]: !tagsValid && !!tagsText.trim(),
               })}
             >
@@ -679,7 +624,7 @@ function MyspaceAutoPoster({ platform }) {
                 <button
                   type="button"
                   style={buttonStyle('ghost', darkMode)}
-                  onClick={() => copyText(tags.join(', '), 'Tags / Keywords')}
+                  onClick={() => copyText(tags.join(', '), 'Post tags / keywords')}
                 >
                   Copy tags
                 </button>
@@ -743,74 +688,100 @@ function MyspaceAutoPoster({ platform }) {
 
           <section className={styles['myspace-card']}>
             <div className={styles['myspace-field__header']}>
-              <label htmlFor="myspace-mood">Mood & Listening To (optional)</label>
+              <label htmlFor="myspace-photo">Add a photo & song (optional)</label>
               <span className={styles['myspace-field__meta']}>
-                Matches the optional vibe fields shown under the Myspace blog form.
+                Matches the optional attachments under the Myspace blog form.
               </span>
             </div>
             <div className={styles['myspace-meta__grid']}>
               <div className={styles['myspace-meta__column']}>
-                <label htmlFor="myspace-mood" className={styles['myspace-field__sublabel']}>
-                  Mood
+                <label htmlFor="myspace-photo" className={styles['myspace-field__sublabel']}>
+                  Add a photo
                 </label>
                 <input
-                  id="myspace-mood"
-                  type="text"
-                  value={mood}
-                  onChange={e => setMood(e.target.value)}
+                  id="myspace-photo"
+                  type="url"
+                  value={photoUrl}
+                  onChange={e => setPhotoUrl(e.target.value)}
                   className={styles['myspace-field__input']}
-                  placeholder="Inspired, grateful, optimistic"
+                  placeholder="https://example.com/myspace-image.jpg"
+                />
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept="image/*"
+                  className={styles['myspace-field__file']}
+                  onChange={handlePhotoFileChange}
                 />
                 <div style={fieldActionRow}>
                   <button
                     type="button"
                     style={buttonStyle('ghost', darkMode)}
-                    onClick={() => copyText(mood, 'Mood')}
+                    onClick={handleChoosePhoto}
                   >
-                    Copy mood
+                    Choose photo from device
                   </button>
                   <button
                     type="button"
                     style={buttonStyle('ghost', darkMode)}
-                    onClick={() => setMood('')}
+                    onClick={() => copyText(photoUrl, 'Photo link')}
                   >
-                    Clear mood
+                    Copy photo link
+                  </button>
+                  <button
+                    type="button"
+                    style={buttonStyle('ghost', darkMode)}
+                    onClick={handleClearPhoto}
+                  >
+                    Clear photo
                   </button>
                 </div>
+                {photoFileName && (
+                  <p className={styles['myspace-photo__meta']}>
+                    Selected from device: <strong>{photoFileName}</strong>
+                  </p>
+                )}
+                {photoPreviewUrl && (
+                  <img
+                    src={photoPreviewUrl}
+                    alt="Selected preview"
+                    className={styles['myspace-photo__preview']}
+                  />
+                )}
               </div>
               <div className={styles['myspace-meta__column']}>
-                <label htmlFor="myspace-listening" className={styles['myspace-field__sublabel']}>
-                  Listening To
+                <label htmlFor="myspace-song" className={styles['myspace-field__sublabel']}>
+                  Add a song
                 </label>
                 <input
-                  id="myspace-listening"
+                  id="myspace-song"
                   type="text"
-                  value={listeningTo}
-                  onChange={e => setListeningTo(e.target.value)}
+                  value={song}
+                  onChange={e => setSong(e.target.value)}
                   className={styles['myspace-field__input']}
-                  placeholder="Artist – Song Title / Podcast"
+                  placeholder="Artist – Song Title"
                 />
                 <div style={fieldActionRow}>
                   <button
                     type="button"
                     style={buttonStyle('ghost', darkMode)}
-                    onClick={() => copyText(listeningTo, 'Listening To')}
+                    onClick={() => copyText(song, 'Song')}
                   >
-                    Copy listening to
+                    Copy song
                   </button>
                   <button
                     type="button"
                     style={buttonStyle('ghost', darkMode)}
-                    onClick={() => setListeningTo('')}
+                    onClick={() => setSong('')}
                   >
-                    Clear listening to
+                    Clear song
                   </button>
                 </div>
               </div>
             </div>
             <p className={styles['myspace-field__hint']}>
-              Add any vibe or soundtrack details you plan to paste into the optional “Mood” and
-              “Listening To” boxes on Myspace.
+              Paste hosted links or pick a local photo (saved only for this browser session), plus
+              jot the song info you plan to add inside Myspace.
             </p>
           </section>
 
@@ -845,8 +816,8 @@ function MyspaceAutoPoster({ platform }) {
             <pre className={styles['myspace-preview__body']}>{preview}</pre>
             {!readyToCopy && (
               <p className={styles['myspace-preview__hint']}>
-                Fill every required field to enable copying the complete draft. These fields map
-                directly to the Myspace blog composer.
+                Fill every required field to enable copying the complete draft. The preview lists
+                title, blog entry, external link, and keywords in the exact order Myspace expects.
               </p>
             )}
           </section>
