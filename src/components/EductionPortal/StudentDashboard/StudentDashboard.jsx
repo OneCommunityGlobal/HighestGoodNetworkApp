@@ -9,6 +9,7 @@ import NavigationBar from './NavigationBar';
 import SummaryCards from './SummaryCards';
 import TaskTimer from './TaskTimer';  
 import { fetchStudentTasks, markStudentTaskAsDone } from '~/actions/studentTasks';
+import { fetchIntermediateTasks, markIntermediateTaskAsDone } from '~/actions/intermediateTasks';
 
 const StudentDashboard = () => {
   const [viewMode, setViewMode] = useState('card'); // 'card' or 'list'
@@ -18,6 +19,8 @@ const StudentDashboard = () => {
     activeCourses: 0,
     logEntries: 0,
   });
+  const [intermediateTasks, setIntermediateTasks] = useState({});
+  const [expandedTasks, setExpandedTasks] = useState({});
 
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth.user);
@@ -27,6 +30,31 @@ const StudentDashboard = () => {
   useEffect(() => {
     dispatch(fetchStudentTasks());
   }, [dispatch]);
+
+  // Fetch intermediate tasks for all parent tasks
+  useEffect(() => {
+    const fetchAllIntermediateTasks = async () => {
+      if (tasks && tasks.length > 0) {
+        const intermediateTasksData = {};
+
+        // Fetch intermediate tasks for each parent task
+        for (const task of tasks) {
+          try {
+            const subTasks = await dispatch(fetchIntermediateTasks(task.id));
+            if (subTasks && subTasks.length > 0) {
+              intermediateTasksData[task.id] = subTasks;
+            }
+          } catch (error) {
+            console.error(`Error fetching intermediate tasks for task ${task.id}:`, error);
+          }
+        }
+
+        setIntermediateTasks(intermediateTasksData);
+      }
+    };
+
+    fetchAllIntermediateTasks();
+  }, [tasks, dispatch]);
 
   // Calculate summary data when tasks change
   useEffect(() => {
@@ -71,6 +99,29 @@ const StudentDashboard = () => {
   // Handle mark as done
   const handleMarkAsDone = async taskId => {
     dispatch(markStudentTaskAsDone(taskId));
+  };
+
+  // Handle mark intermediate task as done
+  const handleMarkIntermediateAsDone = async (intermediateTaskId, parentTaskId) => {
+    try {
+      await dispatch(markIntermediateTaskAsDone(intermediateTaskId));
+      // Refresh intermediate tasks for this parent
+      const tasks = await dispatch(fetchIntermediateTasks(parentTaskId));
+      setIntermediateTasks(prev => ({ ...prev, [parentTaskId]: tasks || [] }));
+    } catch (error) {
+      // Error is handled in the action
+    }
+  };
+
+  // Toggle expand/collapse intermediate tasks
+  const toggleIntermediateTasks = async taskId => {
+    const isExpanded = expandedTasks[taskId];
+
+    // Just toggle the expanded state (tasks are already loaded)
+    setExpandedTasks(prev => ({
+      ...prev,
+      [taskId]: !isExpanded,
+    }));
   };
 
   // Toggle view mode
@@ -153,9 +204,25 @@ const StudentDashboard = () => {
           </div>
 
           {/* Task Views */}
-          {viewMode === 'card'
-            ? <TaskCardView tasks={tasks} onMarkAsDone={handleMarkAsDone} />
-            : <TaskListView tasks={tasks} onMarkAsDone={handleMarkAsDone} />}
+          {viewMode === 'card' ? (
+            <TaskCardView
+              tasks={tasks}
+              onMarkAsDone={handleMarkAsDone}
+              intermediateTasks={intermediateTasks}
+              expandedTasks={expandedTasks}
+              onToggleIntermediateTasks={toggleIntermediateTasks}
+              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+            />
+          ) : (
+            <TaskListView
+              tasks={tasks}
+              onMarkAsDone={handleMarkAsDone}
+              intermediateTasks={intermediateTasks}
+              expandedTasks={expandedTasks}
+              onToggleIntermediateTasks={toggleIntermediateTasks}
+              onMarkIntermediateAsDone={handleMarkIntermediateAsDone}
+            />
+          )}
         </div>
       </Container>
     </div>

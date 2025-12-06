@@ -11,9 +11,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import AccessAlarmRoundedIcon from "@mui/icons-material/AccessAlarmRounded";
 
 const pad2 = (n) => String(n).padStart(2, "0");
-
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-
 const msToHMS = (ms) => {
   const totalSec = Math.floor(ms / 1000);
   const h = Math.floor(totalSec / 3600);
@@ -27,13 +25,10 @@ const BASE_URL =
     import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "")) ||
   "http://localhost:4500";
 
-const FALLBACK_USER_ID = "64528f5e9a3b2c0012adbe4f";
-
 export default function TaskTimer({ userid }) {
   const [open, setOpen] = useState(false);
   const [hours, setHours] = useState(2);
   const [minutes, setMinutes] = useState(0);
-
   const [timerInfo, setTimerInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -45,7 +40,6 @@ export default function TaskTimer({ userid }) {
     "";
 
   const userId = userid;
-
 
   const incH = () => setHours((h) => (h + 1) % 24);
   const decH = () => setHours((h) => (h + 23) % 24);
@@ -61,7 +55,6 @@ export default function TaskTimer({ userid }) {
     const v = e.target.value.replace(/\D/g, "");
     setMinutes(clamp(Number(v || 0), 0, 59));
   };
-
 
   const callTimerApi = async (path, method = "GET", body = null) => {
     setLoading(true);
@@ -82,7 +75,6 @@ export default function TaskTimer({ userid }) {
       if (body) options.body = JSON.stringify(body);
 
       const response = await fetch(url, options);
-
       const contentType = response.headers.get("content-type") || "";
       let data = null;
 
@@ -134,7 +126,6 @@ export default function TaskTimer({ userid }) {
     try {
       const res = await callTimerApi("/api/student/timer/stop", "POST");
       const { h, m, s } = msToHMS(res.data.elapsedMs || 0);
-
       alert(`Timer stopped.\nTime logged: ${pad2(h)}:${pad2(m)}:${pad2(s)}`);
 
       setTimerInfo(null);
@@ -277,9 +268,6 @@ export default function TaskTimer({ userid }) {
       ? <PauseRoundedIcon fontSize="small" />
       : <PlayArrowRoundedIcon fontSize="small" />;
 
-  const primaryLabel =
-    currentStatus === "running" ? "Pause" : "Start";
-
   return (
     <>
       {/* MINI-TIMER */}
@@ -340,8 +328,22 @@ export default function TaskTimer({ userid }) {
       </div>
 
       {open && (
-        <div className={styles.backdrop} onClick={() => setOpen(false)}>
-          <div className={styles.card} onClick={(e) => e.stopPropagation()}>
+        <div
+          className={styles.backdrop}
+          onClick={() => setOpen(false)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              setOpen(false);
+            }
+          }}
+        >
+          <div
+            className={styles.card}
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+          >
             <div className={styles.cardHeader}>
               <span className={styles.headerTitle}>Timer</span>
 

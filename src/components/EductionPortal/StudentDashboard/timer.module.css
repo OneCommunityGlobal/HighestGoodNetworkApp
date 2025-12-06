@@ -62,7 +62,6 @@
 }
 
 .compactCtrlBtn {
-  border: none;
   border-radius: 999px;
   width: 26px;
   height: 26px;
@@ -318,6 +317,7 @@
   justify-content: center;
   width: 100%;
 }
+
 .okBtn {
   border-radius: 999px;
   padding: 6px 18px;
