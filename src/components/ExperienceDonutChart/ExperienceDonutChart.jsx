@@ -128,7 +128,10 @@ export default function ExperienceDonutChart() {
 
   const applyFilters = () => {
     if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
-      setError('Start date cannot be after end date.');
+      setError(null);
+      setChartData(null);
+      setTotal(0);
+      setLoading(false);
       return;
     }
     setAppliedFilters({ startDate, endDate, roles: selectedRoles });
