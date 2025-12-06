@@ -122,7 +122,6 @@
 .reactCalendar :global(.react-calendar__month-view__days__day) {
   height: 80px;
   overflow: auto;
-  height: -webkit-fill-available;
   border: 1px solid #555454;
   box-sizing: border-box; 
 }
