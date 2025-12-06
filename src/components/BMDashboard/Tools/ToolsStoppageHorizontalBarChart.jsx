@@ -458,49 +458,73 @@ export default function ToolsStoppageHorizontalBarChart() {
       <h3 className={`tools-chart-title ${darkMode ? 'dark-mode' : ''}`}>
         Reason of Stoppage of Tools
       </h3>
-      <Row className="mb-3 align-items-center">
-        <Col xs={12} md={6}>
+      <Row className={`mb-3 ${styles.filtersRow}`}>
+        <Col xs={12} md={5}>
           <div className={styles.datepickerWrapper}>
-            <DatePicker
-              selectsRange
-              startDate={startDate}
-              endDate={endDate}
-              onChange={update => {
-                setDateRange(update);
-              }}
-              placeholderText={dateRangeLabel || 'Filter by Date Range'}
-              className={`${styles.datePickerInput} form-control ${darkMode ? 'darkTheme' : ''}`}
-              calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
-            />
-            <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
-              ✕
-            </Button>
+            <label htmlFor="date-range-picker" className={styles.filterLabel}>
+              Filter by Date Range
+            </label>
+            <div className={styles.datePickerInputGroup}>
+              <DatePicker
+                id="date-range-picker"
+                selectsRange
+                startDate={startDate}
+                endDate={endDate}
+                onChange={update => {
+                  setDateRange(update);
+                }}
+                placeholderText={dateRangeLabel || 'Filter by Date Range'}
+                className={styles.datePickerInput}
+                calendarClassName={darkMode ? 'darkThemeCalendar' : 'customCalendar'}
+                wrapperClassName={darkMode ? 'darkThemeDatePickerWrapper' : ''}
+                style={{
+                  backgroundColor: darkMode ? '#2b3e59' : '#ffffff',
+                  color: darkMode ? '#ffffff' : '#000000',
+                  border: `1px solid ${darkMode ? '#666' : '#ccc'}`,
+                }}
+              />
+              <Button variant="outline-danger" size="sm" onClick={() => setDateRange([null, null])}>
+                ✕
+              </Button>
+            </div>
           </div>
         </Col>
         <Col xs={12} md={4}>
-          <Select
-            className="w-100"
-            classNamePrefix="customSelect"
-            value={selectedProject}
-            onChange={opt => setSelectedProject(opt)}
-            options={projectOptions}
-            placeholder="Select a project ID to view data"
-            isClearable={false}
-            isDisabled={projects.length === 0}
-            styles={selectStyles}
-          />
+          <div className={styles.filterWrapper}>
+            <label htmlFor="project-select" className={styles.filterLabel}>
+              Project
+            </label>
+            <Select
+              id="project-select"
+              className="w-100"
+              classNamePrefix="customSelect"
+              value={selectedProject}
+              onChange={opt => setSelectedProject(opt)}
+              options={projectOptions}
+              placeholder="Select a project ID to view data"
+              isClearable={false}
+              isDisabled={projects.length === 0}
+              styles={selectStyles}
+            />
+          </div>
         </Col>
-        <Col xs={12} md={2}>
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={() => {
-              setSelectedProject(null);
-              setDateRange([null, null]);
-            }}
-          >
-            Reset
-          </Button>
+        <Col xs={12} md={3}>
+          <div className={styles.resetWrapper}>
+            <div className={styles.filterLabel} style={{ visibility: 'hidden', height: '19px' }}>
+              &nbsp;
+            </div>
+            <Button
+              variant="danger"
+              size="sm"
+              className={styles.resetButton}
+              onClick={() => {
+                setSelectedProject(null);
+                setDateRange([null, null]);
+              }}
+            >
+              Reset
+            </Button>
+          </div>
         </Col>
       </Row>
 
