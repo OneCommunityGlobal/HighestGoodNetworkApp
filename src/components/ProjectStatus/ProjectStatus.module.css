@@ -144,3 +144,101 @@
 .btnSecondary:hover {
   background: #4b5563;
 }
+
+/* Date Validation Error */
+.dateError {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.dateErrorText {
+  color: #dc2626;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Dark Mode Styles */
+.darkMode {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.darkMode .title {
+  color: #ffffff;
+}
+
+.darkMode .panel {
+  background: #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.darkMode .statLabel {
+  color: #cbd5e1;
+}
+
+.darkMode .statValue {
+  color: #ffffff;
+}
+
+.darkMode .total {
+  color: #e2e8f0;
+}
+
+.darkMode .loading {
+  color: #cbd5e1;
+}
+
+.darkMode .loadingText {
+  color: #cbd5e1;
+}
+
+.darkMode .dateError {
+  background: #991b1b;
+  border-color: #7f1d1d;
+}
+
+.darkMode .dateErrorText {
+  color: #fecaca;
+}
+
+.darkMode .error {
+  background: #7f1d1d;
+  border-color: #991b1b;
+}
+
+.darkMode .errorText {
+  color: #fecaca;
+}
+
+/* Dark mode for DatePicker */
+.darkMode .react-datepicker-wrapper input {
+  background: #334155;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+
+.darkMode .react-datepicker-wrapper input::placeholder {
+  color: #94a3b8;
+}
+
+.darkMode .btnPrimary {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.darkMode .btnPrimary:hover {
+  background: #2563eb;
+}
+
+.darkMode .btnSecondary {
+  background: #475569;
+  color: #ffffff;
+}
+
+.darkMode .btnSecondary:hover {
+  background: #334155;
+}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSelector } from 'react-redux';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
@@ -9,15 +10,17 @@ import { fetchProjectStatusSummary } from '../../services/projectStatusService';
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
-// custom center text
+// custom center text plugin with dark mode support
 const centerTextPlugin = {
   id: 'centerText',
   afterDraw(chart) {
     const { ctx } = chart;
     const { width, height } = chart;
+    const isDarkMode = chart.options.plugins.centerText?.darkMode || false;
+
     ctx.save();
     ctx.font = '600 14px Inter, system-ui';
-    ctx.fillStyle = '#222';
+    ctx.fillStyle = isDarkMode ? '#ffffff' : '#222';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
@@ -37,11 +40,13 @@ const COLORS = {
 };
 
 export default function ProjectStatus() {
+  const darkMode = useSelector(state => state.theme?.darkMode || false);
   const [from, setFrom] = useState(null);
   const [to, setTo] = useState(null);
   const [data, setData] = useState(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState('');
+  const [dateError, setDateError] = useState('');
 
   // Secure token retrieval with error handling
   const getToken = () => {
@@ -99,6 +104,11 @@ export default function ProjectStatus() {
       plugins: {
         legend: { display: false },
         tooltip: {
+          backgroundColor: darkMode ? 'rgba(30, 41, 59, 0.95)' : 'rgba(0, 0, 0, 0.8)',
+          titleColor: darkMode ? '#ffffff' : '#ffffff',
+          bodyColor: darkMode ? '#e2e8f0' : '#ffffff',
+          borderColor: darkMode ? '#475569' : 'rgba(0, 0, 0, 0.1)',
+          borderWidth: 1,
           callbacks: {
             label: ctx => {
               const label = ctx.label || '';
@@ -119,21 +129,31 @@ export default function ProjectStatus() {
           display: true,
           text: 'PROJECT STATUS',
           font: { size: 18, weight: '800' },
+          color: darkMode ? '#ffffff' : '#000000',
         },
         centerText: {
           total: data?.totalProjects ?? 0,
+          darkMode,
         },
       },
     }),
-    [data],
+    [data, darkMode],
   );
 
   const onApply = () => {
+    setDateError('');
+
+    // Validate dates: end date cannot be before start date
+    if (from && to && dayjs(to).isBefore(dayjs(from))) {
+      setDateError('End date cannot be before start date. Please select a valid date range.');
+      return;
+    }
+
     load({ startDate: from, endDate: to });
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.leftSection}>
         {/* Header + Filters */}
         <div className={styles.header}>
@@ -158,6 +178,13 @@ export default function ProjectStatus() {
             </button>
           </div>
         </div>
+
+        {/* Date Validation Error */}
+        {dateError && (
+          <div className={styles.dateError}>
+            <div className={styles.dateErrorText}>{dateError}</div>
+          </div>
+        )}
 
         {/* Loading State */}
         {pending && (
