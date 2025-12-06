@@ -5,18 +5,24 @@ import styles from "./ProjectManagerEducatorView.module.css";
 import NotificationComposer from "./ProjectManagerNotification";
 
 const mockEducators = [
-  { id: "t-001", name: "Alice Johnson", subject: "Mathematics", studentCount: 3, students: [
-    { id: "s-101", name: "Jay", grade: "7", progress: 0.78 },
-    { id: "s-102", name: "Kate", grade: "7", progress: 0.62 },
-    { id: "s-103", name: "Sam", grade: "8", progress: 0.85 },
-  ]},
-  { id: "t-002", name: "Brian Lee", subject: "Science", studentCount: 2, students: [
-    { id: "s-201", name: "Alina Gupta", grade: "6", progress: 0.54 },
-    { id: "s-202", name: "Samir Khan", grade: "6", progress: 0.91 },
-  ]},
-  { id: "t-003", name: "John Doe", subject: "English", studentCount: 1, students: [
-    { id: "s-301", name: "Ryan", grade: "7", progress: 0.73 },
-  ]},
+  {
+    id: "t-001", name: "Alice Johnson", subject: "Mathematics", studentCount: 3, students: [
+      { id: "s-101", name: "Jay", grade: "7", progress: 0.78 },
+      { id: "s-102", name: "Kate", grade: "7", progress: 0.62 },
+      { id: "s-103", name: "Sam", grade: "8", progress: 0.85 },
+    ]
+  },
+  {
+    id: "t-002", name: "Brian Lee", subject: "Science", studentCount: 2, students: [
+      { id: "s-201", name: "Alina Gupta", grade: "6", progress: 0.54 },
+      { id: "s-202", name: "Samir Khan", grade: "6", progress: 0.91 },
+    ]
+  },
+  {
+    id: "t-003", name: "John Doe", subject: "English", studentCount: 1, students: [
+      { id: "s-301", name: "Ryan", grade: "7", progress: 0.73 },
+    ]
+  },
 ];
 
 const api = axios.create({
@@ -114,7 +120,7 @@ function EducatorRow({ educator, isExpanded, onToggle, studentQuery }) {
         type="button"
         className={styles.rowHeader}
         onClick={handleToggle}
-        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleToggle(); }}}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleToggle(); } }}
         aria-expanded={isExpanded}
         aria-controls={`students-${educator.id}`}
       >
@@ -160,7 +166,7 @@ export default function ProjectManagerEducatorView() {
 
   const subjects = React.useMemo(() => {
     const s = new Set(mockEducators.map((e) => e.subject));
-    return ["All", ...Array.from(s).sort()];
+    return ["All", ...Array.from(s).sort((a, b) => a.localeCompare(b))];
   }, []);
 
   React.useEffect(() => {
