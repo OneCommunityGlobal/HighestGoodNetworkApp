@@ -24,6 +24,7 @@ export default function initAuth() {
     }
   } catch (error) {
     // Token is invalid, expired, or malformed - clear it and log out
+    // eslint-disable-next-line no-console
     console.warn('Invalid token detected, logging out user:', error.message);
     localStorage.removeItem(config.tokenKey);
     store.dispatch(logoutUser());

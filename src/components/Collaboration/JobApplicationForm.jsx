@@ -80,8 +80,8 @@ export default function JobApplicationForm({
     ev.preventDefault();
     const e = validate();
     if (Object.keys(e).length) return;
-    console.log('Form OK →', form);
-    alert('Application validated (mock submit).');
+    // TODO: Submit form data to backend
+    // Form validation passed - ready for submission
   };
 
   return (
