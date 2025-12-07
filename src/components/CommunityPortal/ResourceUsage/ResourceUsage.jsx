@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
 import {
@@ -90,6 +90,7 @@ export default function ResourceUsage() {
   const [data, setData] = useState(allData.venue);
   const [insights, setInsights] = useState(allInsights['Last Week']);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const badgeRefs = useRef([]);
 
   const filterDataByDate = (datas, period) => {
     // Create different datasets for different time periods to demonstrate filtering
@@ -109,6 +110,14 @@ export default function ResourceUsage() {
         return baseData;
     }
   };
+
+  useEffect(() => {
+    badgeRefs.current.forEach(badge => {
+      if (badge) {
+        badge.style.setProperty('color', '#000', 'important');
+      }
+    });
+  }, [insights]);
 
   useEffect(() => {
     const resourceTypeKey = resourceType.toLowerCase();
@@ -233,7 +242,11 @@ export default function ResourceUsage() {
               className={`${styles.insightCard} ${darkMode ? styles.darkInsightCard : ''}`}
             >
               <div className={styles.insightTitle}>{insight.title}</div>
-              <div className={styles.insightBadge} style={{ backgroundColor: insight.color }}>
+              <div
+                ref={el => (badgeRefs.current[index] = el)}
+                className={styles.insightBadge}
+                style={{ backgroundColor: insight.color }}
+              >
                 {insight.value}
               </div>
             </div>
