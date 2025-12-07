@@ -60,12 +60,15 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  flex-wrap: wrap;
+  margin: 0px 10px;
 }
 
 /* ---------- View Switcher ---------- */
 .viewSwitcher {
   display: flex;
   gap: 12px; /* clean space between buttons */
+  flex-wrap: wrap;
 }
 
 .viewSwitcher button,
@@ -328,6 +331,13 @@
   padding-right: 8px;
 }
 
+.retrievalStatus {
+  font-size: 20px;
+  text-align: center;
+  font-weight: bold;
+  padding: 8px;
+}
+
 /* Print styles for case cards */
 /* Print styles for case cards */
 @media print {
@@ -409,4 +419,14 @@
     background-color: #f5e6ff !important;
     color: #9b59b6 !important;
   }
+}
+
+@media (max-width: 460px) {
+  .headerActions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  
 }

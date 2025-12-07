@@ -79,6 +79,7 @@ import userSkillsReducer from './userSkillsReducer';
 // community portalgit
 import { noShowVizReducer } from './communityPortal/noShowVizReducer';
 import { eventFeedbackReducer } from './communityPortal/eventFeedback';
+import { EventActivityReducer } from './communityPortal/EventActivityReducer';
 
 import { jobApplicationReducer } from './jobApplication/jobApplicationReducer';
 
@@ -161,6 +162,7 @@ const localReducers = {
   bmissuechart: issueReducer,
   noShowViz: noShowVizReducer,
   eventFeedback: eventFeedbackReducer,
+  eventActivity: EventActivityReducer,
 
   bmProjectMembers: bmProjectMemberReducer,
   bmTimeLogger: bmTimeLoggerReducer,

@@ -1,0 +1,79 @@
+.popupContainer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0,0,0,0.3);
+}
+
+.popupClose {
+  position: fixed;
+  top: 50px;
+  right: 50px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+}
+
+.eventDetailsContainer {
+  width: 600px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.eventDetailsContainerDark {
+  background-color: #1B2A41;
+}
+
+.eventHeading {
+  padding: 8px;
+  color: #007bff;
+}
+
+.eventHeadingDark {
+  padding: 8px;
+  color: white;
+}
+
+.eventDetails {
+  margin-top: 12px;
+}
+
+.eventInput {
+  padding: 8px 10px;
+  border-radius: 8px;
+  width: 100%;
+  margin: 8px 0px;
+}
+
+.dateContainer {
+  display: flex;
+  gap: 10px;
+}
+
+.addBtnContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.addEventBtn {
+  margin-top: 8px;
+  padding: 10px 15px;
+  background-color: #007bff;
+  border-radius: 8px;
+  color: white;
+}
+
+.addEventBtn:hover {
+  background-color: #0056b3;
+}
