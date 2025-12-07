@@ -5,6 +5,8 @@ import Joi from 'joi-browser';
 import { boxStyle } from '../../../../styles';
 import styles from './CreateNewTeam.module.css';
 import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
+import { useHistory } from 'react-router-dom';
+import httpService from '../../../../services/httpService';
 
 const initialFormState = {
   teamName: '',
@@ -35,14 +37,20 @@ export default function CreateNewTeam() {
     assignedMembers: false,
     additionalInformation: false,
   });
+  const history = useHistory();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [submitSuccess, setSubmitSuccess] = useState('');
 
   useEffect(() => {
     dispatch(getUserProfileBasicInfo());
   }, [dispatch]);
 
   useEffect(() => {
-    setMembers(userProfilesBasicInfo);
-  }, []);
+    if (Array.isArray(userProfilesBasicInfo)) {
+      setMembers(userProfilesBasicInfo);
+    }
+  }, [userProfilesBasicInfo]);
 
   const validationObj = {
     additionalInformation: Joi.string()
@@ -92,7 +100,7 @@ export default function CreateNewTeam() {
 
   const handleTeamNameBlur = () => {
     setTouchedFields(prevState => ({ ...prevState, teamName: true }));
-    const validationErrors = validate(formData); // Trigger validation when field loses focus
+    const validationErrors = validate({ ...formData, teamMembers: assignedMembers });
     setErrors(validationErrors || {});
   };
 
@@ -103,7 +111,7 @@ export default function CreateNewTeam() {
       assignedMembers: true,
       additionalInformation: true,
     });
-    const validationErrors = validate(formData);
+    const validationErrors = validate({ ...formData, teamMembers: assignedMembers });
     setErrors(validationErrors || {});
     if (validationErrors) {
       return;
@@ -115,9 +123,35 @@ export default function CreateNewTeam() {
       tasks: assignedTasks,
     };
 
-    // eslint-disable-next-line no-console
-    console.log('Form Submitted:', updatedFormData);
+    setIsSubmitting(true);
+    setSubmitError('');
+    setSubmitSuccess('');
+    try {
+      // prefer URL constant if present, fallback to path
+      const endpoint = URL?.CREATE_TEAM || '/api/teams';
+      const resp = await httpService.post(endpoint, updatedFormData);
+      if (resp.status >= 200 && resp.status < 300) {
+        const teamId = resp.data?.id || resp.data?._id;
+        setSubmitSuccess('Team created successfully.');
+        if (teamId) {
+          history.push(`/bmdashboard/team/${teamId}`);
+          return;
+        }
+        // if no id returned, stay and show success
+      } else {
+        setSubmitError('Unexpected response from server.');
+        return;
+      }
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Create Team error:', err);
+      setSubmitError(err?.response?.data?.message || 'Failed to create team.');
+      return;
+    } finally {
+      setIsSubmitting(false);
+    }
 
+    // reset only after handling success without redirect
     setSelectedMember('');
     setAssignedMembers([]);
     setSelectedTask('');
@@ -191,10 +225,10 @@ export default function CreateNewTeam() {
   };
 
   const handleAddTask = () => {
-    // if (!selectedTask) {
-    //   setTaskErrorMessage('Please select a Task!');
-    //   return;
-    // }
+    if (!selectedTask) {
+      setTaskErrorMessage('Please select a Task!');
+      return;
+    }
     if (assignedTasks.includes(selectedTask)) {
       setTaskErrorMessage('This task is already assigned!'); // Error for duplicate addition
       return;
@@ -342,11 +376,9 @@ export default function CreateNewTeam() {
                   <span
                     role="button"
                     tabIndex={0}
-                    onClick={() => handleRemoveMember(member)}
-                    onKeyDown={e =>
-                      (e.key === 'Enter' || e.key === ' ') && handleRemoveMember(member)
-                    }
-                    aria-label={`Remove member ${member}`}
+                    onClick={() => handleRemoveTask(task)}
+                    onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && handleRemoveTask(task)}
+                    aria-label={`Remove task ${task}`}
                   >
                     X
                   </span>
@@ -365,6 +397,7 @@ export default function CreateNewTeam() {
             placeholder="Specify additional info about team if neccesary"
             value={formData.additionalInformation}
             onChange={event => handleInputChange('additionalInformation', event.target.value)}
+            disabled={isSubmitting}
           />
           {errors.additionalInformation && (
             <Label for="additionalInformationErr" sm={12} className={`${styles.teamFormError}`}>
@@ -372,12 +405,28 @@ export default function CreateNewTeam() {
             </Label>
           )}
         </FormGroup>
+        {submitError && (
+          <div className={styles.teamFormError} style={{ color: 'red' }}>
+            {submitError}
+          </div>
+        )}
+        {submitSuccess && (
+          <div className={styles.successMessage} style={{ color: 'green' }}>
+            {submitSuccess}
+          </div>
+        )}
         <div className={`${styles.addTeamButtons}`}>
-          <Button id="cancel-button" outline style={boxStyle} onClick={handleCancelClick}>
+          <Button
+            id="cancel-button"
+            outline
+            style={boxStyle}
+            onClick={handleCancelClick}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button id="submit-button" style={boxStyle}>
-            Submit
+          <Button id="submit-button" style={boxStyle} disabled={isSubmitting} type="submit">
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
         </div>
       </Form>
