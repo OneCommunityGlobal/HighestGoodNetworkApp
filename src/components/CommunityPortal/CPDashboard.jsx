@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, Button, Input } from 'reactstrap';
-import './CPDashboard.css';
+import styles from './CPDashboard.module.css';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUserAlt } from 'react-icons/fa';
+import { ENDPOINTS } from '../../utils/URL';
+import axios from 'axios';
 
 export function CPDashboard() {
   const [events, setEvents] = useState([]);
@@ -104,36 +106,25 @@ export function CPDashboard() {
   };
 
   return (
-    <Container fluid className="dashboard-container">
-      <header className="dashboard-header">
+    <Container className={styles['dashboard-container']}>
+      <header className={styles['dashboard-header']}>
         <h1>All Events</h1>
-        <div className="dashboard-controls">
-          <div className="dashboard-search-container">
+        <div className={styles['dashboard-controls']}>
+          <div className={styles['dashboard-search-container']}>
             <Input
               type="search"
               placeholder="Search events..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="dashboard-search"
+              className={styles['dashboard-search']}
             />
           </div>
-          {/* <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="community-dropdown">
-            <DropdownToggle caret color="secondary">
-              Community Portal
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem onClick={() => handleNavigation('/home')}>Home</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/events')}>Events</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/about')}>About Us</DropdownItem>
-              <DropdownItem onClick={() => handleNavigation('/contact')}>Contact</DropdownItem>
-            </DropdownMenu>
-          </Dropdown> */}
         </div>
       </header>
 
       <Row>
-        <Col md={3} className="dashboard-sidebar">
-          <div className="filter-section">
+        <Col md={3} className={styles['dashboard-sidebar']}>
+          <div className={styles['filter-section']}>
             <h4>Search Filters</h4>
             <div className="filter-item">
               <label htmlFor="date-tomorrow"> Dates</label>
@@ -150,6 +141,10 @@ export function CPDashboard() {
                   />{' '}
                   Tomorrow
                 </div>
+                <Input type="date" placeholder="Ending After" className={styles['date-filter']} />
+              </div>
+              <div className={styles['filter-item']}>
+                <label htmlFor="online-only">Online</label>
                 <div>
                   <Input
                     type="radio"
@@ -179,29 +174,11 @@ export function CPDashboard() {
                 <Input type="checkbox" /> Online Only
               </div>
             </div>
-            <div className="filter-item">
-              <label htmlFor="branches">Branches</label>
-              <Input type="select">
-                <option>Select branches</option>
-              </Input>
-            </div>
-            <div className="filter-item">
-              <label htmlFor="themes">Themes</label>
-              <Input type="select">
-                <option>Select themes</option>
-              </Input>
-            </div>
-            <div className="filter-item">
-              <label htmlFor="categories">Categories</label>
-              <Input type="select">
-                <option>Select categories</option>
-              </Input>
-            </div>
           </div>
         </Col>
 
-        <Col md={9} className="dashboard-main">
-          <h2 className="section-title">Events</h2>
+        <Col md={9} className={styles['dashboard-main']}>
+          <h2 className={styles['section-title']}>Events</h2>
           <Row>
             {filteredEvents.length > 0 ? (
               filteredEvents.map(event => (
@@ -215,21 +192,21 @@ export function CPDashboard() {
                       <p className="event-date">
                         <FaCalendarAlt className="event-icon" /> {formatDateForUI(event.date)}
                       </p>
-                      <p className="event-location">
-                        <FaMapMarkerAlt className="event-icon" /> {event.location}
+                      <p className={styles['event-location']}>
+                        <FaMapMarkerAlt className={styles['event-icon']} /> {event.location}
                       </p>
-                      <p className="event-organizer">
-                        <FaUserAlt className="event-icon" /> {event.organizer}
+                      <p className={styles['event-organizer']}>
+                        <FaUserAlt className={styles['event-icon']} /> {event.organizer}
                       </p>
                     </CardBody>
                   </Card>
                 </Col>
               ))
             ) : (
-              <div className="no-events">No events available</div>
+              <div className={styles['no-events']}>No events available</div>
             )}
           </Row>
-          <div className="dashboard-actions">
+          <div className={styles['dashboard-actions']}>
             <Button color="primary">Show Past Events</Button>
           </div>
         </Col>
