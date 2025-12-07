@@ -293,7 +293,9 @@ function ReportDetails({
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const rawSeconds = summary.totalSeconds[weekIndex];
+  const hoursLogged = rawSeconds == null ? 0 : rawSeconds / 3600;
+
   const isMeetCriteria =
     canSeeBioHighlight &&
     summary.totalTangibleHrs > 80 &&

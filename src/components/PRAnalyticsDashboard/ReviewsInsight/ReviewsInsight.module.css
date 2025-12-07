@@ -31,7 +31,6 @@
   display: flex;
   justify-content: space-around;
 }
-
 .riFilterItem {
   display: flex;
   flex-direction: column;
@@ -172,7 +171,6 @@
   box-shadow: 2px 2px 4px 1px black;
   border: none;
 }
-
 .riActionDoneGraph {
   width: 50%;
   display: flex;
@@ -200,7 +198,6 @@
 .riGraph canvas {
   height: 100% !important;
 }
-
 .riLoading {
   text-align: center;
   font-size: 18px;
