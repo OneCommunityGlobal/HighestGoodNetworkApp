@@ -62,7 +62,7 @@ function AssignBadge(props) {
       } else {
         setFilteredUsers([]);
         // Clear selectedUserId when input is empty
-        setSelectedUserIds(null);
+        setSelectedUserIds([]);
         props.clearNameAndSelected();
       }
       setError(null);
@@ -72,7 +72,7 @@ function AssignBadge(props) {
       setError(err.message);
       setFilteredUsers([]);
       // Also clear selection on error
-      setSelectedUserIds(null);
+      setSelectedUserIds([]);
       props.clearNameAndSelected();
     }
   }, [fullName, props.allUserProfiles]);
