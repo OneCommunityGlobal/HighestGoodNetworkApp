@@ -1,4 +1,4 @@
-// recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
+//// recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
 const getAllSubpermissionKeys = permissions => {
   const keys = [];
   permissions.forEach(permission => {
@@ -101,6 +101,17 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
+      {
+        label: 'Create, Edit and Delete Weekly Summaries Filter',
+        key: 'manageSummariesFilters',
+        description:
+          'Gives the user permission to create, edit and delete the filter in weekly summaries report page.',
+      },
+      {
+        label: 'See Job Analytics Reports',
+        key: 'getJobReports',
+        description: 'Job Analytics Reports.',
+      },
     ],
   },
   {
@@ -187,15 +198,20 @@ export const permissionLabels = [
           'Gives the user permission to use the "Pause" button to pause user activity on their profile page.',
       },
       {
-        label: 'Set Final Day for User',
-        key: 'setUserFinalDay',
-        description:
-          'Gives the user permission to use the "Set Final Day" button to set a final working day for a user on their profile page.',
+        label: 'Set Final Day',
+        key: 'setFinalDay',
+        description: 'Gives the user permission to use the set the final working day.',
       },
       {
         label: 'Tracking Management',
         key: 'setTrackingManagement',
         description: 'Gives the user permission to interact with the edit warnings list modal.',
+      },
+      {
+        label: 'HGN People +/- Setup',
+        key: 'manageHGNAccessSetup',
+        description:
+          'Gives the user permission to access the HGN Add Access button on user profile pages to add/remove user access to GitHub, Dropbox, Slack, and Sentry.',
       },
     ],
   },

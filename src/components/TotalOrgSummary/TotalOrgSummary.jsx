@@ -27,7 +27,7 @@ import hasPermission from '~/utils/permissions';
 // actions
 import { getTotalOrgSummary } from '~/actions/totalOrgSummary';
 
-import '../Header/DarkMode.css';
+import '../Header/index.css';
 import styles from './TotalOrgSummary.module.css';
 import { clsx } from 'clsx';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
@@ -830,7 +830,7 @@ ${
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <AccordianWrapper title="Volunteer Work and Role Distribution">
           <Row>
             <Col lg={{ size: 7 }}>
               <div
@@ -877,7 +877,7 @@ ${
             </Col>
           </Row>
         </AccordianWrapper>
-        <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <AccordianWrapper title="Teams and Blue Squares">
           <Row>
             <Col lg={{ size: 6 }}>
               <div
