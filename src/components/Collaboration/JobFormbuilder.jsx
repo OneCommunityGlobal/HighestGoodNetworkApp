@@ -1,6 +1,5 @@
 /* eslint-disable no-alert */
 /* eslint-disable no-console */
-// eslint-disable-next-line no-alert
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
@@ -11,11 +10,14 @@ import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x14
 import QuestionSetManager from './QuestionSetManager';
 import QuestionFieldActions from './QuestionFieldActions';
 import QuestionEditModal from './QuestionEditModal';
+import FormPreviewModal from './FormPreviewModal';
 
 function JobFormBuilder() {
   const { role } = useSelector(state => state.auth.user);
   const [formFields, setFormFields] = useState([]);
   const darkMode = useSelector(state => state.theme.darkMode);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+
   const [newField, setNewField] = useState({
     questionText: '',
     questionType: 'textbox',
@@ -98,14 +100,6 @@ function JobFormBuilder() {
 
     loadFirstAvailableForm();
   }, []);
-
-  // const ensureFormExists = async () => {
-  //   if (!currentFormId) {
-  //     console.warn('No form ID available for this operation');
-  //     return false;
-  //   }
-  //   return true;
-  // };
 
   // CRUD Functions with Dynamic Form ID
   const cloneField = async (field, index) => {
@@ -278,11 +272,10 @@ function JobFormBuilder() {
   };
 
   const changeVisiblity = (event, field) => {
-    const updatedFields = formFields.map(
-      item =>
-        item.questionText === field.questionText && item.questionType === field.questionType
-          ? { ...item, visible: event.target.checked } // Return the updated item
-          : item, // Return the unchanged item
+    const updatedFields = formFields.map(item =>
+      item.questionText === field.questionText && item.questionType === field.questionType
+        ? { ...item, visible: event.target.checked }
+        : item,
     );
     setFormFields(updatedFields);
   };
@@ -352,7 +345,7 @@ function JobFormBuilder() {
               formFields={formFields}
               setFormFields={setFormFields}
               onImportQuestions={importQuestions}
-              darkMode={darkMode} // Pass dark mode prop
+              darkMode={darkMode}
             />
             <form>
               {formFields.map((field, index) => (
@@ -369,7 +362,7 @@ function JobFormBuilder() {
                     visible={field.visible}
                     onVisibilityChange={event => changeVisiblity(event, field)}
                   />
-                  <div key={uuidv4()} className={styles.formField}>
+                  <div className={styles.formField} key={uuidv4()}>
                     <label className={`${styles.fieldLabel} ${styles.jbformLabel}`}>
                       {field.questionText}
                     </label>
@@ -416,6 +409,7 @@ function JobFormBuilder() {
                 </div>
               ))}
             </form>
+
             <div className={styles.newFieldSection}>
               <div>
                 <label className={styles.jbformLabel}>
@@ -492,6 +486,23 @@ function JobFormBuilder() {
                 Add Field
               </button>
             </div>
+
+            <div className={styles.previewSection}>
+              <button
+                type="button"
+                className={styles.previewTextButton}
+                onClick={() => setShowPreviewModal(true)}
+              >
+                Preview Form
+              </button>
+            </div>
+
+            <div className={styles.saveSection}>
+              <button type="submit" className={styles.jobSubmitButton} onClick={handleSubmit}>
+                Save Form
+              </button>
+            </div>
+
             {editModalOpen && editingQuestion && (
               <QuestionEditModal
                 question={editingQuestion}
@@ -501,6 +512,13 @@ function JobFormBuilder() {
             )}
           </div>
         ) : null}
+        <FormPreviewModal
+          isOpen={showPreviewModal}
+          onClose={() => setShowPreviewModal(false)}
+          formFields={formFields}
+          jobTitle={jobTitle}
+          darkMode={darkMode}
+        />
       </div>
     </div>
   );
