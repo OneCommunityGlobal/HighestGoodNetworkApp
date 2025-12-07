@@ -183,6 +183,7 @@ import IntermediateTaskList from './components/EductionPortal/IntermediateTasks/
 import JobApplicationForm from './components/Collaboration/JobApplicationForm/JobApplicationForm';
 const ResourceManagement = lazy(() => import('./components/ResourceManagement/ResourceManagement'));
 const RequestResources = lazy(() => import('./components/SocialArchitecture/RequestResources'));
+const PMResourceDashboard = lazy(() => import('./components/PMDashboard/PMResourceDashboard'));
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -764,6 +765,14 @@ export default (
           path="/educationportal/tasks/intermediate"
           exact
           component={IntermediateTaskList}
+        />
+        {/* PM Resource Dashboard Route */}
+        <ProtectedRoute
+          path="/pm/dashboard/resources"
+          exact
+          component={PMResourceDashboard}
+          fallback
+          allowedRoles={[UserRole.Administrator, UserRole.Owner, UserRole.Manager]}
         />
         <CPProtectedRoute
           path="/communityportal/reports/event/personalization"
