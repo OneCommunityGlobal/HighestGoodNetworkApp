@@ -870,10 +870,10 @@ setUpdatedTasks(prev => {
     }
     const inCompleteHoursBlSq = warningData.description === 'Blu Sq Rmvd - Hrs Close Enoug';
 
-    let message = ''
+    let message = null;
     if(bothWarnings) {
       if(allBlSq) {
-        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} but not all and ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
+        message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage} and ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
       } else if(noneBlSq) {
         message = '';
       } else if(inCompleteHoursMixedBlSq) {
@@ -881,12 +881,10 @@ setUpdatedTasks(prev => {
       } else {
         message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage} and received a warning for removing past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
       }
-    } else {
-      if(inCompleteHoursBlSq) {
+    } else if(inCompleteHoursBlSq) {
         message = `Issued a blue square for an Admin having to remove past blue squares ${inCompleteHours.warnings.length - 1} times for ${inCompleteHoursMessage}.`
-      } else {
-        message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
-      }
+    } else {
+      message = `Issued a blue square for an Admin having to remove past blue squares ${noSummary.warnings.length - 1} times for ${noSummaryMessage}.`
     }
     return message
   }

@@ -139,7 +139,9 @@ export default function Warning({ personId, username, userRole, displayUser }) {
             });
         }
         setUsersWarnings(res);
-        toastMessage ? toast.success(toastMessage) : '';
+        if (toastMessage) {
+          toast.success(toastMessage);
+        }
         // });
       })
       .catch(err => {
