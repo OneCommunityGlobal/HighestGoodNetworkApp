@@ -1,3 +1,9 @@
+/* ---------- CSS Variables for Dark Mode ---------- */
+:root {
+  --color-text-dark: #ffffff;
+  --color-border-dark: #4a5a77;
+}
+
 /* ---------- General Styling ---------- */
 .body {
   font-family: 'Arial', sans-serif;
@@ -26,6 +32,10 @@
   margin-bottom: 30px;
   padding: 12px 0;
   border-bottom: 2px solid #e0e0e0;
+}
+
+.participationLandingPageDark .landingPageHeaderContainer {
+  border-bottom: 2px solid var(--color-border-dark);
 }
 
 .landingPageHeader {
@@ -169,7 +179,7 @@
   background-color: #1C2541;
   color: #ffffff;
   border-radius: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-dark);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
   box-sizing: border-box;
@@ -226,6 +236,19 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.trackingHeaderDark .trackingFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
+.trackingHeaderDark .trackingFilters select option {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
 }
 
 /* Summary boxes */
@@ -282,11 +305,11 @@
 .trackingListContainerDark {
   max-height: 600px;
   overflow-y: auto;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-dark);
   border-radius: 10px;
   padding: 10px;
   background: #3A506B;
-  color: #ffffff;
+  color: var(--color-text-dark);
 }
 
 .trackingTable {
@@ -304,7 +327,12 @@
 
 .trackingTableDark thead th {
   background: #1C2541;
-  color: #ffffff;
+  color: var(--color-text-dark);
+}
+
+.trackingTableDark tbody td {
+  color: var(--color-text-dark);
+  border-bottom: 1px solid var(--color-border-dark);
 }
 
 .trackingTable tbody td {
@@ -356,6 +384,19 @@
   font-size: 0.8rem;
   border: 1px solid #ccc;
   border-radius: 5px;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.insightsHeaderDark .insightsFilters select {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
+.insightsHeaderDark .insightsFilters select option {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
 }
 
 .insightsTabs {
@@ -376,6 +417,21 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+}
+
+.insightsDark .insightsTab {
+  color: var(--color-text-dark);
+  background-color: #3A506B;
+  border: 1px solid var(--color-border-dark);
+}
+
+.insightsDark .insightsTab:not(:last-child) {
+  border-right: 1px solid var(--color-border-dark);
+}
+
+.insightsDark .insightsTab.activeTab {
+  background-color: #007bff;
+  color: var(--color-text-dark);
 }
 
 .insightsTab:not(:last-child) {
@@ -445,6 +501,12 @@
   font-size: 0.9rem;
   font-weight: bold;
   color: #333;
+}
+
+.insightsPercentageDark {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--color-text-dark);
 }
 
 /* ---------- PDF/Print helpers ---------- */

@@ -1,3 +1,9 @@
+/* ---------- CSS Variables for Dark Mode ---------- */
+:root {
+  --color-text-dark: #ffffff;
+  --color-border-dark: #4a5a77;
+}
+
 /* ---------- General Styles ---------- */
 .body {
   font-family: 'Arial', sans-serif;
@@ -17,7 +23,7 @@
 .myCasesPageDark {
   padding: 16px;
   background-color: #1C2541;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-dark);
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -80,9 +86,22 @@
   border: 1px solid #ccc;
 }
 
+.myCasesPageDark .viewSwitcher button,
+.myCasesPageDark .createNew {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
 .viewSwitcher button.active {
   background-color: #007bff;
   color: #fff;
+  border-color: #007bff;
+}
+
+.myCasesPageDark .viewSwitcher button.active {
+  background-color: #007bff;
+  color: var(--color-text-dark);
   border-color: #007bff;
 }
 
@@ -96,6 +115,19 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
+  background-color: #ffffff;
+  color: #333;
+}
+
+.myCasesPageDark .filterDropdown {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
+}
+
+.myCasesPageDark .filterDropdown option {
+  background-color: #3A506B;
+  color: var(--color-text-dark);
 }
 
 /* Hover and focus effects for the dropdown */
@@ -135,8 +167,8 @@
 
 .caseCardDark {
   background-color: #3A506B;
-  color: #ffffff;
-  border: 1px solid #ddd;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-border-dark);
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -176,6 +208,31 @@
   color: #9b59b6;
 }
 
+/* Dark mode event badge styles */
+.caseCardDark .eventBadge[data-type='Yoga Class'] {
+  background-color: #1e4d2e;
+  color: #4ade80;
+  border: 1px solid #4ade80;
+}
+
+.caseCardDark .eventBadge[data-type='Cooking Workshop'] {
+  background-color: #4d1e1e;
+  color: #f87171;
+  border: 1px solid #f87171;
+}
+
+.caseCardDark .eventBadge[data-type='Dance Class'] {
+  background-color: #4d3d1e;
+  color: #fbbf24;
+  border: 1px solid #fbbf24;
+}
+
+.caseCardDark .eventBadge[data-type='Fitness Bootcamp'] {
+  background-color: #3d1e4d;
+  color: #c084fc;
+  border: 1px solid #c084fc;
+}
+
 .eventTime {
   font-size: 14px;
   color: #555;
@@ -184,7 +241,7 @@
 
 .eventTimeDark {
   font-size: 14px;
-  color: #ffffff;
+  color: var(--color-text-dark);
   margin-bottom: 10px;
 }
 
@@ -199,7 +256,7 @@
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 15px;
-  color: #ffffff;
+  color: var(--color-text-dark);
 }
 
 .attendeesInfo {
@@ -230,7 +287,7 @@
 
 .attendeesCountDark {
   font-size: 14px;
-  color: #ffffff;
+  color: var(--color-text-dark);
 }
 
 .rates {
