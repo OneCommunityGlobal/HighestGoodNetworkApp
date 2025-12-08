@@ -26,21 +26,8 @@ function VolunteerStatusPieChart({
   const options = {
     plugins: {
       datalabels: {
-        color: '#000',
-        font: {
-          size: 20,
-          weight: 'bolder',
-          lineHeight: 1.8,
-        },
-        formatter: function(value, context) {
-          const percentage = ((value / totalVolunteers) * 100).toFixed(0);
-          // Show value and percent as two lines for clarity
-          return [`${value}`, `(${percentage}%)`];
-        },
-        display: true,
-        offset: 0,
-        align: 'center',
-        anchor: 'center',
+        // Hide in-slice labels because values are already shown with external guides.
+        display: false,
       },
       legend: {
         display: false,

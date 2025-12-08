@@ -57,8 +57,13 @@
   justify-content: center;
   align-items: center;
   gap: 16px;
-  margin-top: 28px;
-  flex-wrap: wrap;
+  margin-top: 48px;
+  margin-bottom: 24px;
+  flex-wrap: nowrap;
+  padding: 0 20px;
+  width: max-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .mentorStatusLabel {

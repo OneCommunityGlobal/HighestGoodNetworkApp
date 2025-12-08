@@ -54,16 +54,33 @@ function VolunteerStatusChart({
       return null;
     }
 
-    const { activeMentors, deactivatedMentors, newMentors, totalMentors } = mentorNumberStats;
+    const {
+      donutChartData,
+      activeMentors,
+      deactivatedMentors,
+      newMentors,
+      totalMentors,
+    } = mentorNumberStats;
+
+    let chartDataValues;
+    if (donutChartData && donutChartData.existingActive !== undefined) {
+      chartDataValues = [
+        { label: 'Existing Active', value: donutChartData.existingActive.count },
+        { label: 'New Active', value: donutChartData.newActive.count },
+        { label: 'Deactivated', value: donutChartData.deactivated.count },
+      ];
+    } else {
+      chartDataValues = [
+        { label: 'Active', value: activeMentors.count },
+        { label: 'New', value: newMentors.count },
+        { label: 'Deactivated This Week', value: deactivatedMentors.count },
+      ];
+    }
 
     return {
       totalMentors: totalMentors.count,
       percentageChange: Number(totalMentors.comparisonPercentage) || 0,
-      data: [
-        { label: 'Active', value: activeMentors.count },
-        { label: 'New', value: newMentors.count },
-        { label: 'Deactivated This Week', value: deactivatedMentors.count },
-      ],
+      data: chartDataValues,
     };
   }, [mentorNumberStats]);
 
@@ -128,6 +145,32 @@ VolunteerStatusChart.propTypes = {
       count: PropTypes.number,
     }),
     totalVolunteers: PropTypes.shape({
+      count: PropTypes.number,
+      comparisonPercentage: PropTypes.number,
+    }),
+  }),
+  mentorNumberStats: PropTypes.shape({
+    donutChartData: PropTypes.shape({
+      existingActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      newActive: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+      deactivated: PropTypes.shape({
+        count: PropTypes.number,
+      }),
+    }),
+    activeMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    newMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    deactivatedMentors: PropTypes.shape({
+      count: PropTypes.number,
+    }),
+    totalMentors: PropTypes.shape({
       count: PropTypes.number,
       comparisonPercentage: PropTypes.number,
     }),

@@ -51,8 +51,11 @@
   align-items: center;
   gap: 16px;
   margin-top: 32px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   margin-bottom: 24px;
+  overflow-x: auto;
+  padding: 0 8px;
+  width: 100%;
 }
 
 .volunteerStatusLabel {
