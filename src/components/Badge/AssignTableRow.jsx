@@ -27,7 +27,6 @@ function AssignTableRow(props) {
     setSelect(prev => (prev !== next ? next : prev));
   }, [effectiveSelected, props.badge?._id]);
 
-
   const badgeId = props.badge?._id;
   const domId = `assign-badge-${badgeId}`;
 
@@ -41,7 +40,8 @@ function AssignTableRow(props) {
   }, []);
 
   const isSelected = selectedBadges.includes(badgeId);
-  console.log(selectedBadges,"sele",badgeId,props)
+  // eslint-disable-next-line no-console
+  console.log(selectedBadges, 'sele', badgeId, props);
 
   const handleCheckBoxChange = e => {
     if (e.target.checked) {

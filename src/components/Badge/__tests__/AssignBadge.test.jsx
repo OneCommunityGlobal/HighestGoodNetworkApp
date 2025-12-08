@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import { configureStore } from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { vi } from 'vitest';
 
@@ -107,10 +107,8 @@ describe('AssignBadge component', () => {
     const input = screen.getByPlaceholderText('Full Name');
     fireEvent.change(input, { target: { value: 'Jerry' } });
 
-    await waitFor(() => {
-      const userRows = screen.getAllByRole('row').slice(1); // Exclude header row
-      fireEvent.click(userRows[0]);
-    });
+    const userRows = (await screen.findAllByRole('row')).slice(1); // Exclude header row
+    fireEvent.click(userRows[0]);
 
     const alertText = screen.getByRole('alert').textContent;
     expect(alertText).toContain('1 user(s) selected');
@@ -126,10 +124,8 @@ describe('AssignBadge component', () => {
     const input = screen.getByPlaceholderText('Full Name');
     fireEvent.change(input, { target: { value: 'Jerry' } });
 
-    await waitFor(() => {
-      const userRows = screen.getAllByRole('row').slice(1); // Exclude header row
-      fireEvent.click(userRows[0]);
-    });
+    const userRows = (await screen.findAllByRole('row')).slice(1); // Exclude header row
+    fireEvent.click(userRows[0]);
 
     expect(screen.getByText('Assign Badge')).toBeEnabled();
   });
