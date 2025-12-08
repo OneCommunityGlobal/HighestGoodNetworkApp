@@ -26,7 +26,6 @@ export const TeamMembersPopup = React.memo(props => {
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
 
   const [filterMode, setFilterMode] = useState('active'); // 'active' | 'all' | 'inactive'
-  const nextLabelFor = m => (m === 'active' ? 'See All' : m === 'all' ? 'Inactive' : 'Active');
   const colorForMode = m =>
     m === 'inactive' ? '#ccc' : m === 'active' ? 'limegreen' : 'dodgerblue';
   const textColorForMode = m => (m === 'inactive' ? 'black' : 'white');
@@ -295,7 +294,7 @@ export const TeamMembersPopup = React.memo(props => {
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {nextLabelFor(filterMode)}
+                    {filterMode}
                   </button>
                 </th>
 
