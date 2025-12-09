@@ -3,8 +3,10 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import GradingTable from './GradingTable';
 import SummaryList from './SummaryList';
+import ConfirmationModal from './ConfirmationModal';
+import AddReviewerModal from './AddReviewerModal';
+import styles from './PRGradingDashboard.module.css';
 
-const API_BASE_URL = 'http://localhost:5000';
 const TEAM_CODE = 'TeamA';
 const TEAM_NAME = 'Team Alpha';
 
@@ -14,13 +16,13 @@ const mockData = [
     reviewer: 'Alice',
     prsNeeded: 10,
     prsReviewed: 7,
-    gradedPrs: [{ prNumbers: '1070 + 1256', grade: 'Exceptional' }],
+    gradedPrs: [{ prNumbers: '1070 + 1256', grade: 'Exceptional', isNew: false }],
   },
   {
     reviewer: 'Bob',
     prsNeeded: 8,
     prsReviewed: 5,
-    gradedPrs: [{ prNumbers: '1234', grade: 'Okay' }],
+    gradedPrs: [{ prNumbers: '1234', grade: 'Okay', isNew: false }],
   },
   {
     reviewer: 'Charlie',
@@ -35,6 +37,9 @@ function PRGradingDashboard() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [openAddModal, setOpenAddModal] = useState(null); // reviewer name or null
+  const [pendingPR, setPendingPR] = useState(null); // { reviewer, prNumbers, grade } or null
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showAddReviewerModal, setShowAddReviewerModal] = useState(false);
 
   // Fetch data on mount
   useEffect(() => {
@@ -44,14 +49,20 @@ function PRGradingDashboard() {
   const fetchGradings = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_BASE_URL}/api/weekly-grading?team=${TEAM_CODE}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_APIENDPOINT}/weekly-grading?team=${TEAM_CODE}`,
+      );
       if (response.data && Array.isArray(response.data)) {
-        setGradings(response.data);
+        // Mark all existing PRs as not new
+        const gradingsWithFlags = response.data.map(g => ({
+          ...g,
+          gradedPrs: g.gradedPrs.map(pr => ({ ...pr, isNew: false })),
+        }));
+        setGradings(gradingsWithFlags);
       } else {
         throw new Error('Invalid response format');
       }
     } catch (error) {
-      console.warn('Failed to fetch gradings, using mock data:', error);
       // Use mock data if API fails
       setGradings(mockData);
       toast.info('Using mock data - API connection failed');
@@ -69,20 +80,40 @@ function PRGradingDashboard() {
     );
   };
 
-  // Add a new graded PR to a reviewer
-  const addGradedPR = (reviewer, prNumbers, grade) => {
+  // Request to add a new graded PR (shows confirmation)
+  const requestAddGradedPR = (reviewer, prNumbers, grade) => {
+    setPendingPR({ reviewer, prNumbers, grade });
+    setShowConfirmation(true);
+    setOpenAddModal(null);
+  };
+
+  // Actually add the PR after confirmation
+  const confirmAddGradedPR = () => {
+    if (!pendingPR) return;
+
+    const { reviewer, prNumbers, grade } = pendingPR;
     setGradings(prev =>
       prev.map(g => {
         if (g.reviewer === reviewer) {
+          // Always increment by 1, regardless of how many PR numbers are in the string
           return {
             ...g,
-            gradedPrs: [...g.gradedPrs, { prNumbers, grade }],
+            prsReviewed: g.prsReviewed + 1,
+            gradedPrs: [...g.gradedPrs, { prNumbers, grade, isNew: true }],
           };
         }
         return g;
       }),
     );
-    setOpenAddModal(null);
+    setPendingPR(null);
+    setShowConfirmation(false);
+    toast.success('PR added successfully! Click Save to save the changes.');
+  };
+
+  // Cancel adding PR
+  const cancelAddGradedPR = () => {
+    setPendingPR(null);
+    setShowConfirmation(false);
   };
 
   // Update grade for a specific PR
@@ -102,13 +133,36 @@ function PRGradingDashboard() {
     );
   };
 
-  // Remove a graded PR
+  // Add a new reviewer
+  const addReviewer = newReviewer => {
+    // Check if reviewer already exists
+    const reviewerExists = gradings.some(
+      g => g.reviewer.toLowerCase() === newReviewer.reviewer.toLowerCase(),
+    );
+    if (reviewerExists) {
+      toast.error(`Reviewer "${newReviewer.reviewer}" already exists.`);
+      return;
+    }
+    setGradings(prev => [...prev, newReviewer]);
+    setShowAddReviewerModal(false);
+    toast.success(`Reviewer "${newReviewer.reviewer}" added successfully.`);
+  };
+
+  // Remove a graded PR (only new ones)
   const removeGradedPR = (reviewer, prIndex) => {
     setGradings(prev =>
       prev.map(g => {
         if (g.reviewer === reviewer) {
+          const prToRemove = g.gradedPrs[prIndex];
+          // Only allow removal of new PRs
+          if (!prToRemove.isNew) {
+            toast.warning('Cannot delete existing PRs. Only newly added PRs can be removed.');
+            return g;
+          }
+          // Always decrement by 1, regardless of how many PR numbers are in the string
           return {
             ...g,
+            prsReviewed: Math.max(0, g.prsReviewed - 1),
             gradedPrs: g.gradedPrs.filter((_, index) => index !== prIndex),
           };
         }
@@ -123,6 +177,7 @@ function PRGradingDashboard() {
       setSaving(true);
       const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
 
+      // Remove isNew flag before sending to API
       const payload = {
         teamCode: TEAM_CODE,
         date: currentDate,
@@ -130,14 +185,24 @@ function PRGradingDashboard() {
           reviewer: g.reviewer,
           prsReviewed: g.prsReviewed,
           prsNeeded: g.prsNeeded,
-          gradedPrs: g.gradedPrs,
+          gradedPrs: g.gradedPrs.map(pr => ({
+            prNumbers: pr.prNumbers,
+            grade: pr.grade,
+          })),
         })),
       };
 
-      await axios.post(`${API_BASE_URL}/api/weekly-grading/save`, payload);
+      await axios.post(`${process.env.REACT_APP_APIENDPOINT}/weekly-grading/save`, payload);
       toast.success('Grading data saved successfully!');
+
+      // After saving, mark all PRs as not new
+      setGradings(prev =>
+        prev.map(g => ({
+          ...g,
+          gradedPrs: g.gradedPrs.map(pr => ({ ...pr, isNew: false })),
+        })),
+      );
     } catch (error) {
-      console.error('Error saving gradings:', error);
       toast.error('Failed to save grading data. Please try again.');
     } finally {
       setSaving(false);
@@ -152,40 +217,49 @@ function PRGradingDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading grading data...</p>
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingContent}>
+          <div className={styles.spinner}></div>
+          <p className={styles.loadingText}>Loading grading data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className={styles.container}>
+      <div className={styles.contentWrapper}>
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex justify-between items-center">
-            <h1 className="text-3xl font-bold text-gray-800">{TEAM_NAME}</h1>
-            <p className="text-lg text-gray-600">{currentDate}</p>
+        <div className={styles.header}>
+          <div className={styles.headerContent}>
+            <h1 className={styles.title}>{TEAM_NAME}</h1>
+            <p className={styles.date}>{currentDate}</p>
           </div>
         </div>
 
         {/* Main Table */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className={styles.section}>
+          <div className={styles.tableHeaderActions}>
+            <button
+              type="button"
+              onClick={() => setShowAddReviewerModal(true)}
+              className={styles.addReviewerButton}
+            >
+              + Add Reviewer
+            </button>
+          </div>
           <GradingTable
             gradings={gradings}
             onUpdatePRsReviewed={updatePRsReviewed}
             onAddPRClick={setOpenAddModal}
             openAddModal={openAddModal}
-            onAddGradedPR={addGradedPR}
+            onAddGradedPR={requestAddGradedPR}
           />
         </div>
 
         {/* Summary Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Summary</h2>
+        <div className={styles.summarySection}>
+          <h2 className={styles.summaryTitle}>Summary</h2>
           <SummaryList
             gradings={gradings}
             onUpdateGrade={updateGrade}
@@ -194,18 +268,35 @@ function PRGradingDashboard() {
         </div>
 
         {/* Footer */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex justify-end">
+        <div className={styles.footer}>
+          <div className={styles.footerContent}>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors duration-200 shadow-md hover:shadow-lg"
+              type="button"
+              className={styles.saveButton}
             >
-              {saving ? 'Saving...' : 'Done'}
+              {saving ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmation && pendingPR && (
+        <ConfirmationModal
+          reviewer={pendingPR.reviewer}
+          prNumbers={pendingPR.prNumbers}
+          grade={pendingPR.grade}
+          onConfirm={confirmAddGradedPR}
+          onCancel={cancelAddGradedPR}
+        />
+      )}
+
+      {/* Add Reviewer Modal */}
+      {showAddReviewerModal && (
+        <AddReviewerModal onAdd={addReviewer} onCancel={() => setShowAddReviewerModal(false)} />
+      )}
     </div>
   );
 }

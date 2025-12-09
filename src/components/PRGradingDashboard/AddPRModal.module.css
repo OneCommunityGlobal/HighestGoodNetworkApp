@@ -1,0 +1,290 @@
+.modal {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.modalTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.closeButton {
+  color: #6b7280;
+  background: none;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.closeButton:hover {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+.closeButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(107, 114, 128, 0.5);
+}
+
+.closeIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.formGroup {
+  margin-bottom: 1rem;
+}
+
+.label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: #111827;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+}
+
+.inputError {
+  border-color: #ef4444;
+}
+
+.inputError:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+}
+
+.errorMessage {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+.successMessage {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+}
+
+.successIcon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.25rem;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.button {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.buttonCancel {
+  color: #374151;
+  background-color: #f3f4f6;
+}
+
+.buttonCancel:hover {
+  background-color: #e5e7eb;
+}
+
+.buttonPrimary {
+  color: white;
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.buttonPrimary:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.buttonPrimary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.buttonPrimary:disabled {
+  background-color: #60a5fa;
+  cursor: not-allowed;
+}
+
+.prNumberDisplay {
+  font-size: 0.875rem;
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+}
+
+.prNumberValue {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.gradeLabel {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.gradeOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gradeButton {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  text-align: left;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: white;
+  color: #374151;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gradeButton:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.gradeButtonSelected {
+  background-color: #dbeafe;
+  border-color: #2563eb;
+  color: #1e40af;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.backButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  background-color: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.backButton:hover {
+  background-color: #e5e7eb;
+}
+
+/* Dark mode support */
+.dark-mode .modal {
+  background-color: #1f2937;
+  border-color: #4b5563;
+}
+
+.dark-mode .modalTitle {
+  color: #f9fafb;
+}
+
+.dark-mode .closeButton {
+  color: #9ca3af;
+}
+
+.dark-mode .closeButton:hover {
+  color: #d1d5db;
+  background-color: #374151;
+}
+
+.dark-mode .label,
+.dark-mode .gradeLabel {
+  color: #d1d5db;
+}
+
+.dark-mode .input {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #f9fafb;
+}
+
+.dark-mode .prNumberDisplay {
+  color: #9ca3af;
+}
+
+.dark-mode .prNumberValue {
+  color: #f9fafb;
+}
+
+.dark-mode .buttonCancel {
+  color: #d1d5db;
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.dark-mode .buttonCancel:hover {
+  background-color: #4b5563;
+}
+
+.dark-mode .gradeButton {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #d1d5db;
+}
+
+.dark-mode .gradeButton:hover {
+  background-color: #4b5563;
+}
+
+.dark-mode .gradeButtonSelected {
+  background-color: #1e3a8a;
+  border-color: #3b82f6;
+  color: #dbeafe;
+}
+
+.dark-mode .backButton {
+  color: #d1d5db;
+  background-color: #374151;
+  border-color: #4b5563;
+}
+
+.dark-mode .backButton:hover {
+  background-color: #4b5563;
+}
+

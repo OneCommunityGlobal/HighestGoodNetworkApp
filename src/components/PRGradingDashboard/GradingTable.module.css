@@ -1,0 +1,56 @@
+.tableWrapper {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+.table {
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+.tableHead {
+  background-color: #f9fafb;
+}
+
+.tableHeader {
+  padding: 0.75rem 1.5rem;
+  text-align: left;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tableBody {
+  background-color: white;
+}
+
+.modalRow {
+  position: relative;
+  z-index: 10;
+}
+
+.modalCell {
+  padding: 1rem 1.5rem;
+  background-color: #f9fafb;
+}
+
+/* Dark mode support */
+.dark-mode .tableHead {
+  background-color: #374151;
+}
+
+.dark-mode .tableHeader {
+  color: #d1d5db;
+}
+
+.dark-mode .tableBody {
+  background-color: #1f2937;
+}
+
+.dark-mode .modalCell {
+  background-color: #374151;
+}
+

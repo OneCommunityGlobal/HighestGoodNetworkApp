@@ -1,0 +1,173 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.reviewerSection {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+}
+
+.reviewerSection:last-child {
+  border-bottom: none;
+}
+
+.reviewerName {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+}
+
+.emptyMessage {
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.prList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.prItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.prItem:hover {
+  background-color: #f3f4f6;
+}
+
+.prContent {
+  flex: 1;
+}
+
+.prNumber {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.prNumberValue {
+  color: #111827;
+}
+
+.gradeOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.gradeLabel {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.gradeRadio {
+  margin-right: 0.5rem;
+  color: #2563eb;
+}
+
+.gradeRadio:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.gradeText {
+  font-size: 0.875rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+}
+
+.gradeTextSelected {
+  background-color: #dbeafe;
+  color: #1e40af;
+  font-weight: 500;
+}
+
+.gradeTextUnselected {
+  color: #4b5563;
+}
+
+.gradeTextUnselected:hover {
+  color: #111827;
+}
+
+.removeButton {
+  margin-left: 1rem;
+  padding: 0.5rem;
+  color: #dc2626;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: all 0.2s;
+}
+
+.removeButton:hover {
+  color: #991b1b;
+  background-color: #fee2e2;
+}
+
+.removeIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* Dark mode support */
+.dark-mode .reviewerSection {
+  border-bottom-color: #4b5563;
+}
+
+.dark-mode .reviewerName {
+  color: #f9fafb;
+}
+
+.dark-mode .emptyMessage {
+  color: #9ca3af;
+}
+
+.dark-mode .prItem {
+  background-color: #374151;
+}
+
+.dark-mode .prItem:hover {
+  background-color: #4b5563;
+}
+
+.dark-mode .prNumber {
+  color: #d1d5db;
+}
+
+.dark-mode .prNumberValue {
+  color: #f9fafb;
+}
+
+.dark-mode .gradeTextUnselected {
+  color: #9ca3af;
+}
+
+.dark-mode .gradeTextUnselected:hover {
+  color: #f9fafb;
+}
+
+.dark-mode .gradeTextSelected {
+  background-color: #1e3a8a;
+  color: #dbeafe;
+}
+
+.dark-mode .removeButton:hover {
+  background-color: #7f1d1d;
+}
+

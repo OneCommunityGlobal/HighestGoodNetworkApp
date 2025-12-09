@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import styles from './ReviewerRow.module.css';
 
 function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick }) {
   const handlePRsReviewedChange = e => {
@@ -18,29 +19,30 @@ function ReviewerRow({ grading, onUpdatePRsReviewed, onAddPRClick }) {
   };
 
   return (
-    <tr className="hover:bg-gray-50 transition-colors">
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm font-medium text-gray-900">{grading.reviewer}</div>
+    <tr className={styles.row}>
+      <td className={styles.cell}>
+        <div className={styles.reviewerName}>{grading.reviewer}</div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className={styles.cell}>
         <input
           type="number"
           min="0"
           value={grading.prsReviewed}
           onChange={handlePRsReviewedChange}
           onBlur={handleBlur}
-          className="w-24 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className={styles.prsReviewedInput}
         />
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="text-sm text-gray-700">{grading.prsNeeded}</div>
+      <td className={styles.cell}>
+        <div className={styles.prsNeeded}>{grading.prsNeeded}</div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className={styles.cell}>
         <button
           onClick={() => onAddPRClick(grading.reviewer)}
-          className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+          className={styles.addButton}
+          type="button"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className={styles.addButtonIcon} />
           Add New
         </button>
       </td>

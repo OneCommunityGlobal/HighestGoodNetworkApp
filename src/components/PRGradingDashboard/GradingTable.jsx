@@ -1,6 +1,7 @@
 import React from 'react';
 import ReviewerRow from './ReviewerRow';
 import AddPRModal from './AddPRModal';
+import styles from './GradingTable.module.css';
 
 function GradingTable({
   gradings,
@@ -10,25 +11,17 @@ function GradingTable({
   onAddGradedPR,
 }) {
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+    <div className={styles.tableWrapper}>
+      <table className={styles.table}>
+        <thead className={styles.tableHead}>
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Reviewer Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              PRs Reviewed
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              PRs Needed
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              PR Actions
-            </th>
+            <th className={styles.tableHeader}>Reviewer Name</th>
+            <th className={styles.tableHeader}>PRs Reviewed</th>
+            <th className={styles.tableHeader}>PRs Needed</th>
+            <th className={styles.tableHeader}>PR Actions</th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
+        <tbody className={styles.tableBody}>
           {gradings.map((grading, index) => (
             <React.Fragment key={grading.reviewer}>
               <ReviewerRow
@@ -37,8 +30,8 @@ function GradingTable({
                 onAddPRClick={onAddPRClick}
               />
               {openAddModal === grading.reviewer && (
-                <tr>
-                  <td colSpan="4" className="px-6 py-4 bg-gray-50">
+                <tr className={styles.modalRow}>
+                  <td colSpan="4" className={styles.modalCell}>
                     <AddPRModal
                       reviewer={grading.reviewer}
                       onAdd={onAddGradedPR}
