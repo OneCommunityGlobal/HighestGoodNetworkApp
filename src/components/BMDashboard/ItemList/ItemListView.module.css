@@ -41,10 +41,11 @@
 
 .selectInput {
   display: grid;
-  grid-template-columns: auto 1fr auto 1fr auto 1fr;
+  grid-template-columns: auto 1fr auto 1fr;
   align-items: center;
   gap: 15px;
   width: 100%;
+  min-width: 400px;    
   max-width: 1200px;
   margin: 0 auto 10px auto;
   overflow: visible;
@@ -62,12 +63,18 @@
 .selectInput select {
   height: 38px;
   width: 100%;
-  min-width: 220px;
-  max-width: 240px;
+  min-width: 400px;
+  max-width: 1200px;
   padding: 5px;
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-bottom: 8px;
+}
+
+.selectInput :global(.react-select__control) {
+  width: 100%;
+  max-width: 1200px;
+  min-width: 400px;
 }
 
 .selectInput input[type='text'] {
