@@ -22,10 +22,10 @@ export function ToolItemListView({
 
   useEffect(() => {
     try {
-      const sp = localStorage.getItem('toolsSelectedProject');
-      const si = localStorage.getItem('toolsSelectedItem');
-      const sts = localStorage.getItem('toolsSelectedStatus');
-      const sc = localStorage.getItem('toolsSelectedCondition');
+      const sp = sessionStorage.getItem('toolsSelectedProject');
+      const si = sessionStorage.getItem('toolsSelectedItem');
+      const sts = sessionStorage.getItem('toolsSelectedStatus');
+      const sc = sessionStorage.getItem('toolsSelectedCondition');
 
       if (sp) setSelectedProject(sp);
       if (si) setSelectedItem(si);
@@ -37,10 +37,10 @@ export function ToolItemListView({
   // Save filters / sort whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem('toolsSelectedProject', selectedProject);
-      localStorage.setItem('toolsSelectedItem', selectedItem);
-      localStorage.setItem('toolsSelectedStatus', selectedToolStatus);
-      localStorage.setItem('toolsSelectedCondition', selectedCondition);
+      sessionStorage.setItem('toolsSelectedProject', selectedProject);
+      sessionStorage.setItem('toolsSelectedItem', selectedItem);
+      sessionStorage.setItem('toolsSelectedStatus', selectedToolStatus);
+      sessionStorage.setItem('toolsSelectedCondition', selectedCondition);
     } catch (e) {
       // ignore
     }
