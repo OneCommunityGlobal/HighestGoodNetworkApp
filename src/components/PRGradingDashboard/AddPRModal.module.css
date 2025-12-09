@@ -215,76 +215,99 @@
 }
 
 /* Dark mode support */
-.dark-mode .modal {
+:global(.dark-mode) .modal {
   background-color: #1f2937;
   border-color: #4b5563;
 }
 
-.dark-mode .modalTitle {
+:global(.dark-mode) .modalTitle {
   color: #f9fafb;
 }
 
-.dark-mode .closeButton {
+:global(.dark-mode) .closeButton {
   color: #9ca3af;
 }
 
-.dark-mode .closeButton:hover {
+:global(.dark-mode) .closeButton:hover {
   color: #d1d5db;
   background-color: #374151;
 }
 
-.dark-mode .label,
-.dark-mode .gradeLabel {
+:global(.dark-mode) .label,
+:global(.dark-mode) .gradeLabel {
   color: #d1d5db;
 }
 
-.dark-mode .input {
+:global(.dark-mode) .input {
   background-color: #374151;
   border-color: #4b5563;
   color: #f9fafb;
 }
 
-.dark-mode .prNumberDisplay {
+:global(.dark-mode) .prNumberDisplay {
   color: #9ca3af;
 }
 
-.dark-mode .prNumberValue {
+:global(.dark-mode) .prNumberValue {
   color: #f9fafb;
 }
 
-.dark-mode .buttonCancel {
+:global(.dark-mode) .buttonCancel {
   color: #d1d5db;
   background-color: #374151;
   border-color: #4b5563;
 }
 
-.dark-mode .buttonCancel:hover {
+:global(.dark-mode) .buttonCancel:hover {
   background-color: #4b5563;
 }
 
-.dark-mode .gradeButton {
+:global(.dark-mode) .gradeButton {
   background-color: #374151;
   border-color: #4b5563;
   color: #d1d5db;
 }
 
-.dark-mode .gradeButton:hover {
+:global(.dark-mode) .gradeButton:hover {
   background-color: #4b5563;
 }
 
-.dark-mode .gradeButtonSelected {
+:global(.dark-mode) .gradeButtonSelected {
   background-color: #1e3a8a;
   border-color: #3b82f6;
   color: #dbeafe;
 }
 
-.dark-mode .backButton {
+:global(.dark-mode) .backButton {
   color: #d1d5db;
   background-color: #374151;
   border-color: #4b5563;
 }
 
-.dark-mode .backButton:hover {
+:global(.dark-mode) .backButton:hover {
   background-color: #4b5563;
+}
+
+:global(.dark-mode) .input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+:global(.dark-mode) .inputError:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+}
+
+:global(.dark-mode) .errorMessage {
+  color: #f87171;
+}
+
+:global(.dark-mode) .successMessage {
+  color: #4ade80;
+}
+
+:global(.dark-mode) .buttonPrimary:disabled {
+  background-color: #60a5fa;
+  opacity: 0.7;
 }
 

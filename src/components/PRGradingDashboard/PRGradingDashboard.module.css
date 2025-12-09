@@ -160,32 +160,64 @@
 }
 
 /* Dark mode support */
-.dark-mode .container {
+:global(.dark-mode) .container {
   background-color: #111827;
 }
 
-.dark-mode .header,
-.dark-mode .section,
-.dark-mode .summarySection,
-.dark-mode .footer {
+:global(.dark-mode) .header,
+:global(.dark-mode) .section,
+:global(.dark-mode) .summarySection,
+:global(.dark-mode) .footer {
   background-color: #1f2937;
   color: #f9fafb;
 }
 
-.dark-mode .title,
-.dark-mode .summaryTitle {
+:global(.dark-mode) .title,
+:global(.dark-mode) .summaryTitle {
   color: #f9fafb;
 }
 
-.dark-mode .date {
+:global(.dark-mode) .date {
   color: #d1d5db;
 }
 
-.dark-mode .loadingContainer {
+:global(.dark-mode) .loadingContainer {
   background-color: #111827;
 }
 
-.dark-mode .loadingText {
+:global(.dark-mode) .loadingText {
   color: #d1d5db;
+}
+
+:global(.dark-mode) .addReviewerButton {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+:global(.dark-mode) .addReviewerButton:hover {
+  background-color: #1d4ed8;
+}
+
+:global(.dark-mode) .addReviewerButton:focus {
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+:global(.dark-mode) .saveButton {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+:global(.dark-mode) .saveButton:hover {
+  background-color: #1d4ed8;
+}
+
+:global(.dark-mode) .saveButton:disabled {
+  background-color: #60a5fa;
+  opacity: 0.7;
+}
+
+:global(.dark-mode) .spinner {
+  border-color: #3b82f6;
+  border-top-color: transparent;
 }
 

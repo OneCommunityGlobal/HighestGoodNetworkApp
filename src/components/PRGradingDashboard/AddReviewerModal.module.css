@@ -159,46 +159,81 @@
 }
 
 /* Dark mode support */
-.dark-mode .modal {
+:global(.dark-mode) .modal {
   background-color: #1f2937;
   border-color: #4b5563;
 }
 
-.dark-mode .modalTitle {
+:global(.dark-mode) .modalTitle {
   color: #f9fafb;
 }
 
-.dark-mode .closeButton {
+:global(.dark-mode) .closeButton {
   color: #9ca3af;
 }
 
-.dark-mode .closeButton:hover {
+:global(.dark-mode) .closeButton:hover {
   color: #d1d5db;
   background-color: #374151;
 }
 
-.dark-mode .label {
+:global(.dark-mode) .closeButton:focus {
+  box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.5);
+}
+
+:global(.dark-mode) .label {
   color: #d1d5db;
 }
 
-.dark-mode .input {
+:global(.dark-mode) .required {
+  color: #f87171;
+}
+
+:global(.dark-mode) .input {
   background-color: #374151;
   border-color: #4b5563;
   color: #f9fafb;
 }
 
-.dark-mode .modalHeader,
-.dark-mode .modalFooter {
+:global(.dark-mode) .input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+:global(.dark-mode) .inputError {
+  border-color: #ef4444;
+}
+
+:global(.dark-mode) .inputError:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.5);
+}
+
+:global(.dark-mode) .errorMessage {
+  color: #f87171;
+}
+
+:global(.dark-mode) .modalHeader,
+:global(.dark-mode) .modalFooter {
   border-color: #4b5563;
 }
 
-.dark-mode .buttonCancel {
+:global(.dark-mode) .buttonCancel {
   color: #d1d5db;
   background-color: #374151;
   border-color: #4b5563;
 }
 
-.dark-mode .buttonCancel:hover {
+:global(.dark-mode) .buttonCancel:hover {
   background-color: #4b5563;
+}
+
+:global(.dark-mode) .buttonConfirm {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+:global(.dark-mode) .buttonConfirm:hover {
+  background-color: #1d4ed8;
 }
 

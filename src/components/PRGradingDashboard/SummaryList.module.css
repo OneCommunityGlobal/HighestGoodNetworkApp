@@ -126,48 +126,61 @@
 }
 
 /* Dark mode support */
-.dark-mode .reviewerSection {
+:global(.dark-mode) .reviewerSection {
   border-bottom-color: #4b5563;
 }
 
-.dark-mode .reviewerName {
+:global(.dark-mode) .reviewerName {
   color: #f9fafb;
 }
 
-.dark-mode .emptyMessage {
+:global(.dark-mode) .emptyMessage {
   color: #9ca3af;
 }
 
-.dark-mode .prItem {
+:global(.dark-mode) .prItem {
   background-color: #374151;
 }
 
-.dark-mode .prItem:hover {
+:global(.dark-mode) .prItem:hover {
   background-color: #4b5563;
 }
 
-.dark-mode .prNumber {
+:global(.dark-mode) .prNumber {
   color: #d1d5db;
 }
 
-.dark-mode .prNumberValue {
+:global(.dark-mode) .prNumberValue {
   color: #f9fafb;
 }
 
-.dark-mode .gradeTextUnselected {
+:global(.dark-mode) .gradeTextUnselected {
   color: #9ca3af;
 }
 
-.dark-mode .gradeTextUnselected:hover {
+:global(.dark-mode) .gradeTextUnselected:hover {
   color: #f9fafb;
 }
 
-.dark-mode .gradeTextSelected {
+:global(.dark-mode) .gradeTextSelected {
   background-color: #1e3a8a;
   color: #dbeafe;
 }
 
-.dark-mode .removeButton:hover {
+:global(.dark-mode) .removeButton {
+  color: #f87171;
+}
+
+:global(.dark-mode) .removeButton:hover {
+  color: #fca5a5;
   background-color: #7f1d1d;
+}
+
+:global(.dark-mode) .gradeRadio {
+  color: #3b82f6;
+}
+
+:global(.dark-mode) .gradeRadio:focus {
+  outline-color: #3b82f6;
 }
 

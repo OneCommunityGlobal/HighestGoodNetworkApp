@@ -38,19 +38,19 @@
 }
 
 /* Dark mode support */
-.dark-mode .tableHead {
+:global(.dark-mode) .tableHead {
   background-color: #374151;
 }
 
-.dark-mode .tableHeader {
+:global(.dark-mode) .tableHeader {
   color: #d1d5db;
 }
 
-.dark-mode .tableBody {
+:global(.dark-mode) .tableBody {
   background-color: #1f2937;
 }
 
-.dark-mode .modalCell {
+:global(.dark-mode) .modalCell {
   background-color: #374151;
 }
 

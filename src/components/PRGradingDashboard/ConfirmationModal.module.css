@@ -139,48 +139,69 @@
 }
 
 /* Dark mode support */
-.dark-mode .modal {
+:global(.dark-mode) .modal {
   background-color: #1f2937;
   border-color: #4b5563;
 }
 
-.dark-mode .modalTitle {
+:global(.dark-mode) .modalTitle {
   color: #f9fafb;
 }
 
-.dark-mode .closeButton {
+:global(.dark-mode) .closeButton {
   color: #9ca3af;
 }
 
-.dark-mode .closeButton:hover {
+:global(.dark-mode) .closeButton:hover {
   color: #d1d5db;
   background-color: #374151;
 }
 
-.dark-mode .confirmationText {
+:global(.dark-mode) .confirmationText {
   color: #d1d5db;
 }
 
-.dark-mode .confirmationText strong {
+:global(.dark-mode) .confirmationText strong {
   color: #f9fafb;
 }
 
-.dark-mode .noteText {
+:global(.dark-mode) .noteText {
   color: #9ca3af;
 }
 
-.dark-mode .modalHeader,
-.dark-mode .modalFooter {
+:global(.dark-mode) .modalHeader,
+:global(.dark-mode) .modalFooter {
   border-color: #4b5563;
 }
 
-.dark-mode .buttonCancel {
+:global(.dark-mode) .buttonCancel {
   color: #d1d5db;
   background-color: #374151;
   border-color: #4b5563;
 }
 
-.dark-mode .buttonCancel:hover {
+:global(.dark-mode) .buttonCancel:hover {
   background-color: #4b5563;
+}
+
+:global(.dark-mode) .icon {
+  color: #3b82f6;
+}
+
+:global(.dark-mode) .buttonConfirm {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+:global(.dark-mode) .buttonConfirm:hover {
+  background-color: #1d4ed8;
+}
+
+:global(.dark-mode) .buttonConfirm:focus {
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+:global(.dark-mode) .closeButton:focus {
+  box-shadow: 0 0 0 2px rgba(156, 163, 175, 0.5);
 }
 

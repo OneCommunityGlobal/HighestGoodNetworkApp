@@ -69,21 +69,39 @@
 }
 
 /* Dark mode support */
-.dark-mode .row:hover {
+:global(.dark-mode) .row:hover {
   background-color: #374151;
 }
 
-.dark-mode .reviewerName {
+:global(.dark-mode) .reviewerName {
   color: #f9fafb;
 }
 
-.dark-mode .prsReviewedInput {
+:global(.dark-mode) .prsReviewedInput {
   background-color: #374151;
   border-color: #4b5563;
   color: #f9fafb;
 }
 
-.dark-mode .prsNeeded {
+:global(.dark-mode) .prsNeeded {
   color: #d1d5db;
+}
+
+:global(.dark-mode) .prsReviewedInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+:global(.dark-mode) .addButton {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+:global(.dark-mode) .addButton:hover {
+  background-color: #1d4ed8;
+}
+
+:global(.dark-mode) .addButton:focus {
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5), 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
