@@ -11,6 +11,7 @@ const TaskListItem = ({
   isExpanded = false,
   onToggleIntermediateTasks,
   onMarkIntermediateAsDone,
+  darkMode = false,
 }) => {
   const {
     progressPercentage,
@@ -34,7 +35,7 @@ const TaskListItem = ({
   };
 
   return (
-    <div className={styles.taskListItem}>
+    <div className={`${styles.taskListItem} ${darkMode ? styles.darkMode : ''}`}>
       {/* Task Info */}
       <div className={styles.taskInfo}>
         <div className={styles.taskHeader}>

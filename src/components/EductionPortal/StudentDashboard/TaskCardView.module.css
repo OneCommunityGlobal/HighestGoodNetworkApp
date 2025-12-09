@@ -22,3 +22,8 @@
     gap: 1rem;
   }
 }
+
+/* Dark Mode Styles */
+.darkMode .emptyState {
+  color: #9ca3af;
+}

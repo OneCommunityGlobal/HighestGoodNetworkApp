@@ -103,3 +103,22 @@
     display: none;
   }
 }
+
+/* Dark Mode Styles */
+.darkMode.navigationBar {
+  background-color: #1e3a5f;
+}
+
+.darkMode .dropdownContent {
+  background-color: #2d2d2d;
+  border-color: #404040;
+}
+
+.darkMode .dropdownItem {
+  color: #d1d5db;
+}
+
+.darkMode .dropdownItem:hover {
+  background-color: #363636;
+  color: #ffffff;
+}

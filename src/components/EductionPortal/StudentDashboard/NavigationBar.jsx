@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './NavigationBar.module.css';
 
-const NavigationBar = () => {
+const NavigationBar = ({ darkMode = false }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
 
   const toggleDropdown = dropdown => {
@@ -86,7 +86,7 @@ const NavigationBar = () => {
   };
 
   return (
-    <nav className={styles.navigationBar}>
+    <nav className={`${styles.navigationBar} ${darkMode ? styles.darkMode : ''}`}>
       <div className={styles.navContainer}>
         {navigationItems.map((item, index) => (
           <div key={index} className={styles.navItem}>

@@ -14,3 +14,8 @@
 .emptyState p {
   margin: 0;
 }
+
+/* Dark Mode Styles */
+.darkMode .emptyState {
+  color: #9ca3af;
+}

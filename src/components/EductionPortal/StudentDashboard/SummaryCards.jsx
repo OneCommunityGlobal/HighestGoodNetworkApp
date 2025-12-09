@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './SummaryCards.module.css';
 
-const SummaryCards = ({ data }) => {
+const SummaryCards = ({ data, darkMode = false }) => {
   const cards = [
     {
       title: 'Total Time Logged',
@@ -61,7 +61,7 @@ const SummaryCards = ({ data }) => {
   };
 
   return (
-    <div className={styles.summaryCards}>
+    <div className={`${styles.summaryCards} ${darkMode ? styles.darkMode : ''}`}>
       {cards.map((card, index) => (
         <div key={index} className={styles.card}>
           <div className={styles.cardContent}>

@@ -141,3 +141,56 @@
     align-self: flex-end;
   }
 }
+
+/* Dark Mode Styles */
+.darkMode {
+  background-color: #1a1a1a;
+}
+
+.darkMode .title {
+  color: #ffffff;
+}
+
+.darkMode .subtitle {
+  color: #9ca3af;
+}
+
+.darkMode .sectionTitle {
+  color: #ffffff;
+}
+
+.darkMode .viewToggle {
+  background-color: #2d2d2d;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.darkMode .toggleButton {
+  color: #9ca3af;
+}
+
+.darkMode .toggleButton:hover {
+  background-color: #363636;
+  color: #d1d5db;
+}
+
+.darkMode .toggleButton.active {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.darkMode .loadingContainer {
+  color: #9ca3af;
+}
+
+.darkMode .spinner {
+  border-color: #404040;
+  border-top-color: #60a5fa;
+}
+
+.darkMode .errorContainer {
+  color: #9ca3af;
+}
+
+.darkMode .errorMessage {
+  color: #f87171;
+}

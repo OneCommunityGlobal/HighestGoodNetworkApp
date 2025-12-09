@@ -17,6 +17,7 @@ const IntermediateTaskList = () => {
   const dispatch = useDispatch();
   const authUser = useSelector(state => state.auth.user);
   const { taskItems: parentTasks } = useSelector(state => state.studentTasks);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [expandedTasks, setExpandedTasks] = useState({});
   const [intermediateTasks, setIntermediateTasks] = useState({});
@@ -158,7 +159,7 @@ const IntermediateTaskList = () => {
   };
 
   return (
-    <div className={styles.dashboard}>
+    <div className={`${styles.dashboard} ${darkMode ? styles.darkMode : ''}`}>
       <Container className={styles.mainContainer}>
         <div className={styles.header}>
           <h1 className={styles.title}>Intermediate Tasks</h1>

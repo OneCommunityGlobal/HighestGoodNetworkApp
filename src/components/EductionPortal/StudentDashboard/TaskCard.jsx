@@ -11,6 +11,7 @@ const TaskCard = ({
   isExpanded = false,
   onToggleIntermediateTasks,
   onMarkIntermediateAsDone,
+  darkMode = false,
 }) => {
   const {
     progressPercentage,
@@ -34,7 +35,7 @@ const TaskCard = ({
   };
 
   return (
-    <div className={styles.taskCard}>
+    <div className={`${styles.taskCard} ${darkMode ? styles.darkMode : ''}`}>
       {/* Status Badge */}
       <div className={`${styles.statusBadge} ${statusBadge.className}`}>{statusBadge.text}</div>
 

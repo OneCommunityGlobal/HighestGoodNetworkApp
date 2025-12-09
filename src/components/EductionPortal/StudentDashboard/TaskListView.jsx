@@ -9,6 +9,7 @@ const TaskListView = ({
   expandedTasks,
   onToggleIntermediateTasks,
   onMarkIntermediateAsDone,
+  darkMode = false,
 }) => {
   if (!tasks || tasks.length === 0) {
     return (
@@ -19,7 +20,7 @@ const TaskListView = ({
   }
 
   return (
-    <div className={styles.listView}>
+    <div className={`${styles.listView} ${darkMode ? styles.darkMode : ''}`}>
       {tasks.map(task => (
         <TaskListItem
           key={task._id || task.id}
@@ -29,6 +30,7 @@ const TaskListView = ({
           isExpanded={expandedTasks[task.id] || false}
           onToggleIntermediateTasks={onToggleIntermediateTasks}
           onMarkIntermediateAsDone={onMarkIntermediateAsDone}
+          darkMode={darkMode}
         />
       ))}
     </div>
