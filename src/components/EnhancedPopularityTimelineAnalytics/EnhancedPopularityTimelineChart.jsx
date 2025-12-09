@@ -289,42 +289,69 @@ const EnhancedPopularityTimelineChart = () => {
     });
 
     return (
-      <div className={styles['ept-legend']} role="list" aria-label="Chart legend">
-        {displayMetrics.map(metric => {
-          const isHighlighted = highlightedRole === metric.role || !highlightedRole;
-          return (
-            <div
-              key={metric.role}
-              role="button"
-              tabIndex={0}
-              aria-pressed={highlightedRole === metric.role}
-              className={`${styles['ept-legend-item']} ${
-                highlightedRole === metric.role
-                  ? styles['ept-legend-item-highlighted']
-                  : isHighlighted
-                  ? ''
-                  : styles['ept-legend-item-dimmed']
-              }`}
-              onClick={() => handleRoleHighlight(metric.role)}
-              onKeyDown={e => handleRoleKeyDown(e, metric.role)}
-            >
-              <div className={styles['ept-legend-color']}>
-                <div
-                  className={styles['ept-legend-line-solid']}
-                  style={{ backgroundColor: metric.color }}
-                />
-                <div
-                  className={styles['ept-legend-line-dashed']}
-                  style={{ borderBottom: `2px dashed ${metric.color}` }}
-                />
+      <div className={styles['ept-legend-container']}>
+        <div className={styles['ept-legend-key']}>
+          <span>
+            <span
+              style={{
+                borderBottom: '2px solid #666',
+                width: '15px',
+                display: 'inline-block',
+                marginBottom: '4px',
+              }}
+            ></span>{' '}
+            Hits
+          </span>
+          <span style={{ marginLeft: '10px' }}>
+            <span
+              style={{
+                borderBottom: '2px dashed #666',
+                width: '15px',
+                display: 'inline-block',
+                marginBottom: '4px',
+              }}
+            ></span>{' '}
+            Applications
+          </span>
+        </div>
+
+        <div className={styles['ept-legend']} role="list" aria-label="Chart legend">
+          {displayMetrics.map(metric => {
+            const isHighlighted = highlightedRole === metric.role || !highlightedRole;
+            return (
+              <div
+                key={metric.role}
+                role="button"
+                tabIndex={0}
+                aria-pressed={highlightedRole === metric.role}
+                className={`${styles['ept-legend-item']} ${
+                  highlightedRole === metric.role
+                    ? styles['ept-legend-item-highlighted']
+                    : isHighlighted
+                    ? ''
+                    : styles['ept-legend-item-dimmed']
+                }`}
+                onClick={() => handleRoleHighlight(metric.role)}
+                onKeyDown={e => handleRoleKeyDown(e, metric.role)}
+              >
+                <div className={styles['ept-legend-color']}>
+                  <div
+                    className={styles['ept-legend-line-solid']}
+                    style={{ backgroundColor: metric.color }}
+                  />
+                  <div
+                    className={styles['ept-legend-line-dashed']}
+                    style={{ borderBottom: `2px dashed ${metric.color}` }}
+                  />
+                </div>
+                <span className={styles['ept-legend-text']}>
+                  {metric.role}
+                  <span className={styles['ept-legend-count']}>({metric.totalHits || 0})</span>
+                </span>
               </div>
-              <span className={styles['ept-legend-text']}>
-                {metric.role}
-                <span className={styles['ept-legend-count']}>({metric.totalHits || 0})</span>
-              </span>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     );
   };
@@ -568,79 +595,81 @@ const EnhancedPopularityTimelineChart = () => {
             </div>
           ) : (
             <div className={styles['ept-chart-wrapper']}>
-              <ResponsiveContainer width="100%" height={500}>
-                <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#f0f0f0'} />
-                  <XAxis
-                    dataKey="month"
-                    angle={-45}
-                    textAnchor="end"
-                    height={80}
-                    interval={0}
-                    tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
-                  />
-                  <YAxis
-                    domain={[0, 'auto']}
-                    tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
-                    label={{
-                      value: 'Count',
-                      angle: -90,
-                      position: 'insideLeft',
-                      style: { fill: darkMode ? '#ccc' : '#333' },
-                    }}
-                  />
-                  <Tooltip
-                    content={<EnhancedTooltip />}
-                    wrapperStyle={{ pointerEvents: 'auto', zIndex: 10002 }}
-                    cursor={{ stroke: darkMode ? '#666' : '#ccc', strokeWidth: 2 }}
-                    onAnimationStart={() => setTooltipVisible(true)}
-                    onAnimationEnd={() => setTooltipVisible(false)}
-                  />
-                  <Legend content={InteractiveLegend} />
+              <div style={{ minWidth: '1000px', height: '500px' }}>
+                <ResponsiveContainer width="100%" height={500}>
+                  <LineChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#444' : '#f0f0f0'} />
+                    <XAxis
+                      dataKey="month"
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      interval={0}
+                      tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
+                    />
+                    <YAxis
+                      domain={[0, 'auto']}
+                      tick={{ fontSize: 12, fill: darkMode ? '#ccc' : '#333' }}
+                      label={{
+                        value: 'Count',
+                        angle: -90,
+                        position: 'insideLeft',
+                        style: { fill: darkMode ? '#ccc' : '#333' },
+                      }}
+                    />
+                    <Tooltip
+                      content={<EnhancedTooltip />}
+                      wrapperStyle={{ pointerEvents: 'auto', zIndex: 10002 }}
+                      cursor={{ stroke: darkMode ? '#666' : '#ccc', strokeWidth: 2 }}
+                      onAnimationStart={() => setTooltipVisible(true)}
+                      onAnimationEnd={() => setTooltipVisible(false)}
+                    />
+                    <Legend content={InteractiveLegend} />
 
-                  {roleMetrics.map(metric => {
-                    const isHighlighted = highlightedRole === metric.role || !highlightedRole;
-                    const opacity = isHighlighted ? 1 : 0.3;
-                    const strokeWidth = isHighlighted ? 3 : 1;
+                    {roleMetrics.map(metric => {
+                      const isHighlighted = highlightedRole === metric.role || !highlightedRole;
+                      const opacity = isHighlighted ? 1 : 0.3;
+                      const strokeWidth = isHighlighted ? 3 : 1;
 
-                    if (!showLowVolume && (metric.totalHits || 0) < 10) {
-                      return null;
-                    }
+                      if (!showLowVolume && (metric.totalHits || 0) < 10) {
+                        return null;
+                      }
 
-                    return (
-                      <React.Fragment key={metric.role}>
-                        <Line
-                          type="monotone"
-                          dataKey={`${metric.roleKey}_hits`}
-                          stroke={metric.color}
-                          strokeWidth={strokeWidth}
-                          strokeOpacity={opacity}
-                          dot={{ fill: metric.color, r: isHighlighted ? 4 : 2 }}
-                          activeDot={{
-                            r: 6,
-                            onClick: () => handleRoleHighlight(metric.role),
-                          }}
-                          name={`${metric.role} Hits`}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey={`${metric.roleKey}_applications`}
-                          stroke={metric.color}
-                          strokeWidth={strokeWidth}
-                          strokeOpacity={opacity}
-                          strokeDasharray="5 5"
-                          dot={{ fill: metric.color, r: isHighlighted ? 3 : 1 }}
-                          activeDot={{
-                            r: 5,
-                            onClick: () => handleRoleHighlight(metric.role),
-                          }}
-                          name={`${metric.role} Apps`}
-                        />
-                      </React.Fragment>
-                    );
-                  })}
-                </LineChart>
-              </ResponsiveContainer>
+                      return (
+                        <React.Fragment key={metric.role}>
+                          <Line
+                            type="monotone"
+                            dataKey={`${metric.roleKey}_hits`}
+                            stroke={metric.color}
+                            strokeWidth={strokeWidth}
+                            strokeOpacity={opacity}
+                            dot={{ fill: metric.color, r: isHighlighted ? 4 : 2 }}
+                            activeDot={{
+                              r: 6,
+                              onClick: () => handleRoleHighlight(metric.role),
+                            }}
+                            name={`${metric.role} Hits`}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey={`${metric.roleKey}_applications`}
+                            stroke={metric.color}
+                            strokeWidth={strokeWidth}
+                            strokeOpacity={opacity}
+                            strokeDasharray="5 5"
+                            dot={{ fill: metric.color, r: isHighlighted ? 3 : 1 }}
+                            activeDot={{
+                              r: 5,
+                              onClick: () => handleRoleHighlight(metric.role),
+                            }}
+                            name={`${metric.role} Apps`}
+                          />
+                        </React.Fragment>
+                      );
+                    })}
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           )}
         </div>

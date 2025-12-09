@@ -214,6 +214,34 @@ padding: 20px;
 border-radius: 8px;
 box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 border: 1px solid #eee;
+overflow-x: auto;
+overflow-y: hidden;
+-webkit-overflow-scrolling: touch;
+position: relative;
+}
+
+.ept-chart-wrapper > div { 
+    min-width: 1000px;
+}
+
+.ept-legend-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.ept-legend-key {
+  font-size: 0.8rem;
+  color: #666;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.dark-theme .ept-legend-key {
+  color: #a0aec0;
 }
 
 .dark-theme .ept-chart-wrapper {
