@@ -1,13 +1,19 @@
 import { useParams } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
 import { Container, Row, Col } from 'reactstrap';
 import LogBar from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
 import MaterialsDisplay from './Materials/MaterialsDisplay';
 import ProjectLog from './ProjectLog';
 import styles from './ProjectDetails.module.css';
+import { fetchBMProjects } from '../../../../actions/bmdashboard/projectActions';
 
 function ProjectDetails() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchBMProjects());
+  }, []);
   const { projectId } = useParams();
   const darkMode = useSelector(state => state.theme.darkMode);
   const projects = useSelector(state => state.bmProjects) || [];
