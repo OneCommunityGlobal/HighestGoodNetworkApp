@@ -142,7 +142,6 @@ export default function Warning({ personId, username, userRole, displayUser }) {
         if (toastMessage) {
           toast.success(toastMessage);
         }
-        // });
       })
       .catch(err => {
         console.log(err);

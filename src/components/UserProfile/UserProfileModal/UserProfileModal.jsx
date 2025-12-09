@@ -196,7 +196,6 @@ const UserProfileModal = props => {
   };
   const handleToggleLogWarning = warningData => {
     if (warningData === 'both') {
-      console.log('warningData after clicking both, checking if they have the number of warnings for both: ', warningData);
       setDisplayBothModal(true);
       setWarningType({
         specialWarnings,
