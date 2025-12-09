@@ -30,6 +30,13 @@ export const formatDateUtcYYYYMMDD = (val) => {
   return moment(val, moment.ISO_8601, true).utc().format('YYYY-MM-DD');
 };
 
+export const formatEndDatePST = (selectedDateString) => {
+  return moment
+    .tz(selectedDateString, LA_TIME_ZONE)       // interpret date as LA/PST
+    .endOf('day')                        // set 23:59:59.999
+    .toDate();                           // convert to UTC ISO for DB
+}
+
 /**
  *
  * @param {*} date UTC timestamp string

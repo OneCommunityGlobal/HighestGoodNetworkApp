@@ -263,9 +263,7 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
       // Prepare patch data
       const patchData = {
         status,
-        endDate: finalDayDate
-          ? moment.utc(finalDayDate).format('YYYY-MM-DD')
-          : undefined,
+        endDate: finalDayDate ?? undefined,
         isSet,
       };
 
