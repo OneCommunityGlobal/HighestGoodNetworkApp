@@ -5,7 +5,6 @@ import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
 import ToolItemsTable from './ToolItemsTable';
 import styles from './ToolItemListView.module.css';
-import { set } from 'lodash';
 
 export function ToolItemListView({
   itemType,
@@ -20,6 +19,32 @@ export function ToolItemListView({
   const [selectedToolStatus, setSelectedToolStatus] = useState('all');
   const [selectedCondition, setSelectedCondition] = useState('all');
   const [isError, setIsError] = useState(false);
+
+  useEffect(() => {
+    try {
+      const sp = localStorage.getItem('toolsSelectedProject');
+      const si = localStorage.getItem('toolsSelectedItem');
+      const sts = localStorage.getItem('toolsSelectedStatus');
+      const sc = localStorage.getItem('toolsSelectedCondition');
+
+      if (sp) setSelectedProject(sp);
+      if (si) setSelectedItem(si);
+      if (sts) setSelectedToolStatus(sts);
+      if (sc) setSelectedCondition(sc);
+    } catch (e) {}
+  }, []);
+
+  // Save filters / sort whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('toolsSelectedProject', selectedProject);
+      localStorage.setItem('toolsSelectedItem', selectedItem);
+      localStorage.setItem('toolsSelectedStatus', selectedToolStatus);
+      localStorage.setItem('toolsSelectedCondition', selectedCondition);
+    } catch (e) {
+      // ignore
+    }
+  }, [selectedProject, selectedItem, selectedToolStatus, selectedCondition]);
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -48,12 +73,9 @@ export function ToolItemListView({
             item.condition !== 'Lost' &&
             item.condition !== 'Needs Replacing'
           );
+        } else if (selectedToolStatus === 'Under Maintenance') {
+          return item.condition === 'Worn' || item.condition === 'Damaged';
         }
-        return true;
-        // if (selectedToolStatus === 'Under Maintenance') {
-        //   // UPDATE LOGIC TO MATCH THE CONDITIONS
-        //   return !item.using && !item.available;
-        // }
       });
     }
 
