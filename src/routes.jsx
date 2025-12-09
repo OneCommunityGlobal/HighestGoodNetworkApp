@@ -171,6 +171,7 @@ import PRDashboardTopReviewedPRs from './components/HGNPRDashboard/PRDashboardTo
 import PRDashboardDetails from './components/HGNPRDashboard/PRDashboardDetails';
 import PromotionEligibility from './components/HGNPRDashboard/PromotionEligibility';
 import PRPromotionsPage from './components/PRPromotions/PRPromotionsPage';
+import PRGradingDashboard from './components/PRGradingDashboard/PRGradingDashboard';
 
 import ProtectedRoute from './components/common/ProtectedRoute';
 import { UserRole } from './utils/enums';
@@ -848,6 +849,12 @@ export default (
           path="/pr-team-analytics/popular-prs"
           exact
           component={PRReviewTeamAnalytics}
+        />
+        <ProtectedRoute
+          path="/pr-grading-dashboard"
+          exact
+          component={PRGradingDashboard}
+          fallback
         />
         <Route path="*" component={NotFoundPage} />
       </Switch>
