@@ -714,6 +714,7 @@ function BioSwitch({ userId, bioPosted, summary, getWeeklySummariesReport }) {
           }
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.warn('Failed to refresh weekly summaries after bio update:', error);
       }
     }
