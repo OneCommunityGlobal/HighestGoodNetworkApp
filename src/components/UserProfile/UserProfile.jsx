@@ -555,62 +555,111 @@ function UserProfile(props) {
     setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
   };
 
-  const onDeleteProject = deletedProjectId => {
-    setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId));
+  const onDeleteProject = async (deletedProjectId) => {
+
+  const removedProject = projects.find(p => (p._id || p.projectId) === deletedProjectId);
+
+  const updatedProjects = projects.filter(p => {
+    return (p._id || p.projectId) !== deletedProjectId;
+  });
+
+  setProjects(updatedProjects);
+
+  // Prepare backend payload
+  const updatedUserProfile = {
+    ...userProfileRef.current,
+    projects: updatedProjects.map(p => String(p._id || p.projectId)),
   };
+
+  try {
+    await handleSubmit(updatedUserProfile);  // this already toasts success
+    toast.success(`User removed from Project "${removedProject?.projectName || 'Unknown'}"`);
+  } catch (e) {
+    toast.error('Failed to remove project, please try again.');
+    console.error(e);
+  }
+  return updatedProjects;
+};
+
 
   const onAssignTeam = assignedTeam => {
     setTeams(prevState => [...prevState, assignedTeam]);
   };
 
-const onAssignProject = assignedProject => {
-  // eslint-disable-next-line no-console
-  console.log("Adding project to state:", assignedProject);
-  
-  // Always create a new array to trigger React re-render
-  setProjects(prevProjects => 
-    {
-    // Ensure prevProjects is an array
-    const currentProjects = Array.isArray(prevProjects) ? prevProjects : [];
-    
-    if (currentProjects.some(proj => proj._id === assignedProject._id)) {
-      // eslint-disable-next-line no-console
-      console.log("Project already exists, not adding duplicate");
-      return currentProjects; 
-    }
-    
-    // Add project and log the new state
-    // eslint-disable-next-line no-console
-    console.log("Adding new project:", assignedProject.projectName);
-    const newProjects = [...currentProjects, assignedProject];
-    // eslint-disable-next-line no-console
-    console.log("Updated projects state:", newProjects);
-    return newProjects; // Return the new array with the project added
-  });
-};
-  const onUpdateTask = (taskId, updatedTask) => {
-    const newTask = {
-      updatedTask,
-      taskId,
-    };
+const onAssignProject = async (assignedProject) => {
+  const projectId = assignedProject._id || assignedProject.projectId;
 
-    setTasks(tasks => {
-      const tasksWithoutTheUpdated = [...tasks];
-      const taskIndex = tasks.findIndex(task => task._id === taskId);
-      tasksWithoutTheUpdated[taskIndex] = updatedTask;
-      return tasksWithoutTheUpdated;
-    });
+  // Avoid duplicates
+  const currentProjects = Array.isArray(projects) ? projects : [];
+  if (currentProjects.some(p => (p._id || p.projectId) === projectId)) {
+    toast.info(`Project "${assignedProject.projectName || 'Unknown'}" already assigned to this user`);
+    return;
+  }
 
-    if (updatedTasks.findIndex(task => task.taskId === taskId) !== -1) {
-      const taskIndex = updatedTasks.findIndex(task => task.taskId === taskId);
-      const tasksToUpdate = updatedTasks;
-      tasksToUpdate.splice(taskIndex, 1);
-      tasksToUpdate.splice(taskIndex, 0, newTask);
-      setUpdatedTasks(tasksToUpdate);
-    } else {
-      setUpdatedTasks(tasks => [...tasks, newTask]);
-    }
+  const updatedProjects = [...currentProjects, assignedProject];
+  setProjects(updatedProjects);
+
+  const updatedUserProfile = {
+    ...userProfileRef.current,
+    projects: updatedProjects.map(p => String(p._id || p.projectId)),
   };
+
+  try {
+    await handleSubmit(updatedUserProfile);  // reuses same pipeline
+    toast.success(`User assigned to Project "${assignedProject.projectName || 'Unknown'}"`);
+  } catch (e) {
+    toast.error('Failed to assign project, please try again.');
+    console.error(e);
+  }
+  return updatedProjects;
+};
+
+const onUpdateTask = async (taskId, updatedTask, method) => {
+  
+  let newTasks;
+
+  if (method === 'remove') {
+    try{
+    newTasks = tasks.filter(t => t._id !== taskId);
+    const res = await axios.delete(ENDPOINTS.TASK_DELETE_BY_ID(taskId, userProfile._id));
+    if (res.status === 200) {
+      setTasks(newTasks);
+      toast.success('Task removed successfully');
+    } else {
+      toast.error('Failed to remove task');
+    }
+    return newTasks;
+  } catch (e) {
+    toast.error('Failed to remove task, please try again.');
+    console.error(e);
+    return tasks;
+  }
+  } else {
+    // UPDATE the task normally
+    newTasks = tasks.map(t =>
+      t._id === taskId ? updatedTask : t
+    );
+  }
+  setTasks(newTasks);
+
+  const updatedUserProfile = {
+  ...userProfileRef.current,
+  tasks: newTasks 
+};
+
+setUpdatedTasks(prev => {
+  const others = prev.filter(t => t.taskId !== taskId);
+  return [...others, { taskId, updatedTask }];
+});
+
+  try {
+    await handleSubmit(updatedUserProfile);
+    toast.success("Task updated");
+  } catch (e) {
+    toast.error("Failed to update task");
+    console.error(e);
+  }
+};
 
   const handleImageUpload = async evt => {
     if (evt) evt.preventDefault();
@@ -1382,15 +1431,6 @@ const onAssignProject = assignedProject => {
         </div>
 
         <div className="right-column">
-          {/* }
-            {!isProfileEqual ||
-              !isTasksEqual ||
-              !isProjectsEqual ? (
-              <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
-              </Alert>
-            ) : null}
-             */}
           {!codeValid ? (
             <Alert color="danger">
               NOT SAVED! The code must be between 5 and 7 characters long
@@ -1741,12 +1781,13 @@ const onAssignProject = assignedProject => {
                       userId={props.match.params.userId}
                       updateTask={onUpdateTask}
                       handleSubmit={handleSubmit}
-                      disabled={
-                        !formValid.firstName ||
-                        !formValid.lastName ||
-                        !formValid.email ||
-                        !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                      }
+                      // disabled={
+                      //   !formValid.firstName ||
+                      //   !formValid.lastName ||
+                      //   !formValid.email ||
+                      //   !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                      // }
+                      disabled={false}
                       darkMode={darkMode}
                     />
                   )
@@ -1797,7 +1838,7 @@ const onAssignProject = assignedProject => {
                   </Button>
                 </Link>
               )}
-              {((canEdit && activeTab) || canEditTeamCode) && (
+              {((canEdit && activeTab) || canEditTeamCode) && activeTab !== '4' && (
                 <>
                   <SaveButton
                     className="mr-1 btn-bottom"
@@ -1808,7 +1849,6 @@ const onAssignProject = assignedProject => {
                       !formValid.email ||
                       !codeValid ||
                       (userStartDate > userEndDate && userEndDate !== '') ||
-                      // titleOnSet ||
                       (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
@@ -2184,12 +2224,13 @@ const onAssignProject = assignedProject => {
                     userId={props.match.params.userId}
                     updateTask={onUpdateTask}
                     handleSubmit={handleSubmit}
-                    disabled={
-                      !formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                    }
+                    // disabled={
+                    //   !formValid.firstName ||
+                    //   !formValid.lastName ||
+                    //   !formValid.email ||
+                    //   !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                    // }
+                    disabled={false}
                     darkMode={darkMode}
                   />
                 </ModalBody>
