@@ -11,7 +11,7 @@ function ProjectTeams() {
   const { projectId } = useParams();
   const history = useHistory();
   const dispatch = useDispatch();
-
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isEditModalOpen, setEditModalOpen] = useState(false);
   // STATE: Loading status for the save button
   const [isSaving, setIsSaving] = useState(false);
@@ -108,8 +108,8 @@ function ProjectTeams() {
           <h2 className="mb-4">Teams working on {currProject.name}</h2>
 
           <div className="table-responsive">
-            <Table striped hover>
-              <thead>
+            <Table hover>
+              <thead className={darkMode ? styles['dark-table-header'] : ''}>
                 <tr>
                   <th>Team Name</th>
                   <th>Status</th>
