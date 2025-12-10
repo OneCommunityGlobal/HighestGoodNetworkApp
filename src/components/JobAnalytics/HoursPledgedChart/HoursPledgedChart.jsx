@@ -81,10 +81,11 @@ function HoursPledgedChart() {
 
     const processedData = Object.values(roleMap).map(roleData => ({
       role: roleData.role,
-      avgHours: roleData.totalHours / roleData.count,
+      avgHours: (roleData.totalHours / roleData.count).toFixed(2),
     }));
 
-    processedData.sort((a, b) => b.avgHours - a.avgHours);
+    processedData.sort((a, b) => Number(b.avgHours) - Number(a.avgHours));
+
     setChartData(processedData);
   }, [rawData, startDate, endDate, selectedRoles]);
 
@@ -164,7 +165,7 @@ function HoursPledgedChart() {
             </YAxis>
             <Tooltip />
             <Bar dataKey="avgHours" fill={darkMode ? '#225163' : '#8884d8'}>
-              <LabelList dataKey="avgHours" position="right" />
+              <LabelList dataKey="avgHours" position="right" formatter={v => v} />
             </Bar>
           </BarChart>
         )}
