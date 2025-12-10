@@ -202,14 +202,12 @@ function UserProfile(props) {
 
   /* useEffect functions */ // added by luis, the below useEffect
   useEffect(() => {
-    loadUserProfile();
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
     dispatch(getAllTeamCode());
     fetchSpecialWarnings();
-    canEditTeamCode && fetchTeamCodeAllUsers();
   }, []);
 
  
@@ -267,69 +265,61 @@ function UserProfile(props) {
     setIsProjectsEqual(compare);
   };
 
-  const loadSummaryIntroDetails = async (teamId, user) => {
+  const buildSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
-
+  
     if (!teamId) {
-      setSummaryIntro(
-        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
-         These people did NOT provide a summary .
-         <Insert the proofread and single-paragraph summary created by ChatGPT>`,
-      );
-      return;
+      return `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes .
+       These people did NOT provide a summary .
+       <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     }
-
+  
     try {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
-
+  
       const activeMembers = data.filter(
         member => member._id !== currentManager._id && member.isActive,
       );
-
-      //submitted a summary, maybe didn't complete their hours just yet
+  
       const memberSubmitted = await Promise.all(
         activeMembers
           .filter(member => member.weeklySummaries[0].summary !== '')
           .map(async member => {
             const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
-
             const returnData = calculateTotalTime(results.data, true);
-
+  
             return returnData < member.weeklycommittedHours
               ? `${member.firstName} ${member.lastName} hasn't completed hours`
               : `${member.firstName} ${member.lastName}`;
           }),
       );
-
+  
       const memberNotSubmitted = activeMembers
         .filter(member => member.weeklySummaries[0].summary === '')
-        .map(member => {
-          if (getTimeOffStatus(member._id)) {
-            return `${member.firstName} ${member.lastName} off for the week`;
-          } else {
-            return `${member.firstName} ${member.lastName}`;
-          }
-        });
-
+        .map(member =>
+          getTimeOffStatus(member._id)
+            ? `${member.firstName} ${member.lastName} off for the week`
+            : `${member.firstName} ${member.lastName}`,
+        );
+  
       const memberSubmittedString =
         memberSubmitted.length !== 0
           ? memberSubmitted.join(', ')
           : '<list all team members names included in the summary>';
-
+  
       const memberDidntSubmitString =
         memberNotSubmitted.length !== 0
           ? memberNotSubmitted.join(', ')
           : '<list all team members names NOT included in the summary>';
-
-      const summaryIntroString = `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
-
-      setSummaryIntro(summaryIntroString);
+  
+      return `This week's summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error fetching team users:', error);
+      return '';
     }
   };
+  
 
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
@@ -497,10 +487,6 @@ function UserProfile(props) {
 
       // Fetch calculated start date from first time entry
       await fetchCalculatedStartDate(userId, newUserProfile);
-
-      // run after main profile is loaded
-      const teamId = newUserProfile?.teams?.[0]?._id || null;
-      await loadSummaryIntroDetails(teamId, response.data);
 
       // Note: Removed automatic getTimeStartDateEntriesByPeriod call to prevent overwriting manual startDate changes
       // Users can now toggle between manual and calculated startDate via button
@@ -1551,12 +1537,18 @@ setUpdatedTasks(prev => {
             >
               {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
             </Button>
-            {(canGetProjectMembers && teams.length !== 0) ||
-            ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
+            {((canGetProjectMembers && teams.length !== 0) ||
+              ['Owner', 'Administrator', 'Manager'].includes(requestorRole)) && (
               <Button
-                onClick={() => {
-                  console.log(summaryIntro)
-                  navigator.clipboard.writeText(summaryIntro);
+                onClick={async () => {
+                  const teamId = userProfile?.teams?.[0]?._id || null;
+                  const intro = await buildSummaryIntroDetails(teamId, userProfile);
+                  if (!intro) {
+                    toast.error('Unable to generate summary intro right now.');
+                    return;
+                  }
+                  setSummaryIntro(intro);
+                  await navigator.clipboard.writeText(intro);
                   toast.success('Summary Intro Copied!');
                 }}
                 color="primary"
@@ -1566,8 +1558,6 @@ setUpdatedTasks(prev => {
               >
                 Generate Summary Intro
               </Button>
-            ) : (
-              ''
             )}
           </div>
           <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
