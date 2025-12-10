@@ -13,6 +13,8 @@ function ProjectTeams() {
   const dispatch = useDispatch();
 
   const [isEditModalOpen, setEditModalOpen] = useState(false);
+  // STATE: Loading status for the save button
+  const [isSaving, setIsSaving] = useState(false);
   const [editData, setEditData] = useState({
     teamName: '',
     teamId: '',
@@ -41,9 +43,20 @@ function ProjectTeams() {
   };
 
   const handleSaveChanges = async name => {
+    if (!name || name.trim().length === 0) {
+      toast.error('Team name cannot be empty.');
+      return;
+    }
+
+    // Start loading
+    setIsSaving(true);
+
     const updateTeamResponse = await dispatch(
       updateTeam(name, editData.teamId, editData.isActive, editData.teamCode),
     );
+
+    // Stop loading
+    setIsSaving(false);
 
     if (updateTeamResponse.status === 200) {
       toast.success('Team updated successfully');
@@ -130,9 +143,6 @@ function ProjectTeams() {
                       <h6 className="text-muted">
                         No active teams are currently assigned to this building.
                       </h6>
-                      <small>
-                        To add a team, please use the Add New Item menu on the dashboard.
-                      </small>
                     </td>
                   </tr>
                 )}
