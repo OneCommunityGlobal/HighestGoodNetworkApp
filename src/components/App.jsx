@@ -179,6 +179,10 @@ class App extends Component {
       storeReady: false,
       authInitialized: false,
     };
+    this.isLoggingOut = false; // Flag to prevent infinite logout loops
+    this.broadcastChannel = null; // BroadcastChannel for cross-tab communication
+    this.tokenCheckInterval = null; // Interval for periodic token checking
+    this.lastTokenValue = null; // Track last known token value
   }
 
   componentDidMount() {
@@ -192,6 +196,8 @@ class App extends Component {
           initAuth();
           authInitialized = true;
           this.setState({ authInitialized: true });
+          // Store initial token value
+          this.lastTokenValue = localStorage.getItem('token');
         } catch (error) {
           console.error('Error initializing auth:', error);
           logger.logError(error);
@@ -202,6 +208,22 @@ class App extends Component {
     // Listen for storage events to sync auth state between tabs
     this.handleStorageChange = this.handleStorageChange.bind(this);
     window.addEventListener('storage', this.handleStorageChange);
+
+    // Use BroadcastChannel API for more reliable cross-tab communication
+    if (typeof BroadcastChannel !== 'undefined') {
+      this.broadcastChannel = new BroadcastChannel('auth_sync');
+      this.broadcastChannel.onmessage = event => {
+        if (event.data && event.data.type === 'logout') {
+          this.handleCrossTabLogout();
+        }
+      };
+    }
+
+    // Periodic token check as fallback (checks every 500ms)
+    // This ensures we catch logout even if storage events don't fire
+    this.tokenCheckInterval = setInterval(() => {
+      this.checkTokenStatus();
+    }, 500);
   }
 
   componentWillUnmount() {
@@ -209,11 +231,68 @@ class App extends Component {
     if (this.handleStorageChange) {
       window.removeEventListener('storage', this.handleStorageChange);
     }
+    // Clean up BroadcastChannel
+    if (this.broadcastChannel) {
+      this.broadcastChannel.close();
+    }
+    // Clean up token check interval
+    if (this.tokenCheckInterval) {
+      clearInterval(this.tokenCheckInterval);
+    }
+  }
+
+  checkTokenStatus() {
+    // Periodic check to detect if token was removed in another tab
+    // This is a fallback for when storage events don't fire reliably
+    if (this.isLoggingOut) return; // Skip if already logging out
+
+    const currentToken = localStorage.getItem('token');
+    const wasAuthenticated = this.lastTokenValue !== null;
+    const isNowUnauthenticated = currentToken === null;
+
+    // If we had a token before and now it's gone, we were logged out
+    if (wasAuthenticated && isNowUnauthenticated) {
+      this.handleCrossTabLogout();
+    }
+
+    // Update last known token value
+    this.lastTokenValue = currentToken;
+  }
+
+  handleCrossTabLogout() {
+    // Handle cross-tab logout (called from storage events, BroadcastChannel, or token check)
+    if (!this.isLoggingOut) {
+      this.isLoggingOut = true;
+
+      // Immediately redirect to login - don't wait for Redux state update
+      // This ensures the user sees the login page right away
+      if (
+        window.location.pathname !== '/login' &&
+        !window.location.pathname.startsWith('/login') &&
+        !window.location.pathname.startsWith('/forgotpassword')
+      ) {
+        window.location.href = '/login';
+        return; // Exit early, let the redirect handle cleanup
+      }
+
+      // If already on login page, just update Redux state
+      if (store && store.dispatch) {
+        const { logoutUser } = require('../actions/authActions');
+        // Use a version of logoutUser that doesn't set the flag to prevent loops
+        store.dispatch(logoutUser(true)); // Pass true to indicate cross-tab logout
+      }
+
+      // Reset flag after a delay
+      setTimeout(() => {
+        this.isLoggingOut = false;
+      }, 1000);
+    }
   }
 
   handleStorageChange(event) {
     // Sync auth state when localStorage changes in other tabs
     if (event.key === 'token' || event.key === 'authToken') {
+      // Handle login sync - token was added in another tab
       if (event.newValue && !authInitialized) {
         try {
           initAuth();
@@ -222,6 +301,20 @@ class App extends Component {
         } catch (error) {
           console.error('Error syncing auth from storage event:', error);
         }
+      }
+      // Handle logout sync - token was removed in another tab
+      if (event.newValue === null && event.oldValue !== null && !this.isLoggingOut) {
+        // Token was removed in another tab, log out this tab
+        this.handleCrossTabLogout();
+      }
+    }
+    // Also check for explicit logout flag
+    if (event.key === 'logoutFlag') {
+      if (event.newValue === 'true' && !this.isLoggingOut) {
+        // Another tab triggered logout, log out this tab
+        this.handleCrossTabLogout();
+        // Clear the flag
+        localStorage.removeItem('logoutFlag');
       }
     }
   }

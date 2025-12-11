@@ -97,8 +97,36 @@ export const getHeaderData = userId => {
   };
 };
 
-export const logoutUser = () => dispatch => {
+export const logoutUser = (isCrossTabLogout = false) => dispatch => {
+  // Only signal other tabs if this is NOT a cross-tab logout
+  // (to prevent infinite loops when responding to storage events)
+  if (!isCrossTabLogout) {
+    // Set a flag to signal other tabs to log out
+    // This flag will trigger a storage event in other tabs
+    localStorage.setItem('logoutFlag', 'true');
+    
+    // Use BroadcastChannel API for more reliable cross-tab communication
+    if (typeof BroadcastChannel !== 'undefined') {
+      try {
+        const channel = new BroadcastChannel('auth_sync');
+        channel.postMessage({ type: 'logout', timestamp: Date.now() });
+        // Close the channel after sending
+        setTimeout(() => channel.close(), 100);
+      } catch (error) {
+        console.warn('BroadcastChannel not available:', error);
+      }
+    }
+    
+    // Clear the logout flag after a short delay to allow other tabs to detect it
+    // We use setTimeout to ensure the storage event fires first
+    setTimeout(() => {
+      localStorage.removeItem('logoutFlag');
+    }, 500);
+  }
+  
+  // Remove the token
   localStorage.removeItem(tokenKey);
+  
   httpService.setjwt(false);
   dispatch(setCurrentUser(null));
 };
