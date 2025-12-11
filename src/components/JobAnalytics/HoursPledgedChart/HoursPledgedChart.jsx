@@ -163,8 +163,19 @@ function HoursPledgedChart() {
                 dx={-50}
               />
             </YAxis>
-            <Tooltip />
-            <Bar dataKey="avgHours" fill={darkMode ? '#225163' : '#8884d8'}>
+            <Tooltip
+              contentStyle={{
+                backgroundColor: darkMode ? '#1c2541' : '#ffffff',
+                color: darkMode ? '#ffffff' : '#000000',
+              }}
+              labelStyle={{
+                color: darkMode ? '#ffffff' : '#000000',
+              }}
+              itemStyle={{
+                color: darkMode ? '#ffffff' : '#000000',
+              }}
+            />
+            <Bar dataKey="avgHours" fill={darkMode ? '#9ca5f6ff' : '#8884d8'}>
               <LabelList dataKey="avgHours" position="right" formatter={v => v} />
             </Bar>
           </BarChart>
