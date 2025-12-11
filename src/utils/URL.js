@@ -471,6 +471,15 @@ export const ENDPOINTS = {
   //pull requests analysis
   PR_REVIEWS_INSIGHTS: `${APIEndpoint}/analytics/pr-review-insights`,
 
+  // application time analytics
+  APPLICATION_TIME_DATA: (startDate, endDate, roles) => {
+    let url = `${APIEndpoint}/analytics/application-time?`;
+    if (startDate) url += `startDate=${encodeURIComponent(startDate)}&`;
+    if (endDate) url += `endDate=${encodeURIComponent(endDate)}&`;
+    if (roles && roles.length > 0) url += `roles=${encodeURIComponent(roles.join(','))}&`;
+    return url.slice(0, -1);
+  },
+
 };
 
 export const ApiEndpoint = APIEndpoint;

@@ -1,5 +1,17 @@
 /* ApplicationTimeChart.module.css */
 
+.pageContainer {
+  padding: 20px;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.pageContainer.darkMode {
+  background-color: #1B2A41;
+  color: #e0e0e0;
+}
+
 .container {
   display: flex;
   align-items: flex-start;
@@ -7,7 +19,26 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageContainer {
+    padding: 10px;
+  }
+}
+
+/* Dark theme support */
+.container.darkMode {
+  background-color: #1B2A41;
+  color: #e0e0e0;
 }
 
 .chartCard {
@@ -16,6 +47,12 @@
   border-radius: 8px;
   background-color: #ffffff;
   padding: 20px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.chartCard.darkMode {
+  background-color: #2c3e50;
+  border-color: #5dade2;
 }
 
 .title {
@@ -24,6 +61,11 @@
   color: #5f6368;
   margin: 0 0 30px 0;
   font-family: Arial, sans-serif;
+  transition: color 0.3s ease;
+}
+
+.title.darkMode {
+  color: #e0e0e0;
 }
 
 .chartArea {
@@ -33,6 +75,23 @@
   padding-right: 60px;
   padding-top: 20px;
   padding-bottom: 40px;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  .chartArea {
+    padding-left: 100px;
+    padding-right: 40px;
+    min-height: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chartArea {
+    padding-left: 80px;
+    padding-right: 30px;
+    min-height: 250px;
+  }
 }
 
 .grid {
@@ -45,6 +104,27 @@
     linear-gradient(to right, #e0e0e0 1px, transparent 1px),
     linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);
   opacity: 0.5;
+  transition: opacity 0.3s ease;
+}
+
+.grid.darkMode {
+  background-image:
+    linear-gradient(to right, #5a6c7d 1px, transparent 1px),
+    linear-gradient(to bottom, #5a6c7d 1px, transparent 1px);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    left: 100px;
+    right: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    left: 80px;
+    right: 30px;
+  }
 }
 
 .yAxis {
@@ -58,6 +138,18 @@
   justify-content: space-between;
 }
 
+@media (max-width: 768px) {
+  .yAxis {
+    width: 90px;
+  }
+}
+
+@media (max-width: 480px) {
+  .yAxis {
+    width: 70px;
+  }
+}
+
 .yAxisItem {
   display: flex;
   align-items: center;
@@ -66,6 +158,19 @@
   font-size: 12px;
   color: #5f6368;
   border-right: 1px solid #9aa0a6;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.yAxisItem.darkMode {
+  color: #e0e0e0;
+  border-right-color: #5a6c7d;
+}
+
+@media (max-width: 480px) {
+  .yAxisItem {
+    font-size: 10px;
+    padding-right: 5px;
+  }
 }
 
 .xAxis {
@@ -78,6 +183,25 @@
   display: flex;
   align-items: flex-start;
   padding-top: 5px;
+  transition: border-color 0.3s ease;
+}
+
+.xAxis.darkMode {
+  border-top-color: #5a6c7d;
+}
+
+@media (max-width: 768px) {
+  .xAxis {
+    left: 100px;
+    right: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .xAxis {
+    left: 80px;
+    right: 30px;
+  }
 }
 
 .bars {
@@ -89,6 +213,20 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .bars {
+    left: 100px;
+    right: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bars {
+    left: 80px;
+    right: 30px;
+  }
 }
 
 .barRow {
@@ -105,6 +243,12 @@
   border-radius: 0 4px 4px 0;
   position: relative;
   min-width: 2px;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.bar.darkMode {
+  background-color: #58d68d;
+  border-color: #27ae60;
 }
 
 .dataLabel {
@@ -116,6 +260,18 @@
   font-weight: 600;
   color: #2d5016;
   white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.dataLabel.darkMode {
+  color: #58d68d;
+}
+
+@media (max-width: 480px) {
+  .dataLabel {
+    font-size: 12px;
+    right: -30px;
+  }
 }
 
 .xAxisLabel {
@@ -125,6 +281,18 @@
   transform: translateX(-50%);
   font-size: 12px;
   color: #5f6368;
+  transition: color 0.3s ease;
+}
+
+.xAxisLabel.darkMode {
+  color: #e0e0e0;
+}
+
+@media (max-width: 480px) {
+  .xAxisLabel {
+    font-size: 10px;
+    bottom: -20px;
+  }
 }
 
 .noData {
@@ -134,6 +302,25 @@
   height: 400px;
   color: #5f6368;
   font-size: 16px;
+  transition: color 0.3s ease;
+}
+
+.noData.darkMode {
+  color: #e0e0e0;
+}
+
+@media (max-width: 768px) {
+  .noData {
+    height: 300px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .noData {
+    height: 250px;
+    font-size: 12px;
+  }
 }
 
 .summary {
@@ -143,6 +330,19 @@
   border-radius: 4px;
   font-size: 14px;
   color: #5f6368;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.summary.darkMode {
+  background-color: #34495e;
+  color: #e0e0e0;
+}
+
+@media (max-width: 480px) {
+  .summary {
+    font-size: 12px;
+    padding: 10px;
+  }
 }
 
 .filters {
@@ -152,11 +352,37 @@
   min-width: 150px;
 }
 
+@media (max-width: 768px) {
+  .filters {
+    min-width: 120px;
+    gap: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filters {
+    min-width: 100px;
+    gap: 10px;
+  }
+}
+
 .filterCard {
   border: 1px solid #dadce0;
   border-radius: 4px;
   padding: 12px;
   background-color: #ffffff;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.filterCard.darkMode {
+  background-color: #2c3e50;
+  border-color: #5a6c7d;
+}
+
+@media (max-width: 480px) {
+  .filterCard {
+    padding: 8px;
+  }
 }
 
 .filterTitle {
@@ -164,6 +390,18 @@
   font-weight: 500;
   color: #3c4043;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.filterTitle.darkMode {
+  color: #e0e0e0;
+}
+
+@media (max-width: 480px) {
+  .filterTitle {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
 }
 
 .select {
@@ -174,4 +412,117 @@
   font-size: 14px;
   background-color: #ffffff;
   color: #3c4043;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.select.darkMode {
+  background-color: #34495e;
+  border-color: #5a6c7d;
+  color: #e0e0e0;
+}
+
+@media (max-width: 480px) {
+  .select {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+}
+
+/* Responsive layout adjustments */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 0;
+  }
+  
+  .chartCard {
+    order: 1;
+    padding: 15px;
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .filters {
+    order: 2;
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: auto;
+    width: 100%;
+    gap: 15px;
+  }
+  
+  .filterCard {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    gap: 10px;
+  }
+  
+  .chartCard {
+    padding: 12px;
+  }
+  
+  .title {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  
+  .filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .filterCard {
+    width: 100%;
+  }
+}
+
+@media (max-width: 320px) {
+  .title {
+    font-size: 14px;
+  }
+  
+  .chartArea {
+    padding-left: 60px;
+    padding-right: 20px;
+    min-height: 200px;
+  }
+  
+  .yAxis {
+    width: 55px;
+  }
+  
+  .yAxisItem {
+    font-size: 9px;
+    padding-right: 3px;
+  }
+  
+  .bars {
+    left: 60px;
+    right: 20px;
+  }
+  
+  .grid {
+    left: 60px;
+    right: 20px;
+  }
+  
+  .xAxis {
+    left: 60px;
+    right: 20px;
+  }
 }
